@@ -1,13 +1,11 @@
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-package com.max.weatherviewer.api
+package com.max.weatherviewer.api.weather
 
 import com.google.gson.Gson
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
-import com.max.weatherviewer.model.Location
-import com.max.weatherviewer.model.Weather
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

@@ -1,4 +1,4 @@
-package com.max.weatherviewer.model
+package com.max.weatherviewer.api.weather
 
 import com.google.gson.annotations.SerializedName
 
