@@ -10,13 +10,13 @@ import pl.charmas.android.reactivelocation2.ReactiveLocationProvider
 
 val locationModule = Kodein.Module("location") {
 
-    bind<LocationPublisher>() with singleton { PublishRelay.create<Location>() }
+    bind<LocationPublisher>("location") with singleton { PublishRelay.create<Location>() }
 
-    bind<LocationObserver>() with provider { instance<LocationPublisher>() }
+    bind<LocationObserver>("location") with provider { instance<LocationPublisher>() }
 
-    bind<PermissionPublisher>() with singleton { PublishRelay.create<PermissionResult>() }
+    bind<PermissionPublisher>("permission") with singleton { PublishRelay.create<PermissionResult>() }
 
-    bind<PermissionObserver>() with provider { instance<PermissionPublisher>() }
+    bind<PermissionObserver>("permission") with provider { instance<PermissionPublisher>() }
 
     bind<LibLocationProvider>() with singleton { ReactiveLocationProvider(instance()) }
 

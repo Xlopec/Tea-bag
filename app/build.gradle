@@ -1,8 +1,18 @@
 apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'androidx.navigation.safeargs'
+apply from: '../set-compile-args.gradle'
+
+repositories {
+    maven { url "$androidx_home/out/ui/build/support_repo/" }
+    maven { url "$androidx_home/prebuilts/androidx/external/" }
+    google()
+    jcenter()
+}
 
 android {
     compileSdkVersion 28
@@ -22,11 +32,23 @@ android {
     }
 }
 
+androidExtensions {
+    experimental = true
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
+
+    implementation "androidx.compose:compose-runtime:1.0.0-alpha01"
+
+    implementation "androidx.fragment:fragment:1.1.0-alpha04"
+    implementation "androidx.ui:ui-framework:1.0.0-alpha01"
+    implementation "androidx.ui:ui-framework:1.0.0-alpha01"
+    implementation "androidx.ui:ui-material:1.0.0-alpha01"
+    implementation "androidx.ui:ui-layout:1.0.0-alpha01"
 
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
@@ -53,6 +75,11 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:$playServices"
     implementation "com.google.android.gms:play-services-maps:$playServices"
 
+    implementation "android.arch.lifecycle:extensions:$lifecycle"
+    kapt "android.arch.lifecycle:compiler:$lifecycle"
+
+    implementation "android.arch.navigation:navigation-fragment-ktx:$navigation"
+    implementation "android.arch.navigation:navigation-ui-ktx:$navigation"
     /*implementation "io.arrow-kt:arrow-core:0.8.2"
     implementation "io.arrow-kt:arrow-meta:0.9.0"
     testImplementation "io.arrow-kt:arrow-syntax:0.9.0"

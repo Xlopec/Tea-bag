@@ -1,13 +1,12 @@
 package com.max.weatherviewer.presentation.start
 
 import com.google.android.gms.location.LocationRequest
-import com.jakewharton.rxrelay2.BehaviorRelay
 import com.max.weatherviewer.api.location.LocationMessage
 import com.max.weatherviewer.api.location.LocationModel
-import com.max.weatherviewer.api.location.locationModule
 import com.max.weatherviewer.api.weather.Location
 import com.max.weatherviewer.api.weather.Weather
 import com.max.weatherviewer.api.weather.WeatherProvider
+import com.max.weatherviewer.component.Component
 import com.max.weatherviewer.just
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -19,20 +18,21 @@ import org.kodein.di.generic.scoped
 import org.kodein.di.generic.singleton
 
 typealias MessagesObs = Observable<out Message>
-typealias StateHolder = BehaviorRelay<State>
-typealias WeatherModel = (messages: MessagesObs) -> Observable<out State>
+typealias WeatherComponent = (messages: MessagesObs) -> Observable<out State>
 
-val weatherModule = Kodein.Module("weatherModule") {
-    val state = BehaviorRelay.createDefault<State>(State.Preview.empty())
+fun weatherModule(startLocation: Location) = Kodein.Module("weatherModule") {
 
-    import(locationModule)
+    bind<Resolver>() with singleton { ResolverImp(instance(), instance()) }
 
-    bind<EffectResolver>() with singleton { EffectsResolverImp(instance(), instance()) }
+    bind<WeatherComponent>() with scoped(ActivityRetainedScope).singleton {
 
-    bind<WeatherModel>() with scoped(ActivityRetainedScope).singleton { WeatherComponent(state, instance()) }
+        fun resolver(command: Command): Single<Message> = instance<Resolver>().resolveEffect(command)
+
+        Component(State.Preview(startLocation), ::resolver, ::update)
+    }
 }
 
-interface EffectResolver {
+interface Resolver {
 
     fun loadFeed(l: Location): Single<Weather>
 
@@ -40,38 +40,19 @@ interface EffectResolver {
 
 }
 
-class WeatherComponent(private val state: StateHolder,
-                       private val effectResolver: EffectResolver) : WeatherModel {
-
-    override fun invoke(messages: MessagesObs): Observable<out State> {
-        val initial = state.value!!
-
-        return messages.map { message -> update(message, initial) }
-            .flatMap { (nextState, effect) ->
-                effectResolver.resolveEffect(effect)
-                    .flatMapObservable { msg -> invoke(Observable.just(msg)) }
-                    .startWith(nextState)
-            }
-            .doOnNext(state::accept)
-            .startWith(initial)
-            .distinctUntilChanged()
-    }
-
-}
-
-fun update(message: Message, @Suppress("UNUSED_PARAMETER") state: State): Pair<State, Command> {
+fun update(message: Message, @Suppress("UNUSED_PARAMETER") s: State): Pair<State, Command> {
     return when (message) {
-        is Message.LoadButtonClicked -> State.Loading to Command.QueryLocation
-        is Message.LocationQueried -> State.Loading to Command.LoadWeather(message.l)
-        is Message.WeatherLoaded -> State.Preview(message.weather) to Command.None
-        is Message.LoadFuckup -> State.Failure(message.th) to Command.None
-        Message.PermissionFuckup -> State.PermissionRequestFuckup to Command.None
-        Message.RequestPermission -> State.RequestPermission to Command.None
-        Message.ShowPermissionRationale -> State.ShowPermissionRationale to Command.None
+        is Message.LoadButtonClicked -> State.Loading(s.location) to Command.QueryLocation
+        is Message.LocationQueried -> State.Loading(s.location) to Command.LoadWeather(message.l)
+        is Message.WeatherLoaded -> State.Preview(s.location, message.weather) to Command.None
+        is Message.LoadFuckup -> State.Failure(s.location, message.th) to Command.None
+        Message.PermissionFuckup -> State.PermissionRequestFuckup(s.location) to Command.None
+        Message.RequestPermission -> State.RequestPermission(s.location) to Command.None
+        Message.ShowPermissionRationale -> State.ShowPermissionRationale(s.location) to Command.None
     }
 }
 
-fun EffectResolver.resolveEffect(command: Command): Single<Message> {
+fun Resolver.resolveEffect(command: Command): Single<Message> {
     return when (command) {
         Command.None -> Single.never()
         is Command.LoadWeather -> loadFeed(command.l).map(Message::WeatherLoaded)
@@ -91,8 +72,8 @@ fun toMessage(locationMessage: LocationMessage): Message {
     }
 }
 
-private class EffectsResolverImp(private val weatherProvider: WeatherProvider,
-                                 private val locationModel: LocationModel) : EffectResolver {
+private class ResolverImp(private val weatherProvider: WeatherProvider,
+                          private val locationModel: LocationModel) : Resolver {
 
     private val locationRequest = LocationRequest()
         .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)

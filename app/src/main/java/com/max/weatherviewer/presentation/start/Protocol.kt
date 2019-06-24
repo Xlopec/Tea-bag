@@ -5,22 +5,19 @@ import com.max.weatherviewer.api.weather.Weather
 
 sealed class State {
 
-    object Loading : State()
+    data class Loading(override val location: Location) : State()
 
-    data class Preview(val data: Weather? = null) : State() {
-        companion object {
-            private val EMPTY = Preview()
-            fun empty() = EMPTY
-        }
-    }
+    data class Preview(override val location: Location, val data: Weather? = null) : State()
 
-    data class Failure(val th: Throwable) : State()
+    data class Failure(override val location: Location, val th: Throwable) : State()
 
-    object PermissionRequestFuckup : State()
+    data class PermissionRequestFuckup(override val location: Location) : State()
 
-    object ShowPermissionRationale : State()
+    data class ShowPermissionRationale(override val location: Location) : State()
 
-    object RequestPermission : State()
+    data class RequestPermission(override val location: Location) : State()
+
+    abstract val location: Location
 
 }
 
