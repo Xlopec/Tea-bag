@@ -25,7 +25,7 @@ class ReducerTest {
             reduce(
                 State.Loading,
                 Command.FeedLoadFailure(th)
-            ) == State.Failure(th))
+            ) == State.LoadFailure(th))
 
         val weather = Weather(Location(30.0, 30.0), Wind(10.0, 30.0))
 

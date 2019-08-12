@@ -7,9 +7,11 @@ sealed class State {
 
     data class Loading(override val location: Location) : State()
 
-    data class Preview(override val location: Location, val data: Weather? = null) : State()
+    data class Preview(override val location: Location, val data: Weather) : State()
 
-    data class Failure(override val location: Location, val th: Throwable) : State()
+    data class Initial(override val location: Location) : State()
+
+    data class LoadFailure(override val location: Location, val th: Throwable) : State()
 
     data class PermissionRequestFuckup(override val location: Location) : State()
 
@@ -23,19 +25,25 @@ sealed class State {
 
 sealed class Message {
 
+    object ViewAttached : Message()
+
+    object SelectLocation : Message()
+
     object LoadButtonClicked : Message()
 
     data class LocationQueried(val l: Location) : Message()
 
     data class WeatherLoaded(val weather: Weather) : Message()
 
-    data class LoadFuckup(val th: Throwable) : Message()
+    data class OpFuckup(val th: Throwable) : Message()
 
     object PermissionFuckup : Message()
 
     object RequestPermission : Message()
 
     object ShowPermissionRationale : Message()
+
+    object Retry : Message()
 }
 
 sealed class Command {
@@ -46,11 +54,11 @@ sealed class Command {
 
     data class FeedLoaded(val data: Weather) : Command()
 
-    data class FeedLoadFailure(val th: Throwable) : Command()
-
     object PermissionRequestFuckup : Command()
 
     object ShowPermissionRationale : Command()
 
     object QueryLocation : Command()
+
+    object SelectLocation : Command()
 }

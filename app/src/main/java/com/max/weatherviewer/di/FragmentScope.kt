@@ -18,10 +18,10 @@ val Fragment.fragmentScope: Scope<Fragment>
 
 private object FragmentScope : Scope<Fragment>, LifecycleObserver {
 
-    private val mapping = mutableMapOf<String?, ScopeRegistry>()
+    private val mapping = mutableMapOf<Int, ScopeRegistry>()
 
     override fun getRegistry(context: Fragment): ScopeRegistry {
-        return mapping.getOrPut(context.tag, ::StandardScopeRegistry)
+        return mapping.getOrPut(context.id, ::StandardScopeRegistry)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -31,7 +31,7 @@ private object FragmentScope : Scope<Fragment>, LifecycleObserver {
 
     private fun handleDestroy(fragment: Fragment) {
         if (fragment.wontBeReCreated) {
-            mapping.remove(fragment.tag)?.clear()
+            mapping.remove(fragment.id)?.clear()
         }
     }
 }

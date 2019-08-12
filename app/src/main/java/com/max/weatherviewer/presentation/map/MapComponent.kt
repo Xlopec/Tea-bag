@@ -31,6 +31,7 @@ private class Navigator(private val fragment: Fragment) {
         defaultNavOptionsBuilder().setLaunchSingleTop(true).setPopUpTo(R.id.mapFragment, true).build()
 
     fun navigateToWeatherViewer(location: Location) {
+        // fixme add communication bus instead of direct args passing
         fragment.findNavController()
             .navigateDefaultAnimated(R.id.weatherViewer, toNavArgs(location).toBundle(), navOptions)
     }

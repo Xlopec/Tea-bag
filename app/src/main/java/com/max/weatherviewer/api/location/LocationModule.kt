@@ -4,8 +4,10 @@ import android.app.Activity
 import com.jakewharton.rxrelay2.PublishRelay
 import com.max.weatherviewer.api.weather.Location
 import org.kodein.di.Kodein
-import org.kodein.di.bindings.WeakContextScope
-import org.kodein.di.generic.*
+import org.kodein.di.generic.bind
+import org.kodein.di.generic.instance
+import org.kodein.di.generic.provider
+import org.kodein.di.generic.singleton
 import pl.charmas.android.reactivelocation2.ReactiveLocationProvider
 
 val locationModule = Kodein.Module("location") {
@@ -14,13 +16,13 @@ val locationModule = Kodein.Module("location") {
 
     bind<LocationObserver>("location") with provider { instance<LocationPublisher>() }
 
-    bind<PermissionPublisher>("permission") with singleton { PublishRelay.create<PermissionResult>() }
+    bind<PermissionPublisher>() with singleton { PublishRelay.create<PermissionResult>() }
 
-    bind<PermissionObserver>("permission") with provider { instance<PermissionPublisher>() }
+    bind<PermissionObserver>() with provider { instance<PermissionPublisher>() }
 
     bind<LibLocationProvider>() with singleton { ReactiveLocationProvider(instance()) }
 
-    bind<LocationModel>() with scoped(WeakContextScope.of<Activity>()).singleton {
+    bind<LocationModel>() with singleton {
         LocationComponent(instance(), instance(), instance(tag = Activity::class))
     }
 
