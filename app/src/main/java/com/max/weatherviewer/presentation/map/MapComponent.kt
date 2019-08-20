@@ -18,10 +18,10 @@ import org.kodein.di.generic.singleton
 
 typealias MapComponent = Component<Message, Command, State>
 
-fun mapModule(fragment: Fragment) = Kodein.Module("map") {
+fun mapModule(fragment: Fragment, preSelectedLocation: Location?) = Kodein.Module("map") {
 
     bind<MapComponent>("map") with scoped(fragment.fragmentScope).singleton {
-        Component(State(), ResolverImp(Navigator(fragment)), ::update)
+        Component(State(preSelectedLocation ?: Location(.0, .0)), ResolverImp(Navigator(fragment)), ::update)
     }
 }
 

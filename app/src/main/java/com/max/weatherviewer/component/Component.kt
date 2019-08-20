@@ -1,5 +1,6 @@
 package com.max.weatherviewer.component
 
+import android.util.Log
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -23,6 +24,7 @@ class Component<M, C, S>(initialState: S,
             .startWith(state.value!!)
             .doOnNext(state::accept)
             .distinctUntilChanged()
+            .doOnNext { Log.d(this@Component.javaClass.simpleName,"State $it") }
     }
 
 }

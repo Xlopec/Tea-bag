@@ -60,5 +60,5 @@ sealed class Command {
 
     object QueryLocation : Command()
 
-    object SelectLocation : Command()
+    data class SelectLocation(val withSelectedLocation: Location?) : Command()
 }

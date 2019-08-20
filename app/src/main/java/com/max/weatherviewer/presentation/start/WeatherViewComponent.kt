@@ -12,6 +12,7 @@ import com.max.weatherviewer.api.weather.WeatherProvider
 import com.max.weatherviewer.component.Component
 import com.max.weatherviewer.just
 import com.max.weatherviewer.navigateDefaultAnimated
+import com.max.weatherviewer.presentation.map.MapFragmentArgs
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -46,7 +47,7 @@ interface Resolver {
 
     fun queryLocation(): Single<out LocationMessage>
 
-    fun toLocationSelection()
+    fun toLocationSelection(withStartLocation: Location?)
 }
 
 fun update(message: Message, s: State): Pair<State, Command> {
@@ -59,7 +60,7 @@ fun update(message: Message, s: State): Pair<State, Command> {
         Message.RequestPermission -> State.RequestPermission(s.location) to Command.None
         Message.ShowPermissionRationale -> State.ShowPermissionRationale(s.location) to Command.None
         Message.ViewAttached -> calculateInitialState(s)
-        Message.SelectLocation -> s to Command.SelectLocation
+        Message.SelectLocation -> s to Command.SelectLocation(s.location)
         Message.Retry -> calculateRetryAction(s)
     }
 }
@@ -72,7 +73,7 @@ fun Resolver.resolveEffect(command: Command): Single<Message> {
         Command.PermissionRequestFuckup -> Message.PermissionFuckup.just()
         Command.ShowPermissionRationale -> Message.RequestPermission.just()
         Command.QueryLocation -> queryLocation().map(::toMessage)
-        Command.SelectLocation -> Completable.fromAction(::toLocationSelection).andThen(Single.never())
+        is Command.SelectLocation -> Completable.fromAction { toLocationSelection(command.withSelectedLocation) }.andThen(Single.never())
     }
 
     return source.onErrorReturn(Message::OpFuckup)
@@ -95,7 +96,7 @@ private class ResolverImp(private val weatherProvider: WeatherProvider,
         .setFastestInterval(1L)
         .setSmallestDisplacement(50f)
 
-    override fun toLocationSelection() = navigator.navigateToMap()
+    override fun toLocationSelection(withStartLocation: Location?) = navigator.navigateToMap(withStartLocation)
 
     override fun loadFeed(l: Location): Single<Weather> = weatherProvider.fetchWeather(l)
 
@@ -122,9 +123,9 @@ private fun calculateInitialState(current: State): Pair<State, Command> {
 
 private class Navigator(private val fragment: Fragment) {
 
-    fun navigateToMap() {
+    fun navigateToMap(withStartLocation: Location?) {
         fragment.findNavController()
-            .navigateDefaultAnimated(R.id.mapFragment)
+            .navigateDefaultAnimated(R.id.mapFragment, MapFragmentArgs.Builder(withStartLocation).build().toBundle())
     }
 
 }
