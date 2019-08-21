@@ -88,6 +88,7 @@ private fun Marker.moveAnimated(to: LatLng, duration: ULong) {
 private val LatLng.location: Location
     get() = Location(latitude, longitude)
 
+@Suppress("DEPRECATION")// rot email
 private val GoogleMap.locChanges: Observable<Location>
     get() {
         val locations = PublishRelay.create<Location>()
@@ -108,7 +109,7 @@ private val GoogleMap.locChanges: Observable<Location>
 private object MarkerEvaluator : TypeEvaluator<LatLng> {
 
     override fun evaluate(fraction: Float, startValue: LatLng, endValue: LatLng): LatLng {
-        return LatLng(startValue.latitude + ((endValue.latitude - startValue.latitude) * fraction),
-                      startValue.longitude + ((endValue.longitude - startValue.longitude) * fraction))
+        return LatLng(startValue.latitude + fraction * (endValue.latitude - startValue.latitude),
+                      startValue.longitude + fraction * (endValue.longitude - startValue.longitude))
     }
 }
