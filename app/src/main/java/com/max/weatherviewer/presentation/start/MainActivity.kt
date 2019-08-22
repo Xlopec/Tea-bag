@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        direct.instance<PermissionPublisher>().accept(PermissionResult(requestCode, permissions, grantResults))
+        direct.instance<PermissionPublisher>().offer(PermissionResult(requestCode, permissions, grantResults))
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 

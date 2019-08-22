@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.github.satoshun.coroutinebinding.view.clicks
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
@@ -15,13 +16,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.jakewharton.rxbinding2.view.clicks
-import com.jakewharton.rxrelay2.PublishRelay
 import com.max.weatherviewer.R
 import com.max.weatherviewer.api.weather.Location
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
+import com.max.weatherviewer.mergeWith
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.map
+import kotlinx.coroutines.flow.*
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
@@ -34,7 +35,8 @@ class MapFragment : Fragment(), KodeinAware {
         val parent by closestKodein()
 
         extend(parent)
-        import(mapModule(this@MapFragment, arguments?.let(MapFragmentArgs::fromBundle)?.preSelectedLocation))
+        import(mapModule(this@MapFragment,
+                         arguments?.let(MapFragmentArgs::fromBundle)?.preSelectedLocation))
     }
 
     private val component: MapComponent by instance("map")
@@ -42,7 +44,9 @@ class MapFragment : Fragment(), KodeinAware {
     private val mapFragment: SupportMapFragment
         get() = childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
 
-    private val disposable = CompositeDisposable()
+    private val viewModelJob = SupervisorJob()
+
+    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.map_fragment, container, false)
@@ -52,23 +56,28 @@ class MapFragment : Fragment(), KodeinAware {
         mapFragment.getMapAsync { map ->
 
             val marker = map.addMarker(MarkerOptions().position(map.cameraPosition.target))
-            val selections = view.findViewById<FloatingActionButton>(R.id.btn_select).clicks().map { Message.Select }
+            val selections = view.findViewById<FloatingActionButton>(R.id.btn_select).clicks()
+                .map { Message.Select }
 
-            disposable += component(map.locChanges.map(Message::MoveTo).cast(Message::class.java).mergeWith(selections))
-                .subscribe { state -> render(state, map, marker) }
+            uiScope.launch {
+                component(map.locChanges.map { Message.MoveTo(it) }.mergeWith(selections.consumeAsFlow()))
+                    .collect { state -> render(state, map, marker) }
+            }
         }
     }
 
     override fun onDestroyView() {
-        disposable.clear()
+        uiScope.cancel()
         super.onDestroyView()
     }
 
     private fun render(state: State, map: GoogleMap, marker: Marker) {
         val latLng = LatLng(state.location.lat, state.location.lon)
 
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder(map.cameraPosition).target(latLng).build()))
-        marker.moveAnimated(latLng, resources.getInteger(android.R.integer.config_mediumAnimTime).toULong())
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder(map.cameraPosition).target(
+            latLng).build()))
+        marker.moveAnimated(latLng,
+                            resources.getInteger(android.R.integer.config_mediumAnimTime).toULong())
     }
 
 }
@@ -89,11 +98,9 @@ private val LatLng.location: Location
     get() = Location(latitude, longitude)
 
 @Suppress("DEPRECATION")// rot email
-private val GoogleMap.locChanges: Observable<Location>
-    get() {
-        val locations = PublishRelay.create<Location>()
-
-        val l = GoogleMap.OnCameraChangeListener { position -> locations.accept(position.target.location) }
+private val GoogleMap.locChanges: Flow<Location>
+    get() = channelFlow {
+        val l = GoogleMap.OnCameraChangeListener { position -> offer(position.target.location) }
 
         setOnCameraMoveStartedListener { reason ->
             if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
@@ -103,7 +110,7 @@ private val GoogleMap.locChanges: Observable<Location>
             }
         }
 
-        return locations
+        awaitClose { setOnCameraChangeListener(null); setOnCameraMoveStartedListener(null) }
     }
 
 private object MarkerEvaluator : TypeEvaluator<LatLng> {

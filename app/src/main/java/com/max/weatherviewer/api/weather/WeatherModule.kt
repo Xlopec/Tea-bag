@@ -1,8 +1,5 @@
 package com.max.weatherviewer.api.weather
 
-import com.jakewharton.rxrelay2.PublishRelay
-import com.max.weatherviewer.presentation.start.Message
-import io.reactivex.Observable
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.instance
@@ -15,5 +12,5 @@ val weatherModule = Kodein.Module("weatherPuller") {
 
     bind<WeatherProvider>() with singleton { WeatherProvider(instance("apiKey"), 60) }
 
-    bind<Observable<Message>>() with singleton { PublishRelay.create<Message>() }
+    //bind<Observable<Message>>() with singleton { PublishRelay.create<Message>() }
 }

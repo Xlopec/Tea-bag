@@ -10,12 +10,9 @@ import com.max.weatherviewer.api.weather.Location
 import com.max.weatherviewer.api.weather.Weather
 import com.max.weatherviewer.api.weather.WeatherProvider
 import com.max.weatherviewer.component.Component
-import com.max.weatherviewer.just
 import com.max.weatherviewer.navigateDefaultAnimated
 import com.max.weatherviewer.presentation.map.MapFragmentArgs
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 import org.kodein.di.Kodein
 import org.kodein.di.bindings.Scope
 import org.kodein.di.generic.bind
@@ -23,8 +20,8 @@ import org.kodein.di.generic.instance
 import org.kodein.di.generic.scoped
 import org.kodein.di.generic.singleton
 
-typealias MessagesObs = Observable<out Message>
-typealias WeatherComponent = (messages: MessagesObs) -> Observable<out State>
+typealias MessagesObs = Flow<Message>
+typealias WeatherComponent = (messages: MessagesObs) -> Flow<State>
 
 fun weatherModule(scope: Scope<Fragment>, startLocation: Location) = Kodein.Module("weatherModule") {
 
@@ -34,7 +31,7 @@ fun weatherModule(scope: Scope<Fragment>, startLocation: Location) = Kodein.Modu
 
     bind<WeatherComponent>() with scoped(scope).singleton {
 
-        fun resolver(command: Command): Single<Message> = instance<Resolver>().resolveEffect(command)
+        suspend fun resolver(command: Command) = instance<Resolver>().resolveEffect(command)
 
         Component(State.Initial(startLocation), ::resolver, ::update)
     }
@@ -43,11 +40,11 @@ fun weatherModule(scope: Scope<Fragment>, startLocation: Location) = Kodein.Modu
 @Deprecated("todo: remove, will be replaced with a curried function")
 interface Resolver {
 
-    fun loadFeed(l: Location): Single<Weather>
+    suspend fun loadFeed(l: Location): Weather
 
-    fun queryLocation(): Single<out LocationMessage>
+    suspend  fun queryLocation(): LocationMessage
 
-    fun toLocationSelection(withStartLocation: Location?)
+    suspend fun toLocationSelection(withStartLocation: Location?)
 }
 
 fun update(message: Message, s: State): Pair<State, Command> {
@@ -65,18 +62,19 @@ fun update(message: Message, s: State): Pair<State, Command> {
     }
 }
 
-fun Resolver.resolveEffect(command: Command): Single<Message> {
-    val source: Single<Message> = when (command) {
-        Command.None -> Single.never()
-        is Command.LoadWeather -> loadFeed(command.l).map(Message::WeatherLoaded)
-        is Command.FeedLoaded -> Message.WeatherLoaded(command.data).just()
-        Command.PermissionRequestFuckup -> Message.PermissionFuckup.just()
-        Command.ShowPermissionRationale -> Message.RequestPermission.just()
-        Command.QueryLocation -> queryLocation().map(::toMessage)
-        is Command.SelectLocation -> Completable.fromAction { toLocationSelection(command.withSelectedLocation) }.andThen(Single.never())
+suspend fun Resolver.resolveEffect(command: Command): Message? {
+
+    suspend fun resolve() = when (command) {
+        Command.None -> null
+        is Command.LoadWeather -> Message.WeatherLoaded(loadFeed(command.l))
+        is Command.FeedLoaded -> Message.WeatherLoaded(command.data)
+        Command.PermissionRequestFuckup -> Message.PermissionFuckup
+        Command.ShowPermissionRationale -> Message.RequestPermission
+        Command.QueryLocation -> toMessage(queryLocation())
+        is Command.SelectLocation -> { toLocationSelection(command.withSelectedLocation); null }
     }
 
-    return source.onErrorReturn(Message::OpFuckup)
+    return runCatching { resolve() }.getOrElse(Message::OpFuckup)
 }
 
 fun toMessage(locationMessage: LocationMessage): Message {
@@ -96,11 +94,11 @@ private class ResolverImp(private val weatherProvider: WeatherProvider,
         .setFastestInterval(1L)
         .setSmallestDisplacement(50f)
 
-    override fun toLocationSelection(withStartLocation: Location?) = navigator.navigateToMap(withStartLocation)
+    override suspend fun toLocationSelection(withStartLocation: Location?) = navigator.navigateToMap(withStartLocation)
 
-    override fun loadFeed(l: Location): Single<Weather> = weatherProvider.fetchWeather(l)
+    override suspend fun loadFeed(l: Location) = weatherProvider.fetchWeather(l)
 
-    override fun queryLocation(): Single<out LocationMessage> = locationModel(locationRequest)
+    override suspend fun queryLocation() = locationModel(locationRequest)
 
 }
 

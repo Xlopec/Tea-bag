@@ -8,25 +8,22 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationRequest
-import com.jakewharton.rxrelay2.PublishRelay
 import com.max.weatherviewer.api.location.LocationMessage.LocationResult
 import com.max.weatherviewer.api.weather.Location
-import com.max.weatherviewer.just
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.flow.Flow
 import pl.charmas.android.reactivelocation2.ReactiveLocationProvider
 import android.location.Location as AndroidLocation
 
-typealias LocationPublisher = PublishRelay<Location>
-typealias LocationObserver = Observable<Location>
+typealias LocationPublisher = BroadcastChannel<Location>
+typealias LocationObserver = Flow<Location>
 
-typealias PermissionPublisher = PublishRelay<PermissionResult>
-typealias PermissionObserver = Observable<PermissionResult>
+typealias PermissionPublisher = BroadcastChannel<PermissionResult>
+typealias PermissionObserver = Flow<PermissionResult>
 
 typealias Permission = String
 
-typealias LocationModel = (request: LocationRequest) -> Single<out LocationMessage>
+typealias LocationModel = (request: LocationRequest) -> LocationMessage
 typealias LibLocationProvider = ReactiveLocationProvider
 
 private const val LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
@@ -65,19 +62,20 @@ class LocationComponent(private val locationProvider: LibLocationProvider,
                         private val permissionObserver: PermissionObserver,
                         private val activity: Activity) : LocationModel {
 
-    override fun invoke(request: LocationRequest): Single<out LocationMessage> = activity.requestLocation(request)
+    override fun invoke(request: LocationRequest): LocationMessage = activity.requestLocation(request)
 
     @SuppressLint("MissingPermission")
-    private fun Activity.requestLocation(request: LocationRequest): Single<out LocationMessage> {
+    private fun Activity.requestLocation(request: LocationRequest): LocationMessage {
 
         if (isGranted(LOCATION_PERMISSION)) {
-            return locationProvider.locationUpdates(request)
+            return LocationResult(Location(30.0, 30.0))//locationProvider.locationUpdates(request)
         }
 
-        return doRequestLocation(request)
+        TODO()
+        //return doRequestLocation(request)
     }
 
-    private fun Activity.doRequestLocation(request: LocationRequest): Single<LocationMessage> {
+    /*private fun Activity.doRequestLocation(request: LocationRequest): Single<LocationMessage> {
 
         return Completable.fromAction { requestPermission() }
             .andThen(permissionObserver)
@@ -92,9 +90,10 @@ class LocationComponent(private val locationProvider: LibLocationProvider,
                     else -> locationProvider.locationUpdates(request)
                 }
             }
-    }
+    }*/
 }
 
+/*
 @SuppressLint("MissingPermission")
 fun LibLocationProvider.locationUpdates(request: LocationRequest): Single<LocationResult> {
     return getUpdatedLocation(request)
@@ -102,6 +101,7 @@ fun LibLocationProvider.locationUpdates(request: LocationRequest): Single<Locati
         .map(::LocationResult)
         .firstOrError()
 }
+*/
 
 fun toLocation(l: AndroidLocation) = l.run { Location(latitude, longitude) }
 
