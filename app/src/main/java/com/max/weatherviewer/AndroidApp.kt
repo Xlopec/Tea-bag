@@ -1,3 +1,5 @@
+@file:Suppress("unused") // used by OS
+
 package com.max.weatherviewer
 
 import android.app.Application

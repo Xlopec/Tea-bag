@@ -10,6 +10,5 @@ sealed class Message {
 data class State(val location: Location = Location(.0, .0))
 
 sealed class Command {
-    object None : Command()
     data class SelectAndQuit(val location: Location) : Command()
 }

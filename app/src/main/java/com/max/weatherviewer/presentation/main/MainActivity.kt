@@ -1,4 +1,4 @@
-package com.max.weatherviewer.presentation.start
+package com.max.weatherviewer.presentation.main
 
 import android.app.Activity
 import android.os.Bundle
@@ -10,6 +10,7 @@ import com.max.weatherviewer.R
 import com.max.weatherviewer.api.location.PermissionPublisher
 import com.max.weatherviewer.api.location.PermissionResult
 import com.max.weatherviewer.api.location.locationModule
+import com.max.weatherviewer.presentation.FragmentsFactory
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
@@ -32,13 +33,13 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        supportFragmentManager.fragmentFactory = FragmentsFactory(kodein)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        direct.instance<PermissionPublisher>().accept(PermissionResult(requestCode, permissions, grantResults))
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        direct.instance<PermissionPublisher>().offer(PermissionResult(requestCode, permissions, grantResults))
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

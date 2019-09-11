@@ -1,22 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/nav_graph" app:startDestination="@id/mapFragment">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/nav_graph"
+        app:startDestination="@id/mapFragment">
 
-    <fragment android:id="@+id/mapFragment" android:name="com.max.weatherviewer.presentation.map.MapFragment"
-              android:label="MapFragment">
+    <fragment
+            android:id="@+id/mapFragment"
+            android:name="com.max.weatherviewer.presentation.map.MapFragment"
+            android:label="MapFragment">
 
-        <action android:id="@+id/action_mapFragment_to_weatherViewer" app:destination="@id/weatherViewer"
-                app:launchSingleTop="true" app:popUpToInclusive="@+id/mapFragment"/>
+        <action
+                android:id="@+id/action_mapFragment_to_weatherViewer"
+                app:destination="@id/weatherViewer"
+                app:launchSingleTop="true"
+                app:popUpToInclusive="@+id/mapFragment" />
 
-        <argument android:name="preSelectedLocation" app:argType="com.max.weatherviewer.api.weather.Location"
-                  app:nullable="true"/>
+        <argument
+                android:name="preSelectedLocation"
+                android:defaultValue="@null"
+                app:argType="com.max.weatherviewer.api.weather.Location"
+                app:nullable="true" />
     </fragment>
 
-    <fragment android:id="@+id/weatherViewer"
-              android:name="com.max.weatherviewer.presentation.viewer.WeatherViewerFragment"
-              android:label="WeatherViewerFragment">
+    <fragment
+            android:id="@+id/weatherViewer"
+            android:name="com.max.weatherviewer.presentation.viewer.WeatherViewerFragment"
+            android:label="WeatherViewerFragment">
 
-        <argument android:name="location" app:argType="com.max.weatherviewer.api.weather.Location"/>
+        <argument
+                android:name="location"
+                app:argType="com.max.weatherviewer.api.weather.Location" />
     </fragment>
 </navigation>

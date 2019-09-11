@@ -1,30 +1,65 @@
+@file:Suppress("unused")
+
+// public API
+
 package com.max.weatherviewer.component
 
 import android.util.Log
-import com.jakewharton.rxrelay2.BehaviorRelay
-import io.reactivex.Observable
-import io.reactivex.Single
+import com.max.weatherviewer.startWith
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.*
 
-typealias Update<M, S, C> = (message: M, state: S) -> Pair<S, C>
-typealias Resolver<C, M> = (command: C) -> Single<out M>
+typealias Update<M, S, C> = (message: M, state: S) -> UpdateWith<S, C>
+typealias Resolver<C, M> = suspend (command: C) -> Set<M>
+typealias UpdateWith<S, C> = Pair<S, Set<C>>
 
 class Component<M, C, S>(initialState: S,
-                         val resolver: Resolver<C, M>,
-                         val update: Update<M, S, C>) : (Observable<out M>) -> Observable<out S> {
+                         private val resolver: Resolver<C, M>,
+                         private val update: Update<M, S, C>) : (Flow<M>) -> Flow<S> {
 
-    private val state: BehaviorRelay<S> = BehaviorRelay.createDefault(initialState)
+    @Volatile
+    private var state: S = initialState
 
-    override fun invoke(messages: Observable<out M>): Observable<out S> {
-        return messages.map { message -> update(message, state.value!!) }
-            .flatMap { (nextState, effect) ->
-                resolver(effect)
-                    .flatMapObservable { msg -> invoke(Observable.just(msg)) }
+    override fun invoke(messages: Flow<M>): Flow<S> {
+        return messages.map { message -> update(message, state) }
+            .flatMapConcat { (nextState, effects) ->
+
+                effects.map { e -> invoke(resolver(e).asFlow()) }
+                    .asFlow()
+                    .flattenConcat()
                     .startWith(nextState)
+
             }
-            .startWith(state.value!!)
-            .doOnNext(state::accept)
+            .startWith(state)
+            .onEach { s -> state = s }
             .distinctUntilChanged()
-            .doOnNext { Log.d(this@Component.javaClass.simpleName,"State $it") }
+            .onEach { Log.d(this@Component.javaClass.simpleName, "State $it") }
     }
 
+}
+
+infix fun <S, C> S.command(command: C) = this to setOf(command)
+
+fun <S, C> S.command(first: C, second: C) = this to setOf(first, second)
+
+fun <S, C> S.command(first: C, second: C, third: C) = this to setOf(first, second, third)
+
+fun <S, C> S.command(vararg commands: C) = this to setOf(*commands)
+
+fun <S, C> S.noCommand() = this to emptySet<C>()
+
+/**
+ * Handy wrapper to perform side effect computations within coroutine scope. This function always
+ * returns empty set of messages [M]
+ */
+suspend inline fun <M> sideEffect(crossinline action: suspend CoroutineScope.() -> Unit): Set<M> {
+    return coroutineScope { action(); emptySet() }
+}
+
+/**
+ * Handy wrapper to perform side effect computations within coroutine scope
+ */
+suspend inline fun <M> effect(crossinline action: suspend () -> M): Set<M> {
+    return coroutineScope { setOf(action()) }
 }

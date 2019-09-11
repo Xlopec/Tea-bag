@@ -3,6 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/androidx_prebuilts/prebuilts/androidx/external" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/androidx_prebuilts_old/prebuilts/androidx/external" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/prebuilts/androidx/external" vcs="Git" />
   </component>
 </project>
