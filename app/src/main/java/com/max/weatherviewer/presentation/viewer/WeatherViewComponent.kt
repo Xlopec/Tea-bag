@@ -19,7 +19,7 @@ import org.kodein.di.generic.scoped
 import org.kodein.di.generic.singleton
 
 typealias MessagesObs = Flow<Message>
-typealias WeatherComponent = (messages: MessagesObs) -> Flow<State>
+typealias WeatherComponent = ComponentV2<Message, Command, State>//(messages: MessagesObs) -> Flow<State>
 
 fun weatherModule(scope: Scope<Fragment>, startLocation: Location): Kodein.Module {
     return Kodein.Module("weatherModule") {
@@ -30,7 +30,7 @@ fun weatherModule(scope: Scope<Fragment>, startLocation: Location): Kodein.Modul
 
             suspend fun resolver(command: Command) = instance<Dependencies>().resolveEffect(command)
 
-            Component(State.Initial(startLocation), ::resolver, ::update)
+            ComponentV2(State.Initial(startLocation), ::resolver, ::update)
         }
     }
 }
