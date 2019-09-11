@@ -13,7 +13,7 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_select"
-            android:layout_gravity="bottom|end"
+            android:layout_gravity="top|end"
             android:layout_width="wrap_content"
             android:src="@drawable/ic_check_white_24dp"
             android:layout_margin="16dp"

@@ -31,11 +31,7 @@ private class Navigator(private val fragment: Fragment) {
     fun navigateToWeatherViewer(location: Location) {
         // fixme add communication bus instead of direct args passing
         fragment.findNavController()
-            .navigateDefaultAnimated(R.id.weatherViewer, toNavArgs(location).toBundle(), navOptions)
-    }
-
-    private fun toNavArgs(location: Location): WeatherViewerFragmentArgs {
-        return WeatherViewerFragmentArgs.Builder(location).build()
+            .navigateDefaultAnimated(R.id.weatherViewer, WeatherViewerFragmentArgs(location).toBundle(), navOptions)
     }
 }
 
@@ -43,16 +39,15 @@ private class ResolverImp(private val navigator: Navigator) {
 
     suspend fun invoke(cmd: Command): Message? {
         return when (cmd) {
-            Command.None -> null
             is Command.SelectAndQuit -> { navigator.navigateToWeatherViewer(cmd.location); null }
         }
     }
 
 }
 
-fun update(m: Message, s: State): Pair<State, Command> {
+fun update(m: Message, s: State): Pair<State, Command?> {
     return when (m) {
-        is Message.MoveTo -> State(m.location) to Command.None
+        is Message.MoveTo -> State(m.location) to null
         Message.Select -> s to Command.SelectAndQuit(s.location)
     }
 }

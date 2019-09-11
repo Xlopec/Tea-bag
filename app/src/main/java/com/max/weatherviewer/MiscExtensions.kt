@@ -4,9 +4,12 @@ package com.max.weatherviewer
 
 import android.os.Bundle
 import androidx.annotation.IdRes
+import androidx.fragment.app.Fragment
+import androidx.navigation.NavArgs
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
+import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -59,3 +62,8 @@ fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
 fun <T> Flow<T>.startWith(t: T): Flow<T> = onStart { emit(t) }
 
 fun <T> Flow<T>.startWith(first: T, vararg other: T): Flow<T> = onStart { emit(first); other.forEach { emit(it) } }
+
+inline fun <reified Args : NavArgs> Fragment.args() = navArgs<Args>().value
+
+/** forces compiler to check `when` clause is exhaustive */
+val Unit?.safe get() = this
