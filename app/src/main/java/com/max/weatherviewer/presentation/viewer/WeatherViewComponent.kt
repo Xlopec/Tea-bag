@@ -1,15 +1,13 @@
 package com.max.weatherviewer.presentation.viewer
 
+import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.location.LocationRequest
 import com.max.weatherviewer.R
-import com.max.weatherviewer.api.location.LocationMessage
 import com.max.weatherviewer.api.location.LocationModel
 import com.max.weatherviewer.api.weather.Location
-import com.max.weatherviewer.api.weather.Weather
 import com.max.weatherviewer.api.weather.WeatherProvider
-import com.max.weatherviewer.component.Component
+import com.max.weatherviewer.component.*
 import com.max.weatherviewer.navigateDefaultAnimated
 import com.max.weatherviewer.presentation.map.MapFragmentArgs
 import kotlinx.coroutines.flow.Flow
@@ -26,93 +24,62 @@ typealias WeatherComponent = (messages: MessagesObs) -> Flow<State>
 fun weatherModule(scope: Scope<Fragment>, startLocation: Location): Kodein.Module {
     return Kodein.Module("weatherModule") {
 
-        bind<Navigator>() with scoped(scope).singleton { Navigator(instance()) }
-
-        bind<Resolver>() with singleton { ResolverImp(instance(), instance(), instance()) }
+        bind<Dependencies>() with singleton { Dependencies(instance(), instance(), instance()) }
 
         bind<WeatherComponent>() with scoped(scope).singleton {
 
-            suspend fun resolver(command: Command) = instance<Resolver>().resolveEffect(command)
+            suspend fun resolver(command: Command) = instance<Dependencies>().resolveEffect(command)
 
             Component(State.Initial(startLocation), ::resolver, ::update)
         }
     }
 }
 
-@Deprecated("todo: remove, will be replaced with a curried function")
-interface Resolver {
-
-    suspend fun loadFeed(l: Location): Weather
-
-    suspend fun queryLocation(): LocationMessage
-
-    suspend fun toLocationSelection(withStartLocation: Location?)
-}
-
-fun update(message: Message, s: State): Pair<State, Command?> {
+@VisibleForTesting
+fun update(message: Message, s: State): UpdateWith<State, Command> {
     return when (message) {
-        is Message.LocationQueried -> State.Loading(s.location) to Command.LoadWeather(message.l)
-        is Message.WeatherLoaded -> State.Preview(s.location, message.weather) to null
-        is Message.OpFuckup -> State.LoadFailure(s.location, message.th) to null
+        is Message.LocationQueried -> State.Loading(s.location) command Command.LoadWeather(message.l)
+        is Message.WeatherLoaded -> State.Preview(s.location, message.weather).noCommand()
+        is Message.OpFuckup -> State.LoadFailure(s.location, message.th).noCommand()
         Message.ViewAttached -> calculateInitialState(s)
-        Message.SelectLocation -> s to Command.SelectLocation(s.location)
+        Message.SelectLocation -> s command Command.SelectLocation(s.location)
         Message.Retry -> calculateRetryAction(s)
     }
 }
 
-suspend fun Resolver.resolveEffect(command: Command): Message? {
+private data class Dependencies(
+        val locationModel: LocationModel,
+        val fragment: Fragment,
+        val weatherProvider: WeatherProvider
+)
+
+private suspend fun Dependencies.resolveEffect(command: Command): Set<Message> {
 
     suspend fun resolve() = when (command) {
-        is Command.LoadWeather -> Message.WeatherLoaded(loadFeed(command.l))
-        is Command.FeedLoaded -> Message.WeatherLoaded(command.data)
-        is Command.SelectLocation -> { toLocationSelection(command.withSelectedLocation); null }
+        is Command.LoadWeather -> effect { Message.WeatherLoaded(weatherProvider.fetchWeather(command.l)) }
+        is Command.FeedLoaded -> effect { Message.WeatherLoaded(command.data) }
+        is Command.SelectLocation -> sideEffect { fragment.navigateToMap(command.withSelectedLocation) }
     }
 
-    return runCatching { resolve() }.getOrElse(Message::OpFuckup)
+    return runCatching { resolve() }.getOrElse { th -> effect { Message.OpFuckup(th) } }
 }
 
-private class ResolverImp(private val weatherProvider: WeatherProvider,
-                          private val locationModel: LocationModel,
-                          private val navigator: Navigator) :
-    Resolver {
-
-    private val locationRequest = LocationRequest()
-        .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-        .setFastestInterval(1L)
-        .setSmallestDisplacement(50f)
-
-    override suspend fun toLocationSelection(withStartLocation: Location?) =
-        navigator.navigateToMap(withStartLocation)
-
-    override suspend fun loadFeed(l: Location) = weatherProvider.fetchWeather(l)
-
-    override suspend fun queryLocation() = locationModel(locationRequest)
-
-}
-
-private fun calculateRetryAction(current: State): Pair<State, Command> {
+private fun calculateRetryAction(current: State): UpdateWith<State, Command> {
     return when (current) {
-        is State.LoadFailure -> State.Loading(
-            current.location) to Command.LoadWeather(
-            current.location)
+        is State.LoadFailure -> State.Loading(current.location) command Command.LoadWeather(current.location)
         is State.Loading, is State.Preview, is State.Initial -> throw IllegalStateException("Shouldn't get there, was $current")
     }
 }
 
-private fun calculateInitialState(current: State): Pair<State, Command?> {
+private fun calculateInitialState(current: State): UpdateWith<State, Command> {
     if (current is State.Initial) {
-        return State.Loading(current.location) to Command.LoadWeather(
-            current.location)
+        return State.Loading(current.location) command Command.LoadWeather(current.location)
     }
-    return current to null
+    return current.noCommand()
 }
 
-private class Navigator(private val fragment: Fragment) {
-
-    fun navigateToMap(withStartLocation: Location?) {
-        fragment.findNavController()
-            .navigateDefaultAnimated(R.id.mapFragment,
-                                     MapFragmentArgs(withStartLocation).toBundle())
-    }
-
+private fun Fragment.navigateToMap(withStartLocation: Location?) {
+    findNavController()
+        .navigateDefaultAnimated(R.id.mapFragment,
+                                 MapFragmentArgs(withStartLocation).toBundle())
 }
