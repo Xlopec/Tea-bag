@@ -1,4 +1,4 @@
-package com.max.weatherviewer.presentation.map
+package com.max.weatherviewer.presentation.map.google
 
 import com.max.weatherviewer.api.weather.Location
 

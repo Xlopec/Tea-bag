@@ -28,12 +28,19 @@ class WeatherViewerFragment(parent: Kodein) : Fragment(), KodeinAware, Coroutine
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = FrameLayout(requireContext())
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val messages = Channel<Message>(Channel.UNLIMITED)
+
         launch {
-            val messages = Channel<Message>(Channel.RENDEZVOUS)
 
             component(messages.consumeAsFlow().startWith(Message.ViewAttached))
                 .collect { state -> (view as ViewGroup).render(messages, state) }
         }
+
+        /*launch {
+            messages.consumeAsFlow().collect {
+                println("LL $it")
+            }
+        }*/
     }
 
     override fun onDestroyView() {

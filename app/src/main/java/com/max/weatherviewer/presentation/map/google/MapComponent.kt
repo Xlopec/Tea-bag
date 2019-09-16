@@ -1,4 +1,4 @@
-package com.max.weatherviewer.presentation.map
+package com.max.weatherviewer.presentation.map.google
 
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
@@ -11,13 +11,14 @@ import com.max.weatherviewer.defaultNavOptionsBuilder
 import com.max.weatherviewer.di.fragmentScope
 import com.max.weatherviewer.navigateDefaultAnimated
 import com.max.weatherviewer.presentation.viewer.WeatherViewerFragmentArgs
+import kotlinx.coroutines.flow.Flow
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.instance
 import org.kodein.di.generic.scoped
 import org.kodein.di.generic.singleton
 
-typealias MapComponent = Component<Message, Command, State>
+typealias MapComponent = (Flow<Message>) -> Flow<State>
 
 fun mapModule(fragment: Fragment, preSelectedLocation: Location?) = Kodein.Module("map") {
 
@@ -27,7 +28,7 @@ fun mapModule(fragment: Fragment, preSelectedLocation: Location?) = Kodein.Modul
 
         suspend fun resolve(command: Command) = instance<Dependencies>().resolve(command)
 
-        Component(State(preSelectedLocation ?: Location(.0, .0)), ::resolve, ::update)
+        androidLogger(Component(State(preSelectedLocation ?: Location(.0, .0)), ::resolve, ::update), "Map")
     }
 }
 
@@ -52,5 +53,6 @@ private suspend fun Dependencies.resolve(command: Command): Set<Message> {
 
 private fun Fragment.navigateToWeatherViewer(location: Location) {
     findNavController()
-        .navigateDefaultAnimated(R.id.weatherViewer, WeatherViewerFragmentArgs(location).toBundle(), navOptions)
+        .navigateDefaultAnimated(R.id.weatherViewer, WeatherViewerFragmentArgs(location).toBundle(),
+                                 navOptions)
 }
