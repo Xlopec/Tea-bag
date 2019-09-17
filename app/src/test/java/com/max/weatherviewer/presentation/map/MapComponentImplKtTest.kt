@@ -6,7 +6,7 @@ import com.max.weatherviewer.presentation.map.google.State
 import org.junit.Assert
 import org.junit.Test
 
-class MapComponentKtTest {
+class MapComponentImplKtTest {
 
     @Test
     fun update() {

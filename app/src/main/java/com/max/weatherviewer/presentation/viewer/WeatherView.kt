@@ -18,7 +18,7 @@ import androidx.ui.text.ParagraphStyle
 import androidx.ui.text.style.TextAlign
 import androidx.ui.text.style.TextOverflow
 import com.max.weatherviewer.api.weather.Weather
-import com.max.weatherviewer.safe
+import com.oliynick.max.elm.core.misc.safe
 import kotlinx.coroutines.channels.SendChannel
 
 @Composable

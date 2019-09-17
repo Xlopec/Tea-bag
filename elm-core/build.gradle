@@ -1,0 +1,171 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: "maven-publish"
+apply plugin: 'org.jetbrains.dokka-android'
+apply plugin: "io.gitlab.arturbosch.detekt"
+
+buildscript {
+    ext.kotlin_version = '1.3.50'
+    ext.detect_version = '1.0.0-RC16'
+
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.18"
+        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detect_version"
+    }
+}
+
+android {
+    compileSdkVersion 28
+
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        // will disable warning about usage of experimental Kotlin features
+        freeCompilerArgs = [
+                '-Xuse-experimental=kotlin.ExperimentalUnsignedTypes',
+                '-Xuse-experimental=kotlin.Experimental',
+                '-Xuse-experimental=kotlinx.coroutines.FlowPreview',
+                '-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi',
+                '-XXLanguage:+NewInference'
+        ]
+    }
+}
+
+project.afterEvaluate {
+    tasks.findByName("publish").dependsOn("sourcesJar").dependsOn("dokkaJavadoc")
+            .dependsOn("assembleRelease")
+
+    tasks.findByName("preReleaseBuild").dependsOn("detekt")
+}
+
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaAndroidTask) {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
+
+    externalDocumentationLink {
+        url = new URL("https://developer.android.com/reference/")
+    }
+
+    packageOptions {
+        // exclude documentation generation for the following package
+        prefix = "com.schindler.sdk.internal"
+        suppress = true
+    }
+}
+
+detekt {
+    toolVersion = detect_version
+    input = files("src/main/kotlin", "src/main/java")
+    filters = ".*/resources/.*,.*/build/.*"
+    baseline = file("detekt-baseline.xml")
+    config = files("$projectDir/detekt-config.yml")
+}
+
+task formatCode(type: io.gitlab.arturbosch.detekt.Detekt) {
+
+    parallel = true
+    autoCorrect = true
+    disableDefaultRuleSets = true
+    buildUponDefaultConfig = true
+    failFast = false
+    ignoreFailures = false
+    setSource(files(projectDir))
+
+    include("**/*.kt")
+    include("**/*.kts")
+    exclude("**/resources/**")
+    exclude("**/build/**")
+
+    config = files("$projectDir/detekt-config.yml")
+}
+
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+    classifier = 'javadoc'
+    from "$buildDir/javadoc"
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+    exclude "**/Kotlin*"
+}
+
+publishing {
+    publications {
+        library(MavenPublication) {
+
+            group = 'org.example'
+            version = '1.0'
+
+            artifact "$buildDir/outputs/aar/${project.name}-release.aar"
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+
+    repositories {
+        maven {
+            name = 'local repository'
+            url = file "$buildDir/publication"
+        }
+    }
+}
+
+androidExtensions {
+    experimental = true
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.core:core-ktx:1.1.0'
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+
+    testImplementation "org.mockito:mockito-core:2.23.4"
+
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+}

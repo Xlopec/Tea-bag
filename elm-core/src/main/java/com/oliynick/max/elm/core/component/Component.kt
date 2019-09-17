@@ -1,11 +1,9 @@
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "FunctionName")
 
-// public API
+package com.oliynick.max.elm.core.component
 
-package com.max.weatherviewer.component
-
-import com.max.weatherviewer.mergeWith
-import com.max.weatherviewer.startWith
+import com.oliynick.max.elm.core.misc.mergeWith
+import com.oliynick.max.elm.core.misc.startWith
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
@@ -14,6 +12,7 @@ import kotlinx.coroutines.flow.*
 typealias Update<M, S, C> = (message: M, state: S) -> UpdateWith<S, C>
 typealias Resolver<C, M> = suspend (command: C) -> Set<M>
 typealias UpdateWith<S, C> = Pair<S, Set<C>>
+typealias Component<M, S> = (Flow<M>) -> Flow<S>
 
 /**
  * Component is one of the main parts of the [ELM architecture](https://guide.elm-lang.org/architecture/). Component (Runtime)
@@ -27,12 +26,16 @@ typealias UpdateWith<S, C> = Pair<S, Set<C>>
  *
  * Component's behaviour can be configured by passing corresponding implementations of [resolver] and [update] functions
  */
-class Component<M, C, S>(initialState: S,
-                         private val resolver: Resolver<C, M>,
-                         private val update: Update<M, S, C>) : (Flow<M>) -> Flow<S> {
+fun <M, C, S> component(initialState: S, resolver: Resolver<C, M>, update: Update<M, S, C>): Component<M, S> {
+    return ComponentImpl(initialState, resolver, update)
+}
+
+private class ComponentImpl<M, C, S>(initialState: S,
+                                     private val resolver: Resolver<C, M>,
+                                     private val update: Update<M, S, C>) : (Flow<M>) -> Flow<S> {
 
     private val stateChannel = BroadcastChannel<S>(Channel.CONFLATED)
-        .also { chan -> chan.offer(initialState) }
+        .also { channel -> channel.offer(initialState) }
 
     override fun invoke(messages: Flow<M>): Flow<S> {
         // merge with channel since changes made to state via another calls to this method
@@ -73,15 +76,15 @@ fun <S, C> S.noCommand() = this to emptySet<C>()
  * Handy wrapper to perform side effect computations within coroutine scope. This function always
  * returns empty set of messages [M]
  */
-suspend inline fun <M> sideEffect(crossinline action: suspend CoroutineScope.() -> Unit): Set<M> {
+suspend inline fun <C, M> C.sideEffect(crossinline action: suspend C.() -> Unit): Set<M> {
     return coroutineScope { action(); emptySet() }
 }
 
 /**
  * Handy wrapper to perform side effect computations within coroutine scope
  */
-suspend inline fun <M> effect(crossinline action: suspend () -> M?): Set<M> {
-    return coroutineScope { action()?.let(::setOf) ?: emptySet() }
+suspend inline fun <C, M> C.effect(crossinline action: suspend C.() -> M?): Set<M> {
+    return coroutineScope { action(this@effect)?.let(::setOf) ?: emptySet() }
 }
 
 /**

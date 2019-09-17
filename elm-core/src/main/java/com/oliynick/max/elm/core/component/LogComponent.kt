@@ -1,4 +1,4 @@
-package com.max.weatherviewer.component
+package com.oliynick.max.elm.core.component
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach

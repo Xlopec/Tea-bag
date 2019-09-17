@@ -7,9 +7,9 @@ import com.max.weatherviewer.R
 import com.max.weatherviewer.api.location.LocationModel
 import com.max.weatherviewer.api.weather.Location
 import com.max.weatherviewer.api.weather.WeatherProvider
-import com.max.weatherviewer.component.*
 import com.max.weatherviewer.navigateDefaultAnimated
 import com.max.weatherviewer.presentation.map.MapFragmentArgs
+import com.oliynick.max.elm.core.component.*
 import kotlinx.coroutines.flow.Flow
 import org.kodein.di.Kodein
 import org.kodein.di.bindings.Scope
@@ -29,7 +29,8 @@ fun weatherModule(scope: Scope<Fragment>, startLocation: Location): Kodein.Modul
 
             suspend fun resolver(command: Command) = instance<Dependencies>().resolveEffect(command)
 
-            androidLogger(Component(State.Initial(startLocation), ::resolver, ::update), "WeatherViewer")
+            androidLogger(component(State.Initial(
+                startLocation), ::resolver, ::update), "WeatherViewer")
         }
     }
 }
@@ -55,9 +56,9 @@ private data class Dependencies(
 private suspend fun Dependencies.resolveEffect(command: Command): Set<Message> {
 
     suspend fun resolve() = when (command) {
-        is Command.LoadWeather -> effect { Message.WeatherLoaded(weatherProvider.fetchWeather(command.l)) }
-        is Command.FeedLoaded -> effect { Message.WeatherLoaded(command.data) }
-        is Command.SelectLocation -> sideEffect { fragment.navigateToMap(command.withSelectedLocation) }
+        is Command.LoadWeather -> command.effect { Message.WeatherLoaded(weatherProvider.fetchWeather(l)) }
+        is Command.FeedLoaded -> command.effect { Message.WeatherLoaded(data) }
+        is Command.SelectLocation -> command.sideEffect { fragment.navigateToMap(withSelectedLocation) }
     }
 
     return runCatching { resolve() }.getOrElse { th -> effect { Message.OpFuckup(th) } }

@@ -1,4 +1,4 @@
-package com.max.weatherviewer.component
+package com.oliynick.max.elm.core.component
 
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
@@ -12,3 +12,5 @@ fun <M, S> androidLogger(component: (Flow<M>) -> Flow<S>,
         component
     )
 }
+
+//todo improve logger + add infix fun for that

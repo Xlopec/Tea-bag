@@ -6,11 +6,11 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.max.weatherviewer.R
 import com.max.weatherviewer.api.weather.Location
-import com.max.weatherviewer.component.*
 import com.max.weatherviewer.defaultNavOptionsBuilder
 import com.max.weatherviewer.di.fragmentScope
 import com.max.weatherviewer.navigateDefaultAnimated
 import com.max.weatherviewer.presentation.viewer.WeatherViewerFragmentArgs
+import com.oliynick.max.elm.core.component.*
 import kotlinx.coroutines.flow.Flow
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
@@ -28,7 +28,8 @@ fun mapModule(fragment: Fragment, preSelectedLocation: Location?) = Kodein.Modul
 
         suspend fun resolve(command: Command) = instance<Dependencies>().resolve(command)
 
-        androidLogger(Component(State(preSelectedLocation ?: Location(.0, .0)), ::resolve, ::update), "Map")
+        androidLogger(component(State(
+            preSelectedLocation ?: Location(.0, .0)), ::resolve, ::update), "Map")
     }
 }
 
@@ -47,7 +48,7 @@ private val navOptions: NavOptions =
 
 private suspend fun Dependencies.resolve(command: Command): Set<Message> {
     return when (command) {
-        is Command.SelectAndQuit -> sideEffect { fragment.navigateToWeatherViewer(command.location) }
+        is Command.SelectAndQuit -> command.sideEffect { fragment.navigateToWeatherViewer(location) }
     }
 }
 
