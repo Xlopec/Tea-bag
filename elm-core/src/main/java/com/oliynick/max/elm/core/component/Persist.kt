@@ -17,7 +17,6 @@
 package com.oliynick.max.elm.core.component
 
 typealias Persist<M, S> = suspend (M, S) -> Unit
-typealias Loader<M, S> =  () -> PersistedData<M, S>?
 typealias PersistedData<M, S> = Pair<M, S>
 
 /*suspend fun <M, C, S> load(loader: Loader<M, S>, ifNone: S, resolver: Resolver<C, M>, update: Update<M, S, C>): Component<M, S> {

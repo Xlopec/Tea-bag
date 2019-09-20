@@ -18,8 +18,6 @@
 
 package com.oliynick.max.elm.core.component
 
-import com.oliynick.max.elm.core.misc.mergeWith
-import com.oliynick.max.elm.core.misc.startWith
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
@@ -27,7 +25,11 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.flow.*
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
+
+/**
+ * Default capacity of actor's _processing mailbox_
+ */
+private const val DEFAULT_ACTOR_BUFFER_CAPACITY = 1U
 
 /**
  * An alias for a pure function that accepts message with current state and returns the next state with possible empty set of commands
@@ -59,6 +61,40 @@ typealias UpdateWith<S, C> = Pair<S, Set<C>>
  */
 typealias Component<M, S> = (Flow<M>) -> Flow<S>
 
+typealias Loader<S> = suspend () -> S
+
+/**
+ * Component is one of the main parts of the [ELM architecture](https://guide.elm-lang.org/architecture/). Component (Runtime)
+ * is a stateful part of the application responsible for a specific feature.
+ *
+ * Conceptually component is a triple [message][M], [command][C], [state][S] operated by pure [update][Update] and impure [resolver][Resolver]
+ * functions. Each component accepts flow of [messages][M] and produces flow of [states][S] triggered by that messages.
+ * Components can be bound to each other to produce new, more complex components
+ *
+ * Note that the resulting function always returns the last state value to its subscribers
+ *
+ * Component's behaviour can be configured by passing corresponding implementations of [resolver] and [update] functions
+ *
+ * @receiver scope where the component should be placed
+ * @param loader loader to retrieve initial state of the component
+ * @param resolver function to resolve effects
+ * @param update pure function to compute states and effects to be resolved
+ * @param initialCommand initial command to execute
+ * @param M incoming messages
+ * @param S state of the component
+ * @param C commands to be executed
+ */
+fun <M, C, S> CoroutineScope.component(loader: Loader<S>,
+                                       resolver: Resolver<C, M>,
+                                       update: Update<M, S, C>,
+                                       initialCommand: C? = null): Component<M, S> {
+
+    val statesChannel = BroadcastChannel<S>(Channel.CONFLATED)
+
+    return newComponent(statesChannel.asFlow(),
+                        newActor(loader, resolver, update, initialCommand, coroutineContext.jobOrDefault(), statesChannel))
+}
+
 /**
  * Component is one of the main parts of the [ELM architecture](https://guide.elm-lang.org/architecture/). Component (Runtime)
  * is a stateful part of the application responsible for a specific feature.
@@ -75,9 +111,7 @@ typealias Component<M, S> = (Flow<M>) -> Flow<S>
  * @param initialState initial state of the component
  * @param resolver function to resolve effects
  * @param update pure function to compute states and effects to be resolved
- * @param initialCommands initial set of commands to execute
- * @param start actor coroutine start option. The default value is [CoroutineStart.LAZY]
- * @param parentJob additional to [CoroutineScope.coroutineContext] context of the coroutine. The default value is [EmptyCoroutineContext]
+ * @param initialCommand initial command to execute
  * @param M incoming messages
  * @param S state of the component
  * @param C commands to be executed
@@ -85,43 +119,12 @@ typealias Component<M, S> = (Flow<M>) -> Flow<S>
 fun <M, C, S> CoroutineScope.component(initialState: S,
                                        resolver: Resolver<C, M>,
                                        update: Update<M, S, C>,
-                                       initialCommands: Set<C> = emptySet(),
-                                       start: CoroutineStart = startStrategy(initialCommands),
-                                       parentJob: Job = coroutineContext.jobOrDefault()): Component<M, S> {
+                                       initialCommand: C? = null): Component<M, S> {
 
-    val statesChannel = BroadcastChannel<S>(Channel.CONFLATED)
-        .also { channel -> channel.offer(initialState) }
+    @Suppress("RedundantSuspendModifier")
+    suspend fun loader(): S = initialState
 
-    @UseExperimental(ObsoleteCoroutinesApi::class)
-    val messages = this@component.actor<M>(parentJob, 1, start, statesChannel::close) {
-
-        channel.send(resolver(initialCommands))
-
-        for (message in channel) {
-            val (nextState, commands) = update(message, statesChannel.latest)
-            // we don't want to get blocked here
-            statesChannel.offer(nextState)
-            channel.send(resolver(commands))
-        }
-    }
-
-    return { input ->
-
-        channelFlow {
-
-            launch {
-                statesChannel.asFlow().distinctUntilChanged().collect {
-                    send(it)
-                }
-            }
-
-            launch {
-                input.collect {
-                    messages.sendChecking(it)
-                }
-            }
-        }
-    }
+    return component(::loader, resolver, update, initialCommand)
 }
 
 infix fun <S, C> S.command(command: C) = this to setOf(command)
@@ -192,47 +195,54 @@ private suspend fun <V> Channel<V>.send(values: Iterable<V>) = values.forEach { 
 private inline val <S> BroadcastChannel<S>.latest: S
     get() = requireNotNull(openSubscription().poll()!!) { "What a terrible failure!" }
 
-private fun <C> startStrategy(commands: Collection<C>): CoroutineStart {
-    return if (commands.isEmpty()) CoroutineStart.LAZY else CoroutineStart.DEFAULT
-}
-
 private fun CoroutineContext.jobOrDefault(): Job = this[Job.Key] ?: Job()
 
-@Deprecated("remove")
-private class ComponentImpl<M, C, S>(initialState: S,
-                                     private val resolver: Resolver<C, M>,
-                                     private val update: Update<M, S, C>) : (Flow<M>) -> Flow<S> {
+private fun <M, C, S> CoroutineScope.newActor(loader: Loader<S>,
+                                              resolver: Resolver<C, M>,
+                                              update: Update<M, S, C>,
+                                              initialCommand: C?,
+                                              parentJob: Job,
+                                              statesChannel: BroadcastChannel<S>): SendChannel<M> {
 
-    private val stateChannel = BroadcastChannel<S>(Channel.CONFLATED)
-        .also { channel -> channel.offer(initialState) }
+    @UseExperimental(ObsoleteCoroutinesApi::class)
+    return this@newActor.actor(parentJob, DEFAULT_ACTOR_BUFFER_CAPACITY.toInt(), onCompletion = statesChannel::close) {
+        check(statesChannel.offer(loader())) { "Couldn't offer an initial state" }
 
-    private suspend fun execCommands(messages: Channel<M>, commands: Set<C>) {
-        commands.map { resolver(it) }.flatten().forEach { m ->
-            messages.send(m)
+        if (initialCommand != null) {
+            channel.send(resolver(initialCommand))
+        }
+
+        for (message in channel) {
+            val (nextState, commands) = update(message, statesChannel.latest)
+            // we don't want to get blocked here
+            check(statesChannel.offer(nextState)) { "Couldn't offer next state $nextState" }
+            channel.send(resolver(commands))
         }
     }
-
-    override fun invoke(messages: Flow<M>): Flow<S> {
-        // merge with channel since changes made to state via another calls to this method
-        // should be propagated to all subscribers. For example, it may happen when both
-        // another component and the UI one are subscribed to this component
-        return stateChannel.asFlow().distinctUntilChanged().mergeWith(calculateState(messages))
-    }
-
-    private fun calculateState(messages: Flow<M>): Flow<S> {
-        return messages.map { message -> update(message, stateChannel.latest) }
-            .flatMapConcat { (nextState, commands) ->
-                // do recursive calls to compute a stable state
-                // TODO should I replace it with a loop?
-                commands.map { cmd -> calculateState(resolver(cmd).asFlow()) }
-                    .asFlow()
-                    .flattenConcat()
-                    .startWith(nextState)
-            }
-            // save and notify subscribers about new state
-            .onEach { newState -> stateChannel.offer(newState) }
-            // avoid duplicates
-            .distinctUntilChanged()
-    }
-
 }
+
+/**
+ * Combines given flow of states and message channel into TEA component
+ */
+private fun <M, S> newComponent(state: Flow<S>, messages: SendChannel<M>): Component<M, S> {
+    return { input ->
+
+        channelFlow {
+
+            launch {
+                state.distinctUntilChanged().collect {
+                    send(it)
+                }
+            }
+
+            launch {
+                input.collect {
+                    messages.sendChecking(it)
+                }
+            }
+        }
+    }
+}
+
+private fun <S> BroadcastChannel(initial: S) = BroadcastChannel<S>(Channel.CONFLATED)
+    .also { channel -> channel.offer(initial) }

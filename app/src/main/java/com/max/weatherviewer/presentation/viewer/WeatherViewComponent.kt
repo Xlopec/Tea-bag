@@ -32,7 +32,7 @@ fun <S> S.weatherModule(startLocation: Location): Kodein.Module where S : Corout
 
             suspend fun resolver(command: Command) = instance<Dependencies>().resolveEffect(command)
 
-            component(State.Loading(startLocation), ::resolver, ::update, setOf(Command.LoadWeather(startLocation)))
+            component(State.Loading(startLocation), ::resolver, ::update, Command.LoadWeather(startLocation))
                 .withAndroidLogger("WeatherViewer")
         }
     }

@@ -77,6 +77,7 @@ class ActorComponentTest {
         channel.close()
         // stop listening to component changes
         collectorJob.cancel()
+        cancel()
     }
 
 
@@ -91,12 +92,14 @@ class ActorComponentTest {
 
         val item = Item("Something")
         // mutate internal state by emitting the message
-        launch { component(flowOf(AddItem(item))).first() }.join()
+        launch { component(AddItem(item)).first() }.join()
 
         val expectedSecondTime = TodoState(listOf(item))
 
         assertEquals("Second check has failed", expectedSecondTime, component.changes().first())
         assertEquals("Second check has failed", expectedSecondTime, component.changes().first())
+
+        cancel()
     }
 
     @Test
@@ -137,13 +140,25 @@ class ActorComponentTest {
         cancel()
     }
 
-    private fun CoroutineScope.testComponent() = component(initial, ::testResolver, ::testUpdate)
+    @Test
+    fun `test when specifying initial command it gets processed`() =
+        componentTest(DoAddItem(Item("some1"), emptyList())) { component ->
+            // since command is processed asynchronously we should wait a little bit
+            val state = component.changes().first { it.items.isNotEmpty() }
+
+            assertEquals(listOf(Item("some1")), state.items)
+
+            cancel()
+        }
+
+    private fun CoroutineScope.testComponent(initalCommand: Command? = null) =
+        component(initial, ::testResolver, ::testUpdate, initalCommand)
 
     /**
      * Creates test scope that emulates [scope][CoroutineScope] that can be [canceled][cancel] for test purposes
      */
-    private fun componentTest(block: suspend CoroutineScope.(Component<Message, TodoState>) -> Unit) {
-        runBlocking { testScope().apply { block(testComponent()) } }
+    private fun componentTest(initalCommand: Command? = null, block: suspend CoroutineScope.(component: Component<Message, TodoState>) -> Unit) {
+        runBlocking { testScope().apply { block(testComponent(initalCommand)) } }
     }
 
 }
