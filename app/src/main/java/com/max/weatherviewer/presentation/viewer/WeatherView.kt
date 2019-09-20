@@ -28,7 +28,6 @@ fun WeatherView(relay: SendChannel<Message>, state: State) {
         when (state) {
             is State.Loading -> Progress()
             is State.Preview -> Preview(relay, state)
-            is State.Initial -> Unit
             is State.LoadFailure -> Failure(relay, state)
         }.safe
     }

@@ -19,45 +19,25 @@ import org.kodein.di.generic.instance
 import org.kodein.di.generic.scoped
 import org.kodein.di.generic.singleton
 
-sealed class Message
-
-data class DecodeQuery(val query: String = "") : Message()
-
-data class DecodeLocation(val location: Location) : Message()
-
-data class Address(val address: String) : Message()
-
-//
-
-sealed class State
-
-data class Preview(val address: String? = null) : State()
-
-//
-
-sealed class Command
-
-data class DoDecodeQuery(val query: String = "") : Command()
-
-data class DoDecodeLocation(val location: Location) : Command()
-
-//
-
 typealias GeodecoderComponent = (Flow<Message>) -> Flow<State>
 
-fun geocoderModule(fragment: Fragment, scope: CoroutineScope) = Kodein.Module("geocoder") {
+fun <S> S.geocoderModule(): Kodein.Module where S : CoroutineScope,
+                                                S : Fragment {
 
-    bind<Geocoder>() with scoped(fragment.fragmentScope).singleton { Geocoder(instance()) }
+    return Kodein.Module("geocoder") {
 
-    bind<Dependencies>() with scoped(fragment.fragmentScope).singleton { Dependencies(fragment, instance()) }
+        bind<Geocoder>() with scoped(fragmentScope).singleton { Geocoder(instance()) }
 
-    bind<GeodecoderComponent>() with scoped(fragment.fragmentScope).singleton {
+        bind<Dependencies>() with scoped(fragmentScope).singleton { Dependencies(this@geocoderModule, instance()) }
 
-        suspend fun resolve(command: Command) = instance<Dependencies>().resolve(command)
+        bind<GeodecoderComponent>() with scoped(fragmentScope).singleton {
 
-        component(Preview(), ::resolve, ::update).withAndroidLogger("Geocoder").also { geodecoder ->
-            scope.bind(instance<MapComponent>("map"), geodecoder) {
-                flowOf(DecodeLocation(it.location))
+            suspend fun resolve(command: Command) = instance<Dependencies>().resolve(command)
+
+            component(Preview(), ::resolve, ::update).withAndroidLogger("Geocoder").also { geodecoder ->
+                bind(instance<MapComponent>("map"), geodecoder) {
+                    flowOf(DecodeLocation(it.location))
+                }
             }
         }
     }

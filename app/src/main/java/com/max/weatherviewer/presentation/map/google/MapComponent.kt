@@ -21,16 +21,18 @@ import org.kodein.di.generic.singleton
 
 typealias MapComponent = (Flow<Message>) -> Flow<State>
 
-fun mapModule(fragment: Fragment, preSelectedLocation: Location?, scope: CoroutineScope) = Kodein.Module("map") {
+fun <S> S.mapModule(preSelectedLocation: Location?): Kodein.Module where S : Fragment,
+                                                                         S : CoroutineScope {
+    return Kodein.Module("map") {
 
-    bind<Dependencies>() with scoped(fragment.fragmentScope).singleton { Dependencies(fragment) }
+        bind<Dependencies>() with scoped(fragmentScope).singleton { Dependencies(this@mapModule) }
 
-    bind<MapComponent>("map") with scoped(fragment.fragmentScope).singleton {
+        bind<MapComponent>("map") with scoped(fragmentScope).singleton {
 
-        suspend fun resolve(command: Command) = instance<Dependencies>().resolve(command)
+            suspend fun resolve(command: Command) = instance<Dependencies>().resolve(command)
 
-        component(State(preSelectedLocation ?: Location(.0, .0)), ::resolve, ::update)
-            .withAndroidLogger("Map")
+            component(StateOf(preSelectedLocation), ::resolve, ::update).withAndroidLogger("Map")
+        }
     }
 }
 

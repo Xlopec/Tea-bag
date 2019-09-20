@@ -7,8 +7,11 @@ sealed class Message {
     object Select : Message()
 }
 
-data class State(val location: Location = Location(.0, .0))
+data class State(val location: Location)
 
 sealed class Command {
     data class SelectAndQuit(val location: Location) : Command()
 }
+
+@Suppress("FunctionName")
+fun StateOf(location: Location?) = State(location ?: Location(.0, .0))

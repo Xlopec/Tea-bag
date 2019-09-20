@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.navArgs
+import kotlinx.coroutines.Job
 
 fun defaultNavOptionsBuilder(): NavOptions.Builder = NavOptions.Builder()
     .setEnterAnim(android.R.anim.slide_in_left)
@@ -37,3 +38,8 @@ fun NavController.navigateDefaultAnimated(@IdRes resId: Int, args: Bundle? = nul
 }
 
 inline fun <reified Args : NavArgs> Fragment.args() = navArgs<Args>().value
+
+fun MutableCollection<Job>.dispose() {
+    forEach { it.cancel() }
+    clear()
+}

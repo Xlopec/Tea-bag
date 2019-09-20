@@ -9,8 +9,6 @@ sealed class State {
 
     data class Preview(override val location: Location, val data: Weather) : State()
 
-    data class Initial(override val location: Location) : State()
-
     data class LoadFailure(override val location: Location, val th: Throwable) : State()
 
     abstract val location: Location
@@ -18,8 +16,6 @@ sealed class State {
 }
 
 sealed class Message {
-
-    object ViewAttached : Message()
 
     object SelectLocation : Message()
 

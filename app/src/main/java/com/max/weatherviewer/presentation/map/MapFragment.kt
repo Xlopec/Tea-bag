@@ -13,20 +13,25 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.max.weatherviewer.R
+import com.max.weatherviewer.args
+import com.max.weatherviewer.di.FragmentKodein
+import com.max.weatherviewer.dispose
+import com.max.weatherviewer.presentation.LifecycleAwareContext
 import com.max.weatherviewer.presentation.map.geodecoder.GeodecoderComponent
 import com.max.weatherviewer.presentation.map.geodecoder.Preview
+import com.max.weatherviewer.presentation.map.geodecoder.geocoderModule
 import com.max.weatherviewer.presentation.map.google.MapComponent
 import com.max.weatherviewer.presentation.map.google.Message
+import com.max.weatherviewer.presentation.map.google.mapModule
+import com.oliynick.max.elm.core.component.changes
 import com.oliynick.max.elm.core.misc.mergeWith
 import com.oliynick.max.elm.core.misc.safe
 import kotlinx.android.synthetic.main.map_fragment.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.map
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.kodein.di.Kodein
@@ -35,43 +40,50 @@ import org.kodein.di.generic.instance
 import com.max.weatherviewer.presentation.map.geodecoder.State as GeoState
 import com.max.weatherviewer.presentation.map.google.State as MapState
 
-class MapFragment(parent: Kodein) : Fragment(), KodeinAware, CoroutineScope by MainScope() {
+class MapFragment(parent: Kodein) : Fragment(), KodeinAware, CoroutineScope {
 
-    override val kodein: Kodein by MapKodein(parent)
+    override val kodein: Kodein by FragmentKodein { fragment ->
+        extend(parent)
 
+        import(fragment.geocoderModule())
+        import(fragment.mapModule(fragment.args<MapFragmentArgs>().preSelectedLocation))
+    }
+
+    override val coroutineContext by LifecycleAwareContext()
     private val mapComponent: MapComponent by instance("map")
     private val geoComponent: GeodecoderComponent by instance()
+    private val viewJobs = mutableListOf<Job>()
 
     private val mapFragment by lazy {
         childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.map_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        launch {
+        viewJobs += launch {
             val map = mapFragment.googleMap()
             val marker = map.addMarker(marker(map.cameraPosition.target))
             val selections = btn_select.clicks().map { Message.Select }
 
-           mapComponent(map.locChanges.map { Message.MoveTo(it) }.mergeWith(selections.consumeAsFlow()))
+            mapComponent(map.locChanges.map { Message.MoveTo(it) }.mergeWith(selections.consumeAsFlow()))
                 .collect { state -> render(state, map, marker) }
         }
 
-        launch {
-            geoComponent(emptyFlow()).collect { render(it) }
+        viewJobs += launch {
+            geoComponent.changes().collect { render(it) }
         }
     }
 
     override fun onDestroyView() {
-        cancel()
+        viewJobs.dispose()
         super.onDestroyView()
     }
 
     private fun render(state: GeoState) {
-        when(state) {
+        when (state) {
             is Preview -> tv_manual_location.setText(state.address)
         }.safe
     }

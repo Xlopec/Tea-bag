@@ -67,23 +67,6 @@ typealias Component<M, S> = (Flow<M>) -> Flow<S>
  * functions. Each component accepts flow of [messages][M] and produces flow of [states][S] triggered by that messages.
  * Components can be bound to each other to produce new, more complex components
  *
- * Note that the resulting function always returns the last value to its subscribers
- *
- * Component's behaviour can be configured by passing corresponding implementations of [resolver] and [update] functions
- */
-@Deprecated("will be replaced with actor component")
-fun <M, C, S> component(initialState: S, resolver: Resolver<C, M>, update: Update<M, S, C>): Component<M, S> {
-    return ComponentImpl(initialState, resolver, update)
-}
-
-/**
- * Component is one of the main parts of the [ELM architecture](https://guide.elm-lang.org/architecture/). Component (Runtime)
- * is a stateful part of the application responsible for a specific feature.
- *
- * Conceptually component is a triple [message][M], [command][C], [state][S] operated by pure [update][Update] and impure [resolver][Resolver]
- * functions. Each component accepts flow of [messages][M] and produces flow of [states][S] triggered by that messages.
- * Components can be bound to each other to produce new, more complex components
- *
  * Note that the resulting function always returns the last state value to its subscribers
  *
  * Component's behaviour can be configured by passing corresponding implementations of [resolver] and [update] functions
@@ -92,8 +75,9 @@ fun <M, C, S> component(initialState: S, resolver: Resolver<C, M>, update: Updat
  * @param initialState initial state of the component
  * @param resolver function to resolve effects
  * @param update pure function to compute states and effects to be resolved
+ * @param initialCommands initial set of commands to execute
  * @param start actor coroutine start option. The default value is [CoroutineStart.LAZY]
- * @param context additional to [CoroutineScope.coroutineContext] context of the coroutine. The default value is [EmptyCoroutineContext]
+ * @param parentJob additional to [CoroutineScope.coroutineContext] context of the coroutine. The default value is [EmptyCoroutineContext]
  * @param M incoming messages
  * @param S state of the component
  * @param C commands to be executed
@@ -101,14 +85,17 @@ fun <M, C, S> component(initialState: S, resolver: Resolver<C, M>, update: Updat
 fun <M, C, S> CoroutineScope.component(initialState: S,
                                        resolver: Resolver<C, M>,
                                        update: Update<M, S, C>,
-                                       start: CoroutineStart = CoroutineStart.LAZY,
-                                       context: CoroutineContext = EmptyCoroutineContext): Component<M, S> {
+                                       initialCommands: Set<C> = emptySet(),
+                                       start: CoroutineStart = startStrategy(initialCommands),
+                                       parentJob: Job = coroutineContext.jobOrDefault()): Component<M, S> {
 
     val statesChannel = BroadcastChannel<S>(Channel.CONFLATED)
         .also { channel -> channel.offer(initialState) }
 
     @UseExperimental(ObsoleteCoroutinesApi::class)
-    val messages = this@component.actor<M>(context, 1, start, statesChannel::close) {
+    val messages = this@component.actor<M>(parentJob, 1, start, statesChannel::close) {
+
+        channel.send(resolver(initialCommands))
 
         for (message in channel) {
             val (nextState, commands) = update(message, statesChannel.latest)
@@ -205,6 +192,13 @@ private suspend fun <V> Channel<V>.send(values: Iterable<V>) = values.forEach { 
 private inline val <S> BroadcastChannel<S>.latest: S
     get() = requireNotNull(openSubscription().poll()!!) { "What a terrible failure!" }
 
+private fun <C> startStrategy(commands: Collection<C>): CoroutineStart {
+    return if (commands.isEmpty()) CoroutineStart.LAZY else CoroutineStart.DEFAULT
+}
+
+private fun CoroutineContext.jobOrDefault(): Job = this[Job.Key] ?: Job()
+
+@Deprecated("remove")
 private class ComponentImpl<M, C, S>(initialState: S,
                                      private val resolver: Resolver<C, M>,
                                      private val update: Update<M, S, C>) : (Flow<M>) -> Flow<S> {
