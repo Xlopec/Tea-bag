@@ -11,6 +11,7 @@ import com.max.weatherviewer.di.fragmentScope
 import com.max.weatherviewer.navigateDefaultAnimated
 import com.max.weatherviewer.presentation.viewer.WeatherViewerFragmentArgs
 import com.oliynick.max.elm.core.component.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
@@ -20,7 +21,7 @@ import org.kodein.di.generic.singleton
 
 typealias MapComponent = (Flow<Message>) -> Flow<State>
 
-fun mapModule(fragment: Fragment, preSelectedLocation: Location?) = Kodein.Module("map") {
+fun mapModule(fragment: Fragment, preSelectedLocation: Location?, scope: CoroutineScope) = Kodein.Module("map") {
 
     bind<Dependencies>() with scoped(fragment.fragmentScope).singleton { Dependencies(fragment) }
 
@@ -28,8 +29,8 @@ fun mapModule(fragment: Fragment, preSelectedLocation: Location?) = Kodein.Modul
 
         suspend fun resolve(command: Command) = instance<Dependencies>().resolve(command)
 
-        androidLogger(component(State(
-            preSelectedLocation ?: Location(.0, .0)), ::resolve, ::update), "Map")
+        component(State(preSelectedLocation ?: Location(.0, .0)), ::resolve, ::update)
+            .withAndroidLogger("Map")
     }
 }
 

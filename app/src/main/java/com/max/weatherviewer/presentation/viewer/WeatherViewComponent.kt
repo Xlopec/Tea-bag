@@ -10,6 +10,7 @@ import com.max.weatherviewer.api.weather.WeatherProvider
 import com.max.weatherviewer.navigateDefaultAnimated
 import com.max.weatherviewer.presentation.map.MapFragmentArgs
 import com.oliynick.max.elm.core.component.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import org.kodein.di.Kodein
 import org.kodein.di.bindings.Scope
@@ -20,7 +21,7 @@ import org.kodein.di.generic.singleton
 
 typealias WeatherComponent = (Flow<Message>) -> Flow<State>
 
-fun weatherModule(scope: Scope<Fragment>, startLocation: Location): Kodein.Module {
+fun weatherModule(scope: Scope<Fragment>, startLocation: Location, mscope: CoroutineScope): Kodein.Module {
     return Kodein.Module("weatherModule") {
 
         bind<Dependencies>() with singleton { Dependencies(instance(), instance(), instance()) }
@@ -29,8 +30,7 @@ fun weatherModule(scope: Scope<Fragment>, startLocation: Location): Kodein.Modul
 
             suspend fun resolver(command: Command) = instance<Dependencies>().resolveEffect(command)
 
-            androidLogger(component(State.Initial(
-                startLocation), ::resolver, ::update), "WeatherViewer")
+            component(State.Initial(startLocation), ::resolver, ::update).withAndroidLogger("WeatherViewer")
         }
     }
 }

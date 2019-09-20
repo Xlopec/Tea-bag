@@ -14,29 +14,32 @@
  *  limitations under the License.
  */
 
-@file:Suppress("TestFunctionName")
-
 package com.oliynick.max.elm.core.component
 
+import com.oliynick.max.elm.core.scope.testScope
+import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.util.concurrent.Executors
 
 @RunWith(JUnit4::class)
-class ComponentTest {
+class ActorComponentTest {
 
     private val mainThreadSurrogate = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val initial = TodoState()
+
+    @get:Rule
+    val exceptionRule: ExpectedException = ExpectedException.none()
 
     @Before
     fun setUp() {
@@ -50,9 +53,8 @@ class ComponentTest {
     }
 
     @Test
-    fun `test when subscribing the last state is propagated`() = runBlockingTest {
-        val lastIndex = 10
-        val states = generateHistoricalStates(lastIndex)
+    fun `test when subscribing the last state is propagated`() = componentTest { component ->
+        val states = generateHistoricalStates()
         val channel = Channel<AddItem>()
 
         for (s in states) {
@@ -61,13 +63,11 @@ class ComponentTest {
             launch { channel.send(AddItem(i)) }
         }
 
-        val component = Component()
-
         val collectorJob = launch {
             component(channel.consumeAsFlow()).collectIndexed { index, value ->
                 // we will gen lastIndex + 1 invocations since the very first
                 // value will be redelivered
-                if (index <= lastIndex) {
+                if (index <= states.lastIndex) {
                     assertEquals(states[index], value)
                 }
             }
@@ -76,49 +76,76 @@ class ComponentTest {
 
         channel.close()
         // stop listening to component changes
-        collectorJob.cancelAndJoin()
+        collectorJob.cancel()
     }
 
-    @Test
-    fun `test when subscribing multiple times the last emitted state is propagated`() = runBlockingTest {
-        val component = Component()
 
+    @Test
+    fun `test when subscribing multiple times the last emitted state is propagated`() = componentTest { component ->
         // first time
 
-        assertEquals(initial, component.changes().first())
-        assertEquals(initial, component.changes().first())
+        assertEquals("First check has failed", initial, component.changes().first())
+        assertEquals("First check has failed", initial, component.changes().first())
 
         // second time
 
         val item = Item("Something")
-
-        val job = async { component(flowOf(AddItem(item))).collect() }
+        // mutate internal state by emitting the message
+        launch { component(flowOf(AddItem(item))).first() }.join()
 
         val expectedSecondTime = TodoState(listOf(item))
 
-        assertEquals(expectedSecondTime, component.changes().first())
-        assertEquals(expectedSecondTime, component.changes().first())
-
-        job.cancelAndJoin()
+        assertEquals("Second check has failed", expectedSecondTime, component.changes().first())
+        assertEquals("Second check has failed", expectedSecondTime, component.changes().first())
     }
 
     @Test
-    fun `test when removing item from an empty list the list stays unchanged`() = runBlockingTest {
-        val state = Component()(flowOf(RemoveItem(Item("some")))).first()
+    fun `test when removing item from an empty list the list stays unchanged`() = componentTest { component ->
+        val state = component(RemoveItem(Item("some"))).first()
 
         assertEquals(state.items, emptyList<Item>())
+
+        cancel()
     }
 
     @Test
-    fun `test item addition ordering is correct`() = runBlockingTest {
+    fun `test when touching a component after canceling a scope results in exception`() = componentTest { component ->
         val item = Item("some")
-        val states = Component()(flowOf(AddItem(item))).take(2).toCollection(ArrayList())
+
+        val states = component(AddItem(item)).take(2).toCollection(ArrayList())
 
         assertEquals(emptyList<Item>(), states[0].items)
         assertEquals(listOf(item), states[1].items)
+
+        cancel()
+
+        exceptionRule.expect(IllegalStateException::class.java)
+        exceptionRule.expectMessage("Component was already disposed")
+
+        component(AddItem(item)).first()
     }
 
-    private fun Component() = component(initial, ::testResolver, ::testUpdate)
+    @Test
+    fun `test item addition ordering is correct`() = componentTest { component ->
+        val item = Item("some")
+
+        val states = component(AddItem(item)).take(2).toCollection(ArrayList())
+
+        assertEquals(emptyList<Item>(), states[0].items)
+        assertEquals(listOf(item), states[1].items)
+
+        cancel()
+    }
+
+    private fun CoroutineScope.testComponent() = component(initial, ::testResolver, ::testUpdate)
+
+    /**
+     * Creates test scope that emulates [scope][CoroutineScope] that can be [canceled][cancel] for test purposes
+     */
+    private fun componentTest(block: suspend CoroutineScope.(Component<Message, TodoState>) -> Unit) {
+        runBlocking { testScope().apply { block(testComponent()) } }
+    }
+
 }
 
 private suspend fun testResolver(cmd: Command): Set<Message> {
@@ -136,10 +163,10 @@ private fun testUpdate(message: Message, state: TodoState): UpdateWith<TodoState
     }
 }
 
-private fun generateHistoricalStates(lastIndex: Int): List<TodoState> {
+private fun generateHistoricalStates(size: Int = 10): List<TodoState> {
     val states = mutableListOf<TodoState>()
 
-    for (i in 0..lastIndex) {
+    for (i in 0 until size) {
         states += TodoState((0 until i).map { Item("some $it") })
     }
 

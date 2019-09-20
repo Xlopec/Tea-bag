@@ -4,9 +4,10 @@ import android.location.Geocoder
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import com.max.weatherviewer.api.weather.Location
-import com.oliynick.max.elm.core.component.*
 import com.max.weatherviewer.di.fragmentScope
 import com.max.weatherviewer.presentation.map.google.MapComponent
+import com.oliynick.max.elm.core.component.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -44,7 +45,7 @@ data class DoDecodeLocation(val location: Location) : Command()
 
 typealias GeodecoderComponent = (Flow<Message>) -> Flow<State>
 
-fun geocoderModule(fragment: Fragment) = Kodein.Module("geocoder") {
+fun geocoderModule(fragment: Fragment, scope: CoroutineScope) = Kodein.Module("geocoder") {
 
     bind<Geocoder>() with scoped(fragment.fragmentScope).singleton { Geocoder(instance()) }
 
@@ -54,11 +55,8 @@ fun geocoderModule(fragment: Fragment) = Kodein.Module("geocoder") {
 
         suspend fun resolve(command: Command) = instance<Dependencies>().resolve(command)
 
-        androidLogger(component(Preview(),
-                                ::resolve,
-                                ::update),
-                      "Geocoder").also { geodecoder ->
-            bind(instance<MapComponent>("map"), geodecoder) {
+        component(Preview(), ::resolve, ::update).withAndroidLogger("Geocoder").also { geodecoder ->
+            scope.bind(instance<MapComponent>("map"), geodecoder) {
                 flowOf(DecodeLocation(it.location))
             }
         }

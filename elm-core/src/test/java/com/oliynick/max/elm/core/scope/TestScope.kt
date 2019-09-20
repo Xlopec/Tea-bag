@@ -14,26 +14,14 @@
  *  limitations under the License.
  */
 
-package com.oliynick.max.elm.core.component
+package com.oliynick.max.elm.core.scope
 
-inline class TodoState(val items: List<Item> = emptyList())
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlin.coroutines.CoroutineContext
 
-data class Item(val what: String) {
-    init {
-        require(what.isNotBlank() && what.isNotEmpty())
-    }
-}
+fun testScope() = object : CoroutineScope { override val coroutineContext: CoroutineContext = Job() + Dispatchers.Main }
 
-sealed class Message
 
-data class AddItem(val item: Item) : Message()
 
-data class Updated(val items: List<Item>) : Message()
-
-data class RemoveItem(val item: Item) : Message()
-
-sealed class Command
-
-data class DoAddItem(val item: Item, val from: List<Item>) : Command()
-
-data class DoRemoveItem(val item: Item, val from: List<Item>) : Command()

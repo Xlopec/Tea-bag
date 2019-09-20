@@ -3,6 +3,7 @@ package com.max.weatherviewer.presentation.viewer
 import androidx.fragment.app.Fragment
 import com.max.weatherviewer.args
 import com.max.weatherviewer.di.fragmentScope
+import kotlinx.coroutines.CoroutineScope
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.bind
@@ -14,16 +15,17 @@ class WeatherViewerKodein(private val parent: Kodein) : KodeinAware {
 
     override lateinit var kodein: Kodein
 
-    operator fun getValue(thisRef: Fragment, property: KProperty<*>): Kodein {
+    operator fun <S> getValue(thisRef: S, property: KProperty<*>): Kodein where S : Fragment,
+                                                                                S : CoroutineScope{
 
         if (!::kodein.isInitialized) {
             kodein = Kodein.lazy {
                 extend(parent)
 
-                bind<Fragment>() with scoped(thisRef.fragmentScope).singleton { thisRef }
+                bind<Fragment>() with scoped(thisRef.fragmentScope).singleton { thisRef as Fragment }
 
                 import(weatherModule(thisRef.fragmentScope,
-                                     thisRef.args<WeatherViewerFragmentArgs>().location))
+                                     thisRef.args<WeatherViewerFragmentArgs>().location, thisRef))
             }
         }
 
