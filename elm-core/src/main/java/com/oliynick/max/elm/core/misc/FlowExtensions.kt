@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 /**
  * Merges two [flows][Flow] into a single one asynchronously
  */
-fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
+internal fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
     channelFlow {
         coroutineScope {
             launch {
@@ -43,9 +43,9 @@ fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
         }
     }
 
-fun <T> Flow<T>.startWith(t: T): Flow<T> = onStart { emit(t) }
+internal fun <T> Flow<T>.startWith(t: T): Flow<T> = onStart { emit(t) }
 
-fun <T> Flow<T>.startWith(first: T, vararg other: T): Flow<T> = onStart { emit(first); other.forEach { emit(it) } }
+internal fun <T> Flow<T>.startWith(first: T, vararg other: T): Flow<T> = onStart { emit(first); other.forEach { emit(it) } }
 
 /** forces compiler to check `when` clause is exhaustive */
-val Unit?.safe get() = this
+internal val Unit?.safe get() = this

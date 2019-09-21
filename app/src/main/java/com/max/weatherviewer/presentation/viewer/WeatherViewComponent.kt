@@ -58,16 +58,7 @@ private data class Dependencies(
 private suspend fun Dependencies.resolveEffect(command: Command): Set<Message> {
 
     suspend fun resolve() = when (command) {
-        is Command.LoadWeather -> command.effect {
-            /*withContext(Dispatchers.IO) {
-                while (isActive) {
-                    kotlinx.coroutines.delay(100L)
-                    println("AZZA")
-                }
-            };
-            println("Done");*/
-            Message.WeatherLoaded(weatherProvider.fetchWeather(l))
-        }
+        is Command.LoadWeather -> command.effect { Message.WeatherLoaded(weatherProvider.fetchWeather(l)) }
         is Command.FeedLoaded -> command.effect { Message.WeatherLoaded(data) }
         is Command.SelectLocation -> command.sideEffect { fragment.navigateToMap(withSelectedLocation) }
     }

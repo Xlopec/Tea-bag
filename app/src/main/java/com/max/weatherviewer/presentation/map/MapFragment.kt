@@ -12,10 +12,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.max.weatherviewer.R
-import com.max.weatherviewer.args
+import com.max.weatherviewer.*
 import com.max.weatherviewer.di.FragmentKodein
-import com.max.weatherviewer.dispose
 import com.max.weatherviewer.presentation.LifecycleAwareContext
 import com.max.weatherviewer.presentation.map.geodecoder.GeodecoderComponent
 import com.max.weatherviewer.presentation.map.geodecoder.Preview
@@ -24,8 +22,6 @@ import com.max.weatherviewer.presentation.map.google.MapComponent
 import com.max.weatherviewer.presentation.map.google.Message
 import com.max.weatherviewer.presentation.map.google.mapModule
 import com.oliynick.max.elm.core.component.changes
-import com.oliynick.max.elm.core.misc.mergeWith
-import com.oliynick.max.elm.core.misc.safe
 import kotlinx.android.synthetic.main.map_fragment.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

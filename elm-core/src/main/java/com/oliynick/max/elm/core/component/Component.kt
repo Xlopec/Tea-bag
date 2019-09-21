@@ -18,12 +18,15 @@
 
 package com.oliynick.max.elm.core.component
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -61,7 +64,9 @@ typealias UpdateWith<S, C> = Pair<S, Set<C>>
  */
 typealias Component<M, S> = (Flow<M>) -> Flow<S>
 
-typealias Loader<S> = suspend () -> S
+typealias Initializer<S, C> = suspend () -> InitArgs<S, C>
+
+typealias InitArgs<S, C> = Pair<S, C?>
 
 /**
  * Component is one of the main parts of the [ELM architecture](https://guide.elm-lang.org/architecture/). Component (Runtime)
@@ -76,23 +81,21 @@ typealias Loader<S> = suspend () -> S
  * Component's behaviour can be configured by passing corresponding implementations of [resolver] and [update] functions
  *
  * @receiver scope where the component should be placed
- * @param loader loader to retrieve initial state of the component
+ * @param initializer initializer to supply initial args to the component
  * @param resolver function to resolve effects
  * @param update pure function to compute states and effects to be resolved
- * @param initialCommand initial command to execute
  * @param M incoming messages
  * @param S state of the component
  * @param C commands to be executed
+ * @return configured instance of [Component]
  */
-fun <M, C, S> CoroutineScope.component(loader: Loader<S>,
+fun <M, C, S> CoroutineScope.component(initializer: Initializer<S, C>,
                                        resolver: Resolver<C, M>,
-                                       update: Update<M, S, C>,
-                                       initialCommand: C? = null): Component<M, S> {
+                                       update: Update<M, S, C>): Component<M, S> {
 
     val statesChannel = BroadcastChannel<S>(Channel.CONFLATED)
 
-    return newComponent(statesChannel.asFlow(),
-                        newActor(loader, resolver, update, initialCommand, coroutineContext.jobOrDefault(), statesChannel))
+    return newComponent(statesChannel.asFlow(), newActor(initializer, resolver, update, coroutineContext.jobOrDefault(), statesChannel))
 }
 
 /**
@@ -115,6 +118,7 @@ fun <M, C, S> CoroutineScope.component(loader: Loader<S>,
  * @param M incoming messages
  * @param S state of the component
  * @param C commands to be executed
+ * @return configured instance of [Component]
  */
 fun <M, C, S> CoroutineScope.component(initialState: S,
                                        resolver: Resolver<C, M>,
@@ -122,58 +126,9 @@ fun <M, C, S> CoroutineScope.component(initialState: S,
                                        initialCommand: C? = null): Component<M, S> {
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun loader(): S = initialState
+    suspend fun loader() = initialState to initialCommand
 
-    return component(::loader, resolver, update, initialCommand)
-}
-
-infix fun <S, C> S.command(command: C) = this to setOf(command)
-
-fun <S, C> S.command(first: C, second: C) = this to setOf(first, second)
-
-fun <S, C> S.command(first: C, second: C, third: C) = this to setOf(first, second, third)
-
-fun <S, C> S.command(vararg commands: C) = this to setOf(*commands)
-
-fun <S, C> S.noCommand() = this to emptySet<C>()
-
-/**
- * Handy wrapper to perform side effect computations within coroutine scope. This function always
- * returns empty set of messages [M]
- */
-suspend inline fun <C, M> C.sideEffect(crossinline action: suspend C.() -> Unit): Set<M> {
-    return coroutineScope { action(); emptySet() }
-}
-
-/**
- * Handy wrapper to perform side effect computations within coroutine scope
- */
-suspend inline fun <C, M> C.effect(crossinline action: suspend C.() -> M?): Set<M> {
-    return coroutineScope { action(this@effect)?.let(::setOf) ?: emptySet() }
-}
-
-/**
- * Returns flow that listens to changes of the original function
- */
-fun <M, S> ((Flow<M>) -> Flow<S>).changes(): Flow<S> = this(emptyFlow())
-
-operator fun <M, S> Component<M, S>.invoke(vararg messages: M) = this(flowOf(*messages))
-
-operator fun <M, S> Component<M, S>.invoke(message: M) = this(flowOf(message))
-
-/**
- * Takes changes of the [producer] stream and feeds them as input to the [consumer] applying [transform] function
- *
- * @receiver coroutine scope to be used
- * @param producer the producer flow function
- * @param consumer the consumer flow function
- * @param transform function that maps produced states to the flow to be consumed by the consumer function
- */
-inline fun <M1, S1, M2, S2> CoroutineScope.bind(noinline producer: Component<M1, S1>,
-                                                noinline consumer: Component<M2, S2>,
-                                                crossinline transform: (S1) -> Flow<M2>) {
-
-    launch { producer.changes().collect { s1 -> launch { consumer(transform(s1)).collect() } } }
+    return component(::loader, resolver, update)
 }
 
 private suspend fun <E> SendChannel<E>.sendChecking(e: E) {
@@ -197,16 +152,17 @@ private inline val <S> BroadcastChannel<S>.latest: S
 
 private fun CoroutineContext.jobOrDefault(): Job = this[Job.Key] ?: Job()
 
-private fun <M, C, S> CoroutineScope.newActor(loader: Loader<S>,
+private fun <M, C, S> CoroutineScope.newActor(initializer: Initializer<S, C>,
                                               resolver: Resolver<C, M>,
                                               update: Update<M, S, C>,
-                                              initialCommand: C?,
                                               parentJob: Job,
                                               statesChannel: BroadcastChannel<S>): SendChannel<M> {
 
     @UseExperimental(ObsoleteCoroutinesApi::class)
     return this@newActor.actor(parentJob, DEFAULT_ACTOR_BUFFER_CAPACITY.toInt(), onCompletion = statesChannel::close) {
-        check(statesChannel.offer(loader())) { "Couldn't offer an initial state" }
+        val (initialState, initialCommand) = initializer()
+
+        check(statesChannel.offer(initialState)) { "Couldn't offer an initial state" }
 
         if (initialCommand != null) {
             channel.send(resolver(initialCommand))
@@ -230,14 +186,14 @@ private fun <M, S> newComponent(state: Flow<S>, messages: SendChannel<M>): Compo
         channelFlow {
 
             launch {
-                state.distinctUntilChanged().collect {
-                    send(it)
+                state.distinctUntilChanged().collect { state ->
+                    send(state)
                 }
             }
 
             launch {
-                input.collect {
-                    messages.sendChecking(it)
+                input.collect { message ->
+                    messages.sendChecking(message)
                 }
             }
         }
