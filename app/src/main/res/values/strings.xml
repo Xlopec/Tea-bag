@@ -2,4 +2,5 @@
     <string name="app_name">WeatherViewer</string>
     <string name="maps_api_key" translatable="false">AIzaSyAf_zEdekM5RpNJ3A5mSCJHi5-dcfB7ToQ</string>
     <string name="action_map">Map</string>
+    <string name="map_location_hint">Location…</string>
 </resources>

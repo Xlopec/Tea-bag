@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Home" pattern="(com.oliynick.max.elm.*||src[elm-core]:*..*)&amp;&amp;!src[elm-core]:values.*&amp;&amp;!src[elm-core]:com.oliynick.max.elm.core.*||test[elm-core]:*..*" />
+</component>

@@ -7,10 +7,11 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.ui.core.setContent
-import com.max.weatherviewer.startWith
+import com.max.weatherviewer.args
+import com.max.weatherviewer.dispose
+import com.max.weatherviewer.presentation.LifecycleAwareContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -19,25 +20,29 @@ import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
 
-class WeatherViewerFragment(parent: Kodein) : Fragment(), KodeinAware, CoroutineScope by MainScope() {
+class WeatherViewerFragment(parent: Kodein) : Fragment(), KodeinAware, CoroutineScope {
 
-    override val kodein by WeatherViewerKodein(parent)
+    override val kodein by Kodein.lazy {
+        extend(parent)
+        import(weatherModule(args<WeatherViewerFragmentArgs>().location))
+    }
 
+    override val coroutineContext by LifecycleAwareContext()
     private val component by instance<WeatherComponent>()
+    private val viewJobs = mutableListOf<Job>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = FrameLayout(requireContext())
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        launch {
-            val messages = Channel<Message>(Channel.RENDEZVOUS)
+        viewJobs += launch {
+            val messages = Channel<Message>()
 
-            component(messages.consumeAsFlow().startWith(Message.ViewAttached))
-                .collect { state -> (view as ViewGroup).render(messages, state) }
+            component(messages.consumeAsFlow()).collect { state -> (view as ViewGroup).render(messages, state) }
         }
     }
 
     override fun onDestroyView() {
-        cancel()
+        viewJobs.dispose()
         super.onDestroyView()
     }
 }

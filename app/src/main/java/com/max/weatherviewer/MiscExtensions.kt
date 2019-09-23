@@ -10,11 +10,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.navArgs
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 fun defaultNavOptionsBuilder(): NavOptions.Builder = NavOptions.Builder()
@@ -42,6 +42,16 @@ fun NavController.navigateDefaultAnimated(@IdRes resId: Int, args: Bundle? = nul
     navigate(resId, args, navOptions, extras)
 }
 
+inline fun <reified Args : NavArgs> Fragment.args() = navArgs<Args>().value
+
+fun MutableCollection<Job>.dispose() {
+    forEach { it.cancel() }
+    clear()
+}
+
+/**
+ * Merges two [flows][Flow] into a single one asynchronously
+ */
 fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
     channelFlow {
         coroutineScope {
@@ -58,12 +68,6 @@ fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
             }
         }
     }
-
-fun <T> Flow<T>.startWith(t: T): Flow<T> = onStart { emit(t) }
-
-fun <T> Flow<T>.startWith(first: T, vararg other: T): Flow<T> = onStart { emit(first); other.forEach { emit(it) } }
-
-inline fun <reified Args : NavArgs> Fragment.args() = navArgs<Args>().value
 
 /** forces compiler to check `when` clause is exhaustive */
 val Unit?.safe get() = this
