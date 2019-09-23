@@ -8,6 +8,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.max.weatherviewer.api.weather.Location
+import com.max.weatherviewer.presentation.map.google.Message
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -30,10 +31,10 @@ val LatLng.location: Location
     get() = Location(latitude, longitude)
 
 @Suppress("DEPRECATION")// rot email
-val GoogleMap.locChanges: Flow<Location>
+val GoogleMap.cameraChanges: Flow<Message.UpdateCamera>
     get() = channelFlow {
         val l = GoogleMap.OnCameraChangeListener { position ->
-            offer(position.target.location)
+            offer(Message.UpdateCamera(position.target.location, position.zoom, position.bearing, position.tilt))
         }
 
         setOnCameraMoveStartedListener { reason ->

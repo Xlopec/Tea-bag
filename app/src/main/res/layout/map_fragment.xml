@@ -18,7 +18,7 @@
             android:layout_margin="16dp"
             android:src="@drawable/ic_check_white_24dp" />
 
-    <AutoCompleteTextView
+    <TextView
             android:id="@+id/tv_manual_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,6 +26,6 @@
             android:padding="8dp"
             android:layout_marginTop="16dp"
             android:layout_gravity="center_horizontal|top"
-            android:hint="@string/map_location_input_hint" />
+            android:hint="@string/map_location_hint" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

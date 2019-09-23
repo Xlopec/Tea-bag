@@ -151,14 +151,14 @@ class ActorComponentTest {
             cancel()
         }
 
-    private fun CoroutineScope.testComponent(initalCommand: Command? = null) =
-        component(initial, ::testResolver, ::testUpdate, initalCommand)
+    private fun CoroutineScope.testComponent(vararg initalCommand: Command) =
+        component(initial, ::testResolver, ::testUpdate, initialCommands = *initalCommand)
 
     /**
      * Creates test scope that emulates [scope][CoroutineScope] that can be [canceled][cancel] for test purposes
      */
-    private fun componentTest(initalCommand: Command? = null, block: suspend CoroutineScope.(component: Component<Message, TodoState>) -> Unit) {
-        runBlocking { testScope().apply { block(testComponent(initalCommand)) } }
+    private fun componentTest(vararg initalCommand: Command, block: suspend CoroutineScope.(component: Component<Message, TodoState>) -> Unit) {
+        runBlocking { testScope().apply { block(testComponent(*initalCommand)) } }
     }
 
 }

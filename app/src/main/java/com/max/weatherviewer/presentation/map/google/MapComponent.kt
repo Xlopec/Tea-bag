@@ -1,14 +1,18 @@
 package com.max.weatherviewer.presentation.map.google
 
+import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
 import com.max.weatherviewer.R
 import com.max.weatherviewer.api.weather.Location
 import com.max.weatherviewer.defaultNavOptionsBuilder
 import com.max.weatherviewer.di.fragmentScope
 import com.max.weatherviewer.navigateDefaultAnimated
+import com.max.weatherviewer.persistence.load
+import com.max.weatherviewer.persistence.persist
 import com.max.weatherviewer.presentation.viewer.WeatherViewerFragmentArgs
 import com.oliynick.max.elm.core.component.*
 import kotlinx.coroutines.CoroutineScope
@@ -25,13 +29,21 @@ fun <S> S.mapModule(preSelectedLocation: Location?): Kodein.Module where S : Fra
                                                                          S : CoroutineScope {
     return Kodein.Module("map") {
 
+        bind<Gson>() with singleton { Gson() }
+
         bind<Dependencies>() with scoped(fragmentScope).singleton { Dependencies(this@mapModule) }
+
+        bind<Interceptor<Message, State, Command>>() with singleton {
+            androidLogger<Message, Command, State>("map") with { _, _, new, _ -> instance<Context>().persist(instance(), new) }
+        }
 
         bind<MapComponent>("map") with scoped(fragmentScope).singleton {
 
             suspend fun resolve(command: Command) = instance<Dependencies>().resolve(command)
 
-            component(StateOf(preSelectedLocation), ::resolve, ::update).withAndroidLogger("Map")
+            suspend fun loader() = (preSelectedLocation?.let(::State) ?: instance<Context>().load(instance(), ::State)) to emptySet<Command>()
+
+            component(::loader, ::resolve, ::update, instance())
         }
     }
 }
@@ -39,7 +51,7 @@ fun <S> S.mapModule(preSelectedLocation: Location?): Kodein.Module where S : Fra
 @VisibleForTesting
 fun update(m: Message, s: State): UpdateWith<State, Command> {
     return when (m) {
-        is Message.MoveTo -> State(m.location).noCommand()
+        is Message.UpdateCamera -> State(m.location, m.zoom, m.bearing, m.tilt).noCommand()
         Message.Select -> s command Command.SelectAndQuit(s.location)
     }
 }

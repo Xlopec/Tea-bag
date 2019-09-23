@@ -8,7 +8,6 @@ import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.ui.core.setContent
 import com.max.weatherviewer.args
-import com.max.weatherviewer.di.FragmentKodein
 import com.max.weatherviewer.dispose
 import com.max.weatherviewer.presentation.LifecycleAwareContext
 import kotlinx.coroutines.CoroutineScope
@@ -23,9 +22,9 @@ import org.kodein.di.generic.instance
 
 class WeatherViewerFragment(parent: Kodein) : Fragment(), KodeinAware, CoroutineScope {
 
-    override val kodein by FragmentKodein { fragment ->
+    override val kodein by Kodein.lazy {
         extend(parent)
-        import(fragment.weatherModule(fragment.args<WeatherViewerFragmentArgs>().location))
+        import(weatherModule(args<WeatherViewerFragmentArgs>().location))
     }
 
     override val coroutineContext by LifecycleAwareContext()

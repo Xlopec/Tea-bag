@@ -13,7 +13,6 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.max.weatherviewer.*
-import com.max.weatherviewer.di.FragmentKodein
 import com.max.weatherviewer.presentation.LifecycleAwareContext
 import com.max.weatherviewer.presentation.map.geodecoder.GeodecoderComponent
 import com.max.weatherviewer.presentation.map.geodecoder.Preview
@@ -28,7 +27,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.map
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -38,11 +36,11 @@ import com.max.weatherviewer.presentation.map.google.State as MapState
 
 class MapFragment(parent: Kodein) : Fragment(), KodeinAware, CoroutineScope {
 
-    override val kodein: Kodein by FragmentKodein { fragment ->
+    override val kodein: Kodein by Kodein.lazy {
         extend(parent)
 
-        import(fragment.geocoderModule())
-        import(fragment.mapModule(fragment.args<MapFragmentArgs>().preSelectedLocation))
+        import(geocoderModule())
+        import(mapModule(args<MapFragmentArgs>().preSelectedLocation))
     }
 
     override val coroutineContext by LifecycleAwareContext()
@@ -64,7 +62,7 @@ class MapFragment(parent: Kodein) : Fragment(), KodeinAware, CoroutineScope {
             val marker = map.addMarker(marker(map.cameraPosition.target))
             val selections = btn_select.clicks().map { Message.Select }
 
-            mapComponent(map.locChanges.map { Message.MoveTo(it) }.mergeWith(selections.consumeAsFlow()))
+            mapComponent(map.cameraChanges.mergeWith(selections.consumeAsFlow()))
                 .collect { state -> render(state, map, marker) }
         }
 
@@ -87,8 +85,8 @@ class MapFragment(parent: Kodein) : Fragment(), KodeinAware, CoroutineScope {
     private fun render(state: MapState, map: GoogleMap, marker: Marker) {
         val latLng = state.location.run { LatLng(lat, lon) }
 
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder(map.cameraPosition).target(
-            latLng).build()))
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder(map.cameraPosition)
+                                                                    .target(latLng).zoom(state.zoom).tilt(state.tilt).bearing(state.bearing).build()))
         marker.moveAnimated(latLng,
                             resources.getInteger(android.R.integer.config_mediumAnimTime).toULong())
     }

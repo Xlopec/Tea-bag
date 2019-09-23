@@ -17,26 +17,43 @@
 package com.oliynick.max.elm.core.component
 
 import android.util.Log
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.onEach
 
-typealias Logger<F> = suspend (F) -> Unit
+/**
+ * Alias for function that returns component's state as string
+ *
+ * @param M message
+ * @param S state
+ * @param C command
+ */
+typealias Formatter<M, S, C> = (message: M, prevState: S, newState: S, commands: Set<C>) -> String
 
-inline fun <M, S> ((Flow<M>) -> Flow<S>).withAndroidLogger(tag: String = this::class.simpleName ?: toString(),
-                                                           crossinline sTransform: (S) -> String = { "State $it" },
-                                                           crossinline mTransform: (M) -> String = { "Message $it" }): (Flow<M>) -> Flow<S> {
-
-    return withLogger({ s -> Log.d(tag, sTransform(s)) }, { m -> Log.d(tag, mTransform(m)) })
+/**
+ * Creates logger that delegates logging to Android logger
+ *
+ * @param tag tag to be used
+ * @param formatter function that accepts component's state and transforms it to a string representation. The default value is [simpleFormatter]
+ * @param M message
+ * @param S state
+ * @param C command
+ * @return ready to use [interceptor][Interceptor]
+ */
+inline fun <M : Any, C : Any, S : Any> androidLogger(tag: String, crossinline formatter: Formatter<M, S, C> = ::simpleFormatter): Interceptor<M, S, C> {
+    return { message, prevState, newState, commands -> Log.d(tag, formatter(message, prevState, newState, commands)) }
 }
 
-fun <M, S> ((Flow<M>) -> Flow<S>).withLogger(stateLog: Logger<S>, messageLog: Logger<M>): (Flow<M>) -> Flow<S> {
-    return LogComponent(stateLog, messageLog, this)
-}
-
-private class LogComponent<M, S>(private val stateLog: Logger<S>,
-                                 private val messageLog: Logger<M>,
-                                 private val delegate: (Flow<M>) -> Flow<S>) : (Flow<M>) -> Flow<S> {
-
-    override fun invoke(messages: Flow<M>): Flow<S> = delegate(messages.onEach(messageLog)).onEach(stateLog)
-
+/**
+ * Default state to string transformer
+ *
+ * @param message message that caused state transition
+ * @param prevState previous state
+ * @param newState new state
+ * @param commands set of commands to execute
+ * @param M message
+ * @param S state
+ * @param C command
+ * @return ready to use [interceptor][Interceptor]
+ */
+fun <M : Any, C : Any, S : Any> simpleFormatter(message: M, prevState: S, newState: S, commands: Set<C>): String {
+    return "performing transition from $prevState to $newState caused by $message " +
+            " ${if (commands.isEmpty()) "" else "and executing commands ${commands.joinToString()}"}"
 }

@@ -1,6 +1,5 @@
 package com.max.weatherviewer.presentation.viewer
 
-import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.max.weatherviewer.R
@@ -32,20 +31,9 @@ fun <S> S.weatherModule(startLocation: Location): Kodein.Module where S : Corout
 
             suspend fun resolver(command: Command) = instance<Dependencies>().resolveEffect(command)
 
-            component(State.Loading(startLocation), ::resolver, ::update, Command.LoadWeather(startLocation))
-                .withAndroidLogger("WeatherViewer")
+            component(State.Loading(startLocation), ::resolver, ::update,
+                      androidLogger("WeatherViewer"), Command.LoadWeather(startLocation))
         }
-    }
-}
-
-@VisibleForTesting
-fun update(message: Message, s: State): UpdateWith<State, Command> {
-    return when (message) {
-        is Message.LocationQueried -> State.Loading(s.location) command Command.LoadWeather(message.l)
-        is Message.WeatherLoaded -> State.Preview(s.location, message.weather).noCommand()
-        is Message.OpFuckup -> State.LoadFailure(s.location, message.th).noCommand()
-        Message.SelectLocation -> s command Command.SelectLocation(s.location)
-        Message.Retry -> calculateRetryAction(s)
     }
 }
 
@@ -64,13 +52,6 @@ private suspend fun Dependencies.resolveEffect(command: Command): Set<Message> {
     }
 
     return runCatching { resolve() }.getOrElse { th -> effect { Message.OpFuckup(th) } }
-}
-
-private fun calculateRetryAction(current: State): UpdateWith<State, Command> {
-    return when (current) {
-        is State.LoadFailure -> State.Loading(current.location) command Command.LoadWeather(current.location)
-        is State.Loading, is State.Preview -> throw IllegalStateException("Shouldn't get there, was $current")
-    }
 }
 
 private fun Fragment.navigateToMap(withStartLocation: Location?) {
