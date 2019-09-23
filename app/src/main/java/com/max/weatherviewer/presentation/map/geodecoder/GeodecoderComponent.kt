@@ -1,7 +1,6 @@
 package com.max.weatherviewer.presentation.map.geodecoder
 
 import android.location.Geocoder
-import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import com.max.weatherviewer.api.weather.Location
 import com.max.weatherviewer.di.fragmentScope
@@ -37,14 +36,6 @@ fun <S> S.geocoderModule(): Kodein.Module where S : CoroutineScope,
             component(Preview(), ::resolve, ::update, androidLogger("Geocoder"))
                 .also { geodecoder -> bind(instance<MapComponent>("map"), geodecoder, ::mapStateToMessages) }
         }
-    }
-}
-
-@VisibleForTesting
-fun update(m: Message, s: State): UpdateWith<State, Command> {
-    return when (m) {
-        is DecodeLocation -> s command DoDecodeLocation(m.location)
-        is Address -> Preview(m.address).noCommand()
     }
 }
 

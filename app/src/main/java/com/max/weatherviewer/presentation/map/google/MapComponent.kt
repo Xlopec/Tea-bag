@@ -1,7 +1,6 @@
 package com.max.weatherviewer.presentation.map.google
 
 import android.content.Context
-import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -45,14 +44,6 @@ fun <S> S.mapModule(preSelectedLocation: Location?): Kodein.Module where S : Fra
 
             component(::loader, ::resolve, ::update, instance())
         }
-    }
-}
-
-@VisibleForTesting
-fun update(m: Message, s: State): UpdateWith<State, Command> {
-    return when (m) {
-        is Message.UpdateCamera -> State(m.location, m.zoom, m.bearing, m.tilt).noCommand()
-        Message.Select -> s command Command.SelectAndQuit(s.location)
     }
 }
 

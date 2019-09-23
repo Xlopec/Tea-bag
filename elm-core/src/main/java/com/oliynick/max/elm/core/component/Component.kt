@@ -263,14 +263,4 @@ private suspend operator fun <C, M> Resolver<C, M>.invoke(commands: Collection<C
     return commands.fold(HashSet(commands.size)) { acc, cmd -> acc.addAll(this(cmd)); acc }
 }
 
-private suspend fun <V> Channel<V>.send(values: Iterable<V>) = values.forEach { v -> send(v) }
-
-/**
- * Retrieves latest element from this [conflated channel][BroadcastChannel]
- *
- * @throws IllegalArgumentException if receiver channel isn't [conflated][Channel.CONFLATED]
- */
-private inline val <S> BroadcastChannel<S>.latest: S
-    get() = requireNotNull(openSubscription().poll()!!) { "What a terrible failure!" }
-
 private fun CoroutineContext.jobOrDefault(): Job = this[Job.Key] ?: Job()
