@@ -21,7 +21,7 @@ import com.max.weatherviewer.presentation.map.google.MapComponent
 import com.max.weatherviewer.presentation.map.google.Message
 import com.max.weatherviewer.presentation.map.google.mapModule
 import com.oliynick.max.elm.core.component.changes
-import kotlinx.android.synthetic.main.map_fragment.*
+import kotlinx.android.synthetic.main.fragment_map.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.map
@@ -53,7 +53,7 @@ class MapFragment(parent: Kodein) : Fragment(), KodeinAware, CoroutineScope {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.map_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
