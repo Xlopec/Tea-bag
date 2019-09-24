@@ -1,6 +1,8 @@
 # TEA Core
 [![Version](https://jitpack.io/v/Xlopec/TEA-core.svg)](https://jitpack.io/#Xlopec/TEA-core)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Build Status](https://travis-ci.org/Xlopec/TEA-core.svg?branch=master)](https://travis-ci.org/Xlopec/TEA-core)
+[![codecov](https://codecov.io/gh/Xlopec/TEA-core/branch/master/graph/badge.svg)](https://codecov.io/gh/Xlopec/TEA-core)
 
 The Elm Architecture implementation in Kotlin for Android.
 
