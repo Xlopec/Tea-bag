@@ -10,14 +10,15 @@ apply from: '../set-compile-args.gradle'
 repositories {
     google()
     jcenter()
+    maven { url 'https://jitpack.io' }
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.max.weatherviewer"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
