@@ -1,0 +1,22 @@
+language: android
+jdk: oraclejdk8
+sudo: false
+
+android:
+  components:
+    - platform-tools
+    - tools
+    - build-tools-26.0.2
+    - android-29
+    - extra-android-m2repository
+
+# script: ./gradlew test && ./gradlew build
+
+jobs:
+  include:
+    - stage: "Tests"
+      name: "Unit Tests"
+      script: ./gradlew testReleaseUnitTest
+    - stage: build
+      name: "Build"
+      script: ./gradlew build
