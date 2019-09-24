@@ -2,9 +2,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: "maven-publish"
 apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: "io.gitlab.arturbosch.detekt"
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'com.github.Xlopec'
+version = '0.0.1-alpha1'
 
 buildscript {
     ext.kotlin_version = '1.3.50'
@@ -30,7 +33,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
-        versionName "0.0.1-alpha1"
+        versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -38,7 +41,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -68,25 +71,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 }
 
 project.afterEvaluate {
-    tasks.findByName("publish").dependsOn("sourcesJar").dependsOn("dokkaJavadoc")
-            .dependsOn("assembleRelease")
-
     tasks.findByName("preReleaseBuild").dependsOn("detekt")
-}
-
-task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaAndroidTask) {
-    outputFormat = 'html'
-    outputDirectory = "$buildDir/javadoc"
-
-    externalDocumentationLink {
-        url = new URL("https://developer.android.com/reference/")
-    }
-
-    packageOptions {
-        // exclude documentation generation for the following package
-        prefix = "com.schindler.sdk.internal"
-        suppress = true
-    }
 }
 
 detekt {
@@ -115,6 +100,15 @@ task formatCode(type: io.gitlab.arturbosch.detekt.Detekt) {
     config = files("$projectDir/detekt-config.yml")
 }
 
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaAndroidTask) {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
+
+    externalDocumentationLink {
+        url = new URL("https://developer.android.com/reference/")
+    }
+}
+
 task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
     classifier = 'javadoc'
     from "$buildDir/javadoc"
@@ -126,25 +120,9 @@ task sourcesJar(type: Jar) {
     exclude "**/Kotlin*"
 }
 
-publishing {
-    publications {
-        library(MavenPublication) {
-
-            group = 'org.example'
-            version = '1.0'
-
-            artifact "$buildDir/outputs/aar/${project.name}-release.aar"
-            artifact sourcesJar
-            artifact javadocJar
-        }
-    }
-
-    repositories {
-        maven {
-            name = 'local repository'
-            url = file "$buildDir/publication"
-        }
-    }
+artifacts {
+    archives javadocJar
+    archives sourcesJar
 }
 
 androidExtensions {
