@@ -16,8 +16,6 @@
 
 package com.oliynick.max.elm.core.component
 
-import android.util.Log
-
 /**
  * Alias for function that returns component's state as string
  *
@@ -38,7 +36,7 @@ typealias Formatter<M, S, C> = (message: M, prevState: S, newState: S, commands:
  * @return ready to use [interceptor][Interceptor]
  */
 inline fun <M : Any, C : Any, S : Any> androidLogger(tag: String, crossinline formatter: Formatter<M, S, C> = ::simpleFormatter): Interceptor<M, S, C> {
-    return { message, prevState, newState, commands -> Log.d(tag, formatter(message, prevState, newState, commands)) }
+    return { message, prevState, newState, commands -> println(formatter(message, prevState, newState, commands)) }
 }
 
 /**

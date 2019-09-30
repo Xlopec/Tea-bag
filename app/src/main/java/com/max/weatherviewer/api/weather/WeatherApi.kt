@@ -3,7 +3,7 @@
 package com.max.weatherviewer.api.weather
 
 import com.google.gson.Gson
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -34,7 +34,7 @@ class WeatherProvider(private val apiKey: String, private val maxCallRate: Int) 
             .build()
 
         Retrofit.Builder()
-            .baseUrl(HttpUrl.parse("http://api.openweathermap.org/data/2.5/")!!)
+            .baseUrl("http://api.openweathermap.org/data/2.5/".toHttpUrlOrNull()!!)
             //.addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
             .addConverterFactory(GsonConverterFactory.create(Gson()))
             .client(client)
