@@ -14,14 +14,13 @@
  *  limitations under the License.
  */
 
-package com.oliynick.max.elm.core.scope
+package com.oliynick.max.elm.core.misc
 
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineScope
+import com.oliynick.max.elm.core.component.Component
+import com.oliynick.max.elm.core.component.invoke
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toCollection
 
-inline fun runBlockingInTestScope(crossinline block: suspend TestCoroutineScope.() -> Unit) {
-    runBlocking { with(TestCoroutineScope(Job())) { block() } }
+suspend fun <I : Any, O : Any> Component<I, O>.invokeCollecting(vararg input: I, elems: Int = input.size): ArrayList<O> {
+    return this(*input).take(elems).toCollection(ArrayList())
 }
-
-

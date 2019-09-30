@@ -16,11 +16,14 @@
 
 package com.oliynick.max.elm.core.component
 
-import com.oliynick.max.elm.core.scope.testScope
+import com.oliynick.max.elm.core.misc.invokeCollecting
+import com.oliynick.max.elm.core.scope.runBlockingInTestScope
 import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collectIndexed
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -73,13 +76,10 @@ class ActorComponentTest {
             }
         }
 
-
         channel.close()
         // stop listening to component changes
         collectorJob.cancel()
-        cancel()
     }
-
 
     @Test
     fun `test when subscribing multiple times the last emitted state is propagated`() = componentTest { component ->
@@ -98,8 +98,6 @@ class ActorComponentTest {
 
         assertEquals("Second check has failed", expectedSecondTime, component.changes().first())
         assertEquals("Second check has failed", expectedSecondTime, component.changes().first())
-
-        cancel()
     }
 
     @Test
@@ -107,15 +105,13 @@ class ActorComponentTest {
         val state = component(RemoveItem(Item("some"))).first()
 
         assertEquals(state.items, emptyList<Item>())
-
-        cancel()
     }
 
     @Test
     fun `test when touching a component after canceling a scope results in exception`() = componentTest { component ->
         val item = Item("some")
 
-        val states = component(AddItem(item)).take(2).toCollection(ArrayList())
+        val states = component.invokeCollecting(AddItem(item), elems = 2)
 
         assertEquals(emptyList<Item>(), states[0].items)
         assertEquals(listOf(item), states[1].items)
@@ -132,12 +128,10 @@ class ActorComponentTest {
     fun `test item addition ordering is correct`() = componentTest { component ->
         val item = Item("some")
 
-        val states = component(AddItem(item)).take(2).toCollection(ArrayList())
+        val states = component.invokeCollecting(AddItem(item), elems = 2)
 
         assertEquals(emptyList<Item>(), states[0].items)
         assertEquals(listOf(item), states[1].items)
-
-        cancel()
     }
 
     @Test
@@ -147,35 +141,18 @@ class ActorComponentTest {
             val state = component.changes().first { it.items.isNotEmpty() }
 
             assertEquals(listOf(Item("some1")), state.items)
-
-            cancel()
         }
 
-    private fun CoroutineScope.testComponent(vararg initalCommand: Command) =
-        component(initial, ::testResolver, ::testUpdate, initialCommands = *initalCommand)
+    private fun CoroutineScope.testComponent(vararg initialCommands: Command) =
+        component(initial, ::testResolver, ::testUpdate, initialCommands = *initialCommands)
 
     /**
      * Creates test scope that emulates [scope][CoroutineScope] that can be [canceled][cancel] for test purposes
      */
-    private fun componentTest(vararg initalCommand: Command, block: suspend CoroutineScope.(component: Component<Message, TodoState>) -> Unit) {
-        runBlocking { testScope().apply { block(testComponent(*initalCommand)) } }
+    private fun componentTest(vararg initialCommands: Command, block: suspend CoroutineScope.(component: Component<Message, TodoState>) -> Unit) {
+        runBlockingInTestScope { block(testComponent(*initialCommands)) }
     }
 
-}
-
-private suspend fun testResolver(cmd: Command): Set<Message> {
-    return when (cmd) {
-        is DoAddItem -> cmd.effect { Updated(from + item) }
-        is DoRemoveItem -> cmd.effect { Updated(from - item) }
-    }
-}
-
-private fun testUpdate(message: Message, state: TodoState): UpdateWith<TodoState, Command> {
-    return when (message) {
-        is Updated -> TodoState(message.items).noCommand()
-        is AddItem -> state command DoAddItem(message.item, state.items)
-        is RemoveItem -> state command DoRemoveItem(message.item, state.items)
-    }
 }
 
 private fun generateHistoricalStates(size: Int = 10): List<TodoState> {

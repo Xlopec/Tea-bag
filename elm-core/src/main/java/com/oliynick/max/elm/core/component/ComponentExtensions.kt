@@ -17,10 +17,8 @@
 package com.oliynick.max.elm.core.component
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /**
@@ -138,12 +136,13 @@ operator fun <M : Any, S : Any> Component<M, S>.invoke(message: M): Flow<S> = th
  * @param producer the producer flow function
  * @param consumer the consumer flow function
  * @param transform function that maps produced states to the flow to be consumed by the consumer function
+ * @return cancelable job to dispose binding
  */
 inline fun <M1 : Any, S1 : Any, M2 : Any, S2 : Any> CoroutineScope.bind(noinline producer: Component<M1, S1>,
                                                                         noinline consumer: Component<M2, S2>,
-                                                                        crossinline transform: (S1) -> Flow<M2>) {
+                                                                        crossinline transform: (S1) -> Flow<M2>): Job {
 
-    launch { producer.changes().collect { s1 -> launch { consumer(transform(s1)).collect() } } }
+    return launch { producer.changes().map { s1 -> transform(s1) }.flattenConcat().flatMapConcat { m2 -> consumer(m2) }.collect() }
 }
 
 /**
