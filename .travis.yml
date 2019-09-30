@@ -35,5 +35,7 @@ jobs:
       name: "Build"
       script: ./gradlew build
 
+if: tag IS present
+
 after_success:
   - ./gradlew :elm-core:jacocoTestReportRelease && bash <(curl -s https://codecov.io/bash) -t $COVERAGE_TOKEN
