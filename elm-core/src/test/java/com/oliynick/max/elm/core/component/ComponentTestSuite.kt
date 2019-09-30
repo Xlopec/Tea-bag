@@ -14,14 +14,11 @@
  *  limitations under the License.
  */
 
-package com.oliynick.max.elm.core.scope
+package com.oliynick.max.elm.core.component
 
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineScope
+import org.junit.runner.RunWith
+import org.junit.runners.Suite
 
-inline fun runBlockingInTestScope(crossinline block: suspend TestCoroutineScope.() -> Unit) {
-    runBlocking { with(TestCoroutineScope(Job())) { block() } }
-}
-
-
+@RunWith(Suite::class)
+@Suite.SuiteClasses(ActorComponentTest::class, ComponentExtensionsTest::class, LogTest::class)
+object ComponentTestSuite

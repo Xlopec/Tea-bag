@@ -14,26 +14,16 @@
  *  limitations under the License.
  */
 
-package com.oliynick.max.elm.core.component
+package com.oliynick.max.elm.core.misc
 
-inline class TodoState(val items: List<Item> = emptyList())
+import com.oliynick.max.elm.core.component.UpdateWith
+import com.oliynick.max.elm.core.component.noCommand
 
-data class Item(val what: String) {
-    init {
-        require(what.isNotBlank() && what.isNotEmpty())
-    }
+@Suppress("RedundantSuspendModifier")
+suspend fun <C> throwingResolver(c: C): Nothing {
+    throw IllegalArgumentException("Unexpected command $c")
 }
 
-sealed class Message
-
-data class AddItem(val item: Item) : Message()
-
-data class Updated(val items: List<Item>) : Message()
-
-data class RemoveItem(val item: Item) : Message()
-
-sealed class Command
-
-data class DoAddItem(val item: Item, val from: List<Item>) : Command()
-
-data class DoRemoveItem(val item: Item, val from: List<Item>) : Command()
+fun messageAsStateUpdate(message: String, @Suppress("UNUSED_PARAMETER") state: String) : UpdateWith<String, Set<String>> {
+    return message.noCommand()
+}

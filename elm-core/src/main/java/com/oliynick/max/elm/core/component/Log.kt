@@ -55,5 +55,5 @@ inline fun <M : Any, C : Any, S : Any> androidLogger(tag: String, crossinline fo
  */
 fun <M : Any, C : Any, S : Any> simpleFormatter(message: M, prevState: S, newState: S, commands: Set<C>): String {
     return "performing transition from $prevState to $newState caused by $message " +
-            " ${if (commands.isEmpty()) "" else "and executing commands ${commands.joinToString()}"}"
+            if (commands.isEmpty()) "without executable commands" else "and executing commands ${commands.joinToString()}"
 }
