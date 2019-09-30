@@ -106,6 +106,7 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaAndroidTask) {
 
     externalDocumentationLink {
         url = new URL("https://developer.android.com/reference/")
+        url = new URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
     }
 }
 
@@ -129,6 +130,10 @@ androidExtensions {
     experimental = true
 }
 
+junitJacoco {
+    jacocoVersion = '0.8.4'
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -142,7 +147,8 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
 
-    testImplementation "org.mockito:mockito-core:2.23.4"
+    testImplementation "io.strikt:strikt-core:0.22.2"
+    testImplementation 'org.robolectric:robolectric:4.3'
 
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 }

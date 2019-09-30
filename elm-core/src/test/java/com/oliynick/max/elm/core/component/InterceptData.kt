@@ -14,14 +14,6 @@
  *  limitations under the License.
  */
 
-package com.oliynick.max.elm.core.scope
+package com.oliynick.max.elm.core.component
 
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineScope
-
-inline fun runBlockingInTestScope(crossinline block: suspend TestCoroutineScope.() -> Unit) {
-    runBlocking { with(TestCoroutineScope(Job())) { block() } }
-}
-
-
+data class InterceptData(val msg: String, val old: String, val new: String, val cmds: Set<String>)

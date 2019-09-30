@@ -89,6 +89,14 @@ typealias Interceptor<M, S, C> = suspend (message: M, prevState: S, newState: S,
 internal typealias ComponentInternal<M, S> = Pair<SendChannel<M>, Flow<S>>
 
 /**
+ * Dependencies holder
+ */
+private data class Dependencies<M, C, S>(inline val initializer: Initializer<S, C>,
+                                         inline val resolver: Resolver<C, M>,
+                                         inline val update: Update<M, S, C>,
+                                         inline val interceptor: Interceptor<M, S, C>)
+
+/**
  * Component is one of the main parts of the [ELM architecture](https://guide.elm-lang.org/architecture/). Component (Runtime)
  * is a stateful part of the application responsible for a specific feature.
  *
@@ -162,64 +170,74 @@ private fun <M, C, S> CoroutineScope.actorComponent(initializer: Initializer<S, 
 
     @UseExperimental(ObsoleteCoroutinesApi::class)
     return this@actorComponent.actor<M>(coroutineContext.jobOrDefault(),
-                                        DEFAULT_ACTOR_BUFFER_CAPACITY.toInt(),
                                         onCompletion = statesChannel::close) {
-        // stores a new state to channel and notifies subscribers about changes
-        suspend fun updateMutating(message: M, state: S): UpdateWith<S, C> {
-            return update(message, state)
-                // we don't want to suspend here
-                .also { (nextState, _) -> statesChannel.offerChecking(nextState) }
-                .also { (nextState, commands) -> interceptor(message, state, nextState, commands) }
-        }
-        // polls messages from collection's iterator and
-        // computes next states until collection is empty
-        suspend fun compute(state: S, it: Iterator<M>): S {
-            val message = it.nextOrNull() ?: return state
 
-            val (nextState, commands) = updateMutating(message, state)
+        val args = Dependencies(initializer, resolver, update, interceptor)
 
-            return compute(compute(nextState, it), resolver(commands).iterator())
-        }
-        // polls messages from channel's iterator and computes subsequent component's states.
-        // Before polling a message from the channel it tries to computes all
-        // subsequent states produced by resolved commands
-        tailrec suspend fun compute(state: S, it: ChannelIterator<M>): S {
-            val message = it.nextOrNull() ?: return state
-
-            val (nextState, commands) = updateMutating(message, state)
-
-            return compute(compute(nextState, resolver(commands).iterator()), it)
-        }
-
-        compute(computeNonTransientState(initializer, resolver, update, statesChannel), channel.iterator())
+        compute(computeNonTransientState(args, statesChannel), channel.iterator(), args, statesChannel)
 
     } to statesChannel.asFlow()
+}
+
+/**
+ * Stores a new state to channel and notifies subscribers about changes
+ */
+private suspend fun <M, C, S> updateMutating(message: M, state: S, dependencies: Dependencies<M, C, S>, states: BroadcastChannel<S>): UpdateWith<S, C> {
+
+    return dependencies.update(message, state)
+        // we don't want to suspend here
+        .also { (nextState, _) -> states.offerChecking(nextState) }
+        .also { (nextState, commands) -> dependencies.interceptor(message, state, nextState, commands) }
+}
+
+/**
+ * Polls messages from channel's iterator and computes subsequent component's states.
+ * Before polling a message from the channel it tries to computes all
+ * subsequent states produced by resolved commands
+ */
+private tailrec suspend fun <M, C, S> compute(state: S,
+                                              it: ChannelIterator<M>,
+                                              dependencies: Dependencies<M, C, S>,
+                                              states: BroadcastChannel<S>): S {
+
+    val message = it.nextOrNull() ?: return state
+
+    val (nextState, commands) = updateMutating(message, state, dependencies, states)
+
+    return compute(compute(nextState, dependencies.resolver(commands).iterator(), dependencies, states), it, dependencies, states)
+}
+
+/**
+ * Polls messages from collection's iterator and computes next states until collection is empty
+ */
+private suspend fun <M, C, S> compute(state: S, it: Iterator<M>, dependencies: Dependencies<M, C, S>, states: BroadcastChannel<S>): S {
+    val message = it.nextOrNull() ?: return state
+
+    val (nextState, commands) = updateMutating(message, state, dependencies, states)
+
+    return compute(compute(nextState, it, dependencies, states), dependencies.resolver(commands).iterator(), dependencies, states)
 }
 
 /**
  * Loads initial state and set of commands, after that computes the sequence of states
  * until non-transient one is found
  * */
-private suspend fun <M, C, S> computeNonTransientState(initializer: Initializer<S, C>,
-                                                       resolver: Resolver<C, M>,
-                                                       update: Update<M, S, C>,
-                                                       statesChannel: BroadcastChannel<S>): S {
+private suspend fun <M, C, S> computeNonTransientState(dependencies: Dependencies<M, C, S>, statesChannel: BroadcastChannel<S>): S {
 
     suspend fun compute(state: S, it: Iterator<M>): S {
         val message = it.nextOrNull() ?: return state
 
-        val (nextState, commands) = update(message, state)
+        val (nextState, commands) = dependencies.update(message, state)
             // we don't want to suspend here
             .also { (nextState, _) -> statesChannel.offerChecking(nextState) }
 
-        return compute(compute(nextState, it), resolver(commands).iterator())
+        return compute(compute(nextState, it), dependencies.resolver(commands).iterator())
     }
 
-    val (initialState, initialCommands) = initializer()
+    val (initialState, initialCommands) = dependencies.initializer()
+        .also { (initialState, _) -> statesChannel.offerChecking(initialState) }
 
-    statesChannel.offerChecking(initialState)
-
-    return compute(initialState, resolver(initialCommands).iterator())
+    return compute(initialState, dependencies.resolver(initialCommands).iterator())
 }
 
 /**
