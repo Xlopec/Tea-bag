@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.oliynick.max.elm.time.travel.protocol
 
 import io.protostuff.LinkedBuffer
@@ -6,23 +8,10 @@ import io.protostuff.Schema
 import io.protostuff.runtime.RuntimeSchema
 import java.util.*
 
-sealed class Action
-
-data class ApplyCommands(val commands: List<Any>) : Action() {
-
-    constructor(command: Any) : this(listOf(command))
-
-    init {
-        require(commands.isNotEmpty())
-    }
-}
-
-class SendPacket private constructor(
-    val id: UUID,
-    val component: String,
-    val clazz: Class<out Action>,
-    val actionData: ByteArray
-) {
+class SendPacket private constructor(val id: UUID,
+                                     val component: String,
+                                     val instanceClass: Class<out Action>,
+                                     val instance: ByteArray) {
     companion object {
 
         private val buffer by lazy { LinkedBuffer.allocate(512) }
@@ -30,10 +19,10 @@ class SendPacket private constructor(
 
         suspend fun pack(component: String, action: Action): ByteArray {
 
-            val schema = RuntimeSchema.getSchema(SendPacket::class.java)
+            val schema = schema<SendPacket>()
+            val schema1 = schema(action::class.java)
 
             try {
-                val schema1 = RuntimeSchema.getSchema(action::class.java) as Schema<Action>
                 val packet = SendPacket(
                     UUID.randomUUID(),
                     component,
@@ -47,44 +36,31 @@ class SendPacket private constructor(
                 buffer1.clear()
             }
         }
-
-
     }
 }
 
-class ReceivePacket private constructor(
-    val id: UUID,
-    val component: String,
-    val action: Action
-) {
+class ReceivePacket private constructor(val id: UUID, val component: String, val action: Action) {
+
     companion object {
 
         suspend fun unpack(packet: ByteArray): ReceivePacket {
-
-            val wrapperSchema = RuntimeSchema.getSchema(SendPacket::class.java)
-
-            val fooParsed = wrapperSchema.newMessage()
-
-            ProtostuffIOUtil.mergeFrom(packet, fooParsed, wrapperSchema)
-
-            val innerSchema = RuntimeSchema.getSchema(fooParsed.clazz) as Schema<Action>
-
-            val lol = innerSchema.newMessage()
-
-            ProtostuffIOUtil.mergeFrom(fooParsed.actionData, lol, innerSchema)
-
-            println("Lol " + lol)
-
-            return ReceivePacket(fooParsed.id, fooParsed.component, lol)
+            return schema<SendPacket>()
+                .parse(packet)
+                .run { ReceivePacket(id, component, schema(instanceClass).parse(instance)) }
         }
     }
 }
 
+private suspend fun <T> Schema<@JvmSuppressWildcards T>.parse(data: ByteArray): T {
+    return newMessage().also { t ->
+        ProtostuffIOUtil.mergeFrom(data, t, this)
+    }
+}
 
-data class Wrapper(val clazz: Class<*>, val data: ByteArray)
+private inline fun <reified T> schema(): Schema<@JvmSuppressWildcards T> {
+    return RuntimeSchema.getSchema(T::class.java)
+}
 
-data class SomeTestString(val value: String)
-
-data class SomeTestState(val string: SomeTestString)
-
-data class SomeTestCommand(val str: SomeTestString)
+private fun <T> schema(clazz: Class<out T>): Schema<T> {
+    return RuntimeSchema.getSchema(clazz) as Schema<T>
+}
