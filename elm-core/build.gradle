@@ -9,9 +9,7 @@ version '0.0.2-alpha1'
 buildscript {
 
     ext {
-        kotlin_version = '1.3.50'
         detect_version = '1.0.0-RC16'
-        coroutines_version = '1.3.0'
     }
 
     repositories {
@@ -22,19 +20,6 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.18"
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detect_version"
-    }
-}
-
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-    kotlinOptions {
-        // will disable warning about usage of experimental Kotlin features
-        freeCompilerArgs = [
-                '-Xuse-experimental=kotlin.ExperimentalUnsignedTypes',
-                '-Xuse-experimental=kotlin.Experimental',
-                '-Xuse-experimental=kotlinx.coroutines.FlowPreview',
-                '-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi',
-                '-XXLanguage:+NewInference'
-        ]
     }
 }
 

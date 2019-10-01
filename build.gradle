@@ -1,10 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = '1.3.50'
-    ext.playServices = "17.0.0"
-    ext.navigation = "2.2.0-alpha03"
-    ext.lifecycle = '1.1.1'
-    ext.coroutines_version = '1.3.0'
+
+    ext {
+        kotlin_version = '1.3.50'
+        playServices = "17.0.0"
+        navigation = "2.2.0-alpha03"
+        lifecycle = '1.1.1'
+        ktor_version = "1.2.4"
+        coroutines_version = '1.3.0'
+    }
 
     repositories {
         mavenLocal()
@@ -12,6 +16,7 @@ buildscript {
         jcenter()
         maven { url 'https://jitpack.io' }
         maven { url "https://plugins.gradle.org/m2/" }
+        maven { url 'https://kotlin.bintray.com/ktor' }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:3.5.0"
@@ -38,8 +43,28 @@ allprojects {
         jcenter()
 
     }
+
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+project.afterEvaluate {
+
+    allprojects { project ->
+
+        project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+            kotlinOptions {
+                // will disable warning about usage of experimental Kotlin features
+                freeCompilerArgs = [
+                        '-Xuse-experimental=kotlin.ExperimentalUnsignedTypes',
+                        '-Xuse-experimental=kotlin.Experimental',
+                        '-Xuse-experimental=kotlinx.coroutines.FlowPreview',
+                        '-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi',
+                        '-XXLanguage:+NewInference'
+                ]
+            }
+        }
+    }
 }

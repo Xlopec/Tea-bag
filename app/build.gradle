@@ -40,19 +40,6 @@ android {
     }
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-    kotlinOptions {
-        // will disable warning about usage of experimental Kotlin features
-        freeCompilerArgs = [
-                '-Xuse-experimental=kotlin.ExperimentalUnsignedTypes',
-                '-Xuse-experimental=kotlin.Experimental',
-                '-Xuse-experimental=kotlinx.coroutines.FlowPreview',
-                '-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi',
-                '-XXLanguage:+NewInference'
-        ]
-    }
-}
-
 androidExtensions {
     experimental = true
 }

@@ -1,18 +1,12 @@
 apply plugin: 'kotlin'
 apply plugin: 'application'
 
-group 'com.github.Xlopec.time.travel'
-version '0.0.1'
+sourceCompatibility = "8"
+targetCompatibility = "8"
 
-mainClassName = 'com.oliynick.max.elm.time.travel.ApplicationKt'
+mainClassName = 'com.oliynick.max.elm.time.travel.ProxyComponentKt'
 
 buildscript {
-
-    ext {
-        kotlin_version = "1.3.50"
-        logback_version = "1.2.1"
-        ktor_version = "1.2.4"
-    }
 
     repositories {
         jcenter()
@@ -27,32 +21,21 @@ buildscript {
 repositories {
     mavenLocal()
     jcenter()
-    maven { url 'https://kotlin.bintray.com/ktor' }
 }
 
 sourceCompatibility = "8"
 targetCompatibility = "8"
 
-sourceSets {
-    main {
-        resources {
-            srcDir('resources')
-        }
-    }
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':elm-core')
+    implementation project(':elm-time-travel-protocol')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    implementation "ch.qos.logback:logback-classic:$logback_version"
-    implementation "io.ktor:ktor-server-core:$ktor_version"
-    implementation "io.ktor:ktor-server-netty:$ktor_version"
-    implementation "io.ktor:ktor-locations:$ktor_version"
-    implementation "io.ktor:ktor-gson:$ktor_version"
-    implementation 'org.kodein.di:kodein-di-generic-jvm:6.1.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
 
-    testImplementation "io.ktor:ktor-server-tests:$ktor_version"
+    implementation "io.ktor:ktor-client-websockets:$ktor_version"
+    implementation "io.ktor:ktor-client-okhttp:$ktor_version"
+    implementation "io.ktor:ktor-gson:$ktor_version"
 }

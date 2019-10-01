@@ -15,3 +15,4 @@
 .externalNativeBuild
 androidx_prebuilts/
 out/
+/.idea/$PRODUCT_WORKSPACE_FILE$
