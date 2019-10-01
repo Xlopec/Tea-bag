@@ -4,41 +4,26 @@ import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.core.component.androidLogger
 import com.oliynick.max.elm.core.component.component
 import com.oliynick.max.elm.core.component.noCommand
-import com.oliynick.max.elm.time.travel.protocol.ApplyCommands
-import com.oliynick.max.elm.time.travel.protocol.Packet
-import com.oliynick.max.elm.time.travel.protocol.gson
+import com.oliynick.max.elm.time.travel.protocol.*
 import io.ktor.client.HttpClient
 import io.ktor.client.features.websocket.WebSockets
 import io.ktor.client.features.websocket.ws
 import io.ktor.http.HttpMethod
 import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.readBytes
-import io.ktor.http.cio.websocket.readText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
+
+
 data class Settings(val name: String,
                     val host: String = "localhost",
                     val port: Int = 8080)
 
-
-class ProxyComponent<M, S>(private val scope: CoroutineScope,
-                           private val delegate: Component<M, S>) : Component<M, S> {
-
-    init {
-
-    }
-
-    override fun invoke(messages: Flow<M>): Flow<S> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-}
-
-fun <M : Any, S : Any> CoroutineScope.component(settings: Settings, component: Component<M, S>): Component<M, S> {
+inline fun <reified M : Any, S : Any> CoroutineScope.component(settings: Settings, noinline component: Component<M, S>): Component<M, S> {
 
     launch {
         val client = HttpClient {
@@ -51,19 +36,22 @@ fun <M : Any, S : Any> CoroutineScope.component(settings: Settings, component: C
             port = settings.port
         ) {
 
-           // launch { component.changes().collect { s -> send(gson.toJson(Packet(UUID.randomUUID().toString(), "update", s))) } }
+           // launch { component.changes().collect { s -> send(gson.toJson(SendPacket(UUID.randomUUID().toString(), "update", s))) } }
 
             for (frame in incoming) {
                 when (frame) {
-                    is Frame.Text -> {
-                        val text = frame.readText()
+                    is Frame.Binary -> {
+                        val bytes = frame.readBytes()
 
-                        println(text)
+                        println(bytes)
 
-                        val packet = gson.fromJson(text, Packet::class.java)
+                        val packet = ReceivePacket.unpack(bytes)
+
+                        println(packet)
 
                         when(val action = packet.action) {
                             is ApplyCommands -> {
+
                                 val message = action.commands as List<M>
 
                                 val s = component.invoke(message).first()
@@ -71,9 +59,7 @@ fun <M : Any, S : Any> CoroutineScope.component(settings: Settings, component: C
                                 println(s)
                             }
                         }
-
                     }
-                    is Frame.Binary -> println(frame.readBytes())
                 }
             }
         }
@@ -82,7 +68,7 @@ fun <M : Any, S : Any> CoroutineScope.component(settings: Settings, component: C
     return component
 }
 
-private fun <M, S> Component<M, S>.invoke(args: List<M>): Flow<S> {
+fun <M, S> Component<M, S>.invoke(args: List<M>): Flow<S> {
     return this(args.asFlow())
 }
 
@@ -108,10 +94,10 @@ fun main() {
 
         component(
             Settings("webSocketComponent"),
-            component<String, String, String>(
-                "",
+            component<SomeTestCommand, String, SomeTestState>(
+                SomeTestState(SomeTestString("initial")),
                 { emptySet() },
-                { message, _ -> message.noCommand() },
+                { message, state -> SomeTestState(message.str).noCommand() },
                 androidLogger("Test"))
         )
 

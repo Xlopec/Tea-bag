@@ -2,8 +2,9 @@ package com.oliynick.max.elm.time.travel.app
 
 import com.oliynick.max.elm.time.travel.app.exception.installErrorInterceptors
 import com.oliynick.max.elm.time.travel.protocol.ApplyCommands
-import com.oliynick.max.elm.time.travel.protocol.Packet
-import com.oliynick.max.elm.time.travel.protocol.gson
+import com.oliynick.max.elm.time.travel.protocol.SendPacket
+import com.oliynick.max.elm.time.travel.protocol.SomeTestCommand
+import com.oliynick.max.elm.time.travel.protocol.SomeTestString
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.features.CallLogging
@@ -18,7 +19,8 @@ import io.ktor.server.netty.EngineMain
 import io.ktor.websocket.webSocket
 import org.slf4j.event.Level
 import java.time.Duration
-import java.util.*
+
+
 
 fun main(args: Array<String>) = EngineMain.main(args)
 
@@ -48,9 +50,33 @@ fun Application.module(testing: Boolean = false) {
 
         webSocket("/") {
 
-            val json = gson.toJson(Packet(UUID.randomUUID(), "apply_message", ApplyCommands(listOf("abc"))))
 
-            send(json)
+
+           /* val schema = RuntimeSchema.getSchema(Wrapper::class.java)
+
+            val buffer = LinkedBuffer.allocate(512)
+
+            // ser
+            val protostuff: ByteArray
+            try {
+                val buffer1 = LinkedBuffer.allocate(512)
+
+                val schema1 = RuntimeSchema.getSchema(SomeTestCommand::class.java)
+
+               val cmd = SomeTestCommand(SomeTestString("something"))
+
+                protostuff = ProtostuffIOUtil.toByteArray(Wrapper(SomeTestCommand::class.java, ProtostuffIOUtil.toByteArray(cmd, schema1, buffer1)), schema, buffer)
+            } finally {
+                buffer.clear()
+            }*/
+
+            val packet = SendPacket.pack("to some component", ApplyCommands(SomeTestCommand(SomeTestString("something"))))
+
+            send(packet)
+
+            //val json = gson.toJson(SendPacket(UUID.randomUUID(), "apply_message", ApplyCommands(SomeTestCommand(SomeTestString("something")))))
+
+            //send(json)
 
             for (frame in incoming) {
                 when (frame) {
