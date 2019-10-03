@@ -1,0 +1,60 @@
+buildscript {
+
+    ext {
+        logback_version = "1.2.1"
+    }
+
+    repositories {
+        jcenter()
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+plugins {
+    id 'kotlin'
+    id 'org.jetbrains.intellij' version '0.4.10'
+}
+
+group 'com.github.Xlopec.time.travel'
+version '0.0.1'
+sourceCompatibility = 1.8
+
+sourceSets {
+    main {
+        resources {
+            srcDir("resources")
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(path: ':elm-core', configuration: 'default')
+    implementation project(path: ':elm-time-travel-protocol', configuration: 'default')
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
+    implementation "ch.qos.logback:logback-classic:$logback_version"
+    implementation "io.ktor:ktor-server-core:$ktor_version"
+    implementation "io.ktor:ktor-server-netty:$ktor_version"
+    implementation "io.ktor:ktor-locations:$ktor_version"
+    implementation "io.ktor:ktor-websockets:$ktor_version"
+    implementation 'org.kodein.di:kodein-di-generic-jvm:6.1.0'
+
+    testImplementation "io.ktor:ktor-server-tests:$ktor_version"
+}
+
+intellij {
+    version '2019.1'
+}
+
+patchPluginXml {
+    changeNotes """
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>"""
+}
