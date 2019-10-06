@@ -1,21 +1,21 @@
 package com.oliynick.max.elm.time.travel.app.misc
 
-import com.intellij.openapi.vfs.VirtualFile
 import java.awt.Component
+import java.io.File
 import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.ListCellRenderer
 
-class VirtualFileCellRenderer : JLabel(), ListCellRenderer<VirtualFile> {
+class FileCellRenderer : JLabel(), ListCellRenderer<File> {
 
     init {
         isOpaque = true
     }
 
-    override fun getListCellRendererComponent(list: JList<out VirtualFile>, country: VirtualFile, index: Int,
+    override fun getListCellRendererComponent(list: JList<out File>, value: File, index: Int,
                                               isSelected: Boolean, cellHasFocus: Boolean): Component {
 
-        text = country.path
+        text = value.path
 
         if (isSelected) {
             background = list.selectionBackground

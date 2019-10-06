@@ -34,10 +34,6 @@ fun main() {
     println(anal)
 }
 
-fun Primitive<*>.update(with: String) {
-
-}
-
 fun analyze(obj: Any): Complex {
 
     fun analyzeField(field: Field, of: Any): Leaf {

@@ -14,7 +14,6 @@ import io.ktor.http.cio.websocket.*
 import io.ktor.locations.Locations
 import io.ktor.request.path
 import io.ktor.routing.routing
-import io.ktor.server.netty.EngineMain
 import io.ktor.websocket.webSocket
 import org.slf4j.event.Level
 import java.io.File
@@ -25,7 +24,10 @@ import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
 
 
-fun main(args: Array<String>) = EngineMain.main(args)
+
+fun main(args: Array<String>) /*= EngineMain.main(args)*/ {
+
+}
 
 fun Application.module(testing: Boolean = false) {
 
@@ -90,7 +92,7 @@ fun Application.module(testing: Boolean = false) {
     }
 }
 
-private fun Any.updateStringFieldTo(value: String) {
+ fun Any.updateStringFieldTo(value: String) {
 
     fun updateField(inside: Any, field: Field) {
         if (field.type.isAssignableFrom(String::class.java)) {

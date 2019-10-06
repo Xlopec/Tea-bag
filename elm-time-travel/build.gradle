@@ -4,7 +4,7 @@ apply plugin: 'application'
 sourceCompatibility = "8"
 targetCompatibility = "8"
 
-mainClassName = 'com.oliynick.max.elm.time.travel.ProxyComponentKt'
+mainClassName = 'com.oliynick.max.elm.time.travel.RunnerKt'
 
 buildscript {
 
@@ -28,8 +28,8 @@ targetCompatibility = "8"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':elm-core')
-    implementation project(':elm-time-travel-protocol')
+    implementation project(path: ':elm-core', configuration: 'default')
+    implementation project(path: ':elm-time-travel-protocol', configuration: 'default')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 

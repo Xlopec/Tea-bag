@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 
-
 data class Settings(val name: String,
                     val host: String = "localhost",
                     val port: Int = 8080)
@@ -96,17 +95,3 @@ fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
         }
     }
 
-fun main() {
-    runBlocking {
-
-        component(
-            Settings("webSocketComponent"),
-            component<SomeTestCommand, String, SomeTestState>(
-                SomeTestState(SomeTestString("initial")),
-                { emptySet() },
-                { message, state -> SomeTestState(message.str).noCommand() },
-                androidLogger("Test"))
-        )
-
-    }
-}

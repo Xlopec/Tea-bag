@@ -1,5 +1,9 @@
-package com.oliynick.max.elm.time.travel.app
+package com.oliynick.max.elm.time.travel.app.misc
 
+import com.oliynick.max.elm.time.travel.app.IntPrimitive
+import com.oliynick.max.elm.time.travel.app.LevelNode
+import com.oliynick.max.elm.time.travel.app.ObjectNode
+import com.oliynick.max.elm.time.travel.app.StringPrimitive
 import java.awt.Component
 import javax.swing.JLabel
 import javax.swing.JTree
@@ -18,7 +22,7 @@ class ObjectTreeRenderer : JLabel(), TreeCellRenderer {
         hasFocus: Boolean
     ): Component {
 
-        val description = when (val obj = (value as DefaultMutableTreeNode).userObject as ObjectNode) {
+        val description = when (val obj = (value as DefaultMutableTreeNode).userObject as? ObjectNode ?: return this) {
             is LevelNode -> obj.type.typeName
             is IntPrimitive -> "Int: ${obj.value}"
             is StringPrimitive -> "String: ${obj.value}"

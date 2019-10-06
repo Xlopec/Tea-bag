@@ -1,131 +1,166 @@
 package com.oliynick.max.elm.time.travel.app
 
-import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.oliynick.max.elm.core.component.androidLogger
-import com.oliynick.max.elm.core.component.component
-import com.oliynick.max.elm.time.travel.app.editor.*
-import com.oliynick.max.elm.time.travel.app.misc.DiffCallback
-import com.oliynick.max.elm.time.travel.app.misc.DiffingListModel
-import com.oliynick.max.elm.time.travel.app.misc.VirtualFileCellRenderer
-import com.oliynick.max.elm.time.travel.app.misc.addOnClickListener
-import kotlinx.coroutines.*
+import com.oliynick.max.elm.core.component.Component
+import com.oliynick.max.elm.time.travel.app.misc.*
+import com.oliynick.max.elm.time.travel.app.plugin.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.launch
+import java.awt.event.MouseEvent
+import java.io.File
 import javax.swing.*
+import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
+import java.awt.Component as AwtComponent
 
-@UseExperimental(InternalCoroutinesApi::class)
-class ToolWindowView(private val project: Project) {
+class ToolWindowView(private val project: Project,
+                     private val scope: CoroutineScope,
+                     private val component: Component<PluginMessage, PluginState>,
+                     private val uiEvents: Channel<PluginMessage>) : CoroutineScope by scope {
 
     private companion object {
-        val FILE_CHOOSER_DESCRIPTOR: FileChooserDescriptor =
+        val CHOOSER_DESCRIPTOR: FileChooserDescriptor =
             FileChooserDescriptor(true, true, false, false, false, true)
                 .withFileFilter { it.extension == "class" || it.isDirectory }
     }
 
     private lateinit var commandsTree: JTree
     private lateinit var panel: JPanel
-    private lateinit var directoriesList: JList<VirtualFile>
+    private lateinit var directoriesList: JList<File>
     private lateinit var removeDirectoryButton: JButton
     private lateinit var addDirectoryButton: JButton
     private lateinit var startButton: JButton
     private lateinit var transientStateProgress: JProgressBar
 
-    object VirtualFileDiffCallback : DiffCallback<VirtualFile, VirtualFile> {
-        override fun areContentsTheSame(oldItem: VirtualFile, newItem: VirtualFile): Boolean = oldItem == newItem
-        override fun areItemsTheSame(oldItem: VirtualFile, newItem: VirtualFile): Boolean = oldItem.path == newItem.path
-    }
-
-    private val directoriesListModel = DiffingListModel(VirtualFileDiffCallback)
+    private val directoriesListModel = DiffingListModel(FileDiffCallback)
+    private val commandsListModel = DiffingListModel(CommandsDiffCallback)
 
     val root: JPanel get() = panel
 
     init {
 
-        val uiEvents = Channel<PluginMessage>()
-
-        directoriesList.cellRenderer = VirtualFileCellRenderer()
+        directoriesList.cellRenderer = FileCellRenderer()
         directoriesList.model = directoriesListModel
 
-        addDirectoryButton.addOnClickListener {
-            FileChooser.chooseFiles(FILE_CHOOSER_DESCRIPTOR, project, null, null) { files ->
-                uiEvents.offer(AddFiles(files))
-            }
-        }
-
-        removeDirectoryButton.addOnClickListener {
-            uiEvents.offer(RemoveFiles(directoriesList.selectedValuesList))
-        }
-
-        startButton.addOnClickListener {
-            uiEvents.offer(StartServer)
-        }
-
-        val a = A("max", Compl(IntB(124), StringB("kek"), 1488))
-
         commandsTree.cellRenderer = ObjectTreeRenderer()
-        commandsTree.model = DefaultTreeModel(a.toJTree())
 
-        GlobalScope.launch {
-            val component = component(
-                Stopped(Settings(ServerSettings())),
-                ::resolve,
-                ::update,
-                androidLogger("Plugin Component")
-            )
+        /*
+        wokrs
+        val listOf = listOf(A("max", Compl(IntB(124), StringB("kek"), 1488)), IntB(124),
+            StringB("kek"))
 
-            component(uiEvents.consumeAsFlow()).collect { state ->
-                withContext(Dispatchers.Main) {
-                    render(state, uiEvents)
+        val nodes = listOf.map { it.toJTree() }
+
+        val root = DefaultMutableTreeNode("Root", true)
+
+        nodes.forEach { root.add(it) }
+
+        commandsTree.isRootVisible = false
+        commandsTree.model = DefaultTreeModel(root)*/
+
+
+
+      //  commandsTree.cellRenderer = ObjectTreeRenderer()
+      //  commandsTree.model = DefaultTreeModel(a.toJTree())
+
+        launch {
+            component(uiEvents.consumeAsFlow()).collect { state -> render(state, uiEvents) }
+        }
+
+        /*launch {
+            component.changes().collect { state ->
+
+                if (state.isTransient) {
+                    ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Loh", false) {
+
+                        override fun run(indicator: ProgressIndicator) {
+                            indicator.isIndeterminate = true
+
+                            //println("Thread ${Thread.currentThread()}"); Thread.sleep(5000L)
+                        }
+
+                    })
                 }
             }
-        }
+        }*/
     }
 
     private fun render(state: PluginState, messages: Channel<PluginMessage>) {
         directoriesListModel.swap(state.settings.classFiles)
+        transientStateProgress.isVisible = state.isTransient
 
         when (state) {
-            is Stopped -> render(state)
+            is Stopped -> render(state, messages)
             is Starting -> render(state)
-            is Running -> render(state)
+            is Started -> render(state, messages)
             is Stopping -> render(state)
-        }
+        }.safe
     }
 
-    private fun render(state: Stopped) {
+    private fun render(state: Stopped, messages: Channel<PluginMessage>) {
         startButton.text = "Start"
-        startButton.isEnabled = state.canStart
-        removeDirectoryButton.isEnabled = state.settings.classFiles.isNotEmpty()
-        transientStateProgress.isVisible = false
+
+        if (state.canStart) {
+            startButton.setOnClickListenerEnabling { messages.offer(StartServer) }
+        } else {
+            startButton.removeMouseListenersDisabling()
+        }
+
+        removeDirectoryButton.setOnClickListenerEnabling {
+            messages.offer(RemoveFiles(directoriesList.selectedValuesList))
+        }
+
+        addDirectoryButton.setOnClickListenerEnabling {
+            project.chooseFiles(CHOOSER_DESCRIPTOR) { files -> messages.offer(AddFiles(files.map { File(it.path) })) }
+        }
     }
 
     private fun render(state: Starting) {
         startButton.text = "Starting"
-        startButton.isEnabled = false
-        removeDirectoryButton.isEnabled = false
-        addDirectoryButton.isEnabled = false
-        transientStateProgress.isVisible = true
+        startButton.removeMouseListenersDisabling()
+
+        removeDirectoryButton.removeMouseListenersDisabling()
+        addDirectoryButton.removeMouseListenersDisabling()
     }
 
-    private fun render(state: Running) {
+    private fun render(state: Started, messages: Channel<PluginMessage>) {
         startButton.text = "Stop"
-        startButton.isEnabled = true
-        removeDirectoryButton.isEnabled = false
-        addDirectoryButton.isEnabled = false
-        transientStateProgress.isVisible = false
+        startButton.setOnClickListenerEnabling { messages.offer(StopServer) }
+
+        removeDirectoryButton.removeMouseListenersDisabling()
+        addDirectoryButton.removeMouseListenersDisabling()
+
+        val nodes = state.debugState.commandNodes.map { it.toJTree() }
+
+        val root = DefaultMutableTreeNode("Root", true)
+
+        nodes.forEach { root.add(it) }
+
+        commandsTree.model = DefaultTreeModel(root)
     }
 
     private fun render(state: Stopping) {
         startButton.text = "Stopping"
-        startButton.isEnabled = false
-        removeDirectoryButton.isEnabled = false
-        addDirectoryButton.isEnabled = false
-        transientStateProgress.isVisible = true
+        startButton.removeMouseListenersDisabling()
+
+        removeDirectoryButton.removeMouseListenersDisabling()
+        addDirectoryButton.removeMouseListenersDisabling()
     }
 
+}
+
+private val PluginState.isTransient inline get() = this is Starting || this is Stopping
+
+private fun AwtComponent.setOnClickListenerEnabling(l: (MouseEvent) -> Unit) {
+    setOnClickListener(l)
+    isEnabled = true
+}
+
+private fun AwtComponent.removeMouseListenersDisabling() {
+    removeMouseListeners()
+    isEnabled = false
 }

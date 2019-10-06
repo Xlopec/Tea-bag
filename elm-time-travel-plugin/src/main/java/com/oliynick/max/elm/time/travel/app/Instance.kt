@@ -27,16 +27,9 @@ data class StringB(val value: String)
 
 data class Compl(val intb: IntB, val strB: StringB, val i: Int)
 
-fun main() {
 
-    val a = A("max", Compl(IntB(124), StringB("kek"), 1488))
 
-    val anal = analyze(a)
-
-    println(anal)
-}
-
-fun Any.toJTree(): DefaultMutableTreeNode {
+/*fun Any.toJTree(): DefaultMutableTreeNode {
 
     fun fillJTree(node: ObjectNode, parent: DefaultMutableTreeNode) {
         val current = DefaultMutableTreeNode(node)
@@ -49,13 +42,30 @@ fun Any.toJTree(): DefaultMutableTreeNode {
         }
     }
 
-    val analyzed = analyze(this)
+    val analyzed = traverse(this)
 
     return DefaultMutableTreeNode(analyzed, true)
         .also { root -> analyzed.value.forEach { node -> fillJTree(node, root) } }
+}*/
+
+fun LevelNode.toJTree(): DefaultMutableTreeNode {
+
+    fun fillJTree(node: ObjectNode, parent: DefaultMutableTreeNode) {
+        val current = DefaultMutableTreeNode(node)
+            .also(parent::add)
+
+        if (node is LevelNode) {
+            for (j in node.value) {
+                fillJTree(j, current)
+            }
+        }
+    }
+
+    return DefaultMutableTreeNode(this, true)
+        .also { root -> value.forEach { node -> fillJTree(node, root) } }
 }
 
-fun analyze(obj: Any): LevelNode {
+fun Any.traverse(): LevelNode {
 
     fun analyzeField(field: Field, of: Any): ObjectNode {
         field.isAccessible = true
@@ -80,14 +90,14 @@ fun analyze(obj: Any): LevelNode {
         return LevelNode(value, field.type, leafs)
     }
 
-    val leafs = obj::class.memberProperties
+    val leafs = this::class.memberProperties
         .asSequence()
         .map { property -> property.javaField }
         .filterNotNull()
-        .map { analyzeField(it, obj) }
+        .map { analyzeField(it, this) }
         .toList()
 
-    return LevelNode(obj, obj::class.java, leafs)
+    return LevelNode(this, this::class.java, leafs)
 }
 
 private val primitives = setOf(

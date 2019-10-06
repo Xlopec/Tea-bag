@@ -1,9 +1,13 @@
 package com.oliynick.max.elm.time.travel.app.misc
 
-import com.oliynick.max.elm.time.travel.app.DefaultMouseListener
 import java.awt.Component
 import java.awt.event.MouseEvent
 
-inline fun Component.addOnClickListener(crossinline l: (MouseEvent) -> Unit) {
+inline fun Component.setOnClickListener(crossinline l: (MouseEvent) -> Unit) {
+    removeMouseListeners()
     addMouseListener(object : DefaultMouseListener { override fun mouseClicked(e: MouseEvent) = l(e) })
+}
+
+fun Component.removeMouseListeners() {
+    mouseListeners.forEach(this::removeMouseListener)
 }

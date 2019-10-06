@@ -5,7 +5,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Collectors
 
-internal class FileSystemClassLoader(files: Set<File>) : ClassLoader() {
+internal class FileSystemClassLoader(files: Collection<File>) : ClassLoader() {
 
     private companion object {
         const val CLASS_EXTENSION = "class"
@@ -13,7 +13,7 @@ internal class FileSystemClassLoader(files: Set<File>) : ClassLoader() {
 
     constructor(first: File, vararg other: File) : this(setOf(first, *other))
 
-    private val files = files.map { file -> file.children() }.flatten()
+    private val files = files.mapTo(HashSet()) { file -> file.children() }.flatten()
 
     override fun findClass(name: String): Class<*> {
         return fromFile(name)

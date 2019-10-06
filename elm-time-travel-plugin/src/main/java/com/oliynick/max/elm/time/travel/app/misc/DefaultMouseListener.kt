@@ -1,4 +1,4 @@
-package com.oliynick.max.elm.time.travel.app
+package com.oliynick.max.elm.time.travel.app.misc
 
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
