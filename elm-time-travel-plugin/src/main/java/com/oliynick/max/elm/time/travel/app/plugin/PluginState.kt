@@ -1,5 +1,6 @@
 package com.oliynick.max.elm.time.travel.app.plugin
 
+import com.oliynick.max.elm.time.travel.app.Instance
 import com.oliynick.max.elm.time.travel.app.LevelNode
 import java.io.File
 
@@ -10,7 +11,7 @@ data class Settings(
     val classFiles: List<File> = listOf() // implies ordered set
 )
 
-data class DebugState(val commandNodes: List<LevelNode> = emptyList())
+data class DebugState(val commandNodes: List<Instance> = emptyList())
 
 sealed class PluginState {
     abstract val settings: Settings

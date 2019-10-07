@@ -185,7 +185,9 @@
             <children>
               <component id="d259e" class="javax.swing.JTree" binding="commandsTree">
                 <constraints/>
-                <properties/>
+                <properties>
+                  <rootVisible value="true"/>
+                </properties>
               </component>
             </children>
           </scrollpane>

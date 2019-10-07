@@ -19,6 +19,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.net.URL
 
 
 data class Settings(val name: String,
@@ -40,7 +41,8 @@ inline fun <reified M : Any, S : Any> CoroutineScope.component(settings: Setting
 
            // launch { component.changes().collect { s -> send(gson.toJson(SendPacket(UUID.randomUUID().toString(), "update", s))) } }
 
-            val packet = SendPacket.pack("to some component", ApplyCommands(SomeTestCommand(SomeTestString("something"))))
+            val packet = SendPacket.pack("to some component", ApplyCommands(SomeTestCommand(SomeTestString("something"),
+                listOf(URL("https://www.youtube.com/watch?v=fwfjsDsMuz8"), "123" to 1))))
 
             send(packet)
 

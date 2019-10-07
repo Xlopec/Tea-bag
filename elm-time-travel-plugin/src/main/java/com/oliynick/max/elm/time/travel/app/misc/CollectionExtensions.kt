@@ -8,6 +8,29 @@ interface DiffCallback<in T1, in T2> {
 
 }
 
+interface UpdateCallback<in T1, in T2> {
+
+    fun onContentUpdated(oldItem: T1, oldIndex: Int, newItem: T2, newIndex: Int) = Unit
+
+    fun onItemInserted(item: T1, index: Int) = Unit
+
+    fun onItemRemoved(item: T1, index: Int) = Unit
+
+}
+
+@PublishedApi
+internal object StubUpdateCallback : UpdateCallback<Any, Any> {
+    override fun onContentUpdated(oldItem: Any, oldIndex: Int, newItem: Any, newIndex: Int) {
+
+    }
+
+    override fun onItemInserted(item: Any, index: Int) {
+    }
+
+    override fun onItemRemoved(item: Any, index: Int) {
+    }
+}
+
 /**
  * Replaces content in receiver list with content of replace list.
  * Changes in target list calculated using Eugene W. Myers diff algorithm.
@@ -16,7 +39,10 @@ interface DiffCallback<in T1, in T2> {
  * Complexity is O(N + M)
  */
 // todo add batch updates and decision strategy
-inline fun <L : MutableList<T1>, T1, T2> L.replaceAll(replaceWith: List<T2>, diffCallback: DiffCallback<T1, T2>, crossinline supply: (T2) -> T1): L {
+inline fun <L : MutableList<T1>, T1, T2> L.replaceAll(replaceWith: List<T2>,
+                                                      diffCallback: DiffCallback<T1, T2>,
+                                                      update: UpdateCallback<T1, T2>? = null,
+                                                      crossinline supply: (T2) -> T1): L {
 
     var x = 0
     var y = 0
@@ -31,8 +57,12 @@ inline fun <L : MutableList<T1>, T1, T2> L.replaceAll(replaceWith: List<T2>, dif
 
         while (x < size && y < replaceWith.size && diffCallback.areItemsTheSame(this[x], replaceWith[y])) {
             // move towards diagonal
-            if (!diffCallback.areContentsTheSame(this[x], replaceWith[y])) {
-                this[x] = supply(replaceWith[y])
+            val old = this[x]
+            val new = replaceWith[y]
+
+            if (!diffCallback.areContentsTheSame(old, new)) {
+                this[x] = supply(new)
+                update?.onContentUpdated(old, x, new, y)
             }
 
             x += 1
@@ -41,13 +71,16 @@ inline fun <L : MutableList<T1>, T1, T2> L.replaceAll(replaceWith: List<T2>, dif
 
         while (x < size && (y == replaceWith.size || (y < replaceWith.size && !diffCallback.areItemsTheSame(this[x], replaceWith[y])))) {
             // move down
-            removeAt(x)
+            val old = removeAt(x)
+            update?.onItemRemoved(old, x)
             moodX -= 1
         }
 
         while (y < replaceWith.size && (x >= size || !diffCallback.areItemsTheSame(this[x], replaceWith[y]))) {
             // move right
-            add(x, supply(replaceWith[y]))
+            val new = supply(replaceWith[y])
+            add(x, new)
+            update?.onItemInserted(new, x)
 
             x += 1
             y += 1
@@ -58,6 +91,10 @@ inline fun <L : MutableList<T1>, T1, T2> L.replaceAll(replaceWith: List<T2>, dif
     return this
 }
 
-fun <L : MutableList<T>, T> L.replaceAll(replaceWith: List<T>, diffCallback: DiffCallback<T, T>): L {
-    return replaceAll(replaceWith, diffCallback) { it }
+fun <L : MutableList<T>, T> L.replaceAll(replaceWith: List<T>,
+                                         diffCallback: DiffCallback<T, T>,
+                                         update: UpdateCallback<T, T>? = null): L {
+    return replaceAll(replaceWith, diffCallback, update, ::identity)
 }
+
+private fun <T> identity(t: T): T = t

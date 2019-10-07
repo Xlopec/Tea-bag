@@ -3,19 +3,25 @@ package com.oliynick.max.elm.time.travel.app
 import java.lang.reflect.Field
 import java.lang.reflect.Type
 import javax.swing.tree.DefaultMutableTreeNode
-import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.javaField
 
-sealed class ObjectNode
+sealed class Node
 
-data class LevelNode(val of: Any, val type: Type, val value: Collection<ObjectNode>) : ObjectNode()
+data class Instance(val type: Type, val nodes: Collection<Node>) : Node()
 
-sealed class Primitive<T> : ObjectNode()
+data class LevelNode(val type: Type, val fieldName: String, val nodes: Collection<Node>) : Node()
 
-data class IntPrimitive(val value: Int) : Primitive<Int>()
+sealed class Primitive<T> : Node() {
+    abstract val value: T
+}
 
-data class StringPrimitive(val value: String) : Primitive<String>()
+data class IntPrimitive(override val value: Int) : Primitive<Int>()
+
+data class StringPrimitive(override val value: String) : Primitive<String>()
+
+data class CollectionPrimitive(override val value: Collection<*>,
+                               val nodes: Collection<Node>) : Primitive<Collection<*>>()
 
 //////
 
@@ -28,82 +34,63 @@ data class StringB(val value: String)
 data class Compl(val intb: IntB, val strB: StringB, val i: Int)
 
 
+fun Instance.toJTree(): DefaultMutableTreeNode {
 
-/*fun Any.toJTree(): DefaultMutableTreeNode {
-
-    fun fillJTree(node: ObjectNode, parent: DefaultMutableTreeNode) {
+    fun fillJTree(node: Node, parent: DefaultMutableTreeNode) {
         val current = DefaultMutableTreeNode(node)
             .also(parent::add)
 
         if (node is LevelNode) {
-            for (j in node.value) {
+            for (j in node.nodes) {
                 fillJTree(j, current)
             }
         }
-    }
 
-    val analyzed = traverse(this)
-
-    return DefaultMutableTreeNode(analyzed, true)
-        .also { root -> analyzed.value.forEach { node -> fillJTree(node, root) } }
-}*/
-
-fun LevelNode.toJTree(): DefaultMutableTreeNode {
-
-    fun fillJTree(node: ObjectNode, parent: DefaultMutableTreeNode) {
-        val current = DefaultMutableTreeNode(node)
-            .also(parent::add)
-
-        if (node is LevelNode) {
-            for (j in node.value) {
+        if (node is CollectionPrimitive) {
+            for (j in node.nodes) {
                 fillJTree(j, current)
             }
         }
     }
 
     return DefaultMutableTreeNode(this, true)
-        .also { root -> value.forEach { node -> fillJTree(node, root) } }
+        .also { root -> nodes.forEach { node -> fillJTree(node, root) } }
 }
 
-fun Any.traverse(): LevelNode {
+fun Any.traverse() = Instance(this::class.java, collectNodes())
 
-    fun analyzeField(field: Field, of: Any): ObjectNode {
-        field.isAccessible = true
+private fun traverse(value: Any, fieldName: String): Node {
 
-        val value = field.get(of)
-
-        if (value.isPrimitive) {
-            return when (value) {
-                is String -> StringPrimitive(value)
-                is Int -> IntPrimitive(value)
-                else -> throw RuntimeException()
-            }
-        }
-
-        val leafs = value::class.memberProperties
-            .asSequence()
-            .map { property -> property.javaField }
-            .filterNotNull()
-            .map { f -> analyzeField(f, value) }
-            .toList()
-
-        return LevelNode(value, field.type, leafs)
+    return when (value) {
+        is String -> StringPrimitive(value)
+        is Int -> IntPrimitive(value)
+        is Byte -> TODO()
+        is Float -> TODO()
+        is Double -> TODO()
+        is Long -> TODO()
+        is Short -> TODO()
+        is Char -> TODO()
+        is Boolean -> TODO()
+        is Collection<*> -> CollectionPrimitive(value, value.mapIndexedNotNull { index, any -> any?.let { traverse(it, index.toString()) } })
+        else -> LevelNode(value::class.java, fieldName, value.collectNodes())
     }
-
-    val leafs = this::class.memberProperties
-        .asSequence()
-        .map { property -> property.javaField }
-        .filterNotNull()
-        .map { analyzeField(it, this) }
-        .toList()
-
-    return LevelNode(this, this::class.java, leafs)
 }
 
-private val primitives = setOf(
-    Int::class, Byte::class, Short::class, Long::class, Double::class,
-    Float::class, Char::class, Boolean::class, String::class
-)
+private fun Any.collectNodes(): List<Node> {
+    return this::class.declaredMemberProperties
+        .asSequence()
+        .mapNotNull { property -> property.javaField }
+        .mapNotNull { field ->
+            val value = field.value(this)
 
-val Any.isPrimitive: Boolean
-    get() = primitives.any { this@isPrimitive::class.isSubclassOf(it) }
+            if (value != null) {
+                traverse(value, field.name)
+            } else null
+        }
+        .toList()
+}
+
+private fun Field.value(of: Any): Any? {
+    isAccessible = true
+    return get(of)
+}

@@ -1,10 +1,10 @@
 package com.oliynick.max.elm.time.travel.app.misc
 
-import com.oliynick.max.elm.time.travel.app.IntPrimitive
-import com.oliynick.max.elm.time.travel.app.LevelNode
-import com.oliynick.max.elm.time.travel.app.ObjectNode
-import com.oliynick.max.elm.time.travel.app.StringPrimitive
+import com.oliynick.max.elm.time.travel.app.*
+import org.kodein.di.simpleErasedName
 import java.awt.Component
+import java.io.PrintWriter
+import java.io.StringWriter
 import javax.swing.JLabel
 import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
@@ -22,14 +22,58 @@ class ObjectTreeRenderer : JLabel(), TreeCellRenderer {
         hasFocus: Boolean
     ): Component {
 
-        val description = when (val obj = (value as DefaultMutableTreeNode).userObject as? ObjectNode ?: return this) {
-            is LevelNode -> obj.type.typeName
-            is IntPrimitive -> "Int: ${obj.value}"
-            is StringPrimitive -> "String: ${obj.value}"
+        if (value === tree.model.root) {
+            text = "Commands"
+            return this
         }
+
+        val description: String =
+            when (val obj = (value as DefaultMutableTreeNode).userObject as? Node ?: return this) {
+                is LevelNode -> obj.toReadableString()
+                is IntPrimitive -> obj.toReadableString()
+                is StringPrimitive -> obj.toReadableString()
+                is CollectionPrimitive -> obj.toReadableString()
+                is Instance -> obj.toReadableString()
+            }
 
         text = description
 
         return this
     }
 }
+
+private fun Node.toReadableString(): String = when (this) {
+    is LevelNode -> toReadableString()
+    is IntPrimitive -> toReadableString()
+    is StringPrimitive -> toReadableString()
+    is CollectionPrimitive -> toReadableString()
+    is Instance -> toReadableString()
+}
+
+private fun LevelNode.toReadableString(): String {
+    return "$fieldName=${type.simpleErasedName()}(${nodes.joinToString { it.toReadableString() }})"
+}
+
+private fun Instance.toReadableString(): String {
+    return "${type.simpleErasedName()}(${nodes.joinToString { it.toReadableString() }})"
+}
+
+private fun CollectionPrimitive.toReadableString(): String {
+    return "${value::class.java.simpleErasedName()} ${nodes.joinToString(prefix = "[", postfix = "]") { it.toReadableString() }}"
+}
+
+private fun Any?.toStringCatching(): String {
+    return try {
+        toString()
+    } catch (th: Throwable) {
+        val sw = StringWriter()
+        val pw = PrintWriter(sw)
+
+        th.printStackTrace(pw)
+        "Couldn't evaluate 'toString()', the method has thrown exception:\n$sw"
+    }
+}
+
+private fun IntPrimitive.toReadableString() = "Int: $value"
+
+private fun StringPrimitive.toReadableString() = "String: \"$value\""

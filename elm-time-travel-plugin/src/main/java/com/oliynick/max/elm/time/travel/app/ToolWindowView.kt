@@ -10,6 +10,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
+import org.jdesktop.swingx.JXTree
 import java.awt.event.MouseEvent
 import java.io.File
 import javax.swing.*
@@ -37,7 +38,7 @@ class ToolWindowView(private val project: Project,
     private lateinit var transientStateProgress: JProgressBar
 
     private val directoriesListModel = DiffingListModel(FileDiffCallback)
-    private val commandsListModel = DiffingListModel(CommandsDiffCallback)
+    private val commandsTreeModel = DiffingTreeModel.newInstance()
 
     val root: JPanel get() = panel
 
@@ -47,29 +48,9 @@ class ToolWindowView(private val project: Project,
         directoriesList.model = directoriesListModel
 
         commandsTree.cellRenderer = ObjectTreeRenderer()
+        commandsTree.model = commandsTreeModel
 
-        /*
-        wokrs
-        val listOf = listOf(A("max", Compl(IntB(124), StringB("kek"), 1488)), IntB(124),
-            StringB("kek"))
-
-        val nodes = listOf.map { it.toJTree() }
-
-        val root = DefaultMutableTreeNode("Root", true)
-
-        nodes.forEach { root.add(it) }
-
-        commandsTree.isRootVisible = false
-        commandsTree.model = DefaultTreeModel(root)*/
-
-
-
-      //  commandsTree.cellRenderer = ObjectTreeRenderer()
-      //  commandsTree.model = DefaultTreeModel(a.toJTree())
-
-        launch {
-            component(uiEvents.consumeAsFlow()).collect { state -> render(state, uiEvents) }
-        }
+        launch { component(uiEvents.consumeAsFlow()).collect { state -> render(state, uiEvents) } }
 
         /*launch {
             component.changes().collect { state ->
@@ -134,13 +115,7 @@ class ToolWindowView(private val project: Project,
         removeDirectoryButton.removeMouseListenersDisabling()
         addDirectoryButton.removeMouseListenersDisabling()
 
-        val nodes = state.debugState.commandNodes.map { it.toJTree() }
-
-        val root = DefaultMutableTreeNode("Root", true)
-
-        nodes.forEach { root.add(it) }
-
-        commandsTree.model = DefaultTreeModel(root)
+        commandsTreeModel.swap(state.debugState.commandNodes)
     }
 
     private fun render(state: Stopping) {
