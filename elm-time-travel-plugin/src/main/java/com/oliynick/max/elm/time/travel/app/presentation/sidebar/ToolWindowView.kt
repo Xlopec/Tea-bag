@@ -1,21 +1,17 @@
-package com.oliynick.max.elm.time.travel.app
+package com.oliynick.max.elm.time.travel.app.presentation.sidebar
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
 import com.oliynick.max.elm.core.component.Component
-import com.oliynick.max.elm.time.travel.app.misc.*
-import com.oliynick.max.elm.time.travel.app.plugin.*
+import com.oliynick.max.elm.time.travel.app.domain.*
+import com.oliynick.max.elm.time.travel.app.presentation.misc.*
+import com.oliynick.max.elm.time.travel.app.presentation.misc.FileDiffCallback
+import com.oliynick.max.elm.time.travel.app.presentation.misc.ObjectTreeRenderer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.launch
-import org.jdesktop.swingx.JXTree
 import java.awt.event.MouseEvent
 import java.io.File
 import javax.swing.*
-import javax.swing.tree.DefaultMutableTreeNode
-import javax.swing.tree.DefaultTreeModel
 import java.awt.Component as AwtComponent
 
 class ToolWindowView(private val project: Project,
@@ -50,7 +46,16 @@ class ToolWindowView(private val project: Project,
         commandsTree.cellRenderer = ObjectTreeRenderer()
         commandsTree.model = commandsTreeModel
 
-        launch { component(uiEvents.consumeAsFlow()).collect { state -> render(state, uiEvents) } }
+        val l = Znlpa(
+            listOf("A", "b", "123" to 1, null),
+            mapOf(3 to "loh", null to "13", 234 to null, null to null)
+        )
+        val root = l.traverse()
+
+        println(root.toReadableString())
+
+        commandsTreeModel.swap(listOf(root))
+        //launch { component(uiEvents.consumeAsFlow()).collect { state -> render(state, uiEvents) } }
 
         /*launch {
             component.changes().collect { state ->

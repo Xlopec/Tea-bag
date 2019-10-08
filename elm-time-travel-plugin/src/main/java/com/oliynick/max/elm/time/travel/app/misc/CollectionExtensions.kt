@@ -18,19 +18,6 @@ interface UpdateCallback<in T1, in T2> {
 
 }
 
-@PublishedApi
-internal object StubUpdateCallback : UpdateCallback<Any, Any> {
-    override fun onContentUpdated(oldItem: Any, oldIndex: Int, newItem: Any, newIndex: Int) {
-
-    }
-
-    override fun onItemInserted(item: Any, index: Int) {
-    }
-
-    override fun onItemRemoved(item: Any, index: Int) {
-    }
-}
-
 /**
  * Replaces content in receiver list with content of replace list.
  * Changes in target list calculated using Eugene W. Myers diff algorithm.

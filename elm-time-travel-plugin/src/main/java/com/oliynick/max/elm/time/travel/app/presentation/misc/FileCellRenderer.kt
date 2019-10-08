@@ -1,4 +1,4 @@
-package com.oliynick.max.elm.time.travel.app.misc
+package com.oliynick.max.elm.time.travel.app.presentation.misc
 
 import java.awt.Component
 import java.io.File

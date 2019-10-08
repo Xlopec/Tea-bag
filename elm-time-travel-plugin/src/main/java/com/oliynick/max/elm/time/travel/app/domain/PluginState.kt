@@ -1,7 +1,5 @@
-package com.oliynick.max.elm.time.travel.app.plugin
+package com.oliynick.max.elm.time.travel.app.domain
 
-import com.oliynick.max.elm.time.travel.app.Instance
-import com.oliynick.max.elm.time.travel.app.LevelNode
 import java.io.File
 
 data class ServerSettings(val port: UInt = 8080U)
@@ -11,7 +9,7 @@ data class Settings(
     val classFiles: List<File> = listOf() // implies ordered set
 )
 
-data class DebugState(val commandNodes: List<Instance> = emptyList())
+data class DebugState(val commandNodes: List<TypeNode> = emptyList())
 
 sealed class PluginState {
     abstract val settings: Settings

@@ -1,9 +1,8 @@
-package com.oliynick.max.elm.time.travel.app.plugin
+package com.oliynick.max.elm.time.travel.app.domain
 
 import com.oliynick.max.elm.core.component.UpdateWith
 import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
-import com.oliynick.max.elm.time.travel.app.traverse
 
 internal fun update(message: PluginMessage, state: PluginState): UpdateWith<PluginState, PluginCommand> {
     return when (message) {

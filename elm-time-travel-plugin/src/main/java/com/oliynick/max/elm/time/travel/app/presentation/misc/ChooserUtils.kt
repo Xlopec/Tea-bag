@@ -1,4 +1,4 @@
-package com.oliynick.max.elm.time.travel.app.misc
+package com.oliynick.max.elm.time.travel.app.presentation.misc
 
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor

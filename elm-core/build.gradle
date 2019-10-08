@@ -24,7 +24,7 @@ buildscript {
 }
 
 project.afterEvaluate {
-    tasks.findByName("jar").dependsOn("detekt")
+    //tasks.findByName("jar").dependsOn("detekt")
 }
 
 detekt {

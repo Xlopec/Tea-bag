@@ -1,7 +1,8 @@
-package com.oliynick.max.elm.time.travel.app.plugin
+package com.oliynick.max.elm.time.travel.app.domain
 
 import com.oliynick.max.elm.core.component.effect
 import com.oliynick.max.elm.core.component.sideEffect
+import com.oliynick.max.elm.time.travel.app.transport.EngineManager
 import kotlinx.coroutines.channels.Channel
 import org.apache.commons.collections.set.ListOrderedSet
 import java.io.File

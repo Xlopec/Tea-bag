@@ -1,4 +1,4 @@
-package com.oliynick.max.elm.time.travel.app.exception
+package com.oliynick.max.elm.time.travel.app.transport.exception
 
 import io.ktor.application.Application
 import io.ktor.application.install

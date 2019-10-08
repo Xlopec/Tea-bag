@@ -1,5 +1,7 @@
-package com.oliynick.max.elm.time.travel.app.misc
+package com.oliynick.max.elm.time.travel.app.presentation.misc
 
+import com.oliynick.max.elm.time.travel.app.misc.DiffCallback
+import com.oliynick.max.elm.time.travel.app.misc.replaceAll
 import javax.swing.AbstractListModel
 
 class DiffingListModel<E>(private val diff: DiffCallback<E, E>) : AbstractListModel<E>() {

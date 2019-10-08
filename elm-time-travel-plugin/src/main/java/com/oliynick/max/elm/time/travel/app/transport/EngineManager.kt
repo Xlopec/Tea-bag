@@ -1,5 +1,7 @@
-package com.oliynick.max.elm.time.travel.app.plugin
+package com.oliynick.max.elm.time.travel.app.transport
 
+import com.oliynick.max.elm.time.travel.app.domain.PluginMessage
+import com.oliynick.max.elm.time.travel.app.domain.Settings
 import io.ktor.server.engine.ApplicationEngine
 import kotlinx.coroutines.channels.Channel
 import java.util.concurrent.TimeUnit

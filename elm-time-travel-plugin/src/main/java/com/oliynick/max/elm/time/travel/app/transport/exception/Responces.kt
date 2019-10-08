@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package com.oliynick.max.elm.time.travel.app.exception
+package com.oliynick.max.elm.time.travel.app.transport.exception
 
 /*
 import com.google.gson.annotations.SerializedName

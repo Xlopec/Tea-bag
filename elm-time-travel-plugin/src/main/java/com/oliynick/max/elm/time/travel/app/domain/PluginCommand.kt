@@ -1,4 +1,4 @@
-package com.oliynick.max.elm.time.travel.app.plugin
+package com.oliynick.max.elm.time.travel.app.domain
 
 import java.io.File
 

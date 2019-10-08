@@ -24,7 +24,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <toolWindow id="Time Traveller" factoryClass="com.oliynick.max.elm.time.travel.app.ElmToolWindowFactory" anchor="right"/>
+        <toolWindow id="Time Traveller" factoryClass="com.oliynick.max.elm.time.travel.app.presentation.sidebar.SideToolWindowFactory" anchor="right"/>
     </extensions>
 
     <actions>
