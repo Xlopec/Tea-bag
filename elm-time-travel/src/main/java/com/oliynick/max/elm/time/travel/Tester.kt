@@ -1,10 +1,8 @@
 package com.oliynick.max.elm.time.travel
 
 import com.oliynick.max.elm.core.component.Component
-import com.oliynick.max.elm.core.component.androidLogger
-import com.oliynick.max.elm.core.component.component
-import com.oliynick.max.elm.core.component.noCommand
 import com.oliynick.max.elm.time.travel.protocol.ApplyCommands
+import com.oliynick.max.elm.time.travel.protocol.ComponentId
 import com.oliynick.max.elm.time.travel.protocol.ReceivePacket
 import com.oliynick.max.elm.time.travel.protocol.SendPacket
 import io.ktor.client.HttpClient
@@ -18,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.net.URL
 
 
@@ -41,30 +38,26 @@ inline fun <reified M : Any, S : Any> CoroutineScope.component(settings: Setting
 
            // launch { component.changes().collect { s -> send(gson.toJson(SendPacket(UUID.randomUUID().toString(), "update", s))) } }
 
-            val packet = SendPacket.pack("to some component", ApplyCommands(SomeTestCommand(SomeTestString("something"),
-                listOf(URL("https://www.youtube.com/watch?v=fwfjsDsMuz8"), "123" to 1))))
+            val testPacket = SendPacket.pack(
+                ComponentId("Test Component"), ApplyCommands(SomeTestCommand(SomeTestString("something"),
+                listOf(/*URL("https://www.youtube.com/watch?v=fwfjsDsMuz8"),*/ 23, 1000, "123" to 1))))
 
-            send(packet)
+            send(testPacket)
 
             for (frame in incoming) {
                 when (frame) {
                     is Frame.Binary -> {
-                        val bytes = frame.readBytes()
 
-                        println(bytes)
-
-                        val packet = ReceivePacket.unpack(bytes)
-
-                        println(packet)
+                        val packet = ReceivePacket.unpack(frame.readBytes())
 
                         when(val action = packet.action) {
                             is ApplyCommands -> {
-
+                                @Suppress("UNCHECKED_CAST")
                                 val message = action.commands as List<M>
 
-                                val s = component.invoke(message).first()
+                                component.invoke(message).first()
 
-                                println(s)
+                                send(SendPacket.pack(packet.component, action))
                             }
                         }
                     }

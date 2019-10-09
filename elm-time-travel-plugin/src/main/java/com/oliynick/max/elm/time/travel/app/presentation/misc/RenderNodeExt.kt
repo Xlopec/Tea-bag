@@ -10,7 +10,7 @@ fun TypeNode.toJTree(): DefaultMutableTreeNode {
         val current = DefaultMutableTreeNode(node)
             .also(parent::add)
 
-        when(node) {
+        when (node) {
             is AnyRef -> node.fields.forEach { fillJTree(it.value, current) }
             is IterablePrimitive -> node.fields.forEach { fillJTree(it.value, current) }
             is MapPrimitive -> node.fields.forEach { fillJTree(it.value, current) }
@@ -63,8 +63,15 @@ fun MapPrimitive.toReadableString(): String {
 
 fun NullRef.toReadableString(): String = "null"
 
-fun IntPrimitive.toReadableString() = "Int:$value"
+fun IntPrimitive.toReadableString() = "Int:$stringValueSafe"
 
-fun StringPrimitive.toReadableString() = "String:${if (value == null) null else '"' + value + '"'}"
+fun StringPrimitive.toReadableString() = "String:${if (value == null) null else '"' + stringValueSafe + '"'}"
 
 private fun toReadableString(field: FieldNode) = "${field.fieldName}=${field.value.toReadableString()}"
+
+private val Any?.stringValueSafe
+    get() = try {
+        toString()
+    } catch (th: Throwable) {
+        "Couldn't get value, method 'toString' thrown exception${th.message?.let { " with message: $it" }}"
+    }

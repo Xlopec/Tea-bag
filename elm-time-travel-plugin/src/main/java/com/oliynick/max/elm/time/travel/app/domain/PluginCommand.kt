@@ -1,5 +1,6 @@
 package com.oliynick.max.elm.time.travel.app.domain
 
+import com.oliynick.max.elm.time.travel.protocol.ComponentId
 import java.io.File
 
 sealed class PluginCommand
@@ -11,4 +12,6 @@ data class DoRemoveFiles(val files: List<File>, val from: List<File>) : PluginCo
 data class DoStartServer(val settings: Settings) : PluginCommand()
 
 object DoStopServer : PluginCommand()
+
+data class DoApplyCommands(val id: ComponentId, val commands: List<Any>) : PluginCommand()
 

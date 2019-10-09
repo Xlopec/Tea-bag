@@ -13,12 +13,13 @@ import com.oliynick.max.elm.time.travel.app.transport.server
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 
 class SideToolWindowFactory : ToolWindowFactory, DumbAware {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val messages = Channel<PluginMessage>()
+        val messages = BroadcastChannel<PluginMessage>(1)
         val deps = Dependencies(messages, EngineManager(::server))
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 

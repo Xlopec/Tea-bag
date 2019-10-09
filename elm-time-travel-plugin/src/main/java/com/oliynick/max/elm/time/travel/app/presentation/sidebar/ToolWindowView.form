@@ -16,7 +16,7 @@
         </constraints>
         <properties>
           <continuousLayout value="true"/>
-          <dividerLocation value="262"/>
+          <dividerLocation value="254"/>
           <dividerSize value="5"/>
           <enabled value="true"/>
           <oneTouchExpandable value="true"/>
@@ -176,21 +176,14 @@
               </component>
             </children>
           </grid>
-          <scrollpane id="1d906">
+          <tabbedpane id="c8a83" binding="componentsTabPane">
             <constraints>
               <splitpane position="right"/>
             </constraints>
             <properties/>
             <border type="none"/>
-            <children>
-              <component id="d259e" class="javax.swing.JTree" binding="commandsTree">
-                <constraints/>
-                <properties>
-                  <rootVisible value="true"/>
-                </properties>
-              </component>
-            </children>
-          </scrollpane>
+            <children/>
+          </tabbedpane>
         </children>
       </splitpane>
     </children>

@@ -5,10 +5,11 @@ import com.intellij.openapi.project.Project
 import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.time.travel.app.domain.*
 import com.oliynick.max.elm.time.travel.app.presentation.misc.*
-import com.oliynick.max.elm.time.travel.app.presentation.misc.FileDiffCallback
-import com.oliynick.max.elm.time.travel.app.presentation.misc.ObjectTreeRenderer
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.launch
 import java.awt.event.MouseEvent
 import java.io.File
 import javax.swing.*
@@ -17,15 +18,14 @@ import java.awt.Component as AwtComponent
 class ToolWindowView(private val project: Project,
                      private val scope: CoroutineScope,
                      private val component: Component<PluginMessage, PluginState>,
-                     private val uiEvents: Channel<PluginMessage>) : CoroutineScope by scope {
+                     private val uiEvents: BroadcastChannel<PluginMessage>) : CoroutineScope by scope {
 
     private companion object {
-        val CHOOSER_DESCRIPTOR: FileChooserDescriptor =
-            FileChooserDescriptor(true, true, false, false, false, true)
-                .withFileFilter { it.extension == "class" || it.isDirectory }
+        val CHOOSER_DESCRIPTOR: FileChooserDescriptor = FileChooserDescriptor(true, true, false, false, false, true)
+            .withFileFilter { it.extension == "class" || it.isDirectory }
     }
 
-    private lateinit var commandsTree: JTree
+    private lateinit var componentsTabPane: JTabbedPane
     private lateinit var panel: JPanel
     private lateinit var directoriesList: JList<File>
     private lateinit var removeDirectoryButton: JButton
@@ -34,7 +34,6 @@ class ToolWindowView(private val project: Project,
     private lateinit var transientStateProgress: JProgressBar
 
     private val directoriesListModel = DiffingListModel(FileDiffCallback)
-    private val commandsTreeModel = DiffingTreeModel.newInstance()
 
     val root: JPanel get() = panel
 
@@ -43,19 +42,9 @@ class ToolWindowView(private val project: Project,
         directoriesList.cellRenderer = FileCellRenderer()
         directoriesList.model = directoriesListModel
 
-        commandsTree.cellRenderer = ObjectTreeRenderer()
-        commandsTree.model = commandsTreeModel
+        componentsTabPane.model = DefaultSingleSelectionModel()
 
-        val l = Znlpa(
-            listOf("A", "b", "123" to 1, null),
-            mapOf(3 to "loh", null to "13", 234 to null, null to null)
-        )
-        val root = l.traverse()
-
-        println(root.toReadableString())
-
-        commandsTreeModel.swap(listOf(root))
-        //launch { component(uiEvents.consumeAsFlow()).collect { state -> render(state, uiEvents) } }
+        launch { component(uiEvents.openSubscription().consumeAsFlow()).collect { state -> render(state, uiEvents) } }
 
         /*launch {
             component.changes().collect { state ->
@@ -75,7 +64,7 @@ class ToolWindowView(private val project: Project,
         }*/
     }
 
-    private fun render(state: PluginState, messages: Channel<PluginMessage>) {
+    private fun render(state: PluginState, messages: BroadcastChannel<PluginMessage>) {
         directoriesListModel.swap(state.settings.classFiles)
         transientStateProgress.isVisible = state.isTransient
 
@@ -87,7 +76,7 @@ class ToolWindowView(private val project: Project,
         }.safe
     }
 
-    private fun render(state: Stopped, messages: Channel<PluginMessage>) {
+    private fun render(state: Stopped, messages: BroadcastChannel<PluginMessage>) {
         startButton.text = "Start"
 
         if (state.canStart) {
@@ -113,14 +102,16 @@ class ToolWindowView(private val project: Project,
         addDirectoryButton.removeMouseListenersDisabling()
     }
 
-    private fun render(state: Started, messages: Channel<PluginMessage>) {
+    private fun render(state: Started, messages: BroadcastChannel<PluginMessage>) {
         startButton.text = "Stop"
         startButton.setOnClickListenerEnabling { messages.offer(StopServer) }
 
         removeDirectoryButton.removeMouseListenersDisabling()
         addDirectoryButton.removeMouseListenersDisabling()
 
-        commandsTreeModel.swap(state.debugState.commandNodes)
+        state.debugState.components
+            .filter { e -> componentsTabPane.indexOfTab(e.key.id) == -1 }
+            .forEach { (id, s) -> componentsTabPane.addTab(id.id, ComponentView(scope, component, s)._root) }
     }
 
     private fun render(state: Stopping) {

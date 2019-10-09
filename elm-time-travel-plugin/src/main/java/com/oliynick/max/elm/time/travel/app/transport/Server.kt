@@ -3,8 +3,7 @@ package com.oliynick.max.elm.time.travel.app.transport
 import com.oliynick.max.elm.time.travel.app.domain.*
 import com.oliynick.max.elm.time.travel.app.misc.FileSystemClassLoader
 import com.oliynick.max.elm.time.travel.app.transport.exception.installErrorInterceptors
-import com.oliynick.max.elm.time.travel.protocol.ApplyCommands
-import com.oliynick.max.elm.time.travel.protocol.ReceivePacket
+import com.oliynick.max.elm.time.travel.protocol.*
 import io.ktor.application.*
 import io.ktor.features.CallLogging
 import io.ktor.features.ConditionalHeaders
@@ -12,6 +11,7 @@ import io.ktor.features.DataConversion
 import io.ktor.features.DefaultHeaders
 import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.readBytes
+import io.ktor.http.cio.websocket.send
 import io.ktor.request.path
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
@@ -20,15 +20,17 @@ import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.websocket.webSocket
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.launch
 import org.slf4j.event.Level
 import java.time.Duration
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 
-fun server(settings: Settings, events: Channel<PluginMessage>): NettyApplicationEngine {
+fun server(settings: Settings, events: BroadcastChannel<PluginMessage>, outgoing: Channel<Pair<ComponentId, Action>>): NettyApplicationEngine {
 
     return embeddedServer(Netty, port = settings.serverSettings.port.toInt()) {
 
@@ -60,6 +62,12 @@ fun server(settings: Settings, events: Channel<PluginMessage>): NettyApplication
 
             webSocket("/") {
 
+                launch {
+                    for ((id, action) in outgoing) {
+                        send(SendPacket.pack(id, action))
+                    }
+                }
+
                 for (frame in incoming.of(Frame.Binary::class)) {
 
                     require(frame.fin) { "Chunks aren't supported" }
@@ -74,8 +82,8 @@ fun server(settings: Settings, events: Channel<PluginMessage>): NettyApplication
 }
 
 private fun ReceivePacket.toMessage(): PluginMessage {
-    return when(val action = action) {
-        is ApplyCommands -> AppendCommands(action.commands)
+    return when (val action = action) {
+        is ApplyCommands -> AppendCommands(component, action.commands)
     }
 }
 

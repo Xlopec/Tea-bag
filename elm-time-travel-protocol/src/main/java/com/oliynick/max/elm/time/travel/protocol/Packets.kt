@@ -17,7 +17,7 @@ class SendPacket private constructor(val id: UUID,
         private val buffer by lazy { LinkedBuffer.allocate(512) }
         private val buffer1 by lazy { LinkedBuffer.allocate(512) }
 
-        suspend fun pack(component: String, action: Action): ByteArray {
+        suspend fun pack(component: ComponentId, action: Action): ByteArray {
 
             val schema = schema<SendPacket>()
             val schema1 = schema(action::class.java)
@@ -25,7 +25,7 @@ class SendPacket private constructor(val id: UUID,
             try {
                 val packet = SendPacket(
                     UUID.randomUUID(),
-                    component,
+                    component.id,
                     action::class.java,
                     ProtostuffIOUtil.toByteArray(action, schema1, buffer)
                 )
@@ -39,14 +39,14 @@ class SendPacket private constructor(val id: UUID,
     }
 }
 
-class ReceivePacket private constructor(val id: UUID, val component: String, val action: Action) {
+class ReceivePacket private constructor(val id: UUID, val component: ComponentId, val action: Action) {
 
     companion object {
 
         suspend fun unpack(packet: ByteArray): ReceivePacket {
             return schema<SendPacket>()
                 .parse(packet)
-                .run { ReceivePacket(id, component, schema(instanceClass).parse(instance)) }
+                .run { ReceivePacket(id, ComponentId(component), schema(instanceClass).parse(instance)) }
         }
     }
 }
