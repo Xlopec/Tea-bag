@@ -1,13 +1,14 @@
 package com.oliynick.max.elm.time.travel.app.presentation.sidebar
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
+import com.intellij.ui.components.JBTabbedPane
 import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.core.component.changes
 import com.oliynick.max.elm.time.travel.app.domain.*
 import com.oliynick.max.elm.time.travel.app.presentation.misc.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.awt.Container
 import java.awt.event.MouseEvent
 import java.io.File
 import javax.swing.*
@@ -26,12 +28,6 @@ class ToolWindowView(private val project: Project,
                      private val component: Component<PluginMessage, PluginState>,
                      private val uiEvents: Channel<PluginMessage>) : CoroutineScope by scope {
 
-    private companion object {
-        val CHOOSER_DESCRIPTOR: FileChooserDescriptor = FileChooserDescriptor(true, true, false, false, false, true)
-            .withFileFilter { it.extension == "class" || it.isDirectory }
-    }
-
-    private lateinit var componentsTabPane: JTabbedPane
     private lateinit var panel: JPanel
     private lateinit var directoriesList: JList<File>
     private lateinit var removeDirectoryButton: JButton
@@ -39,6 +35,7 @@ class ToolWindowView(private val project: Project,
     private lateinit var startButton: JButton
     private lateinit var portTextField: JTextField
     private lateinit var hostTextField: JTextField
+    private lateinit var componentsPanel: JPanel
 
     private val directoriesListModel = DiffingListModel(FileDiffCallback)
 
@@ -60,8 +57,6 @@ class ToolWindowView(private val project: Project,
 
         directoriesList.cellRenderer = FileCellRenderer()
         directoriesList.model = directoriesListModel
-
-        componentsTabPane.model = DefaultSingleSelectionModel()
 
         launch { component(uiEvents.consumeAsFlow()).collect { state -> render(state, uiEvents) } }
         launch { component.showProgressOnTransientState(project) }
@@ -98,7 +93,11 @@ class ToolWindowView(private val project: Project,
         }
 
         addDirectoryButton.setOnClickListenerEnabling {
-            project.chooseFiles(CHOOSER_DESCRIPTOR) { files -> messages.offer(AddFiles(files.map { File(it.path) })) }
+            project.chooseClassFiles { files -> messages.offer(AddFiles(files)) }
+        }
+
+        if (componentsPanel.componentCount == 0) {
+            componentsPanel.add(EmptyComponentsView(component, scope.coroutineContext, project).root, "EmptyView")
         }
     }
 
@@ -117,9 +116,22 @@ class ToolWindowView(private val project: Project,
         removeDirectoryButton.removeMouseListenersDisabling()
         addDirectoryButton.removeMouseListenersDisabling()
 
-        state.debugState.components
-            .filter { e -> componentsTabPane.indexOfTab(e.key.id) == -1 }
-            .forEach { (id, s) -> componentsTabPane.addTab(id.id, ComponentView(scope, component, s)._root) }
+        if (state.debugState.components.size == 1) {
+            componentsPanel.clearCancelling()
+
+            val componentsTabPane = JBTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT)
+                .also { tabPane -> tabPane.model = DefaultSingleSelectionModel() }
+
+            componentsPanel.add(componentsTabPane)
+        }
+
+        if (state.debugState.components.isNotEmpty()) {
+            val componentsTabPane = componentsPanel.getComponent(0) as JTabbedPane
+
+            state.debugState.components
+                .filter { e -> componentsTabPane.indexOfTab(e.key.id) == -1 }
+                .forEach { (id, s) -> componentsTabPane.addTab(id.id, ComponentView(scope, component, s)._root) }
+        }
     }
 
     private fun render(state: Stopping) {
@@ -165,4 +177,17 @@ private fun AwtComponent.setOnClickListenerEnabling(l: (MouseEvent) -> Unit) {
 private fun AwtComponent.removeMouseListenersDisabling() {
     removeMouseListeners()
     isEnabled = false
+}
+
+fun Container.clearCancelling() {
+    for (i in 0 until componentCount) {
+        val c = getComponent(i)
+
+        if (c is CoroutineScope) {
+            // fixme, with CoroutineScope.cancel() it doesn't even compile
+            c.coroutineContext[Job.Key]?.cancel()
+        }
+
+        remove(c)
+    }
 }

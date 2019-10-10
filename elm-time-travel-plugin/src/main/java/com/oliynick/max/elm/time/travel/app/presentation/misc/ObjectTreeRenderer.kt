@@ -7,7 +7,7 @@ import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeCellRenderer
 
-internal class ObjectTreeRenderer(private val rootNodeName: String) : JLabel(), TreeCellRenderer {
+internal class ObjectTreeRenderer(private val rootNodeName: String) : TreeCellRenderer {
 
     override fun getTreeCellRendererComponent(
         tree: JTree,
@@ -19,12 +19,14 @@ internal class ObjectTreeRenderer(private val rootNodeName: String) : JLabel(), 
         hasFocus: Boolean
     ): Component {
 
+        val label = JLabel()
+
         if (value === tree.model.root) {
-            text = rootNodeName
-            return this
+            label.text = rootNodeName
+            return label
         }
 
-        text = when (val node = value.node) {
+        label.text = when (val node = value.node) {
             is AnyRef -> node.toReadableString()
             is IntPrimitive -> node.toReadableString()
             is StringPrimitive -> node.toReadableString()
@@ -34,7 +36,7 @@ internal class ObjectTreeRenderer(private val rootNodeName: String) : JLabel(), 
             is ArrayPrimitive -> node.toReadableString()
         }
 
-        return this
+        return label
     }
 
     private val Any.node inline get() = (this as DefaultMutableTreeNode).userObject as TypeNode
