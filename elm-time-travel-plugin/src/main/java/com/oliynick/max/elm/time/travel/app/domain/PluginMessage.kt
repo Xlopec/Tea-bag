@@ -7,15 +7,17 @@ sealed class PluginMessage
 
 data class AddFiles(val files: List<File>) : PluginMessage()
 
-data class FilesUpdated(val files: List<File>) : PluginMessage()
-
 data class RemoveFiles(val files: List<File>) : PluginMessage()
 
-object NotifyStarting : PluginMessage()
+data class UpdatePort(val port: UInt) : PluginMessage()
+
+data class UpdateHost(val host: String) : PluginMessage()
+
+data class NotifyMissingDependency(val exception: ClassNotFoundException) : PluginMessage()
+
+data class NotifyOperationException(val exception: Throwable) : PluginMessage()
 
 object NotifyStarted : PluginMessage()
-
-object NotifyStopping : PluginMessage()
 
 object NotifyStopped : PluginMessage()
 
@@ -24,6 +26,8 @@ object StartServer : PluginMessage()
 object StopServer : PluginMessage()
 
 data class AppendCommands(val componentId: ComponentId, val commands: List<Any>) : PluginMessage()
+
+data class AppendSnapshot(val componentId: ComponentId, val message: Any, val oldState: Any, val newState: Any) : PluginMessage()
 
 data class RemoveCommands(val componentId: ComponentId, val indexes: IntArray) : PluginMessage()
 

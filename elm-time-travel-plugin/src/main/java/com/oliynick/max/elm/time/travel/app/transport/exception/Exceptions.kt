@@ -13,3 +13,17 @@ fun Application.installErrorInterceptors() {
         }
     }
 }
+
+inline fun Throwable.findCause(crossinline predicate: (Throwable) -> Boolean): Throwable? {
+    var cause: Throwable? = this
+
+    while (cause != null) {
+        if (predicate(cause)) {
+            return cause
+        }
+
+        cause = cause.cause
+    }
+
+    return null
+}

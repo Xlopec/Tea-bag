@@ -69,9 +69,9 @@ fun StringPrimitive.toReadableString() = "String:${if (value == null) null else 
 
 private fun toReadableString(field: FieldNode) = "${field.fieldName}=${field.value.toReadableString()}"
 
-private val Any?.stringValueSafe
+private val Primitive<*>.stringValueSafe
     get() = try {
-        toString()
+        value?.toString() ?: "null"
     } catch (th: Throwable) {
         "Couldn't get value, method 'toString' thrown exception${th.message?.let { " with message: $it" }}"
     }

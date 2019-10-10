@@ -6,7 +6,13 @@ import io.protostuff.LinkedBuffer
 import io.protostuff.ProtostuffIOUtil
 import io.protostuff.Schema
 import io.protostuff.runtime.RuntimeSchema
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.produce
 import java.util.*
+import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KClass
 
 class SendPacket private constructor(val id: UUID,
                                      val component: String,
@@ -17,7 +23,7 @@ class SendPacket private constructor(val id: UUID,
         private val buffer by lazy { LinkedBuffer.allocate(512) }
         private val buffer1 by lazy { LinkedBuffer.allocate(512) }
 
-        suspend fun pack(component: ComponentId, action: Action): ByteArray {
+        fun pack(component: ComponentId, action: Action): ByteArray {
 
             val schema = schema<SendPacket>()
             val schema1 = schema(action::class.java)
@@ -43,7 +49,7 @@ class ReceivePacket private constructor(val id: UUID, val component: ComponentId
 
     companion object {
 
-        suspend fun unpack(packet: ByteArray): ReceivePacket {
+        fun unpack(packet: ByteArray): ReceivePacket {
             return schema<SendPacket>()
                 .parse(packet)
                 .run { ReceivePacket(id, ComponentId(component), schema(instanceClass).parse(instance)) }
@@ -51,7 +57,18 @@ class ReceivePacket private constructor(val id: UUID, val component: ComponentId
     }
 }
 
-private suspend fun <T> Schema<@JvmSuppressWildcards T>.parse(data: ByteArray): T {
+fun <E : Any, R : E> ReceiveChannel<E>.of(of: KClass<R>, context: CoroutineContext = Dispatchers.Unconfined): ReceiveChannel<R> {
+    return GlobalScope.produce(context) {
+        for (e in this@of) {
+            if (of.isInstance(e)) {
+                @Suppress("UNCHECKED_CAST")
+                send(e as R)
+            }
+        }
+    }
+}
+
+private fun <T> Schema<@JvmSuppressWildcards T>.parse(data: ByteArray): T {
     return newMessage().also { t ->
         ProtostuffIOUtil.mergeFrom(data, t, this)
     }

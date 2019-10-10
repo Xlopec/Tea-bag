@@ -11,5 +11,6 @@ dependencies {
 
     api 'io.protostuff:protostuff-runtime:1.5.9'
     api 'io.protostuff:protostuff-core:1.5.9'
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 }
 

@@ -5,13 +5,15 @@ import java.io.File
 
 sealed class PluginCommand
 
-data class DoAddFiles(val files: List<File>, val to: List<File>) : PluginCommand()
+data class StoreFiles(val files: List<File>) : PluginCommand()
 
-data class DoRemoveFiles(val files: List<File>, val from: List<File>) : PluginCommand()
+data class StoreServerSettings(val serverSettings: ServerSettings) : PluginCommand()
 
 data class DoStartServer(val settings: Settings) : PluginCommand()
 
 object DoStopServer : PluginCommand()
 
 data class DoApplyCommands(val id: ComponentId, val commands: List<Any>) : PluginCommand()
+
+data class DoNotifyMissingDependency(val exception: ClassNotFoundException) : PluginCommand()
 

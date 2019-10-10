@@ -7,7 +7,7 @@ import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeCellRenderer
 
-internal class ObjectTreeRenderer : JLabel(), TreeCellRenderer {
+internal class ObjectTreeRenderer(private val rootNodeName: String) : JLabel(), TreeCellRenderer {
 
     override fun getTreeCellRendererComponent(
         tree: JTree,
@@ -20,7 +20,7 @@ internal class ObjectTreeRenderer : JLabel(), TreeCellRenderer {
     ): Component {
 
         if (value === tree.model.root) {
-            text = "Commands"
+            text = rootNodeName
             return this
         }
 

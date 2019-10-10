@@ -3,22 +3,20 @@ package com.oliynick.max.elm.time.travel.app.domain
 import com.oliynick.max.elm.time.travel.protocol.ComponentId
 import java.io.File
 
-data class ServerSettings(val port: UInt = 8080U)
+data class ServerSettings(val host: String = "0.0.0.0", val port: UInt = 8080U)
 
 data class Settings(
     val serverSettings: ServerSettings,
-    val classFiles: List<File> = listOf() // implies ordered set
+    val classFiles: List<File> = listOf() // implies ordering
 )
 
 data class DebugState(val components: Map<ComponentId, ComponentDebugState> = emptyMap())
 
-data class RemoteCommand(val representation: TypeNode, val value: Any)
-
-data class RemoteState(val representation: TypeNode, val value: Any)
+data class RemoteObject(val representation: TypeNode, val value: Any)
 
 data class ComponentDebugState(val id: ComponentId,
-                               val commands: List<RemoteCommand> = emptyList(),
-                               val states: List<RemoteState> = emptyList())
+                               val commands: List<RemoteObject> = emptyList(),
+                               val states: List<RemoteObject> = emptyList())
 
 sealed class PluginState {
     abstract val settings: Settings

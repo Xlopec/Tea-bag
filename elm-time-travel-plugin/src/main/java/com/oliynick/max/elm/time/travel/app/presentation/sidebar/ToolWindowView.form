@@ -153,7 +153,7 @@
                   <text value="Host"/>
                 </properties>
               </component>
-              <component id="72915" class="javax.swing.JTextField" default-binding="true">
+              <component id="72915" class="javax.swing.JTextField" binding="portTextField">
                 <constraints>
                   <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag top="0" left="4" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
@@ -162,7 +162,7 @@
                   <preferredSize width="50" height="30"/>
                 </properties>
               </component>
-              <component id="9c1c" class="javax.swing.JTextField" default-binding="true">
+              <component id="9c1c" class="javax.swing.JTextField" binding="hostTextField">
                 <constraints>
                   <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>

@@ -1,6 +1,5 @@
 package com.oliynick.max.elm.time.travel.app.domain
 
-import com.oliynick.max.elm.time.travel.app.presentation.misc.toReadableString
 import java.lang.reflect.Field
 import java.lang.reflect.Type
 import kotlin.reflect.full.declaredMemberProperties
@@ -102,29 +101,3 @@ private fun Field.value(of: Any): Any? {
 private infix fun TypeNode.named(fieldName: String) = FieldNode(fieldName, this)
 
 private infix fun TypeNode.named(fieldIndex: Int) = this named fieldIndex.toString()
-
-//////
-
-data class A(val string: String, val compl: Compl)
-
-data class IntB(val value: Int)
-
-data class StringB(val value: String)
-
-data class Compl(val intb: IntB, val strB: StringB, val i: Int)
-
-
-data class Znlpa(
-    val iterable: Iterable<*>,
-    val map: Map<*, *>
-)
-
-fun main() {
-    val l = Znlpa(
-        listOf("A", "b", "123" to 1, null),
-        mapOf(3 to "loh", null to "13", 234 to null, null to null)
-    )
-    val root = l.traverse()
-
-    println(root.toReadableString())
-}

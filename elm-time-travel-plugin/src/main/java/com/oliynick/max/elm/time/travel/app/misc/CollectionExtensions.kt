@@ -84,4 +84,17 @@ fun <L : MutableList<T>, T> L.replaceAll(replaceWith: List<T>,
     return replaceAll(replaceWith, diffCallback, update, ::identity)
 }
 
+fun <E> List<E>.mergeWith(with: List<E>): List<E> {
+    val merged = ArrayList<E>(this)
+
+    for (e in with) {
+        if (!merged.contains(e)) {
+            merged += e
+        }
+    }
+
+    merged.trimToSize()
+    return merged
+}
+
 private fun <T> identity(t: T): T = t

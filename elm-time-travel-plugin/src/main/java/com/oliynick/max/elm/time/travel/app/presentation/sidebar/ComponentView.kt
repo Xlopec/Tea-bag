@@ -5,7 +5,6 @@ import com.oliynick.max.elm.time.travel.app.domain.*
 import com.oliynick.max.elm.time.travel.app.presentation.misc.DiffingTreeModel
 import com.oliynick.max.elm.time.travel.app.presentation.misc.ObjectTreeRenderer
 import com.oliynick.max.elm.time.travel.app.presentation.misc.setOnClickListener
-import com.oliynick.max.elm.time.travel.app.transport.of
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
@@ -16,7 +15,6 @@ import javax.swing.JButton
 import javax.swing.JPanel
 import javax.swing.JTree
 import javax.swing.tree.MutableTreeNode
-import javax.swing.tree.TreeModel
 import javax.swing.tree.TreeNode
 
 class ComponentView(
@@ -34,11 +32,14 @@ class ComponentView(
     val _root get() = root
 
     init {
-        commandsTree.cellRenderer = ObjectTreeRenderer()
+        commandsTree.cellRenderer = ObjectTreeRenderer("Commands")
+        statesTree.cellRenderer = ObjectTreeRenderer("States")
 
         val commandsTreeModel = DiffingTreeModel.newInstance(componentState.commands)
+        val statesTreeModel = DiffingTreeModel.newInstance(componentState.states)
 
         commandsTree.model = commandsTreeModel
+        statesTree.model = statesTreeModel
 
         val componentEvents = Channel<PluginMessage>()
 
@@ -47,6 +48,7 @@ class ComponentView(
                 .mapNotNull { (it as? Started)?.debugState?.components?.get(componentState.id) }
                 .collect { componentState ->
                     commandsTreeModel.swap(componentState.commands)
+                    statesTreeModel.swap(componentState.states)
                 }
         }
 

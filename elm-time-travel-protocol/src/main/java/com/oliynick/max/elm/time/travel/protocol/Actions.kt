@@ -10,3 +10,5 @@ data class ApplyCommands(val commands: List<Any>) : Action() {
         require(commands.isNotEmpty())
     }
 }
+
+data class ComponentSnapshot(val message: Any, val oldState: Any, val newState: Any) : Action()
