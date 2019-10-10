@@ -1,15 +1,20 @@
 package com.oliynick.max.elm.time.travel.app.presentation.sidebar
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.oliynick.max.elm.core.component.Component
+import com.oliynick.max.elm.core.component.changes
 import com.oliynick.max.elm.time.travel.app.domain.*
 import com.oliynick.max.elm.time.travel.app.presentation.misc.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.awt.event.MouseEvent
 import java.io.File
 import javax.swing.*
@@ -32,7 +37,6 @@ class ToolWindowView(private val project: Project,
     private lateinit var removeDirectoryButton: JButton
     private lateinit var addDirectoryButton: JButton
     private lateinit var startButton: JButton
-    private lateinit var transientStateProgress: JProgressBar
     private lateinit var portTextField: JTextField
     private lateinit var hostTextField: JTextField
 
@@ -60,28 +64,11 @@ class ToolWindowView(private val project: Project,
         componentsTabPane.model = DefaultSingleSelectionModel()
 
         launch { component(uiEvents.consumeAsFlow()).collect { state -> render(state, uiEvents) } }
-
-        /*launch {
-            component.changes().collect { state ->
-
-                if (state.isTransient) {
-                    ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Loh", false) {
-
-                        override fun run(indicator: ProgressIndicator) {
-                            indicator.isIndeterminate = true
-
-                            //println("Thread ${Thread.currentThread()}"); Thread.sleep(5000L)
-                        }
-
-                    })
-                }
-            }
-        }*/
+        launch { component.showProgressOnTransientState(project) }
     }
 
     private fun render(state: PluginState, messages: Channel<PluginMessage>) {
         directoriesListModel.swap(state.settings.classFiles)
-        transientStateProgress.isVisible = state.isTransient
 
         portTextField.isEnabled = state is Stopped
         hostTextField.isEnabled = portTextField.isEnabled
@@ -151,7 +138,24 @@ private fun JTextField.setText(text: String, listener: DocumentListener) {
     document.addDocumentListener(listener)
 }
 
+private suspend fun Component<PluginMessage, PluginState>.showProgressOnTransientState(project: Project) {
+    changes().filter { state -> state.isTransient }.collect { transientState ->
+        runBackgroundableTask(transientState.progressDescription, project, false) {
+            runBlocking { changes().first { state -> !state.isTransient } }
+        }
+    }
+}
+
 private val PluginState.isTransient inline get() = this is Starting || this is Stopping
+
+private val ServerSettings.asHumanReadable: String inline get() = "$host:$port"
+
+private val PluginState.progressDescription: String
+    inline get() = when (this) {
+        is Starting -> "Starting server on ${settings.serverSettings.asHumanReadable}"
+        is Stopping -> "Stopping server on ${settings.serverSettings.asHumanReadable}"
+        is Stopped, is Started -> throw IllegalStateException("Can't get description for $this")
+    }
 
 private fun AwtComponent.setOnClickListenerEnabling(l: (MouseEvent) -> Unit) {
     setOnClickListener(l)

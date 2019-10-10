@@ -121,20 +121,6 @@
                   <verticalTextPosition value="1"/>
                 </properties>
               </component>
-              <component id="ea189" class="javax.swing.JProgressBar" binding="transientStateProgress">
-                <constraints>
-                  <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="181" height="4"/>
-                  </grid>
-                  <gridbag weightx="1.0" weighty="0.0"/>
-                </constraints>
-                <properties>
-                  <focusable value="false"/>
-                  <indeterminate value="true"/>
-                  <opaque value="false"/>
-                  <visible value="true"/>
-                </properties>
-              </component>
               <component id="ac378" class="javax.swing.JLabel">
                 <constraints>
                   <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>

@@ -21,26 +21,22 @@ class SendPacket private constructor(val id: UUID,
     companion object {
 
         private val buffer by lazy { LinkedBuffer.allocate(512) }
-        private val buffer1 by lazy { LinkedBuffer.allocate(512) }
 
         fun pack(component: ComponentId, action: Action): ByteArray {
-
-            val schema = schema<SendPacket>()
-            val schema1 = schema(action::class.java)
-
             try {
-                val packet = SendPacket(
-                    UUID.randomUUID(),
-                    component.id,
-                    action::class.java,
-                    ProtostuffIOUtil.toByteArray(action, schema1, buffer)
-                )
-
-                return ProtostuffIOUtil.toByteArray(packet, schema, buffer1)
+                return ProtostuffIOUtil.toByteArray(sendPacket(component, action), schema<SendPacket>(), buffer.clear())
             } finally {
                 buffer.clear()
-                buffer1.clear()
             }
+        }
+
+        private fun sendPacket(component: ComponentId, action: Action): SendPacket {
+            return SendPacket(
+                UUID.randomUUID(),
+                component.id,
+                action::class.java,
+                ProtostuffIOUtil.toByteArray(action, schema(action::class.java), buffer)
+            )
         }
     }
 }
