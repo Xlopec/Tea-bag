@@ -43,18 +43,24 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="b9df9" class="javax.swing.JButton" binding="applyCommandButton">
+          <component id="e4f25" class="javax.swing.JLabel" binding="removeCommandButton">
             <constraints/>
             <properties>
-              <enabled value="false"/>
-              <text value="Apply"/>
+              <disabledIcon value="images/remove_dark.png"/>
+              <icon value="images/remove.png"/>
+              <preferredSize width="16" height="16"/>
+              <text value=""/>
             </properties>
           </component>
-          <component id="f7eb4" class="javax.swing.JButton" binding="removeCommandButton">
+          <component id="314a" class="javax.swing.JLabel" binding="applyCommandButton">
             <constraints/>
             <properties>
+              <disabledIcon value="images/updateRunningApplicationDark.png"/>
+              <doubleBuffered value="true"/>
               <enabled value="false"/>
-              <text value="Remove"/>
+              <icon value="images/updateRunningApplication.png"/>
+              <inheritsPopupMenu value="false"/>
+              <text value=""/>
             </properties>
           </component>
         </children>

@@ -2,11 +2,13 @@ package com.oliynick.max.elm.time.travel.app.presentation.sidebar
 
 import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.components.JBTabbedPane
 import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.core.component.changes
 import com.oliynick.max.elm.time.travel.app.domain.*
 import com.oliynick.max.elm.time.travel.app.presentation.misc.*
+import com.oliynick.max.elm.time.travel.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.awt.Container
+import java.awt.FlowLayout
 import java.awt.event.MouseEvent
 import java.io.File
 import javax.swing.*
@@ -30,9 +33,9 @@ class ToolWindowView(private val project: Project,
 
     private lateinit var panel: JPanel
     private lateinit var directoriesList: JList<File>
-    private lateinit var removeDirectoryButton: JButton
-    private lateinit var addDirectoryButton: JButton
-    private lateinit var startButton: JButton
+    private lateinit var removeDirectoryButton: JLabel
+    private lateinit var addDirectoryButton: JLabel
+    private lateinit var startButton: JLabel
     private lateinit var portTextField: JTextField
     private lateinit var hostTextField: JTextField
     private lateinit var componentsPanel: JPanel
@@ -80,7 +83,7 @@ class ToolWindowView(private val project: Project,
         portTextField.setText(state.settings.serverSettings.port.toString(), portListener)
         hostTextField.setText(state.settings.serverSettings.host, hostListener)
 
-        startButton.text = "Start"
+        startButton.icon = icon("run")
 
         if (state.canStart) {
             startButton.setOnClickListenerEnabling { messages.offer(StartServer) }
@@ -102,7 +105,7 @@ class ToolWindowView(private val project: Project,
     }
 
     private fun render(state: Starting) {
-        startButton.text = "Starting"
+        startButton.icon = icon("resume")
         startButton.removeMouseListenersDisabling()
 
         removeDirectoryButton.removeMouseListenersDisabling()
@@ -110,7 +113,7 @@ class ToolWindowView(private val project: Project,
     }
 
     private fun render(state: Started, messages: Channel<PluginMessage>) {
-        startButton.text = "Stop"
+        startButton.icon = icon("suspend")
         startButton.setOnClickListenerEnabling { messages.offer(StopServer) }
 
         removeDirectoryButton.removeMouseListenersDisabling()
@@ -130,12 +133,16 @@ class ToolWindowView(private val project: Project,
 
             state.debugState.components
                 .filter { e -> componentsTabPane.indexOfTab(e.key.id) == -1 }
-                .forEach { (id, s) -> componentsTabPane.addTab(id.id, ComponentView(scope, component, s)._root) }
+                .forEach { (id, s) ->
+                    componentsTabPane.addCloseableTab(id, ComponentView(scope, component, s)._root) {
+
+                    }
+                }
         }
     }
 
     private fun render(state: Stopping) {
-        startButton.text = "Stopping"
+        startButton.icon = icon("killProcess")
         startButton.removeMouseListenersDisabling()
 
         removeDirectoryButton.removeMouseListenersDisabling()
@@ -190,4 +197,24 @@ fun Container.clearCancelling() {
 
         remove(c)
     }
+}
+
+inline fun JTabbedPane.addCloseableTab(component: ComponentId,
+                                       content: java.awt.Component,
+                                       icon: Icon? = null,
+                                       crossinline onClose:(ComponentId) -> Unit) {
+    addTab(component.id, content)
+
+    val panel = JPanel(FlowLayout()).apply {
+        isOpaque = false
+
+        add(JLabel(component.id, icon, SwingConstants.LEADING))
+        add(JLabel("x").also { setOnClickListener { onClose(component) } })
+    }
+
+    setTabComponentAt(indexOfComponent(content), panel)
+}
+
+fun icon(name: String): Icon {
+    return IconLoader.getIcon("images/$name.png")
 }

@@ -1,6 +1,7 @@
 package com.oliynick.max.elm.time.travel.app.presentation.misc
 
 import com.oliynick.max.elm.time.travel.app.domain.*
+import com.oliynick.max.elm.time.travel.app.presentation.sidebar.icon
 import java.awt.Component
 import javax.swing.JLabel
 import javax.swing.JTree
@@ -34,6 +35,12 @@ internal class ObjectTreeRenderer(private val rootNodeName: String) : TreeCellRe
             is NullRef -> node.toReadableString()
             is MapPrimitive -> node.toReadableString()
             is ArrayPrimitive -> node.toReadableString()
+        }
+
+        label.icon = when (value.node) {
+            is ArrayPrimitive, is MapPrimitive, is IterablePrimitive, is AnyRef -> icon("class")
+            NullRef -> null
+            is IntPrimitive , is StringPrimitive -> icon("variable")
         }
 
         return label

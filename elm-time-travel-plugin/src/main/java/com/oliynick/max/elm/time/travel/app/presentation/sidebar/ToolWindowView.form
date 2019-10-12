@@ -40,43 +40,40 @@
                 <properties/>
                 <border type="empty"/>
                 <children>
-                  <component id="95ac1" class="javax.swing.JButton" binding="addDirectoryButton">
+                  <component id="c413a" class="javax.swing.JLabel" binding="addDirectoryButton">
                     <constraints/>
                     <properties>
-                      <background color="-13549283"/>
-                      <borderPainted value="false"/>
-                      <contentAreaFilled value="false"/>
-                      <defaultCapable value="true"/>
+                      <disabledIcon value="images/add_dark.png"/>
                       <enabled value="true"/>
-                      <hideActionText value="false"/>
-                      <maximumSize width="30" height="30"/>
-                      <minimumSize width="30" height="30"/>
-                      <opaque value="false"/>
-                      <preferredSize width="78" height="30"/>
-                      <text value="Add"/>
-                      <toolTipText value="Add .class files or directories to track"/>
+                      <icon value="images/add.png"/>
+                      <inheritsPopupMenu value="false"/>
+                      <maximumSize width="16" height="16"/>
+                      <minimumSize width="16" height="16"/>
+                      <preferredSize width="16" height="16"/>
+                      <requestFocusEnabled value="true"/>
+                      <text value=""/>
                     </properties>
                   </component>
-                  <component id="2693a" class="javax.swing.JButton" binding="removeDirectoryButton" default-binding="true">
+                  <component id="8653e" class="javax.swing.JLabel" binding="removeDirectoryButton">
                     <constraints/>
                     <properties>
-                      <borderPainted value="false"/>
-                      <contentAreaFilled value="false"/>
-                      <hideActionText value="false"/>
-                      <maximumSize width="30" height="30"/>
-                      <minimumSize width="30" height="30"/>
-                      <opaque value="false"/>
-                      <preferredSize width="78" height="30"/>
-                      <text value="Remove"/>
-                      <verticalAlignment value="0"/>
+                      <disabledIcon value="images/remove_dark.png"/>
+                      <icon value="images/remove.png"/>
+                      <maximumSize width="16" height="16"/>
+                      <minimumSize width="16" height="16"/>
+                      <preferredSize width="16" height="16"/>
+                      <text value=""/>
                     </properties>
                   </component>
-                  <component id="77ee2" class="javax.swing.JButton" binding="startButton">
+                  <component id="f3acb" class="javax.swing.JLabel" binding="startButton">
                     <constraints/>
                     <properties>
-                      <icon value="/general/add.svg"/>
-                      <selected value="false"/>
-                      <text value="Start"/>
+                      <icon value="images/toolWindowRun.png"/>
+                      <inheritsPopupMenu value="true"/>
+                      <maximumSize width="16" height="16"/>
+                      <minimumSize width="16" height="16"/>
+                      <preferredSize width="16" height="16"/>
+                      <text value=""/>
                     </properties>
                   </component>
                 </children>

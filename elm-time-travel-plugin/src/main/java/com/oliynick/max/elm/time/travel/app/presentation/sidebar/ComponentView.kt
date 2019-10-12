@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
-import javax.swing.JButton
+import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTree
 import javax.swing.tree.MutableTreeNode
@@ -26,8 +26,8 @@ class ComponentView(
     private lateinit var root: JPanel
     private lateinit var commandsTree: JTree
     private lateinit var statesTree: JTree
-    private lateinit var applyCommandButton: JButton
-    private lateinit var removeCommandButton: JButton
+    private lateinit var applyCommandButton: JLabel
+    private lateinit var removeCommandButton: JLabel
 
     val _root get() = root
 
