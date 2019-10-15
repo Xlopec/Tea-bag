@@ -8,6 +8,7 @@ import com.max.weatherviewer.api.weather.Location
 import com.max.weatherviewer.api.weather.WeatherProvider
 import com.max.weatherviewer.navigateDefaultAnimated
 import com.max.weatherviewer.presentation.map.MapFragmentArgs
+import com.oliynick.max.elm.core.actor.component
 import com.oliynick.max.elm.core.component.*
 import kotlinx.coroutines.CoroutineScope
 import org.kodein.di.Kodein

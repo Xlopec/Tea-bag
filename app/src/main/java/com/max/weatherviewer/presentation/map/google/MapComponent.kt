@@ -13,6 +13,7 @@ import com.max.weatherviewer.navigateDefaultAnimated
 import com.max.weatherviewer.persistence.load
 import com.max.weatherviewer.persistence.persist
 import com.max.weatherviewer.presentation.viewer.WeatherViewerFragmentArgs
+import com.oliynick.max.elm.core.actor.component
 import com.oliynick.max.elm.core.component.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow

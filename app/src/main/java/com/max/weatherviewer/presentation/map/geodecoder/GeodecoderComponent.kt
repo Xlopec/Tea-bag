@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import com.max.weatherviewer.api.weather.Location
 import com.max.weatherviewer.di.fragmentScope
 import com.max.weatherviewer.presentation.map.google.MapComponent
+import com.oliynick.max.elm.core.actor.component
 import com.oliynick.max.elm.core.component.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
