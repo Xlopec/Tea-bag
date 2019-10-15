@@ -19,7 +19,7 @@
           <dividerLocation value="254"/>
           <dividerSize value="5"/>
           <enabled value="true"/>
-          <oneTouchExpandable value="true"/>
+          <oneTouchExpandable value="false"/>
         </properties>
         <border type="empty"/>
         <children>

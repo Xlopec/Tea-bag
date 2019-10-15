@@ -1,1 +1,1 @@
-include ':app', ':elm-core', ':elm-time-travel', ':elm-time-travel-protocol', ':elm-time-travel-plugin'
+include ':app', ':elm-core', ':elm-time-travel-protocol', ':elm-time-travel-plugin'

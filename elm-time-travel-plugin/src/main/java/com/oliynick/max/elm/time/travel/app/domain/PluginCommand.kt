@@ -15,5 +15,7 @@ object DoStopServer : PluginCommand()
 
 data class DoApplyCommands(val id: ComponentId, val commands: List<Any>) : PluginCommand()
 
+data class DoApplyState(val id: ComponentId, val state: Any) : PluginCommand()
+
 data class DoNotifyMissingDependency(val exception: ClassNotFoundException) : PluginCommand()
 

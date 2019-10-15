@@ -62,6 +62,7 @@ project.afterEvaluate {
                         '-Xuse-experimental=kotlin.Experimental',
                         '-Xuse-experimental=kotlinx.coroutines.FlowPreview',
                         '-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi',
+                        '-Xuse-experimental=io.ktor.util.KtorExperimentalAPI',
                         '-XXLanguage:+NewInference'
                 ]
             }

@@ -29,7 +29,7 @@ import java.util.concurrent.Executors
 fun server(
     settings: Settings,
     events: Channel<PluginMessage>,
-    outgoing: Channel<Pair<ComponentId, Action>>
+    outgoing: Channel<Pair<ComponentId, Message>>
 ): NettyApplicationEngine {
 
     return embeddedServer(Netty, host = settings.serverSettings.host, port = settings.serverSettings.port.toInt()) {
@@ -100,8 +100,9 @@ private suspend fun Channel<PluginMessage>.notifyException(e: Throwable) {
 }
 
 private fun ReceivePacket.toMessage(): PluginMessage {
-    return when (val action = action) {
-        is ApplyCommands -> AppendCommands(component, action.commands)
-        is ComponentSnapshot -> AppendSnapshot(component, action.message, action.oldState, action.newState)
+    return when (val action = message) {
+        is NotifyComponentSnapshot -> AppendSnapshot(component, action.message, action.oldState, action.newState)
+        is ApplyMessage -> TODO("shouldn't get here")
+        is ApplyState -> TODO("shouldn't get here")
     }
 }

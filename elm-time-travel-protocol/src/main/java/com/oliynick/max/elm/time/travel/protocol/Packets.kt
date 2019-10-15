@@ -16,32 +16,32 @@ import kotlin.reflect.KClass
 
 class SendPacket private constructor(val id: UUID,
                                      val component: String,
-                                     val instanceClass: Class<out Action>,
+                                     val instanceClass: Class<out Message>,
                                      val instance: ByteArray) {
     companion object {
 
         private val buffer by lazy { LinkedBuffer.allocate(512) }
 
-        fun pack(component: ComponentId, action: Action): ByteArray {
+        fun pack(component: ComponentId, message: Message): ByteArray {
             try {
-                return ProtostuffIOUtil.toByteArray(sendPacket(component, action), schema<SendPacket>(), buffer.clear())
+                return ProtostuffIOUtil.toByteArray(sendPacket(component, message), schema<SendPacket>(), buffer.clear())
             } finally {
                 buffer.clear()
             }
         }
 
-        private fun sendPacket(component: ComponentId, action: Action): SendPacket {
+        private fun sendPacket(component: ComponentId, message: Message): SendPacket {
             return SendPacket(
                 UUID.randomUUID(),
                 component.id,
-                action::class.java,
-                ProtostuffIOUtil.toByteArray(action, schema(action::class.java), buffer)
+                message::class.java,
+                ProtostuffIOUtil.toByteArray(message, schema(message::class.java), buffer)
             )
         }
     }
 }
 
-class ReceivePacket private constructor(val id: UUID, val component: ComponentId, val action: Action) {
+class ReceivePacket private constructor(val id: UUID, val component: ComponentId, val message: Message) {
 
     companion object {
 

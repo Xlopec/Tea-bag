@@ -7,6 +7,7 @@ import com.intellij.ui.components.JBTabbedPane
 import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.core.component.changes
 import com.oliynick.max.elm.time.travel.app.domain.*
+import com.oliynick.max.elm.time.travel.app.presentation.dsl.setHover
 import com.oliynick.max.elm.time.travel.app.presentation.misc.*
 import com.oliynick.max.elm.time.travel.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
@@ -98,6 +99,7 @@ class ToolWindowView(private val project: Project,
         addDirectoryButton.setOnClickListenerEnabling {
             project.chooseClassFiles { files -> messages.offer(AddFiles(files)) }
         }
+        //fixme
 
         if (componentsPanel.componentCount == 0) {
             componentsPanel.add(EmptyComponentsView(component, scope.coroutineContext, project).root, "EmptyView")
@@ -119,6 +121,8 @@ class ToolWindowView(private val project: Project,
         removeDirectoryButton.removeMouseListenersDisabling()
         addDirectoryButton.removeMouseListenersDisabling()
 
+        //fixme
+
         if (state.debugState.components.size == 1) {
             componentsPanel.clearCancelling()
 
@@ -134,8 +138,8 @@ class ToolWindowView(private val project: Project,
             state.debugState.components
                 .filter { e -> componentsTabPane.indexOfTab(e.key.id) == -1 }
                 .forEach { (id, s) ->
-                    componentsTabPane.addCloseableTab(id, ComponentView(scope, component, s)._root) {
-
+                    componentsTabPane.addCloseableTab(id, ComponentView(scope, component, s)._root) { component ->
+                        messages.offer(RemoveComponent(component))
                     }
                 }
         }
@@ -209,7 +213,10 @@ inline fun JTabbedPane.addCloseableTab(component: ComponentId,
         isOpaque = false
 
         add(JLabel(component.id, icon, SwingConstants.LEADING))
-        add(JLabel("x").also { setOnClickListener { onClose(component) } })
+        add(JLabel(icon("close")).apply {
+            setHover(icon("close_dark"))
+            setOnClickListener { onClose(component) }
+        })
     }
 
     setTabComponentAt(indexOfComponent(content), panel)

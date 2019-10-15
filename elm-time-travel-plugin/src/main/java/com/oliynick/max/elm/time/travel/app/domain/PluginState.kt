@@ -2,6 +2,8 @@ package com.oliynick.max.elm.time.travel.app.domain
 
 import com.oliynick.max.elm.time.travel.protocol.ComponentId
 import java.io.File
+import java.time.LocalDateTime
+import java.util.*
 
 data class ServerSettings(val host: String = "0.0.0.0", val port: UInt = 8080U)
 
@@ -14,9 +16,10 @@ data class DebugState(val components: Map<ComponentId, ComponentDebugState> = em
 
 data class RemoteObject(val representation: TypeNode, val value: Any)
 
+data class Snapshot(val id: UUID, val timestamp: LocalDateTime, val message: RemoteObject, val state: RemoteObject)
+
 data class ComponentDebugState(val id: ComponentId,
-                               val commands: List<RemoteObject> = emptyList(),
-                               val states: List<RemoteObject> = emptyList())
+                               val snapshots: List<Snapshot> = emptyList())
 
 sealed class PluginState {
     abstract val settings: Settings
