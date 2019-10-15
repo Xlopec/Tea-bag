@@ -19,6 +19,7 @@ data class RemoteObject(val representation: TypeNode, val value: Any)
 data class Snapshot(val id: UUID, val timestamp: LocalDateTime, val message: RemoteObject, val state: RemoteObject)
 
 data class ComponentDebugState(val id: ComponentId,
+                               val currentState: RemoteObject,
                                val snapshots: List<Snapshot> = emptyList())
 
 sealed class PluginState {

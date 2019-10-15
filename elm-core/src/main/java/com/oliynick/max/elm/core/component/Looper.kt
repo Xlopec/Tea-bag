@@ -32,9 +32,7 @@ internal fun <M, C, S> CoroutineScope.actorComponent(initializer: Initializer<S,
     return this@actorComponent.actor<M>(coroutineContext.jobOrDefault(),
                                         onCompletion = statesChannel::close) {
 
-        val args = Dependencies(initializer, resolver, update, interceptor)
-
-        compute(computeNonTransientState(args, statesChannel), channel.iterator(), args, statesChannel)
+        loop(initializer, Dependencies(initializer, resolver, update, interceptor), channel, statesChannel)
 
     } to statesChannel.asFlow()
 }
@@ -58,49 +56,47 @@ internal suspend fun <M, C, S> updateMutating(message: M,
  * Before polling a message from the channel it tries to computes all
  * subsequent states produced by resolved commands
  */
-internal tailrec suspend fun <M, C, S> compute(state: S,
-                                               it: ChannelIterator<M>,
-                                               dependencies: Dependencies<M, C, S>,
-                                               states: BroadcastChannel<S>): S {
+internal tailrec suspend fun <M, C, S> loop(state: S,
+                                            it: ChannelIterator<M>,
+                                            dependencies: Dependencies<M, C, S>,
+                                            states: BroadcastChannel<S>): S {
 
     val message = it.nextOrNull() ?: return state
 
     val (nextState, commands) = updateMutating(message, state, dependencies, states)
 
-    return compute(compute(nextState, dependencies.resolver(commands).iterator(), dependencies, states), it, dependencies, states)
+    return loop(loop(nextState, dependencies.resolver(commands).iterator(), dependencies, states), it, dependencies, states)
 }
 
 /**
  * Polls messages from collection's iterator and computes next states until collection is empty
  */
-internal suspend fun <M, C, S> compute(state: S, it: Iterator<M>, dependencies: Dependencies<M, C, S>, states: BroadcastChannel<S>): S {
+internal suspend fun <M, C, S> loop(state: S,
+                                    it: Iterator<M>,
+                                    dependencies: Dependencies<M, C, S>,
+                                    states: BroadcastChannel<S>): S {
+
     val message = it.nextOrNull() ?: return state
 
     val (nextState, commands) = updateMutating(message, state, dependencies, states)
 
-    return compute(compute(nextState, it, dependencies, states), dependencies.resolver(commands).iterator(), dependencies, states)
+    return loop(loop(nextState, it, dependencies, states), dependencies.resolver(commands).iterator(), dependencies, states)
 }
 
 /**
- * Loads initial state and set of commands, after that computes the sequence of states
- * until non-transient one is found
- * */
-internal suspend fun <M, C, S> computeNonTransientState(dependencies: Dependencies<M, C, S>, statesChannel: BroadcastChannel<S>): S {
+ * Loads an initial state using supplied initializer and starts component's loop
+ */
+internal suspend fun <M, C, S> loop(initializer: Initializer<S, C>,
+                                    dependencies: Dependencies<M, C, S>,
+                                    messages: Channel<M>,
+                                    states: BroadcastChannel<S>): S {
 
-    suspend fun compute(state: S, it: Iterator<M>): S {
-        val message = it.nextOrNull() ?: return state
+    val (initState, initCommands) = initializer()
+        .also { (initialState, _) -> states.offerChecking(initialState) }
 
-        val (nextState, commands) = dependencies.update(message, state)
-            // we don't want to suspend here
-            .also { (nextState, _) -> statesChannel.offerChecking(nextState) }
+    val nonTransient = loop(initState, dependencies.resolver(initCommands).iterator(), dependencies, states)
 
-        return compute(compute(nextState, it), dependencies.resolver(commands).iterator())
-    }
-
-    val (initialState, initialCommands) = dependencies.initializer()
-        .also { (initialState, _) -> statesChannel.offerChecking(initialState) }
-
-    return compute(initialState, dependencies.resolver(initialCommands).iterator())
+    return loop(nonTransient, messages.iterator(), dependencies, states)
 }
 
 /**

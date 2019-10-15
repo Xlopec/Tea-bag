@@ -35,3 +35,7 @@ data class ReApplyCommands(val componentId: ComponentId, val commands: List<Any>
 data class ReApplyState(val componentId: ComponentId, val state: Any) : PluginMessage()
 
 data class RemoveComponent(val componentId: ComponentId) : PluginMessage()
+
+data class StateReApplied(val componentId: ComponentId, val state: Any) : PluginMessage()
+
+data class ComponentAttached(val componentId: ComponentId, val state: Any) : PluginMessage()

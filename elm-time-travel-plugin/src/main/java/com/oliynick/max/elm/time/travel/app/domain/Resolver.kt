@@ -28,7 +28,7 @@ suspend fun Dependencies.resolve(command: PluginCommand): Set<PluginMessage> {
             DoStopServer -> command.effect { manager.stop(); NotifyStopped }
             is DoApplyCommands -> command.sideEffect { manager.outgoing.send(id to ApplyMessage(commands)) }
             is DoNotifyMissingDependency -> command.sideEffect {  }
-            is DoApplyState -> command.sideEffect { manager.outgoing.send(id to ApplyState(state)) }
+            is DoApplyState -> command.effect { manager.outgoing.send(id to ApplyState(state)); StateReApplied(id, state) }
         }
     }
 

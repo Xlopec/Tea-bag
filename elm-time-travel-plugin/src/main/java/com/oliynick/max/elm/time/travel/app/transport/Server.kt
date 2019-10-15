@@ -104,5 +104,6 @@ private fun ReceivePacket.toMessage(): PluginMessage {
         is NotifyComponentSnapshot -> AppendSnapshot(component, action.message, action.oldState, action.newState)
         is ApplyMessage -> TODO("shouldn't get here")
         is ApplyState -> TODO("shouldn't get here")
+        is NotifyComponentAttached -> ComponentAttached(component, action.state)
     }
 }

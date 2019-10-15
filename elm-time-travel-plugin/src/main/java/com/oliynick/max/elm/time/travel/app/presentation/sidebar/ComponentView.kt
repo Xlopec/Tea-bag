@@ -4,10 +4,7 @@ import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
 import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.time.travel.app.domain.*
-import com.oliynick.max.elm.time.travel.app.presentation.misc.DefaultMouseListener
-import com.oliynick.max.elm.time.travel.app.presentation.misc.DiffingTreeModel
-import com.oliynick.max.elm.time.travel.app.presentation.misc.ObjectTreeRenderer
-import com.oliynick.max.elm.time.travel.app.presentation.misc.setOnClickListener
+import com.oliynick.max.elm.time.travel.app.presentation.misc.*
 import com.oliynick.max.elm.time.travel.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -18,6 +15,7 @@ import kotlinx.coroutines.launch
 import java.awt.event.MouseEvent
 import javax.swing.*
 import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
 import javax.swing.tree.TreeNode
 
@@ -30,6 +28,7 @@ class ComponentView(
 
     private lateinit var root: JPanel
     private lateinit var snapshotsTree: JTree
+    private lateinit var stateTree: JTree
     private lateinit var applyCommandButton: JLabel
     private lateinit var removeCommandButton: JLabel
 
@@ -41,6 +40,9 @@ class ComponentView(
         snapshotsTree.model = snapshotsModel
         snapshotsTree.cellRenderer = ObjectTreeRenderer("Snapshots")
 
+        stateTree.model = DefaultTreeModel(DefaultMutableTreeNode("State").also { it.add(componentState.currentState.representation.toJTree()) })
+        stateTree.cellRenderer = ObjectTreeRenderer("State")
+
         val componentEvents = Channel<PluginMessage>()
 
         launch {
@@ -48,6 +50,7 @@ class ComponentView(
                 .mapNotNull { (it as? Started)?.debugState?.components?.get(componentState.id) }
                 .collect { componentState ->
                     snapshotsModel.swap(componentState.snapshots)
+                    stateTree.model = DefaultTreeModel(DefaultMutableTreeNode("State").also { it.add(componentState.currentState.representation.toJTree()) })
                 }
         }
 
@@ -64,7 +67,7 @@ class ComponentView(
                     snapshotsTree.setSelectionRow(row)
                     (snapshotsTree.getPathForRow(row).lastPathComponent as DefaultMutableTreeNode).also {
 
-                        when(val payload = it.userObject) {
+                        when (val payload = it.userObject) {
                             is Snapshot -> buildPopup(componentState.id, payload, componentEvents).show(e.component, e.x, e.y)
                             "Message" -> buildMessagePopup(componentEvents).show(e.component, e.x, e.y)
                             "State" -> buildStatePopup(componentEvents).show(e.component, e.x, e.y)
@@ -94,7 +97,7 @@ class ComponentView(
 }
 
 private fun buildPopup(component: ComponentId, snapshot: Snapshot, events: Channel<PluginMessage>): JPopupMenu {
-    val menu = JBPopupMenu("Snapshot ${snapshot.toString().take(5)}...")
+    val menu = JBPopupMenu("Snapshot ${snapshot.id}")
 
     menu.add(JBMenuItem("Reset to this", icon("updateRunningApplication")).apply {
         addActionListener {
@@ -103,11 +106,9 @@ private fun buildPopup(component: ComponentId, snapshot: Snapshot, events: Chann
     })
 
     menu.add(JBMenuItem("Delete", icon("remove")).apply {
-        addMouseListener(object : DefaultMouseListener {
-            override fun mouseClicked(e: MouseEvent) {
-                //events.offer()
-            }
-        })
+        addActionListener {
+            events.offer(RemoveSnapshots(component, setOf(snapshot.id)))
+        }
     })
 
     return menu

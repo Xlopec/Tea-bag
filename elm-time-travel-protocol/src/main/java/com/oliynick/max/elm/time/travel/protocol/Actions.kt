@@ -2,14 +2,14 @@ package com.oliynick.max.elm.time.travel.protocol
 
 sealed class Message
 
-data class ApplyMessage(val message: Any) : Message()
+sealed class ClientMessage : Message()
 
-data class NotifyComponentSnapshot(val message: Any, val oldState: Any, val newState: Any) : Message()
+sealed class ServerMessage : Message()
 
-data class NotifyStateUpdated(val newState: Any) : Message()
+data class ApplyMessage(val message: Any) : ClientMessage()
 
-data class ApplyState(val state: Any) : Message()
+data class ApplyState(val state: Any) : ClientMessage()
 
-fun notifyUnexpectedMessage(message: Message): Nothing {
-    throw IllegalArgumentException("Received illegal action, was $message")
-}
+data class NotifyComponentSnapshot(val message: Any, val oldState: Any, val newState: Any) : ServerMessage()
+
+data class NotifyComponentAttached(val state: Any) : ServerMessage()

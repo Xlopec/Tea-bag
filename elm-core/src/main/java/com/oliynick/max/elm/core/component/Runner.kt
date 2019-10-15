@@ -1,8 +1,8 @@
 package com.oliynick.max.elm.core.component
 
 import com.oliynick.max.elm.time.travel.protocol.ComponentId
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlin.random.Random
 
 data class SomeTestString(val value: String)
 
@@ -18,10 +18,10 @@ fun main() {
             Settings(ComponentId("webSocketComponent")),
             SomeTestState(SomeTestString("initial")),
             { emptySet() },
-            { message, _ -> SomeTestState(message.str).noCommand() },
+            { message, _ -> SomeTestState(message.str.copy(value = message.str.value + Random.nextDouble().toString())).noCommand() },
             androidLogger("Test")
         ).also {
-            it.invoke(SomeTestCommand(SomeTestString("hello"), listOf(1234))).first()
+    //        it.invoke(SomeTestCommand(SomeTestString("hello"), listOf(1234))).first()
         }
 
     }

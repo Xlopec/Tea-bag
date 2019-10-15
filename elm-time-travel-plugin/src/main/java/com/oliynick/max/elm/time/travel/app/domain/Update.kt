@@ -25,6 +25,8 @@ internal fun update(message: PluginMessage, state: PluginState): UpdateWith<Plug
         is AppendSnapshot -> appendSnapshot(message, state)
         is RemoveComponent -> removeComponent(message, state)
         is ReApplyState -> reApplyState(message, state)
+        is StateReApplied -> reApplyState(message, state)
+        is ComponentAttached -> attachComponent(message, state)
     }
 }
 
@@ -67,9 +69,24 @@ private fun stopServer(state: PluginState): UpdateWith<Stopping, DoStopServer> {
 private fun appendSnapshot(message: AppendSnapshot, state: PluginState): UpdateWith<PluginState, PluginCommand> {
     if (state is Started) {
 
-        val updated = state.debugState[message.componentId].appendSnapshot(message.toSnapshot())
+        val snapshot = message.toSnapshot()
+        val updated = state.debugState.componentOrNew(message.componentId, snapshot.state).appendSnapshot(snapshot)
 
         return state.copy(debugState = state.debugState.copy(components = state.debugState.components + updated.asPair()))
+            .noCommand()
+    }
+
+    return state.noCommand()
+}
+
+private fun attachComponent(message: ComponentAttached, state: PluginState): UpdateWith<PluginState, PluginCommand> {
+    if (state is Started) {
+
+        val id = message.componentId
+        val currentState = message.state.toRemoteRepresentation()
+        val componentState =  state.debugState.components[id]?.copy(currentState = currentState) ?: ComponentDebugState(id, currentState)
+
+        return state.copy(debugState = state.debugState.copy(components = state.debugState.components + componentState.asPair()))
             .noCommand()
     }
 
@@ -82,6 +99,16 @@ private fun reApplyState(message: ReApplyState, state: PluginState): UpdateWith<
     return state.command(DoApplyState(message.componentId, message.state))
 }
 
+private fun reApplyState(message: StateReApplied, state: PluginState): UpdateWith<PluginState, PluginCommand> {
+    require(state is Started) { "Not a started state, was $state" }
+
+    val component = state.debugState.components[message.componentId] ?: return state.noCommand()
+    val updated = component.copy(currentState = message.state.toRemoteRepresentation())
+
+    return state.copy(debugState = state.debugState.copy(components = state.debugState.components + updated.asPair()))
+        .noCommand()
+}
+
 private fun reApplyCommands(message: ReApplyCommands, state: PluginState): UpdateWith<PluginState, PluginCommand> {
     require(state is Started) { "Not a started state, was $state" }
 
@@ -91,7 +118,8 @@ private fun reApplyCommands(message: ReApplyCommands, state: PluginState): Updat
 private fun removeSnapshots(message: RemoveSnapshots, state: PluginState): UpdateWith<PluginState, PluginCommand> {
     require(state is Started) { "Not a started state, was $state" }
 
-    val updated = state.debugState[message.componentId].removeSnapshots(message.ids)
+    val component = state.debugState.components[message.componentId] ?: throw IllegalArgumentException("Unknown component ${message.componentId}")
+    val updated = component.removeSnapshots(message.ids)
 
     return state.copy(debugState = state.debugState.copy(components = state.debugState.components + updated.asPair()))
         .noCommand()
@@ -108,10 +136,11 @@ private fun notifyMissingDependency(message: NotifyMissingDependency, state: Plu
     return state.command(DoNotifyMissingDependency(message.exception))
 }
 
-private operator fun DebugState.get(id: ComponentId) = components[id] ?: ComponentDebugState(id)
+private fun DebugState.componentOrNew(id: ComponentId, state: RemoteObject) = components[id] ?: ComponentDebugState(id, state)
 
-private fun ComponentDebugState.appendSnapshot(snapshot: Snapshot) =
-    copy(snapshots = snapshots + snapshot)
+private fun ComponentDebugState.appendSnapshot(snapshot: Snapshot): ComponentDebugState {
+    return copy(snapshots = snapshots + snapshot, currentState = snapshot.state)
+}
 
 private fun Any.toRemoteRepresentation() = RemoteObject(traverse(), this)
 
@@ -122,8 +151,10 @@ private fun ComponentDebugState.removeSnapshots(ids: Set<UUID>): ComponentDebugS
 private fun ComponentDebugState.asPair() = id to this
 
 private fun AppendSnapshot.toSnapshot(): Snapshot {
-    return Snapshot(UUID.randomUUID(), LocalDateTime.now(),
-        message.toRemoteRepresentation(), newState.toRemoteRepresentation())
+    return Snapshot(
+        UUID.randomUUID(), LocalDateTime.now(),
+        message.toRemoteRepresentation(), newState.toRemoteRepresentation()
+    )
 }
 
 private fun notifyIllegalMessage(message: String): Nothing = throw IllegalArgumentException(message)
