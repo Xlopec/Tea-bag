@@ -35,12 +35,9 @@ import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
 import javax.swing.tree.TreeNode
 
-
-class ComponentView(
-    private val scope: CoroutineScope,
-    private val component: Component<PluginMessage, PluginState>,
-    componentState: ComponentDebugState
-) : CoroutineScope by scope {
+class ComponentView(private val scope: CoroutineScope,
+                    private val component: Component<PluginMessage, PluginState>,
+                    componentState: ComponentDebugState) : CoroutineScope by scope {
 
     private lateinit var root: JPanel
     private lateinit var snapshotsTree: JTree
@@ -51,22 +48,24 @@ class ComponentView(
     val _root get() = root
 
     init {
-        val snapshotsModel = DiffingTreeModel.newInstance(componentState.snapshots)
+        val snapshotsModel = SnapshotTreeModel.newInstance(componentState.snapshots)
 
         snapshotsTree.model = snapshotsModel
-        snapshotsTree.cellRenderer = ObjectTreeRenderer("Snapshots")
+        snapshotsTree.cellRenderer = SnapshotTreeRenderer
 
-        stateTree.model = DefaultTreeModel(DefaultMutableTreeNode("State").also { it.add(componentState.currentState.representation.toJTree()) })
-        stateTree.cellRenderer = ObjectTreeRenderer("State")
+        val stateTreeModel = StateTreeModel.newInstance(componentState.currentState)
+
+        stateTree.model = stateTreeModel
+        stateTree.cellRenderer = StateTreeRenderer
 
         val componentEvents = Channel<PluginMessage>()
 
         launch {
             component(componentEvents.consumeAsFlow())
-                .mapNotNull { (it as? Started)?.debugState?.components?.get(componentState.id) }
+                .mapNotNull { state -> componentState(state, componentState.id) }
                 .collect { componentState ->
                     snapshotsModel.swap(componentState.snapshots)
-                    stateTree.model = DefaultTreeModel(DefaultMutableTreeNode("State").also { it.add(componentState.currentState.representation.toJTree()) })
+                    stateTreeModel.state = componentState.currentState
                 }
         }
 
@@ -112,16 +111,22 @@ class ComponentView(
 
 }
 
+private fun componentState(state: PluginState, id: ComponentId) = (state as? Started)?.debugState?.components?.get(id)
+
+private fun stateTreeModel(state: RemoteObject): DefaultTreeModel {
+    return DefaultTreeModel(DefaultMutableTreeNode("State").also { it.add(state.representation.toJTree()) })
+}
+
 private fun buildPopup(component: ComponentId, snapshot: Snapshot, events: Channel<PluginMessage>): JPopupMenu {
     val menu = JBPopupMenu("Snapshot ${snapshot.id}")
 
-    menu.add(JBMenuItem("Reset to this", icon("updateRunningApplication")).apply {
+    menu.add(JBMenuItem("Reset to this", getIcon("updateRunningApplication")).apply {
         addActionListener {
             events.offer(ReApplyState(component, snapshot.state.value))
         }
     })
 
-    menu.add(JBMenuItem("Delete", icon("remove")).apply {
+    menu.add(JBMenuItem("Delete", getIcon("remove")).apply {
         addActionListener {
             events.offer(RemoveSnapshots(component, setOf(snapshot.id)))
         }
@@ -133,7 +138,7 @@ private fun buildPopup(component: ComponentId, snapshot: Snapshot, events: Chann
 private fun buildMessagePopup(events: Channel<PluginMessage>): JPopupMenu {
     val menu = JBPopupMenu()
 
-    menu.add(JBMenuItem("Apply this message", icon("updateRunningApplication")).apply {
+    menu.add(JBMenuItem("Apply this message", getIcon("updateRunningApplication")).apply {
         addMouseListener(object : DefaultMouseListener {
             override fun mouseClicked(e: MouseEvent) {
                 //events.offer()
@@ -147,7 +152,7 @@ private fun buildMessagePopup(events: Channel<PluginMessage>): JPopupMenu {
 private fun buildStatePopup(events: Channel<PluginMessage>): JPopupMenu {
     val menu = JBPopupMenu()
 
-    menu.add(JBMenuItem("Apply this state", icon("updateRunningApplication")).apply {
+    menu.add(JBMenuItem("Apply this state", getIcon("updateRunningApplication")).apply {
         addMouseListener(object : DefaultMouseListener {
             override fun mouseClicked(e: MouseEvent) {
 

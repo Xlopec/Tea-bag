@@ -16,7 +16,9 @@
 
 package com.oliynick.max.elm.time.travel.app.presentation.misc
 
+import com.oliynick.max.elm.time.travel.app.domain.RemoteObject
 import com.oliynick.max.elm.time.travel.app.domain.Snapshot
+import com.oliynick.max.elm.time.travel.app.domain.TypeNode
 import com.oliynick.max.elm.time.travel.app.misc.UpdateCallback
 import com.oliynick.max.elm.time.travel.app.misc.replaceAll
 import javax.swing.tree.DefaultMutableTreeNode
@@ -24,12 +26,24 @@ import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
 import javax.swing.tree.TreeModel
 
-class DiffingTreeModel private constructor(private val delegate: DefaultTreeModel,
-                                           initial: List<Snapshot>) : TreeModel by delegate {
+sealed class SnapshotTree
+
+object RootNode : SnapshotTree()
+
+data class SnapshotNode(val snapshot: Snapshot) : SnapshotTree()
+
+data class MessageNode(val message: RemoteObject) : SnapshotTree()
+
+data class StateNode(val state: RemoteObject) : SnapshotTree()
+
+data class SnapshotTypeNode(val typeNode: TypeNode) : SnapshotTree()
+
+class SnapshotTreeModel private constructor(private val delegate: DefaultTreeModel,
+                                            initial: List<Snapshot>) : TreeModel by delegate {
 
     companion object {
-        fun newInstance(data: List<Snapshot> = emptyList()): DiffingTreeModel {
-            return DiffingTreeModel(DefaultTreeModel(DefaultMutableTreeNode("Root", true)), data)
+        fun newInstance(data: List<Snapshot> = emptyList()): SnapshotTreeModel {
+            return SnapshotTreeModel(DefaultTreeModel(DefaultMutableTreeNode(RootNode, true)), data)
         }
     }
 
@@ -60,18 +74,20 @@ class DiffingTreeModel private constructor(private val delegate: DefaultTreeMode
         logicalNodes.replaceAll(new, RefDiffer, updateCallback)
     }
 
+    override fun getRoot() = rootNode
+
     operator fun get(i: Int) = logicalNodes[i]
 
 }
 
 private fun Snapshot.toComponentSubTree(): DefaultMutableTreeNode {
-    return DefaultMutableTreeNode(this)
+    return DefaultMutableTreeNode(SnapshotNode(this))
         .apply {
-            add(DefaultMutableTreeNode("Message").apply {
-                add(message.representation.toJTree())
+            add(DefaultMutableTreeNode(MessageNode(message)).apply {
+                add(message.representation.toJTree(::SnapshotTypeNode))
             })
-            add(DefaultMutableTreeNode("State").apply {
-                add(state.representation.toJTree())
+            add(DefaultMutableTreeNode(StateNode(state)).apply {
+                add(state.representation.toJTree(::SnapshotTypeNode))
             })
         }
 }

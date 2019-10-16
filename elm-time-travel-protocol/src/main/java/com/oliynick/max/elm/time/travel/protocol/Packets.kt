@@ -26,6 +26,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
@@ -37,12 +39,15 @@ class SendPacket private constructor(val id: UUID,
     companion object {
 
         private val buffer by lazy { LinkedBuffer.allocate(512) }
+        private val mutex = Mutex()
 
-        fun pack(component: ComponentId, message: Message): ByteArray {
-            try {
-                return ProtostuffIOUtil.toByteArray(sendPacket(component, message), schema<SendPacket>(), buffer.clear())
-            } finally {
-                buffer.clear()
+        suspend fun pack(component: ComponentId, message: Message): ByteArray {
+            mutex.withLock {
+                try {
+                    return ProtostuffIOUtil.toByteArray(sendPacket(component, message), schema<SendPacket>(), buffer.clear())
+                } finally {
+                    buffer.clear()
+                }
             }
         }
 

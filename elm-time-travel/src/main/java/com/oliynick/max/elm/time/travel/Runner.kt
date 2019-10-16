@@ -17,8 +17,12 @@
 package com.oliynick.max.elm.time.travel
 
 import com.oliynick.max.elm.core.component.androidLogger
+import com.oliynick.max.elm.core.component.invoke
 import com.oliynick.max.elm.core.component.noCommand
 import com.oliynick.max.elm.time.travel.protocol.ComponentId
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 
@@ -40,7 +44,9 @@ fun main() {
                 .noCommand() },
             androidLogger("Test")
         ).also {
-    //        it.invoke(SomeTestCommand(SomeTestString("hello"), listOf(1234))).first()
+            it.invoke(SomeTestCommand(SomeTestString("hello"), listOf(1234)),
+                SomeTestCommand(SomeTestString("Suck"), listOf(24,43,13, "loh")),
+                SomeTestCommand(SomeTestString("dfvbdf"), listOf(24,43,13, "sdfgsd"))).collect()
         }
 
     }

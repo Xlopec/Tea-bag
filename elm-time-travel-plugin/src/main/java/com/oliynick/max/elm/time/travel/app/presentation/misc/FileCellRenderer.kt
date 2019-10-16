@@ -16,7 +16,7 @@
 
 package com.oliynick.max.elm.time.travel.app.presentation.misc
 
-import com.oliynick.max.elm.time.travel.app.presentation.sidebar.icon
+import com.oliynick.max.elm.time.travel.app.presentation.sidebar.getIcon
 import java.awt.Component
 import java.io.File
 import javax.swing.JLabel
@@ -35,11 +35,11 @@ class FileCellRenderer : JLabel(), ListCellRenderer<File> {
         text = value.path
 
         icon = when {
-            !value.exists() -> icon("javaOutsideSource")
-            value.isDirectory -> icon("sourceFolder")
-            value.isFile && value.extension.equals("class", true) -> icon("javaClass")
-            value.isFile && value.extension.equals("zip", true) -> icon("archive")
-            else -> icon("any_type")
+            !value.exists() -> getIcon("javaOutsideSource")
+            value.isDirectory -> getIcon("sourceFolder")
+            value.isFile && value.extension.equals("class", true) -> getIcon("javaClass")
+            value.isFile && value.extension.equals("zip", true) -> getIcon("archive")
+            else -> getIcon("any_type")
         }
 
         if (isSelected) {

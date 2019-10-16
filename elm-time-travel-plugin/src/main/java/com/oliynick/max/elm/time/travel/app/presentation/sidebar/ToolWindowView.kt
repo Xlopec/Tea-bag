@@ -100,8 +100,8 @@ class ToolWindowView(private val project: Project,
         portTextField.setText(state.settings.serverSettings.port.toString(), portListener)
         hostTextField.setText(state.settings.serverSettings.host, hostListener)
 
-        startButton.icon = icon("run")
-        startButton.disabledIcon = icon("run_disabled")
+        startButton.icon = getIcon("run")
+        startButton.disabledIcon = getIcon("run_disabled")
 
         if (state.canStart) {
             startButton.setOnClickListenerEnabling { messages.offer(StartServer) }
@@ -127,8 +127,8 @@ class ToolWindowView(private val project: Project,
     }
 
     private fun render(@Suppress("UNUSED_PARAMETER") state: Starting) {
-        startButton.icon = icon("run")
-        startButton.disabledIcon = icon("resume")
+        startButton.icon = getIcon("run")
+        startButton.disabledIcon = getIcon("resume")
 
         startButton.removeMouseListenersDisabling()
 
@@ -137,8 +137,8 @@ class ToolWindowView(private val project: Project,
     }
 
     private fun render(state: Started, messages: Channel<PluginMessage>) {
-        startButton.icon = icon("suspend")
-        startButton.disabledIcon = icon("suspend_disabled")
+        startButton.icon = getIcon("suspend")
+        startButton.disabledIcon = getIcon("suspend_disabled")
 
         startButton.setOnClickListenerEnabling { messages.offer(StopServer) }
 
@@ -167,8 +167,8 @@ class ToolWindowView(private val project: Project,
     }
 
     private fun render(@Suppress("UNUSED_PARAMETER") state: Stopping) {
-        startButton.icon = icon("suspend")
-        startButton.disabledIcon = icon("killProcess")
+        startButton.icon = getIcon("suspend")
+        startButton.disabledIcon = getIcon("killProcess")
 
         startButton.removeMouseListenersDisabling()
 
@@ -274,8 +274,8 @@ inline fun JTabbedPane.addCloseableTab(component: ComponentId,
         isOpaque = false
 
         add(JLabel(component.id, icon, SwingConstants.LEADING))
-        add(JLabel(icon("close")).apply {
-            setHover(icon("close_dark"))
+        add(JLabel(getIcon("close")).apply {
+            setHover(getIcon("close_dark"))
             setOnClickListener { onClose(component) }
         })
     }
@@ -283,6 +283,6 @@ inline fun JTabbedPane.addCloseableTab(component: ComponentId,
     setTabComponentAt(indexOfComponent(content), panel)
 }
 
-fun icon(name: String): Icon {
+fun getIcon(name: String): Icon {
     return IconLoader.getIcon("images/$name.png")
 }
