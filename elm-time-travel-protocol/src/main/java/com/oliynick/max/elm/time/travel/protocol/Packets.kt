@@ -41,19 +41,19 @@ class SendPacket private constructor(val id: UUID,
         private val buffer by lazy { LinkedBuffer.allocate(512) }
         private val mutex = Mutex()
 
-        suspend fun pack(component: ComponentId, message: Message): ByteArray {
+        suspend fun pack(id: UUID, component: ComponentId, message: Message): ByteArray {
             mutex.withLock {
                 try {
-                    return ProtostuffIOUtil.toByteArray(sendPacket(component, message), schema<SendPacket>(), buffer.clear())
+                    return ProtostuffIOUtil.toByteArray(sendPacket(id, component, message), schema<SendPacket>(), buffer.clear())
                 } finally {
                     buffer.clear()
                 }
             }
         }
 
-        private fun sendPacket(component: ComponentId, message: Message): SendPacket {
+        private fun sendPacket(id: UUID, component: ComponentId, message: Message): SendPacket {
             return SendPacket(
-                UUID.randomUUID(),
+                id,
                 component.id,
                 message::class.java,
                 ProtostuffIOUtil.toByteArray(message, schema(message::class.java), buffer)

@@ -19,8 +19,6 @@ package com.oliynick.max.elm.time.travel.app.presentation.misc
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.oliynick.max.elm.time.travel.app.domain.AddFiles
 import java.io.File
 
 val CLASS_FILES_CHOOSER_DESCRIPTOR: FileChooserDescriptor =

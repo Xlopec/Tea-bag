@@ -33,6 +33,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.*
 
 private val httpClient by lazy { HttpClient { install(WebSockets) } }
 private val localhost = Host("localhost")
@@ -90,7 +91,7 @@ private fun <M : Any, C : Any, S : Any> CoroutineScope.webSocketComponent(settin
             suspend fun applyMessage(message: ClientMessage) {
                 @Suppress("UNCHECKED_CAST")
                 when (message) {
-                    is ApplyMessage -> messages.send(message.message as M)
+                    is ApplyMessage -> message.messages.forEach { m -> messages.send(m as M) }
                     is ApplyState -> {
                         // cancels previous computation job and starts a new one
                         computationJob.cancel()
@@ -104,8 +105,14 @@ private fun <M : Any, C : Any, S : Any> CoroutineScope.webSocketComponent(settin
             incoming.consumeAsFlow()
                 .filterIsInstance<Frame.Binary>()
                 .map { frame -> ReceivePacket.unpack(frame.readBytes()) }
-                .filterIsInstance<ClientMessage>()
-                .collect { message -> applyMessage(message) }
+                .collect { packet ->
+                    val message = packet.message as? ClientMessage
+
+                    if (message != null) {
+                        applyMessage(message)
+                        notifyApplied(settings.id, packet.id)
+                    }
+                }
         }
     }
 
@@ -113,6 +120,8 @@ private fun <M : Any, C : Any, S : Any> CoroutineScope.webSocketComponent(settin
 }
 
 private suspend fun WebSocketSession.send(id: ComponentId, message: ServerMessage) = send(SendPacket.pack(id, message))
+
+private suspend fun WebSocketSession.notifyApplied(id: ComponentId, packetId: UUID) = send(SendPacket.pack(id, ActionApplied(packetId)))
 
 private fun <M : Any, C : Any, S : Any> spyingInterceptor(sink: SendChannel<NotifyComponentSnapshot>): Interceptor<M, S, C> {
     return { message, prevState, newState, _ -> sink.send(NotifyComponentSnapshot(message, prevState, newState)) }

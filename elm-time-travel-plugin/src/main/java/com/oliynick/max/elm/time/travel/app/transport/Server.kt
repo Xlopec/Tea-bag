@@ -38,14 +38,18 @@ import io.ktor.websocket.WebSocketServerSession
 import io.ktor.websocket.webSocket
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
 import org.slf4j.event.Level
 import java.time.Duration
+import java.util.*
 import java.util.concurrent.Executors
+
+data class RemoteCallArgs(val component: ComponentId, val message: Message, val onCompletion: () -> Unit)
 
 fun server(
     settings: Settings,
     events: Channel<PluginMessage>,
-    outgoing: Channel<Pair<ComponentId, Message>>
+    calls: Channel<RemoteCallArgs>
 ): NettyApplicationEngine {
 
     return embeddedServer(Netty, host = settings.serverSettings.host, port = settings.serverSettings.port.toInt()) {
@@ -71,11 +75,49 @@ fun server(
 
             webSocket("/") {
 
+                val appliedActions = Channel<ActionApplied>()
+
                 launch {
-                    for ((id, action) in outgoing) {
-                        send(SendPacket.pack(id, action))
+                    for ((id, action, completion) in calls) {
+
+                        val packetId = UUID.randomUUID()
+
+                        launch {
+                            appliedActions
+                                .consumeAsFlow()
+                                .onCompletion { th -> if (th != null) completion() }
+                                .first { packet -> packet.id == packetId }
+                        }
+
+                        launch { send(SendPacket.pack(packetId, id, action)) }
                     }
                 }
+
+                incoming.consumeAsFlow()
+                    .filterIsInstance<Frame.Binary>()
+                    .map { frame -> unpack(frame) }
+                    .collect { packet ->
+
+                        when(val message = packet.message) {
+                            is NotifyComponentSnapshot -> events.send(AppendSnapshot(packet.component, message.message, message.oldState, message.newState))
+                            is NotifyComponentAttached -> events.send(ComponentAttached(packet.component, message.state))
+                            is ApplyMessage, is ApplyState -> TODO()
+                            is ActionApplied -> appliedActions.send(message)
+                        }
+                    }
+                /*incoming.consumeAsFlow()
+                    .filterIsInstance<Frame.Binary>()
+                    .map { frame -> unpack(frame) }
+                    .collect { packet ->
+                        val i = when(val message = packet.message) {
+                            is NotifyComponentSnapshot -> AppendSnapshot(packet.component, message.message, message.oldState, message.newState)
+                            is NotifyComponentAttached -> ComponentAttached(packet.component, message.state)
+                            is ApplyMessage, is ApplyState -> TODO()
+                            is ActionApplied -> null
+                        }
+
+                        i?.also { events.send(it) }
+                    }*/
 
                 webSocketSessionDispatcher(settings, this).use { dispatcher ->
 
@@ -85,7 +127,7 @@ fun server(
 
                         withContext(dispatcher) {
 
-                            val result = async { ReceivePacket.unpack(frame.readBytes()).toMessage() }
+                            val result = async { unpack(frame).toMessage() }
 
                             try {
                                 events.send(result.await())
@@ -99,6 +141,8 @@ fun server(
         }
     }
 }
+
+private suspend fun unpack(frame: Frame.Binary) = ReceivePacket.unpack(frame.readBytes())
 
 private fun webSocketSessionDispatcher(settings: Settings, session: WebSocketServerSession): ExecutorCoroutineDispatcher {
     return Executors.newSingleThreadExecutor { runnable ->
@@ -121,5 +165,6 @@ private fun ReceivePacket.toMessage(): PluginMessage {
         is ApplyMessage -> TODO("shouldn't get here")
         is ApplyState -> TODO("shouldn't get here")
         is NotifyComponentAttached -> ComponentAttached(component, action.state)
+        is ActionApplied -> TODO()
     }
 }

@@ -40,7 +40,9 @@ object StopServer : UIMessage()
 
 data class RemoveSnapshots(val componentId: ComponentId, val ids: Set<UUID>) : UIMessage()
 
-data class ReApplyCommands(val componentId: ComponentId, val commands: List<Any>) : UIMessage()
+data class ReApplyCommands(val componentId: ComponentId, val commands: List<Any>) : UIMessage() {
+    constructor(componentId: ComponentId, command: Any) : this(componentId, listOf(command))
+}
 
 data class ReApplyState(val componentId: ComponentId, val state: Any) : UIMessage()
 
