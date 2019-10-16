@@ -36,12 +36,20 @@ class EmptyComponentsView(component: Component<PluginMessage, PluginState>,
                           context: CoroutineContext,
                           private val project: Project) : CoroutineScope {
 
+    companion object {
+        val NAME = EmptyComponentsView::class.simpleName!!
+    }
+
     private lateinit var panel: JPanel
     private lateinit var messageText: JLabel
 
     override val coroutineContext = context + Job(context[Job.Key])
 
     val root get() = panel
+
+    init {
+        panel.name = NAME
+    }
 
     init {
         launch {

@@ -21,37 +21,45 @@ import java.io.File
 import java.util.*
 
 sealed class PluginMessage
+/*
+ * UI messages
+ */
+sealed class UIMessage : PluginMessage()
 
-data class AddFiles(val files: List<File>) : PluginMessage()
+data class AddFiles(val files: List<File>) : UIMessage()
 
-data class RemoveFiles(val files: List<File>) : PluginMessage()
+data class RemoveFiles(val files: List<File>) : UIMessage()
 
-data class UpdatePort(val port: UInt) : PluginMessage()
+data class UpdatePort(val port: UInt) : UIMessage()
 
-data class UpdateHost(val host: String) : PluginMessage()
+data class UpdateHost(val host: String) : UIMessage()
 
-data class NotifyMissingDependency(val exception: ClassNotFoundException) : PluginMessage()
+object StartServer : UIMessage()
 
-data class NotifyOperationException(val exception: Throwable) : PluginMessage()
+object StopServer : UIMessage()
 
-object NotifyStarted : PluginMessage()
+data class RemoveSnapshots(val componentId: ComponentId, val ids: Set<UUID>) : UIMessage()
 
-object NotifyStopped : PluginMessage()
+data class ReApplyCommands(val componentId: ComponentId, val commands: List<Any>) : UIMessage()
 
-object StartServer : PluginMessage()
+data class ReApplyState(val componentId: ComponentId, val state: Any) : UIMessage()
 
-object StopServer : PluginMessage()
+data class RemoveComponent(val componentId: ComponentId) : UIMessage()
+/*
+ * Notifications
+ */
+sealed class NotificationMessage : PluginMessage()
 
-data class AppendSnapshot(val componentId: ComponentId, val message: Any, val oldState: Any, val newState: Any) : PluginMessage()
+data class NotifyMissingDependency(val exception: ClassNotFoundException) : NotificationMessage()
 
-data class RemoveSnapshots(val componentId: ComponentId, val ids: Set<UUID>) : PluginMessage()
+data class NotifyOperationException(val exception: Throwable) : NotificationMessage()
 
-data class ReApplyCommands(val componentId: ComponentId, val commands: List<Any>) : PluginMessage()
+object NotifyStarted : NotificationMessage()
 
-data class ReApplyState(val componentId: ComponentId, val state: Any) : PluginMessage()
+object NotifyStopped : NotificationMessage()
 
-data class RemoveComponent(val componentId: ComponentId) : PluginMessage()
+data class AppendSnapshot(val componentId: ComponentId, val message: Any, val oldState: Any, val newState: Any) : NotificationMessage()
 
-data class StateReApplied(val componentId: ComponentId, val state: Any) : PluginMessage()
+data class StateReApplied(val componentId: ComponentId, val state: Any) : NotificationMessage()
 
-data class ComponentAttached(val componentId: ComponentId, val state: Any) : PluginMessage()
+data class ComponentAttached(val componentId: ComponentId, val state: Any) : NotificationMessage()

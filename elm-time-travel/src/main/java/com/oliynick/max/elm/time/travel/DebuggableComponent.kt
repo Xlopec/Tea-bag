@@ -35,12 +35,15 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 private val httpClient by lazy { HttpClient { install(WebSockets) } }
+private val localhost = Host("localhost")
 
-data class Settings(val id: ComponentId, val host: String = "localhost", val port: UInt = 8080U) {
+data class Host(val value: String) {
     init {
-        require(host.isNotEmpty() && host.isNotBlank())
+        require(value.isNotEmpty() && value.isNotEmpty()) { "Hostname shouldn't be empty" }
     }
 }
+
+data class Settings(val id: ComponentId, val host: Host = localhost, val port: UInt = 8080U)
 
 fun <M : Any, C : Any, S : Any> CoroutineScope.component(settings: Settings,
                                                          initialState: S,
@@ -78,7 +81,7 @@ private fun <M : Any, C : Any, S : Any> CoroutineScope.webSocketComponent(settin
     val messages = Channel<M>()
 
     launch {
-        httpClient.ws(HttpMethod.Get, settings.host, settings.port.toInt()) {
+        httpClient.ws(HttpMethod.Get, settings.host.value, settings.port.toInt()) {
             // says 'hello' to a server; 'send' call will be suspended until the very first state gets computed
             launch { send(settings.id, NotifyComponentAttached(statesChannel.asFlow().first())) }
 

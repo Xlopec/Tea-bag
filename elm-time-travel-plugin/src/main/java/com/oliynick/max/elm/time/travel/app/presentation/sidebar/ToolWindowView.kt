@@ -101,6 +101,7 @@ class ToolWindowView(private val project: Project,
         hostTextField.setText(state.settings.serverSettings.host, hostListener)
 
         startButton.icon = icon("run")
+        startButton.disabledIcon = icon("run_disabled")
 
         if (state.canStart) {
             startButton.setOnClickListenerEnabling { messages.offer(StartServer) }
@@ -115,15 +116,20 @@ class ToolWindowView(private val project: Project,
         addDirectoryButton.setOnClickListenerEnabling {
             project.chooseClassFiles { files -> messages.offer(AddFiles(files)) }
         }
-        //fixme
 
-        if (componentsPanel.componentCount == 0) {
-            componentsPanel.add(EmptyComponentsView(component, scope.coroutineContext, project).root, "EmptyView")
+        val shouldRemoveOrEmpty = componentsPanel.isEmpty || (componentsPanel.isNotEmpty && componentsPanel.first().name != EmptyComponentsView.NAME)
+
+        if (shouldRemoveOrEmpty) {
+            showEmptyComponentsView()
         }
+
+        check(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children()}" }
     }
 
-    private fun render(state: Starting) {
-        startButton.icon = icon("resume")
+    private fun render(@Suppress("UNUSED_PARAMETER") state: Starting) {
+        startButton.icon = icon("run")
+        startButton.disabledIcon = icon("resume")
+
         startButton.removeMouseListenersDisabling()
 
         removeDirectoryButton.removeMouseListenersDisabling()
@@ -132,43 +138,66 @@ class ToolWindowView(private val project: Project,
 
     private fun render(state: Started, messages: Channel<PluginMessage>) {
         startButton.icon = icon("suspend")
+        startButton.disabledIcon = icon("suspend_disabled")
+
         startButton.setOnClickListenerEnabling { messages.offer(StopServer) }
 
         removeDirectoryButton.removeMouseListenersDisabling()
         addDirectoryButton.removeMouseListenersDisabling()
 
-        //fixme
+        require(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children()}" }
 
-        if (state.debugState.components.size == 1) {
-            componentsPanel.clearCancelling()
+        if (state.debugState.components.isEmpty()) {
+            // show empty view
+            if (componentsPanel.first().name != EmptyComponentsView.NAME) {
+                showEmptyComponentsView()
+            }
+        } else {
 
-            val componentsTabPane = JBTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT)
-                .also { tabPane -> tabPane.model = DefaultSingleSelectionModel() }
+            if (componentsPanel.first().name == EmptyComponentsView.NAME) {
+                // swap panels
+                componentsPanel.clearCancelling()
+                componentsPanel += tabbedComponentsView()
+            }
 
-            componentsPanel.add(componentsTabPane)
+            (componentsPanel.first() as JTabbedPane).update(state.debugState, messages)
         }
 
-        if (state.debugState.components.isNotEmpty()) {
-            val componentsTabPane = componentsPanel.getComponent(0) as JTabbedPane
-
-            state.debugState.components
-                .filter { e -> componentsTabPane.indexOfTab(e.key.id) == -1 }
-                .forEach { (id, s) ->
-                    componentsTabPane.addCloseableTab(id, ComponentView(scope, component, s)._root) { component ->
-                        messages.offer(RemoveComponent(component))
-                    }
-                }
-        }
+        check(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children()}" }
     }
 
-    private fun render(state: Stopping) {
-        startButton.icon = icon("killProcess")
+    private fun render(@Suppress("UNUSED_PARAMETER") state: Stopping) {
+        startButton.icon = icon("suspend")
+        startButton.disabledIcon = icon("killProcess")
+
         startButton.removeMouseListenersDisabling()
 
         removeDirectoryButton.removeMouseListenersDisabling()
         addDirectoryButton.removeMouseListenersDisabling()
     }
 
+    private fun showEmptyComponentsView() {
+        componentsPanel.clearCancelling()
+        componentsPanel += EmptyComponentsView(component, scope.coroutineContext, project).root
+    }
+
+    private fun tabbedComponentsView() = JBTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT)
+        .also { tabPane -> tabPane.model = DefaultSingleSelectionModel() }
+
+    private fun JTabbedPane.update(debugState: DebugState, messages: Channel<PluginMessage>) {
+        debugState.components
+            .filter { e -> indexOfTab(e.key.id) == -1 }
+            .forEach { (id, s) ->
+                addCloseableTab(id, ComponentView(scope, component, s)._root) { component ->
+                    messages.offer(RemoveComponent(component))
+                }
+            }
+    }
+
+}
+
+private operator fun Container.plusAssign(component: AwtComponent) {
+    add(component)
 }
 
 private fun JTextField.setText(text: String, listener: DocumentListener) {
@@ -206,21 +235,37 @@ private fun AwtComponent.removeMouseListenersDisabling() {
     isEnabled = false
 }
 
+inline val Container.isEmpty inline get() = componentCount == 0
+
+inline val Container.isNotEmpty inline get() = !isEmpty
+
+fun Container.first() = this[0]
+
+operator fun Container.get(i: Int): AwtComponent = getComponent(i)
+
 fun Container.clearCancelling() {
     for (i in 0 until componentCount) {
         val c = getComponent(i)
 
         if (c is CoroutineScope) {
-            // fixme, with CoroutineScope.cancel() it doesn't even compile
-            c.coroutineContext[Job.Key]?.cancel()
+            c.cancel()
         }
 
         remove(c)
     }
 }
 
+fun AwtComponent.cancel() {
+    if (this is CoroutineScope) {
+        // fixme, with CoroutineScope.cancel() it doesn't even compile
+        coroutineContext[Job.Key]?.cancel()
+    }
+}
+
+fun Container.children() = (0 until componentCount).map { i -> this[i] }
+
 inline fun JTabbedPane.addCloseableTab(component: ComponentId,
-                                       content: java.awt.Component,
+                                       content: AwtComponent,
                                        icon: Icon? = null,
                                        crossinline onClose:(ComponentId) -> Unit) {
     addTab(component.id, content)
