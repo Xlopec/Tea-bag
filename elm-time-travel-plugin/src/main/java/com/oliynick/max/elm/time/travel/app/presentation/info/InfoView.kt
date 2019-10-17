@@ -32,12 +32,12 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import kotlin.coroutines.CoroutineContext
 
-class EmptyComponentsView(component: Component<PluginMessage, PluginState>,
-                          context: CoroutineContext,
-                          private val project: Project) : CoroutineScope {
+class InfoView(component: Component<PluginMessage, PluginState>,
+               context: CoroutineContext,
+               private val project: Project) : CoroutineScope {
 
     companion object {
-        val NAME = EmptyComponentsView::class.simpleName!!
+        val NAME = InfoView::class.simpleName!!
     }
 
     private lateinit var panel: JPanel

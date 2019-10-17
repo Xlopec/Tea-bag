@@ -23,6 +23,7 @@ import com.intellij.ui.components.JBTabbedPane
 import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.core.component.changes
 import com.oliynick.max.elm.time.travel.app.domain.*
+import com.oliynick.max.elm.time.travel.app.presentation.component.ComponentView
 import com.oliynick.max.elm.time.travel.app.presentation.dsl.setHover
 import com.oliynick.max.elm.time.travel.app.presentation.misc.*
 import com.oliynick.max.elm.time.travel.protocol.ComponentId
@@ -117,7 +118,7 @@ class ToolWindowView(private val project: Project,
             project.chooseClassFiles { files -> messages.offer(AddFiles(files)) }
         }
 
-        val shouldRemoveOrEmpty = componentsPanel.isEmpty || (componentsPanel.isNotEmpty && componentsPanel.first().name != EmptyComponentsView.NAME)
+        val shouldRemoveOrEmpty = componentsPanel.isEmpty || (componentsPanel.isNotEmpty && componentsPanel.first().name != InfoView.NAME)
 
         if (shouldRemoveOrEmpty) {
             showEmptyComponentsView()
@@ -149,12 +150,12 @@ class ToolWindowView(private val project: Project,
 
         if (state.debugState.components.isEmpty()) {
             // show empty view
-            if (componentsPanel.first().name != EmptyComponentsView.NAME) {
+            if (componentsPanel.first().name != InfoView.NAME) {
                 showEmptyComponentsView()
             }
         } else {
 
-            if (componentsPanel.first().name == EmptyComponentsView.NAME) {
+            if (componentsPanel.first().name == InfoView.NAME) {
                 // swap panels
                 componentsPanel.clearCancelling()
                 componentsPanel += tabbedComponentsView()
@@ -178,7 +179,7 @@ class ToolWindowView(private val project: Project,
 
     private fun showEmptyComponentsView() {
         componentsPanel.clearCancelling()
-        componentsPanel += EmptyComponentsView(component, scope.coroutineContext, project).root
+        componentsPanel += InfoView(component, scope.coroutineContext, project).root
     }
 
     private fun tabbedComponentsView() = JBTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT)

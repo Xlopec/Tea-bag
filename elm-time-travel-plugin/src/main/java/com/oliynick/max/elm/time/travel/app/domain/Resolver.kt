@@ -33,6 +33,7 @@ data class Dependencies(
     val properties: PropertiesComponent
 ) {
     val exceptions: BroadcastChannel<DoNotifyOperationException> = BroadcastChannel(1)
+    val notifications: BroadcastChannel<NotificationMessage> = BroadcastChannel(1)
 }
 
 suspend fun Dependencies.resolve(command: PluginCommand): Set<PluginMessage> {
@@ -48,6 +49,12 @@ suspend fun Dependencies.resolve(command: PluginCommand): Set<PluginMessage> {
         }
     }
 
-    return runCatching { resolve() }
+    return runCatching { resolve().also { messages -> notifications.send(messages.notifications()) } }
         .getOrElse { th -> setOf(NotifyOperationException(th, command)) }
+}
+
+private fun Iterable<PluginMessage>.notifications() = filterIsInstance<NotificationMessage>()
+
+private suspend fun BroadcastChannel<NotificationMessage>.send(messages: Iterable<NotificationMessage>) {
+    messages.forEach { notification -> send(notification) }
 }

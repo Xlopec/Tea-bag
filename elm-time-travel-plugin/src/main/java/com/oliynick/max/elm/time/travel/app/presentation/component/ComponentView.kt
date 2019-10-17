@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.elm.time.travel.app.presentation.sidebar
+package com.oliynick.max.elm.time.travel.app.presentation.component
 
 import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
 import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.time.travel.app.domain.*
 import com.oliynick.max.elm.time.travel.app.presentation.misc.*
+import com.oliynick.max.elm.time.travel.app.presentation.sidebar.getIcon
 import com.oliynick.max.elm.time.travel.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel

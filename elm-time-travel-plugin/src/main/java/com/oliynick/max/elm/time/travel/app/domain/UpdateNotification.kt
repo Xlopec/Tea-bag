@@ -86,10 +86,6 @@ private fun recoverFromException(th: Throwable, op: PluginCommand?, state: Plugi
     }
 }
 
-private fun isIgnorableProblem(th: Throwable, op: PluginCommand?): Boolean {
-    return ((op is DoApplyCommands || op is DoApplyState) && th.isNetworkException) || th.isMissingDependenciesException
-}
-
 private fun isStartStopProblem(op: PluginCommand?): Boolean {
     return op === DoStopServer || op is DoStartServer
 }
