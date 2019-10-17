@@ -11,6 +11,7 @@
 /.idea/gradle.xml
 /.idea/uiDesigner.xml
 /.idea/misc.xml
+/.idea/codeStyles/
 .DS_Store
 /build
 /captures

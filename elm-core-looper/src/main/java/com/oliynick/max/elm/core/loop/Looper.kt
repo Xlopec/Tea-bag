@@ -17,7 +17,6 @@
 package com.oliynick.max.elm.core.loop
 
 import com.oliynick.max.elm.core.component.*
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ChannelIterator
@@ -27,7 +26,6 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Internal alias of a component
@@ -38,9 +36,9 @@ typealias ComponentInternal<M, S> = Pair<SendChannel<M>, Flow<S>>
  * Dependencies holder
  */
 data class Dependencies<M, C, S>(inline val initializer: Initializer<S, C>,
-                                          inline val resolver: Resolver<C, M>,
-                                          inline val update: Update<M, S, C>,
-                                          inline val interceptor: Interceptor<M, S, C>)
+                                 inline val resolver: Resolver<C, M>,
+                                 inline val update: Update<M, S, C>,
+                                 inline val interceptor: Interceptor<M, S, C>)
 
 /**
  * Stores a new state to channel and notifies subscribers about changes
