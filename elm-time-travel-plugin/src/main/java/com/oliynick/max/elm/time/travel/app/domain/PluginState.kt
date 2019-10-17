@@ -21,6 +21,7 @@ import java.io.File
 import java.time.LocalDateTime
 import java.util.*
 
+//todo add remote call timeout
 data class ServerSettings(val host: String = "0.0.0.0", val port: UInt = 8080U)
 
 data class Settings(

@@ -111,9 +111,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-    implementation "io.ktor:ktor-client-websockets:$ktor_version"
-    implementation "io.ktor:ktor-client-okhttp:$ktor_version"
-
     testImplementation project(path: ':elm-core-test', configuration: 'default')
     testImplementation project(path: ':elm-core-actor', configuration: 'default')
 

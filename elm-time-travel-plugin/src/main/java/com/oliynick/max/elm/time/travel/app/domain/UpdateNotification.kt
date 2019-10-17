@@ -20,18 +20,24 @@ import com.oliynick.max.elm.core.component.UpdateWith
 import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
 import com.oliynick.max.elm.time.travel.protocol.ComponentId
+import kotlinx.coroutines.TimeoutCancellationException
+import java.lang.IllegalStateException
+import java.net.ProtocolException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.time.LocalDateTime
 import java.util.*
+import java.util.concurrent.TimeoutException
+import javax.net.ssl.SSLException
 
 internal fun updateForNotification(message: NotificationMessage, state: PluginState): UpdateWith<PluginState, PluginCommand> {
-    return when(message) {
+    return when (message) {
         NotifyStarted -> Started(state.settings, DebugState()).noCommand()
-        is NotifyMissingDependency -> notifyMissingDependency(message, state)
         NotifyStopped -> Stopped(state.settings).noCommand()
         is AppendSnapshot -> appendSnapshot(message, state)
         is StateReApplied -> reApplyState(message, toExpected(state))
         is ComponentAttached -> attachComponent(message, state)
-        is NotifyOperationException -> TODO()
+        is NotifyOperationException -> recoverFromException(message.exception, message.operation, state)
     }
 }
 
@@ -53,7 +59,7 @@ private fun attachComponent(message: ComponentAttached, state: PluginState): Upd
 
         val id = message.componentId
         val currentState = message.state.toRemoteRepresentation()
-        val componentState =  state.debugState.components[id]?.copy(currentState = currentState) ?: ComponentDebugState(id, currentState)
+        val componentState = state.debugState.components[id]?.copy(currentState = currentState) ?: ComponentDebugState(id, currentState)
 
         return state.copy(debugState = state.debugState.copy(components = state.debugState.components + componentState.asPair()))
             .noCommand()
@@ -70,8 +76,26 @@ private fun reApplyState(message: StateReApplied, state: Started): UpdateWith<Pl
         .noCommand()
 }
 
-private fun notifyMissingDependency(message: NotifyMissingDependency, state: PluginState): UpdateWith<PluginState, DoNotifyMissingDependency> {
-    return state.command(DoNotifyMissingDependency(message.exception))
+private fun recoverFromException(th: Throwable, op: PluginCommand?, state: PluginState): UpdateWith<PluginState, PluginCommand> {
+    val notification by lazy { DoNotifyOperationException(th, op) }
+
+    return when {
+        isStartStopProblem(op) -> Stopped(state.settings).command(notification)
+        isFatalProblem(op) -> notifyDeveloperException(th)
+        else -> state.command(notification)
+    }
+}
+
+private fun isIgnorableProblem(th: Throwable, op: PluginCommand?): Boolean {
+    return ((op is DoApplyCommands || op is DoApplyState) && th.isNetworkException) || th.isMissingDependenciesException
+}
+
+private fun isStartStopProblem(op: PluginCommand?): Boolean {
+    return op === DoStopServer || op is DoStartServer
+}
+
+private fun isFatalProblem(op: PluginCommand?): Boolean {
+    return op is StoreFiles || op is StoreServerSettings || op is DoNotifyOperationException
 }
 
 private fun Any.toRemoteRepresentation() = RemoteObject(traverse(), this)
@@ -84,3 +108,19 @@ private fun AppendSnapshot.toSnapshot(): Snapshot {
 }
 
 private fun DebugState.componentOrNew(id: ComponentId, state: RemoteObject) = components[id] ?: ComponentDebugState(id, state)
+
+private fun notifyDeveloperException(cause: Throwable): Nothing {
+    throw IllegalStateException("Unexpected exception. Please, inform developers about the problem", cause)
+}
+
+val Throwable.isMissingDependenciesException
+    get() = this is ClassNotFoundException
+
+val Throwable.isNetworkException
+    // some of IO exceptions
+    get() = this is TimeoutException
+            || this is TimeoutCancellationException
+            || this is UnknownHostException
+            || this is SSLException
+            || this is SocketTimeoutException
+            || this is ProtocolException

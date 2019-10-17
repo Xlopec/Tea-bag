@@ -110,7 +110,7 @@ private fun <M : Any, C : Any, S : Any> CoroutineScope.webSocketComponent(settin
 
                     if (message != null) {
                         applyMessage(message)
-                        notifyApplied(settings.id, packet.id)
+                        notifyApplied(packet.id, settings.id)
                     }
                 }
         }
@@ -119,9 +119,13 @@ private fun <M : Any, C : Any, S : Any> CoroutineScope.webSocketComponent(settin
     return messages to statesChannel.asFlow()
 }
 
-private suspend fun WebSocketSession.send(id: ComponentId, message: ServerMessage) = send(SendPacket.pack(id, message))
+private suspend fun WebSocketSession.send(componentId: ComponentId, message: ServerMessage) {
+    send(SendPacket.pack(UUID.randomUUID(), componentId, message))
+}
 
-private suspend fun WebSocketSession.notifyApplied(id: ComponentId, packetId: UUID) = send(SendPacket.pack(id, ActionApplied(packetId)))
+private suspend fun WebSocketSession.notifyApplied(packetId: UUID, componentId: ComponentId) {
+    send(SendPacket.pack(packetId, componentId, ActionApplied(packetId)))
+}
 
 private fun <M : Any, C : Any, S : Any> spyingInterceptor(sink: SendChannel<NotifyComponentSnapshot>): Interceptor<M, S, C> {
     return { message, prevState, newState, _ -> sink.send(NotifyComponentSnapshot(message, prevState, newState)) }

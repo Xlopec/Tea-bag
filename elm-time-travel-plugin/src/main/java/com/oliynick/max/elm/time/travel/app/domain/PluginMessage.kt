@@ -52,9 +52,7 @@ data class RemoveComponent(val componentId: ComponentId) : UIMessage()
  */
 sealed class NotificationMessage : PluginMessage()
 
-data class NotifyMissingDependency(val exception: ClassNotFoundException) : NotificationMessage()
-
-data class NotifyOperationException(val exception: Throwable) : NotificationMessage()
+data class NotifyOperationException(val exception: Throwable, val operation: PluginCommand? = null) : NotificationMessage()
 
 object NotifyStarted : NotificationMessage()
 
