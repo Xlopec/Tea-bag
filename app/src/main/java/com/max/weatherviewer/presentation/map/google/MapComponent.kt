@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
+import com.max.weatherviewer.BuildConfig
 import com.max.weatherviewer.R
 import com.max.weatherviewer.api.weather.Location
 import com.max.weatherviewer.defaultNavOptionsBuilder
@@ -15,6 +16,8 @@ import com.max.weatherviewer.persistence.persist
 import com.max.weatherviewer.presentation.viewer.WeatherViewerFragmentArgs
 import com.oliynick.max.elm.core.actor.component
 import com.oliynick.max.elm.core.component.*
+import com.oliynick.max.elm.time.travel.GsonConverter
+import com.oliynick.max.elm.time.travel.debugComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import org.kodein.di.Kodein
@@ -22,6 +25,8 @@ import org.kodein.di.generic.bind
 import org.kodein.di.generic.instance
 import org.kodein.di.generic.scoped
 import org.kodein.di.generic.singleton
+import protocol.ComponentId
+import java.net.URL
 
 typealias MapComponent = (Flow<Message>) -> Flow<State>
 
@@ -43,7 +48,20 @@ fun <S> S.mapModule(preSelectedLocation: Location?): Kodein.Module where S : Fra
 
             suspend fun loader() = (preSelectedLocation?.let(::State) ?: instance<Context>().load(instance(), ::State)) to emptySet<Command>()
 
-            component(::loader, ::resolve, ::update, instance())
+            val dependencies = dependencies(::loader, ::resolve, ::update) {
+                interceptor = instance()
+            }
+
+            if (BuildConfig.DEBUG) {
+
+                debugComponent(ComponentId("Google map"), GsonConverter, dependencies) {
+                    serverSettings {
+                        url = URL("http://10.0.2.2:8080")
+                    }
+                }
+            } else {
+                component(dependencies)
+            }
         }
     }
 }

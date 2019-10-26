@@ -22,8 +22,8 @@ import com.oliynick.max.elm.core.component.sideEffect
 import com.oliynick.max.elm.time.travel.app.storage.paths
 import com.oliynick.max.elm.time.travel.app.storage.serverSettings
 import com.oliynick.max.elm.time.travel.app.transport.ServerHandler
-import com.oliynick.max.elm.time.travel.protocol.ApplyMessage
-import com.oliynick.max.elm.time.travel.protocol.ApplyState
+import protocol.ApplyMessage
+import protocol.ApplyState
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 
@@ -43,7 +43,7 @@ suspend fun Dependencies.resolve(command: PluginCommand): Set<PluginMessage> {
             is StoreServerSettings -> command.sideEffect { properties.serverSettings = serverSettings }
             is DoStartServer -> command.effect { manager.start(command.settings, events); NotifyStarted }
             DoStopServer -> command.effect { manager.stop(); NotifyStopped }
-            is DoApplyCommands -> command.sideEffect { manager(id, ApplyMessage(commands)) }
+            is DoApplyCommand -> command.sideEffect { manager(id, ApplyMessage(command.command)) }
             is DoNotifyOperationException -> command.sideEffect { exceptions.send(command) }
             is DoApplyState -> command.effect { manager(id, ApplyState(state)); StateReApplied(id, state) }
         }

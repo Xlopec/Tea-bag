@@ -29,10 +29,10 @@ val Project.properties: PropertiesComponent
 
 var PropertiesComponent.pluginSettings: Settings
     set(value) {
-        paths = value.classFiles
+        //paths = value.dependencies
         serverSettings = value.serverSettings
     }
-    get() = Settings(serverSettings, paths)
+    get() = Settings(serverSettings)
 
 var PropertiesComponent.paths: List<File>
     set(value) = setValues("$PLUGIN_ID.paths", Array(value.size) { i -> value[i].absolutePath })

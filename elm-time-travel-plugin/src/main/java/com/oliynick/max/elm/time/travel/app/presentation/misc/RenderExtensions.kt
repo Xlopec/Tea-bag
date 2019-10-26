@@ -16,9 +16,10 @@
 
 package com.oliynick.max.elm.time.travel.app.presentation.misc
 
-import com.oliynick.max.elm.time.travel.app.domain.*
+import com.oliynick.max.elm.time.travel.app.domain.Snapshot
 import com.oliynick.max.elm.time.travel.app.presentation.sidebar.getIcon
 import org.kodein.di.simpleErasedName
+import protocol.*
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import javax.swing.Icon
@@ -26,9 +27,9 @@ import javax.swing.tree.DefaultMutableTreeNode
 
 private val DATE_TIME_FORMATTER: DateTimeFormatter by lazy { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
 
-fun <T> TypeNode.toJTree(mapper: (TypeNode) -> T): DefaultMutableTreeNode {
+fun <T> Value<*>.toJTree(mapper: (Value<*>) -> T): DefaultMutableTreeNode {
 
-    fun fillJTree(node: TypeNode, parent: DefaultMutableTreeNode) {
+    fun fillJTree(node: Value<*>, parent: DefaultMutableTreeNode) {
         val current = DefaultMutableTreeNode(mapper(node))
             .also(parent::add)
 
@@ -39,83 +40,115 @@ fun <T> TypeNode.toJTree(mapper: (TypeNode) -> T): DefaultMutableTreeNode {
         .also { root -> children.forEach { node -> fillJTree(node, root) } }
 }
 
-fun TypeNode.toJTree(): DefaultMutableTreeNode = toJTree(::identity)
+fun Value<*>.toJTree(): DefaultMutableTreeNode = toJTree(::identity)
 
-val TypeNode.children: Collection<TypeNode>
-    inline get() {
-        val fields = when (this) {
-            is AnyRef -> fields
-            is IterablePrimitive -> fields
-            is MapPrimitive -> fields
-            is ArrayPrimitive -> fields
-            is NullRef, is IntPrimitive, is StringPrimitive -> emptyList()
-        }
+fun anyRef(entry: Map.Entry<*, *>): Value<*> {
+    return Ref(
+        RemoteType(entry::class.java),
+        setOf(
+            Property(RemoteType(if (entry.key == null) Any::class.java else entry.key!!::class.java), "key", entry.key.toValue(converters())),
+            Property(RemoteType(if (entry.value == null) Any::class.java else entry.value!!::class.java), "value", entry.value.toValue(converters()))
+        )
+    )
+}
 
-        return fields.map { it.value }
+val Value<*>.children: Collection<Value<*>>
+    inline get() = when (this) {
+        is PrimitiveWrapper<*>, is Null -> emptyList()
+        is IterableWrapper -> value.map { it }
+        is MapWrapper -> value.map(::anyRef)
+        is Ref -> properties.map { it.v }
     }
 
-fun TypeNode.toReadableString(): String = when (this) {
-    is AnyRef -> toReadableString()
+fun Value<*>.toReadableString(): String = when (this) {
+    /*is AnyRef -> toReadableString()
     is IntPrimitive -> toReadableString()
     is StringPrimitive -> toReadableString()
     is IterablePrimitive -> toReadableString()
     is NullRef -> toReadableString()
     is MapPrimitive -> toReadableString()
-    is ArrayPrimitive -> toReadableString()
+    is ArrayPrimitive -> toReadableString()*/
+    is IntWrapper -> toReadableString()
+    is ByteWrapper -> toReadableString()
+    is ShortWrapper -> toReadableString()
+    is CharWrapper -> toReadableString()
+    is LongWrapper -> toReadableString()
+    is DoubleWrapper -> toReadableString()
+    is FloatWrapper -> toReadableString()
+    is StringWrapper -> toReadableString()
+    is BooleanWrapper -> toReadableString()
+    is IterableWrapper -> toReadableString()
+    is MapWrapper -> toReadableString()
+    is Null -> toReadableString()
+    is Ref -> toReadableString()
 }
 
-fun AnyRef.toReadableString(): String {
-    return "${type.simpleErasedName()}(${fields.joinToString(transform = ::toReadableString)})"
+fun Ref.toReadableString(): String {
+    return "${type.value}(${properties.joinToString(transform = ::toReadableString)})"
 }
 
-fun IterablePrimitive.toReadableString(): String {
+fun IterableWrapper.toReadableString(): String {
+    return "${type.value} ${value.joinToString(
+        prefix = "[",
+        postfix = "]",
+        transform = { it.toReadableString() }
+    )}"
+}
+
+/*fun ArrayPrimitive.toReadableString(): String {
     return "${value::class.java.simpleErasedName()} ${fields.joinToString(
         prefix = "[",
         postfix = "]",
         transform = ::toReadableString
     )}"
-}
+}*/
 
-fun ArrayPrimitive.toReadableString(): String {
-    return "${value::class.java.simpleErasedName()} ${fields.joinToString(
-        prefix = "[",
-        postfix = "]",
-        transform = ::toReadableString
-    )}"
-}
-
-fun MapPrimitive.toReadableString(): String {
-    return "${value::class.java.simpleErasedName()} ${fields.joinToString(
+fun MapWrapper.toReadableString(): String {
+    return "${value::class.java.simpleErasedName()} ${value.entries.joinToString(
         prefix = "{",
         postfix = "}",
-        transform = ::toReadableString
+        transform = { e -> e.key.toReadableString() + " -> " + e.value.toReadableString() }
     )}"
 }
 
-fun NullRef.toReadableString(): String = "null"
+fun Null.toReadableString(): String = "null"
 
-fun IntPrimitive.toReadableString() = "Int:$stringValueSafe"
+fun IntWrapper.toReadableString() = "Int:$stringValueSafe"
 
-fun StringPrimitive.toReadableString() = "String:${if (value == null) null else '"' + stringValueSafe + '"'}"
+fun LongWrapper.toReadableString() = "Long:$stringValueSafe"
 
-val TypeNode.icon: Icon?
+fun FloatWrapper.toReadableString() = "Float:$stringValueSafe"
+
+fun BooleanWrapper.toReadableString() = "Boolean:$stringValueSafe"
+
+fun DoubleWrapper.toReadableString() = "Double:$stringValueSafe"
+
+fun CharWrapper.toReadableString() = "Char:$stringValueSafe"
+
+fun ShortWrapper.toReadableString() = "Short:$stringValueSafe"
+
+fun ByteWrapper.toReadableString() = "Byte:$stringValueSafe"
+
+fun StringWrapper.toReadableString() = "String:${'"' + stringValueSafe + '"'}"
+
+val Value<*>.icon: Icon?
     inline get() = when (this) {
-        is ArrayPrimitive, is MapPrimitive, is IterablePrimitive, is AnyRef -> getIcon("class")
-        is IntPrimitive, is StringPrimitive -> getIcon("variable")
-        NullRef -> null
+        is PrimitiveWrapper<*> -> getIcon("variable")
+        is IterableWrapper, is MapWrapper, is Ref -> getIcon("class")
+        is Null -> null
     }
 
 fun Snapshot.toReadableString(formatter: DateTimeFormatter = DATE_TIME_FORMATTER): String {
     return "${timestamp.format(formatter)}: $id"
 }
 
-private fun toReadableString(field: FieldNode) = "${field.fieldName}=${field.value.toReadableString()}"
+private fun toReadableString(field: Property<*>) = "${field.name}=${field.v.toReadableString()}"
 
-private val Primitive<*>.stringValueSafe
+private val PrimitiveWrapper<*>.stringValueSafe
     get() = try {
         value?.toString() ?: "null"
     } catch (th: Throwable) {
         "Couldn't get value, method 'toString' thrown exception${th.message?.let { " with message: $it" }}"
     }
 
-private fun identity(t: TypeNode) = t
+private fun identity(t: Value<*>) = t

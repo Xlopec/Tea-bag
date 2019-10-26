@@ -19,12 +19,9 @@ package com.oliynick.max.elm.time.travel.app.domain
 import com.oliynick.max.elm.core.component.UpdateWith
 import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
-import com.oliynick.max.elm.time.travel.app.misc.mergeWith
 
 internal fun updateForUser(message: UIMessage, state: PluginState): UpdateWith<PluginState, PluginCommand> {
     return when (message) {
-        is AddFiles -> addFiles(message, toExpected(state))
-        is RemoveFiles -> removeFiles(message, toExpected(state))
         is UpdatePort -> updateServerSettings(state.settings.serverSettings.copy(port = message.port), toExpected(state))
         is UpdateHost -> updateServerSettings(state.settings.serverSettings.copy(host = message.host), toExpected(state))
         StartServer -> startServer(toExpected(state))
@@ -34,18 +31,6 @@ internal fun updateForUser(message: UIMessage, state: PluginState): UpdateWith<P
         is ReApplyState -> reApplyState(message, toExpected(state))
         is RemoveComponent -> removeComponent(message, toExpected(state))
     }
-}
-
-private fun addFiles(message: AddFiles, state: Stopped): UpdateWith<Stopped, StoreFiles> {
-    val updatedPaths = state.settings.classFiles.mergeWith(message.files)
-
-    return state.copy(settings = state.settings.copy(classFiles = updatedPaths)).command(StoreFiles(updatedPaths))
-}
-
-private fun removeFiles(message: RemoveFiles, state: Stopped): UpdateWith<Stopped, StoreFiles> {
-    val updatedPaths = state.settings.classFiles - message.files
-
-    return state.copy(settings = state.settings.copy(classFiles = updatedPaths)).command(StoreFiles(updatedPaths))
 }
 
 private fun updateServerSettings(serverSettings: ServerSettings, state: Stopped): UpdateWith<Stopped, StoreServerSettings> {
@@ -70,7 +55,7 @@ private fun reApplyState(message: ReApplyState, state: Started): UpdateWith<Plug
 }
 
 private fun reApplyCommands(message: ReApplyCommands, state: Started): UpdateWith<PluginState, PluginCommand> {
-    return state.command(DoApplyCommands(message.componentId, message.commands))
+    return state.command(DoApplyCommand(message.componentId, message.command))
 }
 
 private fun removeSnapshots(message: RemoveSnapshots, state: Started): UpdateWith<PluginState, PluginCommand> {

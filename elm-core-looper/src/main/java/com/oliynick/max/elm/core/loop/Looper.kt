@@ -16,7 +16,10 @@
 
 package com.oliynick.max.elm.core.loop
 
-import com.oliynick.max.elm.core.component.*
+import com.oliynick.max.elm.core.component.Component
+import com.oliynick.max.elm.core.component.Dependencies
+import com.oliynick.max.elm.core.component.Resolver
+import com.oliynick.max.elm.core.component.UpdateWith
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ChannelIterator
@@ -31,14 +34,6 @@ import kotlinx.coroutines.launch
  * Internal alias of a component
  */
 typealias ComponentInternal<M, S> = Pair<SendChannel<M>, Flow<S>>
-
-/**
- * Dependencies holder
- */
-data class Dependencies<M, C, S>(inline val initializer: Initializer<S, C>,
-                                 inline val resolver: Resolver<C, M>,
-                                 inline val update: Update<M, S, C>,
-                                 inline val interceptor: Interceptor<M, S, C>)
 
 /**
  * Stores a new state to channel and notifies subscribers about changes
@@ -89,12 +84,11 @@ suspend fun <M, C, S> loop(state: S,
 /**
  * Loads an initial state using supplied initializer and starts component's loop
  */
-suspend fun <M, C, S> loop(initializer: Initializer<S, C>,
-                           dependencies: Dependencies<M, C, S>,
+suspend fun <M, C, S> loop(dependencies: Dependencies<M, C, S>,
                            messages: Channel<M>,
                            states: BroadcastChannel<S>): S {
 
-    val (initState, initCommands) = initializer()
+    val (initState, initCommands) = dependencies.initializer()
         .also { (initialState, _) -> states.offerChecking(initialState) }
 
     val nonTransient = loop(initState, dependencies.resolver(initCommands).iterator(), dependencies, states)
@@ -124,9 +118,6 @@ fun <M, S> newComponent(state: Flow<S>, messages: SendChannel<M>): Component<M, 
         }
     }
 }
-
-@Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
-suspend fun emptyInterceptor(message: Any, prevState: Any, newState: Any, commands: Set<*>) = Unit
 
 fun <E> BroadcastChannel<E>.offerChecking(e: E) = check(offer(e)) { "Couldn't offer next element - $e" }
 

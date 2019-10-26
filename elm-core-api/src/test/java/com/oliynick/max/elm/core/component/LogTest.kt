@@ -36,7 +36,9 @@ class LogTest {
     fun androidLogger() = runBlockingInTestScope {
         val (formatter, sink) = spyFormatter()
 
-        component("", ::throwingResolver, { m, _ -> m.noCommand() }, androidLogger("Test", formatter))
+        component<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
+            interceptor = androidLogger("Test", formatter)
+        }
             .also { component -> /* modify state */ component("a", "b").first() }
 
         expectThat(sink).containsExactly(InterceptData("a", "", "a", emptySet()),
@@ -49,6 +51,6 @@ private fun spyFormatter(): Pair<Formatter<String, String, String>, List<Interce
 
     return { message: String, prevState: String, newState: String, commands: Set<String> ->
         sink += InterceptData(message, prevState, newState, commands)
-        simpleFormatter(message, prevState, newState, commands)
+        simpleFormatter<String, String, String>()(message, prevState, newState, commands)
     } to sink
 }

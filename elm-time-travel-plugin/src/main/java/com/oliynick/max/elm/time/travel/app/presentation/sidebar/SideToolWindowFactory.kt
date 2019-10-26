@@ -25,7 +25,6 @@ import com.intellij.ui.content.ContentFactory
 import com.oliynick.max.elm.core.actor.component
 import com.oliynick.max.elm.core.component.androidLogger
 import com.oliynick.max.elm.time.travel.app.domain.*
-import com.oliynick.max.elm.time.travel.app.presentation.misc.safe
 import com.oliynick.max.elm.time.travel.app.storage.pluginSettings
 import com.oliynick.max.elm.time.travel.app.storage.properties
 import com.oliynick.max.elm.time.travel.app.transport.ServerHandler
@@ -57,8 +56,12 @@ class SideToolWindowFactory : ToolWindowFactory, DumbAware {
 
         toolWindow.contentManager.addContent(content)
 
-        scope.launch { dependencies.exceptions.asFlow().collect { command -> project.showException(command) } }
-        scope.launch { dependencies.notifications.asFlow().collect { notification -> project.showNotification(notification) } }
+        scope.launch {
+            dependencies.exceptions.asFlow().collect { command -> project.showException(command) }
+        }
+        scope.launch {
+            dependencies.notifications.asFlow().collect { notification -> project.showNotification(notification) }
+        }
     }
 
     override fun shouldBeAvailable(project: Project): Boolean = true

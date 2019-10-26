@@ -16,41 +16,69 @@
 
 package com.oliynick.max.elm.time.travel
 
-import com.oliynick.max.elm.core.component.androidLogger
+import com.oliynick.max.elm.core.component.Dependencies
 import com.oliynick.max.elm.core.component.invoke
 import com.oliynick.max.elm.core.component.noCommand
-import com.oliynick.max.elm.time.travel.protocol.ComponentId
+import com.oliynick.max.elm.time.travel.gson.gson
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import protocol.*
+import java.util.*
 import kotlin.random.Random
 
 data class SomeTestString(val value: String)
 
-data class SomeTestCommand(val str: SomeTestString, val collection : Collection<Any>)
+data class SomeTestCommand(val str: SomeTestString/*, val collection : Collection<Any>*/)
 
-data class SomeTestState(val string: SomeTestString)
+data class SomeTestState(val string: SomeTestString/*, val uri: Uri*/)
+
+object SomeUUIDConverter : Converter<UUID, StringWrapper> {
+    override fun from(v: StringWrapper, converters: Converters): UUID =
+        UUID.fromString(v.value)
+
+    override fun to(t: UUID, converters: Converters): StringWrapper =
+        wrap(t.toString())
+}
+
+object GsonConverter : JsonConverter {
+
+    private val gson = gson()
+
+    override fun toJson(any: Any): String = gson.toJson(any)
+
+    override fun <T> fromJson(json: String, cl: Class<T>): T = gson.fromJson(json, cl)
+
+}
 
 fun main() {
 
     runBlocking {
 
-        component<SomeTestCommand, String, SomeTestState>(
-            Settings(ComponentId("webSocketComponent")),
-            SomeTestState(SomeTestString("initial")),
-            { emptySet() },
-            { message, _ -> SomeTestState(message.str.copy(value = message.str.value + Random.nextDouble().toString()))
-                .noCommand() },
-            androidLogger("Test")
-        ).also {
-            launch {
-                it.invoke(
-                    SomeTestCommand(SomeTestString("hello"), listOf(1234)),
-                    SomeTestCommand(SomeTestString("Suck"), listOf(24, 43, 13, "loh")),
-                    SomeTestCommand(SomeTestString("dfvbdf"), listOf(24, 43, 13, "sdfgsd"))
-                ).collect()
+        val dependencies = DebugDependencies(
+            Dependencies<SomeTestCommand, String, SomeTestState>(
+                SomeTestState(SomeTestString("initial")),
+                { emptySet() },
+                { message, _ ->
+                    SomeTestState(message.str.copy(value = message.str.value + Random.nextDouble().toString())).noCommand()
+                }
+            ),
+            ServerSettings(
+                ComponentId("webSocketComponent"),
+                GsonConverter
+            )
+        )
+
+        component(dependencies)
+            .also {
+                launch {
+                    it.invoke(
+                        SomeTestCommand(SomeTestString("hello")/*, listOf(1234)*/),
+                        SomeTestCommand(SomeTestString("Suck")/*, listOf(24, 43, 13, "loh")*/),
+                        SomeTestCommand(SomeTestString("dfvbdf")/*, listOf(24, 43, 13, "sdfgsd")*/)
+                    ).collect()
+                }
             }
-        }
 
     }
 }

@@ -8,7 +8,7 @@ import com.intellij.openapi.wm.WindowManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.awt.RelativePoint
 import com.oliynick.max.elm.time.travel.app.domain.*
-import com.oliynick.max.elm.time.travel.protocol.ComponentId
+import protocol.ComponentId
 import java.awt.Color
 import java.awt.Insets
 import javax.swing.Icon
@@ -79,7 +79,7 @@ private fun htmlDescription(cause: PluginException, operation: PluginCommand?): 
         is StoreFiles, is StoreServerSettings, is DoNotifyOperationException -> TODO()
         is DoStartServer -> "plugin failed to start server"
         DoStopServer -> "plugin failed to stop server"
-        is DoApplyCommands -> "plugin failed to apply commands to component \"${operation.id.id}\""
+        is DoApplyCommand -> "plugin failed to apply commands to component \"${operation.id.id}\""
         is DoApplyState -> "plugin failed to apply state to component \"${operation.id.id}\". Check the client is running"
         null -> cause.tryGetReadableMessage()
     }

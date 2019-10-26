@@ -54,6 +54,12 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    packagingOptions {
+        exclude 'META-INF/ktor*'
+        exclude 'META-INF/kotlin*'
+        exclude 'META-INF/atomicfu*'
+    }
 }
 
 androidExtensions {
@@ -64,6 +70,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(':elm-core-actor')
+    implementation project(':elm-time-travel')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"

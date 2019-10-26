@@ -22,13 +22,14 @@ import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.time.travel.app.domain.*
 import com.oliynick.max.elm.time.travel.app.presentation.misc.*
 import com.oliynick.max.elm.time.travel.app.presentation.sidebar.getIcon
-import com.oliynick.max.elm.time.travel.protocol.ComponentId
+import protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
+import protocol.Value
 import java.awt.event.MouseEvent
 import javax.swing.*
 import javax.swing.tree.DefaultMutableTreeNode
@@ -105,7 +106,7 @@ private fun snapshotPopup(component: ComponentId, snapshot: Snapshot, events: Ch
     return JBPopupMenu("Snapshot ${snapshot.id}").apply {
         add(JBMenuItem("Reset to this", getIcon("updateRunningApplication")).apply {
             addActionListener {
-                events.offer(ReApplyState(component, snapshot.state.value))
+                events.offer(ReApplyState(component, snapshot.state))
             }
         })
 
@@ -117,21 +118,21 @@ private fun snapshotPopup(component: ComponentId, snapshot: Snapshot, events: Ch
     }
 }
 
-private fun messagePopup(id: ComponentId, message: RemoteObject, events: Channel<PluginMessage>): JPopupMenu {
+private fun messagePopup(id: ComponentId, message: Value<*>, events: Channel<PluginMessage>): JPopupMenu {
     return JBPopupMenu().apply {
         add(JBMenuItem("Apply this message", getIcon("updateRunningApplication")).apply {
             addActionListener {
-                events.offer(ReApplyCommands(id, message.value))
+                events.offer(ReApplyCommands(id, message))
             }
         })
     }
 }
 
-private fun statePopup(id: ComponentId, state: RemoteObject, events: Channel<PluginMessage>): JPopupMenu {
+private fun statePopup(id: ComponentId, state: Value<*>, events: Channel<PluginMessage>): JPopupMenu {
     return JBPopupMenu().apply {
         add(JBMenuItem("Apply this state", getIcon("updateRunningApplication")).apply {
             addActionListener {
-                events.offer(ReApplyState(id, state.value))
+                events.offer(ReApplyState(id, state))
             }
         })
     }

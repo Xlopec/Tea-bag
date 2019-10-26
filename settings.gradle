@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-include ':app', ':elm-core-api', ':elm-core-looper', ':elm-core-actor', ':elm-time-travel', ':elm-time-travel-protocol',
-    ':elm-time-travel-plugin', ':elm-core-test'
+include ':app',
+        ':elm-core-api',
+        ':elm-core-looper',
+        ':elm-core-actor',
+        ':elm-time-travel',
+        ':elm-time-travel-protocol',
+        ':elm-time-travel-plugin',
+        ':elm-core-test',
+        'elm-time-travel-adapter-gson'

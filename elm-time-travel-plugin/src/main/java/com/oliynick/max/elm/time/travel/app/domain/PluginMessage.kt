@@ -16,8 +16,8 @@
 
 package com.oliynick.max.elm.time.travel.app.domain
 
-import com.oliynick.max.elm.time.travel.protocol.ComponentId
-import java.io.File
+import protocol.ComponentId
+import protocol.Value
 import java.util.*
 
 sealed class PluginMessage
@@ -25,10 +25,6 @@ sealed class PluginMessage
  * UI messages
  */
 sealed class UIMessage : PluginMessage()
-
-data class AddFiles(val files: List<File>) : UIMessage()
-
-data class RemoveFiles(val files: List<File>) : UIMessage()
 
 data class UpdatePort(val port: UInt) : UIMessage()
 
@@ -40,11 +36,9 @@ object StopServer : UIMessage()
 
 data class RemoveSnapshots(val componentId: ComponentId, val ids: Set<UUID>) : UIMessage()
 
-data class ReApplyCommands(val componentId: ComponentId, val commands: List<Any>) : UIMessage() {
-    constructor(componentId: ComponentId, command: Any) : this(componentId, listOf(command))
-}
+data class ReApplyCommands(val componentId: ComponentId, val command: Value<*>) : UIMessage()
 
-data class ReApplyState(val componentId: ComponentId, val state: Any) : UIMessage()
+data class ReApplyState(val componentId: ComponentId, val state: Value<*>) : UIMessage()
 
 data class RemoveComponent(val componentId: ComponentId) : UIMessage()
 /*
@@ -60,8 +54,8 @@ object NotifyStarted : NotificationMessage()
 
 object NotifyStopped : NotificationMessage()
 
-data class AppendSnapshot(val componentId: ComponentId, val message: Any, val oldState: Any, val newState: Any) : NotificationMessage()
+data class AppendSnapshot(val componentId: ComponentId, val message: Value<*>, val oldState: Value<*>, val newState: Value<*>) : NotificationMessage()
 
-data class StateReApplied(val componentId: ComponentId, val state: Any) : NotificationMessage()
+data class StateReApplied(val componentId: ComponentId, val state: Value<*>) : NotificationMessage()
 
-data class ComponentAttached(val componentId: ComponentId, val state: Any) : NotificationMessage()
+data class ComponentAttached(val componentId: ComponentId, val state: Value<*>) : NotificationMessage()
