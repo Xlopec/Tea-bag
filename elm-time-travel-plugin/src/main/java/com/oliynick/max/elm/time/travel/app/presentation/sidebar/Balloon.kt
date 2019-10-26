@@ -27,7 +27,7 @@ fun Project.showBalloon(balloon: Balloon) {
     balloon.show(point, Balloon.Position.atRight)
 }
 
-fun createBalloon(cause: Throwable, operation: PluginCommand?): Balloon {
+fun createBalloon(cause: PluginException, operation: PluginCommand?): Balloon {
     return createBalloon(htmlDescription(cause, operation), exceptionBalloonIcon, exceptionBalloonTextColor, exceptionBalloonFillColor)
 }
 
@@ -74,7 +74,7 @@ private fun createBalloon(html: String, icon: Icon, textColor: JBColor, fillColo
         .createBalloon()
 }
 
-private fun htmlDescription(cause: Throwable, operation: PluginCommand?): String {
+private fun htmlDescription(cause: PluginException, operation: PluginCommand?): String {
     val message: String? = when (operation) {
         is StoreFiles, is StoreServerSettings, is DoNotifyOperationException -> TODO()
         is DoStartServer -> "plugin failed to start server"
@@ -84,8 +84,6 @@ private fun htmlDescription(cause: Throwable, operation: PluginCommand?): String
         null -> cause.tryGetReadableMessage()
     }
 
-    cause.printStackTrace()
-
     return """<html>
         <p>An exception occurred${message?.let { ", $it" } ?: ""}</p>
         <p>Reason: ${cause.message}</p>
@@ -93,9 +91,9 @@ private fun htmlDescription(cause: Throwable, operation: PluginCommand?): String
     """.trimMargin()
 }
 
-private fun Throwable.tryGetReadableMessage(): String? = when {
-    isMissingDependenciesException -> "plugin couldn't satisfy dependencies. Try adding " +
+private fun PluginException.tryGetReadableMessage(): String? = when(this) {
+    is MissingDependenciesException -> "plugin couldn't satisfy dependencies. Try adding " +
             "the file or directory that contains corresponding .class file"
-    isNetworkException -> "network exception"
+    is NetworkException -> "network exception"
     else -> null
 }

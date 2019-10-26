@@ -33,5 +33,5 @@ data class DoApplyCommands(val id: ComponentId, val commands: List<Any>) : Plugi
 
 data class DoApplyState(val id: ComponentId, val state: Any) : PluginCommand()
 
-data class DoNotifyOperationException(val exception: Throwable, val operation: PluginCommand?) : PluginCommand()
+data class DoNotifyOperationException(val exception: PluginException, val operation: PluginCommand?) : PluginCommand()
 

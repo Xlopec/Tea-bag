@@ -52,7 +52,9 @@ data class RemoveComponent(val componentId: ComponentId) : UIMessage()
  */
 sealed class NotificationMessage : PluginMessage()
 
-data class NotifyOperationException(val exception: Throwable, val operation: PluginCommand? = null) : NotificationMessage()
+data class NotifyOperationException(val exception: PluginException, val operation: PluginCommand? = null) : NotificationMessage() {
+    constructor(raw: Throwable, operation: PluginCommand? = null) : this(raw.toPluginException(), operation)
+}
 
 object NotifyStarted : NotificationMessage()
 
