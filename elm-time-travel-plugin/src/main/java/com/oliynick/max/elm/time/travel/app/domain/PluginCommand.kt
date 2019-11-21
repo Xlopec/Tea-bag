@@ -16,7 +16,8 @@
 
 package com.oliynick.max.elm.time.travel.app.domain
 
-import com.oliynick.max.elm.time.travel.protocol.ComponentId
+import protocol.ComponentId
+import protocol.Value
 import java.io.File
 
 sealed class PluginCommand
@@ -29,9 +30,9 @@ data class DoStartServer(val settings: Settings) : PluginCommand()
 
 object DoStopServer : PluginCommand()
 
-data class DoApplyCommands(val id: ComponentId, val commands: List<Any>) : PluginCommand()
+data class DoApplyCommand(val id: ComponentId, val command: Value<*>) : PluginCommand()
 
-data class DoApplyState(val id: ComponentId, val state: Any) : PluginCommand()
+data class DoApplyState(val id: ComponentId, val state: Value<*>) : PluginCommand()
 
 data class DoNotifyOperationException(val exception: PluginException, val operation: PluginCommand?) : PluginCommand()
 

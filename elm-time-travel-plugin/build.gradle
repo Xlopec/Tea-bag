@@ -64,6 +64,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(path: ':elm-core-actor', configuration: 'default')
     implementation project(path: ':elm-time-travel-protocol', configuration: 'default')
+    implementation project(path: ':elm-time-travel-adapter-gson', configuration: 'default')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 

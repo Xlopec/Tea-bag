@@ -19,7 +19,6 @@ package com.oliynick.max.elm.core.component
 import com.oliynick.max.elm.core.actor.component
 import core.component.*
 import core.misc.invokeCollecting
-import core.misc.messageAsStateUpdate
 import core.misc.throwingResolver
 import core.scope.runBlockingInTestScope
 import kotlinx.coroutines.Dispatchers
@@ -159,7 +158,10 @@ class ComponentExtensionsTest {
 
     @Test
     fun `test component binding`() = runBlockingInTestScope {
-        val supplier = component("", ::throwingResolver, ::messageAsStateUpdate)
+
+        val supplier = component<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
+
+        }
         val (transformer, sink) = spyingIdentityTransformer<String>()
 
         bind(supplier, identityComponent(), transformer)
@@ -174,7 +176,9 @@ class ComponentExtensionsTest {
         val (interceptor1, sink1) = spyingInterceptor()
         val (interceptor2, sink2) = spyingInterceptor()
 
-        component("", ::throwingResolver, { m, _ -> m.noCommand() }, interceptor1 with interceptor2)
+        component<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
+            interceptor =  interceptor1 with interceptor2
+        }
             .also { component -> /* modify state */ component("a", "b").first() }
 
         val expected = listOf(InterceptData("a", "", "a", emptySet()),

@@ -19,7 +19,9 @@
 package com.oliynick.max.elm.core.actor
 
 import com.oliynick.max.elm.core.component.*
-import com.oliynick.max.elm.core.loop.*
+import com.oliynick.max.elm.core.loop.ComponentInternal
+import com.oliynick.max.elm.core.loop.loop
+import com.oliynick.max.elm.core.loop.newComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -50,15 +52,51 @@ import kotlin.coroutines.CoroutineContext
  * @param C commands to be executed
  * @return configured instance of [Component]
  */
-fun <M : Any, C : Any, S : Any> CoroutineScope.component(initializer: Initializer<S, C>,
-                                                         resolver: Resolver<C, M>,
-                                                         update: Update<M, S, C>,
-                                                         interceptor: Interceptor<M, S, C> = ::emptyInterceptor): Component<M, S> {
+@Deprecated("too many params")
+fun <M, C, S> CoroutineScope.component(
+    initializer: Initializer<S, C>,
+    resolver: Resolver<C, M>,
+    update: Update<M, S, C>,
+    interceptor: Interceptor<M, S, C> = { _, _, _, _ -> }
+): Component<M, S> = component(Dependencies(initializer, resolver, update, interceptor))
 
-    val (messages, states) = actorComponent(initializer, resolver, update, interceptor)
+fun <M, C, S> CoroutineScope.component(dependencies: Dependencies<M, C, S>): Component<M, S> {
+
+    val (messages, states) = actorComponent(dependencies)
 
     return newComponent(states, messages)
 }
+
+fun <M, C, S> CoroutineScope.component(
+    initializer: Initializer<S, C>,
+    resolver: Resolver<C, M>,
+    update: Update<M, S, C>,
+    config: DependenciesBuilder<M, C, S>.() -> Unit = {}
+) = component(
+    DependenciesBuilder(initializer, resolver, update)
+        .apply(config)
+        .toDependencies()
+)
+
+fun <M, C, S> CoroutineScope.component(
+    initialState: S,
+    resolver: Resolver<C, M>,
+    update: Update<M, S, C>,
+    vararg initialCommands: C,
+    config: DependenciesBuilder<M, C, S>.() -> Unit = {}
+) = component(
+    dependencies(initializer(initialState, setOf(*initialCommands)), resolver, update, config)
+)
+
+fun <M, C, S> CoroutineScope.dependencies(
+    initialState: S,
+    resolver: Resolver<C, M>,
+    update: Update<M, S, C>,
+    initialCommands: Set<C>,
+    config: DependenciesBuilder<M, C, S>.() -> Unit = {}
+) = component(
+    dependencies(initializer(initialState, initialCommands), resolver, update, config)
+)
 
 /**
  * Component is one of the main parts of the [ELM architecture](https://guide.elm-lang.org/architecture/). Component (Runtime)
@@ -82,11 +120,14 @@ fun <M : Any, C : Any, S : Any> CoroutineScope.component(initializer: Initialize
  * @param C commands to be executed
  * @return configured instance of [Component]
  */
-fun <M : Any, C : Any, S : Any> CoroutineScope.component(initialState: S,
-                                                         resolver: Resolver<C, M>,
-                                                         update: Update<M, S, C>,
-                                                         interceptor: Interceptor<M, S, C> = ::emptyInterceptor,
-                                                         vararg initialCommands: C): Component<M, S> {
+@Deprecated("too many params")
+fun <M, C, S> CoroutineScope.component(
+    initialState: S,
+    resolver: Resolver<C, M>,
+    update: Update<M, S, C>,
+    interceptor: Interceptor<M, S, C> = { _, _, _, _ -> },
+    vararg initialCommands: C
+): Component<M, S> {
 
     @Suppress("RedundantSuspendModifier")
     suspend fun loader() = initialState to setOf(*initialCommands)
@@ -94,18 +135,17 @@ fun <M : Any, C : Any, S : Any> CoroutineScope.component(initialState: S,
     return component(::loader, resolver, update, interceptor)
 }
 
-private fun <M, C, S> CoroutineScope.actorComponent(initializer: Initializer<S, C>,
-                                                     resolver: Resolver<C, M>,
-                                                     update: Update<M, S, C>,
-                                                     interceptor: Interceptor<M, S, C>): ComponentInternal<M, S> {
+private fun <M, C, S> CoroutineScope.actorComponent(dependencies: Dependencies<M, C, S>): ComponentInternal<M, S> {
 
     val statesChannel = BroadcastChannel<S>(Channel.CONFLATED)
 
     @UseExperimental(ObsoleteCoroutinesApi::class)
-    return this@actorComponent.actor<M>(coroutineContext.jobOrDefault(),
-        onCompletion = statesChannel::close) {
+    return this@actorComponent.actor<M>(
+        coroutineContext.jobOrDefault(),
+        onCompletion = statesChannel::close
+    ) {
 
-        loop(initializer, Dependencies(initializer, resolver, update, interceptor), channel, statesChannel)
+        loop(dependencies, channel, statesChannel)
 
     } to statesChannel.asFlow()
 }

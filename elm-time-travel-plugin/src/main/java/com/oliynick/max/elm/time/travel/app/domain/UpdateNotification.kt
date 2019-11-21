@@ -19,7 +19,8 @@ package com.oliynick.max.elm.time.travel.app.domain
 import com.oliynick.max.elm.core.component.UpdateWith
 import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
-import com.oliynick.max.elm.time.travel.protocol.ComponentId
+import protocol.ComponentId
+import protocol.Value
 import java.time.LocalDateTime
 import java.util.*
 
@@ -51,7 +52,7 @@ private fun attachComponent(message: ComponentAttached, state: PluginState): Upd
     if (state is Started) {
 
         val id = message.componentId
-        val currentState = message.state.toRemoteRepresentation()
+        val currentState = message.state
         val componentState = state.debugState.components[id]?.copy(currentState = currentState) ?: ComponentDebugState(id, currentState)
 
         return state.copy(debugState = state.debugState.copy(components = state.debugState.components + componentState.asPair()))
@@ -63,7 +64,7 @@ private fun attachComponent(message: ComponentAttached, state: PluginState): Upd
 
 private fun reApplyState(message: StateReApplied, state: Started): UpdateWith<PluginState, PluginCommand> {
     val component = state.debugState.components[message.componentId] ?: return state.noCommand()
-    val updated = component.copy(currentState = message.state.toRemoteRepresentation())
+    val updated = component.copy(currentState = message.state)
 
     return state.copy(debugState = state.debugState.copy(components = state.debugState.components + updated.asPair()))
         .noCommand()
@@ -88,16 +89,16 @@ private fun isFatalProblem(th: PluginException, op: PluginCommand?): Boolean {
             || th is InternalException
 }
 
-private fun Any.toRemoteRepresentation() = RemoteObject(traverse(), this)
-
 private fun AppendSnapshot.toSnapshot(): Snapshot {
     return Snapshot(
-        UUID.randomUUID(), LocalDateTime.now(),
-        message.toRemoteRepresentation(), newState.toRemoteRepresentation()
+        UUID.randomUUID(),
+        LocalDateTime.now(),
+        message,
+        newState
     )
 }
 
-private fun DebugState.componentOrNew(id: ComponentId, state: RemoteObject) = components[id] ?: ComponentDebugState(id, state)
+private fun DebugState.componentOrNew(id: ComponentId, state: Value<*>) = components[id] ?: ComponentDebugState(id, state)
 
 private fun notifyDeveloperException(cause: Throwable): Nothing {
     throw IllegalStateException("Unexpected exception. Please, inform developers about the problem", cause)

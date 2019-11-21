@@ -18,15 +18,14 @@ package com.oliynick.max.elm.time.travel.app.transport
 
 import com.oliynick.max.elm.time.travel.app.domain.PluginMessage
 import com.oliynick.max.elm.time.travel.app.domain.Settings
-import com.oliynick.max.elm.time.travel.protocol.ComponentId
-import com.oliynick.max.elm.time.travel.protocol.Message
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import protocol.ClientMessage
+import protocol.ComponentId
 import java.util.concurrent.TimeUnit
 
 // fixme shiii
@@ -36,8 +35,6 @@ class ServerHandler {
     private val mutex = Mutex()
 
     suspend fun start(settings: Settings, events: Channel<PluginMessage>) {
-
-
         mutex.withLock {
 
             require(server == null) { "server haven't been disposed" }
@@ -49,13 +46,10 @@ class ServerHandler {
             withContext(Dispatchers.IO) {
                 newServer.start()
             }
-            println("Started")
-            //return@coroutineScope
         }
-
     }
 
-    suspend operator fun invoke(component: ComponentId, message: Message) {
+    suspend operator fun invoke(component: ComponentId, message: ClientMessage) {
         mutex.withLock {
             server!!(component, message)
         }

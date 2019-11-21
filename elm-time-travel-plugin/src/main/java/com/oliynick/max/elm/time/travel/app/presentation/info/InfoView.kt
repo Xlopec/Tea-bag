@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.elm.time.travel.app.presentation.sidebar
+package com.oliynick.max.elm.time.travel.app.presentation.info
 
-import com.intellij.openapi.project.Project
 import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.time.travel.app.domain.*
-import com.oliynick.max.elm.time.travel.app.presentation.misc.chooseClassFiles
 import com.oliynick.max.elm.time.travel.app.presentation.misc.safe
 import com.oliynick.max.elm.time.travel.app.presentation.misc.setOnClickListener
 import kotlinx.coroutines.CoroutineScope
@@ -32,9 +30,10 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import kotlin.coroutines.CoroutineContext
 
-class InfoView(component: Component<PluginMessage, PluginState>,
-               context: CoroutineContext,
-               private val project: Project) : CoroutineScope {
+class InfoView(
+    component: Component<PluginMessage, PluginState>,
+    context: CoroutineContext
+) : CoroutineScope {
 
     companion object {
         val NAME = InfoView::class.simpleName!!
@@ -63,23 +62,21 @@ class InfoView(component: Component<PluginMessage, PluginState>,
 
     private fun render(state: PluginState, uiEvents: Channel<PluginMessage>) {
         when (state) {
-            is Stopped -> render(state, uiEvents)
-            is Started -> render(state)
+            is Stopped -> renderStopped(uiEvents)
+            is Started -> renderStarted()
             is Starting, is Stopping -> Unit
         }.safe
     }
 
-    private fun render(state: Started) {
+    private fun renderStarted() {
         messageText.text = "There are no attached components yet"
     }
 
-    private fun render(state: Stopped, uiEvents: Channel<PluginMessage>) {
-        messageText.text = """<html>Debug server isn't running
-            |${if (state.canStart) ". <a href='#'>Add app's .class files or directories to track</a>" else ""}
-            |</html>""".trimMargin()
+    private fun renderStopped(uiEvents: Channel<PluginMessage>) {
+        messageText.text = "Debug server isn't running"
 
         messageText.setOnClickListener {
-            project.chooseClassFiles { files -> uiEvents.offer(AddFiles(files)) }
+            uiEvents.offer(StartServer)
         }
     }
 

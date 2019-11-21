@@ -16,22 +16,22 @@
 
 package com.oliynick.max.elm.time.travel.app.presentation.misc
 
-import com.oliynick.max.elm.time.travel.app.domain.RemoteObject
+import protocol.Value
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
 import javax.swing.tree.TreeModel
 
 class StateTreeModel private constructor(private val delegate: DefaultTreeModel,
-                                         initial: RemoteObject) : TreeModel by delegate {
+                                         initial: Value<*>) : TreeModel by delegate {
 
     companion object {
-        fun newInstance(state: RemoteObject): StateTreeModel {
+        fun newInstance(state: Value<*>): StateTreeModel {
             return StateTreeModel(DefaultTreeModel(DefaultMutableTreeNode("State", true)), state)
         }
     }
 
-    var state: RemoteObject = initial
+    var state: Value<*> = initial
         set(value) {
             if (value !== field) {
                 field = value
@@ -41,7 +41,7 @@ class StateTreeModel private constructor(private val delegate: DefaultTreeModel,
                 if (root.childCount > 0) {
                     delegate.removeNodeFromParent(root.getChildAt(0) as MutableTreeNode)
                 }
-                delegate.insertNodeInto(value.representation.toJTree(), root, 0)
+                delegate.insertNodeInto(value.toJTree(), root, 0)
             }
         }
 

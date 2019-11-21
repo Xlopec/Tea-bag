@@ -25,8 +25,11 @@ import com.oliynick.max.elm.core.component.changes
 import com.oliynick.max.elm.time.travel.app.domain.*
 import com.oliynick.max.elm.time.travel.app.presentation.component.ComponentView
 import com.oliynick.max.elm.time.travel.app.presentation.dsl.setHover
-import com.oliynick.max.elm.time.travel.app.presentation.misc.*
-import com.oliynick.max.elm.time.travel.protocol.ComponentId
+import com.oliynick.max.elm.time.travel.app.presentation.info.InfoView
+import com.oliynick.max.elm.time.travel.app.presentation.misc.DefaultDocumentListener
+import com.oliynick.max.elm.time.travel.app.presentation.misc.removeMouseListeners
+import com.oliynick.max.elm.time.travel.app.presentation.misc.safe
+import com.oliynick.max.elm.time.travel.app.presentation.misc.setOnClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -36,10 +39,10 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import protocol.ComponentId
 import java.awt.Container
 import java.awt.FlowLayout
 import java.awt.event.MouseEvent
-import java.io.File
 import javax.swing.*
 import javax.swing.event.DocumentListener
 import java.awt.Component as AwtComponent
@@ -50,15 +53,10 @@ class ToolWindowView(private val project: Project,
                      private val uiEvents: Channel<PluginMessage>) : CoroutineScope by scope {
 
     private lateinit var panel: JPanel
-    private lateinit var directoriesList: JList<File>
-    private lateinit var removeDirectoryButton: JLabel
-    private lateinit var addDirectoryButton: JLabel
     private lateinit var startButton: JLabel
     private lateinit var portTextField: JTextField
     private lateinit var hostTextField: JTextField
     private lateinit var componentsPanel: JPanel
-
-    private val directoriesListModel = DiffingListModel(FileDiffCallback)
 
     private val portListener = object : DefaultDocumentListener {
         override fun onValueUpdated(value: String) {
@@ -75,16 +73,12 @@ class ToolWindowView(private val project: Project,
     val root: JPanel get() = panel
 
     init {
-
-        directoriesList.cellRenderer = FileCellRenderer()
-        directoriesList.model = directoriesListModel
-
         launch { component(uiEvents.consumeAsFlow()).collect { state -> render(state, uiEvents) } }
         launch { component.showProgressOnTransientState(project) }
     }
 
+    //todo consider exposing a single callback
     private fun render(state: PluginState, messages: Channel<PluginMessage>) {
-        directoriesListModel.swap(state.settings.classFiles)
 
         portTextField.isEnabled = state is Stopped
         hostTextField.isEnabled = portTextField.isEnabled
@@ -104,19 +98,7 @@ class ToolWindowView(private val project: Project,
         startButton.icon = getIcon("run")
         startButton.disabledIcon = getIcon("run_disabled")
 
-        if (state.canStart) {
-            startButton.setOnClickListenerEnabling { messages.offer(StartServer) }
-        } else {
-            startButton.removeMouseListenersDisabling()
-        }
-
-        removeDirectoryButton.setOnClickListenerEnabling {
-            messages.offer(RemoveFiles(directoriesList.selectedValuesList))
-        }
-
-        addDirectoryButton.setOnClickListenerEnabling {
-            project.chooseClassFiles { files -> messages.offer(AddFiles(files)) }
-        }
+        startButton.setOnClickListenerEnabling { messages.offer(StartServer) }
 
         val shouldRemoveOrEmpty = componentsPanel.isEmpty || (componentsPanel.isNotEmpty && componentsPanel.first().name != InfoView.NAME)
 
@@ -132,9 +114,6 @@ class ToolWindowView(private val project: Project,
         startButton.disabledIcon = getIcon("resume")
 
         startButton.removeMouseListenersDisabling()
-
-        removeDirectoryButton.removeMouseListenersDisabling()
-        addDirectoryButton.removeMouseListenersDisabling()
     }
 
     private fun render(state: Started, messages: Channel<PluginMessage>) {
@@ -142,9 +121,6 @@ class ToolWindowView(private val project: Project,
         startButton.disabledIcon = getIcon("suspend_disabled")
 
         startButton.setOnClickListenerEnabling { messages.offer(StopServer) }
-
-        removeDirectoryButton.removeMouseListenersDisabling()
-        addDirectoryButton.removeMouseListenersDisabling()
 
         require(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children()}" }
 
@@ -172,14 +148,11 @@ class ToolWindowView(private val project: Project,
         startButton.disabledIcon = getIcon("killProcess")
 
         startButton.removeMouseListenersDisabling()
-
-        removeDirectoryButton.removeMouseListenersDisabling()
-        addDirectoryButton.removeMouseListenersDisabling()
     }
 
     private fun showEmptyComponentsView() {
         componentsPanel.clearCancelling()
-        componentsPanel += InfoView(component, scope.coroutineContext, project).root
+        componentsPanel += InfoView(component, scope.coroutineContext).root
     }
 
     private fun tabbedComponentsView() = JBTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT)

@@ -35,7 +35,7 @@ typealias Formatter<M, S, C> = (message: M, prevState: S, newState: S, commands:
  * @param C command
  * @return ready to use [interceptor][Interceptor]
  */
-inline fun <M : Any, C : Any, S : Any> androidLogger(tag: String, crossinline formatter: Formatter<M, S, C> = ::simpleFormatter): Interceptor<M, S, C> {
+fun <M, C, S> androidLogger(tag: String, formatter: Formatter<M, S, C> = simpleFormatter()): Interceptor<M, S, C> {
     return { message, prevState, newState, commands ->
         // fixme rewrite and fix
         try {
@@ -49,16 +49,14 @@ inline fun <M : Any, C : Any, S : Any> androidLogger(tag: String, crossinline fo
 /**
  * Default state to string transformer
  *
- * @param message message that caused state transition
- * @param prevState previous state
- * @param newState new state
- * @param commands set of commands to execute
  * @param M message
  * @param S state
  * @param C command
  * @return ready to use [interceptor][Interceptor]
  */
-fun <M : Any, C : Any, S : Any> simpleFormatter(message: M, prevState: S, newState: S, commands: Set<C>): String {
-    return "performing transition from $prevState to $newState caused by $message " +
-            if (commands.isEmpty()) "without executable commands" else "and executing commands ${commands.joinToString()}"
+fun <M, C, S> simpleFormatter(): Formatter<M, S, C> {
+    return { message: M, prevState: S, newState: S, commands: Set<C> ->
+        "performing transition from $prevState to $newState caused by $message " +
+                if (commands.isEmpty()) "without executable commands" else "and executing commands ${commands.joinToString()}"
+    }
 }

@@ -100,7 +100,7 @@ fun <L : MutableList<T>, T> L.replaceAll(replaceWith: List<T>,
     return replaceAll(replaceWith, diffCallback, update, ::identity)
 }
 
-fun <E> List<E>.mergeWith(with: List<E>): List<E> {
+fun <E> List<E>.mergeWith(with: Collection<E>): List<E> {
     val merged = ArrayList<E>(this)
 
     for (e in with) {

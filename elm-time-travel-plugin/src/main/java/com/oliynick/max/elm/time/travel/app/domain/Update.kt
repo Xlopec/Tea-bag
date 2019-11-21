@@ -17,8 +17,6 @@
 package com.oliynick.max.elm.time.travel.app.domain
 
 import com.oliynick.max.elm.core.component.UpdateWith
-import com.oliynick.max.elm.time.travel.protocol.ComponentId
-import java.time.LocalDateTime
 import java.util.*
 
 internal fun update(message: PluginMessage, state: PluginState): UpdateWith<PluginState, PluginCommand> {
@@ -28,6 +26,7 @@ internal fun update(message: PluginMessage, state: PluginState): UpdateWith<Plug
     }
 }
 
+// fixme remove this shi
 inline fun <reified R : T, T> toExpected(t: T, crossinline message: () -> Any = { "Unexpected state, required ${R::class} but was $t" }): R {
     require(t is R, message)
     return t

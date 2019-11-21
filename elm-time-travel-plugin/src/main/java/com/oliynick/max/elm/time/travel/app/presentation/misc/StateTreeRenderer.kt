@@ -16,10 +16,8 @@
 
 package com.oliynick.max.elm.time.travel.app.presentation.misc
 
-import com.oliynick.max.elm.time.travel.app.domain.*
+import protocol.Value
 import java.awt.Component
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import javax.swing.JLabel
 import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
@@ -43,7 +41,7 @@ object StateTreeRenderer : TreeCellRenderer {
             return label
         }
 
-        val payload = node.userObject as TypeNode
+        val payload = node.userObject as Value<*>
 
         label.text = payload.toReadableString()
         label.icon = payload.icon
