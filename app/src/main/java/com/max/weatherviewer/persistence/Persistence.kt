@@ -1,14 +1,8 @@
 package com.max.weatherviewer.persistence
 
-import android.content.Context
-import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileReader
-
 // dumb but working solution, just for example
 
+/*
 suspend inline fun <reified T> Context.load(gson: Gson, crossinline ifNone: () -> T): T {
     return withContext(Dispatchers.IO) {
         val file = cacheFile(T::class.java.fileName)
@@ -27,4 +21,4 @@ suspend inline fun <reified T> Context.persist(gson: Gson, state: T) {
 }
 
 val Class<*>.fileName get() = "$simpleName.json"
-fun Context.cacheFile(filename: String): File = File(cacheDir, filename).also { it.createNewFile() }
+fun Context.cacheFile(filename: String): File = File(cacheDir, filename).also { it.createNewFile() }*/

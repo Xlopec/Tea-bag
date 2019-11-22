@@ -2,53 +2,67 @@ package com.max.weatherviewer.presentation.main
 
 import android.app.Activity
 import android.os.Bundle
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.Navigation
-import androidx.navigation.ui.NavigationUI
-import com.max.weatherviewer.R
-import com.max.weatherviewer.api.location.PermissionPublisher
-import com.max.weatherviewer.api.location.PermissionResult
-import com.max.weatherviewer.api.location.locationModule
-import com.max.weatherviewer.presentation.FragmentsFactory
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.closestKodein
-import org.kodein.di.android.retainedKodein
-import org.kodein.di.direct
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.provider
+import androidx.ui.core.Text
+import androidx.ui.core.setContent
+import com.google.android.gms.maps.GoogleMapOptions
+import com.google.android.gms.maps.MapView
 
-class MainActivity : AppCompatActivity(), KodeinAware {
+class MainActivity : Activity()/*, KodeinAware*/ {
 
-    private val parentKodein by closestKodein()
+    /*private val parentKodein by closestKodein()
 
     override val kodein: Kodein by retainedKodein {
 
         extend(parentKodein, allowOverride = true)
-        import(locationModule)
+        import(locationModule())
 
         bind<Activity>(tag = Activity::class) with provider { this@MainActivity }
-    }
+    }*/
+
+    private lateinit var mapView: MapView
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        supportFragmentManager.fragmentFactory = FragmentsFactory(kodein)
+        //supportFragmentManager.fragmentFactory = FragmentsFactory(kodein)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        mapView = MapView(this, GoogleMapOptions().zoomControlsEnabled(true).scrollGesturesEnabledDuringRotateOrZoom(true).scrollGesturesEnabled(true))
+
+        mapView.onCreate(savedInstanceState)
+
+        setContentView(mapView)
+
+        mapView.setContent {
+            Text("Hello")
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mapView.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.onPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mapView.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView.onDestroy()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        direct.instance<PermissionPublisher>().offer(PermissionResult(requestCode, permissions, grantResults))
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return NavigationUI.onNavDestinationSelected(item, Navigation.findNavController(this, R.id.nav_host_fragment))
-                || super.onOptionsItemSelected(item)
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp()
+        //direct.instance<PermissionPublisher>().offer(PermissionResult(requestCode, permissions, grantResults))
     }
 
 }

@@ -1,29 +1,11 @@
 package com.max.weatherviewer.presentation.viewer
 
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.max.weatherviewer.BuildConfig
-import com.max.weatherviewer.R
-import com.max.weatherviewer.api.location.LocationModel
-import com.max.weatherviewer.api.weather.Location
-import com.max.weatherviewer.api.weather.WeatherProvider
-import com.max.weatherviewer.navigateDefaultAnimated
-import com.max.weatherviewer.presentation.map.MapFragmentArgs
-import com.oliynick.max.elm.core.actor.component
-import com.oliynick.max.elm.core.component.*
-import com.oliynick.max.elm.time.travel.GsonConverter
-import com.oliynick.max.elm.time.travel.debugComponent
-import kotlinx.coroutines.CoroutineScope
-import org.kodein.di.Kodein
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.scoped
-import org.kodein.di.generic.singleton
-import protocol.ComponentId
-import java.net.URL
+import com.oliynick.max.elm.core.component.Component
+
 
 typealias WeatherComponent = Component<Message, State>
 
+/*
 fun <S> S.weatherModule(startLocation: Location): Kodein.Module where S : CoroutineScope,
                                                                       S : Fragment {
 
@@ -41,7 +23,7 @@ fun <S> S.weatherModule(startLocation: Location): Kodein.Module where S : Corout
                 interceptor = androidLogger("WeatherViewer")
             }
 
-            if (BuildConfig.DEBUG) {
+            if (false &&  BuildConfig.DEBUG) {
 
                 debugComponent(ComponentId("Weather viewer"), GsonConverter, dependencies) {
                     serverSettings {
@@ -54,13 +36,13 @@ fun <S> S.weatherModule(startLocation: Location): Kodein.Module where S : Corout
         }
     }
 }
+*/
 
-private data class Dependencies(
+/*private data class Dependencies(
         val locationModel: LocationModel,
-        val fragment: Fragment,
         val weatherProvider: WeatherProvider
-)
-
+)*/
+/*
 private suspend fun Dependencies.resolveEffect(command: Command): Set<Message> {
 
     suspend fun resolve() = when (command) {
@@ -70,10 +52,11 @@ private suspend fun Dependencies.resolveEffect(command: Command): Set<Message> {
     }
 
     return runCatching { resolve() }.getOrElse { th -> effect { Message.OpFuckup(th) } }
-}
+}*/
 
+/*
 private fun Fragment.navigateToMap(withStartLocation: Location?) {
     findNavController()
         .navigateDefaultAnimated(R.id.mapFragment,
                                  MapFragmentArgs(withStartLocation).toBundle())
-}
+}*/

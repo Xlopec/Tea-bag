@@ -2,14 +2,8 @@
 
 package com.max.weatherviewer.api.weather
 
-import com.google.gson.Gson
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.util.concurrent.TimeUnit
 
 
 class WeatherProvider(private val apiKey: String, private val maxCallRate: Int) {
@@ -23,28 +17,26 @@ class WeatherProvider(private val apiKey: String, private val maxCallRate: Int) 
 
     }
 
-    init {
-        require(apiKey.isNotBlank())
-    }
+   // private val api: WeatherApi
 
-    private val api: WeatherApi by lazy {
-        val client = OkHttpClient.Builder()
+    init {
+        /*val client = OkHttpClient.Builder()
             .readTimeout(3, TimeUnit.SECONDS)
             .connectTimeout(3, TimeUnit.SECONDS)
             .build()
 
-        Retrofit.Builder()
+        api = Retrofit.Builder()
             .baseUrl("http://api.openweathermap.org/data/2.5/".toHttpUrlOrNull()!!)
             //.addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
             .addConverterFactory(GsonConverterFactory.create(Gson()))
             .client(client)
             .build()
-            .create(WeatherApi::class.java)
+            .create(WeatherApi::class.java)*/
     }
 
-    suspend fun fetchWeather(location: Location): Weather {
+   /* suspend fun fetchWeather(location: Location): Weather {
         return api.fetchWeather(location.lat, location.lon, apiKey)
-    }
+    }*/
 
     /*fun fetchWeather(locations: Collection<Location>): Single<List<Weather>> {
         val delay = 60_000L / maxCallRate

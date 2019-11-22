@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
+//"b40db1b95c75e4668ab28ed46a6c6c45"
 @Parcelize
 data class Wind(@SerializedName("speed") val speed: Double,
                 @SerializedName("deg") val degrees: Double) : Parcelable
