@@ -2,14 +2,17 @@
 
 package com.max.weatherviewer.app
 
-/*
-class AndroidApp : Application(), KodeinAware {
-    override val kodein: Kodein
+import android.app.Application
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import java.util.concurrent.Executors
+import kotlin.coroutines.CoroutineContext
 
-    init {
-        kodein = Kodein.lazy {
-            importOnce(androidXModule(this@AndroidApp))
-            importOnce(weatherModule())
-        }
-    }
-}*/
+object ComponentScope : CoroutineScope {
+    override val coroutineContext: CoroutineContext = Executors.newSingleThreadExecutor { r -> Thread(r, "App Scheduler") }.asCoroutineDispatcher()
+}
+
+class AndroidApp : Application() {
+
+
+}

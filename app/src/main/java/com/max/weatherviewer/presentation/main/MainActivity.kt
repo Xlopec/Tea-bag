@@ -2,63 +2,41 @@ package com.max.weatherviewer.presentation.main
 
 import android.app.Activity
 import android.os.Bundle
-import androidx.ui.core.Text
 import androidx.ui.core.setContent
-import com.google.android.gms.maps.GoogleMapOptions
-import com.google.android.gms.maps.MapView
+import com.max.weatherviewer.*
+import com.max.weatherviewer.app.ComponentScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.launch
 
-class MainActivity : Activity()/*, KodeinAware*/ {
+class MainActivity : Activity(), CoroutineScope by MainScope() {
 
-    /*private val parentKodein by closestKodein()
-
-    override val kodein: Kodein by retainedKodein {
-
-        extend(parentKodein, allowOverride = true)
-        import(locationModule())
-
-        bind<Activity>(tag = Activity::class) with provider { this@MainActivity }
-    }*/
-
-    private lateinit var mapView: MapView
+    private val component = ComponentScope.appComponent(Dependencies(this))
+    private val messages = Channel<Message>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //supportFragmentManager.fragmentFactory = FragmentsFactory(kodein)
         super.onCreate(savedInstanceState)
 
-        mapView = MapView(this, GoogleMapOptions().zoomControlsEnabled(true).scrollGesturesEnabledDuringRotateOrZoom(true).scrollGesturesEnabled(true))
 
-        mapView.onCreate(savedInstanceState)
 
-        setContentView(mapView)
-
-        mapView.setContent {
-            Text("Hello")
+        launch {
+            component(messages.consumeAsFlow()).collect { state ->
+                render(state.screen) { messages.offer(it) }
+            }
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        mapView.onStart()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mapView.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mapView.onPause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        mapView.onStop()
-    }
-
     override fun onDestroy() {
+        cancel()
         super.onDestroy()
-        mapView.onDestroy()
+    }
+
+    override fun onBackPressed() {
+        messages.offer(Pop)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -66,3 +44,14 @@ class MainActivity : Activity()/*, KodeinAware*/ {
     }
 
 }
+
+private fun Activity.render(screen: Screen, onMessage: (Message) -> Unit) {
+    setContent {
+        App {
+            Screen(screen, onMessage)
+        }
+    }
+}
+
+private val State.screen: Screen
+    get() = screens.last()
