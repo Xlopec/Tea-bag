@@ -5,11 +5,10 @@ import androidx.ui.core.Text
 import androidx.ui.foundation.VerticalScroller
 import androidx.ui.layout.Column
 import androidx.ui.layout.FlexColumn
+import androidx.ui.layout.Row
+import androidx.ui.material.CircularProgressIndicator
 import androidx.ui.material.TopAppBar
-import com.max.weatherviewer.Home
-import com.max.weatherviewer.Message
-import com.max.weatherviewer.Pop
-import com.max.weatherviewer.R
+import com.max.weatherviewer.*
 
 @Composable
 fun HomeScreen(screen: Home, onMessage: (Message) -> Unit) {
@@ -25,9 +24,21 @@ fun HomeScreen(screen: Home, onMessage: (Message) -> Unit) {
             )
         }
         flexible(flex = 1f) {
+
             VerticalScroller {
+
                 Column {
-                    Text("Text")
+
+                    when (screen.state) {
+                        Loading -> CircularProgressIndicator()
+                        is Preview -> {
+                            screen.state.articles.forEach { article ->
+                                Row {
+                                    Text(article.title.value)
+                                }
+                            }
+                        }
+                    }.safe
                 }
             }
         }

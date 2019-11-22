@@ -5,10 +5,13 @@ import kotlinx.collections.immutable.immutableListOf
 
 sealed class Screen
 
-data class State(val screens: ImmutableList<Screen> = immutableListOf(Home())) {
+data class State(val screens: ImmutableList<Screen> = immutableListOf(Home(Loading))) {
     init {
         require(screens.isNotEmpty())
     }
 }
 
-class Home : Screen()
+data class Home(val state: HomeState) : Screen()
+
+inline val State.screen: Screen
+    get() = screens.last()

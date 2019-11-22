@@ -69,10 +69,6 @@ project.afterEvaluate {
 
     allprojects { project ->
 
-        if (project.name.contains("app")) {
-            return
-        }
-
         project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
             kotlinOptions {
                 // will disable warning about usage of experimental Kotlin features

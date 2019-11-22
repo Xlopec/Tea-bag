@@ -5,27 +5,34 @@ import android.os.Bundle
 import androidx.ui.core.setContent
 import com.max.weatherviewer.*
 import com.max.weatherviewer.app.ComponentScope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.launch
 
 class MainActivity : Activity(), CoroutineScope by MainScope() {
 
-    private val component = ComponentScope.appComponent(Dependencies(this))
+    private val dependencies = Dependencies(
+        Channel(),
+        newsApi(retrofit { adapters.forEach { (cl, adapter) -> registerTypeAdapter(cl.java, adapter) } })
+    )
+    private val component = ComponentScope.appComponent(dependencies)
     private val messages = Channel<Message>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
         launch {
             component(messages.consumeAsFlow()).collect { state ->
-                render(state.screen) { messages.offer(it) }
+                withContext(Dispatchers.Main) {
+                    render(state.screen, messages::offer)
+                }
+            }
+        }
+
+        launch {
+            dependencies.closeAppCommands.consumeAsFlow().collect {
+                finishAfterTransition()
             }
         }
     }
@@ -46,12 +53,10 @@ class MainActivity : Activity(), CoroutineScope by MainScope() {
 }
 
 private fun Activity.render(screen: Screen, onMessage: (Message) -> Unit) {
+    println("Thread ${Thread.currentThread()}")
     setContent {
         App {
             Screen(screen, onMessage)
         }
     }
 }
-
-private val State.screen: Screen
-    get() = screens.last()
