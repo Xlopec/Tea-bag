@@ -62,7 +62,17 @@ fun <S, C> S.command(first: C, second: C, third: C): UpdateWith<S, C> = this to 
  * @param commands commands to combine with state
  * @return [UpdateWith] instance with given state and set of commands
  */
-fun <S, C> S.command(vararg commands: C): UpdateWith<S, C> = this to setOf(*commands)
+fun <S, C> S.command(vararg commands: C): UpdateWith<S, C> = this command setOf(*commands)
+
+/**
+ * Handy extension to combine set of commands with state
+ *
+ * @receiver state to combine with commands
+ * @param S state to combine with command
+ * @param commands commands to combine with state
+ * @return [UpdateWith] instance with given state and set of commands
+ */
+infix fun <S, C> S.command(commands: Set<C>): UpdateWith<S, C> = this to commands
 
 /**
  * Handy extension to express absence of commands to execute combined with state

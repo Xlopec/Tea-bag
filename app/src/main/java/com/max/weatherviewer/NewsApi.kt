@@ -1,6 +1,10 @@
 package com.max.weatherviewer
 
 import com.google.gson.*
+import com.max.weatherviewer.domain.Article
+import com.max.weatherviewer.domain.Author
+import com.max.weatherviewer.domain.Description
+import com.max.weatherviewer.domain.Title
 import retrofit2.Retrofit
 import retrofit2.create
 import retrofit2.http.GET
@@ -36,17 +40,20 @@ object URLAdapter : TypeAdapter<URL> {
 
 object TitleAdapter : TypeAdapter<Title> {
     override fun serialize(src: Title, typeOfSrc: Type?, context: JsonSerializationContext?) = JsonPrimitive(src.value)
-    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?) = Title(json.asString)
+    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?) =
+        Title(json.asString)
 }
 
 object AuthorAdapter : TypeAdapter<Author> {
     override fun serialize(src: Author, typeOfSrc: Type?, context: JsonSerializationContext?) = JsonPrimitive(src.value)
-    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?) = Author(json.asString)
+    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?) =
+        Author(json.asString)
 }
 
 object DescriptionAdapter : TypeAdapter<Description> {
     override fun serialize(src: Description, typeOfSrc: Type?, context: JsonSerializationContext?) = JsonPrimitive(src.value)
-    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?) = Description(json.asString)
+    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?) =
+        Description(json.asString)
 }
 
 private data class ArticlesResponse(val articles: List<Article>)

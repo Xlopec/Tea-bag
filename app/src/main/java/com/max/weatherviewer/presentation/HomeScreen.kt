@@ -13,11 +13,16 @@ import androidx.ui.foundation.DrawImage
 import androidx.ui.foundation.VerticalScroller
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.layout.*
-import androidx.ui.material.CircularProgressIndicator
-import androidx.ui.material.Divider
-import androidx.ui.material.themeTextStyle
-import androidx.ui.material.withOpacity
-import com.max.weatherviewer.*
+import androidx.ui.material.*
+import com.max.weatherviewer.app.Home
+import com.max.weatherviewer.app.HomeMessage
+import com.max.weatherviewer.app.LoadArticles
+import com.max.weatherviewer.app.Message
+import com.max.weatherviewer.domain.Article
+import com.max.weatherviewer.home.Error
+import com.max.weatherviewer.home.Loading
+import com.max.weatherviewer.home.Preview
+import com.max.weatherviewer.safe
 import kotlinx.coroutines.runBlocking
 import java.net.URL
 
@@ -34,15 +39,16 @@ fun HomeScreen(screen: Home, onMessage: (Message) -> Unit) {
         ) {
 
             when (screen.state) {
-                Loading -> Progress()
+                Loading -> ArticlesProgress()
                 is Preview -> Articles(screen.state.articles)
+                is Error -> ArticlesError(screen.state.cause, onMessage)
             }.safe
         }
     }
 }
 
 @Composable
-private fun Progress() {
+private fun ArticlesProgress() {
     CircularProgressIndicator()
 }
 
@@ -50,6 +56,30 @@ private fun Progress() {
 private fun Articles(articles: Iterable<Article>) {
     articles.forEach { article ->
         ArticleCard(article)
+    }
+}
+
+@Composable
+private fun ArticlesError(cause: Throwable, onMessage: (HomeMessage) -> Unit) {
+    Column(
+        mainAxisSize = LayoutSize.Expand,
+        mainAxisAlignment = MainAxisAlignment.Center
+    ) {
+        Text(
+            text = "Failed to load articles, message: '${cause.message?.decapitalize() ?: "unknown exception"}'",
+            style = (+themeTextStyle { subtitle2 }).withOpacity(0.87f)
+        )
+
+        Row(
+            mainAxisSize = LayoutSize.Expand,
+            mainAxisAlignment = MainAxisAlignment.Center
+        ) {
+            Button(
+                text = "Retry",
+                onClick = { onMessage(LoadArticles("bitcoin")) }
+            )
+        }
+
     }
 }
 

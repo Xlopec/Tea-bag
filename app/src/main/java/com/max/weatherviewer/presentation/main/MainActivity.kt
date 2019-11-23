@@ -4,9 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.ui.core.setContent
 import com.max.weatherviewer.*
-import com.max.weatherviewer.app.appComponent
-import com.max.weatherviewer.app.appMessages
-import com.max.weatherviewer.app.closeAppCommands
+import com.max.weatherviewer.app.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow

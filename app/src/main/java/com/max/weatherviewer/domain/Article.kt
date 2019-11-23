@@ -1,4 +1,4 @@
-package com.max.weatherviewer
+package com.max.weatherviewer.domain
 
 import java.net.URL
 
