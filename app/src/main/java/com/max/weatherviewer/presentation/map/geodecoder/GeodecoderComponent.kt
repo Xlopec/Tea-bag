@@ -30,19 +30,19 @@ fun <S> S.geocoderModule(): Kodein.Module where S : CoroutineScope,
 
             suspend fun resolve(command: Command) = instance<Dependencies>().resolve(command)
 
-            val dependencies = dependencies(Preview(), ::resolve, ::update) {
+            val appDependencies = appDependencies(Preview(), ::resolve, ::update) {
                 interceptor = androidLogger("Geocoder")
             }
 
             if (false &&  BuildConfig.DEBUG) {
 
-                debugComponent(ComponentId("Geocoder"), GsonConverter, dependencies) {
+                debugComponent(ComponentId("Geocoder"), GsonConverter, appDependencies) {
                     serverSettings {
                         url = URL("http://10.0.2.2:8080")
                     }
                 }
             } else {
-                component(dependencies)
+                component(appDependencies)
             }.also { geodecoder -> bind(instance<MapComponent>("map"), geodecoder, ::mapStateToMessages) }
         }
     }

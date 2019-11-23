@@ -6,7 +6,8 @@ data class Article(
     val url: URL,
     val title: Title,
     val author: Author,
-    val description: Description
+    val description: Description,
+    val urlToImage: URL?
 )
 
 data class Title(val value: String) {

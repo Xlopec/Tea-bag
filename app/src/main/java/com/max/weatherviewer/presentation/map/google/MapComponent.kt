@@ -22,19 +22,19 @@ typealias MapComponent = (Flow<Message>) -> Flow<State>
 
             suspend fun loader() = (preSelectedLocation?.let(::State) ?: instance<Context>().load(instance(), ::State)) to emptySet<Command>()
 
-            val dependencies = dependencies(::loader, ::resolve, ::update) {
+            val appDependencies = appDependencies(::loader, ::resolve, ::update) {
                 interceptor = instance()
             }
 
             if (false && BuildConfig.DEBUG) {
 
-                debugComponent(ComponentId("Google map"), GsonConverter, dependencies) {
+                debugComponent(ComponentId("Google map"), GsonConverter, appDependencies) {
                     serverSettings {
                         url = URL("http://10.0.2.2:8080")
                     }
                 }
             } else {
-                component(dependencies)
+                component(appDependencies)
             }
         }
     }

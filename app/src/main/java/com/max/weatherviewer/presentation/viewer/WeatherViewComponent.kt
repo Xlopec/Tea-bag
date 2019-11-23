@@ -19,19 +19,19 @@ fun <S> S.weatherModule(startLocation: Location): Kodein.Module where S : Corout
 
             suspend fun resolver(command: Command) = instance<Dependencies>().resolveEffect(command)
 
-            val dependencies = dependencies(State.Loading(startLocation), ::resolver, ::update, Command.LoadWeather(startLocation)) {
+            val appDependencies = appDependencies(State.Loading(startLocation), ::resolver, ::update, Command.LoadWeather(startLocation)) {
                 interceptor = androidLogger("WeatherViewer")
             }
 
             if (false &&  BuildConfig.DEBUG) {
 
-                debugComponent(ComponentId("Weather viewer"), GsonConverter, dependencies) {
+                debugComponent(ComponentId("Weather viewer"), GsonConverter, appDependencies) {
                     serverSettings {
                         url = URL("http://10.0.2.2:8080")
                     }
                 }
             } else {
-                component(dependencies)
+                component(appDependencies)
             }
         }
     }
