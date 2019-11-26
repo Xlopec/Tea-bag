@@ -45,9 +45,11 @@ object GsonConverter : JsonConverter {
 
     private val gson = gson()
 
-    override fun toJson(any: Any): String = gson.toJson(any)
+    override fun toJson(any: Any): String = gson.toJson(any).also {
+        println("To json $it")
+    }
 
-    override fun <T> fromJson(json: String, cl: Class<T>): T = gson.fromJson(json, cl)
+    override fun <T> fromJson(json: String, cl: Class<T>): T = gson.also { println("from json $json") }.fromJson(json, cl)
 
 }
 

@@ -13,6 +13,7 @@ import kotlinx.coroutines.channels.Channel
 import retrofit2.Retrofit
 
 data class Dependencies(
+    val isDebugBuild: Boolean,
     val closeAppCommands: Channel<CloseApp>,
     val retrofit: Retrofit,
     val homeDependencies: HomeDependencies

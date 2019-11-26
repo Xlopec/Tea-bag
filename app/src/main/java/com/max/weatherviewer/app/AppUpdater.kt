@@ -2,6 +2,8 @@ package com.max.weatherviewer.app
 
 import com.max.weatherviewer.CloseApp
 import com.max.weatherviewer.Command
+import com.max.weatherviewer.home.Home
+import com.max.weatherviewer.home.HomeMessage
 import com.max.weatherviewer.home.HomeUpdater
 import com.oliynick.max.elm.core.component.UpdateWith
 import com.oliynick.max.elm.core.component.command
@@ -13,12 +15,19 @@ object AppUpdater {
     fun update(message: Message, state: State): UpdateWith<State, Command> {
         return when (message) {
             is Navigation -> navigate(message, state)
+            is ScreenMessage -> update(message, state)
+        }
+    }
+
+    fun update(message: ScreenMessage, state: State) : UpdateWith<State, Command> {
+        return when(message) {
             is HomeMessage -> state.updateScreen<Home> { home ->
                 HomeUpdater.update(
                     message,
                     home
                 )
             }
+            else -> TODO()
         }
     }
 

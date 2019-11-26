@@ -3,8 +3,6 @@ package com.max.weatherviewer.home
 import com.max.weatherviewer.DoLoadArticles
 import com.max.weatherviewer.HomeCommand
 import com.max.weatherviewer.NewsApi
-import com.max.weatherviewer.app.ArticlesLoadException
-import com.max.weatherviewer.app.ArticlesLoaded
 import com.max.weatherviewer.app.Message
 import com.oliynick.max.elm.core.component.effect
 
@@ -24,7 +22,12 @@ object HomeResolver {
             }
 
         return runCatching { resolve(command) }
-            .getOrElse { th -> setOf(ArticlesLoadException("bitcoin", th)) }
+            .getOrElse { th -> setOf(
+                ArticlesLoadException(
+                    "bitcoin",
+                    th
+                )
+            ) }
     }
 
 }

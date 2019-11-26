@@ -10,6 +10,7 @@ import org.junit.runners.JUnit4
 import protocol.converters
 import protocol.fromValue
 import protocol.toValue
+import java.util.*
 import kotlin.test.assertEquals
 
 @RunWith(JUnit4::class)
@@ -22,6 +23,24 @@ class ValueTest {
 
         val converters = converters {
             +URLConverter
+            +UUIDConverter
+        }
+
+        val value = initial.toValue(converters)
+        val unparsed = value.fromValue(converters)
+
+        assertEquals(initial, unparsed, """Initial $initial 
+            |isn't equal to
+            |$unparsed""".trimMargin())
+    }
+
+    private data class Holder(val uuid0: UUID, val uuid1: UUID?)
+
+    @Test
+    fun `test unpacking for custom fields is correct`() {
+        val initial = Holder(UUID.randomUUID(), null)
+
+        val converters = converters {
             +UUIDConverter
         }
 

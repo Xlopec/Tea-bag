@@ -41,7 +41,7 @@ object IntAdapter : JsonSerializer<IntWrapper>, JsonDeserializer<IntWrapper> {
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ) = IntWrapper(json.asInt)
+    ) = IntWrapper(json.asJsonObject["value"].asInt)
 }
 
 object LongAdapter : JsonSerializer<LongWrapper>, JsonDeserializer<LongWrapper> {
@@ -52,7 +52,7 @@ object LongAdapter : JsonSerializer<LongWrapper>, JsonDeserializer<LongWrapper> 
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ) = LongWrapper(json.asLong)
+    ) = LongWrapper(json.asJsonObject["value"].asLong)
 }
 
 object ByteAdapter : JsonSerializer<ByteWrapper>, JsonDeserializer<ByteWrapper> {
@@ -63,7 +63,7 @@ object ByteAdapter : JsonSerializer<ByteWrapper>, JsonDeserializer<ByteWrapper> 
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ) = ByteWrapper(json.asByte)
+    ) = ByteWrapper(json.asJsonObject["value"].asByte)
 }
 
 object ShortAdapter : JsonSerializer<ShortWrapper>, JsonDeserializer<ShortWrapper> {
@@ -74,7 +74,7 @@ object ShortAdapter : JsonSerializer<ShortWrapper>, JsonDeserializer<ShortWrappe
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ) = ShortWrapper(json.asShort)
+    ) = ShortWrapper(json.asJsonObject["value"].asShort)
 }
 
 object CharAdapter : JsonSerializer<CharWrapper>, JsonDeserializer<CharWrapper> {
@@ -85,7 +85,7 @@ object CharAdapter : JsonSerializer<CharWrapper>, JsonDeserializer<CharWrapper> 
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ) = CharWrapper(json.asCharacter)
+    ) = CharWrapper(json.asJsonObject["value"].asCharacter)
 }
 
 object BooleanAdapter : JsonSerializer<BooleanWrapper>, JsonDeserializer<BooleanWrapper> {
@@ -99,7 +99,7 @@ object BooleanAdapter : JsonSerializer<BooleanWrapper>, JsonDeserializer<Boolean
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ) = BooleanWrapper.of(json.asBoolean)
+    ) = BooleanWrapper.of(json.asJsonObject["value"].asBoolean)
 }
 
 object DoubleAdapter : JsonSerializer<DoubleWrapper>, JsonDeserializer<DoubleWrapper> {
@@ -113,7 +113,7 @@ object DoubleAdapter : JsonSerializer<DoubleWrapper>, JsonDeserializer<DoubleWra
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ) = DoubleWrapper(json.asDouble)
+    ) = DoubleWrapper(json.asJsonObject["value"].asDouble)
 }
 
 object FloatAdapter : JsonSerializer<FloatWrapper>, JsonDeserializer<FloatWrapper> {
@@ -124,7 +124,7 @@ object FloatAdapter : JsonSerializer<FloatWrapper>, JsonDeserializer<FloatWrappe
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ) = FloatWrapper(json.asFloat)
+    ) = FloatWrapper(json.asJsonObject["value"].asFloat)
 }
 
 object StringAdapter : JsonSerializer<StringWrapper>, JsonDeserializer<StringWrapper> {
@@ -132,13 +132,13 @@ object StringAdapter : JsonSerializer<StringWrapper>, JsonDeserializer<StringWra
         src: StringWrapper,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ) = JsonPrimitive(src.value)
+    ) = toJson(src)//JsonPrimitive(src.value)
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ) = StringWrapper(json.asString)
+    ) = StringWrapper(json.asJsonObject["value"].asString)
 }
 
 object NullAdapter : JsonSerializer<Null>, JsonDeserializer<Null> {
@@ -146,7 +146,11 @@ object NullAdapter : JsonSerializer<Null>, JsonDeserializer<Null> {
         src: Null,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement = JsonNull.INSTANCE
+    ): JsonElement = JsonObject().apply {
+        addProperty("wrapper_type", src.javaClass.name)
+        addProperty("underlying_type", src.type.value)
+        add("value", null)
+    }
 
     override fun deserialize(
         json: JsonElement,
@@ -154,6 +158,25 @@ object NullAdapter : JsonSerializer<Null>, JsonDeserializer<Null> {
         context: JsonDeserializationContext
     ): Null {
         return Null(RemoteType(json.asJsonObject["underlying_type"].asString.clazz()))
+    }
+}
+
+private fun toJson(p: PrimitiveWrapper<*>): JsonObject {
+    val v = when(p) {
+        is IntWrapper -> JsonPrimitive(p.value)
+        is ByteWrapper -> JsonPrimitive(p.value)
+        is ShortWrapper -> JsonPrimitive(p.value)
+        is CharWrapper -> JsonPrimitive(p.value)
+        is LongWrapper -> JsonPrimitive(p.value)
+        is DoubleWrapper -> JsonPrimitive(p.value)
+        is FloatWrapper -> JsonPrimitive(p.value)
+        is StringWrapper -> JsonPrimitive(p.value)
+        is BooleanWrapper -> JsonPrimitive(p.value)
+    }
+    return JsonObject().apply {
+        addProperty("wrapper_type", p.javaClass.name)
+        addProperty("underlying_type", p.type.value)
+        add("value", v)
     }
 }
 
@@ -167,7 +190,7 @@ object ValueDeserializer : JsonDeserializer<Value<*>> {
         val wrapperType = jsonObject["wrapper_type"].asString.wrapperType()
 
         return context.deserialize(
-            jsonObject.getDeserializationTargetElement(wrapperType),
+            jsonObject,
             wrapperType
         )
     }
@@ -191,8 +214,8 @@ object RefAdapter : JsonSerializer<Ref>, JsonDeserializer<Ref> {
         for (p in src.properties) {
             val o = JsonObject().also {
                 it.addProperty("property_name", p.name)
-                it.addProperty("property_wrapper_type", p.v::class.java.serializeName)
-                it.addProperty("property_type", p.type.value)
+                it.addProperty("wrapper_type", p.v::class.java.serializeName)
+                it.addProperty("underlying_type", p.type.value)
                 it.add("property", context.serialize(p.v))
             }
 
@@ -220,12 +243,19 @@ object RefAdapter : JsonSerializer<Ref>, JsonDeserializer<Ref> {
                 .map { o ->
 
                     val cll =
-                        Class.forName(o["property_wrapper_type"].asString) as Class<out Value<*>>
-                    val nested = o["property"];
+                        Class.forName(o["wrapper_type"].asString) as Class<out Value<*>>
+                    val nested = o["property"]
+
+                    val value =/* if (nested.isJsonNull) {
+                        context.deserialize<Value<Any>>(o, cll)
+                    } else {
+                        */context.deserialize<Value<Any>>(nested, cll)
+                    //}
+
                     Property(
-                        RemoteType(o["property_type"].asString),
+                        RemoteType(o["underlying_type"].asString),
                         o["property_name"].asString,
-                        context.deserialize<Value<Any>>(nested, cll)
+                        value
                     )
                 }.toSet()
         )

@@ -64,9 +64,32 @@ class BooleanWrapper private constructor(value: Boolean) : PrimitiveWrapper<Bool
     }
 }
 
-class IterableWrapper(value: Iterable<Value<*>>) : PrimitiveWrapper<Iterable<Value<*>>>(value)
+sealed class CollectionPrimitiveWrapper<T>(val value: T) : Value<T>() {
+    final override val type: RemoteType = RemoteType(value!!::class.java)
 
-class MapWrapper(value: Map<Value<*>, Value<*>>) : PrimitiveWrapper<Map<Value<*>, Value<*>>>(value)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CollectionPrimitiveWrapper<*>) return false
+
+        if (value != other.value) return false
+        if (type != other.type) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = value?.hashCode() ?: 0
+        result = 31 * result + type.hashCode()
+        return result
+    }
+
+    override fun toString() = "CollectionPrimitiveWrapper(value=$value, type=$type)"
+
+}
+
+class IterableWrapper(value: Iterable<Value<*>>) : CollectionPrimitiveWrapper<Iterable<Value<*>>>(value)
+
+class MapWrapper(value: Map<Value<*>, Value<*>>) : CollectionPrimitiveWrapper<Map<Value<*>, Value<*>>>(value)
 
 data class Ref(override val type: RemoteType, val properties: Set<Property<*>>) : Value<Any>()
 

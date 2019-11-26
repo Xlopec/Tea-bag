@@ -14,14 +14,9 @@ import androidx.ui.foundation.VerticalScroller
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.layout.*
 import androidx.ui.material.*
-import com.max.weatherviewer.app.Home
-import com.max.weatherviewer.app.HomeMessage
-import com.max.weatherviewer.app.LoadArticles
 import com.max.weatherviewer.app.Message
 import com.max.weatherviewer.domain.Article
-import com.max.weatherviewer.home.Error
-import com.max.weatherviewer.home.Loading
-import com.max.weatherviewer.home.Preview
+import com.max.weatherviewer.home.*
 import com.max.weatherviewer.safe
 import kotlinx.coroutines.runBlocking
 import java.net.URL
@@ -38,10 +33,10 @@ fun HomeScreen(screen: Home, onMessage: (Message) -> Unit) {
             modifier = Spacing(16.dp)
         ) {
 
-            when (screen.state) {
+            when (screen) {
                 Loading -> ArticlesProgress()
-                is Preview -> Articles(screen.state.articles)
-                is Error -> ArticlesError(screen.state.cause, onMessage)
+                is Preview -> Articles(screen.articles)
+                is Error -> ArticlesError(screen.cause, onMessage)
             }.safe
         }
     }

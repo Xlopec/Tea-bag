@@ -1,15 +1,16 @@
 package com.max.weatherviewer.home
 
+import com.max.weatherviewer.app.Screen
 import com.max.weatherviewer.domain.Article
 
-sealed class HomeState
+sealed class Home : Screen()
 
-object Loading : HomeState()
+object Loading : Home()
 
 data class Preview(
     val articles: List<Article>
-) : HomeState()
+) : Home()
 
 data class Error(
     val cause: Throwable
-) : HomeState()
+) : Home()

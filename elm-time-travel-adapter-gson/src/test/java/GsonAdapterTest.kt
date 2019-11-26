@@ -1,8 +1,11 @@
+
 import com.oliynick.max.elm.time.travel.gson.gson
 import core.data.Id
 import core.data.Name
 import core.data.User
 import core.data.photo
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.immutableListOf
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -30,10 +33,34 @@ class GsonAdapterTest {
         +UUIDConverter
     }
 
+    data class StringListHolder(val screens: ImmutableList<String>)
+
+    data class Screen(val user: User)
+
     @Test
     fun `test initial value is same as parsed one`() {
 
         val initialValue = SomeTestCommand(SomeTestString("hello")/*, listOf(1234)*/, emptyList()).toValue(testConverters)
+        val json = gson.toJson(initialValue)
+        val fromJsonValue = gson.fromJson(json, Value::class.java)
+
+        assertEquals(initialValue, fromJsonValue)
+    }
+
+    @Test
+    fun `test initial value with custom field type is same as parsed one`() {
+
+        val initialValue = StringListHolder(immutableListOf("A", "B", "C")).toValue(testConverters)
+        val json = gson.toJson(initialValue)
+        val fromJsonValue = gson.fromJson(json, Value::class.java)
+
+        assertEquals(initialValue, fromJsonValue)
+    }
+
+    @Test
+    fun `test initial value with custom null field type is same as parsed one`() {
+
+        val initialValue = testUser.toValue(testConverters)
         val json = gson.toJson(initialValue)
         val fromJsonValue = gson.fromJson(json, Value::class.java)
 

@@ -5,11 +5,8 @@ package com.max.weatherviewer.app
 
 import android.app.Activity
 import android.app.Application
-import com.max.weatherviewer.CloseApp
-import com.max.weatherviewer.adapters
+import com.max.weatherviewer.*
 import com.max.weatherviewer.home.HomeDependencies
-import com.max.weatherviewer.newsApi
-import com.max.weatherviewer.retrofit
 import com.oliynick.max.elm.core.component.Component
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -23,6 +20,7 @@ class AndroidApp : Application() {
 
     val dependencies by unsafeLazy {
         Dependencies(
+            BuildConfig.DEBUG,
             Channel(),
             retrofit,
             HomeDependencies(newsApi(retrofit))

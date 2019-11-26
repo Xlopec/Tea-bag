@@ -59,9 +59,31 @@ class Converters internal constructor() {
 
     internal operator fun get(cl: Class<*>) = converters[cl.key]
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Converters
+
+        if (converters != other.converters) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return converters.hashCode()
+    }
+
+    override fun toString(): String {
+        return "Converters(converters=$converters)"
+    }
+
+
     @PublishedApi
     internal inline val Class<*>.key: String
         get() = canonicalName
+
+
 }
 
 private object IntConverter : Converter<Int, IntWrapper> {
@@ -112,7 +134,7 @@ private object StringConverter : Converter<String, StringWrapper> {
 //TODO add converter for specific collections
 private object IterableConverter : Converter<Iterable<*>, IterableWrapper> {
     override fun from(v: IterableWrapper, converters: Converters): Iterable<*> {
-        return v.value.map { elem -> converters.findSuitableConverter(elem.type).from(elem, converters) }
+        return v.value.map { elem -> elem.fromValue(converters) }
     }
 
     override fun to(t: Iterable<*>, converters: Converters) = wrap(t, converters)
@@ -161,7 +183,9 @@ fun <T> T.toValue(converters: Converters) = toValue(this!!::class.java, converte
 @Suppress("UNCHECKED_CAST")
 fun <T> Value<T>.fromValue(converters: Converters): T? = when (this) {
     is Null -> null
-    is Ref, is PrimitiveWrapper<*> -> converters.findSuitableConverter(type).from(this, converters)
+    is Ref,
+    is PrimitiveWrapper<*>,
+    is CollectionPrimitiveWrapper<*> -> converters.findSuitableConverter(type).from(this, converters)
 } as T?
 
 //todo rename to wrap|val|primitive?
@@ -269,19 +293,19 @@ private fun Unsafe.fill(instance: Any, property: Property<*>, cl: Class<*>, conv
 
     val field = instance.getFieldFor(property)
     val offset = objectFieldOffset(field)
-    val converter = converters.findSuitableConverter(property.type)
 
-    when (val value = converter.from(property.v, converters)) {
-        is Int -> unsafe.putInt(instance, offset, value)
-        is Byte -> unsafe.putByte(instance, offset, value)
-        is Short -> unsafe.putShort(instance, offset, value)
-        is Boolean -> unsafe.putBoolean(instance, offset, value)
-        is Long -> unsafe.putLong(instance, offset, value)
-        is Double -> unsafe.putDouble(instance, offset, value)
-        is Float -> unsafe.putFloat(instance, offset, value)
-        is Char -> unsafe.putChar(instance, offset, value)
-        is Any, null -> unsafe.putObject(instance, offset, value)
-        else -> error("Couldn't convert value $this of class $cl")
+    when (val value = if (property.v is Null) null else converters.findSuitableConverter(property.type).from(property.v, converters)) {
+        is Int -> putInt(instance, offset, value)
+        is Byte -> putByte(instance, offset, value)
+        is Short -> putShort(instance, offset, value)
+        is Boolean -> putBoolean(instance, offset, value)
+        is Long -> putLong(instance, offset, value)
+        is Double -> putDouble(instance, offset, value)
+        is Float -> putFloat(instance, offset, value)
+        is Char -> putChar(instance, offset, value)
+        is Any, null -> putObject(instance, offset, value)
+        else -> error("Should never happen, couldn't convert value $value\nof instance (class=$cl) $instance,\n" +
+            "registered converters $converters")
     }
 }
 

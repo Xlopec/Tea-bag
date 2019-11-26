@@ -11,16 +11,16 @@ import androidx.ui.graphics.Color
 import androidx.ui.layout.*
 import androidx.ui.material.*
 import androidx.ui.material.surface.Surface
-import com.max.weatherviewer.*
 import com.max.weatherviewer.R
-import com.max.weatherviewer.app.Home
 import com.max.weatherviewer.app.Message
 import com.max.weatherviewer.app.Screen
+import com.max.weatherviewer.home.Home
 import com.max.weatherviewer.presentation.HomeScreen
 import com.max.weatherviewer.presentation.VectorImage
 import com.max.weatherviewer.presentation.VectorImageButton
 import com.max.weatherviewer.presentation.theme.lightThemeColors
 import com.max.weatherviewer.presentation.theme.themeTypography
+import com.max.weatherviewer.safe
 
 @Composable
 fun App(
@@ -72,6 +72,7 @@ fun App(
 fun Screen(screen: Screen, onMessage: (Message) -> Unit) {
     when (screen) {
         is Home -> HomeScreen(screen, onMessage)
+        else -> TODO()
     }.safe
 }
 
