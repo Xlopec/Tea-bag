@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.oliynick.max.elm.time.travel.gson
 
 import com.google.gson.*
@@ -35,7 +37,7 @@ object IterableAdapter : JsonSerializer<IterableWrapper>, JsonDeserializer<Itera
 
 object IntAdapter : JsonSerializer<IntWrapper>, JsonDeserializer<IntWrapper> {
     override fun serialize(src: IntWrapper, typeOfSrc: Type?, context: JsonSerializationContext) =
-        JsonPrimitive(src.value)
+        src.toJson()
 
     override fun deserialize(
         json: JsonElement,
@@ -46,7 +48,7 @@ object IntAdapter : JsonSerializer<IntWrapper>, JsonDeserializer<IntWrapper> {
 
 object LongAdapter : JsonSerializer<LongWrapper>, JsonDeserializer<LongWrapper> {
     override fun serialize(src: LongWrapper, typeOfSrc: Type?, context: JsonSerializationContext) =
-        JsonPrimitive(src.value)
+        src.toJson()
 
     override fun deserialize(
         json: JsonElement,
@@ -57,7 +59,7 @@ object LongAdapter : JsonSerializer<LongWrapper>, JsonDeserializer<LongWrapper> 
 
 object ByteAdapter : JsonSerializer<ByteWrapper>, JsonDeserializer<ByteWrapper> {
     override fun serialize(src: ByteWrapper, typeOfSrc: Type?, context: JsonSerializationContext) =
-        JsonPrimitive(src.value)
+        src.toJson()
 
     override fun deserialize(
         json: JsonElement,
@@ -68,7 +70,7 @@ object ByteAdapter : JsonSerializer<ByteWrapper>, JsonDeserializer<ByteWrapper> 
 
 object ShortAdapter : JsonSerializer<ShortWrapper>, JsonDeserializer<ShortWrapper> {
     override fun serialize(src: ShortWrapper, typeOfSrc: Type?, context: JsonSerializationContext) =
-        JsonPrimitive(src.value)
+        src.toJson()
 
     override fun deserialize(
         json: JsonElement,
@@ -79,7 +81,7 @@ object ShortAdapter : JsonSerializer<ShortWrapper>, JsonDeserializer<ShortWrappe
 
 object CharAdapter : JsonSerializer<CharWrapper>, JsonDeserializer<CharWrapper> {
     override fun serialize(src: CharWrapper, typeOfSrc: Type?, context: JsonSerializationContext) =
-        JsonPrimitive(src.value)
+        src.toJson()
 
     override fun deserialize(
         json: JsonElement,
@@ -93,7 +95,7 @@ object BooleanAdapter : JsonSerializer<BooleanWrapper>, JsonDeserializer<Boolean
         src: BooleanWrapper,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ) = JsonPrimitive(src.value)
+    ) = src.toJson()
 
     override fun deserialize(
         json: JsonElement,
@@ -107,7 +109,7 @@ object DoubleAdapter : JsonSerializer<DoubleWrapper>, JsonDeserializer<DoubleWra
         src: DoubleWrapper,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ) = JsonPrimitive(src.value)
+    ) = src.toJson()
 
     override fun deserialize(
         json: JsonElement,
@@ -118,7 +120,7 @@ object DoubleAdapter : JsonSerializer<DoubleWrapper>, JsonDeserializer<DoubleWra
 
 object FloatAdapter : JsonSerializer<FloatWrapper>, JsonDeserializer<FloatWrapper> {
     override fun serialize(src: FloatWrapper, typeOfSrc: Type?, context: JsonSerializationContext) =
-        JsonPrimitive(src.value)
+        src.toJson()
 
     override fun deserialize(
         json: JsonElement,
@@ -132,7 +134,7 @@ object StringAdapter : JsonSerializer<StringWrapper>, JsonDeserializer<StringWra
         src: StringWrapper,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ) = toJson(src)//JsonPrimitive(src.value)
+    ) = src.toJson()
 
     override fun deserialize(
         json: JsonElement,
@@ -158,25 +160,6 @@ object NullAdapter : JsonSerializer<Null>, JsonDeserializer<Null> {
         context: JsonDeserializationContext
     ): Null {
         return Null(RemoteType(json.asJsonObject["underlying_type"].asString.clazz()))
-    }
-}
-
-private fun toJson(p: PrimitiveWrapper<*>): JsonObject {
-    val v = when(p) {
-        is IntWrapper -> JsonPrimitive(p.value)
-        is ByteWrapper -> JsonPrimitive(p.value)
-        is ShortWrapper -> JsonPrimitive(p.value)
-        is CharWrapper -> JsonPrimitive(p.value)
-        is LongWrapper -> JsonPrimitive(p.value)
-        is DoubleWrapper -> JsonPrimitive(p.value)
-        is FloatWrapper -> JsonPrimitive(p.value)
-        is StringWrapper -> JsonPrimitive(p.value)
-        is BooleanWrapper -> JsonPrimitive(p.value)
-    }
-    return JsonObject().apply {
-        addProperty("wrapper_type", p.javaClass.name)
-        addProperty("underlying_type", p.type.value)
-        add("value", v)
     }
 }
 
@@ -246,16 +229,10 @@ object RefAdapter : JsonSerializer<Ref>, JsonDeserializer<Ref> {
                         Class.forName(o["wrapper_type"].asString) as Class<out Value<*>>
                     val nested = o["property"]
 
-                    val value =/* if (nested.isJsonNull) {
-                        context.deserialize<Value<Any>>(o, cll)
-                    } else {
-                        */context.deserialize<Value<Any>>(nested, cll)
-                    //}
-
                     Property(
                         RemoteType(o["underlying_type"].asString),
                         o["property_name"].asString,
-                        value
+                        context.deserialize<Value<Any>>(nested, cll)
                     )
                 }.toSet()
         )
@@ -464,14 +441,28 @@ private inline fun Any.typedJsonObject(
 }
 
 
-@Suppress("UNCHECKED_CAST")
 private fun String.wrapperType() = Class.forName(this) as Class<out Value<*>>
 
-@Suppress("UNCHECKED_CAST")
 private fun String.clazz() = Class.forName(this)
 
-private fun JsonObject.getDeserializationTargetElement(wrapperType: Class<out Value<*>>): JsonElement {
-    return if (PrimitiveWrapper::class.java.isAssignableFrom(wrapperType)) this["value"] else this
+private fun PrimitiveWrapper<*>.toJson(): JsonObject {
+    val v = when (this) {
+        is IntWrapper -> JsonPrimitive(value)
+        is ByteWrapper -> JsonPrimitive(value)
+        is ShortWrapper -> JsonPrimitive(value)
+        is CharWrapper -> JsonPrimitive(value)
+        is LongWrapper -> JsonPrimitive(value)
+        is DoubleWrapper -> JsonPrimitive(value)
+        is FloatWrapper -> JsonPrimitive(value)
+        is StringWrapper -> JsonPrimitive(value)
+        is BooleanWrapper -> JsonPrimitive(value)
+    }
+
+    return JsonObject().apply {
+        addProperty("wrapper_type", javaClass.name)
+        addProperty("underlying_type", type.value)
+        add("value", v)
+    }
 }
 
 private inline val Class<out Value<*>>.payloadFieldName: String

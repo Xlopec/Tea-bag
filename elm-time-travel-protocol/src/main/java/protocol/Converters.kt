@@ -13,6 +13,9 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.Short
+import kotlin.reflect.KClass
+import kotlin.reflect.full.allSuperclasses
+import kotlin.reflect.full.isSuperclassOf
 import java.lang.Boolean as JBooleanWrapper
 import java.lang.Byte as JByteWrapper
 import java.lang.Character as JCharacterWrapper
@@ -21,6 +24,14 @@ import java.lang.Float as JFloatWrapper
 import java.lang.Integer as JIntWrapper
 import java.lang.Long as JLongWrapper
 import java.lang.Short as JShortWrapper
+
+private val classComparator = Comparator<KClass<*>> { t1, t2 ->
+    when {
+        t2 == t1 -> 0
+        t1.isSuperclassOf(t2) -> 1
+        else -> -1
+    }
+}
 
 interface Converter<T, V : Value<*>> {
 
@@ -42,13 +53,27 @@ class Converters internal constructor() {
         converters.remove(T::class.java.key)
     }
 
+    @Suppress("UNCHECKED_CAST")
+    fun <T, V : Value<*>> register(
+        converter: Converter<T, V>,
+        cl: Class<out T>,
+        vararg other: Class<out T>
+    ) {
+        register(converter, cl)
+        other.forEach { c -> register(converter, c) }
+    }
+
     fun <T, V : Value<*>> register(converter: Converter<T, V>, cl: Class<out T>) {
         @Suppress("UNCHECKED_CAST")
         converters[cl.key] = converter as Converter<Any, Value<*>>
     }
 
     @Suppress("UNCHECKED_CAST")
-    internal fun <N, W : Any, V : Value<*>> register(converter: Converter<N, V>, wrapper: Class<out W>, primitive: Class<out N>) {
+    internal fun <N, W : Any, V : Value<*>> register(
+        converter: Converter<N, V>,
+        wrapper: Class<out W>,
+        primitive: Class<out N>
+    ) {
         val cast = converter as Converter<Any, Value<*>>
 
         converters[wrapper.key] = cast
@@ -140,9 +165,33 @@ private object IterableConverter : Converter<Iterable<*>, IterableWrapper> {
     override fun to(t: Iterable<*>, converters: Converters) = wrap(t, converters)
 }
 
+private object ListConverter : Converter<List<*>, IterableWrapper> {
+    override fun from(v: IterableWrapper, converters: Converters): List<*> {
+        return v.value.map { elem -> elem.fromValue(converters) }
+    }
+
+    override fun to(t: List<*>, converters: Converters) = wrap(t, converters)
+}
+
+private object ArrayListConverter : Converter<ArrayList<*>, IterableWrapper> {
+    override fun from(v: IterableWrapper, converters: Converters): ArrayList<*> {
+        return v.value.mapTo(
+            ArrayList(
+                (v.value as? Collection<*>)?.size ?: 10
+            )
+        ) { elem -> elem.fromValue(converters) }
+    }
+
+    override fun to(t: ArrayList<*>, converters: Converters) = wrap(t, converters)
+}
+
 private object MapConverter : Converter<Map<*, *>, MapWrapper> {
     override fun from(v: MapWrapper, converters: Converters): Map<*, *> {
-        return v.value.entries.associate { e -> e.key.fromValue(converters) to e.value.fromValue(converters) }
+        return v.value.entries.associate { e ->
+            e.key.fromValue(converters) to e.value.fromValue(
+                converters
+            )
+        }
     }
 
     override fun to(t: Map<*, *>, converters: Converters) = wrap(t, converters)
@@ -158,6 +207,8 @@ fun converters(config: Converters.() -> Unit = {}): Converters {
         .apply {
             +RefConverter
             +IterableConverter
+            +ListConverter
+            +ArrayListConverter
             +MapConverter
             +StringConverter
             register(IntConverter, JIntWrapper::class.java, Int::class.java)
@@ -171,21 +222,28 @@ fun converters(config: Converters.() -> Unit = {}): Converters {
         }.apply(config)
 }
 
-fun <T> T?.toValue(cl: Class<out T>,
-                   converters: Converters): Value<T> {
+fun <T> T?.toValue(
+    cl: Class<out T>,
+    converters: Converters
+): Value<T> {
 
     @Suppress("UNCHECKED_CAST")
-    return (this?.let { t -> converters.findSuitableConverter(cl).to(t, converters) } ?: wrap(cl)) as Value<T>
+    return (this?.let { t -> converters.findSuitableConverter(cl).to(t, converters) }
+        ?: wrap(cl)) as Value<T>
 }
 
-fun <T> T.toValue(converters: Converters) = toValue(this!!::class.java, converters)
+@Suppress("UNCHECKED_CAST")
+fun <T> T.toValue(converters: Converters): Value<T> = toValue(clazz, converters) as Value<T>
 
 @Suppress("UNCHECKED_CAST")
 fun <T> Value<T>.fromValue(converters: Converters): T? = when (this) {
     is Null -> null
     is Ref,
     is PrimitiveWrapper<*>,
-    is CollectionPrimitiveWrapper<*> -> converters.findSuitableConverter(type).from(this, converters)
+    is CollectionPrimitiveWrapper<*> -> converters.findSuitableConverter(type).from(
+        this,
+        converters
+    )
 } as T?
 
 //todo rename to wrap|val|primitive?
@@ -252,14 +310,15 @@ inline fun wrap(any: Any, converters: Converters): Ref {
 
 @PublishedApi
 internal inline val Any?.clazz
-    get() = if (this == null) Any::class.java else this::class.java
+    get() = if (this == null) Nothing::class.java else this::class.java
 
 /**
  * Collects all reachable fields recursively
  */
 @PublishedApi
 internal fun collectFields(clazz: Class<*>): Sequence<Field> {
-    return (clazz.declaredFields.asSequence() + (clazz.superclass?.let(::collectFields) ?: emptySequence()))
+    return (clazz.declaredFields.asSequence() + (clazz.superclass?.let(::collectFields)
+        ?: emptySequence()))
         .filter { f -> !f.isTransient && !f.isStatic }
 }
 
@@ -277,7 +336,16 @@ private fun Ref.fromValue(converters: Converters): Any {
     val cl = type.clazz
 
     return unsafe.allocateInstance(cl)
-        .also { instance -> properties.forEach { property -> unsafe.fill(instance, property, cl, converters) } }
+        .also { instance ->
+            properties.forEach { property ->
+                unsafe.fill(
+                    instance,
+                    property,
+                    cl,
+                    converters
+                )
+            }
+        }
 }
 
 private fun Converters.findSuitableConverter(type: RemoteType): Converter<Any, Value<*>> {
@@ -285,16 +353,30 @@ private fun Converters.findSuitableConverter(type: RemoteType): Converter<Any, V
 }
 
 private fun Converters.findSuitableConverter(cl: Class<*>): Converter<Any, Value<*>> {
-    return this[cl] ?: cl.interfaces.map { c -> findSuitableConverter(c) }.firstOrNull() ?: findSuitableConverter(cl.superclass
-        ?: return this[Any::class.java] ?: error("Should never happen"))
+    return this[cl] ?: cl.kotlin.allSuperclasses
+        .asSequence()
+        .sortedWith(classComparator)
+        .mapNotNull { c -> this[c.java] }
+        .toList()
+        .also { suitableConverters -> require(suitableConverters.isNotEmpty()) { "Couldn't find a suitable converter for class $cl" } }
+        .first()
 }
 
-private fun Unsafe.fill(instance: Any, property: Property<*>, cl: Class<*>, converters: Converters) {
+private fun Unsafe.fill(
+    instance: Any,
+    property: Property<*>,
+    cl: Class<*>,
+    converters: Converters
+) {
 
     val field = instance.getFieldFor(property)
     val offset = objectFieldOffset(field)
 
-    when (val value = if (property.v is Null) null else converters.findSuitableConverter(property.type).from(property.v, converters)) {
+    when (val value =
+        if (property.v is Null) null else converters.findSuitableConverter(property.type).from(
+            property.v,
+            converters
+        )) {
         is Int -> putInt(instance, offset, value)
         is Byte -> putByte(instance, offset, value)
         is Short -> putShort(instance, offset, value)
@@ -304,8 +386,10 @@ private fun Unsafe.fill(instance: Any, property: Property<*>, cl: Class<*>, conv
         is Float -> putFloat(instance, offset, value)
         is Char -> putChar(instance, offset, value)
         is Any, null -> putObject(instance, offset, value)
-        else -> error("Should never happen, couldn't convert value $value\nof instance (class=$cl) $instance,\n" +
-            "registered converters $converters")
+        else -> error(
+            "Should never happen, couldn't convert value $value\nof instance (class=$cl) $instance,\n" +
+                "registered converters $converters"
+        )
     }
 }
 
@@ -324,6 +408,8 @@ private inline val Field.isTransient get() = Modifier.isTransient(modifiers)
 private inline val Field.isStatic get() = Modifier.isStatic(modifiers)
 
 private fun notifyUnknownField(instance: Any, property: Property<*>): Nothing {
-    error("Couldn't find field with name ${property.name}" +
-            "\nfor instance ${instance},\nproperty $property")
+    error(
+        "Couldn't find field with name ${property.name}" +
+            "\nfor instance ${instance},\nproperty $property"
+    )
 }
