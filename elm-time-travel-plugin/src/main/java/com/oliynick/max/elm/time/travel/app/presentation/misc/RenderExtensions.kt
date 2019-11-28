@@ -25,7 +25,11 @@ import java.time.format.FormatStyle
 import javax.swing.Icon
 import javax.swing.tree.DefaultMutableTreeNode
 
-private val DATE_TIME_FORMATTER: DateTimeFormatter by lazy { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
+private val DATE_TIME_FORMATTER: DateTimeFormatter by lazy {
+    DateTimeFormatter.ofLocalizedDateTime(
+        FormatStyle.MEDIUM
+    )
+}
 
 fun <T> Value<*>.toJTree(mapper: (Value<*>) -> T): DefaultMutableTreeNode {
 
@@ -46,8 +50,16 @@ fun anyRef(entry: Map.Entry<*, *>): Value<*> {
     return Ref(
         RemoteType(entry::class.java),
         setOf(
-            Property(RemoteType(if (entry.key == null) Any::class.java else entry.key!!::class.java), "key", entry.key.toValue(converters())),
-            Property(RemoteType(if (entry.value == null) Any::class.java else entry.value!!::class.java), "value", entry.value.toValue(converters()))
+            Property(
+                RemoteType(if (entry.key == null) Any::class.java else entry.key!!::class.java),
+                "key",
+                entry.key.toValue(converters())
+            ),
+            Property(
+                RemoteType(if (entry.value == null) Any::class.java else entry.value!!::class.java),
+                "value",
+                entry.value.toValue(converters())
+            )
         )
     )
 }
@@ -55,9 +67,9 @@ fun anyRef(entry: Map.Entry<*, *>): Value<*> {
 val Value<*>.children: Collection<Value<*>>
     inline get() = when (this) {
         is PrimitiveWrapper<*>, is Null -> emptyList()
-        is IterableWrapper -> value.map { it }
         is MapWrapper -> value.map(::anyRef)
         is Ref -> properties.map { it.v }
+        is CollectionWrapper -> value.map { it }
     }
 
 fun Value<*>.toReadableString(): String = when (this) {
@@ -77,17 +89,17 @@ fun Value<*>.toReadableString(): String = when (this) {
     is FloatWrapper -> toReadableString()
     is StringWrapper -> toReadableString()
     is BooleanWrapper -> toReadableString()
-    is IterableWrapper -> toReadableString()
     is MapWrapper -> toReadableString()
     is Null -> toReadableString()
     is Ref -> toReadableString()
+    is CollectionWrapper -> toReadableString()
 }
 
 fun Ref.toReadableString(): String {
     return "${type.value}(${properties.joinToString(transform = ::toReadableString)})"
 }
 
-fun IterableWrapper.toReadableString(): String {
+fun CollectionWrapper.toReadableString(): String {
     return "${type.value} ${value.joinToString(
         prefix = "[",
         postfix = "]",
@@ -134,7 +146,7 @@ fun StringWrapper.toReadableString() = "String:${'"' + stringValueSafe + '"'}"
 val Value<*>.icon: Icon?
     inline get() = when (this) {
         is PrimitiveWrapper<*> -> getIcon("variable")
-        is IterableWrapper, is MapWrapper, is Ref -> getIcon("class")
+        is CollectionWrapper, is MapWrapper, is Ref -> getIcon("class")
         is Null -> null
     }
 

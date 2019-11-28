@@ -4,6 +4,7 @@ import core.data.Id
 import core.data.Name
 import core.data.User
 import core.data.photo
+import io.kotlintest.shouldBe
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.immutableListOf
 import org.junit.Test
@@ -11,7 +12,10 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import protocol.*
 import java.util.*
-import kotlin.test.assertEquals
+
+private data class StringMapHolder(val values: Map<String?, Int?>)
+
+private data class StringListHolder(val screens: ImmutableList<String>)
 
 @RunWith(JUnit4::class)
 class GsonAdapterTest {
@@ -33,28 +37,39 @@ class GsonAdapterTest {
         +UUIDConverter
     }
 
-    data class StringListHolder(val screens: ImmutableList<String>)
 
-    data class Screen(val user: User)
 
     @Test
     fun `test initial value is same as parsed one`() {
 
-        val initialValue = SomeTestCommand(SomeTestString("hello")/*, listOf(1234)*/, emptyList()).toValue(testConverters)
+        val initialValue = SomeTestCommand(SomeTestString("hello"), listOf(1234))
+            .toValue(testConverters)
         val json = gson.toJson(initialValue)
         val fromJsonValue = gson.fromJson(json, Value::class.java)
 
-        assertEquals(initialValue, fromJsonValue)
+        initialValue shouldBe fromJsonValue
+    }
+
+    @Test
+    fun `test initial map is same as parsed one`() {
+
+        val initialValue = StringMapHolder(mapOf("a" to 123, "b" to 1, null to null, null to 1, "" to null))
+            .toValue(testConverters)
+        val json = gson.toJson(initialValue)
+        val fromJsonValue = gson.fromJson(json, Value::class.java)
+
+        initialValue shouldBe fromJsonValue
     }
 
     @Test
     fun `test initial value with custom field type is same as parsed one`() {
 
-        val initialValue = StringListHolder(immutableListOf("A", "B", "C")).toValue(testConverters)
+        val initialValue = StringListHolder(immutableListOf("A", "B", "C"))
+            .toValue(testConverters)
         val json = gson.toJson(initialValue)
         val fromJsonValue = gson.fromJson(json, Value::class.java)
 
-        assertEquals(initialValue, fromJsonValue)
+        initialValue shouldBe fromJsonValue
     }
 
     @Test
@@ -64,7 +79,7 @@ class GsonAdapterTest {
         val json = gson.toJson(initialValue)
         val fromJsonValue = gson.fromJson(json, Value::class.java)
 
-        assertEquals(initialValue, fromJsonValue)
+        initialValue shouldBe fromJsonValue
     }
 
     @Test
@@ -76,7 +91,7 @@ class GsonAdapterTest {
         val cmdJson = gson.toJson(initialApplyCmd)
         val fromJson = gson.fromJson(cmdJson, ApplyMessage::class.java)
 
-        assertEquals(initialApplyCmd, fromJson)
+        initialApplyCmd shouldBe fromJson
     }
 
     @Test
@@ -88,7 +103,7 @@ class GsonAdapterTest {
         val applyMessageJson = gson.toJson(initialApplyCmd)
         val fromJson = gson.fromJson(applyMessageJson, ApplyState::class.java)
 
-        assertEquals(initialApplyCmd, fromJson)
+        initialApplyCmd shouldBe fromJson
     }
 
     @Test
@@ -100,7 +115,7 @@ class GsonAdapterTest {
         val applyMessageJson = gson.toJson(initialApplyCmd)
         val fromJson = gson.fromJson(applyMessageJson, NotifyComponentSnapshot::class.java)
 
-        assertEquals(initialApplyCmd, fromJson)
+        initialApplyCmd shouldBe fromJson
     }
 
     @Test
@@ -112,7 +127,7 @@ class GsonAdapterTest {
         val applyMessageJson = gson.toJson(initialApplyCmd)
         val fromJson = gson.fromJson(applyMessageJson, NotifyComponentAttached::class.java)
 
-        assertEquals(initialApplyCmd, fromJson)
+        initialApplyCmd shouldBe fromJson
     }
 
     @Test
@@ -122,7 +137,7 @@ class GsonAdapterTest {
         val applyMessageJson = gson.toJson(initialApplyCmd)
         val fromJson = gson.fromJson(applyMessageJson, ActionApplied::class.java)
 
-        assertEquals(initialApplyCmd, fromJson)
+        initialApplyCmd shouldBe fromJson
     }
 
 }

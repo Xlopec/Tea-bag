@@ -5,14 +5,17 @@ package protocol
 import sun.misc.Unsafe
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
+import java.util.*
 import kotlin.Boolean
 import kotlin.Byte
 import kotlin.Char
+import kotlin.Comparator
 import kotlin.Double
 import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.Short
+import kotlin.collections.LinkedHashSet
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.isSuperclassOf
@@ -156,33 +159,43 @@ private object StringConverter : Converter<String, StringWrapper> {
     override fun to(t: String, converters: Converters) = wrap(t)
 }
 
-//TODO add converter for specific collections
-private object IterableConverter : Converter<Iterable<*>, IterableWrapper> {
-    override fun from(v: IterableWrapper, converters: Converters): Iterable<*> {
-        return v.value.map { elem -> elem.fromValue(converters) }
-    }
-
-    override fun to(t: Iterable<*>, converters: Converters) = wrap(t, converters)
-}
-
-private object ListConverter : Converter<List<*>, IterableWrapper> {
-    override fun from(v: IterableWrapper, converters: Converters): List<*> {
+private object ListConverter : Converter<List<*>, CollectionWrapper> {
+    override fun from(v: CollectionWrapper, converters: Converters): List<*> {
         return v.value.map { elem -> elem.fromValue(converters) }
     }
 
     override fun to(t: List<*>, converters: Converters) = wrap(t, converters)
 }
 
-private object ArrayListConverter : Converter<ArrayList<*>, IterableWrapper> {
-    override fun from(v: IterableWrapper, converters: Converters): ArrayList<*> {
-        return v.value.mapTo(
-            ArrayList(
-                (v.value as? Collection<*>)?.size ?: 10
-            )
-        ) { elem -> elem.fromValue(converters) }
+private object QueueConverter : Converter<Queue<*>, CollectionWrapper> {
+    override fun from(v: CollectionWrapper, converters: Converters): Queue<*> {
+        return v.value.mapTo(LinkedList()) { elem -> elem.fromValue(converters) }
     }
 
-    override fun to(t: ArrayList<*>, converters: Converters) = wrap(t, converters)
+    override fun to(t: Queue<*>, converters: Converters) = wrap(t, converters)
+}
+
+private object DequeueConverter : Converter<Deque<*>, CollectionWrapper> {
+    override fun from(v: CollectionWrapper, converters: Converters): Deque<*> {
+        return v.value.mapTo(ArrayDeque(v.value.size)) { elem -> elem.fromValue(converters) }
+    }
+
+    override fun to(t: Deque<*>, converters: Converters) = wrap(t, converters)
+}
+
+private object CollectionConverter : Converter<Collection<*>, CollectionWrapper> {
+    override fun from(v: CollectionWrapper, converters: Converters) =
+        ListConverter.from(v, converters)
+
+    override fun to(t: Collection<*>, converters: Converters) = wrap(t, converters)
+}
+
+private object SetConverter : Converter<Set<*>, CollectionWrapper> {
+    override fun from(v: CollectionWrapper, converters: Converters): Set<*> {
+        return v.value.mapTo(LinkedHashSet(v.value.size)) { elem -> elem.fromValue(converters) }
+    }
+
+    override fun to(t: Set<*>, converters: Converters) = wrap(t, converters)
 }
 
 private object MapConverter : Converter<Map<*, *>, MapWrapper> {
@@ -206,9 +219,11 @@ fun converters(config: Converters.() -> Unit = {}): Converters {
     return Converters()
         .apply {
             +RefConverter
-            +IterableConverter
             +ListConverter
-            +ArrayListConverter
+            +SetConverter
+            +CollectionConverter
+            +QueueConverter
+            +DequeueConverter
             +MapConverter
             +StringConverter
             register(IntConverter, JIntWrapper::class.java, Int::class.java)
@@ -282,8 +297,8 @@ fun wrap(v: Map<*, *>, converters: Converters): MapWrapper {
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun wrap(v: Iterable<*>, converters: Converters): IterableWrapper {
-    return IterableWrapper(v.map { it.toValue(it.clazz, converters) })
+inline fun wrap(v: Iterable<*>, converters: Converters): CollectionWrapper {
+    return CollectionWrapper(v.map { it.toValue(it.clazz, converters) })
 }
 
 @Suppress("NOTHING_TO_INLINE")
@@ -297,10 +312,16 @@ inline fun wrap(any: Any, converters: Converters): Ref {
     val properties = collectFields(any::class.java)
         .onEach { field -> field.isAccessible = true }
         .map { field ->
+
+            val value: Any? = field.get(any)
+            // we want to store an actual class, not the declared
+            // one if possible
+            val type = value?.javaClass ?: field.type
+
             Property(
-                RemoteType(field.type),
+                RemoteType(type),
                 field.name,
-                field.get(any).toValue(field.type, converters)
+                value.toValue(type, converters)
             )
         }
         .toSet()

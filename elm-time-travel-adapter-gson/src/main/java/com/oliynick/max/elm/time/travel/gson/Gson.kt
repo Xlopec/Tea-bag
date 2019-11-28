@@ -84,8 +84,12 @@ fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
             StringAdapter
         )
         .registerTypeAdapter(
-            IterableWrapper::class.java,
-            IterableAdapter
+            CollectionWrapper::class.java,
+            CollectionAdapter
+        )
+        .registerTypeAdapter(
+            MapWrapper::class.java,
+            MapAdapter
         )
         .registerTypeAdapter(
             Null::class.java,

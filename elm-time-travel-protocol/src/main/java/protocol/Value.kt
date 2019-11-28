@@ -87,7 +87,7 @@ sealed class CollectionPrimitiveWrapper<T>(val value: T) : Value<T>() {
 
 }
 
-class IterableWrapper(value: Iterable<Value<*>>) : CollectionPrimitiveWrapper<Iterable<Value<*>>>(value)
+class CollectionWrapper(value: List<Value<*>>) : CollectionPrimitiveWrapper<List<Value<*>>>(value)
 
 class MapWrapper(value: Map<Value<*>, Value<*>>) : CollectionPrimitiveWrapper<Map<Value<*>, Value<*>>>(value)
 
