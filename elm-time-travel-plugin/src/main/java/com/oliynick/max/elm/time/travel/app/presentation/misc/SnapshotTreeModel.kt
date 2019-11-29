@@ -19,23 +19,10 @@ package com.oliynick.max.elm.time.travel.app.presentation.misc
 import com.oliynick.max.elm.time.travel.app.domain.Snapshot
 import com.oliynick.max.elm.time.travel.app.misc.UpdateCallback
 import com.oliynick.max.elm.time.travel.app.misc.replaceAll
-import protocol.Value
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
 import javax.swing.tree.TreeModel
-
-sealed class SnapshotTree
-
-object RootNode : SnapshotTree()
-
-data class SnapshotNode(val snapshot: Snapshot) : SnapshotTree()
-
-data class MessageNode(val message: Value<*>) : SnapshotTree()
-
-data class StateNode(val state: Value<*>) : SnapshotTree()
-
-data class SnapshotTypeNode(val typeNode: Value<*>) : SnapshotTree()
 
 class SnapshotTreeModel private constructor(private val delegate: DefaultTreeModel,
                                             initial: List<Snapshot>) : TreeModel by delegate {
@@ -83,10 +70,10 @@ private fun Snapshot.toComponentSubTree(): DefaultMutableTreeNode {
     return DefaultMutableTreeNode(SnapshotNode(this))
         .apply {
             add(DefaultMutableTreeNode(MessageNode(message)).apply {
-                add(message.toJTree(::SnapshotTypeNode))
+                add(message.toJTree())
             })
             add(DefaultMutableTreeNode(StateNode(state)).apply {
-                add(state.toJTree(::SnapshotTypeNode))
+                add(state.toJTree())
             })
         }
 }

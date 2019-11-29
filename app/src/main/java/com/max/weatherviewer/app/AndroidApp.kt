@@ -19,7 +19,7 @@ import kotlin.coroutines.CoroutineContext
 class AndroidApp : Application() {
 
     val dependencies by unsafeLazy {
-        Dependencies(
+        AppDependencies(
             BuildConfig.DEBUG,
             Channel(),
             retrofit,
@@ -27,7 +27,7 @@ class AndroidApp : Application() {
         )
     }
 
-    val component by unsafeLazy { ComponentScope.appComponent(dependencies) }
+    val component by unsafeLazy { ComponentScope.AppComponent(dependencies) }
 
     val messages = Channel<Message>()
 }
@@ -41,7 +41,7 @@ inline val Activity.appComponent: Component<Message, State>
 inline val Activity.appMessages: Channel<Message>
     get() = androidApp.messages
 
-inline val Activity.appDependencies: Dependencies
+inline val Activity.appDependencies: AppDependencies
     get() = androidApp.dependencies
 
 inline val Activity.closeAppCommands: Flow<CloseApp>

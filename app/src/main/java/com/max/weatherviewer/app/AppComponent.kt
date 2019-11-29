@@ -1,13 +1,16 @@
+@file:Suppress("FunctionName")
+
 package com.max.weatherviewer.app
 
 import com.max.weatherviewer.Command
 import com.max.weatherviewer.DoLoadArticles
 import com.max.weatherviewer.home.Loading
-import com.oliynick.max.elm.core.actor.component
+import com.oliynick.max.elm.core.actor.Component
 import com.oliynick.max.elm.core.component.Component
+import com.oliynick.max.elm.core.component.Dependencies
 import com.oliynick.max.elm.core.component.androidLogger
-import com.oliynick.max.elm.time.travel.GsonConverter
-import com.oliynick.max.elm.time.travel.debugComponent
+import com.oliynick.max.elm.time.travel.Component
+import com.oliynick.max.elm.time.travel.URL
 import kotlinx.coroutines.CoroutineScope
 import protocol.*
 import java.net.URL
@@ -21,32 +24,31 @@ object URLConverter : Converter<URL, StringWrapper> {
 
 }
 
-fun CoroutineScope.appComponent(dependencies: Dependencies): Component<Message, State> {
+fun CoroutineScope.AppComponent(dependencies: AppDependencies): Component<Message, State> {
 
     suspend fun resolver(command: Command) = AppResolver.resolve(dependencies, command)
     // todo state persistence
+    val componentDependencies = Dependencies(
+        State(Loading),
+        ::resolver,
+        AppUpdater::update,
+        DoLoadArticles("bitcoin")
+    ) {
+        interceptor = androidLogger("News Reader App")
+    }
 
-    return if (dependencies.isDebugBuild) {
+    if (dependencies.isDebugBuild) {
 
-        debugComponent(
-            ComponentId("News Reader App"), GsonConverter,
-            com.oliynick.max.elm.core.component.Dependencies(
-                State(Loading),
-                ::resolver,
-                AppUpdater::update,
-                androidLogger("News Reader App"),
-                DoLoadArticles("bitcoin")
-            )
-        ) {
+        return Component(ComponentId("News Reader App"), componentDependencies, URL(host = "10.0.2.2")) {
             serverSettings {
-                url = URL("http://10.0.2.2:8080")
 
                 converters {
                     +URLConverter
                 }
             }
         }
-    } else component(State(Loading), ::resolver, AppUpdater::update, DoLoadArticles("bitcoin")) {
-
     }
+
+    return Component(componentDependencies)
+
 }

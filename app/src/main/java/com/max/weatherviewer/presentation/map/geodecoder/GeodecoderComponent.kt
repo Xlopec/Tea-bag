@@ -1,17 +1,8 @@
 package com.max.weatherviewer.presentation.map.geodecoder
 
-import com.max.weatherviewer.BuildConfig
-import com.max.weatherviewer.api.weather.Location
-import com.oliynick.max.elm.core.actor.component
 import com.oliynick.max.elm.core.component.*
-import com.oliynick.max.elm.time.travel.debugComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.withContext
-import protocol.ComponentId
-import java.net.URL
 import com.max.weatherviewer.presentation.map.google.State as MapState
 
 typealias GeodecoderComponent = Component<Message, State>

@@ -16,7 +16,6 @@
 
 package com.oliynick.max.elm.time.travel.app.presentation.misc
 
-import protocol.Value
 import java.awt.Component
 import javax.swing.JLabel
 import javax.swing.JTree
@@ -41,9 +40,18 @@ object StateTreeRenderer : TreeCellRenderer {
             return label
         }
 
-        val payload = node.userObject as Value<*>
+        val payload = node.userObject as RenderTree
 
-        label.text = payload.toReadableString()
+        label.text = when(payload) {
+            RootNode -> "State"
+            is SnapshotNode, is MessageNode, is StateNode -> error("Can't render $payload")
+            is PropertyNode -> payload.toReadableString()
+            is ValueNode -> payload.toReadableString()
+            is IndexedNode -> payload.toReadableString()
+            is EntryKeyNode -> payload.toReadableString()
+            is EntryValueNode -> payload.toReadableString()
+        }
+
         label.icon = payload.icon
 
         return label

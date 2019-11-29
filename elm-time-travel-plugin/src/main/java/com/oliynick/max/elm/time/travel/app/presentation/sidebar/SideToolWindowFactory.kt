@@ -22,7 +22,7 @@ import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
-import com.oliynick.max.elm.core.actor.component
+import com.oliynick.max.elm.core.actor.Component
 import com.oliynick.max.elm.core.component.androidLogger
 import com.oliynick.max.elm.time.travel.app.domain.*
 import com.oliynick.max.elm.time.travel.app.storage.pluginSettings
@@ -48,7 +48,7 @@ class SideToolWindowFactory : ToolWindowFactory, DumbAware {
 
         suspend fun loader() = Stopped(project.properties.pluginSettings) to emptySet<Nothing>()
 
-        val component = scope.component(::loader, ::resolve, ::update, androidLogger("Plugin Component"))
+        val component = scope.Component(::loader, ::resolve, ::update, androidLogger("Plugin Component"))
 
         val myToolWindow = ToolWindowView(project, scope, component, messages)
         val contentFactory = ContentFactory.SERVICE.getInstance()

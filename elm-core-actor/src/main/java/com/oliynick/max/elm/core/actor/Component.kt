@@ -53,49 +53,50 @@ import kotlin.coroutines.CoroutineContext
  * @return configured instance of [Component]
  */
 @Deprecated("too many params")
-fun <M, C, S> CoroutineScope.component(
+fun <M, C, S> CoroutineScope.Component(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     interceptor: Interceptor<M, S, C> = { _, _, _, _ -> }
-): Component<M, S> = component(Dependencies(initializer, resolver, update, interceptor))
+): Component<M, S> =
+    Component(Dependencies(initializer, resolver, update, interceptor))
 
-fun <M, C, S> CoroutineScope.component(dependencies: Dependencies<M, C, S>): Component<M, S> {
+fun <M, C, S> CoroutineScope.Component(dependencies: Dependencies<M, C, S>): Component<M, S> {
 
     val (messages, states) = actorComponent(dependencies)
 
     return newComponent(states, messages)
 }
 
-fun <M, C, S> CoroutineScope.component(
+fun <M, C, S> CoroutineScope.Component(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     config: DependenciesBuilder<M, C, S>.() -> Unit = {}
-) = component(
+) = Component(
     DependenciesBuilder(initializer, resolver, update)
         .apply(config)
         .toDependencies()
 )
 
-fun <M, C, S> CoroutineScope.component(
+fun <M, C, S> CoroutineScope.Component(
     initialState: S,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     vararg initialCommands: C,
     config: DependenciesBuilder<M, C, S>.() -> Unit = {}
-) = component(
-    dependencies(initializer(initialState, setOf(*initialCommands)), resolver, update, config)
+) = Component(
+    Dependencies(initializer(initialState, setOf(*initialCommands)), resolver, update, config)
 )
 
-fun <M, C, S> CoroutineScope.dependencies(
+fun <M, C, S> CoroutineScope.Component(
     initialState: S,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     initialCommands: Set<C>,
     config: DependenciesBuilder<M, C, S>.() -> Unit = {}
-) = component(
-    dependencies(initializer(initialState, initialCommands), resolver, update, config)
+) = Component(
+    Dependencies(initializer(initialState, initialCommands), resolver, update, config)
 )
 
 /**
@@ -121,7 +122,7 @@ fun <M, C, S> CoroutineScope.dependencies(
  * @return configured instance of [Component]
  */
 @Deprecated("too many params")
-fun <M, C, S> CoroutineScope.component(
+fun <M, C, S> CoroutineScope.Component(
     initialState: S,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
@@ -132,7 +133,7 @@ fun <M, C, S> CoroutineScope.component(
     @Suppress("RedundantSuspendModifier")
     suspend fun loader() = initialState to setOf(*initialCommands)
 
-    return component(::loader, resolver, update, interceptor)
+    return Component(::loader, resolver, update, interceptor)
 }
 
 private fun <M, C, S> CoroutineScope.actorComponent(dependencies: Dependencies<M, C, S>): ComponentInternal<M, S> {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.elm.time.travel
 
 import com.oliynick.max.elm.core.component.*
@@ -41,12 +43,12 @@ import java.net.URL
 import java.util.*
 
 private val httpClient by lazy { HttpClient { install(WebSockets) } }
-private val localhost by lazy { URL("http://localhost:8080") }
+private val localhost by lazy { URL() }
 
 @DslMarker
 private annotation class DslBuilder
 
-interface JsonConverter {
+internal interface JsonConverter {
     fun toJson(any: Any): String
     fun <T> fromJson(json: String, cl: Class<T>): T
 }
@@ -60,7 +62,6 @@ data class DebugDependencies<M, C, S>(
 //todo add dsl
 data class ServerSettings(
     inline val id: ComponentId,
-    inline val jsonConverter: JsonConverter,
     inline val converters: Converters = converters(),
     inline val url: URL = localhost
 )
@@ -68,15 +69,16 @@ data class ServerSettings(
 @DslBuilder
 class ServerSettingsBuilder internal constructor(
     var id: ComponentId,
-    var jsonConverter: JsonConverter,
-    var converters: Converters = converters(),
-    var url: URL = localhost
+    var converters: Converters,
+    var url: URL
 ) {
 
     fun converters(config: Converters.() -> Unit) {
         converters.apply(config)
     }
 }
+
+fun URL(protocol: String = "http", host: String = "localhost", port: UInt = 8080U) = URL(protocol, host, port.toInt(), "")
 
 @DslBuilder
 class DebugDependenciesBuilder<M, C, S> internal constructor(
@@ -94,31 +96,31 @@ class DebugDependenciesBuilder<M, C, S> internal constructor(
 
 }
 
-fun <M, C, S> debugDependencies(
+fun <M, C, S> Dependencies(
     id: ComponentId,
-    jsonConverter: JsonConverter,
     dependencies: Dependencies<M, C, S>,
+    url: URL = localhost,
     config: DebugDependenciesBuilder<M, C, S>.() -> Unit = {}
 ) = DebugDependenciesBuilder(
     DependenciesBuilder(dependencies),
-    ServerSettingsBuilder(id, jsonConverter)
+    ServerSettingsBuilder(id, converters(), url)
 ).apply(config).toDebugDependencies()
 
-fun <M, C, S> CoroutineScope.debugComponent(
+fun <M, C, S> CoroutineScope.Component(
     id: ComponentId,
-    jsonConverter: JsonConverter,
     dependencies: Dependencies<M, C, S>,
+    url: URL = localhost,
     config: DebugDependenciesBuilder<M, C, S>.() -> Unit = {}
-) = component(
-    debugDependencies(
+) = Component(
+    Dependencies(
         id,
-        jsonConverter,
         dependencies,
+        url,
         config
     )
 )
 
-fun <M, C, S> CoroutineScope.component(debugDependencies: DebugDependencies<M, C, S>): Component<M, S> {
+fun <M, C, S> CoroutineScope.Component(debugDependencies: DebugDependencies<M, C, S>): Component<M, S> {
 
     val (messages, states) = webSocketComponent(debugDependencies)
 
@@ -141,11 +143,13 @@ private fun <M, C, S> CoroutineScope.webSocketComponent(dependencies: DebugDepen
             val snapshots = Channel<NotifyComponentSnapshot<M, S>>()
 
             with(dependencies.withSpyingInterceptor(snapshots)) {
-                // says 'hello' to a server; the message will be suspended until
-                // the very first state gets computed
-                launch { notifyAttached(statesChannel.asFlow().first(), serverSettings) }
-                // observes state changes and notifies server about them
-                launch { notifySnapshots(snapshots.consumeAsFlow(), serverSettings) }
+                launch {
+                    // says 'hello' to a server; the message will be suspended until
+                    // the very first state gets computed
+                    notifyAttached(statesChannel.asFlow().first(), serverSettings)
+                    // observes state changes and notifies server about them
+                    notifySnapshots(snapshots.consumeAsFlow(), serverSettings)
+                }
                 // observes incoming messages from server and applies them
                 observeMessages(this@with, messages, statesChannel)
             }
@@ -178,22 +182,19 @@ private suspend fun <M, C, S> ClientWebSocketSession.observeMessages(
             }.safe
         }
 
-        incomingPackets(serverSettings.id, serverSettings.jsonConverter)
+        incomingPackets(serverSettings.id)
             .collect { packet ->
-
-                println("In message $packet")
-
                 applyMessage(packet.message)
-                notifyApplied(serverSettings.jsonConverter, packet.id, serverSettings.id)
+                notifyApplied(packet.id, serverSettings.id)
             }
     }
 }
 
-private fun ClientWebSocketSession.incomingPackets(id: ComponentId, jsonConverter: JsonConverter) =
+private fun ClientWebSocketSession.incomingPackets(id: ComponentId) =
     incoming.consumeAsFlow()
         .filterIsInstance<Frame.Text>()
         .map { frame -> frame.readText() }
-        .map { json -> jsonConverter.fromJson(json, NotifyClient::class.java) }
+        .map { json -> GsonConverter.fromJson(json, NotifyClient::class.java) }
         .filter { packet -> packet.component == id }
 
 private suspend fun <M, C, S> loop(
@@ -218,7 +219,7 @@ private suspend fun <S> WebSocketSession.notifyAttached(first: S, serverSettings
         serverSettings.id
     )
 
-    send(serverSettings.jsonConverter.toJson(message))
+    send(GsonConverter.toJson(message))
 }
 
 private suspend fun <M, S> WebSocketSession.notifySnapshots(
@@ -227,7 +228,6 @@ private suspend fun <M, S> WebSocketSession.notifySnapshots(
 ) {
     snapshots.collect { snapshot ->
         send(
-            serverSettings.jsonConverter,
             serverSettings.id,
             snapshot
         )
@@ -242,19 +242,17 @@ private fun notifyMessage(
     NotifyServer(packetId, componentId, message)
 
 private suspend fun WebSocketSession.send(
-    jsonConverter: JsonConverter,
     componentId: ComponentId,
     message: ServerMessage
 ) {
-    send(jsonConverter.toJson(NotifyServer(UUID.randomUUID(), componentId, message)))
+    send(GsonConverter.toJson(NotifyServer(UUID.randomUUID(), componentId, message)))
 }
 
 private suspend fun WebSocketSession.notifyApplied(
-    jsonConverter: JsonConverter,
     packetId: UUID,
     componentId: ComponentId
 ) {
-    send(jsonConverter.toJson(NotifyServer(packetId, componentId, ActionApplied(packetId))))
+    send(GsonConverter.toJson(NotifyServer(packetId, componentId, ActionApplied(packetId))))
 }
 
 private fun <M, C, S> spyingInterceptor(
@@ -294,4 +292,4 @@ private fun <M, C, S> DebugDependenciesBuilder<M, C, S>.toDebugDependencies() =
     )
 
 private fun ServerSettingsBuilder.toServerSettings() =
-    ServerSettings(id, jsonConverter, converters, url)
+    ServerSettings(id, converters, url)

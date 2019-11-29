@@ -19,7 +19,6 @@ package com.oliynick.max.elm.time.travel
 import com.oliynick.max.elm.core.component.Dependencies
 import com.oliynick.max.elm.core.component.invoke
 import com.oliynick.max.elm.core.component.noCommand
-import com.oliynick.max.elm.time.travel.gson.gson
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -41,18 +40,6 @@ object SomeUUIDConverter : Converter<UUID, StringWrapper> {
         wrap(t.toString())
 }
 
-object GsonConverter : JsonConverter {
-
-    private val gson = gson()
-
-    override fun toJson(any: Any): String = gson.toJson(any).also {
-        println("To json $it")
-    }
-
-    override fun <T> fromJson(json: String, cl: Class<T>): T = gson.also { println("from json $json") }.fromJson(json, cl)
-
-}
-
 fun main() {
 
     runBlocking {
@@ -66,12 +53,11 @@ fun main() {
                 }
             ),
             ServerSettings(
-                ComponentId("webSocketComponent"),
-                GsonConverter
+                ComponentId("webSocketComponent")
             )
         )
 
-        component(dependencies)
+        Component(dependencies)
             .also {
                 launch {
                     it.invoke(

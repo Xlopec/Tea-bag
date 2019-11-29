@@ -37,8 +37,6 @@ class GsonAdapterTest {
         +UUIDConverter
     }
 
-
-
     @Test
     fun `test initial value is same as parsed one`() {
 

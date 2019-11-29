@@ -42,7 +42,7 @@ class ServerHandler {
             val newServer = Server.newInstance(settings, events)
 
             server = newServer
-
+            // fixme handle errors
             withContext(Dispatchers.IO) {
                 newServer.start()
             }

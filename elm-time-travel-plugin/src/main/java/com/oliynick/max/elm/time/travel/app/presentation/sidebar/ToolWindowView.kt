@@ -24,7 +24,7 @@ import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.core.component.changes
 import com.oliynick.max.elm.time.travel.app.domain.*
 import com.oliynick.max.elm.time.travel.app.presentation.component.ComponentView
-import com.oliynick.max.elm.time.travel.app.presentation.dsl.setHover
+import com.oliynick.max.elm.time.travel.app.presentation.misc.setHover
 import com.oliynick.max.elm.time.travel.app.presentation.info.InfoView
 import com.oliynick.max.elm.time.travel.app.presentation.misc.DefaultDocumentListener
 import com.oliynick.max.elm.time.travel.app.presentation.misc.removeMouseListeners

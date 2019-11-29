@@ -12,7 +12,7 @@ import com.oliynick.max.elm.core.component.sideEffect
 import kotlinx.coroutines.channels.Channel
 import retrofit2.Retrofit
 
-data class Dependencies(
+data class AppDependencies(
     val isDebugBuild: Boolean,
     val closeAppCommands: Channel<CloseApp>,
     val retrofit: Retrofit,
@@ -21,7 +21,7 @@ data class Dependencies(
 
 object AppResolver {
 
-    suspend fun resolve(dependencies: Dependencies, command: Command): Set<Message> {
+    suspend fun resolve(dependencies: AppDependencies, command: Command): Set<Message> {
 
         suspend fun resolve(command: Command): Set<Message> =
             dependencies.run {

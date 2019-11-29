@@ -22,13 +22,13 @@ import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.time.travel.app.domain.*
 import com.oliynick.max.elm.time.travel.app.presentation.misc.*
 import com.oliynick.max.elm.time.travel.app.presentation.sidebar.getIcon
-import protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
+import protocol.ComponentId
 import protocol.Value
 import java.awt.event.MouseEvent
 import javax.swing.*
@@ -90,19 +90,24 @@ private fun JTree.showActionPopup(e: MouseEvent, id: ComponentId, events: Channe
         is SnapshotNode -> snapshotPopup(id, treeNode.snapshot, events)
         is MessageNode -> messagePopup(id, treeNode.message, events)
         is StateNode -> statePopup(id, treeNode.state, events)
-        RootNode, is SnapshotTypeNode -> return
+        RootNode, is PropertyNode, is ValueNode, is IndexedNode, is EntryKeyNode, is EntryValueNode -> return // todo modify value at this point
     }
 
     menu.show(e.component, e.x, e.y)
 }
 
-private fun JTree.getSubTreeForRow(row: Int): SnapshotTree {
-    return (getPathForRow(row).lastPathComponent as DefaultMutableTreeNode).userObject as SnapshotTree
+private fun JTree.getSubTreeForRow(row: Int): RenderTree {
+    return (getPathForRow(row).lastPathComponent as DefaultMutableTreeNode).userObject as RenderTree
 }
 
-private fun componentState(state: PluginState, id: ComponentId) = (state as? Started)?.debugState?.components?.get(id)
+private fun componentState(state: PluginState, id: ComponentId) =
+    (state as? Started)?.debugState?.components?.get(id)
 
-private fun snapshotPopup(component: ComponentId, snapshot: Snapshot, events: Channel<PluginMessage>): JPopupMenu {
+private fun snapshotPopup(
+    component: ComponentId,
+    snapshot: Snapshot,
+    events: Channel<PluginMessage>
+): JPopupMenu {
     return JBPopupMenu("Snapshot ${snapshot.id}").apply {
         add(JBMenuItem("Reset to this", getIcon("updateRunningApplication")).apply {
             addActionListener {
@@ -118,7 +123,11 @@ private fun snapshotPopup(component: ComponentId, snapshot: Snapshot, events: Ch
     }
 }
 
-private fun messagePopup(id: ComponentId, message: Value<*>, events: Channel<PluginMessage>): JPopupMenu {
+private fun messagePopup(
+    id: ComponentId,
+    message: Value<*>,
+    events: Channel<PluginMessage>
+): JPopupMenu {
     return JBPopupMenu().apply {
         add(JBMenuItem("Apply this message", getIcon("updateRunningApplication")).apply {
             addActionListener {
@@ -128,7 +137,11 @@ private fun messagePopup(id: ComponentId, message: Value<*>, events: Channel<Plu
     }
 }
 
-private fun statePopup(id: ComponentId, state: Value<*>, events: Channel<PluginMessage>): JPopupMenu {
+private fun statePopup(
+    id: ComponentId,
+    state: Value<*>,
+    events: Channel<PluginMessage>
+): JPopupMenu {
     return JBPopupMenu().apply {
         add(JBMenuItem("Apply this state", getIcon("updateRunningApplication")).apply {
             addActionListener {

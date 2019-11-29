@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "FunctionName")
 
 package com.oliynick.max.elm.core.component
 
@@ -62,7 +62,7 @@ class DependenciesBuilder<M, C, S>(
     )
 }
 
-fun <M, C, S> dependencies(
+fun <M, C, S> Dependencies(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
@@ -71,21 +71,21 @@ fun <M, C, S> dependencies(
     .apply(config)
     .toDependencies()
 
-fun <M, C, S> dependencies(
+fun <M, C, S> Dependencies(
     initialState: S,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     vararg initialCommands: C,
     config: DependenciesBuilder<M, C, S>.() -> Unit = {}
-) = dependencies(initializer(initialState, setOf(*initialCommands)), resolver, update, config)
+) = Dependencies(initializer(initialState, setOf(*initialCommands)), resolver, update, config)
 
-fun <M, C, S> dependencies(
+fun <M, C, S> Dependencies(
     initialState: S,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     initialCommands: Set<C>,
     config: DependenciesBuilder<M, C, S>.() -> Unit = {}
-) = dependencies(initializer(initialState, initialCommands), resolver, update, config)
+) = Dependencies(initializer(initialState, initialCommands), resolver, update, config)
 
 fun <S, C> initializer(s: S, commands: Set<C>): Initializer<S, C> = { s to commands }
 

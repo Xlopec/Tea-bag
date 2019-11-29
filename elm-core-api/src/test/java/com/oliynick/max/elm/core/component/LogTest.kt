@@ -16,11 +16,10 @@
 
 package com.oliynick.max.elm.core.component
 
-import com.oliynick.max.elm.core.actor.component
+import com.oliynick.max.elm.core.actor.Component
 import core.component.InterceptData
 import core.misc.throwingResolver
 import core.scope.runBlockingInTestScope
-import kotlinx.coroutines.flow.first
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,7 +35,7 @@ class LogTest {
     fun androidLogger() = runBlockingInTestScope {
         val (formatter, sink) = spyFormatter()
 
-        component<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
+        Component<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
             interceptor = androidLogger("Test", formatter)
         }
             .also { component -> /* modify state */ component("a", "b").first() }

@@ -29,7 +29,6 @@ val Project.properties: PropertiesComponent
 
 var PropertiesComponent.pluginSettings: Settings
     set(value) {
-        //paths = value.dependencies
         serverSettings = value.serverSettings
     }
     get() = Settings(serverSettings)
