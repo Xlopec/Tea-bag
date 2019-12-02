@@ -16,7 +16,7 @@
 
 package com.oliynick.max.elm.time.travel
 
-import com.oliynick.max.elm.core.component.Dependencies
+import com.oliynick.max.elm.core.component.Env
 import com.oliynick.max.elm.core.component.invoke
 import com.oliynick.max.elm.core.component.noCommand
 import kotlinx.coroutines.flow.collect
@@ -45,7 +45,7 @@ fun main() {
     runBlocking {
 
         val dependencies = DebugDependencies(
-            Dependencies<SomeTestCommand, String, SomeTestState>(
+            Env<SomeTestCommand, String, SomeTestState>(
                 SomeTestState(SomeTestString("initial")),
                 { emptySet() },
                 { message, _ ->

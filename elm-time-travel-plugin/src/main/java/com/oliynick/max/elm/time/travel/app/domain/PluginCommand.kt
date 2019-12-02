@@ -22,17 +22,33 @@ import java.io.File
 
 sealed class PluginCommand
 
-data class StoreFiles(val files: List<File>) : PluginCommand()
+@Deprecated("will be removed or replaced")
+data class StoreFiles(
+    val files: List<File>
+) : PluginCommand()
 
-data class StoreServerSettings(val serverSettings: ServerSettings) : PluginCommand()
+data class StoreServerSettings(
+    val serverSettings: ServerSettings
+) : PluginCommand()
 
-data class DoStartServer(val settings: Settings) : PluginCommand()
+data class DoStartServer(
+    val settings: Settings
+) : PluginCommand()
 
 object DoStopServer : PluginCommand()
 
-data class DoApplyCommand(val id: ComponentId, val command: Value<*>) : PluginCommand()
+data class DoApplyCommand(
+    val id: ComponentId,
+    val command: Value<*>
+) : PluginCommand()
 
-data class DoApplyState(val id: ComponentId, val state: Value<*>) : PluginCommand()
+data class DoApplyState(
+    val id: ComponentId,
+    val state: Value<*>
+) : PluginCommand()
 
-data class DoNotifyOperationException(val exception: PluginException, val operation: PluginCommand?) : PluginCommand()
+data class DoNotifyOperationException(
+    val exception: PluginException,
+    val operation: PluginCommand?
+) : PluginCommand()
 

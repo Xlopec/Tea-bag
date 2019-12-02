@@ -22,16 +22,10 @@ import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
-import com.oliynick.max.elm.core.actor.Component
-import com.oliynick.max.elm.core.component.androidLogger
+import com.oliynick.max.elm.time.travel.app.di.Environment
+import com.oliynick.max.elm.time.travel.app.di.PluginComponent
 import com.oliynick.max.elm.time.travel.app.domain.*
-import com.oliynick.max.elm.time.travel.app.storage.pluginSettings
 import com.oliynick.max.elm.time.travel.app.storage.properties
-import com.oliynick.max.elm.time.travel.app.transport.ServerHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -40,31 +34,30 @@ import kotlinx.coroutines.launch
 class SideToolWindowFactory : ToolWindowFactory, DumbAware {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val messages = Channel<PluginMessage>()
-        val dependencies = Dependencies(messages, ServerHandler(), project.properties)
-        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-
-        suspend fun resolve(command: PluginCommand) = dependencies.resolve(command)
-
-        suspend fun loader() = Stopped(project.properties.pluginSettings) to emptySet<Nothing>()
-
-        val component = scope.Component(::loader, ::resolve, ::update, androidLogger("Plugin Component"))
-
-        val myToolWindow = ToolWindowView(project, scope, component, messages)
-        val contentFactory = ContentFactory.SERVICE.getInstance()
-        val content = contentFactory.createContent(myToolWindow.root, null, false)
-
-        toolWindow.contentManager.addContent(content)
-
-        scope.launch {
-            dependencies.exceptions.asFlow().collect { command -> project.showException(command) }
-        }
-        scope.launch {
-            dependencies.notifications.asFlow().collect { notification -> project.showNotification(notification) }
-        }
+        Environment(project.properties).createToolWindowContent(project, toolWindow)
     }
 
     override fun shouldBeAvailable(project: Project): Boolean = true
+}
+
+private fun Environment.createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+    val myToolWindow = ToolWindowView(project, this, PluginComponent(), channels.events)
+    val contentFactory = ContentFactory.SERVICE.getInstance()
+    val content = contentFactory.createContent(myToolWindow.root, null, false)
+
+    toolWindow.contentManager.addContent(content)
+
+    launch {
+        channels.exceptions.asFlow().collect { command ->
+            project.showException(command)
+        }
+    }
+
+    launch {
+        channels.notifications.asFlow().collect { notification ->
+            project.showNotification(notification)
+        }
+    }
 }
 
 private fun Project.showException(command: DoNotifyOperationException) {

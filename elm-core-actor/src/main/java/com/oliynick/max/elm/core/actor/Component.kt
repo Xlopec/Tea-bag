@@ -59,11 +59,11 @@ fun <M, C, S> CoroutineScope.Component(
     update: Update<M, S, C>,
     interceptor: Interceptor<M, S, C> = { _, _, _, _ -> }
 ): Component<M, S> =
-    Component(Dependencies(initializer, resolver, update, interceptor))
+    Component(Env(initializer, resolver, update, interceptor))
 
-fun <M, C, S> CoroutineScope.Component(dependencies: Dependencies<M, C, S>): Component<M, S> {
+fun <M, C, S> CoroutineScope.Component(env: Env<M, C, S>): Component<M, S> {
 
-    val (messages, states) = actorComponent(dependencies)
+    val (messages, states) = actorComponent(env)
 
     return newComponent(states, messages)
 }
@@ -72,11 +72,11 @@ fun <M, C, S> CoroutineScope.Component(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
-    config: DependenciesBuilder<M, C, S>.() -> Unit = {}
+    config: EnvBuilder<M, C, S>.() -> Unit = {}
 ) = Component(
-    DependenciesBuilder(initializer, resolver, update)
+    EnvBuilder(initializer, resolver, update)
         .apply(config)
-        .toDependencies()
+        .toEnv()
 )
 
 fun <M, C, S> CoroutineScope.Component(
@@ -84,9 +84,9 @@ fun <M, C, S> CoroutineScope.Component(
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     vararg initialCommands: C,
-    config: DependenciesBuilder<M, C, S>.() -> Unit = {}
+    config: EnvBuilder<M, C, S>.() -> Unit = {}
 ) = Component(
-    Dependencies(initializer(initialState, setOf(*initialCommands)), resolver, update, config)
+    Env(initializer(initialState, setOf(*initialCommands)), resolver, update, config)
 )
 
 fun <M, C, S> CoroutineScope.Component(
@@ -94,9 +94,9 @@ fun <M, C, S> CoroutineScope.Component(
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     initialCommands: Set<C>,
-    config: DependenciesBuilder<M, C, S>.() -> Unit = {}
+    config: EnvBuilder<M, C, S>.() -> Unit = {}
 ) = Component(
-    Dependencies(initializer(initialState, initialCommands), resolver, update, config)
+    Env(initializer(initialState, initialCommands), resolver, update, config)
 )
 
 /**
@@ -136,7 +136,7 @@ fun <M, C, S> CoroutineScope.Component(
     return Component(::loader, resolver, update, interceptor)
 }
 
-private fun <M, C, S> CoroutineScope.actorComponent(dependencies: Dependencies<M, C, S>): ComponentInternal<M, S> {
+private fun <M, C, S> CoroutineScope.actorComponent(env: Env<M, C, S>): ComponentInternal<M, S> {
 
     val statesChannel = BroadcastChannel<S>(Channel.CONFLATED)
 
@@ -146,7 +146,7 @@ private fun <M, C, S> CoroutineScope.actorComponent(dependencies: Dependencies<M
         onCompletion = statesChannel::close
     ) {
 
-        loop(dependencies, channel, statesChannel)
+        env.loop(channel, statesChannel)
 
     } to statesChannel.asFlow()
 }

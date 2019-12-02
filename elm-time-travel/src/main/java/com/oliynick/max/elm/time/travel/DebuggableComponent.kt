@@ -55,7 +55,7 @@ internal interface JsonConverter {
 
 //todo add dsl
 data class DebugDependencies<M, C, S>(
-    inline val componentDependencies: Dependencies<M, C, S>,
+    inline val componentEnv: Env<M, C, S>,
     inline val serverSettings: ServerSettings
 )
 
@@ -82,11 +82,11 @@ fun URL(protocol: String = "http", host: String = "localhost", port: UInt = 8080
 
 @DslBuilder
 class DebugDependenciesBuilder<M, C, S> internal constructor(
-    var dependenciesBuilder: DependenciesBuilder<M, C, S>,
+    var dependenciesBuilder: EnvBuilder<M, C, S>,
     var serverSettingsBuilder: ServerSettingsBuilder
 ) {
 
-    fun dependencies(config: DependenciesBuilder<M, C, S>.() -> Unit) {
+    fun dependencies(config: EnvBuilder<M, C, S>.() -> Unit) {
         dependenciesBuilder.apply(config)
     }
 
@@ -98,23 +98,23 @@ class DebugDependenciesBuilder<M, C, S> internal constructor(
 
 fun <M, C, S> Dependencies(
     id: ComponentId,
-    dependencies: Dependencies<M, C, S>,
+    env: Env<M, C, S>,
     url: URL = localhost,
     config: DebugDependenciesBuilder<M, C, S>.() -> Unit = {}
 ) = DebugDependenciesBuilder(
-    DependenciesBuilder(dependencies),
+    EnvBuilder(env),
     ServerSettingsBuilder(id, converters(), url)
 ).apply(config).toDebugDependencies()
 
 fun <M, C, S> CoroutineScope.Component(
     id: ComponentId,
-    dependencies: Dependencies<M, C, S>,
+    env: Env<M, C, S>,
     url: URL = localhost,
     config: DebugDependenciesBuilder<M, C, S>.() -> Unit = {}
 ) = Component(
     Dependencies(
         id,
-        dependencies,
+        env,
         url,
         config
     )
@@ -167,7 +167,7 @@ private suspend fun <M, C, S> ClientWebSocketSession.observeMessages(
 
     with(dependencies) {
 
-        var computationJob = launch { loop(componentDependencies, messages, states) }
+        var computationJob = launch { componentEnv.loop(messages, states) }
 
         suspend fun applyMessage(message: ClientMessage) {
             @Suppress("UNCHECKED_CAST")
@@ -205,11 +205,11 @@ private suspend fun <M, C, S> loop(
 ) {
 
     with(inputDependencies) {
-        loop(
-            componentDependencies.withNewInitializer(stateValue.fromValue(serverSettings.converters)!!),
-            messages,
-            states
-        )
+        componentEnv.withNewInitializer(stateValue.fromValue(serverSettings.converters)!!)
+            .loop(
+                messages,
+                states
+            )
     }
 }
 
@@ -271,23 +271,23 @@ private fun <M, C, S> spyingInterceptor(
 private fun <M, C, S> DebugDependencies<M, C, S>.withSpyingInterceptor(
     snapshots: Channel<NotifyComponentSnapshot<M, S>>
 ) = copy(
-    componentDependencies = componentDependencies.withSpyingInterceptor(
+    componentEnv = componentEnv.withSpyingInterceptor(
         snapshots,
         serverSettings.converters
     )
 )
 
-private fun <M, C, S> Dependencies<M, C, S>.withSpyingInterceptor(
+private fun <M, C, S> Env<M, C, S>.withSpyingInterceptor(
     snapshots: Channel<NotifyComponentSnapshot<M, S>>,
     converters: Converters
 ) = copy(interceptor = spyingInterceptor<M, C, S>(snapshots, converters).with(interceptor))
 
-private fun <M, C, S> Dependencies<M, C, S>.withNewInitializer(s: S) =
+private fun <M, C, S> Env<M, C, S>.withNewInitializer(s: S) =
     copy(initializer = { s to emptySet() })
 
 private fun <M, C, S> DebugDependenciesBuilder<M, C, S>.toDebugDependencies() =
     DebugDependencies(
-        dependenciesBuilder.toDependencies(),
+        dependenciesBuilder.toEnv(),
         serverSettingsBuilder.toServerSettings()
     )
 

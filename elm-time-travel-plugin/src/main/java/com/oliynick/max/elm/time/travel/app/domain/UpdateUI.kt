@@ -20,53 +20,97 @@ import com.oliynick.max.elm.core.component.UpdateWith
 import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
 
-internal fun updateForUser(message: UIMessage, state: PluginState): UpdateWith<PluginState, PluginCommand> {
-    return when (message) {
-        is UpdatePort -> updateServerSettings(state.settings.serverSettings.copy(port = message.port), toExpected(state))
-        is UpdateHost -> updateServerSettings(state.settings.serverSettings.copy(host = message.host), toExpected(state))
-        StartServer -> startServer(toExpected(state))
-        StopServer -> stopServer(toExpected(state))
-        is RemoveSnapshots -> removeSnapshots(message, toExpected(state))
-        is ReApplyCommands -> reApplyCommands(message, toExpected(state))
-        is ReApplyState -> reApplyState(message, toExpected(state))
-        is RemoveComponent -> removeComponent(message, toExpected(state))
+interface UiUpdater {
+    fun update(message: UIMessage, state: PluginState): UpdateWith<PluginState, PluginCommand>
+}
+
+// privacy is for pussies
+@Suppress("MemberVisibilityCanBePrivate")
+object LiveUiUpdater : UiUpdater {
+    override fun update(
+        message: UIMessage,
+        state: PluginState
+    ): UpdateWith<PluginState, PluginCommand> =
+        updateForUser(message, state)
+
+    fun updateForUser(
+        message: UIMessage,
+        state: PluginState
+    ): UpdateWith<PluginState, PluginCommand> =
+        when {
+            message is UpdatePort && state is Stopped -> updateServerSettings(
+                state.settings.serverSettings.copy(
+                    port = message.port
+                ), state
+            )
+            message is UpdateHost && state is Stopped -> updateServerSettings(
+                state.settings.serverSettings.copy(
+                    host = message.host
+                ), state
+            )
+            message === StartServer && state is Stopped -> startServer(state)
+            message === StopServer && state is Started -> stopServer(state)
+            message is RemoveSnapshots && state is Started -> removeSnapshots(message, state)
+            message is ReApplyCommands && state is Started -> reApplyCommands(message, state)
+            message is ReApplyState && state is Started -> reApplyState(message, state)
+            message is RemoveComponent && state is Started -> removeComponent(message, state)
+            else -> notifyIllegalMessage(message, state)
+        }
+
+    fun updateServerSettings(
+        serverSettings: ServerSettings,
+        state: Stopped
+    ): UpdateWith<Stopped, StoreServerSettings> {
+        //todo consider implementing generic memoization?
+        if (state.settings.serverSettings == serverSettings) {
+            return state.noCommand()
+        }
+
+        return state.copy(settings = state.settings.copy(serverSettings = serverSettings))
+            .command(StoreServerSettings(serverSettings))
     }
-}
 
-private fun updateServerSettings(serverSettings: ServerSettings, state: Stopped): UpdateWith<Stopped, StoreServerSettings> {
-    if (state.settings.serverSettings == serverSettings) {
-        return state.noCommand()
+    fun startServer(state: Stopped): UpdateWith<Starting, DoStartServer> {
+        return Starting(state.settings)
+            .command(DoStartServer(state.settings))
     }
 
-    return state.copy(settings = state.settings.copy(serverSettings = serverSettings)).command(StoreServerSettings(serverSettings))
-}
+    fun stopServer(state: Started): UpdateWith<Stopping, DoStopServer> {
+        return Stopping(state.settings).command(DoStopServer)
+    }
 
-private fun startServer(state: Stopped): UpdateWith<Starting, DoStartServer> {
-    return Starting(state.settings)
-        .command(DoStartServer(state.settings))
-}
+    fun reApplyState(
+        message: ReApplyState,
+        state: Started
+    ): UpdateWith<PluginState, PluginCommand> {
+        return state.command(DoApplyState(message.componentId, message.state))
+    }
 
-private fun stopServer(state: Started): UpdateWith<Stopping, DoStopServer> {
-    return Stopping(state.settings).command(DoStopServer)
-}
+    fun reApplyCommands(
+        message: ReApplyCommands,
+        state: Started
+    ): UpdateWith<PluginState, PluginCommand> {
+        return state.command(DoApplyCommand(message.componentId, message.command))
+    }
 
-private fun reApplyState(message: ReApplyState, state: Started): UpdateWith<PluginState, PluginCommand> {
-    return state.command(DoApplyState(message.componentId, message.state))
-}
+    fun removeSnapshots(
+        message: RemoveSnapshots,
+        state: Started
+    ): UpdateWith<PluginState, PluginCommand> {
+        val component = state.debugState.components[message.componentId]
+            ?: throw IllegalArgumentException("Unknown component ${message.componentId}")
+        val updated = component.removeSnapshots(message.ids)
+        // todo use Started.updateComponents() function
+        return state.copy(debugState = state.debugState.copy(components = state.debugState.components + updated.asPair()))
+            .noCommand()
+    }
 
-private fun reApplyCommands(message: ReApplyCommands, state: Started): UpdateWith<PluginState, PluginCommand> {
-    return state.command(DoApplyCommand(message.componentId, message.command))
-}
+    fun removeComponent(
+        message: RemoveComponent,
+        state: Started
+    ): UpdateWith<PluginState, PluginCommand> {
+        return state.copy(debugState = state.debugState.copy(components = state.debugState.components - message.componentId))
+            .noCommand()
+    }
 
-private fun removeSnapshots(message: RemoveSnapshots, state: Started): UpdateWith<PluginState, PluginCommand> {
-    val component = state.debugState.components[message.componentId] ?: throw IllegalArgumentException("Unknown component ${message.componentId}")
-    val updated = component.removeSnapshots(message.ids)
-
-    return state.copy(debugState = state.debugState.copy(components = state.debugState.components + updated.asPair()))
-        .noCommand()
-}
-
-private fun removeComponent(message: RemoveComponent, state: Started): UpdateWith<PluginState, PluginCommand> {
-    return state.copy(debugState = state.debugState.copy(components = state.debugState.components - message.componentId))
-        .noCommand()
 }

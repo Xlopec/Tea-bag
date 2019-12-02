@@ -7,7 +7,7 @@ import com.max.weatherviewer.DoLoadArticles
 import com.max.weatherviewer.home.Loading
 import com.oliynick.max.elm.core.actor.Component
 import com.oliynick.max.elm.core.component.Component
-import com.oliynick.max.elm.core.component.Dependencies
+import com.oliynick.max.elm.core.component.Env
 import com.oliynick.max.elm.core.component.androidLogger
 import com.oliynick.max.elm.time.travel.Component
 import com.oliynick.max.elm.time.travel.URL
@@ -28,7 +28,7 @@ fun CoroutineScope.AppComponent(dependencies: AppDependencies): Component<Messag
 
     suspend fun resolver(command: Command) = AppResolver.resolve(dependencies, command)
     // todo state persistence
-    val componentDependencies = Dependencies(
+    val componentDependencies = Env(
         State(Loading),
         ::resolver,
         AppUpdater::update,

@@ -21,29 +21,55 @@ import protocol.Value
 import java.time.LocalDateTime
 import java.util.*
 
+typealias ComponentMapping = Map<ComponentId, ComponentDebugState>
+
+const val defaultHost = "0.0.0.0"
+const val defaultPort = 8080U
+
 //todo add remote call timeout
-data class ServerSettings(val host: String = "0.0.0.0", val port: UInt = 8080U)
+data class ServerSettings(
+    val host: String,
+    val port: UInt
+)
 
 data class Settings(
     val serverSettings: ServerSettings
 )
 
-data class DebugState(val components: Map<ComponentId, ComponentDebugState> = emptyMap())
+data class DebugState(
+    val components: ComponentMapping = emptyMap()
+)
 
-data class Snapshot(val id: UUID, val timestamp: LocalDateTime, val message: Value<*>, val state: Value<*>)
+data class Snapshot(
+    val id: UUID,
+    val timestamp: LocalDateTime,
+    val message: Value<*>,
+    val state: Value<*>
+)
 
-data class ComponentDebugState(val id: ComponentId,
-                               val currentState: Value<*>,
-                               val snapshots: List<Snapshot> = emptyList())
+data class ComponentDebugState(
+    val id: ComponentId,
+    val currentState: Value<*>,
+    val snapshots: List<Snapshot> = emptyList()
+)
 
 sealed class PluginState {
     abstract val settings: Settings
 }
 
-data class Stopped(override val settings: Settings) : PluginState()
+data class Stopped(
+    override val settings: Settings
+) : PluginState()
 
-data class Starting(override val settings: Settings) : PluginState()
+data class Starting(
+    override val settings: Settings
+) : PluginState()
 
-data class Started(override val settings: Settings, val debugState: DebugState) : PluginState()
+data class Started(
+    override val settings: Settings,
+    val debugState: DebugState
+) : PluginState()
 
-data class Stopping(override val settings: Settings) : PluginState()
+data class Stopping(
+    override val settings: Settings
+) : PluginState()
