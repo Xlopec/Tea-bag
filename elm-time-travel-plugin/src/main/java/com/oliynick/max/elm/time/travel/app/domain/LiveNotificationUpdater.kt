@@ -125,12 +125,6 @@ object LiveNotificationUpdater : NotificationUpdater {
             state
         )
 
-    fun Started.updateDebugState(debugState: DebugState) =
-        copy(debugState = debugState)
-
-    inline fun Started.updateComponents(how: (ComponentMapping) -> ComponentMapping) =
-        updateDebugState(debugState.copy(components = how(debugState.components)))
-
     fun notifyDeveloperException(cause: Throwable): Nothing =
         throw IllegalStateException(
             "Unexpected exception. Please, inform developers about the problem",

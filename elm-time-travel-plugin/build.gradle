@@ -78,6 +78,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutines_version"
 
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
+    testImplementation project(path: ':elm-core-test', configuration: 'default')
 }
 
 intellij {
