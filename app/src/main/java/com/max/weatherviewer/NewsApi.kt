@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.max.weatherviewer
 
 import com.google.gson.*
@@ -23,36 +25,59 @@ val adapters = mapOf(
     Description::class to DescriptionAdapter
 )
 
-fun newsApi(retrofit: Retrofit): NewsApi {
+fun NewsApi(retrofit: Retrofit): NewsApi {
 
     val api = retrofit.create<RetrofitNewsApi>()
 
     return { query ->
-        println("Fetching")
         api.fetchNews(query, "08a7e13902bf4cffab115365071e3850").articles
     }
 }
 
-object URLAdapter : TypeAdapter<URL> {
-    override fun serialize(src: URL, typeOfSrc: Type?, context: JsonSerializationContext?) = JsonPrimitive(src.toExternalForm())
-    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?) = URL(json.asString)
+private object URLAdapter : TypeAdapter<URL> {
+    override fun serialize(src: URL, typeOfSrc: Type?, context: JsonSerializationContext?) =
+        JsonPrimitive(src.toExternalForm())
+
+    override fun deserialize(
+        json: JsonElement,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?
+    ) = URL(json.asString)
 }
 
-object TitleAdapter : TypeAdapter<Title> {
-    override fun serialize(src: Title, typeOfSrc: Type?, context: JsonSerializationContext?) = JsonPrimitive(src.value)
-    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?) =
+private object TitleAdapter : TypeAdapter<Title> {
+    override fun serialize(src: Title, typeOfSrc: Type?, context: JsonSerializationContext?) =
+        JsonPrimitive(src.value)
+
+    override fun deserialize(
+        json: JsonElement,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?
+    ) =
         Title(json.asString)
 }
 
-object AuthorAdapter : TypeAdapter<Author> {
-    override fun serialize(src: Author, typeOfSrc: Type?, context: JsonSerializationContext?) = JsonPrimitive(src.value)
-    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?) =
+private object AuthorAdapter : TypeAdapter<Author> {
+    override fun serialize(src: Author, typeOfSrc: Type?, context: JsonSerializationContext?) =
+        JsonPrimitive(src.value)
+
+    override fun deserialize(
+        json: JsonElement,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?
+    ) =
         Author(json.asString)
 }
 
-object DescriptionAdapter : TypeAdapter<Description> {
-    override fun serialize(src: Description, typeOfSrc: Type?, context: JsonSerializationContext?) = JsonPrimitive(src.value)
-    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?) =
+private object DescriptionAdapter : TypeAdapter<Description> {
+    override fun serialize(src: Description, typeOfSrc: Type?, context: JsonSerializationContext?) =
+        JsonPrimitive(src.value)
+
+    override fun deserialize(
+        json: JsonElement,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?
+    ) =
         Description(json.asString)
 }
 

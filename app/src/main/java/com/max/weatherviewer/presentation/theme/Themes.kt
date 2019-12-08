@@ -1,9 +1,9 @@
 package com.max.weatherviewer.presentation.theme
 
 import androidx.ui.graphics.Color
-import androidx.ui.material.MaterialColors
+import androidx.ui.material.ColorPalette
 
-val lightThemeColors = MaterialColors(
+val lightThemeColors = ColorPalette(
     primary = Color(0xFFDD0D3C),
     primaryVariant = Color(0xFFC20029),
     onPrimary = Color.White,

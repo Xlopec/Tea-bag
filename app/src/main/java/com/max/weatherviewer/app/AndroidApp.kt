@@ -5,8 +5,11 @@ package com.max.weatherviewer.app
 
 import android.app.Activity
 import android.app.Application
-import com.max.weatherviewer.*
-import com.max.weatherviewer.home.HomeDependencies
+import com.max.weatherviewer.BuildConfig
+import com.max.weatherviewer.CloseApp
+import com.max.weatherviewer.adapters
+import com.max.weatherviewer.env.Environment
+import com.max.weatherviewer.retrofit
 import com.oliynick.max.elm.core.component.Component
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -18,16 +21,11 @@ import kotlin.coroutines.CoroutineContext
 
 class AndroidApp : Application() {
 
-    val dependencies by unsafeLazy {
-        AppDependencies(
-            BuildConfig.DEBUG,
-            Channel(),
-            retrofit,
-            HomeDependencies(newsApi(retrofit))
-        )
+    val environment by unsafeLazy {
+        Environment(retrofit, AppComponentScope, BuildConfig.DEBUG)
     }
 
-    val component by unsafeLazy { ComponentScope.AppComponent(dependencies) }
+    val component by unsafeLazy { environment.appComponent() }
 
     val messages = Channel<Message>()
 }
@@ -41,11 +39,11 @@ inline val Activity.appComponent: Component<Message, State>
 inline val Activity.appMessages: Channel<Message>
     get() = androidApp.messages
 
-inline val Activity.appDependencies: AppDependencies
-    get() = androidApp.dependencies
+inline val Activity.environment: Environment
+    get() = androidApp.environment
 
 inline val Activity.closeAppCommands: Flow<CloseApp>
-    get() = androidApp.dependencies.closeAppCommands.consumeAsFlow()
+    get() = androidApp.environment.closeCommands.consumeAsFlow()
 
 private val retrofit by unsafeLazy {
     retrofit {
@@ -57,7 +55,7 @@ private val retrofit by unsafeLazy {
 
 private fun <T> unsafeLazy(block: () -> T) = lazy(LazyThreadSafetyMode.NONE, block)
 
-private object ComponentScope : CoroutineScope {
+private object AppComponentScope : CoroutineScope {
     override val coroutineContext: CoroutineContext =
         Executors.newSingleThreadExecutor { r -> Thread(r, "App Scheduler") }
             .asCoroutineDispatcher()

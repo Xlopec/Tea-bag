@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.max.weatherviewer.presentation
 
 import android.graphics.Bitmap
@@ -26,10 +28,6 @@ fun HomeScreen(screen: Home, onMessage: (Message) -> Unit) {
     VerticalScroller {
 
         Column(
-            crossAxisSize = LayoutSize.Expand,
-            mainAxisSize = LayoutSize.Expand,
-            mainAxisAlignment = MainAxisAlignment.Center,
-            crossAxisAlignment = CrossAxisAlignment.Center,
             modifier = Spacing(16.dp)
         ) {
 
@@ -57,17 +55,16 @@ private fun Articles(articles: Iterable<Article>) {
 @Composable
 private fun ArticlesError(cause: Throwable, onMessage: (HomeMessage) -> Unit) {
     Column(
-        mainAxisSize = LayoutSize.Expand,
-        mainAxisAlignment = MainAxisAlignment.Center
+        modifier = Expanded
     ) {
         Text(
-            text = "Failed to load articles, message: '${cause.message?.decapitalize() ?: "unknown exception"}'",
-            style = (+themeTextStyle { subtitle2 }).withOpacity(0.87f)
+            text = "Failed to load articles, message: '${cause.message?.decapitalize()
+                ?: "unknown exception"}'",
+            style = (+MaterialTheme.typography()).subtitle2.withOpacity(0.87f)
         )
 
         Row(
-            mainAxisSize = LayoutSize.Expand,
-            mainAxisAlignment = MainAxisAlignment.Center
+            modifier = Expanded
         ) {
             Button(
                 text = "Retry",
@@ -82,11 +79,11 @@ private val cache = LruCache<URL, Bitmap>(20)
 
 @Composable
 private fun ArticleCard(article: Article) {
-    Column {
+    Column(modifier = ExpandedWidth wraps Spacing(16.dp)) {
 
         if (article.urlToImage != null) {
 
-            Container(expanded = true, height = 180.dp) {
+            Container(modifier = MinHeight(180.dp) wraps ExpandedWidth) {
                 Clip(shape = RoundedCornerShape(8.dp)) {
                     // fixme seems there is currently no way to load images off the main thread in Compose
                     val image = +memo {
@@ -106,22 +103,24 @@ private fun ArticleCard(article: Article) {
             }
         }
 
+        val typography = +MaterialTheme.typography()
+
 
         Text(
             text = article.title.value,
-            style = (+themeTextStyle { h6 }).withOpacity(0.87f)
+            style = typography.h6.withOpacity(0.87f)
         )
 
         Text(
             text = article.author.value,
-            style = (+themeTextStyle { subtitle2 }).withOpacity(0.87f)
+            style = typography.subtitle2.withOpacity(0.87f)
         )
 
         HeightSpacer(8.dp)
 
         Text(
             text = article.description.value,
-            style = (+themeTextStyle { body2 }).withOpacity(0.6f)
+            style = typography.body2.withOpacity(0.6f)
         )
 
         ArticleDivider()

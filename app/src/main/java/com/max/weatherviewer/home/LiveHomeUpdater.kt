@@ -6,14 +6,20 @@ import com.oliynick.max.elm.core.component.UpdateWith
 import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
 
-object HomeUpdater {
+interface HomeUpdater {
+    fun update(
+        message: HomeMessage,
+        home: Home
+    ): UpdateWith<Home, Command>
+}
 
-    fun update(message: HomeMessage, home: Home): UpdateWith<Home, Command> {
-        return when (message) {
+object LiveHomeUpdater : HomeUpdater {
+
+    override fun update(message: HomeMessage, home: Home): UpdateWith<Home, Command> =
+        when (message) {
             is ArticlesLoaded -> Preview(message.articles).noCommand()
             is LoadArticles -> Loading command DoLoadArticles(message.query)
             is ArticlesLoadException -> Error(message.cause).noCommand()
         }
-    }
 
 }

@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.max.weatherviewer.home
 
 import com.max.weatherviewer.DoLoadArticles
@@ -5,13 +7,21 @@ import com.max.weatherviewer.HomeCommand
 import com.max.weatherviewer.NewsApi
 import com.max.weatherviewer.app.Message
 import com.oliynick.max.elm.core.component.effect
+import retrofit2.Retrofit
 
-object HomeResolver {
+interface HomeResolver<Env> {
 
-    suspend fun resolve(dependencies: HomeDependencies, command: HomeCommand): Set<Message> {
+    suspend fun Env.resolve(command: HomeCommand): Set<Message>
 
+}
+
+fun <Env> HomeResolver(): HomeResolver<Env> where Env : HasNewsApi =
+    object : LiveHomeResolver<Env> {}
+
+interface LiveHomeResolver<Env> : HomeResolver<Env> where Env : HasNewsApi {
+
+    override suspend fun Env.resolve(command: HomeCommand): Set<Message> {
         suspend fun resolve(command: HomeCommand) =
-            dependencies.run {
                 when (command) {
                     is DoLoadArticles -> command.effect {
                         ArticlesLoaded(
@@ -19,7 +29,7 @@ object HomeResolver {
                         )
                     }
                 }
-            }
+
 
         return runCatching { resolve(command) }
             .getOrElse { th -> setOf(
@@ -29,9 +39,12 @@ object HomeResolver {
                 )
             ) }
     }
-
 }
 
-data class HomeDependencies(
+interface HasNewsApi {
     val newsApi: NewsApi
-)
+}
+
+fun NewsApi(retrofit: Retrofit): HasNewsApi = object : HasNewsApi {
+    override val newsApi: NewsApi by lazy { NewsApi(retrofit) }
+}
