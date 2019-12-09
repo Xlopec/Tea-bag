@@ -27,7 +27,7 @@ inline fun <reified T : Screen> State.updateScreen(
     how: (T) -> UpdateWith<T, Command>
 ): UpdateWith<State, Command> {
 
-    val index = screens.indexOfFirst { screen -> screen is T }
+    val index = screens.indexOfLast { screen -> screen is T }
 
     if (index < 0) {
         return noCommand()
@@ -37,3 +37,24 @@ inline fun <reified T : Screen> State.updateScreen(
 
     return copy(screens = screens.set(index, screen)) command commands
 }
+
+fun State.swapScreens(
+    i: Int,
+    j: Int = screens.lastIndex
+): State {
+
+    if (i == j) return this
+
+    val tmp = screens[j]
+
+    return copy(screens = screens.set(j, screens[i]).set(i, tmp))
+}
+
+fun State.pushScreen(
+    screen: Screen
+): State = copy(screens = screens.add(screen))
+
+fun State.popScreen(
+): State = copy(screens = screens.pop())
+
+private fun <T> ImmutableList<T>.pop() = if (lastIndex >= 0) removeAt(lastIndex) else this

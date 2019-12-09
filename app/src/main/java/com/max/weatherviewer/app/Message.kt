@@ -4,7 +4,11 @@ sealed class Message
 
 sealed class Navigation : Message()
 
-data class NavigateTo(val screen: Screen) : Navigation()
+object NavigateToFeed : Navigation()
+
+object NavigateToFavorite : Navigation()
+
+object NavigateToTranding : Navigation()
 
 object Pop : Navigation()
 

@@ -5,8 +5,14 @@ import com.max.weatherviewer.domain.Article
 
 sealed class HomeMessage : ScreenMessage()
 
-data class LoadArticles(val query: String) : HomeMessage()
+data class LoadArticles(
+    val query: String
+) : HomeMessage()
 
-data class ArticlesLoaded(val articles: List<Article>) : HomeMessage()
+data class ArticlesLoaded(
+    val articles: List<Article>
+) : HomeMessage()
 
-data class ArticlesLoadException(val query: String, val cause: Throwable) : HomeMessage()
+data class ArticlesLoadException(
+    val cause: Throwable
+) : HomeMessage()

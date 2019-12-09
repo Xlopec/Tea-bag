@@ -9,16 +9,21 @@ import androidx.compose.unaryPlus
 import androidx.ui.core.Modifier
 import androidx.ui.core.Text
 import androidx.ui.core.dp
+import androidx.ui.foundation.Clickable
+import androidx.ui.foundation.selection.Toggleable
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
+import androidx.ui.graphics.vector.DrawVector
 import androidx.ui.layout.*
 import androidx.ui.material.*
+import androidx.ui.material.ripple.Ripple
 import androidx.ui.material.surface.Surface
+import androidx.ui.res.vectorResource
 import com.max.weatherviewer.R
-import com.max.weatherviewer.app.Message
-import com.max.weatherviewer.app.Screen
-import com.max.weatherviewer.home.Home
-import com.max.weatherviewer.presentation.HomeScreen
+import com.max.weatherviewer.app.*
+import com.max.weatherviewer.home.Feed
+import com.max.weatherviewer.home.LoadCriteria
+import com.max.weatherviewer.presentation.FeedScreen
 import com.max.weatherviewer.presentation.VectorImage
 import com.max.weatherviewer.presentation.VectorImageButton
 import com.max.weatherviewer.presentation.theme.lightThemeColors
@@ -50,20 +55,22 @@ fun App(
                     )
                 },
                 bodyContent = {
-                    FlexColumn {
-                        inflexible {
-                            TopAppBar(
-                                title = { Text(text = "News Reader") },
-                                navigationIcon = {
-                                    VectorImageButton(R.drawable.ic_menu_white_24dp) {
-                                        onDrawerStateChange(DrawerState.Opened)
-                                    }
+                    Column {
+
+                        TopAppBar(
+                            title = { Text(text = "News Reader") },
+                            navigationIcon = {
+                                VectorImageButton(R.drawable.ic_menu_white_24dp) {
+                                    onDrawerStateChange(DrawerState.Opened)
                                 }
-                            )
-                        }
-                        flexible(flex = 1f) {
+                            }
+                        )
+
+                        Container(modifier = Flexible(1f)) {
                             children()
                         }
+
+                        BottomBar(screen as Feed, onMessage)
                     }
                 }
             )
@@ -74,7 +81,7 @@ fun App(
 @Composable
 fun Screen(screen: Screen, onMessage: (Message) -> Unit) {
     when (screen) {
-        is Home -> HomeScreen(screen, onMessage)
+        is Feed -> FeedScreen(screen, onMessage)
         else -> TODO()
     }.safe
 }
@@ -160,6 +167,73 @@ private fun DrawerButton(
                         color = textIconColor
                     )
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun BottomBar(
+    current: Feed,
+    onMessage: (Navigation) -> Unit
+) {
+
+    Surface(elevation = 2.dp) {
+        Container(modifier = Height(56.dp) wraps Expanded) {
+            FlexRow {
+                expanded(1f) {
+                    BottomBarAction(if (current.criteria is LoadCriteria.Query) R.drawable.ic_language_red_24dp else R.drawable.ic_language_white_24dp) {
+                        onMessage(NavigateToFeed)
+                    }
+                }
+                expanded(1f) {
+                    BottomBarAction(if (current.criteria is LoadCriteria.Favorite) R.drawable.ic_favorite_border_red_24dp else R.drawable.ic_favorite_border_white_24dp) {
+                        onMessage(NavigateToFavorite)
+                    }
+                }
+                expanded(1f) {
+                    BottomBarAction(if (current.criteria is LoadCriteria.Trending) R.drawable.ic_trending_up_red_24dp else R.drawable.ic_trending_up_white_24dp) {
+                        onMessage(NavigateToTranding)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BottomBarAction(
+    @DrawableRes id: Int,
+    onClick: () -> Unit
+) {
+    Ripple(
+        bounded = false,
+        radius = 24.dp
+    ) {
+        Clickable(onClick = onClick) {
+            Container(modifier = Spacing(12.dp) wraps Size(24.dp, 24.dp)) {
+                DrawVector(+vectorResource(id))
+            }
+        }
+    }
+}
+
+@Composable
+fun BookmarkButton(
+    isBookmarked: Boolean,
+    onBookmark: (Boolean) -> Unit
+) {
+    Ripple(
+        bounded = false,
+        radius = 24.dp
+    ) {
+        Toggleable(isBookmarked, onBookmark) {
+            Container(modifier = Size(48.dp, 48.dp)) {
+                if (isBookmarked) {
+                    VectorImage(id = R.drawable.ic_bookmark_white_24dp)
+                } else {
+                    VectorImage(id = R.drawable.ic_bookmark_border_white_24dp)
+                }
             }
         }
     }

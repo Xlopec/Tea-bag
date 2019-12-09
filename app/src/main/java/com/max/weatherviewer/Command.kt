@@ -1,14 +1,15 @@
 package com.max.weatherviewer
 
+import com.max.weatherviewer.home.LoadCriteria
+
 sealed class Command
 
 // App wide commands
 
 object CloseApp : Command()
 
-// Home screen commands
+// Feed screen commands
 
-sealed class HomeCommand : Command()
-
-data class DoLoadArticles(val query: String) : HomeCommand()
-
+data class LoadByCriteria(
+    val criteria: LoadCriteria
+) : Command()
