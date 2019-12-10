@@ -6,10 +6,11 @@ import com.max.weatherviewer.CloseApp
 import com.max.weatherviewer.Command
 import com.max.weatherviewer.LoadByCriteria
 import com.max.weatherviewer.home.*
-import com.max.weatherviewer.home.LiveHomeUpdater.update
+import com.max.weatherviewer.home.LiveFeedUpdater.update
 import com.oliynick.max.elm.core.component.UpdateWith
 import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
+import java.util.*
 
 interface AppUpdater<Env> {
 
@@ -20,9 +21,9 @@ interface AppUpdater<Env> {
 
 }
 
-fun <Env> AppUpdater(): AppUpdater<Env> where Env : HomeUpdater = object : LiveAppUpdater<Env> {}
+fun <Env> AppUpdater(): AppUpdater<Env> where Env : FeedUpdater = object : LiveAppUpdater<Env> {}
 
-interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : HomeUpdater {
+interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : FeedUpdater {
 
     override fun Env.update(
         message: Message,
@@ -30,7 +31,7 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : HomeUpdater {
     ): UpdateWith<State, Command> =
         when (message) {
             is Navigation -> navigate(message, state)
-            is ScreenMessage -> updateScreen(message, state)
+            is ScreenMsg -> updateScreen(message.message, state)
         }
 
     fun updateScreen(
@@ -38,8 +39,9 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : HomeUpdater {
         state: State
     ): UpdateWith<State, Command> =
         when (message) {
-            is HomeMessage -> state.updateScreen<Feed> { home -> update(message, home) }
-            else -> error("Unhandled screen message $message for state $state")
+            is FeedMessage -> state.updateScreen<Feed>(message.id) { feed -> update(message, feed) }
+            //is FeedMessage -> state.updateScreen<Feed> { home -> update(message, home) }
+          //  else -> error("Unhandled screen message $message for state $state")
         }
 
     fun navigate(
@@ -54,7 +56,7 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : HomeUpdater {
             existingIndex >= 0 -> state.swapScreens(existingIndex).noCommand()
             nav is NavigateToFeed -> state.pushFeedScreen(LoadCriteria.Query(""))
             nav is NavigateToFavorite -> state.pushFeedScreen(LoadCriteria.Favorite)
-            nav is NavigateToTranding -> state.pushFeedScreen(LoadCriteria.Trending)
+            nav is NavigateToTrending -> state.pushFeedScreen(LoadCriteria.Trending)
             nav === Pop && screens > 1 -> state.popScreen().noCommand()
             nav === Pop && screens == 1 -> state command CloseApp
             else -> error("Unexpected state")
@@ -71,11 +73,15 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : HomeUpdater {
         criteria: LoadCriteria,
         nav: Navigation
     ) = (criteria is LoadCriteria.Query && nav === NavigateToFeed)
-        || (criteria == LoadCriteria.Trending && nav === NavigateToTranding)
+        || (criteria == LoadCriteria.Trending && nav === NavigateToTrending)
         || (criteria == LoadCriteria.Favorite && nav === NavigateToFavorite)
 
     fun State.pushFeedScreen(
         criteria: LoadCriteria
-    ) = pushScreen(FeedLoading(criteria)) command LoadByCriteria(criteria)
+    ): UpdateWith<State, LoadByCriteria> {
+        val id = UUID.randomUUID()
+
+        return pushScreen(FeedLoading(id, criteria)) command LoadByCriteria(id, criteria)
+    }
 
 }

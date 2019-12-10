@@ -14,7 +14,7 @@ data class Key7(
 inline fun <A1, A2, R> memoize(
     capacity: UInt = 10U,
     crossinline f: (A1, A2) -> R
-): (A1, A2) -> R =
+) =
     object : (A1, A2) -> R {
 
         private val cache = LruCache<Key7, R>(capacity)

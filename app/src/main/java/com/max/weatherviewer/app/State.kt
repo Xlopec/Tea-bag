@@ -6,8 +6,13 @@ import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.immutableListOf
+import java.util.*
 
-abstract class Screen
+typealias ScreenId = UUID
+
+abstract class Screen {
+    abstract val id: ScreenId
+}
 
 data class State(
     val screens: ImmutableList<Screen>
@@ -24,10 +29,11 @@ inline val State.screen: Screen
     get() = screens.last()
 
 inline fun <reified T : Screen> State.updateScreen(
+    id: ScreenId,
     how: (T) -> UpdateWith<T, Command>
 ): UpdateWith<State, Command> {
 
-    val index = screens.indexOfLast { screen -> screen is T }
+    val index = screens.indexOfFirst { screen -> screen.id == id && screen is T }
 
     if (index < 0) {
         return noCommand()

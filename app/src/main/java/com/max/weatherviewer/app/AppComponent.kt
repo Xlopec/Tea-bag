@@ -15,6 +15,7 @@ import com.oliynick.max.elm.time.travel.Component
 import com.oliynick.max.elm.time.travel.URL
 import protocol.*
 import java.net.URL
+import java.util.*
 
 fun Environment.appComponent(): Component<Message, State> {
 
@@ -22,14 +23,14 @@ fun Environment.appComponent(): Component<Message, State> {
 
     fun update(message: Message, state: State) = this.update(message, state)
 
-    val initScreen = FeedLoading(LoadCriteria.Query("bitcoin"))
+    val initScreen = FeedLoading(UUID.randomUUID(), LoadCriteria.Query("bitcoin"))
 
     // todo state persistence
     val componentDependencies = Env(
         State(initScreen),
         ::resolve,
         ::update,
-        LoadByCriteria(initScreen.criteria)
+        LoadByCriteria(initScreen.id, initScreen.criteria)
     ) {
         interceptor = androidLogger("News Reader App")
     }

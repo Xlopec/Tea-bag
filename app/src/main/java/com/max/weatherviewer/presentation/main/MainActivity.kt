@@ -3,8 +3,8 @@ package com.max.weatherviewer.presentation.main
 import android.app.Activity
 import android.os.Bundle
 import androidx.ui.core.setContent
-import com.max.weatherviewer.*
 import com.max.weatherviewer.app.*
+import com.max.weatherviewer.collect
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow

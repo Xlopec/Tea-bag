@@ -81,7 +81,7 @@ fun App(
 @Composable
 fun Screen(screen: Screen, onMessage: (Message) -> Unit) {
     when (screen) {
-        is Feed -> FeedScreen(screen, onMessage)
+        is Feed -> FeedScreen(screen) { m -> onMessage(ScreenMsg(m)) }
         else -> TODO()
     }.safe
 }
@@ -193,7 +193,7 @@ private fun BottomBar(
                 }
                 expanded(1f) {
                     BottomBarAction(if (current.criteria is LoadCriteria.Trending) R.drawable.ic_trending_up_red_24dp else R.drawable.ic_trending_up_white_24dp) {
-                        onMessage(NavigateToTranding)
+                        onMessage(NavigateToTrending)
                     }
                 }
             }

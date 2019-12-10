@@ -5,23 +5,25 @@ package com.max.weatherviewer.presentation
 import android.graphics.Bitmap
 import androidx.collection.LruCache
 import androidx.compose.Composable
+import androidx.compose.memo
 import androidx.compose.unaryPlus
 import androidx.ui.core.Clip
 import androidx.ui.core.Opacity
 import androidx.ui.core.Text
 import androidx.ui.core.dp
+import androidx.ui.foundation.DrawImage
 import androidx.ui.foundation.VerticalScroller
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.layout.*
 import androidx.ui.material.*
-import com.max.weatherviewer.app.Message
 import com.max.weatherviewer.domain.Article
 import com.max.weatherviewer.home.*
 import com.max.weatherviewer.safe
+import kotlinx.coroutines.runBlocking
 import java.net.URL
 
 @Composable
-fun FeedScreen(screen: Feed, onMessage: (Message) -> Unit) {
+fun FeedScreen(screen: Feed, onMessage: (FeedMessage) -> Unit) {
     VerticalScroller {
 
         Column(
@@ -50,7 +52,7 @@ private fun Articles(articles: Iterable<Article>) {
 }
 
 @Composable
-private fun ArticlesError(cause: Throwable, onMessage: (HomeMessage) -> Unit) {
+private fun ArticlesError(cause: Throwable, onMessage: (FeedMessage) -> Unit) {
     Column(
         modifier = Expanded
     ) {
@@ -65,7 +67,7 @@ private fun ArticlesError(cause: Throwable, onMessage: (HomeMessage) -> Unit) {
         ) {
             Button(
                 text = "Retry",
-                onClick = { onMessage(LoadArticles("bitcoin")) }
+                onClick = {/* onMessage(LoadArticles("bitcoin")) */}
             )
         }
 
@@ -83,7 +85,7 @@ private fun ArticleCard(article: Article) {
             Container(modifier = MinHeight(180.dp) wraps ExpandedWidth) {
                 Clip(shape = RoundedCornerShape(8.dp)) {
                     // fixme seems there is currently no way to load images off the main thread in Compose
-                   /* val image = +memo {
+                    val image = +memo {
                         cache.get(article.urlToImage) ?: runBlocking {
                             loadImage(
                                 article.urlToImage,
@@ -95,7 +97,7 @@ private fun ArticleCard(article: Article) {
 
                     cache.put(article.urlToImage, image)
 
-                    DrawImage(MyImage(image))*/
+                    DrawImage(MyImage(image))
                 }
             }
         }

@@ -1,5 +1,7 @@
 package com.max.weatherviewer.app
 
+import com.max.weatherviewer.home.ScreenMessage
+
 sealed class Message
 
 sealed class Navigation : Message()
@@ -8,8 +10,10 @@ object NavigateToFeed : Navigation()
 
 object NavigateToFavorite : Navigation()
 
-object NavigateToTranding : Navigation()
+object NavigateToTrending : Navigation()
 
 object Pop : Navigation()
 
-abstract class ScreenMessage : Message()
+data class ScreenMsg(
+    val message: ScreenMessage
+) : Message()

@@ -1,5 +1,8 @@
+@file:Suppress("FunctionName")
+
 package com.max.weatherviewer
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -11,7 +14,10 @@ import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
 import javax.net.ssl.X509TrustManager
 
-fun retrofit(config: GsonBuilder.() -> Unit = {}): Retrofit {
+fun Gson(config: GsonBuilder.() -> Unit = {}): Gson =
+    GsonBuilder().serializeNulls().setPrettyPrinting().apply(config).create()
+
+fun Retrofit(gson: Gson = Gson()): Retrofit {
     val client = OkHttpClient.Builder()
         .readTimeout(3, TimeUnit.SECONDS)
         .connectTimeout(3, TimeUnit.SECONDS)
@@ -40,7 +46,7 @@ fun retrofit(config: GsonBuilder.() -> Unit = {}): Retrofit {
 
     return Retrofit.Builder()
         .baseUrl("https://newsapi.org/v2/")
-        .addConverterFactory(GsonConverterFactory.create(GsonBuilder().serializeNulls().setPrettyPrinting().apply(config).create()))
+        .addConverterFactory(GsonConverterFactory.create(gson))
         .client(client)
         .build()
 }

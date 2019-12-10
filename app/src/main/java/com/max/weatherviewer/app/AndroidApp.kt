@@ -5,11 +5,8 @@ package com.max.weatherviewer.app
 
 import android.app.Activity
 import android.app.Application
-import com.max.weatherviewer.BuildConfig
-import com.max.weatherviewer.CloseApp
-import com.max.weatherviewer.adapters
+import com.max.weatherviewer.*
 import com.max.weatherviewer.env.Environment
-import com.max.weatherviewer.retrofit
 import com.oliynick.max.elm.core.component.Component
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -22,7 +19,7 @@ import kotlin.coroutines.CoroutineContext
 class AndroidApp : Application() {
 
     val environment by unsafeLazy {
-        Environment(retrofit, AppComponentScope, BuildConfig.DEBUG)
+        Environment(retrofit, AppComponentScope, this, gson, BuildConfig.DEBUG)
     }
 
     val component by unsafeLazy { environment.appComponent() }
@@ -45,12 +42,16 @@ inline val Activity.environment: Environment
 inline val Activity.closeAppCommands: Flow<CloseApp>
     get() = androidApp.environment.closeCommands.consumeAsFlow()
 
-private val retrofit by unsafeLazy {
-    retrofit {
+private val gson by unsafeLazy {
+    Gson {
         adapters.forEach { (cl, adapter) ->
             registerTypeAdapter(cl.java, adapter)
         }
     }
+}
+
+private val retrofit by unsafeLazy {
+    Retrofit(gson)
 }
 
 private fun <T> unsafeLazy(block: () -> T) = lazy(LazyThreadSafetyMode.NONE, block)
