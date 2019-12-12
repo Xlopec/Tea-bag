@@ -10,8 +10,12 @@ sealed class ScreenMessage {
 sealed class FeedMessage : ScreenMessage()
 
 data class LoadArticles(
+    override val id: ScreenId
+) : FeedMessage()
+
+data class ToggleArticleIsFavorite(
     override val id: ScreenId,
-    val query: String
+    val article: Article
 ) : FeedMessage()
 
 data class ArticlesLoaded(

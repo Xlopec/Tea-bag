@@ -23,7 +23,7 @@ fun Environment.appComponent(): Component<Message, State> {
 
     fun update(message: Message, state: State) = this.update(message, state)
 
-    val initScreen = FeedLoading(UUID.randomUUID(), LoadCriteria.Query("bitcoin"))
+    val initScreen = FeedLoading(UUID.randomUUID(), LoadCriteria.Query("android"))
 
     // todo state persistence
     val componentDependencies = Env(

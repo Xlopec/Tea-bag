@@ -182,17 +182,17 @@ private fun BottomBar(
         Container(modifier = Height(56.dp) wraps Expanded) {
             FlexRow {
                 expanded(1f) {
-                    BottomBarAction(if (current.criteria is LoadCriteria.Query) R.drawable.ic_language_red_24dp else R.drawable.ic_language_white_24dp) {
+                    ImageButton(if (current.criteria is LoadCriteria.Query) R.drawable.ic_language_red_24dp else R.drawable.ic_language_white_24dp) {
                         onMessage(NavigateToFeed)
                     }
                 }
                 expanded(1f) {
-                    BottomBarAction(if (current.criteria is LoadCriteria.Favorite) R.drawable.ic_favorite_border_red_24dp else R.drawable.ic_favorite_border_white_24dp) {
+                    ImageButton(if (current.criteria is LoadCriteria.Favorite) R.drawable.ic_favorite_border_red_24dp else R.drawable.ic_favorite_border_white_24dp) {
                         onMessage(NavigateToFavorite)
                     }
                 }
                 expanded(1f) {
-                    BottomBarAction(if (current.criteria is LoadCriteria.Trending) R.drawable.ic_trending_up_red_24dp else R.drawable.ic_trending_up_white_24dp) {
+                    ImageButton(if (current.criteria is LoadCriteria.Trending) R.drawable.ic_trending_up_red_24dp else R.drawable.ic_trending_up_white_24dp) {
                         onMessage(NavigateToTrending)
                     }
                 }
@@ -202,8 +202,9 @@ private fun BottomBar(
 }
 
 @Composable
-private fun BottomBarAction(
+fun ImageButton(
     @DrawableRes id: Int,
+    tint: Color = Color.Transparent,
     onClick: () -> Unit
 ) {
     Ripple(
@@ -212,7 +213,10 @@ private fun BottomBarAction(
     ) {
         Clickable(onClick = onClick) {
             Container(modifier = Spacing(12.dp) wraps Size(24.dp, 24.dp)) {
-                DrawVector(+vectorResource(id))
+                DrawVector(
+                    vectorImage = +vectorResource(id),
+                    tintColor = tint
+                )
             }
         }
     }

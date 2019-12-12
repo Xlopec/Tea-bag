@@ -7,7 +7,8 @@ data class Article(
     val title: Title,
     val author: Author,
     val description: Description,
-    val urlToImage: URL?
+    val urlToImage: URL?,
+    val isFavorite: Boolean = false
 )
 
 data class Title(val value: String) {
@@ -27,5 +28,7 @@ data class Description(val value: String) {
         require(value.isNonEmpty)
     }
 }
+
+fun Article.toggleFavorite(): Article = copy(isFavorite = !isFavorite)
 
 private inline val String.isNonEmpty get() = isNotEmpty() && isNotBlank()

@@ -35,3 +35,8 @@ data class Error(
     override val criteria: LoadCriteria,
     val cause: Throwable
 ) : Feed()
+
+// todo replace with immutable collection
+fun Preview.updateArticle(
+    new: Article
+): Preview = copy(articles = articles.map { if (it.url == new.url) new else it })

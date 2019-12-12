@@ -60,7 +60,6 @@ fun State.pushScreen(
     screen: Screen
 ): State = copy(screens = screens.add(screen))
 
-fun State.popScreen(
-): State = copy(screens = screens.pop())
+fun State.popScreen(): State = copy(screens = screens.pop())
 
 private fun <T> ImmutableList<T>.pop() = if (lastIndex >= 0) removeAt(lastIndex) else this

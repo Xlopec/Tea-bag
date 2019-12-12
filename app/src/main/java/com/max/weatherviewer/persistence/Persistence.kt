@@ -10,7 +10,11 @@ import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.UpdateOptions
 import com.mongodb.stitch.android.core.Stitch
 import com.mongodb.stitch.android.services.mongodb.local.LocalMongoDbService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import org.bson.Document
+import java.net.URL
 
 interface HasMongoDb {
     val mongoDb: MongoDatabase
@@ -53,7 +57,12 @@ interface Storage<Env> {
 
     suspend fun Env.addToFavorite(article: Article)
 
+    suspend fun Env.removeFromFavorite(url: URL)
+
     suspend fun Env.getFavorite(): List<Article>
+
+    @Deprecated("temp workaround")
+    suspend fun Env.isFavorite(url: URL): Boolean
 
 }
 
@@ -61,40 +70,42 @@ interface MongoDbStorage<Env> : Storage<Env> where Env : HasMongoCollection,
                                                    Env : HasGson {
 
     override suspend fun Env.addToFavorite(article: Article) {
-        val r = collection.replaceOne(
-            Filters.eq("url", article.url.toExternalForm()),
-            Document.parse(gson.toJson(article)),
-            ReplaceOptions.createReplaceOptions(UpdateOptions().upsert(true))
-        )
-
-        println(r)
+        coroutineScope {
+            withContext(Dispatchers.IO) {
+                collection.replaceOne(
+                    Filters.eq("url", article.url.toExternalForm()),
+                    Document.parse(gson.toJson(article)),
+                    ReplaceOptions.createReplaceOptions(UpdateOptions().upsert(true))
+                )
+            }
+        }
     }
 
-    override suspend fun Env.getFavorite(): List<Article> {
-        return collection
-            .find()
-            .map { gson.fromJson(it.toJson(), Article::class.java) }
-            .into(ArrayList())
+    override suspend fun Env.removeFromFavorite(url: URL) {
+        coroutineScope {
+            withContext(Dispatchers.IO) {
+                collection.findOneAndDelete(
+                    Filters.eq("url", url.toExternalForm())
+                )
+            }
+        }
     }
+
+    override suspend fun Env.getFavorite(): List<Article> =
+        coroutineScope {
+            withContext(Dispatchers.IO) {
+                collection
+                    .find()
+                    .map { gson.fromJson(it.toJson(), Article::class.java) }
+                    .into(ArrayList())
+            }
+        }
+
+    override suspend fun Env.isFavorite(url: URL): Boolean =
+        coroutineScope {
+            withContext(Dispatchers.IO) {
+                collection.count(Filters.eq("url", url.toExternalForm())) > 0
+            }
+        }
+
 }
-
-/*
-suspend inline fun <reified T> Context.load(gson: Gson, crossinline ifNone: () -> T): T {
-    return withContext(Dispatchers.IO) {
-        val file = cacheFile(T::class.java.fileName)
-
-        val state = runCatching { gson.fromJson(FileReader(file), T::class.java) }
-            .onFailure { file.delete() }
-            .getOrElse { ifNone() }
-            ?: ifNone()
-
-        state
-    }
-}
-
-suspend inline fun <reified T> Context.persist(gson: Gson, state: T) {
-    return withContext(Dispatchers.IO) { cacheFile(T::class.java.fileName).writeText(gson.toJson(state)) }
-}
-
-val Class<*>.fileName get() = "$simpleName.json"
-fun Context.cacheFile(filename: String): File = File(cacheDir, filename).also { it.createNewFile() }*/
