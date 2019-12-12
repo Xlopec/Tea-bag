@@ -81,7 +81,7 @@ fun App(
 @Composable
 fun Screen(screen: Screen, onMessage: (Message) -> Unit) {
     when (screen) {
-        is Feed -> FeedScreen(screen) { m -> onMessage(ScreenMsg(m)) }
+        is Feed -> FeedScreen(screen) { m -> onMessage(ScreenMessageWrapper(m)) }
         else -> TODO()
     }.safe
 }
@@ -181,18 +181,32 @@ private fun BottomBar(
     Surface(elevation = 2.dp) {
         Container(modifier = Height(56.dp) wraps Expanded) {
             FlexRow {
+
+                val themeColors = +MaterialTheme.colors()
+                val selected = themeColors.primary
+                val nonSelected = themeColors.onSecondary
+
                 expanded(1f) {
-                    ImageButton(if (current.criteria is LoadCriteria.Query) R.drawable.ic_language_red_24dp else R.drawable.ic_language_white_24dp) {
+                    ImageButton(
+                        id = R.drawable.ic_language_white_24dp,
+                        tint = if (current.criteria is LoadCriteria.Query) selected else nonSelected
+                    ) {
                         onMessage(NavigateToFeed)
                     }
                 }
                 expanded(1f) {
-                    ImageButton(if (current.criteria is LoadCriteria.Favorite) R.drawable.ic_favorite_border_red_24dp else R.drawable.ic_favorite_border_white_24dp) {
+                    ImageButton(
+                        id = R.drawable.ic_favorite_border_white_24dp,
+                        tint = if (current.criteria is LoadCriteria.Favorite) selected else nonSelected
+                    ) {
                         onMessage(NavigateToFavorite)
                     }
                 }
                 expanded(1f) {
-                    ImageButton(if (current.criteria is LoadCriteria.Trending) R.drawable.ic_trending_up_red_24dp else R.drawable.ic_trending_up_white_24dp) {
+                    ImageButton(
+                        id = R.drawable.ic_trending_up_white_24dp,
+                        tint = if (current.criteria is LoadCriteria.Trending) selected else nonSelected
+                    ) {
                         onMessage(NavigateToTrending)
                     }
                 }

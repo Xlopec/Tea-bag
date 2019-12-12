@@ -8,7 +8,6 @@ import androidx.compose.Composable
 import androidx.compose.memo
 import androidx.compose.unaryPlus
 import androidx.ui.core.Clip
-import androidx.ui.core.Opacity
 import androidx.ui.core.Text
 import androidx.ui.core.dp
 import androidx.ui.foundation.Clickable
@@ -17,8 +16,11 @@ import androidx.ui.foundation.VerticalScroller
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
 import androidx.ui.layout.*
-import androidx.ui.material.*
+import androidx.ui.material.Button
+import androidx.ui.material.CircularProgressIndicator
+import androidx.ui.material.MaterialTheme
 import androidx.ui.material.ripple.Ripple
+import androidx.ui.material.withOpacity
 import com.max.weatherviewer.R
 import com.max.weatherviewer.app.ScreenId
 import com.max.weatherviewer.domain.Article
@@ -181,14 +183,5 @@ private fun ArticleCard(
         }
 
         HeightSpacer(16.dp)
-    }
-}
-
-@Composable
-private fun ArticleDivider() {
-    Padding(top = 4.dp, bottom = 6.dp) {
-        Opacity(0.08f) {
-            Divider()
-        }
     }
 }

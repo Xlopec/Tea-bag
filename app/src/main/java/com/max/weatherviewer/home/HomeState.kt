@@ -40,3 +40,11 @@ data class Error(
 fun Preview.updateArticle(
     new: Article
 ): Preview = copy(articles = articles.map { if (it.url == new.url) new else it })
+
+fun Preview.prependArticle(
+    new: Article
+): Preview = copy(articles = listOf(new) + articles)
+
+fun Preview.removeArticle(
+    victim: Article
+): Preview = copy(articles = articles.filter { it.url != victim.url })

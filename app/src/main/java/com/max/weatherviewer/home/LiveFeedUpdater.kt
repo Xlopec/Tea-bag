@@ -4,7 +4,6 @@ import com.max.weatherviewer.Command
 import com.max.weatherviewer.LoadByCriteria
 import com.max.weatherviewer.RemoveArticle
 import com.max.weatherviewer.SaveArticle
-import com.max.weatherviewer.app.ScreenId
 import com.max.weatherviewer.domain.Article
 import com.max.weatherviewer.domain.toggleFavorite
 import com.oliynick.max.elm.core.component.UpdateWith
@@ -18,6 +17,8 @@ interface FeedUpdater {
     ): UpdateWith<Feed, Command>
 }
 
+// nothing is private in our world
+@Suppress("MemberVisibilityCanBePrivate")
 object LiveFeedUpdater : FeedUpdater {
 
     override fun update(
@@ -29,8 +30,23 @@ object LiveFeedUpdater : FeedUpdater {
             message is LoadArticles -> FeedLoading(feed.id, feed.criteria) command LoadByCriteria(feed.id, feed.criteria)
             message is ArticlesLoadException -> Error(feed.id, feed.criteria, message.cause).noCommand()
             message is ToggleArticleIsFavorite && feed is Preview -> markArticleAsFavorite(message.article, feed)
+            message is ArticleUpdated && feed is Preview -> updateArticle(message.article, feed)
+            message is ArticleUpdated -> feed.noCommand()// ignore
             else -> error("Can't handle message $message when state is $feed")
         }
+
+    fun updateArticle(
+        article: Article,
+        state: Preview
+    ): UpdateWith<Feed, Command> {
+
+        val updated = when(state.criteria) {
+            is LoadCriteria.Query, LoadCriteria.Trending -> state.updateArticle(article)
+            LoadCriteria.Favorite -> if (article.isFavorite) state.prependArticle(article) else state.removeArticle(article)
+        }
+
+        return updated.noCommand()
+    }
 
     fun markArticleAsFavorite(
         article: Article,
@@ -39,10 +55,9 @@ object LiveFeedUpdater : FeedUpdater {
 
         val toggled = article.toggleFavorite()
 
-        return state.updateArticle(toggled) command toggled.storeCommand(state.id)
+        return state.updateArticle(toggled) command toggled.storeCommand()
     }
 
-    fun Article.storeCommand(id: ScreenId) =
-        if (isFavorite) SaveArticle(id, this) else RemoveArticle(id, url)
+    fun Article.storeCommand() = if (isFavorite) SaveArticle(this) else RemoveArticle(this)
 
 }

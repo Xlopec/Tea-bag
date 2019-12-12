@@ -6,7 +6,9 @@ import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.immutableListOf
+import kotlinx.collections.immutable.toImmutableList
 import java.util.*
+import kotlin.collections.ArrayList
 
 typealias ScreenId = UUID
 
@@ -29,9 +31,13 @@ inline val State.screen: Screen
     get() = screens.last()
 
 inline fun <reified T : Screen> State.updateScreen(
-    id: ScreenId,
+    id: ScreenId?,
     how: (T) -> UpdateWith<T, Command>
 ): UpdateWith<State, Command> {
+
+    if (id == null) {
+        return updateScreen(how)
+    }
 
     val index = screens.indexOfFirst { screen -> screen.id == id && screen is T }
 
@@ -42,6 +48,28 @@ inline fun <reified T : Screen> State.updateScreen(
     val (screen, commands) = how(screens[index] as T)
 
     return copy(screens = screens.set(index, screen)) command commands
+}
+
+inline fun <reified T : Screen> State.updateScreen(
+    how: (T) -> UpdateWith<T, Command>
+): UpdateWith<State, Command> {
+
+    val cmds = mutableSetOf<Command>()
+    val scrs = screens.fold(ArrayList<Screen>(screens.size)) { acc, screen ->
+
+        if (screen is T) {
+            val (updatedScreen, commands) = how(screen)
+
+            cmds += commands
+            acc += updatedScreen
+        } else {
+            acc += screen
+        }
+
+        acc
+    }.toImmutableList()
+
+    return copy(screens = scrs) command cmds
 }
 
 fun State.swapScreens(

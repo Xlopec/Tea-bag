@@ -14,6 +14,7 @@ object NavigateToTrending : Navigation()
 
 object Pop : Navigation()
 
-data class ScreenMsg(
+// fixme don't want to put all message definitions in the one file
+data class ScreenMessageWrapper(
     val message: ScreenMessage
 ) : Message()

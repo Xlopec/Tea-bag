@@ -9,13 +9,11 @@ import com.max.weatherviewer.RemoveArticle
 import com.max.weatherviewer.SaveArticle
 import com.max.weatherviewer.app.Message
 import com.max.weatherviewer.app.ScreenId
-import com.max.weatherviewer.app.ScreenMsg
+import com.max.weatherviewer.app.ScreenMessageWrapper
 import com.max.weatherviewer.domain.Article
 import com.max.weatherviewer.persistence.Storage
 import com.oliynick.max.elm.core.component.effect
-import com.oliynick.max.elm.core.component.sideEffect
 import retrofit2.Retrofit
-import java.net.URL
 
 interface FeedResolver<Env> {
 
@@ -28,35 +26,34 @@ fun <Env> HomeResolver(): FeedResolver<Env> where Env : HasNewsApi, Env : Storag
 
 interface LiveFeedResolver<Env> : FeedResolver<Env> where Env : HasNewsApi, Env : Storage<Env> {
 
-    override suspend fun Env.resolve(command: FeedCommand): Set<ScreenMsg> {
+    override suspend fun Env.resolve(command: FeedCommand): Set<ScreenMessageWrapper> {
 
         suspend fun resolve() =
-            //fixme add NotifyArticleUpdatedMessage
             when (command) {
                 is LoadByCriteria -> fetch(command.id, command.criteria)
                 is SaveArticle -> store(command.article)
-                is RemoveArticle -> remove(command.url)
+                is RemoveArticle -> remove(command.article)
             }
 
 
         return runCatching { resolve() }
-            .getOrElse { th -> setOf(ScreenMsg(ArticlesLoadException(command.id, th))) }
+            .getOrThrow()//rElse { th -> setOf(ScreenMessageWrapper(ArticlesLoadException(command.id, th))) }
     }
 
     suspend fun Env.store(
         article: Article
-    ): Set<ScreenMsg> = sideEffect { addToFavorite(article) }
+    ): Set<ScreenMessageWrapper> = effect { addToFavorite(article); ScreenMessageWrapper(ArticleUpdated(article)) }
 
     suspend fun Env.remove(
-        url: URL
-    ): Set<ScreenMsg> = sideEffect { removeFromFavorite(url) }
+        article: Article
+    ): Set<ScreenMessageWrapper> = effect { removeFromFavorite(article.url); ScreenMessageWrapper(ArticleUpdated(article)) }
 
     suspend fun Env.fetch(
         id: ScreenId,
         criteria: LoadCriteria
-    ): Set<ScreenMsg> = when (criteria) {
+    ): Set<ScreenMessageWrapper> = when (criteria) {
             is LoadCriteria.Query -> criteria.effect {
-                ScreenMsg(
+                ScreenMessageWrapper(
                     ArticlesLoaded(
                         id,
                         newsApi(criteria.query).map {
@@ -66,7 +63,7 @@ interface LiveFeedResolver<Env> : FeedResolver<Env> where Env : HasNewsApi, Env 
                 )
             }
             LoadCriteria.Favorite -> criteria.effect {
-                ScreenMsg(
+                ScreenMessageWrapper(
                     ArticlesLoaded(
                         id,
                         getFavorite()
@@ -74,7 +71,7 @@ interface LiveFeedResolver<Env> : FeedResolver<Env> where Env : HasNewsApi, Env 
                 )
             }
             LoadCriteria.Trending -> criteria.effect {
-                ScreenMsg(
+                ScreenMessageWrapper(
                     ArticlesLoaded(
                         id,
                         // todo: what articles are considered to be trending?

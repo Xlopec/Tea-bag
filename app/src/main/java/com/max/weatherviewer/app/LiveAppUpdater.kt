@@ -31,7 +31,7 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : FeedUpdater {
     ): UpdateWith<State, Command> =
         when (message) {
             is Navigation -> navigate(message, state)
-            is ScreenMsg -> updateScreen(message.message, state)
+            is ScreenMessageWrapper -> updateScreen(message.message, state)
         }
 
     fun updateScreen(
@@ -40,8 +40,6 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : FeedUpdater {
     ): UpdateWith<State, Command> =
         when (message) {
             is FeedMessage -> state.updateScreen<Feed>(message.id) { feed -> update(message, feed) }
-            //is FeedMessage -> state.updateScreen<Feed> { home -> update(message, home) }
-          //  else -> error("Unhandled screen message $message for state $state")
         }
 
     fun navigate(
@@ -83,5 +81,14 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : FeedUpdater {
 
         return pushScreen(FeedLoading(id, criteria)) command LoadByCriteria(id, criteria)
     }
+
+    val ScreenMessage.id: ScreenId?
+        get() = when (this) {
+            is LoadArticles -> id
+            is ToggleArticleIsFavorite -> id
+            is ArticlesLoaded -> id
+            is ArticlesLoadException -> id
+            is ArticleUpdated -> null
+        }
 
 }
