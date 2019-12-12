@@ -3,32 +3,33 @@
 package com.max.weatherviewer.presentation
 
 import android.graphics.Bitmap
-import androidx.collection.LruCache
-import androidx.compose.Composable
-import androidx.compose.memo
-import androidx.compose.unaryPlus
-import androidx.ui.core.Clip
-import androidx.ui.core.Text
-import androidx.ui.core.dp
+import androidx.compose.*
+import androidx.ui.core.*
+import androidx.ui.engine.geometry.RRect
 import androidx.ui.foundation.Clickable
 import androidx.ui.foundation.DrawImage
 import androidx.ui.foundation.VerticalScroller
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
+import androidx.ui.graphics.Paint
 import androidx.ui.layout.*
 import androidx.ui.material.Button
 import androidx.ui.material.CircularProgressIndicator
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.ripple.Ripple
 import androidx.ui.material.withOpacity
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.target.Target
 import com.max.weatherviewer.R
 import com.max.weatherviewer.app.ScreenId
 import com.max.weatherviewer.domain.Article
 import com.max.weatherviewer.home.*
 import com.max.weatherviewer.presentation.main.ImageButton
 import com.max.weatherviewer.safe
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import java.net.URL
+import kotlin.coroutines.resume
 
 @Composable
 fun FeedScreen(screen: Feed, onMessage: (FeedMessage) -> Unit) {
@@ -98,7 +99,15 @@ private fun FeedMessage(
     }
 }
 
-private val cache = LruCache<URL, Bitmap>(20)
+fun <T> observe(data: Deferred<T>) = effectOf<T?> {
+    val result = +state<T?> { null }
+    val observer = +memo { GlobalScope.launch(start = CoroutineStart.LAZY) { result.value = data.await() } }
+    +onCommit(data) {
+        val j = GlobalScope.launch { observer.join() }
+        onDispose { j.cancel() }
+    }
+    result.value
+}
 
 @Composable
 private fun ArticleCard(
@@ -124,20 +133,15 @@ private fun ArticleCard(
 
                                 Container(modifier = MinHeight(180.dp) wraps ExpandedWidth) {
                                     Clip(shape = RoundedCornerShape(8.dp)) {
-                                        // fixme seems there is currently no way to load images off the main thread in Compose
-                                        val image = +memo {
-                                            cache.get(article.urlToImage) ?: runBlocking {
-                                                loadImage(
-                                                    article.urlToImage,
-                                                    100,
-                                                    180
-                                                )
+                                        // fixme Composition requires active composition context
+                                        // fixme Not in frame
+                                        val o = +observe(GlobalScope.async(start = CoroutineStart.LAZY) { loadImage(article.urlToImage, 100, 180) })
+
+                                            if (o == null) {
+                                                DrawImagePlaceholder()
+                                            } else {
+                                                DrawImage(MyImage(o))
                                             }
-                                        }
-
-                                        cache.put(article.urlToImage, image)
-
-                                        DrawImage(MyImage(image))
                                     }
                                 }
                             }
@@ -185,3 +189,44 @@ private fun ArticleCard(
         HeightSpacer(16.dp)
     }
 }
+
+@Composable
+private fun DrawImagePlaceholder() {
+    val paint = +memo { Paint().apply { color = Color.Gray } }
+
+    Draw { canvas, parentSize -> canvas.drawRRect(parentSize.toRRect(), paint) }
+}
+
+private fun PxSize.toRRect() = RRect(0f, 0f, width.value, height.value)
+
+// fixme Composition requires active composition context
+private fun observe(url: URL) = effectOf<Bitmap?> {
+    val result = +state<Bitmap?> { null }
+
+    val def = +memo { GlobalScope.async(start = CoroutineStart.LAZY) { url.loadImage() } }
+
+    +onCommit(url) {
+        val job = GlobalScope.launch { result.value = def.await() }
+
+        onDispose(job::cancel)
+    }
+
+    result.value
+}
+
+private suspend fun URL.loadImage(
+    width: Int = Target.SIZE_ORIGINAL,
+    height: Int = 180.dp.value.toInt()
+) =
+    suspendCancellableCoroutine<Bitmap?> { c ->
+
+        val bitmapFuture = Glide.with(+ambient(ContextAmbient))
+            .asBitmap()
+            .load(toExternalForm())
+            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+            .centerCrop()
+            .submit(width, height)
+
+        c.invokeOnCancellation { bitmapFuture.cancel(true) }
+        c.resume(bitmapFuture.get())
+    }
