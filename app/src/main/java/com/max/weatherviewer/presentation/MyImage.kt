@@ -37,6 +37,26 @@ suspend fun loadImage(url: URL, width: Int, height: Int): Bitmap =
         }
     }
 
+fun loadImage2(url: URL, width: Int, height: Int, cb: (Bitmap) -> Unit){
+    val options = url.openStream().use { input ->
+
+        BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+
+            BitmapFactory.decodeStream(input, null, this)
+
+            inSampleSize = calculateInSampleSize(this, width, height)
+
+            inJustDecodeBounds = false
+        }
+    }
+
+    val bm = BitmapFactory.decodeStream(url.openStream(), null, options)
+        ?: error("Couldn't load image $url")
+
+    cb(bm)
+}
+
 class MyImage(val bitmap: Bitmap) : Image {
 
     /**

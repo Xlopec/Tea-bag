@@ -3,6 +3,8 @@
 package com.max.weatherviewer.presentation
 
 import android.graphics.Bitmap
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.*
 import androidx.ui.core.*
 import androidx.ui.engine.geometry.RRect
@@ -17,6 +19,7 @@ import androidx.ui.material.Button
 import androidx.ui.material.CircularProgressIndicator
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.ripple.Ripple
+import androidx.ui.material.surface.Card
 import androidx.ui.material.withOpacity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -29,6 +32,7 @@ import com.max.weatherviewer.presentation.main.ImageButton
 import com.max.weatherviewer.safe
 import kotlinx.coroutines.*
 import java.net.URL
+import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 
 @Composable
@@ -61,7 +65,12 @@ private fun Preview.FeedArticles(
     if (articles.isEmpty()) {
         FeedMessage(id, "Feed is empty", onMessage)
     } else {
-        articles.forEach { article -> ArticleCard(id, article, onMessage) }
+        articles.forEachIndexed { index, article ->
+            if (index != 0 && index != articles.lastIndex) {
+                HeightSpacer(8.dp)
+            }
+            ArticleCard(id, article, onMessage)
+        }
     }
 }
 
@@ -109,84 +118,169 @@ fun <T> observe(data: Deferred<T>) = effectOf<T?> {
     result.value
 }
 
+fun observe(url: URL) = effectOf<Bitmap?> {
+    val result = +state<Bitmap?> { null }
+
+    val observer = +memo {
+        val cb: (Bitmap?) -> Unit = {
+            result.value = it
+        }
+
+        cb
+    }
+
+    +onCommit(observer) {
+
+        url.loadImage(callback = observer)
+        //onDispose { j.cancel() }
+    }
+    result.value
+}
+
 @Composable
 private fun ArticleCard(
     id: ScreenId,
     article: Article,
     onMessage: (FeedMessage) -> Unit
 ) {
-    Column(modifier = ExpandedWidth) {
 
-        Clip(shape = RoundedCornerShape(8.dp)) {
+    ClickableCard(
+        onClick = {}
+    ) {
+        Column {
+            ArticleImage(article)
 
-            Ripple(
-                bounded = true
-            ) {
+            Padding(left = 8.dp, right = 8.dp) {
+                ArticleTextContent(article)
+            }
 
-                Clickable(onClick = { }) {
+            HeightSpacer(8.dp)
 
-                    Column {
+            ArticleActionsMenu(id, article, onMessage)
+        }
+    }
+}
 
-                        Clip(shape = RoundedCornerShape(8.dp)) {
+@Composable
+fun ClickableCard(
+    onClick: (() -> Unit)? = null,
+    children: @Composable() () -> Unit
+) {
+    Card(
+        modifier = Spacing(all = 4.dp),
+        elevation = 2.dp,
+        shape = RoundedCornerShape(8.dp)
+    ) {
 
-                            if (article.urlToImage != null) {
+        Column(modifier = ExpandedWidth) {
 
-                                Container(modifier = MinHeight(180.dp) wraps ExpandedWidth) {
-                                    Clip(shape = RoundedCornerShape(8.dp)) {
-                                        // fixme Composition requires active composition context
-                                        // fixme Not in frame
-                                        val o = +observe(GlobalScope.async(start = CoroutineStart.LAZY) { loadImage(article.urlToImage, 100, 180) })
+            Ripple(bounded = true) {
 
-                                            if (o == null) {
-                                                DrawImagePlaceholder()
-                                            } else {
-                                                DrawImage(MyImage(o))
-                                            }
-                                    }
-                                }
-                            }
-                        }
-
-                        val typography = +MaterialTheme.typography()
-
-
-                        Text(
-                            text = article.title.value,
-                            style = typography.h6.withOpacity(0.87f)
-                        )
-
-                        Text(
-                            text = article.author.value,
-                            style = typography.subtitle2.withOpacity(0.87f)
-                        )
-
-                        HeightSpacer(8.dp)
-
-                        Text(
-                            text = article.description.value,
-                            style = typography.body2.withOpacity(0.6f)
-                        )
-
-                        HeightSpacer(8.dp)
-
-                        Row(
-                            modifier = ExpandedWidth,
-                            arrangement = Arrangement.End
-                        ) {
-                            ImageButton(
-                                R.drawable.ic_favorite_border_black_24dp,
-                                if (article.isFavorite) Color.Red else Color.Black
-                            ) {
-                                onMessage(ToggleArticleIsFavorite(id, article))
-                            }
-                        }
-
-                    }
+                Clickable(onClick = onClick) {
+                    children()
                 }
             }
         }
+    }
+}
 
-        HeightSpacer(16.dp)
+private fun ArticleActionsMenu(
+    id: ScreenId,
+    article: Article,
+    onMessage: (FeedMessage) -> Unit
+) {
+
+    Row(
+        modifier = ExpandedWidth,
+        arrangement = Arrangement.End
+    ) {
+        ImageButton(
+            R.drawable.ic_share_black_24dp,
+            Color.Black
+        ) {
+
+        }
+        ImageButton(
+            R.drawable.ic_favorite_border_black_24dp,
+            if (article.isFavorite) Color.Red else Color.Black
+        ) {
+            onMessage(ToggleArticleIsFavorite(id, article))
+        }
+    }
+}
+
+@Composable
+private fun ArticleImage(
+    article: Article
+) {
+    Clip(shape = RoundedCornerShape(8.dp)) {
+
+        Container(modifier = MinHeight(180.dp) wraps ExpandedWidth) {
+            Clip(shape = RoundedCornerShape(8.dp, 8.dp)) {
+                // fixme Composition requires active composition context
+                // fixme Not in frame
+
+                val state = state<Bitmap?> { null }
+                val result = +state
+
+                if (article.urlToImage != null) {
+                    val observer = +memo {
+                        val cb: (Bitmap?) -> Unit = {
+                            Handler(Looper.getMainLooper()).post {
+                                println("Update")
+
+                                result.value = it
+
+                                println("post Update")
+                            }
+
+                        }
+
+                        cb
+                    }
+
+                    +onCommit {
+
+                        article.urlToImage.loadImage(callback = observer)
+                        //onDispose { j.cancel() }
+                    }
+
+
+                    println("VALUE ${result.value}")
+                }
+
+                if (result.value == null) {
+                    DrawImagePlaceholder()
+                } else {
+                    DrawImage(MyImage(result.value!!))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ArticleTextContent(article: Article) {
+    Column {
+
+        val typography = +MaterialTheme.typography()
+
+        Text(
+            text = article.title.value,
+            style = typography.h6.withOpacity(0.87f)
+        )
+
+        Text(
+            text = article.author.value,
+            style = typography.subtitle2.withOpacity(0.87f)
+        )
+
+        HeightSpacer(8.dp)
+
+        Text(
+            text = article.description.value,
+            style = typography.body2.withOpacity(0.6f)
+        )
     }
 }
 
@@ -200,18 +294,26 @@ private fun DrawImagePlaceholder() {
 private fun PxSize.toRRect() = RRect(0f, 0f, width.value, height.value)
 
 // fixme Composition requires active composition context
-private fun observe(url: URL) = effectOf<Bitmap?> {
-    val result = +state<Bitmap?> { null }
 
-    val def = +memo { GlobalScope.async(start = CoroutineStart.LAZY) { url.loadImage() } }
+private val scheduler = Executors.newFixedThreadPool(3)
 
-    +onCommit(url) {
-        val job = GlobalScope.launch { result.value = def.await() }
+private fun URL.loadImage(
+    width: Int = 100.dp.value.toInt(),
+    height: Int = 180.dp.value.toInt(),
+    callback: (Bitmap?) -> Unit
+) {
 
-        onDispose(job::cancel)
+    scheduler.submit {
+        /* val bm = Glide.with(+ambient(ContextAmbient))
+             .asBitmap()
+             .load(toExternalForm())
+             .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+             .centerCrop()
+             .submit(width, height)
+             .get()*/
+
+        loadImage2(this, width, height, callback)
     }
-
-    result.value
 }
 
 private suspend fun URL.loadImage(
