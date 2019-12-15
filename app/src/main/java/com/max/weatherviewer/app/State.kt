@@ -1,12 +1,11 @@
 package com.max.weatherviewer.app
 
-import com.max.weatherviewer.Command
 import com.oliynick.max.elm.core.component.UpdateWith
 import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.immutableListOf
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -17,10 +16,10 @@ abstract class Screen {
 }
 
 data class State(
-    val screens: ImmutableList<Screen>
+    val screens: PersistentList<Screen>
 ) {
 
-    constructor(screen: Screen) : this(immutableListOf(screen))
+    constructor(screen: Screen) : this(persistentListOf(screen))
 
     init {
         require(screens.isNotEmpty())
@@ -67,7 +66,7 @@ inline fun <reified T : Screen> State.updateScreen(
         }
 
         acc
-    }.toImmutableList()
+    }.toPersistentList()
 
     return copy(screens = scrs) command cmds
 }
@@ -90,4 +89,4 @@ fun State.pushScreen(
 
 fun State.popScreen(): State = copy(screens = screens.pop())
 
-private fun <T> ImmutableList<T>.pop() = if (lastIndex >= 0) removeAt(lastIndex) else this
+private fun <T> PersistentList<T>.pop() = if (lastIndex >= 0) removeAt(lastIndex) else this

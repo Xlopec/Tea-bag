@@ -1,6 +1,6 @@
 package com.max.weatherviewer.app
 
-import com.max.weatherviewer.home.ScreenMessage
+import com.max.weatherviewer.screens.feed.ScreenMessage
 
 sealed class Message
 
