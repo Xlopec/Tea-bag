@@ -2,7 +2,6 @@ package com.max.weatherviewer.screens.main
 
 import android.app.Activity
 import android.os.Bundle
-import androidx.compose.memo
 import androidx.ui.core.setContent
 import com.max.weatherviewer.app.*
 import com.max.weatherviewer.misc.collect
@@ -43,8 +42,6 @@ class MainActivity : Activity(), CoroutineScope by MainScope() {
 
 private fun Activity.render(screen: Screen, onMessage: (Message) -> Unit) =
     setContent {
-
-        memo {  }
 
         when(screen) {
             is Feed -> HomeScreen(screen, onMessage)

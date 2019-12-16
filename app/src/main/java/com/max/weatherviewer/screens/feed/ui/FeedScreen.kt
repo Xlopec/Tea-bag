@@ -102,8 +102,8 @@ fun FeedScreen(
 
             when (screen) {
                 is FeedLoading -> FeedArticlesProgress()
-                is Preview -> screen.FeedArticles(onMessage)
-                is Error -> screen.FeedError(onMessage)
+                is Preview -> FeedArticles(screen, onMessage)
+                is Error -> FeedError(screen, onMessage)
             }.safe
         }
     }
@@ -119,23 +119,24 @@ private fun FeedArticlesProgress() {
 }
 
 @Composable
-private fun Preview.FeedArticles(
+private fun FeedArticles(
+    screen: Preview,
     onMessage: (Message) -> Unit
 ) {
 
-    if (articles.isEmpty()) {
+    if (screen.articles.isEmpty()) {
         FeedMessage(
-            id,
+            screen.id,
             "Feed is empty",
             onMessage
         )
     } else {
-        articles.forEachIndexed { index, article ->
-            if (index != 0 && index != articles.lastIndex) {
+        screen.articles.forEachIndexed { index, article ->
+            if (index != 0 && index != screen.articles.lastIndex) {
                 HeightSpacer(8.dp)
             }
             ArticleCard(
-                id,
+                screen.id,
                 article,
                 onMessage
             )
@@ -144,11 +145,12 @@ private fun Preview.FeedArticles(
 }
 
 @Composable
-private fun Error.FeedError(
+private fun FeedError(
+    screen: Error,
     onMessage: (Message) -> Unit
 ) = FeedMessage(
-    id,
-    "Failed to load articles, message: '${cause.message?.decapitalize() ?: "unknown exception"}'",
+    screen.id,
+    "Failed to load articles, message: '${screen.cause.message?.decapitalize() ?: "unknown exception"}'",
     onMessage
 )
 
@@ -389,10 +391,11 @@ private fun ArticleTextContent(article: Article) {
             )
         }
 
+        /*
         Text(
             text = "Published on ${dateFormatter.format(article.published)}",
             style = typography.caption.withOpacity(0.87f)
-        )
+        )*/
 
         HeightSpacer(8.dp)
 

@@ -3,26 +3,21 @@
 package com.max.weatherviewer.app.env.storage
 
 import android.app.Application
-import android.content.Context
-import com.google.gson.Gson
 import com.max.weatherviewer.app.env.HasAppContext
-import com.max.weatherviewer.app.env.network.ArticleElement
-import com.max.weatherviewer.app.env.network.ArticleResponse
-import com.max.weatherviewer.app.env.network.HasNewsApi
+import com.max.weatherviewer.app.env.storage.local.HasMongoCollection
+import com.max.weatherviewer.app.env.storage.network.ArticleElement
+import com.max.weatherviewer.app.env.storage.network.ArticleResponse
+import com.max.weatherviewer.app.env.storage.network.HasNewsApi
 import com.max.weatherviewer.domain.Article
 import com.max.weatherviewer.screens.feed.LoadCriteria
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.UpdateOptions
-import com.mongodb.stitch.android.core.Stitch
-import com.mongodb.stitch.android.services.mongodb.local.LocalMongoDbService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.bson.Document
 import java.net.URL
-
 
 fun <Env> Storage(): Storage<Env> where Env : HasMongoCollection,
                                         Env : HasNewsApi,
@@ -101,33 +96,4 @@ interface LiveStorage<Env> : Storage<Env> where Env : HasMongoCollection,
     private inline val Application.countryCode: String
         get() = resources.configuration.locale.country
 
-}
-
-interface HasMongoCollection {
-    val collection: MongoCollection<Document>
-}
-
-fun MongoCollection(
-    context: Context
-): HasMongoCollection = object :
-    HasMongoCollection {
-    override val collection: MongoCollection<Document>
-
-    init {
-        Stitch.initialize(context)
-
-        val client = Stitch.initializeAppClient(context.packageName)
-
-        collection = client.getServiceClient(LocalMongoDbService.clientFactory)
-            .getDatabase("app")
-            .getCollection("favorite")
-    }
-}
-
-interface HasGson {
-    val gson: Gson
-}
-
-fun Gson(gson: Gson) = object : HasGson {
-    override val gson: Gson = gson
 }

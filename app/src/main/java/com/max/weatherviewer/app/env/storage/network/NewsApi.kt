@@ -1,9 +1,13 @@
 @file:Suppress("FunctionName")
 
-package com.max.weatherviewer.app.env.network
+package com.max.weatherviewer.app.env.storage.network
 
-import com.google.gson.*
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
 import com.google.gson.annotations.SerializedName
+import com.max.weatherviewer.app.env.storage.TypeAdapter
 import com.max.weatherviewer.domain.Author
 import com.max.weatherviewer.domain.Description
 import com.max.weatherviewer.domain.Title
@@ -17,10 +21,7 @@ import java.lang.reflect.Type
 import java.net.URL
 import java.util.*
 
-interface TypeAdapter<T> : JsonSerializer<T>,
-    JsonDeserializer<T>
-
-val adapters = mapOf(
+val articleAdapters = mapOf(
     String::class to StringAdapter,
     URL::class to URLAdapter,
     Title::class to TitleAdapter,
@@ -31,6 +32,46 @@ val adapters = mapOf(
 fun NewsApi(retrofit: Retrofit): HasNewsApi = object : HasNewsApi {
     override val api = retrofit.create<RetrofitNewsApi>()
 }
+
+interface HasNewsApi {
+    val api: RetrofitNewsApi
+}
+
+interface RetrofitNewsApi {
+
+    @GET("/v2/everything")
+    suspend fun fetchFromEverything(
+        @Query("apiKey") apiKey: String,
+        @QueryMap query: Map<String, String>
+    ): ArticleResponse
+
+    @GET("/v2/top-headlines")
+    suspend fun fetchTopHeadlines(
+        @Query("apiKey") apiKey: String,
+        @Query("country") countryCode: String
+    ): ArticleResponse
+
+}
+
+data class ArticleElement(
+    @SerializedName("author")
+    val author: Author?,
+    @SerializedName("description")
+    val description: Description,
+    @SerializedName("publishedAt")
+    val publishedAt: Date,
+    @SerializedName("title")
+    val title: Title,
+    @SerializedName("url")
+    val url: URL,
+    @SerializedName("urlToImage")
+    val urlToImage: URL?
+)
+
+data class ArticleResponse(
+    @SerializedName("articles")
+    val articles: List<ArticleElement> = listOf()
+)
 
 private object StringAdapter : TypeAdapter<String> {
     override fun serialize(src: String, typeOfSrc: Type?, context: JsonSerializationContext?) =
@@ -86,43 +127,3 @@ private object DescriptionAdapter : TypeAdapter<Description> {
         context: JsonDeserializationContext?
     ) = Description.tryCreate(json.asString)
 }
-
-interface HasNewsApi {
-    val api: RetrofitNewsApi
-}
-
-interface RetrofitNewsApi {
-
-    @GET("/v2/everything")
-    suspend fun fetchFromEverything(
-        @Query("apiKey") apiKey: String,
-        @QueryMap query: Map<String, String>
-    ): ArticleResponse
-
-    @GET("/v2/top-headlines")
-    suspend fun fetchTopHeadlines(
-        @Query("apiKey") apiKey: String,
-        @Query("country") countryCode: String
-    ): ArticleResponse
-
-}
-
-data class ArticleElement(
-    @SerializedName("author")
-    val author: Author?,
-    @SerializedName("description")
-    val description: Description,
-    @SerializedName("publishedAt")
-    val publishedAt: Date,
-    @SerializedName("title")
-    val title: Title,
-    @SerializedName("url")
-    val url: URL,
-    @SerializedName("urlToImage")
-    val urlToImage: URL?
-)
-
-data class ArticleResponse(
-    @SerializedName("articles")
-    val articles: List<ArticleElement> = listOf()
-)

@@ -33,7 +33,6 @@ interface HasCommandTransport {
     val closeCommands: BroadcastChannel<CloseApp>
 }
 
-fun CommandTransport() = object :
-    HasCommandTransport {
+fun CommandTransport() = object : HasCommandTransport {
     override val closeCommands: BroadcastChannel<CloseApp> = BroadcastChannel(1)
 }
