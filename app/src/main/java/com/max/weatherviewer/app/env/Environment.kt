@@ -13,7 +13,6 @@ import com.max.weatherviewer.app.resolve.AppResolver
 import com.max.weatherviewer.app.resolve.CommandTransport
 import com.max.weatherviewer.app.resolve.HasCommandTransport
 import com.max.weatherviewer.app.update.AppUpdater
-import com.max.weatherviewer.misc.unsafeLazy
 import com.max.weatherviewer.screens.feed.resolve.FeedResolver
 import com.max.weatherviewer.screens.feed.resolve.LiveFeedResolver
 import com.max.weatherviewer.screens.feed.update.FeedUpdater
@@ -42,27 +41,28 @@ interface Environment :
 fun Environment(
     application: Application,
     isDebug: Boolean
-): Environment = object : Environment,
-    AppUpdater<Environment> by AppUpdater(),
-    FeedUpdater by LiveFeedUpdater,
-    AppResolver<Environment> by AppResolver(),
-    HasCommandTransport by CommandTransport(),
-    FeedResolver<Environment> by LiveFeedResolver(),
-    HasNewsApi by NewsApi(retrofit),
-    HasMongoCollection by MongoCollection(
-        application
-    ),
-    HasGson by Gson(
-        gson
-    ),
-    HasAppContext by AppContext(application),
-    Storage<Environment> by Storage(),
-    CoroutineScope by AppComponentScope {
-    override val isDebug: Boolean = isDebug
+): Environment {
+
+    val gson = buildGson()
+    val retrofit = buildRetrofit(gson)
+
+    return object : Environment,
+        AppUpdater<Environment> by AppUpdater(),
+        FeedUpdater by LiveFeedUpdater,
+        AppResolver<Environment> by AppResolver(),
+        HasCommandTransport by CommandTransport(),
+        FeedResolver<Environment> by LiveFeedResolver(),
+        HasNewsApi by NewsApi(retrofit),
+        HasMongoCollection by MongoCollection(application),
+        HasGson by Gson(gson),
+        HasAppContext by AppContext(application),
+        Storage<Environment> by Storage(),
+        CoroutineScope by AppComponentScope {
+        override val isDebug: Boolean = isDebug
+    }
 }
 
-
-private val gson by unsafeLazy {
+private fun buildGson() =
     gson {
         setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 
@@ -70,11 +70,6 @@ private val gson by unsafeLazy {
             registerTypeAdapter(cl.java, adapter)
         }
     }
-}
-
-private val retrofit by unsafeLazy {
-    retrofit(gson)
-}
 
 private object AppComponentScope : CoroutineScope {
     override val coroutineContext: CoroutineContext =

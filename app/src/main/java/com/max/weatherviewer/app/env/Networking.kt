@@ -17,7 +17,7 @@ import javax.net.ssl.X509TrustManager
 fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
     GsonBuilder().serializeNulls().setPrettyPrinting().apply(config).create()
 
-fun retrofit(gson: Gson = gson()): Retrofit {
+fun buildRetrofit(gson: Gson = gson()): Retrofit {
     val client = OkHttpClient.Builder()
         .readTimeout(3, TimeUnit.SECONDS)
         .connectTimeout(3, TimeUnit.SECONDS)
