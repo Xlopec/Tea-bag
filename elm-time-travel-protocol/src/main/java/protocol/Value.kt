@@ -64,6 +64,8 @@ class BooleanWrapper private constructor(value: Boolean) : PrimitiveWrapper<Bool
     }
 }
 
+
+//todo remove generic?
 sealed class CollectionPrimitiveWrapper<T>(val value: T) : Value<T>() {
     final override val type: RemoteType = RemoteType(value!!::class.java)
 

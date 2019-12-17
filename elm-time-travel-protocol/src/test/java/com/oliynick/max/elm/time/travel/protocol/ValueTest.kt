@@ -5,6 +5,7 @@ import core.data.User
 import core.data.photo
 import core.data.randomId
 import io.kotlintest.shouldBe
+import kotlinx.collections.immutable.persistentListOf
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -172,6 +173,19 @@ class ValueTest {
         val unparsed = value.fromValue(converters)
 
         initial shouldBe unparsed
+    }
+
+    @Test
+    fun `test unpacking of external library class instance is correct`() {
+
+        val listOfStrings = persistentListOf("a", "b", "c")
+
+        val converters = converters()
+
+        val value = listOfStrings.toValue(converters)
+        val unparsed = value.fromValue(converters)
+
+        listOfStrings shouldBe unparsed
     }
 
 }
