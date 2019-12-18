@@ -18,6 +18,7 @@ fun converters(
     Converters()
         .apply {
             +RefConverter
+            +IterableConverter
             +ListConverter
             +SetConverter
             +CollectionConverter
@@ -158,6 +159,14 @@ private object BooleanConverter : Converter<Boolean, BooleanWrapper> {
 private object StringConverter : Converter<String, StringWrapper> {
     override fun from(v: StringWrapper, converters: Converters) = v.value
     override fun to(t: String, converters: Converters) = wrap(t)
+}
+
+private object IterableConverter : Converter<Iterable<*>, CollectionWrapper> {
+    override fun from(v: CollectionWrapper, converters: Converters): Iterable<*> {
+        return v.value.map { elem -> elem.fromValue(converters) }
+    }
+
+    override fun to(t: Iterable<*>, converters: Converters) = wrap(t, converters)
 }
 
 private object ListConverter : Converter<List<*>, CollectionWrapper> {

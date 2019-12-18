@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package core.data
 
 import java.net.URL
@@ -20,6 +22,8 @@ data class Name(val value: String) {
 
 inline class Photo(val url: URL)
 
-fun randomId() = Id(UUID.randomUUID())
+fun RandomId() = Id(UUID.randomUUID())
 
-fun photo(urlSpec: String) = Photo(URL(urlSpec))
+fun Photo(urlSpec: String) = Photo(URL(urlSpec))
+
+fun Avatar(s: String) = URL(s)

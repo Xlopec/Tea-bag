@@ -43,7 +43,7 @@ import java.net.URL
 import java.util.*
 
 private val httpClient by lazy { HttpClient { install(WebSockets) } }
-private val localhost by lazy { URL() }
+private val localhost by lazy(::URL)
 
 @DslMarker
 private annotation class DslBuilder
@@ -67,30 +67,59 @@ data class ServerSettings(
 )
 
 @DslBuilder
-class ServerSettingsBuilder internal constructor(
+class ServerSettingsBuilder<M, C, S> internal constructor(
     var id: ComponentId,
     var converters: Converters,
     var url: URL
 ) {
 
+    @JvmName("unsafeConverters")
     fun converters(config: Converters.() -> Unit) {
         converters.apply(config)
     }
+
+    @JvmName("messageConverters")
+    fun converter(c: (M, Converters) -> Value<*>) {
+
+    }
+
+    @JvmName("commandConverters")
+    fun converter(c: (C, Converters) -> Value<*>) {
+
+    }
+
+    @JvmName("stateConverters")
+    fun converter(c: (S, Converters) -> Value<*>) {
+
+    }
+
+    fun <S> stateDeserializer(v: (Value<*>, Converters) -> S) {
+
+    }
+
+    fun <M> messageDeserializer(v: (Value<*>, Converters) -> M) {
+
+    }
+
+    fun <C> commandDeserializer(v: (Value<*>, Converters) -> C) {
+
+    }
+
 }
 
 fun URL(protocol: String = "http", host: String = "localhost", port: UInt = 8080U) = URL(protocol, host, port.toInt(), "")
 
 @DslBuilder
-class DebugDependenciesBuilder<M, C, S> internal constructor(
+class DebugEnvBuilder<M, C, S> internal constructor(
     var dependenciesBuilder: EnvBuilder<M, C, S>,
-    var serverSettingsBuilder: ServerSettingsBuilder
+    var serverSettingsBuilder: ServerSettingsBuilder<M, C, S>
 ) {
 
     fun dependencies(config: EnvBuilder<M, C, S>.() -> Unit) {
         dependenciesBuilder.apply(config)
     }
 
-    fun serverSettings(config: ServerSettingsBuilder.() -> Unit) {
+    fun serverSettings(config: ServerSettingsBuilder<M, C, S>.() -> Unit) {
         serverSettingsBuilder.apply(config)
     }
 
@@ -100,8 +129,8 @@ fun <M, C, S> Dependencies(
     id: ComponentId,
     env: Env<M, C, S>,
     url: URL = localhost,
-    config: DebugDependenciesBuilder<M, C, S>.() -> Unit = {}
-) = DebugDependenciesBuilder(
+    config: DebugEnvBuilder<M, C, S>.() -> Unit = {}
+) = DebugEnvBuilder(
     EnvBuilder(env),
     ServerSettingsBuilder(id, converters(), url)
 ).apply(config).toDebugDependencies()
@@ -110,7 +139,7 @@ fun <M, C, S> CoroutineScope.Component(
     id: ComponentId,
     env: Env<M, C, S>,
     url: URL = localhost,
-    config: DebugDependenciesBuilder<M, C, S>.() -> Unit = {}
+    config: DebugEnvBuilder<M, C, S>.() -> Unit = {}
 ) = Component(
     Dependencies(
         id,
@@ -285,11 +314,11 @@ private fun <M, C, S> Env<M, C, S>.withSpyingInterceptor(
 private fun <M, C, S> Env<M, C, S>.withNewInitializer(s: S) =
     copy(initializer = { s to emptySet() })
 
-private fun <M, C, S> DebugDependenciesBuilder<M, C, S>.toDebugDependencies() =
+private fun <M, C, S> DebugEnvBuilder<M, C, S>.toDebugDependencies() =
     DebugDependencies(
         dependenciesBuilder.toEnv(),
         serverSettingsBuilder.toServerSettings()
     )
 
-private fun ServerSettingsBuilder.toServerSettings() =
+private fun <M, C, S> ServerSettingsBuilder<M, C, S>.toServerSettings() =
     ServerSettings(id, converters, url)

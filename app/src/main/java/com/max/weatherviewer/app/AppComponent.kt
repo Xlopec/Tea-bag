@@ -50,6 +50,24 @@ fun Environment.appComponent(): Component<Message, State> {
                     +URLConverter
                     +PersistentListConverter
                 }
+
+                converter { s: State, converters ->
+                    s toRef  {
+                        ref {
+                            "screens".of(screens) { toRef(screen, converters) }
+                        }
+                    }
+                }
+
+                stateDeserializer { v, converters ->
+                    (v as Ref) nonNull {
+                        State(
+                            screens = "screens" nonNull { screens: CollectionWrapper ->
+                                screens.value.map { (it.fromValue(converters) as Screen) }.toPersistentList()
+                            }
+                        )
+                    }
+                }
             }
         }
     }
@@ -57,6 +75,8 @@ fun Environment.appComponent(): Component<Message, State> {
     return Component(componentDependencies)
 
 }
+
+private fun toRef(s: Screen, converters: Converters): Value<*> = s.toValue(converters)
 
 private object PersistentListConverter : Converter<PersistentList<*>, CollectionWrapper> {
 

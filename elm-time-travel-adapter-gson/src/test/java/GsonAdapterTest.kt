@@ -3,7 +3,7 @@ import com.oliynick.max.elm.time.travel.gson.gson
 import core.data.Id
 import core.data.Name
 import core.data.User
-import core.data.photo
+import core.data.Photo
 import io.kotlintest.shouldBe
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.immutableListOf
@@ -26,9 +26,9 @@ class GsonAdapterTest {
         Id(UUID.randomUUID()),
         Name("John"),
         listOf(
-            photo("https://www.google.com"),
-            photo("https://www.google.com1"),
-            photo("https://www.google.com2")
+            Photo("https://www.google.com"),
+            Photo("https://www.google.com1"),
+            Photo("https://www.google.com2")
         )
     )
 

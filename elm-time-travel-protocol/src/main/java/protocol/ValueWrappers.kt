@@ -6,7 +6,7 @@ import sun.misc.Unsafe
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
-import kotlin.reflect.full.allSuperclasses
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
 
 private val classComparator = Comparator<KClass<*>> { t1, t2 ->
@@ -19,20 +19,24 @@ private val classComparator = Comparator<KClass<*>> { t1, t2 ->
 
 @Suppress("UNCHECKED_CAST")
 fun <T> T?.toValue(
-    cl: Class<out T>,
-    converters: Converters
+    actualType: Class<out T>,
+    converters: Converters,
+    declaredType: Class<out T> = actualType
 ): Value<T> =
-    (this?.let { t -> converters.findConverter(cl).to(t, converters) } ?: wrap(cl)) as Value<T>
+    (this?.let { t -> converters.findConverter(actualType, declaredType).to(t, converters) } ?: wrap(actualType)) as Value<T>
 
 @Suppress("UNCHECKED_CAST")
-fun <T> T.toValue(converters: Converters): Value<T> = toValue(clazz, converters) as Value<T>
+fun <T> T.toValue(
+    converters: Converters,
+    declaredType: Class<T> = clazz as Class<T>
+): Value<T> = toValue(clazz, converters, declaredType) as Value<T>
 
 @Suppress("UNCHECKED_CAST")
-fun <T> Value<T>.fromValue(converters: Converters): T? = when (this) {
+fun <T> Value<T>.fromValue(converters: Converters, interfaceType: Class<T> = type.clazz as Class<T>): T? = when (this) {
     is Null -> null
     is Ref,
     is PrimitiveWrapper<*>,
-    is CollectionPrimitiveWrapper<*> -> converters.findConverter(type).from(this, converters)
+    is CollectionPrimitiveWrapper<*> -> converters.findConverter(type.clazz, interfaceType).from(this, converters)
 } as T?
 
 @Suppress("NOTHING_TO_INLINE")
@@ -94,7 +98,7 @@ inline fun wrap(any: Any, converters: Converters): Ref {
             Property(
                 RemoteType(type),
                 field.name,
-                value.toValue(type, converters)
+                value.toValue(type, converters, field.type)
             )
         }
         .toSet()
@@ -131,21 +135,44 @@ internal fun Ref.fromRefValue(
         }
 }
 
+/*
 private fun Converters.findConverter(
-    type: RemoteType
-): Converter<Any, Value<*>> = this[type] ?: findConverter(type.clazz)
+    type: Class<*>,
+    interfaceType: Class<*> = type
+): Converter<Any, Value<*>> = this[type] ?: findConverter(type.clazz, interfaceType)
+*/
 
 private fun Converters.findConverter(
-    cl: Class<*>
-): Converter<Any, Value<*>> =
+    realType: Class<*>,
+    interfaceType: Class<*> = realType
+): Converter<Any, Value<*>> {
     // fixme
-    this[cl] ?: cl.kotlin.allSuperclasses
-        .asSequence()
-        .sortedWith(classComparator)
-        .mapNotNull { c -> this[c.java] }
-        .toList()
-        .also { suitableConverters -> require(suitableConverters.isNotEmpty()) { "Couldn't find a suitable converter for class $cl" } }
-        .first()
+    val c = this[realType] ?: this[interfaceType]
+    // fast path, good case
+    if (c != null) {
+        return c
+    }
+    // slower path
+    val converter = converters.keys.mapNotNull { kotlin.runCatching { Class.forName(it) }.getOrNull() }
+        .filter { it.kotlin.isSubclassOf(realType.kotlin) }
+        .map { this[it]!! }
+        .firstOrNull()
+
+    if (converter != null) {
+        return converter
+    }
+
+    if (
+        interfaceType.kotlin.isSubclassOf(Iterable::class)
+        || interfaceType.kotlin.isSubclassOf(Map::class)
+    ) {
+        // well, we've been fucked up
+        error("Couldn't find converter for both $realType and $interfaceType")
+    }
+
+    return this[Any::class.java]!!
+}
+
 
 private fun Unsafe.fill(
     instance: Any,
@@ -157,7 +184,7 @@ private fun Unsafe.fill(
     val field = instance.getFieldFor(property)
     val offset = objectFieldOffset(field)
 
-    when (val value = property.getValue(converters)) {
+    when (val value = property.getValue(converters, field.type)) {
         is Int -> putInt(instance, offset, value)
         is Byte -> putByte(instance, offset, value)
         is Short -> putShort(instance, offset, value)
@@ -175,8 +202,9 @@ private fun Unsafe.fill(
 }
 
 private fun Property<*>.getValue(
-    converters: Converters
-): Any? = if (v is Null) null else converters.findConverter(type).from(v, converters)
+    converters: Converters,
+    interfaceType: Class<*>
+): Any? = if (v is Null) null else converters.findConverter(type.clazz, interfaceType).from(v, converters)
 
 private fun Any.getFieldFor(
     property: Property<*>

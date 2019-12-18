@@ -1,9 +1,10 @@
 package com.oliynick.max.elm.time.travel.protocol
 
 import core.data.Name
+import core.data.Photo
+import core.data.RandomId
 import core.data.User
-import core.data.photo
-import core.data.randomId
+import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.shouldBe
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Test
@@ -22,9 +23,9 @@ class ValueTest {
     @Test
     fun `test unpacking of pojo is correct`() {
         val initial = User(
-            randomId(), Name("John"), listOf(
-                photo("https://www.google.com"),
-                photo("https://www.google1.com"), photo("https://www.google3.com")
+            RandomId(), Name("John"), listOf(
+                Photo("https://www.google.com"),
+                Photo("https://www.google1.com"), Photo("https://www.google3.com")
             )
         )
 
@@ -45,10 +46,10 @@ class ValueTest {
 
         val converters = converters()
 
-        val value = initial.toValue(converters)
-        val unparsed = value.fromValue(converters)
+        val value = initial.toValue(converters, Iterable::class.java)
+        val unparsed = value.fromValue(converters, Iterable::class.java)!!
 
-        initial shouldBe unparsed
+        initial.toList() shouldContainExactly unparsed.toList()
     }
 
     @Test
@@ -57,10 +58,10 @@ class ValueTest {
 
         val converters = converters()
 
-        val value = initial.toValue(converters)
-        val unparsed = value.fromValue(converters)
+        val value = initial.toValue(converters, Iterable::class.java)
+        val unparsed = value.fromValue(converters, Iterable::class.java)!!
 
-        initial shouldBe unparsed
+        initial.toList() shouldContainExactly unparsed.toList()
     }
 
     @Test
@@ -69,8 +70,8 @@ class ValueTest {
 
         val converters = converters()
 
-        val value = initial.toValue(converters)
-        val unparsed = value.fromValue(converters)
+        val value = initial.toValue(converters, List::class.java)
+        val unparsed = value.fromValue(converters, List::class.java)
 
         initial shouldBe unparsed
     }
@@ -81,8 +82,8 @@ class ValueTest {
 
         val converters = converters()
 
-        val value = initial.toValue(converters)
-        val unparsed = value.fromValue(converters)
+        val value = initial.toValue(converters, Map::class.java)
+        val unparsed = value.fromValue(converters, Map::class.java)
 
         initial shouldBe unparsed
     }
@@ -93,8 +94,8 @@ class ValueTest {
 
         val converters = converters()
 
-        val value = initial.toValue(converters)
-        val unparsed = value.fromValue(converters)
+        val value = initial.toValue(converters, List::class.java)
+        val unparsed = value.fromValue(converters, List::class.java)
 
         initial shouldBe unparsed
     }
@@ -105,8 +106,8 @@ class ValueTest {
 
         val converters = converters()
 
-        val value = initial.toValue(converters)
-        val unparsed = value.fromValue(converters)
+        val value = initial.toValue(converters, Map::class.java)
+        val unparsed = value.fromValue(converters, Map::class.java)
 
         initial shouldBe unparsed
     }
@@ -117,8 +118,8 @@ class ValueTest {
 
         val converters = converters()
 
-        val value = initial.toValue(converters)
-        val unparsed = value.fromValue(converters)
+        val value = initial.toValue(converters, List::class.java)
+        val unparsed = value.fromValue(converters, List::class.java)
 
         initial shouldBe unparsed
     }
@@ -129,8 +130,8 @@ class ValueTest {
 
         val converters = converters()
 
-        val value = initial.toValue(converters)
-        val unparsed = value.fromValue(converters)
+        val value = initial.toValue(converters, Map::class.java)
+        val unparsed = value.fromValue(converters, Map::class.java)
 
         initial shouldBe unparsed
     }
