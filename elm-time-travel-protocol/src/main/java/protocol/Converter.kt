@@ -36,6 +36,7 @@ fun converters(
             register(BooleanConverter, java.lang.Boolean::class.java, Boolean::class.java)
         }.apply(config)
 
+@Deprecated("subject for removal")
 class Converters internal constructor() {
 
     @PublishedApi

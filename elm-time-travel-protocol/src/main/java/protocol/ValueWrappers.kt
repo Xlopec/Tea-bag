@@ -18,6 +18,7 @@ private val classComparator = Comparator<KClass<*>> { t1, t2 ->
 }
 
 @Suppress("UNCHECKED_CAST")
+@Deprecated("subject for removal")
 fun <T> T?.toValue(
     actualType: Class<out T>,
     converters: Converters,
@@ -26,12 +27,14 @@ fun <T> T?.toValue(
     (this?.let { t -> converters.findConverter(actualType, declaredType).to(t, converters) } ?: wrap(actualType)) as Value<T>
 
 @Suppress("UNCHECKED_CAST")
+@Deprecated("subject for removal")
 fun <T> T.toValue(
     converters: Converters,
     declaredType: Class<T> = clazz as Class<T>
 ): Value<T> = toValue(clazz, converters, declaredType) as Value<T>
 
 @Suppress("UNCHECKED_CAST")
+@Deprecated("subject for removal")
 fun <T> Value<T>.fromValue(converters: Converters, interfaceType: Class<T> = type.clazz as Class<T>): T? = when (this) {
     is Null -> null
     is Ref,

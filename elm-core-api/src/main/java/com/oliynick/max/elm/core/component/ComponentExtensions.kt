@@ -89,7 +89,7 @@ fun <S, C> S.noCommand(): UpdateWith<S, C> = this to emptySet()
  * @param action action to perform that produces no messages that can be consumed by a component
  * @return set of messages to be consumed by a component, always empty
  */
-suspend inline fun <C, M> C.sideEffect(crossinline action: suspend C.() -> Unit): Set<M> {
+suspend inline infix fun <C, M> C.sideEffect(crossinline action: suspend C.() -> Unit): Set<M> {
     action()
     return emptySet()
 }
@@ -103,7 +103,7 @@ suspend inline fun <C, M> C.sideEffect(crossinline action: suspend C.() -> Unit)
  * @param action action to perform that might produce message to be consumed by a component
  * @return set of messages to be consumed a component
  */
-suspend inline fun <C, M> C.effect(crossinline action: suspend C.() -> M?): Set<M> {
+suspend inline infix fun <C, M> C.effect(crossinline action: suspend C.() -> M?): Set<M> {
     return action(this@effect)?.let(::setOf) ?: emptySet()
 }
 

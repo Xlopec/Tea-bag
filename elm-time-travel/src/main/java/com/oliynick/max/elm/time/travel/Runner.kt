@@ -49,11 +49,14 @@ fun main() {
                 SomeTestState(SomeTestString("initial")),
                 { emptySet() },
                 { message, _ ->
+                    println(message)
                     SomeTestState(message.str.copy(value = message.str.value + Random.nextDouble().toString())).noCommand()
                 }
             ),
             ServerSettings(
-                ComponentId("webSocketComponent")
+                ComponentId("webSocketComponent"),
+                gsonSerializer(),
+                URL()
             )
         )
 

@@ -18,10 +18,20 @@ package protocol
 
 import java.util.*
 
+typealias Json = String
+
 sealed class ServerMessage
 
-data class NotifyComponentSnapshot<out M, out T>(val message: Value<M>, val oldState: Value<T>, val newState: Value<T>) : ServerMessage()
+data class NotifyComponentSnapshot(
+    val message: Json,
+    val oldState: Json,
+    val newState: Json
+) : ServerMessage()
 
-data class NotifyComponentAttached(val state: Value<*>) : ServerMessage()
+data class NotifyComponentAttached(
+    val state: Json
+) : ServerMessage()
 
-data class ActionApplied(val id: UUID) : ServerMessage()
+data class ActionApplied(
+    val id: UUID
+) : ServerMessage()

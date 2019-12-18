@@ -47,7 +47,7 @@ fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
             ComponentId::class.java,
             ComponentIdAdapter
         )
-        .registerTypeAdapter(
+        /*.registerTypeAdapter(
             IntWrapper::class.java,
             IntAdapter
         )
@@ -102,7 +102,7 @@ fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
         .registerTypeHierarchyAdapter(
             Value::class.java,
             ValueDeserializer
-        )
+        )*/
         .apply(config)
         .create()
 

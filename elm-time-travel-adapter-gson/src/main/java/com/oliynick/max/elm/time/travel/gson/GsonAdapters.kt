@@ -269,11 +269,11 @@ object ClientMessageAdapter : JsonSerializer<ClientMessage>, JsonDeserializer<Cl
     ): ClientMessage = context.deserialize(json, json.asJsonObject["type"].asString.clazz())
 }
 
-object NotifyComponentSnapshotAdapter : JsonSerializer<NotifyComponentSnapshot<*, *>>,
-    JsonDeserializer<NotifyComponentSnapshot<*, *>> {
+object NotifyComponentSnapshotAdapter : JsonSerializer<NotifyComponentSnapshot>,
+    JsonDeserializer<NotifyComponentSnapshot> {
 
     override fun serialize(
-        src: NotifyComponentSnapshot<*, *>,
+        src: NotifyComponentSnapshot,
         typeOfSrc: Type?,
         context: JsonSerializationContext
     ): JsonElement = src.typedJsonObject {
@@ -286,11 +286,11 @@ object NotifyComponentSnapshotAdapter : JsonSerializer<NotifyComponentSnapshot<*
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): NotifyComponentSnapshot<*, *> {
+    ): NotifyComponentSnapshot {
         val jsonObject = json.asJsonObject
 
         fun deserialize(propertyName: String) =
-            context.deserialize<Value<*>>(jsonObject[propertyName], Value::class.java)
+            context.deserialize<Json>(jsonObject[propertyName], Any::class.java)
 
         return NotifyComponentSnapshot(
             deserialize("message"),
@@ -312,7 +312,7 @@ object ApplyStateAdapter : JsonSerializer<ApplyState>, JsonDeserializer<ApplySta
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): ApplyState = ApplyState(context.deserialize(json.asJsonObject["state"], Value::class.java))
+    ): ApplyState = ApplyState(context.deserialize(json.asJsonObject["state"], Any::class.java))
 }
 
 object ApplyMessageAdapter : JsonSerializer<ApplyMessage>, JsonDeserializer<ApplyMessage> {
@@ -328,7 +328,7 @@ object ApplyMessageAdapter : JsonSerializer<ApplyMessage>, JsonDeserializer<Appl
         typeOfT: Type?,
         context: JsonDeserializationContext
     ): ApplyMessage =
-        ApplyMessage(context.deserialize(json.asJsonObject["message"], Value::class.java))
+        ApplyMessage(context.deserialize(json.asJsonObject["message"], Any::class.java))
 }
 
 object NotifyComponentAttachedAdapter : JsonSerializer<NotifyComponentAttached>,
@@ -347,7 +347,7 @@ object NotifyComponentAttachedAdapter : JsonSerializer<NotifyComponentAttached>,
     ): NotifyComponentAttached = NotifyComponentAttached(
         context.deserialize(
             json.asJsonObject["state"],
-            Value::class.java
+            Any::class.java
         )
     )
 }

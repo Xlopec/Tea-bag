@@ -1,5 +1,6 @@
 package protocol
 
+@Deprecated("useless")
 inline class RemoteType(val value: String) {
 
     constructor(cl: Class<*>) : this(cl.serializeName)
@@ -10,6 +11,7 @@ inline class RemoteType(val value: String) {
 data class Property<T>(val type: RemoteType, val name: String, val v: Value<T>)
 
 sealed class Value<out T> {
+    @Deprecated("useless")
     abstract val type: RemoteType
 }
 
