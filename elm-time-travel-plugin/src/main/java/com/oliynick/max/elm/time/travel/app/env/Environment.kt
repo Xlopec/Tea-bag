@@ -1,4 +1,4 @@
-package com.oliynick.max.elm.time.travel.app.di
+package com.oliynick.max.elm.time.travel.app.env
 
 import com.intellij.ide.util.PropertiesComponent
 import com.oliynick.max.elm.time.travel.app.domain.resolver.*

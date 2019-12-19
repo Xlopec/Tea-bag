@@ -11,10 +11,7 @@ import com.oliynick.max.elm.core.component.Env
 import com.oliynick.max.elm.core.component.androidLogger
 import com.oliynick.max.elm.time.travel.Component
 import com.oliynick.max.elm.time.travel.URL
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
-import protocol.*
-import java.net.URL
+import protocol.ComponentId
 import java.util.*
 
 fun Environment.appComponent(): Component<Message, State> {
@@ -46,10 +43,10 @@ fun Environment.appComponent(): Component<Message, State> {
         return Component(ComponentId("News Reader App"), componentDependencies, URL(host = "10.0.2.2")) {
             serverSettings {
 
-                converters {
+                /*converters {
                     +URLConverter
                     +PersistentListConverter
-                }
+                }*/
             }
         }
     }
@@ -58,7 +55,7 @@ fun Environment.appComponent(): Component<Message, State> {
 
 }
 
-private fun toRef(s: Screen, converters: Converters): Value<*> = s.toValue(converters)
+/*private fun toRef(s: Screen, converters: Converters): Value<*> = s.toValue(converters)
 
 private object PersistentListConverter : Converter<PersistentList<*>, CollectionWrapper> {
 
@@ -79,4 +76,4 @@ private object URLConverter : Converter<URL, StringWrapper> {
     override fun to(t: URL, converters: Converters): StringWrapper =
         wrap(t.toExternalForm())
 
-}
+}*/

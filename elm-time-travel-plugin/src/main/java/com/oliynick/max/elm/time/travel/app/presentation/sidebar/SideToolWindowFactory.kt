@@ -22,8 +22,8 @@ import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
-import com.oliynick.max.elm.time.travel.app.di.Environment
-import com.oliynick.max.elm.time.travel.app.di.PluginComponent
+import com.oliynick.max.elm.time.travel.app.env.Environment
+import com.oliynick.max.elm.time.travel.app.env.PluginComponent
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.storage.properties
 import kotlinx.coroutines.flow.asFlow

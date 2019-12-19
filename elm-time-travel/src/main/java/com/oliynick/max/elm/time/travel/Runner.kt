@@ -22,8 +22,7 @@ import com.oliynick.max.elm.core.component.noCommand
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import protocol.*
-import java.util.*
+import protocol.ComponentId
 import kotlin.random.Random
 
 data class SomeTestString(val value: String)
@@ -31,14 +30,6 @@ data class SomeTestString(val value: String)
 data class SomeTestCommand(val str: SomeTestString/*, val collection : Collection<Any>*/)
 
 data class SomeTestState(val string: SomeTestString/*, val uri: Uri*/)
-
-object SomeUUIDConverter : Converter<UUID, StringWrapper> {
-    override fun from(v: StringWrapper, converters: Converters): UUID =
-        UUID.fromString(v.value)
-
-    override fun to(t: UUID, converters: Converters): StringWrapper =
-        wrap(t.toString())
-}
 
 fun main() {
 

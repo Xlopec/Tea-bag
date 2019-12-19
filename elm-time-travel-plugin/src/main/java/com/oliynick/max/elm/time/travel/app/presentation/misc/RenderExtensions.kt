@@ -148,22 +148,22 @@ private fun MapWrapper.toReadableString(): String {
     )}"
 }
 
-private fun Null.toReadableString(): String = "${type.value}:null"
+private fun Null.toReadableString(): String = "null"
 
 private fun StringWrapper.toReadableString(): String = '"' + value + '"'
 
 private fun Ref.toReadableString(): String =
-    "${type.value}(${properties.joinToString(transform = ::toReadableString)})"
+    properties.joinToString(transform = ::toReadableString)
 
 private fun toReadableString(field: Property<*>): String =
     "${field.name}=${field.v.toReadableString()}"
 
 private fun CollectionWrapper.toReadableString(): String {
-    return "${type.value} ${value.joinToString(
+    return value.joinToString(
         prefix = "[",
         postfix = "]",
         transform = { it.toReadableString() }
-    )}"
+    )
 }
 
 private val Value<*>.icon: Icon?

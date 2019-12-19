@@ -39,16 +39,12 @@ class ValueDslTest {
         }
 
         val expected = Ref(
-            RemoteType(User::class.java),
             setOf(
                 Property(
-                    RemoteType(Id::class.java),
                     "id",
                     Ref(
-                        RemoteType(Id::class.java),
                         setOf(
                             Property(
-                                RemoteType(String::class.java),
                                 "value",
                                 wrap(testUser.id.uuid.toString())
                             )
@@ -56,13 +52,10 @@ class ValueDslTest {
                     )
                 ),
                 Property(
-                    RemoteType(Name::class.java),
                     "name",
                     Ref(
-                        RemoteType(Name::class.java),
                         setOf(
                             Property(
-                                RemoteType(String::class.java),
                                 "value",
                                 wrap(testUser.name.value)
                             )
@@ -70,7 +63,6 @@ class ValueDslTest {
                     )
                 ),
                 Property(
-                    RemoteType(testUser.photos::class.java),
                     "photos",
                     CollectionWrapper(
                         testUser.photos.map {
@@ -79,7 +71,6 @@ class ValueDslTest {
                     )
                 ),
                 Property(
-                    RemoteType(String::class.java),
                     "avatar",
                     wrap(String::class.java)
                 )

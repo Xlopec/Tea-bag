@@ -8,37 +8,30 @@ inline class RemoteType(val value: String) {
     override fun toString() = "RemoteType(value='$value')"
 }
 
-data class Property<T>(val type: RemoteType, val name: String, val v: Value<T>)
+data class Property<T>(val name: String, val v: Value<T>)
 
-sealed class Value<out T> {
-    @Deprecated("useless")
-    abstract val type: RemoteType
-}
+sealed class Value<out T>
 
 sealed class PrimitiveWrapper<T>(val value: T) : Value<T>() {
-    final override val type: RemoteType = RemoteType(value!!::class.java)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is PrimitiveWrapper<*>) return false
 
         if (value != other.value) return false
-        if (type != other.type) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = value?.hashCode() ?: 0
-        result = 31 * result + type.hashCode()
-        return result
+        return value?.hashCode() ?: 0
     }
 
-    override fun toString() = "PrimitiveWrapper(value=$value, type=$type)"
+    override fun toString() = "PrimitiveWrapper(value=$value)"
 
 }
 
-data class Null(override val type: RemoteType) : Value<Any>()
+object Null : Value<Any>()
 
 class IntWrapper(value: Int) : PrimitiveWrapper<Int>(value)
 
@@ -69,25 +62,19 @@ class BooleanWrapper private constructor(value: Boolean) : PrimitiveWrapper<Bool
 
 //todo remove generic?
 sealed class CollectionPrimitiveWrapper<T>(val value: T) : Value<T>() {
-    final override val type: RemoteType = RemoteType(value!!::class.java)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is CollectionPrimitiveWrapper<*>) return false
 
         if (value != other.value) return false
-        if (type != other.type) return false
 
         return true
     }
 
-    override fun hashCode(): Int {
-        var result = value?.hashCode() ?: 0
-        result = 31 * result + type.hashCode()
-        return result
-    }
+    override fun hashCode(): Int = value?.hashCode() ?: 0
 
-    override fun toString() = "CollectionPrimitiveWrapper(value=$value, type=$type)"
+    override fun toString() = "CollectionPrimitiveWrapper(value=$value)"
 
 }
 
@@ -95,6 +82,6 @@ class CollectionWrapper(value: List<Value<*>>) : CollectionPrimitiveWrapper<List
 
 class MapWrapper(value: Map<Value<*>, Value<*>>) : CollectionPrimitiveWrapper<Map<Value<*>, Value<*>>>(value)
 
-data class Ref(override val type: RemoteType, val properties: Set<Property<*>>) : Value<Any>()
+data class Ref(val properties: Set<Property<*>>) : Value<Any>()
 
 inline val Class<*>.serializeName: String get() = name

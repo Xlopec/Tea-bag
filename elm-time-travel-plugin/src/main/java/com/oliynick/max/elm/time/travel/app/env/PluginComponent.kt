@@ -1,4 +1,4 @@
-package com.oliynick.max.elm.time.travel.app.di
+package com.oliynick.max.elm.time.travel.app.env
 
 import com.oliynick.max.elm.core.actor.Component
 import com.oliynick.max.elm.core.component.Component

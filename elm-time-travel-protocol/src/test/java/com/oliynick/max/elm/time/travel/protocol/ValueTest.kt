@@ -47,7 +47,7 @@ class ValueTest {
         val converters = converters()
 
         val value = initial.toValue(converters, Iterable::class.java)
-        val unparsed = value.fromValue(converters, Iterable::class.java)!!
+        val unparsed = value.fromValue(converters)!!
 
         initial.toList() shouldContainExactly unparsed.toList()
     }
@@ -59,7 +59,7 @@ class ValueTest {
         val converters = converters()
 
         val value = initial.toValue(converters, Iterable::class.java)
-        val unparsed = value.fromValue(converters, Iterable::class.java)!!
+        val unparsed = value.fromValue(converters)!!
 
         initial.toList() shouldContainExactly unparsed.toList()
     }
@@ -71,7 +71,7 @@ class ValueTest {
         val converters = converters()
 
         val value = initial.toValue(converters, List::class.java)
-        val unparsed = value.fromValue(converters, List::class.java)
+        val unparsed = value.fromValue(converters)
 
         initial shouldBe unparsed
     }
@@ -83,7 +83,7 @@ class ValueTest {
         val converters = converters()
 
         val value = initial.toValue(converters, Map::class.java)
-        val unparsed = value.fromValue(converters, Map::class.java)
+        val unparsed = value.fromValue(converters)
 
         initial shouldBe unparsed
     }
@@ -95,7 +95,7 @@ class ValueTest {
         val converters = converters()
 
         val value = initial.toValue(converters, List::class.java)
-        val unparsed = value.fromValue(converters, List::class.java)
+        val unparsed = value.fromValue(converters)
 
         initial shouldBe unparsed
     }
@@ -107,7 +107,7 @@ class ValueTest {
         val converters = converters()
 
         val value = initial.toValue(converters, Map::class.java)
-        val unparsed = value.fromValue(converters, Map::class.java)
+        val unparsed = value.fromValue(converters)
 
         initial shouldBe unparsed
     }
@@ -119,7 +119,7 @@ class ValueTest {
         val converters = converters()
 
         val value = initial.toValue(converters, List::class.java)
-        val unparsed = value.fromValue(converters, List::class.java)
+        val unparsed = value.fromValue(converters)
 
         initial shouldBe unparsed
     }
@@ -131,7 +131,7 @@ class ValueTest {
         val converters = converters()
 
         val value = initial.toValue(converters, Map::class.java)
-        val unparsed = value.fromValue(converters, Map::class.java)
+        val unparsed = value.fromValue(converters)
 
         initial shouldBe unparsed
     }

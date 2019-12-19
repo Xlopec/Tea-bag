@@ -184,7 +184,6 @@ object NullAdapter : JsonSerializer<Null>, JsonDeserializer<Null> {
         context: JsonSerializationContext
     ): JsonElement = JsonObject().apply {
         addProperty("wrapper_type", src.javaClass.name)
-        addProperty("underlying_type", src.type.value)
         add("value", null)
     }
 
@@ -193,7 +192,7 @@ object NullAdapter : JsonSerializer<Null>, JsonDeserializer<Null> {
         typeOfT: Type?,
         context: JsonDeserializationContext
     ): Null {
-        return Null(RemoteType(json.asJsonObject["underlying_type"].asString.clazz()))
+        return Null
     }
 }
 
@@ -221,7 +220,6 @@ object RefAdapter : JsonSerializer<Ref>, JsonDeserializer<Ref> {
         context: JsonSerializationContext
     ): JsonElement = JsonObject()
         .apply {
-            addProperty("underlying_type", src.type.value)
             addProperty("wrapper_type", src::class.java.serializeName)
             add("properties", src.properties.toJsonProperties(context::serialize))
         }
@@ -232,7 +230,6 @@ object RefAdapter : JsonSerializer<Ref>, JsonDeserializer<Ref> {
         context: JsonDeserializationContext
     ): Ref = json.asJsonObject.run {
         Ref(
-            RemoteType(this["underlying_type"].asString),
             this["properties"].asJsonArray.fromJsonProperties(context::deserialize)
         )
     }
@@ -426,7 +423,6 @@ private fun PrimitiveWrapper<*>.toJson(): JsonObject {
 
     return JsonObject().apply {
         addProperty("wrapper_type", this@toJson.javaClass.name)
-        addProperty("underlying_type", this@toJson.type.value)
         add("value", jsonPrimitive)
     }
 }
@@ -441,7 +437,6 @@ private inline fun Property<*>.toJsonProperty(serializer: (Any?) -> JsonElement)
     JsonObject().apply {
         addProperty("property_name", name)
         addProperty("wrapper_type", v::class.java.serializeName)
-        addProperty("underlying_type", type.value)
         add("property", serializer(v))
     }
 
@@ -453,7 +448,6 @@ private inline fun JsonArray.fromJsonProperties(deserializer: (JsonElement, Type
 
 private inline fun JsonObject.fromJsonProperty(deserializer: (JsonElement, Type) -> Value<*>): Property<*> =
     Property(
-        RemoteType(this["underlying_type"].asString),
         this["property_name"].asString,
         deserializer(this["property"], this["wrapper_type"].asString.wrapperType())
     )

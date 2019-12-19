@@ -81,7 +81,6 @@ interface JsonSerializer {
 @DslBuilder
 class ServerSettingsBuilder internal constructor(
     var id: ComponentId,
-    var converters: Converters,
     var url: URL,
     var jsonSerializer: JsonSerializer
 ) {
@@ -90,12 +89,6 @@ class ServerSettingsBuilder internal constructor(
         serializer: JsonSerializer
     ) {
         jsonSerializer = serializer
-    }
-
-    @Deprecated("subject for removal")
-    @JvmName("unsafeConverters")
-    fun converters(config: Converters.() -> Unit) {
-        converters.apply(config)
     }
 
 }
@@ -127,7 +120,7 @@ fun <M, C, S> Dependencies(
     config: DebugEnvBuilder<M, C, S>.() -> Unit = {}
 ) = DebugEnvBuilder(
     EnvBuilder(env),
-    ServerSettingsBuilder(id, converters(), url, serializer)
+    ServerSettingsBuilder(id, url, serializer)
 ).apply(config).toDebugDependencies()
 
 inline fun <reified M, C, reified S> CoroutineScope.Component(

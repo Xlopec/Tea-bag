@@ -287,11 +287,9 @@ private fun Gson.asJsonElement(
         acc
     }
 
-private val stubType = RemoteType("stub")
-
 private fun JsonElement.toValue(): Value<*> =
     when {
-        isJsonNull -> Null(stubType)
+        isJsonNull -> Null
         isJsonObject -> asJsonObject.toValue()
         isJsonPrimitive -> asJsonPrimitive.toValue()
         isJsonArray -> asJsonArray.toValue()
@@ -303,10 +301,8 @@ private fun JsonObject.toValue(): Ref {
     val entrySet = entrySet()
 
     return Ref(
-        stubType,
         entrySet.mapTo(HashSet<Property<*>>(entrySet.size)) { entry ->
             Property(
-                stubType,
                 entry.key,
                 entry.value.toValue()
             )
@@ -316,15 +312,15 @@ private fun JsonObject.toValue(): Ref {
 
 private fun JsonPrimitive.toValue(): Value<*> =
     when {
-        isBoolean -> wrap(asBoolean)
-        isString -> wrap(asString)
+        isBoolean -> BooleanWrapper.of(asBoolean)
+        isString -> StringWrapper(asString)
         isNumber -> when (asNumber) {
-            is Float -> wrap(asFloat)
-            is Double -> wrap(asDouble)
-            is Int -> wrap(asInt)
-            is Long -> wrap(asLong)
-            is Short -> wrap(asShort)
-            is Byte -> wrap(asByte)
+            is Float -> FloatWrapper(asFloat)
+            is Double -> DoubleWrapper(asDouble)
+            is Int -> IntWrapper(asInt)
+            is Long -> LongWrapper(asLong)
+            is Short -> ShortWrapper(asShort)
+            is Byte -> ByteWrapper(asByte)
             else -> error("Don't know how to wrap $this")
         }
         else -> error("Don't know how to wrap $this")
