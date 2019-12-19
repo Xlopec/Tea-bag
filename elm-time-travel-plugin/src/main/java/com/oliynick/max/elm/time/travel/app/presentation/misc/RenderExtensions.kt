@@ -16,7 +16,7 @@
 
 package com.oliynick.max.elm.time.travel.app.presentation.misc
 
-import com.oliynick.max.elm.time.travel.app.domain.Snapshot
+import com.oliynick.max.elm.time.travel.app.domain.cms.Snapshot
 import com.oliynick.max.elm.time.travel.app.presentation.sidebar.getIcon
 import org.kodein.di.simpleErasedName
 import protocol.*

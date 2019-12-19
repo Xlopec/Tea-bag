@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.elm.time.travel.app.domain
+package com.oliynick.max.elm.time.travel.app.domain.cms
 
 import protocol.ComponentId
 import protocol.Value

@@ -1,4 +1,4 @@
-package com.oliynick.max.elm.time.travel.app.domain
+package com.oliynick.max.elm.time.travel.app.domain.cms
 
 import kotlinx.coroutines.TimeoutCancellationException
 import java.net.ProtocolException
@@ -28,9 +28,15 @@ fun Throwable.toPluginException(): PluginException {
     }
 
     return when {
-        isMissingDependenciesException -> MissingDependenciesException(message!!, this)
-        isNetworkException -> NetworkException(message ?: "Network exception occurred", this)
-        else -> InternalException(message ?: "Internal exception occurred", this)
+        isMissingDependenciesException -> MissingDependenciesException(
+            message!!,
+            this)
+        isNetworkException -> NetworkException(message
+                                                                                                                      ?: "Network exception occurred",
+                                                                                                                  this)
+        else -> InternalException(message
+                                                                                                         ?: "Internal exception occurred",
+                                                                                                     this)
     }
 }
 

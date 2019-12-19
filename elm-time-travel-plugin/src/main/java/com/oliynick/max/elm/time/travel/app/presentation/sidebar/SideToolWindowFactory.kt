@@ -24,7 +24,7 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
 import com.oliynick.max.elm.time.travel.app.di.Environment
 import com.oliynick.max.elm.time.travel.app.di.PluginComponent
-import com.oliynick.max.elm.time.travel.app.domain.*
+import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.storage.properties
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect

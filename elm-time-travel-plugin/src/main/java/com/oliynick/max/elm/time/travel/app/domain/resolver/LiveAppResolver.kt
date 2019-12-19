@@ -1,10 +1,11 @@
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.elm.time.travel.app.domain
+package com.oliynick.max.elm.time.travel.app.domain.resolver
 
 import com.intellij.ide.util.PropertiesComponent
 import com.oliynick.max.elm.core.component.effect
 import com.oliynick.max.elm.core.component.sideEffect
+import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.storage.paths
 import com.oliynick.max.elm.time.travel.app.storage.serverSettings
 import com.oliynick.max.elm.time.travel.app.transport.GSON
@@ -31,7 +32,10 @@ fun HasChannels(
     exceptions: BroadcastChannel<DoNotifyOperationException> = BroadcastChannel(1),
     notifications: BroadcastChannel<NotificationMessage> = BroadcastChannel(1)
 ) =
-    HasChannels(Channels(events, exceptions, notifications))
+    HasChannels(Channels(
+        events,
+        exceptions,
+        notifications))
 
 fun HasChannels(channels: Channels) =
     object : HasChannels {
@@ -58,11 +62,13 @@ interface HasSystemProperties {
 
 fun <Env> LiveAppResolver() where Env : HasChannels,
                                   Env : HasServerService,
-                                  Env : HasSystemProperties = object : LiveAppResolver<Env> {}
+                                  Env : HasSystemProperties = object :
+    LiveAppResolver<Env> {}
 
-interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasChannels,
-                                                        Env : HasServerService,
-                                                        Env : HasSystemProperties {
+interface LiveAppResolver<Env> :
+    AppResolver<Env> where Env : HasChannels,
+                           Env : HasServerService,
+                           Env : HasSystemProperties {
 
     override suspend fun Env.resolve(command: PluginCommand): Set<PluginMessage> {
 

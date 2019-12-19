@@ -16,8 +16,8 @@
 
 package com.oliynick.max.elm.time.travel.app.transport
 
-import com.oliynick.max.elm.time.travel.app.domain.PluginMessage
-import com.oliynick.max.elm.time.travel.app.domain.Settings
+import com.oliynick.max.elm.time.travel.app.domain.cms.PluginMessage
+import com.oliynick.max.elm.time.travel.app.domain.cms.Settings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel

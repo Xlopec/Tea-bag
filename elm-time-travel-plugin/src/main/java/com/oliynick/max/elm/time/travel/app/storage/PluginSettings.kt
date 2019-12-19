@@ -18,10 +18,10 @@ package com.oliynick.max.elm.time.travel.app.storage
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
-import com.oliynick.max.elm.time.travel.app.domain.ServerSettings
-import com.oliynick.max.elm.time.travel.app.domain.Settings
-import com.oliynick.max.elm.time.travel.app.domain.defaultHost
-import com.oliynick.max.elm.time.travel.app.domain.defaultPort
+import com.oliynick.max.elm.time.travel.app.domain.cms.ServerSettings
+import com.oliynick.max.elm.time.travel.app.domain.cms.Settings
+import com.oliynick.max.elm.time.travel.app.domain.cms.defaultHost
+import com.oliynick.max.elm.time.travel.app.domain.cms.defaultPort
 import java.io.File
 
 private const val PLUGIN_ID = "com.oliynick.max.elm.time.travel.plugin"

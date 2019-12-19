@@ -4,10 +4,10 @@ import com.oliynick.max.elm.core.actor.Component
 import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.core.component.Env
 import com.oliynick.max.elm.core.component.androidLogger
-import com.oliynick.max.elm.time.travel.app.domain.PluginCommand
-import com.oliynick.max.elm.time.travel.app.domain.PluginMessage
-import com.oliynick.max.elm.time.travel.app.domain.PluginState
-import com.oliynick.max.elm.time.travel.app.domain.Stopped
+import com.oliynick.max.elm.time.travel.app.domain.cms.PluginCommand
+import com.oliynick.max.elm.time.travel.app.domain.cms.PluginMessage
+import com.oliynick.max.elm.time.travel.app.domain.cms.PluginState
+import com.oliynick.max.elm.time.travel.app.domain.cms.Stopped
 import com.oliynick.max.elm.time.travel.app.storage.pluginSettings
 
 @Suppress("FunctionName")

@@ -1,8 +1,9 @@
-package com.oliynick.max.elm.time.travel.app.domain
+package com.oliynick.max.elm.time.travel.app.domain.updater
 
 import com.oliynick.max.elm.core.component.UpdateWith
 import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
+import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import protocol.ComponentId
 
 // privacy is for pussies
@@ -14,22 +15,36 @@ object LiveUiUpdater : UiUpdater {
         state: PluginState
     ): UpdateWith<PluginState, PluginCommand> =
         when {
-            message is UpdatePort && state is Stopped -> updateServerSettings(state.updatedServerSettings {
-                copy(
-                    port = message.port
-                )
-            }, state)
-            message is UpdateHost && state is Stopped -> updateServerSettings(state.updatedServerSettings {
-                copy(
-                    host = message.host
-                )
-            }, state)
-            message === StartServer && state is Stopped -> startServer(state)
-            message === StopServer && state is Started -> stopServer(state)
-            message is RemoveSnapshots && state is Started -> removeSnapshots(message, state)
-            message is ReApplyCommands && state is Started -> reApplyCommands(message, state)
-            message is ReApplyState && state is Started -> reApplyState(message, state)
-            message is RemoveComponent && state is Started -> removeComponent(message, state)
+            message is UpdatePort && state is Stopped -> updateServerSettings(
+                state.updatedServerSettings {
+                    copy(
+                        port = message.port
+                    )
+                },
+                state)
+            message is UpdateHost && state is Stopped -> updateServerSettings(
+                state.updatedServerSettings {
+                    copy(
+                        host = message.host
+                    )
+                },
+                state)
+            message === StartServer && state is Stopped -> startServer(
+                state)
+            message === StopServer && state is Started -> stopServer(
+                state)
+            message is RemoveSnapshots && state is Started -> removeSnapshots(
+                message,
+                state)
+            message is ReApplyCommands && state is Started -> reApplyCommands(
+                message,
+                state)
+            message is ReApplyState && state is Started -> reApplyState(
+                message,
+                state)
+            message is RemoveComponent && state is Started -> removeComponent(
+                message,
+                state)
             else -> notifyIllegalMessage(message, state)
         }
 

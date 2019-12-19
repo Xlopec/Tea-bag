@@ -17,7 +17,7 @@
 package com.oliynick.max.elm.time.travel.app.presentation.info
 
 import com.oliynick.max.elm.core.component.Component
-import com.oliynick.max.elm.time.travel.app.domain.*
+import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.presentation.misc.safe
 import com.oliynick.max.elm.time.travel.app.presentation.misc.setOnClickListener
 import kotlinx.coroutines.CoroutineScope

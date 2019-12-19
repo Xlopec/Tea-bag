@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.elm.time.travel.app.domain
+package com.oliynick.max.elm.time.travel.app.domain.updater
 
-interface AppResolver<Env> {
+import com.oliynick.max.elm.core.component.UpdateWith
+import com.oliynick.max.elm.time.travel.app.domain.cms.PluginCommand
+import com.oliynick.max.elm.time.travel.app.domain.cms.PluginState
+import com.oliynick.max.elm.time.travel.app.domain.cms.UIMessage
 
-    suspend fun Env.resolve(command: PluginCommand): Set<PluginMessage>
+interface UiUpdater {
+
+    fun update(message: UIMessage, state: PluginState): UpdateWith<PluginState, PluginCommand>
 
 }

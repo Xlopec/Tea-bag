@@ -1,7 +1,8 @@
 package com.oliynick.max.elm.time.travel.app.di
 
 import com.intellij.ide.util.PropertiesComponent
-import com.oliynick.max.elm.time.travel.app.domain.*
+import com.oliynick.max.elm.time.travel.app.domain.resolver.*
+import com.oliynick.max.elm.time.travel.app.domain.updater.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -25,5 +26,6 @@ fun Environment(properties: PropertiesComponent): Environment =
         AppResolver<Environment> by LiveAppResolver(),
         HasChannels by HasChannels(),
         HasServerService by HasServerService(),
-        HasSystemProperties by HasSystemProperties(properties),
+        HasSystemProperties by HasSystemProperties(
+            properties),
         CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.Main) {}

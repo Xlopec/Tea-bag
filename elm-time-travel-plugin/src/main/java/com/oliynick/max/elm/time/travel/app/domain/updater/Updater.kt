@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.elm.time.travel.app.domain
+package com.oliynick.max.elm.time.travel.app.domain.updater
 
 import com.oliynick.max.elm.core.component.UpdateWith
+import com.oliynick.max.elm.time.travel.app.domain.cms.PluginCommand
+import com.oliynick.max.elm.time.travel.app.domain.cms.PluginMessage
+import com.oliynick.max.elm.time.travel.app.domain.cms.PluginState
 
-interface NotificationUpdater {
-
-    fun update(
-        message: NotificationMessage,
+interface Updater<Env> {
+    fun Env.update(
+        message: PluginMessage,
         state: PluginState
     ): UpdateWith<PluginState, PluginCommand>
-
 }
 
+fun notifyIllegalMessage(
+    message: PluginMessage,
+    state: PluginState
+): Nothing =
+    throw IllegalArgumentException("Can't handle message $message when plugin is in state $state")

@@ -1,8 +1,9 @@
-package com.oliynick.max.elm.time.travel.app.domain
+package com.oliynick.max.elm.time.travel.app.domain.updater
 
 import com.oliynick.max.elm.core.component.UpdateWith
 import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
+import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import protocol.ComponentId
 import protocol.Value
 import java.time.LocalDateTime
@@ -17,11 +18,19 @@ object LiveNotificationUpdater : NotificationUpdater {
         state: PluginState
     ): UpdateWith<PluginState, PluginCommand> =
         when {
-            message === NotifyStarted -> toStartedState(state.settings)
-            message === NotifyStopped -> toStoppedState(state.settings)
-            message is AppendSnapshot && state is Started -> appendSnapshot(message, state)
-            message is StateReApplied && state is Started -> reApplyState(message, state)
-            message is ComponentAttached && state is Started -> attachComponent(message, state)
+            message === NotifyStarted -> toStartedState(
+                state.settings)
+            message === NotifyStopped -> toStoppedState(
+                state.settings)
+            message is AppendSnapshot && state is Started -> appendSnapshot(
+                message,
+                state)
+            message is StateReApplied && state is Started -> reApplyState(
+                message,
+                state)
+            message is ComponentAttached && state is Started -> attachComponent(
+                message,
+                state)
             message is NotifyOperationException -> recoverFromException(
                 message.exception,
                 message.operation,
@@ -99,7 +108,9 @@ object LiveNotificationUpdater : NotificationUpdater {
             isStartStopProblem(op) -> Stopped(
                 state.settings
             ).command(notification)
-            isFatalProblem(th, op) -> notifyDeveloperException(th)
+            isFatalProblem(th,
+                                                                                                                          op) -> notifyDeveloperException(
+                th)
             else -> state.command(notification)
         }
     }
