@@ -18,7 +18,6 @@ package com.oliynick.max.elm.time.travel.app.presentation.misc
 
 import com.oliynick.max.elm.time.travel.app.domain.cms.Snapshot
 import com.oliynick.max.elm.time.travel.app.presentation.sidebar.getIcon
-import org.kodein.di.simpleErasedName
 import protocol.*
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -51,13 +50,13 @@ fun ValueNode.toReadableString(): String =
     value.toReadableString()
 
 fun IndexedNode.toReadableString(): String =
-    "[$index]=${value.toReadableString()}"
+    "[$index] = ${value.toReadableString()}"
 
 fun EntryKeyNode.toReadableString(): String =
-    "key=${key.toReadableString()}"
+    "key = ${key.toReadableString()}"
 
 fun EntryValueNode.toReadableString(): String =
-    "value=${value.toReadableString()}"
+    "value = ${value.toReadableString()}"
 
 val RenderTree.icon: Icon?
     get() = when (this) {
@@ -141,11 +140,11 @@ private fun Value<*>.toReadableString(): String = when (this) {
 }
 
 private fun MapWrapper.toReadableString(): String {
-    return "${value::class.java.simpleErasedName()} ${value.entries.joinToString(
+    return "Map:(${value.entries.joinToString(
         prefix = "{",
         postfix = "}",
         transform = { e -> e.key.toReadableString() + " -> " + e.value.toReadableString() }
-    )}"
+    )})"
 }
 
 private fun Null.toReadableString(): String = "null"
@@ -153,10 +152,10 @@ private fun Null.toReadableString(): String = "null"
 private fun StringWrapper.toReadableString(): String = '"' + value + '"'
 
 private fun Ref.toReadableString(): String =
-    properties.joinToString(transform = ::toReadableString)
+    "Object:(${properties.joinToString(transform = ::toReadableString, limit = 200)})"
 
 private fun toReadableString(field: Property<*>): String =
-    "${field.name}=${field.v.toReadableString()}"
+    "Property: ${field.name}=${field.v.toReadableString()}"
 
 private fun CollectionWrapper.toReadableString(): String {
     return value.joinToString(
