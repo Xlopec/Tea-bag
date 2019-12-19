@@ -265,7 +265,6 @@ private fun Gson.asJsonElement(
         is BooleanWrapper -> JsonPrimitive(value.value)
         is Null -> JsonNull.INSTANCE
         is CollectionWrapper -> asJsonElement(value)
-        is MapWrapper -> TODO()
         is Ref -> asJsonElement(value)
     }
 

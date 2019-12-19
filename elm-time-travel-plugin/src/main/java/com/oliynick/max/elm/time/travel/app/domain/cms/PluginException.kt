@@ -8,19 +8,40 @@ import java.util.concurrent.TimeoutException
 import javax.net.ssl.SSLException
 
 sealed class PluginException : Throwable {
-    constructor(message: String, cause: Throwable) : super(message, cause)
+    constructor(
+        message: String,
+        cause: Throwable
+    ) : super(message, cause)
+
     constructor(message: String) : super(message)
     constructor(cause: Throwable) : super(cause)
-    constructor(message: String, cause: Throwable?, enableSuppression: Boolean, writableStackTrace: Boolean) : super(message, cause, enableSuppression, writableStackTrace)
+    constructor(
+        message: String,
+        cause: Throwable?,
+        enableSuppression: Boolean,
+        writableStackTrace: Boolean
+    ) : super(message, cause, enableSuppression, writableStackTrace)
 }
 
-class UserException(message: String, cause: Throwable) : PluginException(message, cause)
+class UserException(
+    message: String,
+    cause: Throwable
+) : PluginException(message, cause)
 
-class NetworkException(message: String, cause: Throwable) : PluginException(message, cause)
+class NetworkException(
+    message: String,
+    cause: Throwable
+) : PluginException(message, cause)
 
-class MissingDependenciesException(message: String, cause: Throwable) : PluginException(message, cause)
+class MissingDependenciesException(
+    message: String,
+    cause: Throwable
+) : PluginException(message, cause)
 
-class InternalException(message: String, cause: Throwable) : PluginException(message, cause)
+class InternalException(
+    message: String,
+    cause: Throwable
+) : PluginException(message, cause)
 
 fun Throwable.toPluginException(): PluginException {
     if (this is PluginException) {
@@ -31,12 +52,9 @@ fun Throwable.toPluginException(): PluginException {
         isMissingDependenciesException -> MissingDependenciesException(
             message!!,
             this)
-        isNetworkException -> NetworkException(message
-                                                                                                                      ?: "Network exception occurred",
-                                                                                                                  this)
-        else -> InternalException(message
-                                                                                                         ?: "Internal exception occurred",
-                                                                                                     this)
+        isNetworkException -> NetworkException(message ?: "Network exception occurred",
+                                               this)
+        else -> InternalException(message ?: "Internal exception occurred", this)
     }
 }
 
@@ -59,9 +77,11 @@ private val Throwable.isMissingDependenciesException
 
 private val Throwable.isNetworkException
     // some of IO exceptions
-    get() = findCause { it is TimeoutException
+    get() = findCause {
+        it is TimeoutException
             || it is TimeoutCancellationException
             || it is UnknownHostException
             || it is SSLException
             || it is SocketTimeoutException
-            || it is ProtocolException } != null
+            || it is ProtocolException
+    } != null

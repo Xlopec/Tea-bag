@@ -16,9 +16,8 @@
 
 package com.oliynick.max.elm.time.travel.app.presentation.misc
 
-import com.oliynick.max.elm.time.travel.app.domain.cms.Snapshot
+import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.presentation.sidebar.getIcon
-import protocol.*
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import javax.swing.Icon
@@ -36,7 +35,6 @@ fun Value<*>.toJTree(): DefaultMutableTreeNode =
         is PrimitiveWrapper<*> -> toJTree()
         is Null -> toJTree()
         is CollectionWrapper -> toJTree()
-        is MapWrapper -> toJTree()
         is Ref -> toJTree()
     }
 
@@ -88,22 +86,6 @@ private fun Ref.toJTree(
         acc
     }
 
-private fun MapWrapper.toJTree(
-    parent: DefaultMutableTreeNode = DefaultMutableTreeNode(ValueNode(this))
-): DefaultMutableTreeNode =
-    value.entries.fold(parent) { acc, entry ->
-
-        val keyNode = DefaultMutableTreeNode(EntryKeyNode(entry.key))
-        val valNode = DefaultMutableTreeNode(EntryValueNode(entry.value))
-
-        entry.key.tryAppendSubTree(keyNode)
-        entry.value.tryAppendSubTree(valNode)
-
-        acc += keyNode
-        acc += valNode
-        acc
-    }
-
 private fun CollectionWrapper.toJTree(
     parent: DefaultMutableTreeNode = DefaultMutableTreeNode(ValueNode(this))
 ): DefaultMutableTreeNode =
@@ -121,7 +103,6 @@ private fun Value<*>.tryAppendSubTree(parent: DefaultMutableTreeNode): DefaultMu
     when (this) {
         is PrimitiveWrapper<*>, is Null -> null
         is CollectionWrapper -> toJTree(parent)
-        is MapWrapper -> toJTree(parent)
         is Ref -> toJTree(parent)
     }
 
@@ -133,18 +114,9 @@ private operator fun DefaultMutableTreeNode.plusAssign(child: MutableTreeNode) =
 private fun Value<*>.toReadableString(): String = when (this) {
     is StringWrapper -> toReadableString()
     is PrimitiveWrapper<*> -> value.toString()
-    is MapWrapper -> toReadableString()
     is Null -> toReadableString()
     is Ref -> toReadableString()
     is CollectionWrapper -> toReadableString()
-}
-
-private fun MapWrapper.toReadableString(): String {
-    return "Map:(${value.entries.joinToString(
-        prefix = "{",
-        postfix = "}",
-        transform = { e -> e.key.toReadableString() + " -> " + e.value.toReadableString() }
-    )})"
 }
 
 private fun Null.toReadableString(): String = "null"
@@ -168,6 +140,6 @@ private fun CollectionWrapper.toReadableString(): String {
 private val Value<*>.icon: Icon?
     inline get() = when (this) {
         is PrimitiveWrapper<*> -> getIcon("variable")
-        is CollectionWrapper, is MapWrapper, is Ref -> getIcon("class")
+        is CollectionWrapper, is Ref -> getIcon("class")
         is Null -> null
     }

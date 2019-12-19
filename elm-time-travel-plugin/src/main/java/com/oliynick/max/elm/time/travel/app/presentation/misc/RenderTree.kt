@@ -1,8 +1,7 @@
 package com.oliynick.max.elm.time.travel.app.presentation.misc
 
 import com.oliynick.max.elm.time.travel.app.domain.cms.Snapshot
-import protocol.Property
-import protocol.Value
+import com.oliynick.max.elm.time.travel.app.domain.cms.*
 
 sealed class RenderTree
 object RootNode : RenderTree()

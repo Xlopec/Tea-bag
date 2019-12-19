@@ -1,12 +1,4 @@
-package protocol
-
-@Deprecated("useless")
-inline class RemoteType(val value: String) {
-
-    constructor(cl: Class<*>) : this(cl.serializeName)
-
-    override fun toString() = "RemoteType(value='$value')"
-}
+package com.oliynick.max.elm.time.travel.app.domain.cms
 
 data class Property<T>(val name: String, val v: Value<T>)
 
@@ -80,8 +72,4 @@ sealed class CollectionPrimitiveWrapper<T>(val value: T) : Value<T>() {
 
 class CollectionWrapper(value: List<Value<*>>) : CollectionPrimitiveWrapper<List<Value<*>>>(value)
 
-class MapWrapper(value: Map<Value<*>, Value<*>>) : CollectionPrimitiveWrapper<Map<Value<*>, Value<*>>>(value)
-
 data class Ref(val properties: Set<Property<*>>) : Value<Any>()
-
-inline val Class<*>.serializeName: String get() = name

@@ -5,7 +5,6 @@ import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import protocol.ComponentId
-import protocol.Value
 import java.time.LocalDateTime
 import java.util.*
 
@@ -105,11 +104,9 @@ object LiveNotificationUpdater : NotificationUpdater {
         }
 
         return when {
-            isStartStopProblem(op) -> Stopped(
-                state.settings
-            ).command(notification)
+            isStartStopProblem(op) -> Stopped(state.settings).command(notification)
             isFatalProblem(th,
-                                                                                                                          op) -> notifyDeveloperException(
+                           op) -> notifyDeveloperException(
                 th)
             else -> state.command(notification)
         }
@@ -118,7 +115,10 @@ object LiveNotificationUpdater : NotificationUpdater {
     fun isStartStopProblem(op: PluginCommand?): Boolean =
         op === DoStopServer || op is DoStartServer
 
-    fun isFatalProblem(th: PluginException, op: PluginCommand?): Boolean =
+    fun isFatalProblem(
+        th: PluginException,
+        op: PluginCommand?
+    ): Boolean =
         op is StoreFiles || op is StoreServerSettings || op is DoNotifyOperationException
             || th is InternalException
 
@@ -130,7 +130,10 @@ object LiveNotificationUpdater : NotificationUpdater {
             newState
         )
 
-    fun DebugState.componentOrNew(id: ComponentId, state: Value<*>) =
+    fun DebugState.componentOrNew(
+        id: ComponentId,
+        state: Value<*>
+    ) =
         components[id] ?: ComponentDebugState(
             id,
             state

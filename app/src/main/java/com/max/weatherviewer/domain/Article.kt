@@ -16,7 +16,7 @@ data class Article(
 
 data class Title(val value: String) {
 
-    companion object {}
+    companion object;
 
     init {
         require(isValid(value))
@@ -25,7 +25,7 @@ data class Title(val value: String) {
 
 data class Author(val value: String) {
 
-    companion object {}
+    companion object;
 
     init {
         require(isValid(value))
@@ -34,7 +34,7 @@ data class Author(val value: String) {
 
 data class Description(val value: String) {
 
-    companion object {}
+    companion object;
 
     init {
         require(isValid(value))

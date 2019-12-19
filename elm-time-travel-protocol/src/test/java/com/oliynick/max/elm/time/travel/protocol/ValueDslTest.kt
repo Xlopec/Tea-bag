@@ -34,7 +34,7 @@ class ValueDslTest {
                     "value" of name.value
                 }
                 "photos".of(photos) { wrap(url.toExternalForm()) }
-                "avatar" of avatar?.toExternalForm()
+                "avatar" of avatar.toExternalForm()
             }
         }
 
@@ -90,7 +90,7 @@ class ValueDslTest {
                 }
                 "name" of name.value
                 "photos".of(photos) { wrap(url.toExternalForm()) }
-                "avatar" of avatar?.toExternalForm()
+                "avatar" of avatar.toExternalForm()
             }
         }
 
