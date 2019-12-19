@@ -221,15 +221,15 @@ private suspend fun processPacket(
                 is NotifyComponentSnapshot -> events.send(
                     AppendSnapshot(
                         packet.componentId,
-                        GSON.fromJson(message.message),
-                        GSON.fromJson(message.oldState),
-                        GSON.fromJson(message.newState)
+                        GSON.fromRaw(message.message),
+                        GSON.fromRaw(message.oldState),
+                        GSON.fromRaw(message.newState)
                     )
                 )
                 is NotifyComponentAttached -> events.send(
                     ComponentAttached(
                         packet.componentId,
-                        GSON.fromJson(message.state)
+                        GSON.fromRaw(message.state)
                     )
                 )
                 is ActionApplied -> completions.send(message.id)
@@ -242,9 +242,9 @@ private suspend fun processPacket(
 }
 
 //todo make private
-internal fun Gson.fromJson(
-    json: Json
-): Value<*> = fromJson(json, JsonElement::class.java).toValue()
+internal fun Gson.fromRaw(
+    any: Any
+): Value<*> = toJsonTree(any).toValue()
 
 internal fun Gson.asJson(
     value: Value<*>

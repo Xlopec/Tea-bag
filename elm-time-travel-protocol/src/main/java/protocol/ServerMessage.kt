@@ -23,13 +23,13 @@ typealias Json = String
 sealed class ServerMessage
 
 data class NotifyComponentSnapshot(
-    val message: Json,
-    val oldState: Json,
-    val newState: Json
+    val message: Any,
+    val oldState: Any,
+    val newState: Any
 ) : ServerMessage()
 
 data class NotifyComponentAttached(
-    val state: Json
+    val state: Any
 ) : ServerMessage()
 
 data class ActionApplied(

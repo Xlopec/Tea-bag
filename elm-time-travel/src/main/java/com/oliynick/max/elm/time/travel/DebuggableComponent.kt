@@ -217,15 +217,16 @@ internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.app
         // todo split into functions per message type
         is ApplyMessage -> {
             messages.send(serverSettings.serializer.run {
-                message.messageValue.fromJson(
+                TODO()
+               /* message.messageValue.fromJson(
                     M::class.java
-                )
+                )*/
             } as M)
             null
         }
         is ApplyState -> {
             // cancels previous computation job and starts a new one
-            launch { loop<M, C, S>(message.stateValue, this@with, messages, states) }
+            launch { loop<M, C, S>(TODO(), this@with, messages, states) }
         }
     }
 }

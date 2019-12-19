@@ -8,9 +8,7 @@ import com.oliynick.max.elm.core.component.sideEffect
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.storage.paths
 import com.oliynick.max.elm.time.travel.app.storage.serverSettings
-import com.oliynick.max.elm.time.travel.app.transport.GSON
 import com.oliynick.max.elm.time.travel.app.transport.ServerHandler
-import com.oliynick.max.elm.time.travel.app.transport.asJson
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import protocol.ApplyMessage
@@ -88,8 +86,8 @@ interface LiveAppResolver<Env> :
                 is DoApplyCommand -> command.sideEffect {
                     server(
                         id,
-                        // todo refactor
-                        ApplyMessage(GSON.asJson(command.command))
+                        // fixme fix
+                        ApplyMessage(command.command)
                     )
                 }
                 is DoNotifyOperationException -> command.sideEffect {
@@ -100,8 +98,8 @@ interface LiveAppResolver<Env> :
                 is DoApplyState -> command.effect {
                     server(
                         id,
-                        // todo refactor
-                        ApplyState(GSON.asJson(state))
+                        // fixme fix
+                        ApplyState(state)
                     )
 
                     StateReApplied(

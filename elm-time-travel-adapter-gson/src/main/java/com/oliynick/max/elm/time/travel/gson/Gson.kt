@@ -4,14 +4,17 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonSerializer
-import protocol.*
-import java.util.*
+import protocol.NotifyComponentAttached
 
 fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
     GsonBuilder()
         .serializeNulls()
         .setPrettyPrinting()
-        .registerTypeHierarchyAdapter(
+        .registerTypeAdapter(
+            NotifyComponentAttached::class.java,
+            NotifyComponentAttachedAdapter
+        )
+        /*.registerTypeHierarchyAdapter(
             ServerMessage::class.java,
             ServerMessageAdapter
         )
@@ -31,10 +34,7 @@ fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
             ApplyState::class.java,
             ApplyStateAdapter
         )
-        .registerTypeAdapter(
-            NotifyComponentAttached::class.java,
-            NotifyComponentAttachedAdapter
-        )
+
         .registerTypeAdapter(
             ActionApplied::class.java,
             ActionAppliedAdapter
@@ -46,7 +46,7 @@ fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
         .registerTypeAdapter(
             ComponentId::class.java,
             ComponentIdAdapter
-        )
+        )*/
         /*.registerTypeAdapter(
             IntWrapper::class.java,
             IntAdapter

@@ -106,7 +106,10 @@ object NotifyComponentAttachedAdapter : JsonSerializer<NotifyComponentAttached>,
         src: NotifyComponentAttached,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement = src.typedJsonObject { add("state", context.serialize(src.state)) }
+    ): JsonElement = src.typedJsonObject {
+        add("state", context.serialize(src.state))
+        addProperty("stateType", src.state::class.java.name)
+    }
 
     override fun deserialize(
         json: JsonElement,
@@ -115,7 +118,7 @@ object NotifyComponentAttachedAdapter : JsonSerializer<NotifyComponentAttached>,
     ): NotifyComponentAttached = NotifyComponentAttached(
         context.deserialize(
             json.asJsonObject["state"],
-            Any::class.java
+            Class.forName(json.asJsonObject["stateType"].asString)
         )
     )
 }
