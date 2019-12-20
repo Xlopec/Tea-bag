@@ -13,7 +13,10 @@ internal object GsonConverter : JsonConverter {
 
     override fun toJson(any: Any): String = gson.toJson(any)
 
-    override fun <T> fromJson(json: String, cl: Class<T>): T = gson.fromJson(json, cl)
+    override fun <T> fromJson(
+        json: String,
+        cl: Class<T>
+    ): T = gson.fromJson(json, cl)
 
 }
 
@@ -37,12 +40,18 @@ internal class GsonSerializer(
     private val gson: Gson
 ) : JsonSerializer {
 
-    override fun Any?.toJson(): String = gson.toJson(this).also {
+    override fun <T> toJson(
+        any: T,
+        type: Class<out T>
+    ): Json = gson.toJson(any, type).also {
         println("Serialized to $it")
     }
 
-    override fun <T> Json.fromJson(t: Class<out T>): T? =
-        runCatching { gson.fromJson(this, t) }
-            .getOrElse { th -> throw JsonParseException("Couldn't deserialize $this", th) }
+    override fun <T> fromJson(
+        json: Json,
+        type: Class<out T>
+    ): T? =
+        json.runCatching { this@GsonSerializer.gson.fromJson(json, type) }
+            .getOrElse { th -> throw JsonParseException("Couldn't deserialize $json", th) }
 
 }

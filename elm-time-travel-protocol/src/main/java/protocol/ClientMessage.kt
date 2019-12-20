@@ -3,9 +3,9 @@ package protocol
 sealed class ClientMessage
 
 data class ApplyMessage(
-    val messageValue: Any
+    val message: Any
 ) : ClientMessage()
 
 data class ApplyState(
-    val stateValue: Any
+    val state: Any
 ) : ClientMessage()

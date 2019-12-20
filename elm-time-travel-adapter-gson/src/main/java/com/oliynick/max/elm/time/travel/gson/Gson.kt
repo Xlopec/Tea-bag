@@ -4,17 +4,19 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonSerializer
-import protocol.NotifyComponentAttached
+import protocol.*
+import java.util.*
 
 fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
     GsonBuilder()
         .serializeNulls()
         .setPrettyPrinting()
+        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         .registerTypeAdapter(
             NotifyComponentAttached::class.java,
             NotifyComponentAttachedAdapter
         )
-        /*.registerTypeHierarchyAdapter(
+        .registerTypeHierarchyAdapter(
             ServerMessage::class.java,
             ServerMessageAdapter
         )
@@ -34,7 +36,6 @@ fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
             ApplyState::class.java,
             ApplyStateAdapter
         )
-
         .registerTypeAdapter(
             ActionApplied::class.java,
             ActionAppliedAdapter
@@ -46,68 +47,16 @@ fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
         .registerTypeAdapter(
             ComponentId::class.java,
             ComponentIdAdapter
-        )*/
-        /*.registerTypeAdapter(
-            IntWrapper::class.java,
-            IntAdapter
-        )
-        .registerTypeAdapter(
-            ByteWrapper::class.java,
-            ByteAdapter
-        )
-        .registerTypeAdapter(
-            ShortWrapper::class.java,
-            ShortAdapter
-        )
-        .registerTypeAdapter(
-            CharWrapper::class.java,
-            CharAdapter
-        )
-        .registerTypeAdapter(
-            DoubleWrapper::class.java,
-            DoubleAdapter
-        )
-        .registerTypeAdapter(
-            FloatWrapper::class.java,
-            FloatAdapter
-        )
-        .registerTypeAdapter(
-            LongWrapper::class.java,
-            LongAdapter
-        )
-        .registerTypeAdapter(
-            BooleanWrapper::class.java,
-            BooleanAdapter
-        )
-        .registerTypeAdapter(
-            StringWrapper::class.java,
-            StringAdapter
-        )
-        .registerTypeAdapter(
-            CollectionWrapper::class.java,
-            CollectionAdapter
-        )
-        .registerTypeAdapter(
-            MapWrapper::class.java,
-            MapAdapter
-        )
-        .registerTypeAdapter(
-            Null::class.java,
-            NullAdapter
-        )
-        .registerTypeAdapter(
-            Ref::class.java,
-            RefAdapter
         )
         .registerTypeHierarchyAdapter(
-            Value::class.java,
-            ValueDeserializer
-        )*/
+            List::class.java,
+            ListSerializer
+        )
         .apply(config)
         .create()
 
 inline operator fun <S, reified T> GsonBuilder.plusAssign(serializer: S) where S : JsonSerializer<T>,
-                                                                                               S : JsonDeserializer<T> {
+                                                                               S : JsonDeserializer<T> {
 
     registerTypeHierarchyAdapter(T::class.java, serializer)
 }

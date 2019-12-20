@@ -3,8 +3,9 @@
 package com.max.weatherviewer.app
 
 import com.google.gson.*
-import com.google.gson.typeadapters.RuntimeTypeAdapterFactory
 import com.max.weatherviewer.app.env.Environment
+import com.max.weatherviewer.app.serialization.PersistentListSerializer
+import com.max.weatherviewer.app.serialization.Serializer
 import com.max.weatherviewer.screens.feed.Feed
 import com.max.weatherviewer.screens.feed.FeedLoading
 import com.max.weatherviewer.screens.feed.LoadCriteria
@@ -15,6 +16,7 @@ import com.oliynick.max.elm.core.component.androidLogger
 import com.oliynick.max.elm.time.travel.Component
 import com.oliynick.max.elm.time.travel.URL
 import com.oliynick.max.elm.time.travel.gsonSerializer
+import com.oliynick.max.elm.time.travel.registerReflectiveTypeAdapter
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import protocol.ComponentId
@@ -53,71 +55,7 @@ fun Environment.appComponent(): Component<Message, State> {
 
         return Component(ComponentId("News Reader App"), componentDependencies, URL(host = "10.0.2.2")) {
             serverSettings {
-
-                installSerializer(gsonSerializer {
-
-                  //  registerTypeAdapter(PersistentList::class.java, PersistentListAdapter)
-                  //  registerTypeAdapter(List::class.java, ListAdapter)
-
-
-                    RuntimeTypeAdapterFactory.of(Feed::class.java, "gtype", true).apply {
-                        Feed::class.sealedSubclasses.forEach {
-                            registerSubtype(it.java, it.java.serializeValue)
-                        }
-                    }.also {
-                        registerTypeAdapterFactory(it)
-                    }
-
-                    RuntimeTypeAdapterFactory.of(LoadCriteria::class.java, "gtype", true).apply {
-                        LoadCriteria::class.sealedSubclasses.forEach {
-                            registerSubtype(it.java, it.java.serializeValue)
-                        }
-                    }.also {
-                        registerTypeAdapterFactory(it)
-                    }
-
-                    RuntimeTypeAdapterFactory.of(Message::class.java, "gtype", true).apply {
-                        Message::class.sealedSubclasses.forEach {
-                            registerSubtype(it.java, it.java.serializeValue)
-                        }
-                    }.also {
-                        registerTypeAdapterFactory(it)
-                    }
-
-                  /*  RuntimeTypeAdapterFactory.of(ScreenMessage::class.java).apply {
-                        ScreenMessage::class.sealedSubclasses.forEach {
-                            registerSubtype(it.java)
-                        }
-                    }.also {
-                        registerTypeAdapterFactory(it)
-                    }*/
-
-                    /*RuntimeTypeAdapterFactory.of(FeedMessage::class.java, "gtype", true).apply {
-                        FeedMessage::class.sealedSubclasses.forEach {
-                            registerSubtype(it.java, it.java.serializeValue)
-                        }
-                    }.also {
-                        registerTypeAdapterFactory(it)
-                    }*/
-
-                    /*registerHierarchyAdapter<Message>()
-                    registerHierarchyAdapter<ScreenMessage>()
-
-                    RuntimeTy
-                    registerAdapter<FeedMessage>()
-                    registerAdapter<LoadArticles>()
-                    registerAdapter<ArticlesLoaded>()*/
-                    //registerAdapter<ScreenMessageWrapper>()
-
-                    //registerTypeAdapter(Message::class.java, polyAdapter<Message>())
-                    //registerTypeHierarchyAdapter(ScreenMessage::class.java, polyAdapter<ScreenMessage>())
-                    //registerTypeHierarchyAdapter(Any::class.java, AnyAdapter)
-                    //registerTypeHierarchyAdapter(Object::class.java, AnyAdapter)
-                })
-                /*converters {
-                    +URLConverter
-                    +PersistentListConverter
-                }*/
+                installSerializer(AppGsonSerializer())
             }
         }
     }
@@ -126,17 +64,23 @@ fun Environment.appComponent(): Component<Message, State> {
 
 }
 
- inline fun <reified T : Any> GsonBuilder.registerAdapter() {
+fun AppGsonSerializer() = gsonSerializer {
+
+    registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
+    registerReflectiveTypeAdapter<Feed>()
+    registerReflectiveTypeAdapter<LoadCriteria>()
+
+}
+
+inline fun <reified T : Any> GsonBuilder.registerAdapter() {
     registerTypeAdapter(T::class.java, polyAdapter<T>())
 }
 
- inline fun <reified T : Any> GsonBuilder.registerHierarchyAdapter() {
+inline fun <reified T : Any> GsonBuilder.registerHierarchyAdapter() {
     registerTypeHierarchyAdapter(T::class.java, polyAdapter<T>())
 }
 
- interface TypeAdapter<T> : JsonSerializer<T>, JsonDeserializer<T>
-
-private object PersistentListAdapter : TypeAdapter<PersistentList<*>> {
+private object PersistentListAdapter : Serializer<PersistentList<*>> {
 
     override fun serialize(
         src: PersistentList<*>,
@@ -152,7 +96,7 @@ private object PersistentListAdapter : TypeAdapter<PersistentList<*>> {
 
 }
 
-private object ListAdapter : TypeAdapter<List<*>> {
+private object ListAdapter : Serializer<List<*>> {
 
     override fun serialize(
         src: List<*>,
@@ -168,7 +112,7 @@ private object ListAdapter : TypeAdapter<List<*>> {
 
 }
 
-inline fun <reified T : Any> polyAdapter() = object : TypeAdapter<T> {
+inline fun <reified T : Any> polyAdapter() = object : Serializer<T> {
     override fun serialize(
         src: T,
         typeOfSrc: Type?,
@@ -186,7 +130,7 @@ inline fun <reified T : Any> polyAdapter() = object : TypeAdapter<T> {
 
 }
 
- fun polyAdapter(cl : Class<*>) = object : TypeAdapter<Any> {
+fun polyAdapter(cl: Class<*>) = object : Serializer<Any> {
     override fun serialize(
         src: Any,
         typeOfSrc: Type?,
@@ -220,7 +164,7 @@ private object MessageAdapter : JsonDeserializer<Message> {
 
 }
 
-private object AnyAdapter : TypeAdapter<Any> {
+private object AnyAdapter : Serializer<Any> {
 
     override fun serialize(
         src: Any,
@@ -240,9 +184,9 @@ val Type.serializeValue: String
     get() = (this as Class<*>).canonicalName!!
 
 
- fun ClassFor(className: String) = Class.forName(className)
+fun ClassFor(className: String) = Class.forName(className)
 
- inline fun <reified T> JsonDeserializationContext.deserializeTypedJson(
+inline fun <reified T> JsonDeserializationContext.deserializeTypedJson(
     json: JsonElement
 ): T = json.asJsonObject.let { obj ->
 
@@ -251,7 +195,7 @@ val Type.serializeValue: String
     deserialize(obj["value"], typeOf)
 }
 
- fun JsonDeserializationContext.deserializeTypedJsonArray(
+fun JsonDeserializationContext.deserializeTypedJsonArray(
     json: JsonElement
 ): List<*> = json.asJsonObject.let { obj ->
 
@@ -269,7 +213,7 @@ private fun Any.typedJsonObject(
     }
     .apply(config)
 
- fun JsonSerializationContext.typedJsonObject(
+fun JsonSerializationContext.typedJsonObject(
     any: Any,
     type: Class<*> = any::class.java
 ): JsonObject = JsonObject()
@@ -278,7 +222,7 @@ private fun Any.typedJsonObject(
         add("value", serialize(any, type))
     }
 
- fun JsonSerializationContext.typedJsonObject(
+fun JsonSerializationContext.typedJsonObject(
     it: Iterable<*>,
     type: Class<*>
 ): JsonObject = JsonObject()

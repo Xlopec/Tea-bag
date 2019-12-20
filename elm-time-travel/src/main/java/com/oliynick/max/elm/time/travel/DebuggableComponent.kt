@@ -54,7 +54,10 @@ private annotation class DslBuilder
 
 internal interface JsonConverter {
     fun toJson(any: Any): String
-    fun <T> fromJson(json: String, cl: Class<T>): T
+    fun <T> fromJson(
+        json: String,
+        cl: Class<T>
+    ): T
 }
 
 //todo add dsl
@@ -72,9 +75,15 @@ data class ServerSettings(
 
 interface JsonSerializer {
 
-    fun Any?.toJson(): Json
+    fun <T> toJson(
+        any: T,
+        type: Class<out T>
+    ): Json
 
-    fun <T> Json.fromJson(t: Class<out T>): T?
+    fun <T> fromJson(
+        json: Json,
+        type: Class<out T>
+    ): T?
 
 }
 
@@ -93,7 +102,11 @@ class ServerSettingsBuilder internal constructor(
 
 }
 
-fun URL(protocol: String = "http", host: String = "localhost", port: UInt = 8080U) =
+fun URL(
+    protocol: String = "http",
+    host: String = "localhost",
+    port: UInt = 8080U
+) =
     URL(protocol, host, port.toInt(), "")
 
 @DslBuilder
@@ -216,17 +229,12 @@ internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.app
     when (message) {
         // todo split into functions per message type
         is ApplyMessage -> {
-            messages.send(serverSettings.serializer.run {
-                TODO()
-               /* message.messageValue.fromJson(
-                    M::class.java
-                )*/
-            } as M)
+            messages.send(message.message as M)
             null
         }
         is ApplyState -> {
             // cancels previous computation job and starts a new one
-            launch { loop<M, C, S>(TODO(), this@with, messages, states) }
+            launch { loop<M, C, S>(message.state as S, this@with, messages, states) }
         }
     }
 }
@@ -241,14 +249,14 @@ internal fun ClientWebSocketSession.incomingPackets(id: ComponentId) =
 
 @PublishedApi
 internal suspend inline fun <M, C, reified S> loop(
-    stateValue: Json,
+    stateValue: S,
     inputDependencies: DebugDependencies<M, C, S>,
     messages: Channel<M>,
     states: BroadcastChannel<S>
 ) {
 
     with(inputDependencies) {
-        componentEnv.withNewInitializer(serverSettings.serializer.run { stateValue.fromJson(S::class.java)!! })
+        componentEnv.withNewInitializer(stateValue)
             .loop(
                 messages,
                 states
@@ -257,9 +265,12 @@ internal suspend inline fun <M, C, reified S> loop(
 }
 
 @PublishedApi
-internal suspend fun <S> WebSocketSession.notifyAttached(first: S, serverSettings: ServerSettings) {
+internal suspend fun <S> WebSocketSession.notifyAttached(
+    first: S,
+    serverSettings: ServerSettings
+) {
     val message = notifyMessage(
-        NotifyComponentAttached(serverSettings.serializer.run { first.toJson() }),
+        NotifyComponentAttached(first as Any),
         serverSettings.id
     )
 
@@ -305,17 +316,14 @@ internal suspend fun WebSocketSession.notifyApplied(
 
 @PublishedApi
 internal fun <M, C, S> spyingInterceptor(
-    sink: SendChannel<NotifyComponentSnapshot>,
-    serializer: JsonSerializer
+    sink: SendChannel<NotifyComponentSnapshot>
 ): Interceptor<M, S, C> = { message, prevState, newState, _ ->
     sink.send(
-        with(serializer) {
-            NotifyComponentSnapshot(
-                message.toJson(),
-                prevState.toJson(),
-                newState.toJson()
-            )
-        }
+        NotifyComponentSnapshot(
+            message as Any,
+            prevState as Any,
+            newState as Any
+        )
     )
 }
 
@@ -324,16 +332,14 @@ internal fun <M, C, S> DebugDependencies<M, C, S>.withSpyingInterceptor(
     snapshots: Channel<NotifyComponentSnapshot>
 ) = copy(
     componentEnv = componentEnv.withSpyingInterceptor(
-        snapshots,
-        serverSettings.serializer
+        snapshots
     )
 )
 
 @PublishedApi
 internal fun <M, C, S> Env<M, C, S>.withSpyingInterceptor(
-    snapshots: Channel<NotifyComponentSnapshot>,
-    serializer: JsonSerializer
-) = copy(interceptor = spyingInterceptor<M, C, S>(snapshots, serializer).with(interceptor))
+    snapshots: Channel<NotifyComponentSnapshot>
+) = copy(interceptor = spyingInterceptor<M, C, S>(snapshots).with(interceptor))
 
 @PublishedApi
 internal fun <M, C, S> Env<M, C, S>.withNewInitializer(s: S) =

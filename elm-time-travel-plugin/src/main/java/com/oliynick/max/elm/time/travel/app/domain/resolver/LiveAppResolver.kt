@@ -60,13 +60,11 @@ interface HasSystemProperties {
 
 fun <Env> LiveAppResolver() where Env : HasChannels,
                                   Env : HasServerService,
-                                  Env : HasSystemProperties = object :
-    LiveAppResolver<Env> {}
+                                  Env : HasSystemProperties = object : LiveAppResolver<Env> {}
 
-interface LiveAppResolver<Env> :
-    AppResolver<Env> where Env : HasChannels,
-                           Env : HasServerService,
-                           Env : HasSystemProperties {
+interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasChannels,
+                                                        Env : HasServerService,
+                                                        Env : HasSystemProperties {
 
     override suspend fun Env.resolve(command: PluginCommand): Set<PluginMessage> {
 
