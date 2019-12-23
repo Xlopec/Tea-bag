@@ -213,13 +213,13 @@ private fun <T> JsonDeserializationContext.fromTypedJson(json: JsonElement): T =
         deserialize(obj["value"], obj["type"].asString.clazz())
     }
 
-private fun <T, C : MutableCollection<T>> JsonDeserializationContext.fromTypedJsonArray(
+private fun <T, C : MutableCollection<T?>> JsonDeserializationContext.fromTypedJsonArray(
     json: JsonElement,
     into: C
 ): C =
     json.asJsonArray
         .asSequence()
-        .map { elem -> fromTypedJson<T>(elem) }
+        .map { elem -> fromTypedJson<T?>(elem) }
         .toCollection(into)
 
 private fun String.clazz() = Class.forName(this)

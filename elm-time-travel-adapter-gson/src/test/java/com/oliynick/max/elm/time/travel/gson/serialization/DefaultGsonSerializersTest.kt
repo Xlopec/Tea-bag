@@ -27,6 +27,10 @@ class DefaultGsonSerializersTest {
         )
     )
 
+    data class NullableListWrapper(
+        val nullablePhotos: List<Photo?>
+    )
+
     @Test
     fun `test NotifyComponentAttached gets serialized correctly`() {
 
@@ -75,6 +79,53 @@ class DefaultGsonSerializersTest {
         val fromJson = gsonSerializer.fromJson(json, ClientMessage::class.java)
 
         applyMessage shouldBe fromJson
+    }
+
+    @Test
+    fun `test ApplyMessage with NullableListWrapper gets serialized properly`() {
+
+        val applyMessage = ApplyMessage(
+            NullableListWrapper(
+                listOf(
+                    Photo("https://www.google.com"),
+                    null,
+                    Photo("https://www.google.com1"),
+                    Photo("https://www.google.com2"),
+                    null
+                )
+            )
+        )
+
+        val json = gsonSerializer.toJson(applyMessage, ClientMessage::class.java)
+        val fromJson = gsonSerializer.fromJson(json, ClientMessage::class.java)
+
+        applyMessage shouldBe fromJson
+    }
+
+    @Test
+    fun `test nullable list gets serialized properly`() {
+
+        val nullableList = listOf(
+            Photo("https://www.google.com"),
+            null,
+            Photo("https://www.google.com1"),
+            Photo("https://www.google.com2"),
+            null
+        )
+
+        val json = gsonSerializer.toJson(nullableList, List::class.java)
+        val fromJson = gsonSerializer.fromJson(json, List::class.java)
+
+        nullableList shouldBe fromJson
+    }
+
+    @Test
+    fun `test null gets serialized properly`() {
+
+        val json = gsonSerializer.toJson(null, Nothing::class.java)
+        val fromJson = gsonSerializer.fromJson(json, Nothing::class.java)
+
+        null shouldBe fromJson
     }
 
     @Test
