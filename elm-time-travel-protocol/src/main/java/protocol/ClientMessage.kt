@@ -1,6 +1,5 @@
 package protocol
 
-@Deprecated("remove")
 sealed class ClientMessage
 
 data class ApplyMessage(

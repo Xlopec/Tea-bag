@@ -16,7 +16,7 @@ internal fun Gson.asJson(
     value: Value<*>
 ): Json = toJson(asJsonElement(value))
 
-private fun Gson.asJsonElement(
+fun asJsonElement(
     value: Value<*>
 ): JsonElement =
     when (value) {
@@ -34,7 +34,7 @@ private fun Gson.asJsonElement(
         is Ref -> asJsonElement(value)
     }
 
-private fun Gson.asJsonElement(
+private fun asJsonElement(
     value: Ref
 ): JsonElement {
     return JsonObject().apply {
@@ -44,11 +44,11 @@ private fun Gson.asJsonElement(
     }
 }
 
-private fun Gson.asJsonElement(
+private fun asJsonElement(
     value: CollectionWrapper
 ): JsonElement =
     value.value.fold(JsonArray(value.value.size)) { acc, v ->
-        acc.add(toJson(v))
+        acc.add(asJsonElement(v))
         acc
     }
 

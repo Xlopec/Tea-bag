@@ -4,7 +4,9 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonSerializer
-import protocol.*
+import protocol.ClientMessage
+import protocol.ComponentId
+import protocol.ServerMessage
 import java.util.*
 
 fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
@@ -20,14 +22,14 @@ fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
             ClientMessage::class.java,
             ClientMessageAdapter
         )
-        .registerTypeAdapter(
+        /*.registerTypeAdapter(
             ApplyMessage::class.java,
             ApplyMessageAdapter
-        )
-        .registerTypeAdapter(
+        )*/
+        /*.registerTypeAdapter(
             ApplyState::class.java,
             ApplyStateAdapter
-        )
+        )*/
         .registerTypeAdapter(
             UUID::class.java,
             UUIDAdapter

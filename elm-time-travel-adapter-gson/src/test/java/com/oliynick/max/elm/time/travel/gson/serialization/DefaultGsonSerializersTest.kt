@@ -9,10 +9,7 @@ import io.kotlintest.shouldBe
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import protocol.ActionApplied
-import protocol.NotifyComponentAttached
-import protocol.NotifyComponentSnapshot
-import protocol.ServerMessage
+import protocol.*
 import java.util.*
 
 @RunWith(JUnit4::class)
@@ -75,10 +72,10 @@ class DefaultGsonSerializersTest {
         fromJson shouldBe message
     }
 
-    /*@Test
-    fun `test ApplyMessage gets serialized properly`() {
+    @Test
+    fun `test ApplyMessage gets serialized properly`() = with(gsonSerializer) {
 
-        val applyMessage = ApplyMessage(testUser)
+        val applyMessage = ApplyMessage(toJsonTree(testUser))
 
         val json = gsonSerializer.toJson(applyMessage, ClientMessage::class.java)
         val fromJson = gsonSerializer.fromJson(json, ClientMessage::class.java)
@@ -87,22 +84,24 @@ class DefaultGsonSerializersTest {
     }
 
     @Test
-    fun `test ApplyMessage with NullableListWrapper gets serialized properly`() {
+    fun `test ApplyMessage with NullableListWrapper gets serialized properly`() = with(gsonSerializer) {
 
         val applyMessage = ApplyMessage(
-            NullableListWrapper(
-                listOf(
-                    Photo("https://www.google.com"),
-                    null,
-                    Photo("https://www.google.com1"),
-                    Photo("https://www.google.com2"),
-                    null
+            toJsonTree(
+                NullableListWrapper(
+                    listOf(
+                        Photo("https://www.google.com"),
+                        null,
+                        Photo("https://www.google.com1"),
+                        Photo("https://www.google.com2"),
+                        null
+                    )
                 )
             )
         )
 
-        val json = gsonSerializer.toJson(applyMessage, ClientMessage::class.java)
-        val fromJson = gsonSerializer.fromJson(json, ClientMessage::class.java)
+        val json = toJson(applyMessage, ClientMessage::class.java)
+        val fromJson = fromJson(json, ClientMessage::class.java)
 
         applyMessage shouldBe fromJson
     }
@@ -134,38 +133,14 @@ class DefaultGsonSerializersTest {
     }
 
     @Test
-    fun `test ApplyState gets serialized properly`() {
+    fun `test ApplyState gets serialized properly`() = with(gsonSerializer) {
 
-        val applyMessage = ApplyState(testUser)
+        val applyMessage = ApplyState(toJsonTree(testUser))
 
-        val json = gsonSerializer.toJson(applyMessage, ClientMessage::class.java)
-        val fromJson = gsonSerializer.fromJson(json, ClientMessage::class.java)
+        val json = toJson(applyMessage, ClientMessage::class.java)
+        val fromJson = fromJson(json, ClientMessage::class.java)
 
         applyMessage shouldBe fromJson
-    }*/
-
-    /* @Test
-     fun `test ServerMessage gets deserialized without loading client classes`() {
-
-         val replaceWithClass = "some.unknown.to.server.class"
-
-         val message = NotifyServer(UUID.randomUUID(), ComponentId("some comp"), NotifyComponentSnapshot("loh", testUser, testUser))
-         val json = gsonSerializer.toJson(message, NotifyServer::class.java)
-             .replace(testUser::class.java.name, replaceWithClass)
-
-         println("JSON $json")
-
-         shouldThrowExactly<ClassNotFoundException> {
-             gsonSerializer.fromJson(json, ClientMessage::class.java)
-         } shouldHaveMessage replaceWithClass
-
-         *//*val jsonTree = gsonSerializer.fromJson(json, JsonElement::class.java)
-
-        val aa = NotifyComponentAttached(jsonTree)
-
-
-
-        println("JSON with tree ${gsonSerializer.toJson(aa)}")*//*
     }
-*/
+
 }

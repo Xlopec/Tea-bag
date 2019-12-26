@@ -18,11 +18,14 @@ internal object ServerMessageAdapter : JsonSerializer<ServerMessage>, JsonDeseri
 
         addProperty("@type", src::class.java.serializeName)
 
-        add("@value", when (src) {
-            is NotifyComponentSnapshot -> src.toJsonElement()
-            is NotifyComponentAttached -> src.toJsonElement()
-            is ActionApplied -> src.toJsonElement(context)
-        })
+        add(
+            "@value",
+            when (src) {
+                is NotifyComponentSnapshot -> src.toJsonElement()
+                is NotifyComponentAttached -> src.toJsonElement()
+                is ActionApplied -> src.toJsonElement(context)
+            }
+        )
     }
 
     override fun deserialize(
@@ -75,13 +78,41 @@ internal object ClientMessageAdapter : JsonSerializer<ClientMessage>, JsonDeseri
         src: ClientMessage,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement = context.toTypedJson(src)
+    ): JsonElement = JsonObject {
+        addProperty("@type", src::class.java.serializeName)
+
+        add(
+            "@value",
+            when (src) {
+                is ApplyMessage -> src.toJsonElement()
+                is ApplyState -> src.toJsonElement()
+            }
+        )
+    }
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): ClientMessage = context.fromTypedJson(json)
+    ): ClientMessage = json.asJsonObject.let { obj ->
+
+        val value = obj["@value"]
+
+        when (obj["@type"].asString) {
+            ApplyMessage::class.java.serializeName -> value.asApplyMessage()
+            ApplyState::class.java.serializeName -> value.asApplyState()
+            else -> error("unknown client message type, json\n\n$json\n")
+        }
+    }
+
+    private fun ApplyMessage.toJsonElement() = message
+
+    private fun ApplyState.toJsonElement() = state
+
+    private fun JsonElement.asApplyMessage() = ApplyMessage(this)
+
+    private fun JsonElement.asApplyState() = ApplyState(this)
+
 }
 
 internal object ApplyStateAdapter : JsonSerializer<ApplyState>, JsonDeserializer<ApplyState> {
