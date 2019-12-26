@@ -196,18 +196,18 @@ internal object ListSerializer : JsonSerializer<List<*>>, JsonDeserializer<List<
 }
 
 @Suppress("FunctionName")
-private inline fun JsonObject(
+internal inline fun JsonObject(
     builder: JsonObject.() -> Unit
 ): JsonObject = JsonObject().apply(builder)
 
 @Suppress("FunctionName")
-private inline fun JsonArray(
+internal inline fun JsonArray(
     capacity: Int = 10,
     builder: JsonArray.() -> Unit
 ): JsonArray = JsonArray(capacity).apply(builder)
 
 @Suppress("FunctionName")
-private fun JsonArray(
+internal fun JsonArray(
     it: Iterable<JsonElement>
 ): JsonArray = JsonArray((it as? Collection)?.size ?: 10) { it.forEach(::add) }
 
