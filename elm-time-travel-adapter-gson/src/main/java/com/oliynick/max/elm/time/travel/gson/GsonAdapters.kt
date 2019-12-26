@@ -14,13 +14,59 @@ internal object ServerMessageAdapter : JsonSerializer<ServerMessage>, JsonDeseri
         src: ServerMessage,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement = context.toTypedJson(src)
+    ): JsonElement = JsonObject {
+
+        addProperty("@type", src::class.java.serializeName)
+
+        add("@value", when (src) {
+            is NotifyComponentSnapshot -> src.toJsonElement()
+            is NotifyComponentAttached -> src.toJsonElement()
+            is ActionApplied -> src.toJsonElement(context)
+        })
+    }
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): ServerMessage = context.fromTypedJson(json)
+    ): ServerMessage = json.asJsonObject.let { obj ->
+
+        val value = obj["@value"]
+
+        when (obj["@type"].asString) {
+            NotifyComponentSnapshot::class.java.serializeName -> value.asNotifyComponentSnapshot()
+            NotifyComponentAttached::class.java.serializeName -> value.asNotifyComponentAttached()
+            ActionApplied::class.java.serializeName -> value.asActionApplied(context)
+            else -> error("unknown server message type, json\n\n$json\n")
+        }
+    }
+
+    private fun NotifyComponentSnapshot.toJsonElement() =
+        JsonObject {
+            add("message", message)
+            add("oldState", oldState)
+            add("newState", newState)
+        }
+
+    private fun JsonElement.asNotifyComponentSnapshot() =
+        NotifyComponentSnapshot(
+            asJsonObject["message"],
+            asJsonObject["oldState"],
+            asJsonObject["newState"]
+        )
+
+    private fun NotifyComponentAttached.toJsonElement() = state
+
+    private fun JsonElement.asNotifyComponentAttached() = NotifyComponentAttached(this)
+
+    private fun ActionApplied.toJsonElement(
+        context: JsonSerializationContext
+    ) = context.serialize(id)
+
+    private fun JsonElement.asActionApplied(context: JsonDeserializationContext) =
+        ActionApplied(context.deserialize(this, UUID::class.java))
+
+
 }
 
 internal object ClientMessageAdapter : JsonSerializer<ClientMessage>, JsonDeserializer<ClientMessage> {
@@ -38,37 +84,6 @@ internal object ClientMessageAdapter : JsonSerializer<ClientMessage>, JsonDeseri
     ): ClientMessage = context.fromTypedJson(json)
 }
 
-internal object NotifyComponentSnapshotAdapter : JsonSerializer<NotifyComponentSnapshot>,
-                                                 JsonDeserializer<NotifyComponentSnapshot> {
-
-    override fun serialize(
-        src: NotifyComponentSnapshot,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ): JsonElement = JsonObject {
-        add("message", context.toTypedJson(src.message))
-        add("oldState", context.toTypedJson(src.oldState))
-        add("newState", context.toTypedJson(src.newState))
-    }
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): NotifyComponentSnapshot {
-        val jsonObject = json.asJsonObject
-
-        fun deserialize(propertyName: String) =
-            context.fromTypedJson<Any>(jsonObject[propertyName])
-
-        return NotifyComponentSnapshot(
-            deserialize("message"),
-            deserialize("oldState"),
-            deserialize("newState")
-        )
-    }
-}
-
 internal object ApplyStateAdapter : JsonSerializer<ApplyState>, JsonDeserializer<ApplyState> {
 
     override fun serialize(
@@ -82,7 +97,7 @@ internal object ApplyStateAdapter : JsonSerializer<ApplyState>, JsonDeserializer
         typeOfT: Type?,
         context: JsonDeserializationContext
     ): ApplyState =
-        context.fromTypedJson<Any>(json)
+        context.fromTypedJson<JsonElement>(json)
             .let(::ApplyState)
 }
 
@@ -98,44 +113,8 @@ internal object ApplyMessageAdapter : JsonSerializer<ApplyMessage>, JsonDeserial
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): ApplyMessage =
-        context.fromTypedJson<Any>(json)
-            .let(::ApplyMessage)
+    ): ApplyMessage = ApplyMessage(json)
 
-}
-
-internal object NotifyComponentAttachedAdapter : JsonSerializer<NotifyComponentAttached>,
-                                                 JsonDeserializer<NotifyComponentAttached> {
-
-    override fun serialize(
-        src: NotifyComponentAttached,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ): JsonElement = context.toTypedJson(src.state)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): NotifyComponentAttached =
-        context.fromTypedJson<Any>(json)
-            .let(::NotifyComponentAttached)
-}
-
-internal object ActionAppliedAdapter : JsonSerializer<ActionApplied>, JsonDeserializer<ActionApplied> {
-
-    override fun serialize(
-        src: ActionApplied,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ): JsonElement = context.toTypedJson(src.id)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): ActionApplied = context.fromTypedJson<UUID>(json)
-        .let(::ActionApplied)
 }
 
 internal object UUIDAdapter : JsonSerializer<UUID>, JsonDeserializer<UUID> {

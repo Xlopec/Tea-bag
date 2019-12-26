@@ -22,12 +22,44 @@ import java.util.*
 
 data class SomeTestString(val value: String)
 
-data class SomeTestCommand constructor(val str: SomeTestString, val collection: Collection<Any>)
+data class SomeTestCommand constructor(
+    val str: SomeTestString,
+    val collection: Collection<Any>
+)
 
 data class SomeTestState(val string: SomeTestString/*, val uri: Uri*/)
 
-data class NotifyServer(val messageId: UUID,
-                        val componentId: ComponentId,
-                        val payload: ServerMessage)
+@Deprecated("will be removed")
+data class NotifyServer(
+    val messageId: UUID,
+    val componentId: ComponentId,
+    val payload: ServerMessage
+)
 
-data class NotifyClient(val id: UUID, val component: ComponentId, val message: ClientMessage)
+@Deprecated("will be removed")
+data class NotifyClient(
+    val id: UUID,
+    val component: ComponentId,
+    val message: ClientMessage
+)
+
+/*fun ServerPacket(
+    messageId: UUID,
+    componentId: ComponentId,
+    payload: JsonTree
+): JsonTree = JsonObject {
+    addProperty("messageId", messageId.toString())
+    addProperty("componentId", componentId.id)
+    add("payload", payload)
+}
+
+fun ClientPacket(
+    id: UUID,
+    component: ComponentId,
+    payload: JsonTree
+): JsonTree = JsonObject {
+    addProperty("id", id.toString())
+    addProperty("component", component.id)
+    add("message", payload)
+}*/
+

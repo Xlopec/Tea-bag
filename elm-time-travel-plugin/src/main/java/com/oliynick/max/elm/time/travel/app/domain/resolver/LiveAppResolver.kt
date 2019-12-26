@@ -9,6 +9,7 @@ import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.storage.paths
 import com.oliynick.max.elm.time.travel.app.storage.serverSettings
 import com.oliynick.max.elm.time.travel.app.transport.ServerHandler
+import com.oliynick.max.elm.time.travel.app.transport.serialization.GSON
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import protocol.ApplyMessage
@@ -85,7 +86,7 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasChannels,
                     server(
                         id,
                         // fixme fix
-                        ApplyMessage(command.command)
+                        ApplyMessage(GSON.toJsonTree(command.command))
                     )
                 }
                 is DoNotifyOperationException -> command.sideEffect {
@@ -97,7 +98,7 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasChannels,
                     server(
                         id,
                         // fixme fix
-                        ApplyState(state)
+                        ApplyState(GSON.toJsonTree(state))
                     )
 
                     StateReApplied(

@@ -12,10 +12,6 @@ fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
         .serializeNulls()
         .setPrettyPrinting()
         .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        .registerTypeAdapter(
-            NotifyComponentAttached::class.java,
-            NotifyComponentAttachedAdapter
-        )
         .registerTypeHierarchyAdapter(
             ServerMessage::class.java,
             ServerMessageAdapter
@@ -29,16 +25,8 @@ fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
             ApplyMessageAdapter
         )
         .registerTypeAdapter(
-            NotifyComponentSnapshot::class.java,
-            NotifyComponentSnapshotAdapter
-        )
-        .registerTypeAdapter(
             ApplyState::class.java,
             ApplyStateAdapter
-        )
-        .registerTypeAdapter(
-            ActionApplied::class.java,
-            ActionAppliedAdapter
         )
         .registerTypeAdapter(
             UUID::class.java,

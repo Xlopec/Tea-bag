@@ -18,7 +18,7 @@ package com.oliynick.max.elm.time.travel.app.transport
 
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.transport.serialization.GSON
-import com.oliynick.max.elm.time.travel.app.transport.serialization.fromRaw
+import com.oliynick.max.elm.time.travel.app.transport.serialization.toValue
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.features.CallLogging
@@ -218,15 +218,15 @@ private suspend fun processPacket(
                 is NotifyComponentSnapshot -> events.send(
                     AppendSnapshot(
                         packet.componentId,
-                        GSON.fromRaw(message.message),
-                        GSON.fromRaw(message.oldState),
-                        GSON.fromRaw(message.newState)
+                        message.message.toValue(),
+                        message.oldState.toValue(),
+                        message.newState.toValue()
                     )
                 )
                 is NotifyComponentAttached -> events.send(
                     ComponentAttached(
                         packet.componentId,
-                        GSON.fromRaw(message.state)
+                        message.state.toValue()
                     )
                 )
                 is ActionApplied -> completions.send(message.id)

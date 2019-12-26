@@ -6,12 +6,26 @@ import com.google.gson.JsonParseException
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory
 import com.oliynick.max.elm.time.travel.gson.gson
 import protocol.Json
+import protocol.JsonTree
 
+@PublishedApi
 internal object GsonConverter : JsonConverter {
 
     private val gson = gson()
+    override fun <T> toJsonTree(
+        any: T,
+        cl: Class<out T>
+    ): JsonTree = gson.toJsonTree(any, cl)
 
-    override fun toJson(any: Any): String = gson.toJson(any)
+
+    override fun <T> fromJsonTree(
+        json: JsonTree,
+        cl: Class<T>
+    ): T = gson.fromJson(json, cl)
+
+    override fun <T> toJson(
+        any: T
+    ): String = gson.toJson(any)
 
     override fun <T> fromJson(
         json: String,

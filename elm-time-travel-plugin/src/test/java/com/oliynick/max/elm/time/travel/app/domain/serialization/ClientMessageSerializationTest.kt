@@ -26,7 +26,7 @@ class ClientMessageSerializationTest {
             listOf()
         )
 
-        val applyMessage = ApplyMessage(user)
+        val applyMessage = ApplyMessage(gson.toJsonTree(user))
 
         val json = gson.toJson(applyMessage, ClientMessage::class.java)
         val fromJson = gson.fromJson(json, ClientMessage::class.java)

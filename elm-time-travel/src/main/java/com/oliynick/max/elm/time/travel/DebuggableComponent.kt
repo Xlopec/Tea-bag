@@ -53,7 +53,20 @@ internal val localhost by lazy(::URL)
 private annotation class DslBuilder
 
 internal interface JsonConverter {
-    fun toJson(any: Any): String
+    fun <T> toJsonTree(
+        any: T,
+        cl: Class<out T>
+    ): JsonTree
+
+    fun <T> fromJsonTree(
+        json: JsonTree,
+        cl: Class<T>
+    ): T
+
+    fun <T> toJson(
+        any: T
+    ): String
+
     fun <T> fromJson(
         json: String,
         cl: Class<T>
@@ -136,7 +149,7 @@ fun <M, C, S> Dependencies(
     ServerSettingsBuilder(id, url, serializer)
 ).apply(config).toDebugDependencies()
 
-inline fun <reified M, C, reified S> CoroutineScope.Component(
+inline fun <reified M, reified C, reified S> CoroutineScope.Component(
     id: ComponentId,
     env: Env<M, C, S>,
     url: URL = localhost,
@@ -152,7 +165,7 @@ inline fun <reified M, C, reified S> CoroutineScope.Component(
     )
 )
 
-inline fun <reified M, C, reified S> CoroutineScope.Component(debugDependencies: DebugDependencies<M, C, S>): Component<M, S> {
+inline fun <reified M, reified C, reified S> CoroutineScope.Component(debugDependencies: DebugDependencies<M, C, S>): Component<M, S> {
 
     val (messages, states) = webSocketComponent(debugDependencies)
 
@@ -160,7 +173,7 @@ inline fun <reified M, C, reified S> CoroutineScope.Component(debugDependencies:
 }
 
 @PublishedApi
-internal inline fun <reified M, C, reified S> CoroutineScope.webSocketComponent(dependencies: DebugDependencies<M, C, S>): ComponentInternal<M, S> {
+internal inline fun <reified M, reified C, reified S> CoroutineScope.webSocketComponent(dependencies: DebugDependencies<M, C, S>): ComponentInternal<M, S> {
 
     val messages = Channel<M>()
     val statesChannel = BroadcastChannel<S>(Channel.CONFLATED)
@@ -229,12 +242,12 @@ internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.app
     when (message) {
         // todo split into functions per message type
         is ApplyMessage -> {
-            messages.send(message.message as M)
+            messages.send(GsonConverter.fromJsonTree(message.message, M::class.java))
             null
         }
         is ApplyState -> {
             // cancels previous computation job and starts a new one
-            launch { loop<M, C, S>(message.state as S, this@with, messages, states) }
+            launch { loop<M, C, S>(GsonConverter.fromJsonTree(message.state, S::class.java), this@with, messages, states) }
         }
     }
 }
@@ -265,12 +278,12 @@ internal suspend inline fun <M, C, reified S> loop(
 }
 
 @PublishedApi
-internal suspend fun <S> WebSocketSession.notifyAttached(
+internal suspend inline fun <reified S> WebSocketSession.notifyAttached(
     first: S,
     serverSettings: ServerSettings
 ) {
     val message = notifyMessage(
-        NotifyComponentAttached(first as Any),
+        NotifyComponentAttached(GsonConverter.toJsonTree(first as Any, S::class.java)),
         serverSettings.id
     )
 
@@ -315,20 +328,20 @@ internal suspend fun WebSocketSession.notifyApplied(
 }
 
 @PublishedApi
-internal fun <M, C, S> spyingInterceptor(
+internal inline fun <reified M, reified C, reified S> spyingInterceptor(
     sink: SendChannel<NotifyComponentSnapshot>
 ): Interceptor<M, S, C> = { message, prevState, newState, _ ->
     sink.send(
         NotifyComponentSnapshot(
-            message as Any,
-            prevState as Any,
-            newState as Any
+            GsonConverter.toJsonTree(message as Any, M::class.java),
+            GsonConverter.toJsonTree(prevState as Any, S::class.java),
+            GsonConverter.toJsonTree(newState as Any, S::class.java)
         )
     )
 }
 
 @PublishedApi
-internal fun <M, C, S> DebugDependencies<M, C, S>.withSpyingInterceptor(
+internal inline fun <reified M, reified C, reified S> DebugDependencies<M, C, S>.withSpyingInterceptor(
     snapshots: Channel<NotifyComponentSnapshot>
 ) = copy(
     componentEnv = componentEnv.withSpyingInterceptor(
@@ -337,7 +350,7 @@ internal fun <M, C, S> DebugDependencies<M, C, S>.withSpyingInterceptor(
 )
 
 @PublishedApi
-internal fun <M, C, S> Env<M, C, S>.withSpyingInterceptor(
+internal inline fun <reified M, reified C, reified S> Env<M, C, S>.withSpyingInterceptor(
     snapshots: Channel<NotifyComponentSnapshot>
 ) = copy(interceptor = spyingInterceptor<M, C, S>(snapshots).with(interceptor))
 

@@ -1,11 +1,12 @@
 package protocol
 
+@Deprecated("remove")
 sealed class ClientMessage
 
 data class ApplyMessage(
-    val message: Any
+    val message: JsonTree
 ) : ClientMessage()
 
 data class ApplyState(
-    val state: Any
+    val state: JsonTree
 ) : ClientMessage()

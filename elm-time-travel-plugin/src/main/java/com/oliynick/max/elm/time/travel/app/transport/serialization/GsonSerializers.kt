@@ -52,7 +52,7 @@ private fun Gson.asJsonElement(
         acc
     }
 
-private fun JsonElement.toValue(): Value<*> =
+fun JsonElement.toValue(): Value<*> =
     when {
         isJsonNull -> Null
         isJsonObject -> asJsonObject.toValue()
