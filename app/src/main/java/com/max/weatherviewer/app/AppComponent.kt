@@ -6,7 +6,6 @@ import com.google.gson.*
 import com.max.weatherviewer.app.env.Environment
 import com.max.weatherviewer.app.serialization.PersistentListSerializer
 import com.max.weatherviewer.app.serialization.Serializer
-import com.max.weatherviewer.screens.feed.Feed
 import com.max.weatherviewer.screens.feed.FeedLoading
 import com.max.weatherviewer.screens.feed.LoadCriteria
 import com.oliynick.max.elm.core.actor.Component
@@ -16,7 +15,6 @@ import com.oliynick.max.elm.core.component.androidLogger
 import com.oliynick.max.elm.time.travel.Component
 import com.oliynick.max.elm.time.travel.URL
 import com.oliynick.max.elm.time.travel.gsonSerializer
-import com.oliynick.max.elm.time.travel.registerReflectiveTypeAdapter
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import protocol.ComponentId
@@ -67,8 +65,10 @@ fun Environment.appComponent(): Component<Message, State> {
 fun AppGsonSerializer() = gsonSerializer {
 
     registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
-    registerReflectiveTypeAdapter<Feed>()
-    registerReflectiveTypeAdapter<LoadCriteria>()
+   // registerReflectiveTypeAdapter<Feed>()
+    //registerReflectiveTypeAdapter<LoadCriteria>()
+    //registerReflectiveTypeAdapter<Message>()
+    //registerReflectiveTypeAdapter<ScreenMessage>()
 
 }
 

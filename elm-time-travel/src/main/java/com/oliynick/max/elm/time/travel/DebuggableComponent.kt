@@ -165,7 +165,9 @@ inline fun <reified M, reified C, reified S> CoroutineScope.Component(
     )
 )
 
-inline fun <reified M, reified C, reified S> CoroutineScope.Component(debugDependencies: DebugDependencies<M, C, S>): Component<M, S> {
+inline fun <reified M, reified C, reified S> CoroutineScope.Component(
+    debugDependencies: DebugDependencies<M, C, S>
+): Component<M, S> {
 
     val (messages, states) = webSocketComponent(debugDependencies)
 
@@ -173,7 +175,9 @@ inline fun <reified M, reified C, reified S> CoroutineScope.Component(debugDepen
 }
 
 @PublishedApi
-internal inline fun <reified M, reified C, reified S> CoroutineScope.webSocketComponent(dependencies: DebugDependencies<M, C, S>): ComponentInternal<M, S> {
+internal inline fun <reified M, reified C, reified S> CoroutineScope.webSocketComponent(
+    dependencies: DebugDependencies<M, C, S>
+): ComponentInternal<M, S> {
 
     val messages = Channel<M>()
     val statesChannel = BroadcastChannel<S>(Channel.CONFLATED)

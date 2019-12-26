@@ -7,6 +7,7 @@ import com.google.gson.typeadapters.RuntimeTypeAdapterFactory
 import com.oliynick.max.elm.time.travel.gson.gson
 import protocol.Json
 import protocol.JsonTree
+import kotlin.reflect.KClass
 
 @PublishedApi
 internal object GsonConverter : JsonConverter {
@@ -38,16 +39,29 @@ fun gsonSerializer(
     config: GsonBuilder.() -> Unit = {}
 ): JsonSerializer = GsonSerializer(gson(config))
 
-inline fun <reified T> GsonBuilder.registerReflectiveTypeAdapter() {
+inline fun <reified T : Any> GsonBuilder.registerReflectiveTypeAdapter() {
     RuntimeTypeAdapterFactory.of(T::class.java)
         .also { adapterFactory ->
-            T::class.sealedSubclasses.forEach { sub ->
+
+            adapterFactory.registerRecursively(T::class)
+
+            /*T::class.sealedSubclasses.forEach { sub ->
                 adapterFactory.registerSubtype(sub.java)
-            }
+            }*/
         }
         .also { adapterFactory ->
             registerTypeAdapterFactory(adapterFactory)
         }
+}
+
+@PublishedApi
+internal fun <T : Any> RuntimeTypeAdapterFactory<T>.registerRecursively(sub: KClass<out T>) {
+    if (sub.isSealed) {
+        sub.sealedSubclasses.forEach { registerRecursively(it) }
+    }
+
+    println("registered $sub")
+    registerSubtype(sub.java)
 }
 
 internal class GsonSerializer(
