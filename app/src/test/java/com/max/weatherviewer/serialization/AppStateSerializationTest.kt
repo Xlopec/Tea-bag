@@ -1,14 +1,17 @@
 package com.max.weatherviewer.serialization
 
-import com.max.weatherviewer.app.AppGsonSerializer
+import com.google.gson.GsonBuilder
 import com.max.weatherviewer.app.State
+import com.max.weatherviewer.app.serialization.PersistentListSerializer
 import com.max.weatherviewer.domain.Article
 import com.max.weatherviewer.domain.Description
 import com.max.weatherviewer.domain.Title
 import com.max.weatherviewer.screens.feed.FeedLoading
 import com.max.weatherviewer.screens.feed.LoadCriteria
 import com.max.weatherviewer.screens.feed.Preview
+import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
 import io.kotlintest.shouldBe
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,7 +26,12 @@ import java.util.*
 @RunWith(JUnit4::class)
 class AppStateSerializationTest {
 
-    private val gsonSerializer = AppGsonSerializer()
+    private val gsonSerializer = GsonBuilder()
+        .setPrettyPrinting()
+        .apply {
+            registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
+            registerTypeAdapterFactory(TypeAppenderAdapterFactory())
+        }.create()
 
     private val previewScreenState = Preview(
         UUID.randomUUID(),
@@ -54,36 +62,37 @@ class AppStateSerializationTest {
     )
 
     @Test
-    fun `test NotifyComponentAttached is serializing correctly`() {
+    fun `test NotifyComponentAttached is serializing correctly`() = with(gsonSerializer) {
 
-        val message = NotifyComponentAttached(testState)
-        val json = gsonSerializer.toJson(message, ServerMessage::class.java)
-        val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
+        val message = NotifyComponentAttached(toJsonTree(testState))
+        val json = toJson(message)
+
+        val fromJson = fromJson(json, ServerMessage::class.java)
 
         fromJson shouldBe message
     }
 
     @Test
-    fun `test ActionApplied is serializing correctly`() {
+    fun `test ActionApplied is serializing correctly`() = with(gsonSerializer) {
 
         val message = ActionApplied(UUID.randomUUID())
-        val json = gsonSerializer.toJson(message, ServerMessage::class.java)
-        val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
+        val json = toJson(message)
+        val fromJson = fromJson(json, ServerMessage::class.java)
 
         fromJson shouldBe message
     }
 
     @Test
-    fun `test NotifyComponentSnapshot is serializing correctly`() {
+    fun `test NotifyComponentSnapshot is serializing correctly`() = with(gsonSerializer) {
 
         val message = NotifyComponentSnapshot(
-            "Message",
-            testState,
-            loadingScreenState
+            toJsonTree("Message"),
+            toJsonTree(testState),
+            toJsonTree(loadingScreenState)
         )
 
-        val json = gsonSerializer.toJson(message, ServerMessage::class.java)
-        val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
+        val json = toJson(message)
+        val fromJson = fromJson(json, ServerMessage::class.java)
 
         fromJson shouldBe message
     }
