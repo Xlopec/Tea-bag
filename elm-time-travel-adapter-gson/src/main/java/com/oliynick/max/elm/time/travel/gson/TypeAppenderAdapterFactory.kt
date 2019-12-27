@@ -8,17 +8,40 @@ import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import java.lang.reflect.Array
-import java.util.*
+import kotlin.Array as KArray
 
+/**
+ * [TypeAdapterFactory] that wraps values in [json object][JsonObject] that holds actual type of the value and its actual json representation.
+ *
+ * Note that this type adapter will wrap each property or element (in case of array or collection serialization) of the value in json wrapper
+ * recursively
+ *
+ * Consider the following example, if we have the following json structure:
+ * ```
+ * {
+ * "property": "value"
+ * }
+ * ```
+ * it'll be transformed to the next json object:
+ * ```
+ * {
+ * "@type": "java.lang.String",
+ * "@value":
+ *      {
+ *       "property": "value"
+ *      }
+ * }
+ * ```
+ */
 object TypeAppenderAdapterFactory : TypeAdapterFactory {
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T : Any?> create(
         gson: Gson,
         type: TypeToken<T>
     ): TypeAdapter<T> = object : TypeAdapter<T>() {
 
         val elementAdapter = gson.getAdapter(JsonElement::class.java)
-        val delegate = gson.getDelegateAdapter(this@TypeAppenderAdapterFactory, type)
 
         override fun write(
             out: JsonWriter,
@@ -28,7 +51,7 @@ object TypeAppenderAdapterFactory : TypeAdapterFactory {
                 "@type",
                 value.clazz.name
             )
-            add("@value", delegate.toJsonTree(value))
+            add("@value", gson.getDelegateAdapter(this@TypeAppenderAdapterFactory, type).toJsonTree(value))
         })
 
         @Suppress("UNCHECKED_CAST")
@@ -51,46 +74,58 @@ private fun JsonObject.fromJsonElement(
         "json object should have property '@type', json was\n$this\n\n"
     }
 
-    val token by lazy { TypeToken(get("@type").asString) }
+    val token by unsafeLazy { TypeToken(get("@type").asString) }
     val value: JsonElement? = get("@value")
+    val array by unsafeLazy { value!!.asJsonArray }
 
     @Suppress("UNCHECKED_CAST")
     return when {
         value == null || value.isJsonNull -> null
-        value.isJsonArray -> value.asJsonArray.fromJsonArray(gson, token, skipFactory)
-        else -> gson.getDelegateAdapter(skipFactory, token).fromJsonTreeSafe(value)
+        value.isJsonArray && token.rawType.isArray -> array.fromJsonArray(
+            token.rawType,
+            gson,
+            skipFactory
+        )
+        value.isJsonArray -> array.fromJsonArray(gson, token.cast(), skipFactory)
+        else -> gson.getDelegateAdapter(skipFactory, token).fromJsonTree(value)
     }
 }
+
+@Suppress("UNCHECKED_CAST")
+private fun JsonArray.fromJsonArray(
+    cl: Class<*>,
+    gson: Gson,
+    skipFactory: TypeAdapterFactory
+): KArray<Any?> =
+    cl.cast<Any?>()
+        .newArray(size())
+        .also { array ->
+            this@fromJsonArray.forEachIndexed { index, jsonElement ->
+                array[index] = jsonElement.asJsonObject.fromJsonElement(gson, skipFactory)
+            }
+        }
 
 private fun JsonArray.fromJsonArray(
     gson: Gson,
-    cl: TypeToken<*>,
+    cl: TypeToken<out MutableCollection<Any?>>,
     skipFactory: TypeAdapterFactory
-): Any {
-
-    fun fromJsonElement(
-        jsonObject: JsonObject
-    ): Any? = gson.getDelegateAdapter(skipFactory, TypeToken(jsonObject["@type"].asString)).fromJsonTreeSafe(jsonObject["@value"])
-
-    return if (cl.rawType.isArray) {
-        (Array.newInstance((cl.rawType as Class<*>).componentType, size()) as kotlin.Array<Any?>).also {  arr ->
-            forEachIndexed { index, jsonElement ->
-
-                val from = fromJsonElement(jsonElement.asJsonObject)
-
-                arr[index] = from
-            }
+): Collection<Any?> =
+    asSequence()
+        .map { jsonElement -> jsonElement.asJsonObject }
+        .mapTo(gson.constructorConstructor.construct(cl)) { jsonObject ->
+            jsonObject.fromJsonElement(
+                gson,
+                skipFactory
+            )
         }
-    } else {
 
-        asSequence()
-            .map { jsonElement -> jsonElement.asJsonObject }
-            .mapTo(gson.constructorConstructor.construct(cl as TypeToken<out MutableCollection<Any?>>)) { jsonObject ->
-                gson.getDelegateAdapter(skipFactory, TypeToken(jsonObject["@type"].asString)).fromJsonTreeSafe(jsonObject["@value"])
-            }
-    }
+private fun <T> Class<T>.newArray(
+    size: Int
+): KArray<T> {
+    require(isArray) { "Class $this is not array" }
+    @Suppress("UNCHECKED_CAST")
+    return Array.newInstance(componentType, size) as KArray<T>
 }
-
 
 private fun TypeToken(
     name: String
@@ -101,11 +136,7 @@ private fun <T> ConstructorConstructor.construct(
     token: TypeToken<out T>
 ): T = get(token).construct() as T
 
-private fun <T> TypeAdapter<T>.fromJsonTreeSafe(
-    element: JsonElement?
-): T? = if (element == null) null else fromJsonTree(element)
-
-private val typeTokenCache = WeakHashMap<String, TypeToken<*>>()
+private val typeTokenCache = mutableMapOf<String, TypeToken<*>>()
 
 private val constructorConstructorField by lazy {
     Gson::class.java.getDeclaredField("constructorConstructor")
@@ -117,3 +148,13 @@ private inline val Gson.constructorConstructor: ConstructorConstructor
 
 private inline val Any?.clazz: Class<out Any>
     get() = (if (this == null) Any::class else this::class).java
+
+@Suppress("UNCHECKED_CAST")
+private fun <T> TypeToken<*>.cast() = this as TypeToken<T>
+
+@Suppress("UNCHECKED_CAST")
+private fun <T> Class<*>.cast() = this as Class<T>
+
+private fun <T> unsafeLazy(
+    init: () -> T
+) = lazy(LazyThreadSafetyMode.NONE, init)
