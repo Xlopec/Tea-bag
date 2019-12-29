@@ -41,10 +41,11 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
     api project(path: ':elm-core-api', configuration: 'default')
-    implementation project(path: ':elm-core-looper', configuration: 'default')
-    // fixme hide later
     api project(path: ':elm-time-travel-protocol', configuration: 'default')
+
+    implementation project(path: ':elm-core-looper', configuration: 'default')
     api project(path: ':elm-time-travel-adapter-gson', configuration: 'default')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -52,12 +53,9 @@ dependencies {
     implementation "io.ktor:ktor-client-websockets:$ktor_version"
     implementation "io.ktor:ktor-client-okhttp:$ktor_version"
 
+    api group: 'com.google.code.gson', name: 'gson-extras', version: '2.8.5'
+
+
     testImplementation project(path: ':elm-core-test', configuration: 'default')
-    testImplementation project(path: ':elm-time-travel-protocol', configuration: 'default')
-    testImplementation 'junit:junit:4.12'
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
-    testImplementation "io.strikt:strikt-core:0.22.2"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-common:$kotlin_version"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
 }

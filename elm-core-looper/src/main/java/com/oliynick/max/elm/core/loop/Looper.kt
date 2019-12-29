@@ -17,7 +17,7 @@
 package com.oliynick.max.elm.core.loop
 
 import com.oliynick.max.elm.core.component.Component
-import com.oliynick.max.elm.core.component.Dependencies
+import com.oliynick.max.elm.core.component.Env
 import com.oliynick.max.elm.core.component.Resolver
 import com.oliynick.max.elm.core.component.UpdateWith
 import kotlinx.coroutines.channels.BroadcastChannel
@@ -38,69 +38,88 @@ typealias ComponentInternal<M, S> = Pair<SendChannel<M>, Flow<S>>
 /**
  * Stores a new state to channel and notifies subscribers about changes
  */
-suspend fun <M, C, S> updateMutating(message: M,
-                                     state: S,
-                                     dependencies: Dependencies<M, C, S>,
-                                     states: BroadcastChannel<S>): UpdateWith<S, C> {
-
-    return dependencies.update(message, state)
+suspend fun <M, C, S> Env<M, C, S>.updateMutating(
+    message: M,
+    state: S,
+    states: BroadcastChannel<S>
+): UpdateWith<S, C> =
+    update(message, state)
         // we don't want to suspend here
         .also { (nextState, _) -> states.offerChecking(nextState) }
-        .also { (nextState, commands) -> dependencies.interceptor(message, state, nextState, commands) }
-}
+        .also { (nextState, commands) -> interceptor(message, state, nextState, commands) }
 
 /**
  * Polls messages from channel's iterator and computes subsequent component's states.
  * Before polling a message from the channel it tries to computes all
  * subsequent states produced by resolved commands
  */
-tailrec suspend fun <M, C, S> loop(state: S,
-                                   it: ChannelIterator<M>,
-                                   dependencies: Dependencies<M, C, S>,
-                                   states: BroadcastChannel<S>): S {
+tailrec suspend fun <M, C, S> Env<M, C, S>.loop(
+    state: S,
+    it: ChannelIterator<M>,
+    states: BroadcastChannel<S>
+): S {
 
     val message = it.nextOrNull() ?: return state
 
-    val (nextState, commands) = updateMutating(message, state, dependencies, states)
+    val (nextState, commands) = updateMutating(message, state, states)
 
-    return loop(loop(nextState, dependencies.resolver(commands).iterator(), dependencies, states), it, dependencies, states)
+    return loop(
+        loop(
+            nextState,
+            resolver(commands).iterator(),
+            states
+        ),
+        it,
+        states
+    )
 }
 
 /**
  * Polls messages from collection's iterator and computes next states until collection is empty
  */
-suspend fun <M, C, S> loop(state: S,
-                           it: Iterator<M>,
-                           dependencies: Dependencies<M, C, S>,
-                           states: BroadcastChannel<S>): S {
+suspend fun <M, C, S> Env<M, C, S>.loop(
+    state: S,
+    it: Iterator<M>,
+    states: BroadcastChannel<S>
+): S {
 
     val message = it.nextOrNull() ?: return state
 
-    val (nextState, commands) = updateMutating(message, state, dependencies, states)
+    val (nextState, commands) = updateMutating(message, state, states)
 
-    return loop(loop(nextState, it, dependencies, states), dependencies.resolver(commands).iterator(), dependencies, states)
+    return loop(
+        loop(
+            nextState,
+            it,
+            states
+        ),
+        resolver(commands).iterator(),
+        states
+    )
 }
 
 /**
  * Loads an initial state using supplied initializer and starts component's loop
  */
-suspend fun <M, C, S> loop(dependencies: Dependencies<M, C, S>,
-                           messages: Channel<M>,
-                           states: BroadcastChannel<S>): S {
+suspend fun <M, C, S> Env<M, C, S>.loop(
+    messages: Channel<M>,
+    states: BroadcastChannel<S>
+): S {
 
-    val (initState, initCommands) = dependencies.initializer()
+    val (initState, initCommands) = initializer()
         .also { (initialState, _) -> states.offerChecking(initialState) }
 
-    val nonTransient = loop(initState, dependencies.resolver(initCommands).iterator(), dependencies, states)
+    val nonTransient =
+        loop(initState, resolver(initCommands).iterator(), states)
 
-    return loop(nonTransient, messages.iterator(), dependencies, states)
+    return loop(nonTransient, messages.iterator(), states)
 }
 
 /**
  * Combines given flow of states and message channel into TEA component
  */
-fun <M, S> newComponent(state: Flow<S>, messages: SendChannel<M>): Component<M, S> {
-    return { input ->
+fun <M, S> newComponent(state: Flow<S>, messages: SendChannel<M>): Component<M, S> =
+    { input ->
 
         channelFlow {
 
@@ -117,9 +136,9 @@ fun <M, S> newComponent(state: Flow<S>, messages: SendChannel<M>): Component<M, 
             }
         }
     }
-}
 
-fun <E> BroadcastChannel<E>.offerChecking(e: E) = check(offer(e)) { "Couldn't offer next element - $e" }
+fun <E> BroadcastChannel<E>.offerChecking(e: E) =
+    check(offer(e)) { "Couldn't offer next element - $e" }
 
 fun <E> Iterator<E>.nextOrNull() = if (hasNext()) next() else null
 

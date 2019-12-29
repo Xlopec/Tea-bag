@@ -12,6 +12,8 @@
 /.idea/uiDesigner.xml
 /.idea/misc.xml
 /.idea/codeStyles/
+/.idea/jarRepositories.xml
+/projectFilesBackup*/
 .DS_Store
 /build
 /captures

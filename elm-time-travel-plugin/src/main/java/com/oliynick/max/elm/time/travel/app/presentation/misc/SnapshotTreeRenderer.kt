@@ -17,8 +17,6 @@
 package com.oliynick.max.elm.time.travel.app.presentation.misc
 
 import java.awt.Component
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import javax.swing.JLabel
 import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
@@ -35,20 +33,21 @@ object SnapshotTreeRenderer : TreeCellRenderer {
                                               hasFocus: Boolean): Component {
 
         val label = JLabel()
-        val payload = (value as DefaultMutableTreeNode).userObject as SnapshotTree
+        val payload = (value as DefaultMutableTreeNode).userObject as RenderTree
 
         label.text = when(payload) {
             RootNode -> "Snapshots (${tree.model.getChildCount(tree.model.root)})"
             is SnapshotNode -> payload.snapshot.toReadableString()
             is MessageNode -> "Message"
             is StateNode -> "State"
-            is SnapshotTypeNode -> payload.typeNode.toReadableString()
+            is PropertyNode -> payload.toReadableString()
+            is ValueNode -> payload.toReadableString()
+            is IndexedNode -> payload.toReadableString()
+            is EntryKeyNode -> payload.toReadableString()
+            is EntryValueNode -> payload.toReadableString()
         }
 
-        label.icon = when(payload) {
-            RootNode, is MessageNode, is SnapshotNode, is StateNode -> null
-            is SnapshotTypeNode -> payload.typeNode.icon
-        }
+        label.icon = payload.icon
 
         return label
     }

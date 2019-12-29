@@ -1,451 +1,237 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.oliynick.max.elm.time.travel.gson
 
 import com.google.gson.*
 import protocol.*
 import java.lang.reflect.Type
 import java.util.*
+import kotlin.collections.ArrayList
 
-// todo replace direct constructor invocations with `wrap` method
-
-object IterableAdapter : JsonSerializer<IterableWrapper>, JsonDeserializer<IterableWrapper> {
-
-    override fun serialize(
-        src: IterableWrapper,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ): JsonElement {
-        return JsonArray((src.value as? Collection<*>)?.size ?: 10).also { arr ->
-            src.value.forEach { elem -> arr.add(context.serialize(elem)) }
-        }
-    }
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): IterableWrapper {
-        return IterableWrapper(json.asJsonArray.map { jsonElem ->
-            context.deserialize(
-                jsonElem,
-                Value::class.java
-            )
-        })
-    }
-}
-
-object IntAdapter : JsonSerializer<IntWrapper>, JsonDeserializer<IntWrapper> {
-    override fun serialize(src: IntWrapper, typeOfSrc: Type?, context: JsonSerializationContext) =
-        JsonPrimitive(src.value)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ) = IntWrapper(json.asInt)
-}
-
-object LongAdapter : JsonSerializer<LongWrapper>, JsonDeserializer<LongWrapper> {
-    override fun serialize(src: LongWrapper, typeOfSrc: Type?, context: JsonSerializationContext) =
-        JsonPrimitive(src.value)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ) = LongWrapper(json.asLong)
-}
-
-object ByteAdapter : JsonSerializer<ByteWrapper>, JsonDeserializer<ByteWrapper> {
-    override fun serialize(src: ByteWrapper, typeOfSrc: Type?, context: JsonSerializationContext) =
-        JsonPrimitive(src.value)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ) = ByteWrapper(json.asByte)
-}
-
-object ShortAdapter : JsonSerializer<ShortWrapper>, JsonDeserializer<ShortWrapper> {
-    override fun serialize(src: ShortWrapper, typeOfSrc: Type?, context: JsonSerializationContext) =
-        JsonPrimitive(src.value)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ) = ShortWrapper(json.asShort)
-}
-
-object CharAdapter : JsonSerializer<CharWrapper>, JsonDeserializer<CharWrapper> {
-    override fun serialize(src: CharWrapper, typeOfSrc: Type?, context: JsonSerializationContext) =
-        JsonPrimitive(src.value)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ) = CharWrapper(json.asCharacter)
-}
-
-object BooleanAdapter : JsonSerializer<BooleanWrapper>, JsonDeserializer<BooleanWrapper> {
-    override fun serialize(
-        src: BooleanWrapper,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ) = JsonPrimitive(src.value)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ) = BooleanWrapper.of(json.asBoolean)
-}
-
-object DoubleAdapter : JsonSerializer<DoubleWrapper>, JsonDeserializer<DoubleWrapper> {
-    override fun serialize(
-        src: DoubleWrapper,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ) = JsonPrimitive(src.value)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ) = DoubleWrapper(json.asDouble)
-}
-
-object FloatAdapter : JsonSerializer<FloatWrapper>, JsonDeserializer<FloatWrapper> {
-    override fun serialize(src: FloatWrapper, typeOfSrc: Type?, context: JsonSerializationContext) =
-        JsonPrimitive(src.value)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ) = FloatWrapper(json.asFloat)
-}
-
-object StringAdapter : JsonSerializer<StringWrapper>, JsonDeserializer<StringWrapper> {
-    override fun serialize(
-        src: StringWrapper,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ) = JsonPrimitive(src.value)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ) = StringWrapper(json.asString)
-}
-
-object NullAdapter : JsonSerializer<Null>, JsonDeserializer<Null> {
-    override fun serialize(
-        src: Null,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ): JsonElement = JsonNull.INSTANCE
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): Null {
-        return Null(RemoteType(json.asJsonObject["underlying_type"].asString.clazz()))
-    }
-}
-
-object ValueDeserializer : JsonDeserializer<Value<*>> {
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): Value<*> {
-        val jsonObject = json.asJsonObject
-        val wrapperType = jsonObject["wrapper_type"].asString.wrapperType()
-
-        return context.deserialize(
-            jsonObject.getDeserializationTargetElement(wrapperType),
-            wrapperType
-        )
-    }
-}
-
-object RefAdapter : JsonSerializer<Ref>, JsonDeserializer<Ref> {
-
-    override fun serialize(
-        src: Ref,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ): JsonElement {
-        val obj = JsonObject()
-            .also { obj ->
-                obj.addProperty("underlying_type", src.type.value)
-                obj.addProperty("wrapper_type", src::class.java.serializeName)
-            }
-
-        val arr = JsonArray(src.properties.size)
-
-        for (p in src.properties) {
-            val o = JsonObject().also {
-                it.addProperty("property_name", p.name)
-                it.addProperty("property_wrapper_type", p.v::class.java.serializeName)
-                it.addProperty("property_type", p.type.value)
-                it.add("property", context.serialize(p.v))
-            }
-
-            arr.add(o)
-        }
-
-        obj.add("properties", arr)
-
-        return obj
-    }
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): Ref {
-        // todo refactor
-        val jsonObj = json.asJsonObject
-        val wrapperType = Class.forName(jsonObj["wrapper_type"].asString) as Class<out Value<*>>
-        val underlying = jsonObj["underlying_type"].asString
-
-        return Ref(RemoteType(underlying),
-            jsonObj[wrapperType.payloadFieldName].asJsonArray
-                .map { e -> e.asJsonObject }
-                .map { o ->
-
-                    val cll =
-                        Class.forName(o["property_wrapper_type"].asString) as Class<out Value<*>>
-                    val nested = o["property"];
-                    Property(
-                        RemoteType(o["property_type"].asString),
-                        o["property_name"].asString,
-                        context.deserialize<Value<Any>>(nested, cll)
-                    )
-                }.toSet()
-        )
-    }
-
-}
-
-object ServerMessageAdapter : JsonSerializer<ServerMessage>, JsonDeserializer<ServerMessage> {
+internal object ServerMessageAdapter : JsonSerializer<ServerMessage>, JsonDeserializer<ServerMessage> {
 
     override fun serialize(
         src: ServerMessage,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement {
-        return context.serialize(src)
+    ): JsonElement = JsonObject {
+
+        addProperty("@type", src::class.java.serializeName)
+
+        add(
+            "@value",
+            when (src) {
+                is NotifyComponentSnapshot -> src.toJsonElement()
+                is NotifyComponentAttached -> src.toJsonElement()
+                is ActionApplied -> src.toJsonElement(context)
+            }
+        )
     }
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): ServerMessage {
-        return context.deserialize(json, json.asJsonObject["type"].asString.clazz())
+    ): ServerMessage = json.asJsonObject.let { obj ->
+
+        val value = obj["@value"]
+
+        when (obj["@type"].asString) {
+            NotifyComponentSnapshot::class.java.serializeName -> value.asNotifyComponentSnapshot()
+            NotifyComponentAttached::class.java.serializeName -> value.asNotifyComponentAttached()
+            ActionApplied::class.java.serializeName -> value.asActionApplied(context)
+            else -> error("unknown server message type, json\n\n$json\n")
+        }
     }
+
+    private fun NotifyComponentSnapshot.toJsonElement() =
+        JsonObject {
+            add("message", message)
+            add("oldState", oldState)
+            add("newState", newState)
+        }
+
+    private fun JsonElement.asNotifyComponentSnapshot() =
+        NotifyComponentSnapshot(
+            asJsonObject["message"],
+            asJsonObject["oldState"],
+            asJsonObject["newState"]
+        )
+
+    private fun NotifyComponentAttached.toJsonElement() = state
+
+    private fun JsonElement.asNotifyComponentAttached() = NotifyComponentAttached(this)
+
+    private fun ActionApplied.toJsonElement(
+        context: JsonSerializationContext
+    ) = context.serialize(id)
+
+    private fun JsonElement.asActionApplied(context: JsonDeserializationContext) =
+        ActionApplied(context.deserialize(this, UUID::class.java))
+
+
 }
 
-object ClientMessageAdapter : JsonSerializer<ClientMessage>, JsonDeserializer<ClientMessage> {
+internal object ClientMessageAdapter : JsonSerializer<ClientMessage>, JsonDeserializer<ClientMessage> {
 
     override fun serialize(
         src: ClientMessage,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement {
-        return context.serialize(src)
+    ): JsonElement = JsonObject {
+        addProperty("@type", src::class.java.serializeName)
+
+        add(
+            "@value",
+            when (src) {
+                is ApplyMessage -> src.toJsonElement()
+                is ApplyState -> src.toJsonElement()
+            }
+        )
     }
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): ClientMessage {
-        return context.deserialize(json, json.asJsonObject["type"].asString.clazz())
-    }
-}
+    ): ClientMessage = json.asJsonObject.let { obj ->
 
-object NotifyComponentSnapshotAdapter : JsonSerializer<NotifyComponentSnapshot<*, *>>,
-    JsonDeserializer<NotifyComponentSnapshot<*, *>> {
+        val value = obj["@value"]
 
-    override fun serialize(
-        src: NotifyComponentSnapshot<*, *>,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ): JsonElement {
-        return src.typedJsonObject {
-            add("message", context.serialize(src.message))
-            add("oldState", context.serialize(src.oldState))
-            add("newState", context.serialize(src.newState))
+        when (obj["@type"].asString) {
+            ApplyMessage::class.java.serializeName -> value.asApplyMessage()
+            ApplyState::class.java.serializeName -> value.asApplyState()
+            else -> error("unknown client message type, json\n\n$json\n")
         }
     }
 
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): NotifyComponentSnapshot<*, *> {
-        val jsonObject = json.asJsonObject
+    private fun ApplyMessage.toJsonElement() = message
 
-        fun deserialize(propertyName: String) =
-            context.deserialize<Value<*>>(jsonObject[propertyName], Value::class.java)
+    private fun ApplyState.toJsonElement() = state
 
-        return NotifyComponentSnapshot(
-            deserialize("message"),
-            deserialize("oldState"),
-            deserialize("newState")
-        )
-    }
+    private fun JsonElement.asApplyMessage() = ApplyMessage(this)
+
+    private fun JsonElement.asApplyState() = ApplyState(this)
+
 }
 
-object ApplyStateAdapter : JsonSerializer<ApplyState>, JsonDeserializer<ApplyState> {
+internal object ApplyStateAdapter : JsonSerializer<ApplyState>, JsonDeserializer<ApplyState> {
 
     override fun serialize(
         src: ApplyState,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement {
-        return src.typedJsonObject { add("state", context.serialize(src.stateValue)) }
-    }
+    ): JsonElement = context.toTypedJson(src.state)
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): ApplyState {
-        return ApplyState(context.deserialize(json.asJsonObject["state"], Value::class.java))
-    }
+    ): ApplyState =
+        context.fromTypedJson<JsonElement>(json)
+            .let(::ApplyState)
 }
 
-object ApplyMessageAdapter : JsonSerializer<ApplyMessage>, JsonDeserializer<ApplyMessage> {
+internal object ApplyMessageAdapter : JsonSerializer<ApplyMessage>, JsonDeserializer<ApplyMessage> {
 
     override fun serialize(
         src: ApplyMessage,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement {
-        return src.typedJsonObject { add("message", context.serialize(src.messageValue)) }
-    }
+    ): JsonElement = context.toTypedJson(src.message)
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): ApplyMessage {
-        return ApplyMessage(context.deserialize(json.asJsonObject["message"], Value::class.java))
-    }
+    ): ApplyMessage = ApplyMessage(json)
+
 }
 
-object NotifyComponentAttachedAdapter : JsonSerializer<NotifyComponentAttached>,
-    JsonDeserializer<NotifyComponentAttached> {
-
-    override fun serialize(
-        src: NotifyComponentAttached,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ): JsonElement {
-        return src.typedJsonObject { add("state", context.serialize(src.state)) }
-    }
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): NotifyComponentAttached {
-        return NotifyComponentAttached(
-            context.deserialize(
-                json.asJsonObject["state"],
-                Value::class.java
-            )
-        )
-    }
-}
-
-object ActionAppliedAdapter : JsonSerializer<ActionApplied>, JsonDeserializer<ActionApplied> {
-
-    override fun serialize(
-        src: ActionApplied,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ): JsonElement {
-        return src.typedJsonObject { add("id", context.serialize(src.id)) }
-    }
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): ActionApplied {
-        return ActionApplied(context.deserialize(json.asJsonObject["id"], UUID::class.java))
-    }
-}
-
-object UUIDAdapter : JsonSerializer<UUID>, JsonDeserializer<UUID> {
+internal object UUIDAdapter : JsonSerializer<UUID>, JsonDeserializer<UUID> {
 
     override fun serialize(
         src: UUID,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement {
-        return JsonPrimitive(src.toString())
-    }
+    ): JsonElement = JsonPrimitive(src.toString())
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): UUID {
-        return UUID.fromString(json.asString)
-    }
+    ): UUID = UUID.fromString(json.asString)
 }
 
-object ComponentIdAdapter : JsonSerializer<ComponentId>, JsonDeserializer<ComponentId> {
+internal object ComponentIdAdapter : JsonSerializer<ComponentId>, JsonDeserializer<ComponentId> {
 
     override fun serialize(
         src: ComponentId,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement {
-        return JsonPrimitive(src.id)
-    }
+    ): JsonElement = JsonPrimitive(src.id)
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): ComponentId {
-        return ComponentId(json.asString)
+    ): ComponentId = ComponentId(json.asString)
+}
+
+internal object ListSerializer : JsonSerializer<List<*>>, JsonDeserializer<List<*>> {
+
+    override fun deserialize(
+        json: JsonElement,
+        typeOfT: Type?,
+        context: JsonDeserializationContext
+    ): List<*> = context.fromTypedJsonArray<Any?, ArrayList<Any?>>(json, ArrayList(json.asJsonArray.size()))
+
+    override fun serialize(
+        src: List<*>,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext
+    ): JsonElement =
+        JsonArray(src.map { elem -> context.toTypedJson(elem) })
+
+}
+
+@Suppress("FunctionName")
+internal inline fun JsonObject(
+    builder: JsonObject.() -> Unit
+): JsonObject = JsonObject().apply(builder)
+
+@Suppress("FunctionName")
+internal inline fun JsonArray(
+    capacity: Int = 10,
+    builder: JsonArray.() -> Unit
+): JsonArray = JsonArray(capacity).apply(builder)
+
+@Suppress("FunctionName")
+internal fun JsonArray(
+    it: Iterable<JsonElement>
+): JsonArray = JsonArray((it as? Collection)?.size ?: 10) { it.forEach(::add) }
+
+private fun JsonSerializationContext.toTypedJson(any: Any?) =
+    JsonObject()
+        .apply {
+            addProperty("type", if (any == null) Any::class.java.serializeName else any::class.java.serializeName)
+            add("value", serialize(any))
+        }
+
+private fun <T> JsonDeserializationContext.fromTypedJson(json: JsonElement): T =
+    json.asJsonObject.let { obj ->
+        deserialize(obj["value"], obj["type"].asString.clazz())
     }
-}
 
-private inline fun Any.typedJsonObject(
-    typePropertyName: String = "type",
-    block: JsonObject.() -> Unit
-): JsonObject {
-    return JsonObject()
-        .apply { addProperty(typePropertyName, this@typedJsonObject::class.java.serializeName) }
-        .apply(block)
-}
+private fun <T, C : MutableCollection<T?>> JsonDeserializationContext.fromTypedJsonArray(
+    json: JsonElement,
+    into: C
+): C =
+    json.asJsonArray
+        .asSequence()
+        .map { elem -> fromTypedJson<T?>(elem) }
+        .toCollection(into)
 
-
-@Suppress("UNCHECKED_CAST")
-private fun String.wrapperType() = Class.forName(this) as Class<out Value<*>>
-
-@Suppress("UNCHECKED_CAST")
 private fun String.clazz() = Class.forName(this)
 
-private fun JsonObject.getDeserializationTargetElement(wrapperType: Class<out Value<*>>): JsonElement {
-    return if (PrimitiveWrapper::class.java.isAssignableFrom(wrapperType)) this["value"] else this
-}
-
-private inline val Class<out Value<*>>.payloadFieldName: String
-    get() = if (PrimitiveWrapper::class.java.isAssignableFrom(this) || Null::class.java.isAssignableFrom(
-            this
-        )
-    ) "value" else "properties"
+inline val Class<*>.serializeName: String get() = name

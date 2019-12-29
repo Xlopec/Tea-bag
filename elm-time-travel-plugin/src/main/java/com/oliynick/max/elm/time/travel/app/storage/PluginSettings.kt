@@ -18,8 +18,10 @@ package com.oliynick.max.elm.time.travel.app.storage
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
-import com.oliynick.max.elm.time.travel.app.domain.ServerSettings
-import com.oliynick.max.elm.time.travel.app.domain.Settings
+import com.oliynick.max.elm.time.travel.app.domain.cms.ServerSettings
+import com.oliynick.max.elm.time.travel.app.domain.cms.Settings
+import com.oliynick.max.elm.time.travel.app.domain.cms.defaultHost
+import com.oliynick.max.elm.time.travel.app.domain.cms.defaultPort
 import java.io.File
 
 private const val PLUGIN_ID = "com.oliynick.max.elm.time.travel.plugin"
@@ -29,11 +31,11 @@ val Project.properties: PropertiesComponent
 
 var PropertiesComponent.pluginSettings: Settings
     set(value) {
-        //paths = value.dependencies
         serverSettings = value.serverSettings
     }
     get() = Settings(serverSettings)
 
+@Deprecated("will be removed or replaced")
 var PropertiesComponent.paths: List<File>
     set(value) = setValues("$PLUGIN_ID.paths", Array(value.size) { i -> value[i].absolutePath })
     get() = getValues("$PLUGIN_ID.paths")?.map(::File) ?: emptyList()
@@ -43,4 +45,7 @@ var PropertiesComponent.serverSettings: ServerSettings
         setValue("$PLUGIN_ID.host", value.host)
         setValue("$PLUGIN_ID.port", value.port.toInt(), 8080)
     }
-    get() = ServerSettings(getValue("$PLUGIN_ID.host", "0.0.0.0"), getInt("$PLUGIN_ID.port", 8080).toUInt())
+    get() = ServerSettings(
+        getValue("$PLUGIN_ID.host", defaultHost),
+        getInt("$PLUGIN_ID.port", defaultPort.toInt()).toUInt()
+    )

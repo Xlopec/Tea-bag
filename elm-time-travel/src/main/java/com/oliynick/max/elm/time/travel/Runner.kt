@@ -16,15 +16,13 @@
 
 package com.oliynick.max.elm.time.travel
 
-import com.oliynick.max.elm.core.component.Dependencies
+import com.oliynick.max.elm.core.component.Env
 import com.oliynick.max.elm.core.component.invoke
 import com.oliynick.max.elm.core.component.noCommand
-import com.oliynick.max.elm.time.travel.gson.gson
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import protocol.*
-import java.util.*
+import protocol.ComponentId
 import kotlin.random.Random
 
 data class SomeTestString(val value: String)
@@ -33,43 +31,27 @@ data class SomeTestCommand(val str: SomeTestString/*, val collection : Collectio
 
 data class SomeTestState(val string: SomeTestString/*, val uri: Uri*/)
 
-object SomeUUIDConverter : Converter<UUID, StringWrapper> {
-    override fun from(v: StringWrapper, converters: Converters): UUID =
-        UUID.fromString(v.value)
-
-    override fun to(t: UUID, converters: Converters): StringWrapper =
-        wrap(t.toString())
-}
-
-object GsonConverter : JsonConverter {
-
-    private val gson = gson()
-
-    override fun toJson(any: Any): String = gson.toJson(any)
-
-    override fun <T> fromJson(json: String, cl: Class<T>): T = gson.fromJson(json, cl)
-
-}
-
 fun main() {
 
     runBlocking {
 
         val dependencies = DebugDependencies(
-            Dependencies<SomeTestCommand, String, SomeTestState>(
+            Env<SomeTestCommand, String, SomeTestState>(
                 SomeTestState(SomeTestString("initial")),
                 { emptySet() },
                 { message, _ ->
+                    println(message)
                     SomeTestState(message.str.copy(value = message.str.value + Random.nextDouble().toString())).noCommand()
                 }
             ),
             ServerSettings(
                 ComponentId("webSocketComponent"),
-                GsonConverter
+                gsonSerializer(),
+                URL()
             )
         )
 
-        component(dependencies)
+        Component(dependencies)
             .also {
                 launch {
                     it.invoke(

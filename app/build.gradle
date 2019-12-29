@@ -14,20 +14,35 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.application'
+buildscript {
+    ext {
+        playServices = "17.0.0"
+        compose_version = '0.1.0-dev03'
+        kotlin_version = '1.3.60-eap-76'
+    }
 
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-
-apply plugin: 'kotlin-android-extensions'
-apply plugin: "androidx.navigation.safeargs.kotlin"
-apply from: '../set-compile-args.gradle'
-
-repositories {
-    google()
-    jcenter()
-    maven { url 'https://jitpack.io' }
+    repositories {
+        mavenLocal()
+        google()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url 'https://kotlin.bintray.com/ktor' }
+        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+        google()
+        jcenter()
+        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+    }
+   /* dependencies {
+        classpath 'com.android.tools.build:gradle:4.0.0-alpha04'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.60-eap-25'
+    }*/
 }
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlinx-serialization'
 
 android {
     compileSdkVersion 29
@@ -45,6 +60,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    /*buildFeatures {
+        // Enables Jetpack Compose for this module
+        compose true
+    }*/
 
     compileOptions {
         sourceCompatibility = 1.8
@@ -73,45 +93,47 @@ dependencies {
     implementation project(':elm-time-travel')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3"
+
+    implementation "androidx.compose:compose-runtime:$compose_version"
+    implementation "androidx.ui:ui-framework:$compose_version"
+    implementation "androidx.ui:ui-layout:$compose_version"
+    implementation "androidx.ui:ui-material:$compose_version"
+    implementation "androidx.ui:ui-foundation:$compose_version"
+    implementation "androidx.ui:ui-animation:$compose_version"
+    implementation "androidx.ui:ui-tooling:$compose_version"
+
+    implementation "com.github.bumptech.glide:glide:4.10.0"
+
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation('androidx.activity:activity-ktx:1.0.0')
+    implementation "androidx.core:core-ktx:1.1.0"
 
-    implementation "androidx.fragment:fragment:1.2.0-alpha04"
+    //implementation 'org.mongodb:mongo-java-driver:3.9.0'
+    implementation 'org.mongodb:stitch-android-sdk:4.1.0'
 
-    implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'com.squareup.okhttp3:okhttp:4.2.0'
-    implementation 'com.squareup.retrofit2:retrofit:2.6.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'org.kodein.di:kodein-di-generic-jvm:6.1.0'
-
-    implementation 'pl.charmas.android:android-reactive-location2:2.1@aar'
-
-    implementation "org.kodein.di:kodein-di-framework-android-core:6.1.0"
-    implementation 'org.kodein.di:kodein-di-framework-android-x:6.1.0'
-
-    implementation 'com.github.satoshun.coroutinebinding:coroutinebinding-core:1.0.0-RC2'
+    implementation "com.google.code.gson:gson:2.8.6"
+    implementation "com.squareup.okhttp3:okhttp:4.2.0"
+    implementation "com.squareup.retrofit2:retrofit:2.6.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.6.0"
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
 
     implementation "com.google.android.gms:play-services-location:$playServices"
     implementation "com.google.android.gms:play-services-maps:$playServices"
 
-    implementation "android.arch.lifecycle:extensions:$lifecycle"
-    kapt "android.arch.lifecycle:compiler:$lifecycle"
-
-    implementation "androidx.navigation:navigation-fragment-ktx:$navigation"
-    implementation "androidx.navigation:navigation-ui-ktx:$navigation"
-
-    testImplementation 'junit:junit:4.12'
+    testImplementation project(path: ':elm-core-test', configuration: 'default')
+    testImplementation "junit:junit:4.12"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
 
     testImplementation "org.mockito:mockito-core:2.23.4"
 
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation "androidx.test:runner:1.2.0"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.1"
+
+    compile group: 'com.google.code.gson', name: 'gson-extras', version: '2.8.5'
+
 }

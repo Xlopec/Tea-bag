@@ -16,8 +16,9 @@
 
 package com.oliynick.max.elm.time.travel.app.transport
 
-import com.oliynick.max.elm.time.travel.app.domain.*
-import com.oliynick.max.elm.time.travel.gson.gson
+import com.oliynick.max.elm.time.travel.app.domain.cms.*
+import com.oliynick.max.elm.time.travel.app.transport.serialization.GSON
+import com.oliynick.max.elm.time.travel.app.transport.serialization.toValue
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.features.CallLogging
@@ -43,8 +44,6 @@ import org.slf4j.event.Level
 import protocol.*
 import java.time.Duration
 import java.util.*
-
-private val GSON by lazy { gson() }
 
 data class RemoteCallArgs(val callId: UUID, val component: ComponentId, val message: ClientMessage)
 
@@ -76,7 +75,8 @@ class Server private constructor(
                 completionJob.join()
             }
         } catch (th: TimeoutCancellationException) {
-            throw NetworkException("Timed out waiting for $timeout ms to perform operation", th)
+            throw NetworkException("Timed out waiting for $timeout ms to perform operation",
+                                                                                                      th)
         } catch (th: Throwable) {
             throw th.toPluginException()
         }
@@ -122,7 +122,11 @@ fun main() {
                         }
                     }
 
-                    installPacketReceiver(pluginMessages, completions, incoming.consumeAsFlow().filterIsInstance())
+                    installPacketReceiver(
+                        pluginMessages,
+                        completions,
+                        incoming.consumeAsFlow().filterIsInstance()
+                    )
                 }
             }
         }.start(true)
@@ -136,7 +140,11 @@ private fun server(
     calls: BroadcastChannel<RemoteCallArgs>
 ): NettyApplicationEngine {
 
-    return embeddedServer(Netty, host = settings.serverSettings.host, port = settings.serverSettings.port.toInt()) {
+    return embeddedServer(
+        Netty,
+        host = settings.serverSettings.host,
+        port = settings.serverSettings.port.toInt()
+    ) {
 
         install(CallLogging) {
             level = Level.INFO
@@ -175,34 +183,55 @@ private fun Application.configureWebSocketRouting(
     }
 }
 
-private suspend fun installPacketSender(calls: Flow<RemoteCallArgs>,
-                                        outgoing: SendChannel<Frame>) {
+private suspend fun installPacketSender(
+    calls: Flow<RemoteCallArgs>,
+    outgoing: SendChannel<Frame>
+) {
     calls.collect { (callId, componentId, message) ->
         outgoing.send(Frame.Text(GSON.toJson(NotifyClient(callId, componentId, message))))
     }
 }
 
-private suspend fun installPacketReceiver(events: Channel<PluginMessage>,
-                                          completions: BroadcastChannel<UUID>,
-                                          incoming: Flow<Frame.Text>) {
+private suspend fun installPacketReceiver(
+    events: Channel<PluginMessage>,
+    completions: BroadcastChannel<UUID>,
+    incoming: Flow<Frame.Text>
+) {
 
     incoming.collect { frame -> processPacket(frame, events, completions) }
 }
 
 
-private suspend fun processPacket(frame: Frame.Text,
-                                  events: Channel<PluginMessage>,
-                                  completions: BroadcastChannel<UUID>) {
+private suspend fun processPacket(
+    frame: Frame.Text,
+    events: Channel<PluginMessage>,
+    completions: BroadcastChannel<UUID>
+) {
     coroutineScope {
 
         val json = frame.readText()
+
+        println("Got json $json")
+
         val packet = GSON.fromJson(json, NotifyServer::class.java)
 
         try {
 
             when (val message = packet.payload) {// todo consider removing `?`
-                is NotifyComponentSnapshot<*, *> -> events.send(AppendSnapshot(packet.componentId, message.message, message.oldState, message.newState))
-                is NotifyComponentAttached -> events.send(ComponentAttached(packet.componentId, message.state))
+                is NotifyComponentSnapshot -> events.send(
+                    AppendSnapshot(
+                        packet.componentId,
+                        message.message.toValue(),
+                        message.oldState.toValue(),
+                        message.newState.toValue()
+                    )
+                )
+                is NotifyComponentAttached -> events.send(
+                    ComponentAttached(
+                        packet.componentId,
+                        message.state.toValue()
+                    )
+                )
                 is ActionApplied -> completions.send(message.id)
             }
 
@@ -211,3 +240,4 @@ private suspend fun processPacket(frame: Frame.Text,
         }
     }
 }
+

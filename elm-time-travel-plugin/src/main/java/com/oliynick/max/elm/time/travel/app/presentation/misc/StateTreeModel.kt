@@ -16,7 +16,7 @@
 
 package com.oliynick.max.elm.time.travel.app.presentation.misc
 
-import protocol.Value
+import com.oliynick.max.elm.time.travel.app.domain.cms.Value
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode

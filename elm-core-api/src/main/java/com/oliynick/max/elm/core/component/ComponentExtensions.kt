@@ -62,7 +62,17 @@ fun <S, C> S.command(first: C, second: C, third: C): UpdateWith<S, C> = this to 
  * @param commands commands to combine with state
  * @return [UpdateWith] instance with given state and set of commands
  */
-fun <S, C> S.command(vararg commands: C): UpdateWith<S, C> = this to setOf(*commands)
+fun <S, C> S.command(vararg commands: C): UpdateWith<S, C> = this command setOf(*commands)
+
+/**
+ * Handy extension to combine set of commands with state
+ *
+ * @receiver state to combine with commands
+ * @param S state to combine with command
+ * @param commands commands to combine with state
+ * @return [UpdateWith] instance with given state and set of commands
+ */
+infix fun <S, C> S.command(commands: Set<C>): UpdateWith<S, C> = this to commands
 
 /**
  * Handy extension to express absence of commands to execute combined with state
@@ -79,7 +89,7 @@ fun <S, C> S.noCommand(): UpdateWith<S, C> = this to emptySet()
  * @param action action to perform that produces no messages that can be consumed by a component
  * @return set of messages to be consumed by a component, always empty
  */
-suspend inline fun <C, M> C.sideEffect(crossinline action: suspend C.() -> Unit): Set<M> {
+suspend inline infix fun <C, M> C.sideEffect(crossinline action: suspend C.() -> Unit): Set<M> {
     action()
     return emptySet()
 }
@@ -93,7 +103,7 @@ suspend inline fun <C, M> C.sideEffect(crossinline action: suspend C.() -> Unit)
  * @param action action to perform that might produce message to be consumed by a component
  * @return set of messages to be consumed a component
  */
-suspend inline fun <C, M> C.effect(crossinline action: suspend C.() -> M?): Set<M> {
+suspend inline infix fun <C, M> C.effect(crossinline action: suspend C.() -> M?): Set<M> {
     return action(this@effect)?.let(::setOf) ?: emptySet()
 }
 
