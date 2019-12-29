@@ -400,7 +400,7 @@ private fun ArticleTextContent(article: Article) {
         HeightSpacer(8.dp)
 
         Text(
-            text = article.description.value,
+            text = article.description?.value ?: "No description",
             style = typography.body2.withOpacity(0.6f)
         )
     }

@@ -52,10 +52,9 @@ internal val localhost by lazy(::URL)
 @DslMarker
 private annotation class DslBuilder
 
-internal interface JsonConverter {
+interface JsonConverter {
     fun <T> toJsonTree(
-        any: T,
-        cl: Class<out T>
+        any: T
     ): JsonTree
 
     fun <T> fromJsonTree(
@@ -82,11 +81,11 @@ data class DebugDependencies<M, C, S>(
 //todo add dsl
 data class ServerSettings(
     inline val id: ComponentId,
-    inline val serializer: JsonSerializer,
+    inline val serializer: JsonConverter,
     inline val url: URL
 )
 
-interface JsonSerializer {
+/*interface JsonSerializer {
 
     fun <T> toJson(
         any: T,
@@ -98,17 +97,17 @@ interface JsonSerializer {
         type: Class<out T>
     ): T?
 
-}
+}*/
 
 @DslBuilder
 class ServerSettingsBuilder internal constructor(
     var id: ComponentId,
     var url: URL,
-    var jsonSerializer: JsonSerializer
+    var jsonSerializer: JsonConverter
 ) {
 
     fun installSerializer(
-        serializer: JsonSerializer
+        serializer: JsonConverter
     ) {
         jsonSerializer = serializer
     }
@@ -142,7 +141,7 @@ fun <M, C, S> Dependencies(
     id: ComponentId,
     env: Env<M, C, S>,
     url: URL = localhost,
-    serializer: JsonSerializer = gsonSerializer(),
+    serializer: JsonConverter = gsonSerializer(),
     config: DebugEnvBuilder<M, C, S>.() -> Unit = {}
 ) = DebugEnvBuilder(
     EnvBuilder(env),
@@ -153,7 +152,7 @@ inline fun <reified M, reified C, reified S> CoroutineScope.Component(
     id: ComponentId,
     env: Env<M, C, S>,
     url: URL = localhost,
-    serializer: JsonSerializer = gsonSerializer(),
+    serializer: JsonConverter = gsonSerializer(),
     noinline config: DebugEnvBuilder<M, C, S>.() -> Unit = {}
 ) = Component(
     Dependencies(
@@ -192,7 +191,7 @@ internal inline fun <reified M, reified C, reified S> CoroutineScope.webSocketCo
 
             val snapshots = Channel<NotifyComponentSnapshot>()
 
-            with(dependencies.withSpyingInterceptor(snapshots)) {
+            with(dependencies.withSpyingInterceptor(snapshots, dependencies.serverSettings.serializer)) {
                 launch {
                     // says 'hello' to a server; the message will be suspended until
                     // the very first state gets computed
@@ -220,7 +219,7 @@ internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.obs
 
         var computationJob = launch { componentEnv.loop(messages, states) }
 
-        incomingPackets(serverSettings.id)
+        incomingPackets(serverSettings.id, serverSettings.serializer)
             .collect { packet ->
                 // todo consider replacing with some kind of stream and fold function
                 val newJob = applyMessage(packet.message, dependencies, messages, states)
@@ -230,7 +229,7 @@ internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.obs
                     computationJob = newJob
                 }
 
-                notifyApplied(packet.id, serverSettings.id)
+                notifyApplied(packet.id, serverSettings.id, serverSettings.serializer)
             }
     }
 }
@@ -246,22 +245,25 @@ internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.app
     when (message) {
         // todo split into functions per message type
         is ApplyMessage -> {
-            messages.send(GsonConverter.fromJsonTree(message.message, M::class.java))
+            messages.send(dependencies.serverSettings.serializer.fromJsonTree(message.message, M::class.java))
             null
         }
         is ApplyState -> {
             // cancels previous computation job and starts a new one
-            launch { loop<M, C, S>(GsonConverter.fromJsonTree(message.state, S::class.java), this@with, messages, states) }
+            launch { loop<M, C, S>(dependencies.serverSettings.serializer.fromJsonTree(message.state, S::class.java), this@with, messages, states) }
         }
     }
 }
 
 @PublishedApi
-internal fun ClientWebSocketSession.incomingPackets(id: ComponentId) =
+internal fun ClientWebSocketSession.incomingPackets(
+    id: ComponentId,
+    serializer: JsonConverter
+) =
     incoming.consumeAsFlow()
         .filterIsInstance<Frame.Text>()
         .map { frame -> frame.readText() }
-        .map { json -> GsonConverter.fromJson(json, NotifyClient::class.java) }
+        .map { json -> serializer.fromJson(json, NotifyClient::class.java) }
         .filter { packet -> packet.component == id }
 
 @PublishedApi
@@ -287,11 +289,11 @@ internal suspend inline fun <reified S> WebSocketSession.notifyAttached(
     serverSettings: ServerSettings
 ) {
     val message = notifyMessage(
-        NotifyComponentAttached(GsonConverter.toJsonTree(first as Any, S::class.java)),
+        NotifyComponentAttached(serverSettings.serializer.toJsonTree(first as Any)),
         serverSettings.id
     )
 
-    send(GsonConverter.toJson(message))
+    send(serverSettings.serializer.toJson(message))
 }
 
 @PublishedApi
@@ -302,7 +304,8 @@ internal suspend fun WebSocketSession.notifySnapshots(
     snapshots.collect { snapshot ->
         send(
             serverSettings.id,
-            snapshot
+            snapshot,
+            serverSettings.serializer
         )
     }
 }
@@ -318,45 +321,51 @@ internal fun notifyMessage(
 @PublishedApi
 internal suspend fun WebSocketSession.send(
     componentId: ComponentId,
-    message: ServerMessage
+    message: ServerMessage,
+    serializer: JsonConverter
 ) {
-    send(GsonConverter.toJson(NotifyServer(UUID.randomUUID(), componentId, message)))
+    send(serializer.toJson(NotifyServer(UUID.randomUUID(), componentId, message)))
 }
 
 @PublishedApi
 internal suspend fun WebSocketSession.notifyApplied(
     packetId: UUID,
-    componentId: ComponentId
+    componentId: ComponentId,
+    serializer: JsonConverter
 ) {
-    send(GsonConverter.toJson(NotifyServer(packetId, componentId, ActionApplied(packetId))))
+    send(serializer.toJson(NotifyServer(packetId, componentId, ActionApplied(packetId))))
 }
 
 @PublishedApi
 internal inline fun <reified M, reified C, reified S> spyingInterceptor(
-    sink: SendChannel<NotifyComponentSnapshot>
+    sink: SendChannel<NotifyComponentSnapshot>,
+    serializer: JsonConverter
 ): Interceptor<M, S, C> = { message, prevState, newState, _ ->
     sink.send(
         NotifyComponentSnapshot(
-            GsonConverter.toJsonTree(message as Any, M::class.java),
-            GsonConverter.toJsonTree(prevState as Any, S::class.java),
-            GsonConverter.toJsonTree(newState as Any, S::class.java)
+            serializer.toJsonTree(message as Any),
+            serializer.toJsonTree(prevState as Any),
+            serializer.toJsonTree(newState as Any)
         )
     )
 }
 
 @PublishedApi
 internal inline fun <reified M, reified C, reified S> DebugDependencies<M, C, S>.withSpyingInterceptor(
-    snapshots: Channel<NotifyComponentSnapshot>
+    snapshots: Channel<NotifyComponentSnapshot>,
+    serializer: JsonConverter
 ) = copy(
     componentEnv = componentEnv.withSpyingInterceptor(
-        snapshots
+        snapshots,
+        serializer
     )
 )
 
 @PublishedApi
 internal inline fun <reified M, reified C, reified S> Env<M, C, S>.withSpyingInterceptor(
-    snapshots: Channel<NotifyComponentSnapshot>
-) = copy(interceptor = spyingInterceptor<M, C, S>(snapshots).with(interceptor))
+    snapshots: Channel<NotifyComponentSnapshot>,
+    serializer: JsonConverter
+) = copy(interceptor = spyingInterceptor<M, C, S>(snapshots, serializer).with(interceptor))
 
 @PublishedApi
 internal fun <M, C, S> Env<M, C, S>.withNewInitializer(s: S) =

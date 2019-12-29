@@ -14,8 +14,8 @@ import com.oliynick.max.elm.core.component.Env
 import com.oliynick.max.elm.core.component.androidLogger
 import com.oliynick.max.elm.time.travel.Component
 import com.oliynick.max.elm.time.travel.URL
+import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
 import com.oliynick.max.elm.time.travel.gsonSerializer
-import com.oliynick.max.elm.time.travel.registerReflectiveTypeAdapter
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import protocol.ComponentId
@@ -66,10 +66,7 @@ fun Environment.appComponent(): Component<Message, State> {
 fun AppGsonSerializer() = gsonSerializer {
 
     registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
-   // registerReflectiveTypeAdapter<Feed>()
-    registerReflectiveTypeAdapter<LoadCriteria>()
-    //registerReflectiveTypeAdapter<Message>()
-    //registerReflectiveTypeAdapter<ScreenMessage>()
+    registerTypeAdapterFactory(TypeAppenderAdapterFactory)
 
 }
 

@@ -4,9 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonSerializer
-import protocol.ClientMessage
 import protocol.ComponentId
-import protocol.ServerMessage
 import java.util.*
 
 fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
@@ -14,14 +12,14 @@ fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
         .serializeNulls()
         .setPrettyPrinting()
         .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        .registerTypeHierarchyAdapter(
+       /* .registerTypeHierarchyAdapter(
             ServerMessage::class.java,
             ServerMessageAdapter
         )
         .registerTypeHierarchyAdapter(
             ClientMessage::class.java,
             ClientMessageAdapter
-        )
+        )*/
         /*.registerTypeAdapter(
             ApplyMessage::class.java,
             ApplyMessageAdapter
@@ -38,10 +36,10 @@ fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
             ComponentId::class.java,
             ComponentIdAdapter
         )
-        .registerTypeHierarchyAdapter(
+       /* .registerTypeHierarchyAdapter(
             List::class.java,
             ListSerializer
-        )
+        )*/
         .apply(config)
         .create()
 

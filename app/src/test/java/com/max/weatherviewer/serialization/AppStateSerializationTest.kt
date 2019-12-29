@@ -1,12 +1,14 @@
 package com.max.weatherviewer.serialization
 
 import com.google.gson.GsonBuilder
+import com.max.weatherviewer.app.ScreenMessageWrapper
 import com.max.weatherviewer.app.State
 import com.max.weatherviewer.app.serialization.PersistentListSerializer
 import com.max.weatherviewer.domain.Article
 import com.max.weatherviewer.domain.Description
 import com.max.weatherviewer.domain.Title
 import com.max.weatherviewer.screens.feed.FeedLoading
+import com.max.weatherviewer.screens.feed.LoadArticles
 import com.max.weatherviewer.screens.feed.LoadCriteria
 import com.max.weatherviewer.screens.feed.Preview
 import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
@@ -30,7 +32,7 @@ class AppStateSerializationTest {
         .setPrettyPrinting()
         .apply {
             registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
-            registerTypeAdapterFactory(TypeAppenderAdapterFactory())
+            registerTypeAdapterFactory(TypeAppenderAdapterFactory)
         }.create()
 
     private val previewScreenState = Preview(
@@ -93,6 +95,19 @@ class AppStateSerializationTest {
 
         val json = toJson(message)
         val fromJson = fromJson(json, ServerMessage::class.java)
+
+        fromJson shouldBe message
+    }
+
+    @Test
+    fun `test ScreenMessageWrapper is serializing correctly`() = with(gsonSerializer) {
+
+        val message = ScreenMessageWrapper(
+            LoadArticles(UUID.randomUUID())
+        )
+
+        val json = toJson(message)
+        val fromJson = fromJson(json, ScreenMessageWrapper::class.java)
 
         fromJson shouldBe message
     }

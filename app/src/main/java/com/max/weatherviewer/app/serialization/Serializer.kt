@@ -13,8 +13,10 @@ object PersistentListSerializer : Serializer<PersistentList<*>> {
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): PersistentList<*> {
-        return json.asJsonArray.map {
+    ): PersistentList<*> = context.deserialize<Collection<Any?>>(json, Collection::class.java).toPersistentList()
+
+    /*
+    json.asJsonArray.map {
 
             it.asJsonObject.run {
                 context.deserialize<Any?>(this["value"], Class.forName(this["type"].asString))
@@ -23,13 +25,16 @@ object PersistentListSerializer : Serializer<PersistentList<*>> {
 
         }.toPersistentList()
     }
+     */
 
     override fun serialize(
         src: PersistentList<*>,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement {
-        return JsonArray().apply {
+    ): JsonElement = context.serialize(src, Collection::class.java)
+
+    /*
+    return JsonArray().apply {
             for (v in src) {
                 add(JsonObject().also {
                     it.addProperty("type", v!!::class.java.name)
@@ -38,6 +43,6 @@ object PersistentListSerializer : Serializer<PersistentList<*>> {
                 )
             }
         }
-    }
+     */
 
 }

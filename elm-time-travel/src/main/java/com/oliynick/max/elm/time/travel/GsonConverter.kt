@@ -2,22 +2,19 @@ package com.oliynick.max.elm.time.travel
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonParseException
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory
+import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
 import com.oliynick.max.elm.time.travel.gson.gson
-import protocol.Json
 import protocol.JsonTree
 import kotlin.reflect.KClass
 
-@PublishedApi
-internal object GsonConverter : JsonConverter {
+private class GsonConverter(
+    private val gson: Gson
+) : JsonConverter {
 
-    private val gson = gson()
     override fun <T> toJsonTree(
-        any: T,
-        cl: Class<out T>
-    ): JsonTree = gson.toJsonTree(any, cl)
-
+        any: T
+    ): JsonTree = gson.toJsonTree(any)
 
     override fun <T> fromJsonTree(
         json: JsonTree,
@@ -36,23 +33,8 @@ internal object GsonConverter : JsonConverter {
 }
 
 fun gsonSerializer(
-    config: GsonBuilder.() -> Unit = {}
-): JsonSerializer = GsonSerializer(gson(config))
-
-inline fun <reified T : Any> GsonBuilder.registerReflectiveTypeAdapter() {
-    RuntimeTypeAdapterFactory.of(T::class.java)
-        .also { adapterFactory ->
-
-            adapterFactory.registerRecursively(T::class)
-
-            /*T::class.sealedSubclasses.forEach { sub ->
-                adapterFactory.registerSubtype(sub.java)
-            }*/
-        }
-        .also { adapterFactory ->
-            registerTypeAdapterFactory(adapterFactory)
-        }
-}
+    config: GsonBuilder.() -> Unit = { registerTypeAdapterFactory(TypeAppenderAdapterFactory) }
+): JsonConverter = GsonConverter(gson(config))
 
 @PublishedApi
 internal fun <T : Any> RuntimeTypeAdapterFactory<T>.registerRecursively(sub: KClass<out T>) {
@@ -62,24 +44,4 @@ internal fun <T : Any> RuntimeTypeAdapterFactory<T>.registerRecursively(sub: KCl
 
     println("registered $sub")
     registerSubtype(sub.java)
-}
-
-internal class GsonSerializer(
-    private val gson: Gson
-) : JsonSerializer {
-
-    override fun <T> toJson(
-        any: T,
-        type: Class<out T>
-    ): Json = gson.toJson(any, type).also {
-        println("Serialized to $it")
-    }
-
-    override fun <T> fromJson(
-        json: Json,
-        type: Class<out T>
-    ): T? =
-        json.runCatching { this@GsonSerializer.gson.fromJson(json, type) }
-            .getOrElse { th -> throw JsonParseException("Couldn't deserialize $json", th) }
-
 }

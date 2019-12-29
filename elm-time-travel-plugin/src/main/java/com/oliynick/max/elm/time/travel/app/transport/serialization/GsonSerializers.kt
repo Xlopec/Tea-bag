@@ -2,10 +2,15 @@ package com.oliynick.max.elm.time.travel.app.transport.serialization
 
 import com.google.gson.*
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
+import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
 import com.oliynick.max.elm.time.travel.gson.gson
 import protocol.Json
 
-internal val GSON by lazy { gson() }
+internal val GSON by lazy {
+    gson {
+        registerTypeAdapterFactory(TypeAppenderAdapterFactory)
+    }
+}
 
 //todo make private
 internal fun Gson.fromRaw(

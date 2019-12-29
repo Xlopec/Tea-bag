@@ -210,6 +210,9 @@ private suspend fun processPacket(
     coroutineScope {
 
         val json = frame.readText()
+
+        println("Got json $json")
+
         val packet = GSON.fromJson(json, NotifyServer::class.java)
 
         try {

@@ -57,7 +57,7 @@ data class ArticleElement(
     @SerializedName("author")
     val author: Author?,
     @SerializedName("description")
-    val description: Description,
+    val description: Description?,
     @SerializedName("publishedAt")
     val publishedAt: Date,
     @SerializedName("title")
