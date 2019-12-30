@@ -15,7 +15,10 @@ fun Environment.PluginComponent(): Component<PluginMessage, PluginState> {
 
     suspend fun resolve(c: PluginCommand) = this.resolve(c)
 
-    fun update(message: PluginMessage, state: PluginState) = this.update(message, state)
+    fun update(
+        message: PluginMessage,
+        state: PluginState
+    ) = this.update(message, state)
 
     return Component(Env(
         Stopped(properties.pluginSettings),

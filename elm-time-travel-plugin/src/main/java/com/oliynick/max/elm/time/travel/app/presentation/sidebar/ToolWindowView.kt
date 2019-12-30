@@ -24,12 +24,8 @@ import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.core.component.changes
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.presentation.component.ComponentView
-import com.oliynick.max.elm.time.travel.app.presentation.misc.setHover
 import com.oliynick.max.elm.time.travel.app.presentation.info.InfoView
-import com.oliynick.max.elm.time.travel.app.presentation.misc.DefaultDocumentListener
-import com.oliynick.max.elm.time.travel.app.presentation.misc.removeMouseListeners
-import com.oliynick.max.elm.time.travel.app.presentation.misc.safe
-import com.oliynick.max.elm.time.travel.app.presentation.misc.setOnClickListener
+import com.oliynick.max.elm.time.travel.app.presentation.misc.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -47,10 +43,12 @@ import javax.swing.*
 import javax.swing.event.DocumentListener
 import java.awt.Component as AwtComponent
 
-class ToolWindowView(private val project: Project,
-                     private val scope: CoroutineScope,
-                     private val component: Component<PluginMessage, PluginState>,
-                     private val uiEvents: Channel<PluginMessage>) : CoroutineScope by scope {
+class ToolWindowView(
+    private val project: Project,
+    private val scope: CoroutineScope,
+    private val component: Component<PluginMessage, PluginState>,
+    private val uiEvents: Channel<PluginMessage>
+) : CoroutineScope by scope {
 
     private lateinit var panel: JPanel
     private lateinit var startButton: JLabel
@@ -78,7 +76,10 @@ class ToolWindowView(private val project: Project,
     }
 
     //todo consider exposing a single callback
-    private fun render(state: PluginState, messages: Channel<PluginMessage>) {
+    private fun render(
+        state: PluginState,
+        messages: Channel<PluginMessage>
+    ) {
 
         portTextField.isEnabled = state is Stopped
         hostTextField.isEnabled = portTextField.isEnabled
@@ -91,7 +92,10 @@ class ToolWindowView(private val project: Project,
         }.safe
     }
 
-    private fun render(state: Stopped, messages: Channel<PluginMessage>) {
+    private fun render(
+        state: Stopped,
+        messages: Channel<PluginMessage>
+    ) {
         portTextField.setText(state.settings.serverSettings.port.toString(), portListener)
         hostTextField.setText(state.settings.serverSettings.host, hostListener)
 
@@ -116,7 +120,10 @@ class ToolWindowView(private val project: Project,
         startButton.removeMouseListenersDisabling()
     }
 
-    private fun render(state: Started, messages: Channel<PluginMessage>) {
+    private fun render(
+        state: Started,
+        messages: Channel<PluginMessage>
+    ) {
         startButton.icon = getIcon("suspend")
         startButton.disabledIcon = getIcon("suspend_disabled")
 
@@ -158,7 +165,10 @@ class ToolWindowView(private val project: Project,
     private fun tabbedComponentsView() = JBTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT)
         .also { tabPane -> tabPane.model = DefaultSingleSelectionModel() }
 
-    private fun JTabbedPane.update(debugState: DebugState, messages: Channel<PluginMessage>) {
+    private fun JTabbedPane.update(
+        debugState: DebugState,
+        messages: Channel<PluginMessage>
+    ) {
         debugState.components
             .filter { e -> indexOfTab(e.key.id) == -1 }
             .forEach { (id, s) ->
@@ -174,7 +184,10 @@ private operator fun Container.plusAssign(component: AwtComponent) {
     add(component)
 }
 
-private fun JTextField.setText(text: String, listener: DocumentListener) {
+private fun JTextField.setText(
+    text: String,
+    listener: DocumentListener
+) {
     document.removeDocumentListener(listener)
     this.text = text
     document.addDocumentListener(listener)
@@ -238,10 +251,12 @@ fun AwtComponent.cancel() {
 
 fun Container.children() = (0 until componentCount).map { i -> this[i] }
 
-inline fun JTabbedPane.addCloseableTab(component: ComponentId,
-                                       content: AwtComponent,
-                                       icon: Icon? = null,
-                                       crossinline onClose:(ComponentId) -> Unit) {
+inline fun JTabbedPane.addCloseableTab(
+    component: ComponentId,
+    content: AwtComponent,
+    icon: Icon? = null,
+    crossinline onClose: (ComponentId) -> Unit
+) {
     addTab(component.id, content)
 
     val panel = JPanel(FlowLayout()).apply {

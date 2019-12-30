@@ -80,7 +80,11 @@ class ComponentView(
 
 }
 
-private fun JTree.showActionPopup(e: MouseEvent, id: ComponentId, events: Channel<PluginMessage>) {
+private fun JTree.showActionPopup(
+    e: MouseEvent,
+    id: ComponentId,
+    events: Channel<PluginMessage>
+) {
     val row = getClosestRowForLocation(e.x, e.y)
 
     setSelectionRow(row)
@@ -99,7 +103,10 @@ private fun JTree.getSubTreeForRow(row: Int): RenderTree {
     return (getPathForRow(row).lastPathComponent as DefaultMutableTreeNode).userObject as RenderTree
 }
 
-private fun componentState(state: PluginState, id: ComponentId) =
+private fun componentState(
+    state: PluginState,
+    id: ComponentId
+) =
     (state as? Started)?.debugState?.components?.get(id)
 
 private fun snapshotPopup(

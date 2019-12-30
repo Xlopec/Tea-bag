@@ -33,11 +33,20 @@ object StartServer : UIMessage()
 
 object StopServer : UIMessage()
 
-data class RemoveSnapshots(val componentId: ComponentId, val ids: Set<UUID>) : UIMessage()
+data class RemoveSnapshots(
+    val componentId: ComponentId,
+    val ids: Set<UUID>
+) : UIMessage()
 
-data class ReApplyCommands(val componentId: ComponentId, val command: Value<*>) : UIMessage()
+data class ReApplyCommands(
+    val componentId: ComponentId,
+    val command: Value<*>
+) : UIMessage()
 
-data class ReApplyState(val componentId: ComponentId, val state: Value<*>) : UIMessage()
+data class ReApplyState(
+    val componentId: ComponentId,
+    val state: Value<*>
+) : UIMessage()
 
 data class RemoveComponent(val componentId: ComponentId) : UIMessage()
 /*
@@ -45,16 +54,33 @@ data class RemoveComponent(val componentId: ComponentId) : UIMessage()
  */
 sealed class NotificationMessage : PluginMessage()
 
-data class NotifyOperationException(val exception: PluginException, val operation: PluginCommand? = null) : NotificationMessage() {
-    constructor(raw: Throwable, operation: PluginCommand? = null) : this(raw.toPluginException(), operation)
+data class NotifyOperationException(
+    val exception: PluginException,
+    val operation: PluginCommand? = null
+) : NotificationMessage() {
+    constructor(
+        raw: Throwable,
+        operation: PluginCommand? = null
+    ) : this(raw.toPluginException(), operation)
 }
 
 object NotifyStarted : NotificationMessage()
 
 object NotifyStopped : NotificationMessage()
 
-data class AppendSnapshot(val componentId: ComponentId, val message: Value<*>, val oldState: Value<*>, val newState: Value<*>) : NotificationMessage()
+data class AppendSnapshot(
+    val componentId: ComponentId,
+    val message: Value<*>,
+    val oldState: Value<*>,
+    val newState: Value<*>
+) : NotificationMessage()
 
-data class StateReApplied(val componentId: ComponentId, val state: Value<*>) : NotificationMessage()
+data class StateReApplied(
+    val componentId: ComponentId,
+    val state: Value<*>
+) : NotificationMessage()
 
-data class ComponentAttached(val componentId: ComponentId, val state: Value<*>) : NotificationMessage()
+data class ComponentAttached(
+    val componentId: ComponentId,
+    val state: Value<*>
+) : NotificationMessage()

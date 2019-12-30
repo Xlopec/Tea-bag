@@ -26,7 +26,9 @@ import java.awt.event.MouseEvent
 
 inline fun Component.setOnClickListener(crossinline l: (MouseEvent) -> Unit) {
     removeMouseListeners()
-    addMouseListener(object : DefaultMouseListener { override fun mouseClicked(e: MouseEvent) = l(e) })
+    addMouseListener(object : DefaultMouseListener {
+        override fun mouseClicked(e: MouseEvent) = l(e)
+    })
 }
 
 fun Component.removeMouseListeners() {

@@ -24,7 +24,7 @@ fun Application.installErrorInterceptors() {
     install(StatusPages) {
 
         exception<RuntimeException> { cause ->
-         //   call.respond(HttpStatusCode.InternalServerError, ErrorResponse(cause))
+            //   call.respond(HttpStatusCode.InternalServerError, ErrorResponse(cause))
             throw cause
         }
     }

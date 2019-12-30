@@ -20,12 +20,12 @@ interface Environment :
 @Suppress("FunctionName")
 fun Environment(properties: PropertiesComponent): Environment =
     object : Environment,
-        Updater<Environment> by LiveUpdater(),
-        NotificationUpdater by LiveNotificationUpdater,
-        UiUpdater by LiveUiUpdater,
-        AppResolver<Environment> by LiveAppResolver(),
-        HasChannels by HasChannels(),
-        HasServerService by HasServerService(),
-        HasSystemProperties by HasSystemProperties(
-            properties),
-        CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.Main) {}
+             Updater<Environment> by LiveUpdater(),
+             NotificationUpdater by LiveNotificationUpdater,
+             UiUpdater by LiveUiUpdater,
+             AppResolver<Environment> by LiveAppResolver(),
+             HasChannels by HasChannels(),
+             HasServerService by HasServerService(),
+             HasSystemProperties by HasSystemProperties(
+                 properties),
+             CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.Main) {}

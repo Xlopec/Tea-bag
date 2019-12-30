@@ -33,14 +33,20 @@ import kotlinx.coroutines.launch
 
 class SideToolWindowFactory : ToolWindowFactory, DumbAware {
 
-    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+    override fun createToolWindowContent(
+        project: Project,
+        toolWindow: ToolWindow
+    ) {
         Environment(project.properties).createToolWindowContent(project, toolWindow)
     }
 
     override fun shouldBeAvailable(project: Project): Boolean = true
 }
 
-private fun Environment.createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+private fun Environment.createToolWindowContent(
+    project: Project,
+    toolWindow: ToolWindow
+) {
     val myToolWindow = ToolWindowView(project, this, PluginComponent(), channels.events)
     val contentFactory = ContentFactory.SERVICE.getInstance()
     val content = contentFactory.createContent(myToolWindow.root, null, false)
@@ -65,7 +71,7 @@ private fun Project.showException(command: DoNotifyOperationException) {
 }
 
 private fun Project.showNotification(notification: NotificationMessage) {
-    val balloon: Balloon = when(notification) {
+    val balloon: Balloon = when (notification) {
         NotifyStarted -> createServerStartedBalloon()
         NotifyStopped -> createServerStoppedBalloon()
         is StateReApplied -> createStateReAppliedBalloon(notification.componentId)

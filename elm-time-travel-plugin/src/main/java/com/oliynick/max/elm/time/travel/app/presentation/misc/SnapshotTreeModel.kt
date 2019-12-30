@@ -24,8 +24,10 @@ import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
 import javax.swing.tree.TreeModel
 
-class SnapshotTreeModel private constructor(private val delegate: DefaultTreeModel,
-                                            initial: List<Snapshot>) : TreeModel by delegate {
+class SnapshotTreeModel private constructor(
+    private val delegate: DefaultTreeModel,
+    initial: List<Snapshot>
+) : TreeModel by delegate {
 
     companion object {
         fun newInstance(data: List<Snapshot> = emptyList()): SnapshotTreeModel {
@@ -35,18 +37,29 @@ class SnapshotTreeModel private constructor(private val delegate: DefaultTreeMod
 
     private val updateCallback = object : UpdateCallback<Snapshot, Snapshot> {
 
-        override fun onContentUpdated(oldItem: Snapshot, oldIndex: Int, newItem: Snapshot, newIndex: Int) {
+        override fun onContentUpdated(
+            oldItem: Snapshot,
+            oldIndex: Int,
+            newItem: Snapshot,
+            newIndex: Int
+        ) {
             rootNode.remove(oldIndex)
             delegate.insertNodeInto(newItem.toComponentSubTree(), rootNode, oldIndex)
         }
 
-        override fun onItemInserted(item: Snapshot, index: Int) {
+        override fun onItemInserted(
+            item: Snapshot,
+            index: Int
+        ) {
             require(index == rootNode.childCount) { "$index != ${rootNode.childCount}" }
 
             delegate.insertNodeInto(item.toComponentSubTree(), rootNode, index)
         }
 
-        override fun onItemRemoved(item: Snapshot, index: Int) {
+        override fun onItemRemoved(
+            item: Snapshot,
+            index: Int
+        ) {
             delegate.removeNodeFromParent(rootNode.getChildAt(index) as MutableTreeNode)
         }
     }

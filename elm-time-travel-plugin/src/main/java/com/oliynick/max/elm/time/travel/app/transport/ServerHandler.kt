@@ -34,7 +34,10 @@ class ServerHandler {
     private var collectJob: Job? = null
     private val mutex = Mutex()
 
-    suspend fun start(settings: Settings, events: Channel<PluginMessage>) {
+    suspend fun start(
+        settings: Settings,
+        events: Channel<PluginMessage>
+    ) {
         mutex.withLock {
 
             require(server == null) { "server haven't been disposed" }
@@ -49,7 +52,10 @@ class ServerHandler {
         }
     }
 
-    suspend operator fun invoke(component: ComponentId, message: ClientMessage) {
+    suspend operator fun invoke(
+        component: ComponentId,
+        message: ClientMessage
+    ) {
         mutex.withLock {
             server!!(component, message)
         }

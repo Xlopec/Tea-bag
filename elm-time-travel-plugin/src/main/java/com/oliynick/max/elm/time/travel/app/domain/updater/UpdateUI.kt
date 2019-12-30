@@ -23,6 +23,9 @@ import com.oliynick.max.elm.time.travel.app.domain.cms.UIMessage
 
 interface UiUpdater {
 
-    fun update(message: UIMessage, state: PluginState): UpdateWith<PluginState, PluginCommand>
+    fun update(
+        message: UIMessage,
+        state: PluginState
+    ): UpdateWith<PluginState, PluginCommand>
 
 }

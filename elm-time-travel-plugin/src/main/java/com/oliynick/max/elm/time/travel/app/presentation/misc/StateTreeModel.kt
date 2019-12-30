@@ -22,8 +22,10 @@ import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
 import javax.swing.tree.TreeModel
 
-class StateTreeModel private constructor(private val delegate: DefaultTreeModel,
-                                         initial: Value<*>) : TreeModel by delegate {
+class StateTreeModel private constructor(
+    private val delegate: DefaultTreeModel,
+    initial: Value<*>
+) : TreeModel by delegate {
 
     companion object {
         fun newInstance(state: Value<*>): StateTreeModel {

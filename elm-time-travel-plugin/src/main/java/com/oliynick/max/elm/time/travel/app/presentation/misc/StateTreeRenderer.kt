@@ -24,13 +24,15 @@ import javax.swing.tree.TreeCellRenderer
 
 object StateTreeRenderer : TreeCellRenderer {
 
-    override fun getTreeCellRendererComponent(tree: JTree,
-                                              value: Any,
-                                              selected: Boolean,
-                                              expanded: Boolean,
-                                              leaf: Boolean,
-                                              row: Int,
-                                              hasFocus: Boolean): Component {
+    override fun getTreeCellRendererComponent(
+        tree: JTree,
+        value: Any,
+        selected: Boolean,
+        expanded: Boolean,
+        leaf: Boolean,
+        row: Int,
+        hasFocus: Boolean
+    ): Component {
 
         val label = JLabel()
         val node = value as DefaultMutableTreeNode
@@ -42,7 +44,7 @@ object StateTreeRenderer : TreeCellRenderer {
 
         val payload = node.userObject as RenderTree
 
-        label.text = when(payload) {
+        label.text = when (payload) {
             RootNode -> "State"
             is SnapshotNode, is MessageNode, is StateNode -> error("Can't render $payload")
             is PropertyNode -> payload.toReadableString()

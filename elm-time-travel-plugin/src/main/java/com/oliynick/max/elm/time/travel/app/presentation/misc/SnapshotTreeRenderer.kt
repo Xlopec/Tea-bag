@@ -24,18 +24,20 @@ import javax.swing.tree.TreeCellRenderer
 
 object SnapshotTreeRenderer : TreeCellRenderer {
 
-    override fun getTreeCellRendererComponent(tree: JTree,
-                                              value: Any,
-                                              selected: Boolean,
-                                              expanded: Boolean,
-                                              leaf: Boolean,
-                                              row: Int,
-                                              hasFocus: Boolean): Component {
+    override fun getTreeCellRendererComponent(
+        tree: JTree,
+        value: Any,
+        selected: Boolean,
+        expanded: Boolean,
+        leaf: Boolean,
+        row: Int,
+        hasFocus: Boolean
+    ): Component {
 
         val label = JLabel()
         val payload = (value as DefaultMutableTreeNode).userObject as RenderTree
 
-        label.text = when(payload) {
+        label.text = when (payload) {
             RootNode -> "Snapshots (${tree.model.getChildCount(tree.model.root)})"
             is SnapshotNode -> payload.snapshot.toReadableString()
             is MessageNode -> "Message"

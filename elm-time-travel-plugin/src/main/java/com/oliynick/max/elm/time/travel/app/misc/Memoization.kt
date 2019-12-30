@@ -19,7 +19,10 @@ inline fun <A1, A2, R> memoize(
 
         private val cache = LruCache<Key7, R>(capacity)
 
-        override fun invoke(p1: A1, p2: A2): R =
+        override fun invoke(
+            p1: A1,
+            p2: A2
+        ): R =
             cache.getOrPut(Key7(p1, p2)) { f(p1, p2) }
 
     }

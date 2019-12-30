@@ -18,19 +18,36 @@ package com.oliynick.max.elm.time.travel.app.misc
 
 interface DiffCallback<in T1, in T2> {
 
-    fun areItemsTheSame(oldItem: T1, newItem: T2): Boolean
+    fun areItemsTheSame(
+        oldItem: T1,
+        newItem: T2
+    ): Boolean
 
-    fun areContentsTheSame(oldItem: T1, newItem: T2): Boolean
+    fun areContentsTheSame(
+        oldItem: T1,
+        newItem: T2
+    ): Boolean
 
 }
 
 interface UpdateCallback<in T1, in T2> {
 
-    fun onContentUpdated(oldItem: T1, oldIndex: Int, newItem: T2, newIndex: Int) = Unit
+    fun onContentUpdated(
+        oldItem: T1,
+        oldIndex: Int,
+        newItem: T2,
+        newIndex: Int
+    ) = Unit
 
-    fun onItemInserted(item: T1, index: Int) = Unit
+    fun onItemInserted(
+        item: T1,
+        index: Int
+    ) = Unit
 
-    fun onItemRemoved(item: T1, index: Int) = Unit
+    fun onItemRemoved(
+        item: T1,
+        index: Int
+    ) = Unit
 
 }
 
@@ -42,10 +59,12 @@ interface UpdateCallback<in T1, in T2> {
  * Complexity is O(N + M)
  */
 // todo add batch updates and decision strategy
-inline fun <L : MutableList<T1>, T1, T2> L.replaceAll(replaceWith: List<T2>,
-                                                      diffCallback: DiffCallback<T1, T2>,
-                                                      update: UpdateCallback<T1, T2>? = null,
-                                                      crossinline supply: (T2) -> T1): L {
+inline fun <L : MutableList<T1>, T1, T2> L.replaceAll(
+    replaceWith: List<T2>,
+    diffCallback: DiffCallback<T1, T2>,
+    update: UpdateCallback<T1, T2>? = null,
+    crossinline supply: (T2) -> T1
+): L {
 
     var x = 0
     var y = 0
@@ -94,9 +113,11 @@ inline fun <L : MutableList<T1>, T1, T2> L.replaceAll(replaceWith: List<T2>,
     return this
 }
 
-fun <L : MutableList<T>, T> L.replaceAll(replaceWith: List<T>,
-                                         diffCallback: DiffCallback<T, T>,
-                                         update: UpdateCallback<T, T>? = null): L {
+fun <L : MutableList<T>, T> L.replaceAll(
+    replaceWith: List<T>,
+    diffCallback: DiffCallback<T, T>,
+    update: UpdateCallback<T, T>? = null
+): L {
     return replaceAll(replaceWith, diffCallback, update, ::identity)
 }
 

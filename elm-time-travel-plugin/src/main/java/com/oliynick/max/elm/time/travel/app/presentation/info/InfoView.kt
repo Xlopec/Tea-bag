@@ -60,7 +60,10 @@ class InfoView(
         }
     }
 
-    private fun render(state: PluginState, uiEvents: Channel<PluginMessage>) {
+    private fun render(
+        state: PluginState,
+        uiEvents: Channel<PluginMessage>
+    ) {
         when (state) {
             is Stopped -> renderStopped(uiEvents)
             is Started -> renderStarted()

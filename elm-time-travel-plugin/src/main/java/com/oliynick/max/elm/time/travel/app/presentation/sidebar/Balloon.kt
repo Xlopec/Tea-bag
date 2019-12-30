@@ -27,7 +27,10 @@ fun Project.showBalloon(balloon: Balloon) {
     balloon.show(point, Balloon.Position.atRight)
 }
 
-fun createBalloon(cause: PluginException, operation: PluginCommand?): Balloon {
+fun createBalloon(
+    cause: PluginException,
+    operation: PluginCommand?
+): Balloon {
     return createBalloon(htmlDescription(cause, operation), exceptionBalloonIcon, exceptionBalloonTextColor, exceptionBalloonFillColor)
 }
 
@@ -63,7 +66,12 @@ private fun createNotificationBalloon(html: String): Balloon {
     return createBalloon(html, notificationBalloonIcon, notificationBalloonTextColor, notificationBalloonFillColor)
 }
 
-private fun createBalloon(html: String, icon: Icon, textColor: JBColor, fillColor: JBColor): Balloon {
+private fun createBalloon(
+    html: String,
+    icon: Icon,
+    textColor: JBColor,
+    fillColor: JBColor
+): Balloon {
     return JBPopupFactory.getInstance()
         .createHtmlTextBalloonBuilder(html, icon, textColor, fillColor, null)
         .setBlockClicksThroughBalloon(true)
@@ -74,7 +82,10 @@ private fun createBalloon(html: String, icon: Icon, textColor: JBColor, fillColo
         .createBalloon()
 }
 
-private fun htmlDescription(cause: PluginException, operation: PluginCommand?): String {
+private fun htmlDescription(
+    cause: PluginException,
+    operation: PluginCommand?
+): String {
     val message: String? = when (operation) {
         is StoreFiles, is StoreServerSettings, is DoNotifyOperationException -> TODO()
         is DoStartServer -> "plugin failed to start server"
@@ -91,9 +102,9 @@ private fun htmlDescription(cause: PluginException, operation: PluginCommand?): 
     """.trimMargin()
 }
 
-private fun PluginException.tryGetReadableMessage(): String? = when(this) {
+private fun PluginException.tryGetReadableMessage(): String? = when (this) {
     is MissingDependenciesException -> "plugin couldn't satisfy dependencies. Try adding " +
-            "the file or directory that contains corresponding .class file"
+        "the file or directory that contains corresponding .class file"
     is NetworkException -> "network exception"
     else -> null
 }

@@ -45,7 +45,11 @@ import protocol.*
 import java.time.Duration
 import java.util.*
 
-data class RemoteCallArgs(val callId: UUID, val component: ComponentId, val message: ClientMessage)
+data class RemoteCallArgs(
+    val callId: UUID,
+    val component: ComponentId,
+    val message: ClientMessage
+)
 
 @Suppress("MemberVisibilityCanBePrivate")
 class Server private constructor(
@@ -59,12 +63,18 @@ class Server private constructor(
 
         private const val timeout = 3000L
 
-        fun newInstance(settings: Settings, events: Channel<PluginMessage>): Server {
+        fun newInstance(
+            settings: Settings,
+            events: Channel<PluginMessage>
+        ): Server {
             return Server(settings, events, BroadcastChannel(1), BroadcastChannel(1))
         }
     }
 
-    suspend operator fun invoke(component: ComponentId, message: ClientMessage) {
+    suspend operator fun invoke(
+        component: ComponentId,
+        message: ClientMessage
+    ) {
         try {
             withTimeout(timeout) {
                 //todo un-hardcode
@@ -76,7 +86,7 @@ class Server private constructor(
             }
         } catch (th: TimeoutCancellationException) {
             throw NetworkException("Timed out waiting for $timeout ms to perform operation",
-                                                                                                      th)
+                                   th)
         } catch (th: Throwable) {
             throw th.toPluginException()
         }

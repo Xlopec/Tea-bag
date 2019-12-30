@@ -25,7 +25,10 @@ val CLASS_FILES_CHOOSER_DESCRIPTOR: FileChooserDescriptor =
     FileChooserDescriptor(true, true, false, false, false, true)
         .withFileFilter { it.extension == "class" || it.isDirectory }
 
-inline fun Project.chooseFiles(descriptor: FileChooserDescriptor, crossinline callback: (List<File>) -> Unit) {
+inline fun Project.chooseFiles(
+    descriptor: FileChooserDescriptor,
+    crossinline callback: (List<File>) -> Unit
+) {
     FileChooser.chooseFiles(descriptor, this, null, null) { virtualFiles ->
         callback(virtualFiles.map { File(it.path) })
     }

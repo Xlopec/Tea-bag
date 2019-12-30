@@ -31,14 +31,20 @@ class DiffingListModel<E>(private val diff: DiffCallback<E, E>) : AbstractListMo
             return e
         }
 
-        override fun set(index: Int, element: E): E {
+        override fun set(
+            index: Int,
+            element: E
+        ): E {
             val old = delegate[index]
 
             fireContentsChanged(this@DiffingListModel, index, index)
             return old
         }
 
-        override fun add(index: Int, element: E) {
+        override fun add(
+            index: Int,
+            element: E
+        ) {
             delegate.add(index, element)
             fireIntervalAdded(this@DiffingListModel, index, index)
         }

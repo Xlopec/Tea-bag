@@ -8,6 +8,7 @@ class LruCache<K, V>(val capacity: UInt) {
     init {
         require(capacity > 0U) { "Capacity should be greater than 0" }
     }
+
     // [most used, ..., least used, null, ..., null]
     private val cache by lazy(LazyThreadSafetyMode.NONE) { arrayOfNulls<Pair<K, V>?>(capacity.toInt()) }
     private var realSize = 0U
@@ -19,7 +20,10 @@ class LruCache<K, V>(val capacity: UInt) {
         inline get() = size == 0U
 
     // todo add checks
-    fun getOrPut(k: K, v: () -> V): V {
+    fun getOrPut(
+        k: K,
+        v: () -> V
+    ): V {
 
         for (i in cache.indices) {
 
@@ -42,7 +46,10 @@ class LruCache<K, V>(val capacity: UInt) {
         return newCached.second
     }
 
-    private fun moveToFront(elem: Pair<K, V>, i: Int) {
+    private fun moveToFront(
+        elem: Pair<K, V>,
+        i: Int
+    ) {
 
         for (j in i downTo 1) {
             cache[j] = cache[j - 1]
