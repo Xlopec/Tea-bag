@@ -22,14 +22,7 @@ import java.util.*
 typealias Json = String
 typealias JsonTree = JsonElement
 
-// todo implement later
-enum class ServerMessageType {
-    ComponentSnapshot,
-    ComponentAttached,
-    ActionApplied
-}
-
-
+@Deprecated("should be replaced with concrete type tailored for server/client usage case")
 sealed class ServerMessage
 
 data class NotifyComponentSnapshot(
@@ -45,30 +38,3 @@ data class NotifyComponentAttached(
 data class ActionApplied(
     val id: UUID
 ) : ServerMessage()
-
-/*
-fun ComponentSnapshot(
-    message: JsonTree,
-    oldState: JsonTree,
-    newState: JsonTree
-) = JsonObject {
-    addProperty("@type", ServerMessageType.ComponentSnapshot.toString())
-    add("@message", message)
-    add("@oldState", oldState)
-    add("@newState", newState)
-}
-
-fun ComponentAttached(
-    state: JsonTree
-) = JsonObject {
-    addProperty("@type", ServerMessageType.ComponentAttached.toString())
-    add("@state", state)
-}
-
-fun ActionApplied(
-    id: UUID
-) = JsonObject {
-    addProperty("@type", ServerMessageType.ActionApplied.toString())
-    addProperty("@id", id.toString())
-}
-*/

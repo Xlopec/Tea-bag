@@ -1,5 +1,6 @@
 package protocol
 
+@Deprecated("should be replaced with concrete type tailored for server/client usage case")
 sealed class ClientMessage
 
 data class ApplyMessage(

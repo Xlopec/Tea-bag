@@ -41,11 +41,11 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : FeedUpdater {
         val screens = state.screens.size
 
         return when {
-            nav is NavigateToFeed -> state.pushScreen(nav, LoadCriteria.Query(""))
+            nav is NavigateToFeed -> state.pushScreen(nav, LoadCriteria.Query("android"))
             nav is NavigateToFavorite -> state.pushScreen(nav, LoadCriteria.Favorite)
             nav is NavigateToTrending -> state.pushScreen(nav, LoadCriteria.Trending)
-            nav === Pop && screens > 1 -> state.popScreen().noCommand()
-            nav === Pop && screens == 1 -> state command CloseApp
+            nav is Pop && screens > 1 -> state.popScreen().noCommand()
+            nav is Pop && screens == 1 -> state command CloseApp
             else -> error("Unexpected state")
         }
     }

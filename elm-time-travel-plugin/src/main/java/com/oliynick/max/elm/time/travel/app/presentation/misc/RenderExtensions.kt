@@ -119,22 +119,23 @@ private fun Value<*>.toReadableString(): String = when (this) {
     is CollectionWrapper -> toReadableString()
 }
 
+@Suppress("unused")
 private fun Null.toReadableString(): String = "null"
 
-private fun StringWrapper.toReadableString(): String = '"' + value + '"'
+private fun StringWrapper.toReadableString(): String = "\"$value\""
 
 private fun Ref.toReadableString(): String =
-    "Object:(${properties.joinToString(transform = ::toReadableString, limit = 200)})"
+    "${type.name}(${properties.joinToString(transform = ::toReadableString, limit = 120)})"
 
 private fun toReadableString(field: Property<*>): String =
-    "Property: ${field.name}=${field.v.toReadableString()}"
+    "${field.name}=${field.v.toReadableString()}"
 
 private fun CollectionWrapper.toReadableString(): String {
-    return value.joinToString(
+    return "${type.name} ${value.joinToString(
         prefix = "[",
         postfix = "]",
         transform = { it.toReadableString() }
-    )
+    )}"
 }
 
 private val Value<*>.icon: Icon?

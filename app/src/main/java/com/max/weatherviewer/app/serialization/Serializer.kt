@@ -31,18 +31,19 @@ object PersistentListSerializer : Serializer<PersistentList<*>> {
         src: PersistentList<*>,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement = context.serialize(src, Collection::class.java)
+    ): JsonElement = //context.serialize(src, Collection::class.java)
 
-    /*
-    return JsonArray().apply {
+
+     JsonArray().apply {
             for (v in src) {
-                add(JsonObject().also {
+                add(context.serialize(v))
+                /*add(JsonObject().also {
                     it.addProperty("type", v!!::class.java.name)
                     it.add("value", context.serialize(v))
                 }
-                )
+                )*/
             }
         }
-     */
+
 
 }

@@ -9,6 +9,7 @@ import com.max.weatherviewer.app.env.HasAppContext
 import com.max.weatherviewer.app.env.storage.HasGson
 import com.max.weatherviewer.app.env.storage.Storage
 import com.max.weatherviewer.app.exception.AppException
+import com.max.weatherviewer.app.exception.toAppException
 import com.max.weatherviewer.domain.Article
 import com.max.weatherviewer.screens.feed.ArticleUpdated
 import com.max.weatherviewer.screens.feed.ArticlesLoaded
@@ -39,7 +40,7 @@ interface LiveFeedResolver<Env> : FeedResolver<Env> where Env : HasAppContext,
             }
 
         return runCatching { resolve() }
-            .getOrThrow()//Else { th -> setOf(toErrorMessage(toAppException(th), command)) }
+            .getOrElse { th -> setOf(toErrorMessage(toAppException(th), command)) }
     }
 
     suspend fun Env.store(

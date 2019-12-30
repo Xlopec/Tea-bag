@@ -188,7 +188,12 @@ private suspend fun installPacketSender(
     outgoing: SendChannel<Frame>
 ) {
     calls.collect { (callId, componentId, message) ->
-        outgoing.send(Frame.Text(GSON.toJson(NotifyClient(callId, componentId, message))))
+
+        val json = GSON.toJson(NotifyClient(callId, componentId, message))
+
+        println("Send json $json")
+
+        outgoing.send(Frame.Text(json))
     }
 }
 
@@ -221,15 +226,15 @@ private suspend fun processPacket(
                 is NotifyComponentSnapshot -> events.send(
                     AppendSnapshot(
                         packet.componentId,
-                        message.message.toValue(),
-                        message.oldState.toValue(),
-                        message.newState.toValue()
+                        message.message.asJsonObject.toValue(),
+                        message.oldState.asJsonObject.toValue(),
+                        message.newState.asJsonObject.toValue()
                     )
                 )
                 is NotifyComponentAttached -> events.send(
                     ComponentAttached(
                         packet.componentId,
-                        message.state.toValue()
+                        message.state.asJsonObject.toValue()
                     )
                 )
                 is ActionApplied -> completions.send(message.id)

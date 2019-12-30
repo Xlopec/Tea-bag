@@ -283,6 +283,6 @@ fun BookmarkButton(
 private fun Feed.toScreenTitle(): String =
     when(criteria) {
         is LoadCriteria.Query -> "Feed"
-        LoadCriteria.Favorite -> "Favorite"
-        LoadCriteria.Trending -> "Trending"
+        is LoadCriteria.Favorite -> "Favorite"
+        is LoadCriteria.Trending -> "Trending"
     }

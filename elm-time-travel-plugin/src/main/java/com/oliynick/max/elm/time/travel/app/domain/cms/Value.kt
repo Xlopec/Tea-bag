@@ -1,8 +1,32 @@
 package com.oliynick.max.elm.time.travel.app.domain.cms
 
-data class Property<T>(val name: String, val v: Value<T>)
+inline class Type(
+    val name: String
+) {
+    companion object {
+        fun of(
+            name: String
+        ): Type {
+            require(name.isNotEmpty())
+            return Type(name)
+        }
 
-sealed class Value<out T>
+        fun of(
+            any: Any
+        ) = of(any::class.java.name!!)
+    }
+}
+
+data class Property<T>(
+    val name: String,
+    val v: Value<T>
+) {
+    val type: Type = v.type
+}
+
+sealed class Value<out T> {
+    abstract val type: Type
+}
 
 sealed class PrimitiveWrapper<T>(val value: T) : Value<T>() {
 
@@ -23,53 +47,61 @@ sealed class PrimitiveWrapper<T>(val value: T) : Value<T>() {
 
 }
 
-object Null : Value<Any>()
+data class Null(
+    override val type: Type
+) : Value<Any>()
 
-class IntWrapper(value: Int) : PrimitiveWrapper<Int>(value)
+class IntWrapper(
+    override val type: Type,
+    value: Int
+) : PrimitiveWrapper<Int>(value)
 
-class ByteWrapper(value: Byte) : PrimitiveWrapper<Byte>(value)
+class ByteWrapper(
+    override val type: Type,
+    value: Byte
+) : PrimitiveWrapper<Byte>(value)
 
-class ShortWrapper(value: Short) : PrimitiveWrapper<Short>(value)
+class ShortWrapper(
+    override val type: Type,
+    value: Short
+) : PrimitiveWrapper<Short>(value)
 
-class CharWrapper(value: Char) : PrimitiveWrapper<Char>(value)
+class CharWrapper(
+    override val type: Type,
+    value: Char
+) : PrimitiveWrapper<Char>(value)
 
-class LongWrapper(value: Long) : PrimitiveWrapper<Long>(value)
+class LongWrapper(
+    override val type: Type,
+    value: Long
+) : PrimitiveWrapper<Long>(value)
 
-class DoubleWrapper(value: Double) : PrimitiveWrapper<Double>(value)
+class DoubleWrapper(
+    override val type: Type,
+    value: Double
+) : PrimitiveWrapper<Double>(value)
 
-class FloatWrapper(value: Float) : PrimitiveWrapper<Float>(value)
+class FloatWrapper(
+    override val type: Type,
+    value: Float
+) : PrimitiveWrapper<Float>(value)
 
-class StringWrapper(value: String) : PrimitiveWrapper<String>(value)
+class StringWrapper(
+    override val type: Type,
+    value: String
+) : PrimitiveWrapper<String>(value)
 
-class BooleanWrapper private constructor(value: Boolean) : PrimitiveWrapper<Boolean>(value) {
-    companion object {
+class BooleanWrapper(
+    override val type: Type,
+    value: Boolean
+) : PrimitiveWrapper<Boolean>(value)
 
-        private val TRUE = BooleanWrapper(true)
-        private val FALSE = BooleanWrapper(false)
+data class CollectionWrapper(
+    override val type: Type,
+    val value: List<Value<*>>
+) : Value<List<Value<*>>>()
 
-        fun of(value: Boolean) = if (value) TRUE else FALSE
-    }
-}
-
-
-//todo remove generic?
-sealed class CollectionPrimitiveWrapper<T>(val value: T) : Value<T>() {
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is CollectionPrimitiveWrapper<*>) return false
-
-        if (value != other.value) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int = value?.hashCode() ?: 0
-
-    override fun toString() = "CollectionPrimitiveWrapper(value=$value)"
-
-}
-
-class CollectionWrapper(value: List<Value<*>>) : CollectionPrimitiveWrapper<List<Value<*>>>(value)
-
-data class Ref(val properties: Set<Property<*>>) : Value<Any>()
+data class Ref(
+    override val type: Type,
+    val properties: Set<Property<*>>
+) : Value<Any>()

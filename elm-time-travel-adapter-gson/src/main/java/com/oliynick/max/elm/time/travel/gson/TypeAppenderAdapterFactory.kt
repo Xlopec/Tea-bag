@@ -51,7 +51,10 @@ object TypeAppenderAdapterFactory : TypeAdapterFactory {
                 "@type",
                 value.clazz.name
             )
-            add("@value", gson.getDelegateAdapter(this@TypeAppenderAdapterFactory, type).toJsonTree(value))
+
+            val delegate = gson.getDelegateAdapter(this@TypeAppenderAdapterFactory, type)
+
+            add("@value", delegate.toJsonTree(value))
         })
 
         @Suppress("UNCHECKED_CAST")

@@ -1,0 +1,28 @@
+{
+  "@type": "com.max.weatherviewer.app.State",
+  "@value": {
+    "screens": {
+        "@type": "kotlinx.collections.immutable.implementations.immutableList.SmallPersistentVector",
+        "@value": [
+          {
+            "@type": "com.max.weatherviewer.screens.feed.FeedLoading",
+            "@value": {
+              "criteria": {
+                "@type": "com.max.weatherviewer.screens.feed.LoadCriteria$Query",
+                "@value": {
+                  "query": {
+                    "@type": "java.lang.String",
+                    "@value": "android"
+                  }
+                }
+              },
+              "id": {
+                "@type": "java.util.UUID",
+                "@value": "6b1ece05-eefb-44fe-9313-892eb000f0ee"
+              }
+            }
+          }
+        ]
+    }
+  }
+}
