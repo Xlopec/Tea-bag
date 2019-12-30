@@ -46,16 +46,7 @@ object TypeAppenderAdapterFactory : TypeAdapterFactory {
         override fun write(
             out: JsonWriter,
             value: T
-        ) = elementAdapter.write(out, JsonObject {
-            addProperty(
-                "@type",
-                value.clazz.name
-            )
-
-            val delegate = gson.getDelegateAdapter(this@TypeAppenderAdapterFactory, type)
-
-            add("@value", delegate.toJsonTree(value))
-        })
+        ) = elementAdapter.write(out, value.toJsonTree(gson, type as TypeToken<Any?>, this@TypeAppenderAdapterFactory))
 
         @Suppress("UNCHECKED_CAST")
         override fun read(
@@ -67,6 +58,50 @@ object TypeAppenderAdapterFactory : TypeAdapterFactory {
     }
 
 }
+
+private fun Any?.toJsonTree(
+    gson: Gson,
+    type: TypeToken<Any?>,
+    skipFactory: TypeAdapterFactory
+) = JsonObject {
+
+    addProperty("@type", this@toJsonTree.clazz.name)
+    // workaround to serialize null values properly
+    val tree = when(this@toJsonTree) {
+        null -> null
+        is Map<*, *> -> TODO("Not implemented")//this@toJsonTree.toJsonTree(gson, skipFactory)
+        is Iterable<*> -> this@toJsonTree.toJsonTree(gson, skipFactory)
+        else -> gson.getDelegateAdapter(skipFactory, type).toJsonTree(this@toJsonTree)
+    }
+
+    add("@value", tree)
+}
+
+private fun Iterable<*>.toJsonTree(
+    gson: Gson,
+    skipFactory: TypeAdapterFactory
+): JsonArray = JsonArray((this as? Collection<*>)?.size ?: 10) {
+
+    this@toJsonTree.forEach { e ->
+        @Suppress("UNCHECKED_CAST")
+        add(e.toJsonTree(gson, TypeToken(e.clazz) as TypeToken<Any?>, skipFactory))
+    }
+}
+
+/*private fun Map<*, *>.toJsonTree(
+    gson: Gson,
+    skipFactory: TypeAdapterFactory
+): JsonArray = JsonArray(entries.size) {
+
+    entries.forEach { e ->
+
+        JsonObject {
+
+        }
+
+        add(e.toJsonTree(gson, TypeToken(e.clazz) as TypeToken<Any?>, skipFactory))
+    }
+}*/
 
 private fun JsonObject.fromJsonElement(
     gson: Gson,
@@ -129,6 +164,10 @@ private fun <T> Class<T>.newArray(
     @Suppress("UNCHECKED_CAST")
     return Array.newInstance(componentType, size) as KArray<T>
 }
+
+private fun TypeToken(
+    cl: Class<*>
+): TypeToken<*> = TypeToken(cl.name!!)
 
 private fun TypeToken(
     name: String

@@ -56,7 +56,7 @@ object LiveNotificationUpdater : NotificationUpdater {
         val updated = state.debugState.componentOrNew(message.componentId, snapshot.state)
             .appendSnapshot(snapshot)
 
-        return state.updateComponents { mapping -> mapping + updated.asPair() }
+        return state.updateComponents { mapping -> mapping.put(updated.id, updated) }
             .noCommand()
     }
 
@@ -73,7 +73,7 @@ object LiveNotificationUpdater : NotificationUpdater {
                 currentState
             )
 
-        return state.updateComponents { mapping -> mapping + componentState.asPair() }
+        return state.updateComponents { mapping -> mapping.put(componentState.id, componentState) }
             .noCommand()
     }
 
@@ -85,7 +85,7 @@ object LiveNotificationUpdater : NotificationUpdater {
         val component = state.debugState.components[message.componentId] ?: return state.noCommand()
         val updated = component.copy(currentState = message.state)
 
-        return state.updateComponents { mapping -> mapping + updated.asPair() }
+        return state.updateComponents { mapping -> mapping.put(updated.id, updated) }
             .noCommand()
     }
 

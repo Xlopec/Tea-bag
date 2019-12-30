@@ -1,10 +1,13 @@
 package com.oliynick.max.elm.time.travel.gson.serialization
 
-import com.oliynick.max.elm.time.travel.gson.gson
+import com.google.gson.GsonBuilder
+import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
 import core.data.Id
 import core.data.Name
 import core.data.Photo
 import core.data.User
+import io.kotlintest.matchers.beInstanceOf
+import io.kotlintest.should
 import io.kotlintest.shouldBe
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,7 +18,12 @@ import java.util.*
 @RunWith(JUnit4::class)
 class DefaultGsonSerializersTest {
 
-    private val gsonSerializer = gson()
+    private val gsonSerializer = GsonBuilder()
+        .setPrettyPrinting()
+        .serializeNulls()
+        .apply {
+            registerTypeAdapterFactory(TypeAppenderAdapterFactory)
+        }.create()
 
     private val testUser = User(
         Id(UUID.randomUUID()),
@@ -35,7 +43,7 @@ class DefaultGsonSerializersTest {
     fun `test NotifyComponentAttached gets serialized correctly`() {
 
         val message = NotifyComponentAttached(gsonSerializer.toJsonTree(testUser))
-        val json = gsonSerializer.toJson(message, ServerMessage::class.java)
+        val json = gsonSerializer.toJson(message)
         val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
 
         fromJson shouldBe message
@@ -45,7 +53,7 @@ class DefaultGsonSerializersTest {
     fun `test ActionApplied gets serialized correctly`() {
 
         val message = ActionApplied(UUID.randomUUID())
-        val json = gsonSerializer.toJson(message, ServerMessage::class.java)
+        val json = gsonSerializer.toJson(message)
         val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
 
         fromJson shouldBe message
@@ -66,7 +74,7 @@ class DefaultGsonSerializersTest {
             )
         )
 
-        val json = gsonSerializer.toJson(message, ServerMessage::class.java)
+        val json = gsonSerializer.toJson(message)
         val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
 
         fromJson shouldBe message
@@ -77,10 +85,10 @@ class DefaultGsonSerializersTest {
 
         val applyMessage = ApplyMessage(toJsonTree(testUser))
 
-        val json = gsonSerializer.toJson(applyMessage, ClientMessage::class.java)
+        val json = gsonSerializer.toJson(applyMessage)
         val fromJson = gsonSerializer.fromJson(json, ClientMessage::class.java)
 
-        applyMessage shouldBe fromJson
+        fromJson shouldBe applyMessage
     }
 
     @Test
@@ -100,10 +108,10 @@ class DefaultGsonSerializersTest {
             )
         )
 
-        val json = toJson(applyMessage, ClientMessage::class.java)
+        val json = toJson(applyMessage)
         val fromJson = fromJson(json, ClientMessage::class.java)
 
-        applyMessage shouldBe fromJson
+        fromJson shouldBe applyMessage
     }
 
     @Test
@@ -117,19 +125,19 @@ class DefaultGsonSerializersTest {
             null
         )
 
-        val json = gsonSerializer.toJson(nullableList, List::class.java)
+        val json = gsonSerializer.toJson(nullableList)
         val fromJson = gsonSerializer.fromJson(json, List::class.java)
 
-        nullableList shouldBe fromJson
+        fromJson shouldBe nullableList
     }
 
     @Test
     fun `test null gets serialized properly`() {
 
-        val json = gsonSerializer.toJson(null, Nothing::class.java)
-        val fromJson = gsonSerializer.fromJson(json, Nothing::class.java)
+        val json = gsonSerializer.toJson(null, Any::class.java)
+        val fromJson = gsonSerializer.fromJson(json, Any::class.java)
 
-        null shouldBe fromJson
+        fromJson shouldBe null
     }
 
     @Test
@@ -137,10 +145,19 @@ class DefaultGsonSerializersTest {
 
         val applyMessage = ApplyState(toJsonTree(testUser))
 
-        val json = toJson(applyMessage, ClientMessage::class.java)
+        val json = toJson(applyMessage)
         val fromJson = fromJson(json, ClientMessage::class.java)
 
-        applyMessage shouldBe fromJson
+        fromJson shouldBe applyMessage
+    }
+
+    @Test
+    fun `test singleton gets serialized properly`() = with(gsonSerializer) {
+
+        val json = toJson(Singleton)
+        val fromJson = fromJson(json, Singleton::class.java)
+
+        fromJson should beInstanceOf(Singleton::class)
     }
 
 }

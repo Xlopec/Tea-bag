@@ -38,6 +38,10 @@ data class RemoveSnapshots(
     val ids: Set<UUID>
 ) : UIMessage()
 
+data class RemoveAllSnapshots(
+    val componentId: ComponentId
+) : UIMessage()
+
 data class ReApplyCommands(
     val componentId: ComponentId,
     val command: Value<*>

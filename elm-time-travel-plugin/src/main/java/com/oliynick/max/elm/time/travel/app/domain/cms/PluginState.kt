@@ -16,11 +16,15 @@
 
 package com.oliynick.max.elm.time.travel.app.domain.cms
 
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import protocol.ComponentId
 import java.time.LocalDateTime
 import java.util.*
 
-typealias ComponentMapping = Map<ComponentId, ComponentDebugState>
+typealias ComponentMapping = PersistentMap<ComponentId, ComponentDebugState>
 
 const val defaultHost = "0.0.0.0"
 const val defaultPort = 8080U
@@ -36,7 +40,7 @@ data class Settings(
 )
 
 data class DebugState(
-    val components: ComponentMapping = emptyMap()
+    val components: ComponentMapping = persistentMapOf()
 )
 
 data class Snapshot(
@@ -49,7 +53,7 @@ data class Snapshot(
 data class ComponentDebugState(
     val id: ComponentId,
     val currentState: Value<*>,
-    val snapshots: List<Snapshot> = emptyList()
+    val snapshots: PersistentList<Snapshot> = persistentListOf()
 )
 
 sealed class PluginState {

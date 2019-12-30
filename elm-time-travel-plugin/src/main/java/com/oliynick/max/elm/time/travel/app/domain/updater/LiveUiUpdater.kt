@@ -5,6 +5,7 @@ import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import protocol.ComponentId
+import java.util.*
 
 // privacy is for pussies
 @Suppress("MemberVisibilityCanBePrivate")
@@ -29,22 +30,13 @@ object LiveUiUpdater : UiUpdater {
                     )
                 },
                 state)
-            message === StartServer && state is Stopped -> startServer(
-                state)
-            message === StopServer && state is Started -> stopServer(
-                state)
-            message is RemoveSnapshots && state is Started -> removeSnapshots(
-                message,
-                state)
-            message is ReApplyCommands && state is Started -> reApplyCommands(
-                message,
-                state)
-            message is ReApplyState && state is Started -> reApplyState(
-                message,
-                state)
-            message is RemoveComponent && state is Started -> removeComponent(
-                message,
-                state)
+            message === StartServer && state is Stopped -> startServer(state)
+            message === StopServer && state is Started -> stopServer(state)
+            message is RemoveSnapshots && state is Started -> removeSnapshots(message.componentId, message.ids, state)
+            message is ReApplyCommands && state is Started -> reApplyCommands(message, state)
+            message is ReApplyState && state is Started -> reApplyState(message, state)
+            message is RemoveComponent && state is Started -> removeComponent(message, state)
+            message is RemoveAllSnapshots && state is Started -> removeSnapshots(message.componentId, state)
             else -> notifyIllegalMessage(message, state)
         }
 
@@ -89,26 +81,23 @@ object LiveUiUpdater : UiUpdater {
         )
 
     fun removeSnapshots(
-        message: RemoveSnapshots,
+        componentId: ComponentId,
+        ids: Set<UUID>,
         state: Started
-    ): UpdateWith<PluginState, PluginCommand> {
+    ): UpdateWith<PluginState, PluginCommand> =
+        state.removeSnapshots(componentId, ids).noCommand()
 
-        val component = state.debugState.components[message.componentId]
-            ?: notifyUnknownComponent(message.componentId)
-        val updated = component.removeSnapshots(message.ids)
-
-        return state.updateComponents { mapping -> mapping + updated.asPair() }
-            .noCommand()
-    }
+    fun removeSnapshots(
+        componentId: ComponentId,
+        state: Started
+    ): UpdateWith<PluginState, PluginCommand> =
+        state.removeSnapshots(componentId).noCommand()
 
     fun removeComponent(
         message: RemoveComponent,
         state: Started
     ): UpdateWith<PluginState, PluginCommand> =
-        state.updateComponents { mapping -> mapping - message.componentId }
+        state.updateComponents { mapping -> mapping.remove(message.componentId) }
             .noCommand()
-
-    fun notifyUnknownComponent(id: ComponentId): Nothing =
-        throw IllegalArgumentException("Unknown component $id")
 
 }
