@@ -24,7 +24,6 @@ import com.bumptech.glide.request.target.Target
 import com.max.weatherviewer.R
 import com.max.weatherviewer.app.Message
 import com.max.weatherviewer.app.ScreenId
-import com.max.weatherviewer.app.ScreenMessageWrapper
 import com.max.weatherviewer.domain.Article
 import com.max.weatherviewer.misc.safe
 import com.max.weatherviewer.screens.feed.*
@@ -59,11 +58,9 @@ fun FeedSearchHeader(
                         textStyle = (+MaterialTheme.typography()).subtitle2,
                         onValueChange = { query ->
                             onMessage(
-                                ScreenMessageWrapper(
-                                    OnQueryUpdated(
-                                        id,
-                                        query
-                                    )
+                                OnQueryUpdated(
+                                    id,
+                                    query
                                 )
                             )
                         }
@@ -74,7 +71,7 @@ fun FeedSearchHeader(
                 ImageButton(
                     id = R.drawable.ic_search_black_24dp
                 ) {
-                    onMessage(ScreenMessageWrapper(LoadArticles(id)))
+                    onMessage(LoadArticles(id))
                 }
             }
         }
@@ -150,7 +147,8 @@ private fun FeedError(
     onMessage: (Message) -> Unit
 ) = FeedMessage(
     screen.id,
-    "Failed to load articles, message: '${screen.cause.message?.decapitalize() ?: "unknown exception"}'",
+    "Failed to load articles, message: '${screen.cause.message?.decapitalize()
+        ?: "unknown exception"}'",
     onMessage
 )
 
@@ -179,10 +177,8 @@ private fun FeedMessage(
                 text = "Reload",
                 onClick = {
                     onMessage(
-                        ScreenMessageWrapper(
-                            LoadArticles(
-                                id
-                            )
+                        LoadArticles(
+                            id
                         )
                     )
                 }
@@ -232,10 +228,8 @@ private fun ArticleCard(
     ClickableCard(
         onClick = {
             onMessage(
-                ScreenMessageWrapper(
-                    OpenArticle(
-                        article
-                    )
+                OpenArticle(
+                    article
                 )
             )
         }
@@ -298,10 +292,8 @@ private fun ArticleActionsMenu(
             Color.Black
         ) {
             onMessage(
-                ScreenMessageWrapper(
-                    ShareArticle(
-                        article
-                    )
+                ShareArticle(
+                    article
                 )
             )
         }
@@ -310,11 +302,9 @@ private fun ArticleActionsMenu(
             if (article.isFavorite) Color.Red else Color.Black
         ) {
             onMessage(
-                ScreenMessageWrapper(
-                    ToggleArticleIsFavorite(
-                        id,
-                        article
-                    )
+                ToggleArticleIsFavorite(
+                    id,
+                    article
                 )
             )
         }
@@ -371,7 +361,12 @@ private fun ArticleImage(
     }
 }
 
-private val dateFormatter: SimpleDateFormat by lazy { SimpleDateFormat("dd MMM' at 'hh:mm", Locale.getDefault()) }
+private val dateFormatter: SimpleDateFormat by lazy {
+    SimpleDateFormat(
+        "dd MMM' at 'hh:mm",
+        Locale.getDefault()
+    )
+}
 
 @Composable
 private fun ArticleTextContent(article: Article) {

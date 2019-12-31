@@ -28,7 +28,7 @@ interface LiveFeedResolver<Env> : FeedResolver<Env> where Env : HasAppContext,
 
     override suspend fun Env.resolve(
         command: FeedCommand
-    ): Set<ScreenMessageWrapper> {
+    ): Set<ScreenMessage> {
 
         suspend fun resolve() =
             when (command) {
@@ -45,59 +45,49 @@ interface LiveFeedResolver<Env> : FeedResolver<Env> where Env : HasAppContext,
 
     suspend fun Env.store(
         article: Article
-    ): Set<ScreenMessageWrapper> = effect {
+    ): Set<ScreenMessage> = effect {
         addToFavorite(article)
-        ScreenMessageWrapper(
-            ArticleUpdated(
-                article
-            )
+        ArticleUpdated(
+            article
         )
     }
 
     suspend fun Env.remove(
         article: Article
-    ): Set<ScreenMessageWrapper> = effect {
+    ): Set<ScreenMessage> = effect {
         removeFromFavorite(article.url)
-        ScreenMessageWrapper(
-            ArticleUpdated(
-                article
-            )
+        ArticleUpdated(
+            article
         )
     }
 
     suspend fun Env.fetch(
         id: ScreenId,
         criteria: LoadCriteria
-    ): Set<ScreenMessageWrapper> = when (criteria) {
+    ): Set<ScreenMessage> = when (criteria) {
         is LoadCriteria.Query -> criteria.effect {
-            ScreenMessageWrapper(
-                ArticlesLoaded(
-                    id,
-                    fetch(criteria)
-                )
+            ArticlesLoaded(
+                id,
+                fetch(criteria)
             )
         }
         LoadCriteria.Favorite -> criteria.effect {
-            ScreenMessageWrapper(
-                ArticlesLoaded(
-                    id,
-                    fetchFavorite()
-                )
+            ArticlesLoaded(
+                id,
+                fetchFavorite()
             )
         }
         LoadCriteria.Trending -> criteria.effect {
-            ScreenMessageWrapper(
-                ArticlesLoaded(
-                    id,
-                    fetchTrending()
-                )
+            ArticlesLoaded(
+                id,
+                fetchTrending()
             )
         }
     }
 
     suspend fun Env.openArticle(
         command: DoOpenArticle
-    ): Set<ScreenMessageWrapper> = command.sideEffect {
+    ): Set<ScreenMessage> = command.sideEffect {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url.toString()))
             .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
 
@@ -108,7 +98,7 @@ interface LiveFeedResolver<Env> : FeedResolver<Env> where Env : HasAppContext,
 
     suspend fun Env.shareArticle(
         command: DoShareArticle
-    ): Set<ScreenMessageWrapper> = command.sideEffect {
+    ): Set<ScreenMessage> = command.sideEffect {
         application.startActivity(createShareIntent(article))
     }
 
@@ -128,11 +118,9 @@ interface LiveFeedResolver<Env> : FeedResolver<Env> where Env : HasAppContext,
     fun toErrorMessage(
         th: AppException,
         command: FeedCommand
-    ) = ScreenMessageWrapper(
-        FeedOperationException(
-            command.screenId(),
-            th
-        )
+    ) = FeedOperationException(
+        command.screenId(),
+        th
     )
 
 }

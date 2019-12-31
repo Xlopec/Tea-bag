@@ -22,7 +22,7 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : FeedUpdater {
     ): UpdateWith<State, Command> =
         when (message) {
             is Navigation -> navigate(message, state)
-            is ScreenMessageWrapper -> updateScreen(message.message, state)
+            is ScreenMessage -> updateScreen(message, state)
         }
 
     fun updateScreen(
@@ -31,6 +31,7 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : FeedUpdater {
     ): UpdateWith<State, Command> =
         when (message) {
             is FeedMessage -> state.updateScreen<Feed>(message.id) { feed -> update(message, feed) }
+            else -> error("Unknown screen message, was $message")
         }
 
     fun navigate(
@@ -103,7 +104,7 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : FeedUpdater {
         )
     }
 
-    val ScreenMessage.id: ScreenId?
+    val FeedMessage.id: ScreenId?
         get() = when (this) {
             is LoadArticles -> id
             is ToggleArticleIsFavorite -> id

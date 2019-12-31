@@ -1,10 +1,9 @@
 package com.max.weatherviewer.screens.feed
 
 import com.max.weatherviewer.app.ScreenId
+import com.max.weatherviewer.app.ScreenMessage
 import com.max.weatherviewer.app.exception.AppException
 import com.max.weatherviewer.domain.Article
-
-sealed class ScreenMessage
 
 sealed class FeedMessage : ScreenMessage()
 
