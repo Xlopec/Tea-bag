@@ -12,6 +12,7 @@ class TypeAppenderAdapterFactoryTest {
 
     private val serializer = GsonBuilder()
         .setPrettyPrinting()
+        .serializeNulls()
         .apply {
             registerTypeAdapterFactory(TypeAppenderAdapterFactory)
         }.create()

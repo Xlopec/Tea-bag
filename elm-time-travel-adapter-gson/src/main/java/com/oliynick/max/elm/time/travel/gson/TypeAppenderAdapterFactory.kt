@@ -35,7 +35,6 @@ import kotlin.Array as KArray
  */
 object TypeAppenderAdapterFactory : TypeAdapterFactory {
 
-    @Suppress("UNCHECKED_CAST")
     override fun <T : Any?> create(
         gson: Gson,
         type: TypeToken<T>
@@ -46,7 +45,7 @@ object TypeAppenderAdapterFactory : TypeAdapterFactory {
         override fun write(
             out: JsonWriter,
             value: T
-        ) = elementAdapter.write(out, value.toJsonTree(gson, type as TypeToken<Any?>, this@TypeAppenderAdapterFactory))
+        ) = elementAdapter.write(out, value.toJsonTree(gson, type.cast(), this@TypeAppenderAdapterFactory))
 
         @Suppress("UNCHECKED_CAST")
         override fun read(
@@ -54,7 +53,7 @@ object TypeAppenderAdapterFactory : TypeAdapterFactory {
         ): T = elementAdapter
             .read(`in`)
             .asJsonObject
-            .fromJsonElement(gson, this@TypeAppenderAdapterFactory) as T
+            .asAny(gson, this@TypeAppenderAdapterFactory) as T
     }
 
 }
@@ -67,9 +66,8 @@ private fun Any?.toJsonTree(
 
     addProperty("@type", this@toJsonTree.clazz.name)
     // workaround to serialize null values properly
-    val tree = when(this@toJsonTree) {
-        null -> null
-        is Map<*, *> -> TODO("Not implemented")//this@toJsonTree.toJsonTree(gson, skipFactory)
+    val tree: JsonElement = when (this@toJsonTree) {
+        is Map<*, *> -> this@toJsonTree.toJsonTree(gson, skipFactory)
         is Iterable<*> -> this@toJsonTree.toJsonTree(gson, skipFactory)
         else -> gson.getDelegateAdapter(skipFactory, type).toJsonTree(this@toJsonTree)
     }
@@ -83,27 +81,24 @@ private fun Iterable<*>.toJsonTree(
 ): JsonArray = JsonArray((this as? Collection<*>)?.size ?: 10) {
 
     this@toJsonTree.forEach { e ->
-        @Suppress("UNCHECKED_CAST")
-        add(e.toJsonTree(gson, TypeToken(e.clazz) as TypeToken<Any?>, skipFactory))
+        add(e.toJsonTree(gson, TypeToken(e.clazz).cast(), skipFactory))
     }
 }
 
-/*private fun Map<*, *>.toJsonTree(
+private fun Map<*, *>.toJsonTree(
     gson: Gson,
     skipFactory: TypeAdapterFactory
 ): JsonArray = JsonArray(entries.size) {
 
     entries.forEach { e ->
-
-        JsonObject {
-
-        }
-
-        add(e.toJsonTree(gson, TypeToken(e.clazz) as TypeToken<Any?>, skipFactory))
+        add(JsonObject {
+            add("@key", e.key.toJsonTree(gson, TypeToken(e.key.clazz).cast(), skipFactory))
+            add("@value", e.value.toJsonTree(gson, TypeToken(e.value.clazz).cast(), skipFactory))
+        })
     }
-}*/
+}
 
-private fun JsonObject.fromJsonElement(
+private fun JsonObject.asAny(
     gson: Gson,
     skipFactory: TypeAdapterFactory
 ): Any? {
@@ -116,21 +111,16 @@ private fun JsonObject.fromJsonElement(
     val value: JsonElement? = get("@value")
     val array by unsafeLazy { value!!.asJsonArray }
 
-    @Suppress("UNCHECKED_CAST")
     return when {
         value == null || value.isJsonNull -> null
-        value.isJsonArray && token.rawType.isArray -> array.fromJsonArray(
-            token.rawType,
-            gson,
-            skipFactory
-        )
-        value.isJsonArray -> array.fromJsonArray(gson, token.cast(), skipFactory)
+        isArray(token, value) -> array.asArray(token.rawType, gson, skipFactory)
+        isCollection(token, value) -> array.asCollection(gson, token.cast(), skipFactory)
+        isMap(token, value) -> array.asMap(gson, token.cast(), skipFactory)
         else -> gson.getDelegateAdapter(skipFactory, token).fromJsonTree(value)
     }
 }
 
-@Suppress("UNCHECKED_CAST")
-private fun JsonArray.fromJsonArray(
+private fun JsonArray.asArray(
     cl: Class<*>,
     gson: Gson,
     skipFactory: TypeAdapterFactory
@@ -138,12 +128,12 @@ private fun JsonArray.fromJsonArray(
     cl.cast<Any?>()
         .newArray(size())
         .also { array ->
-            this@fromJsonArray.forEachIndexed { index, jsonElement ->
-                array[index] = jsonElement.asJsonObject.fromJsonElement(gson, skipFactory)
+            this@asArray.forEachIndexed { index, jsonElement ->
+                array[index] = jsonElement.asJsonObject.asAny(gson, skipFactory)
             }
         }
 
-private fun JsonArray.fromJsonArray(
+private fun JsonArray.asCollection(
     gson: Gson,
     cl: TypeToken<out MutableCollection<Any?>>,
     skipFactory: TypeAdapterFactory
@@ -151,11 +141,24 @@ private fun JsonArray.fromJsonArray(
     asSequence()
         .map { jsonElement -> jsonElement.asJsonObject }
         .mapTo(gson.constructorConstructor.construct(cl)) { jsonObject ->
-            jsonObject.fromJsonElement(
+            jsonObject.asAny(
                 gson,
                 skipFactory
             )
         }
+
+private fun JsonArray.asMap(
+    gson: Gson,
+    cl: TypeToken<out MutableMap<Any?, Any?>>,
+    skipFactory: TypeAdapterFactory
+): Map<Any?, Any?> =
+    asSequence()
+        .map { jsonElement -> jsonElement.asJsonObject }
+        .associateByTo(
+            destination = gson.constructorConstructor.construct(cl),
+            keySelector = { entry -> entry["@key"].asJsonObject.asAny(gson, skipFactory) },
+            valueTransform = { entry -> entry["@value"].asJsonObject.asAny(gson, skipFactory) }
+        )
 
 private fun <T> Class<T>.newArray(
     size: Int
@@ -200,3 +203,18 @@ private fun <T> Class<*>.cast() = this as Class<T>
 private fun <T> unsafeLazy(
     init: () -> T
 ) = lazy(LazyThreadSafetyMode.NONE, init)
+
+private fun isArray(
+    token: TypeToken<out Any?>,
+    value: JsonElement
+): Boolean = value.isJsonArray && token.rawType.isArray
+
+private fun isCollection(
+    token: TypeToken<out Any?>,
+    value: JsonElement
+): Boolean = value.isJsonArray && Collection::class.java.isAssignableFrom(token.rawType)
+
+private fun isMap(
+    token: TypeToken<out Any?>,
+    value: JsonElement
+): Boolean = value.isJsonArray && Map::class.java.isAssignableFrom(token.rawType)
