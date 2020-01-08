@@ -136,7 +136,9 @@ fun <M, C, S> CoroutineScope.Component(
     return Component(::loader, resolver, update, interceptor)
 }
 
-private fun <M, C, S> CoroutineScope.actorComponent(env: Env<M, C, S>): ComponentInternal<M, S> {
+private fun <M, C, S> CoroutineScope.actorComponent(
+    env: Env<M, C, S>
+): ComponentInternal<M, S> {
 
     val statesChannel = BroadcastChannel<S>(Channel.CONFLATED)
 

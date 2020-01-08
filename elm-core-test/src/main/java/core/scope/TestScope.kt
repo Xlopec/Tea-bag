@@ -19,9 +19,13 @@ package core.scope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlin.coroutines.CoroutineContext
 
-inline fun runBlockingInTestScope(crossinline block: suspend TestCoroutineScope.() -> Unit) {
-    runBlocking { with(TestCoroutineScope(Job())) { block() } }
+inline fun runBlockingInTestScope(
+    context: CoroutineContext = Job(),
+    crossinline block: suspend TestCoroutineScope.() -> Unit
+) {
+    runBlocking { with(TestCoroutineScope(context)) { block() } }
 }
 
 

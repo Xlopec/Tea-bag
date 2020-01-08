@@ -21,7 +21,6 @@ import java.util.*
 
 typealias JsonTree = JsonElement
 
-@Deprecated("should be replaced with concrete type tailored for server/client usage case")
 sealed class ServerMessage
 
 data class NotifyComponentSnapshot(

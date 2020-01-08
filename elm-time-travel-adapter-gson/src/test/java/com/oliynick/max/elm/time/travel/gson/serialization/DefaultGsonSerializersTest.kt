@@ -1,7 +1,6 @@
 package com.oliynick.max.elm.time.travel.gson.serialization
 
-import com.google.gson.GsonBuilder
-import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
+import com.oliynick.max.elm.time.travel.gson.Gson
 import core.data.Id
 import core.data.Name
 import core.data.Photo
@@ -18,12 +17,7 @@ import java.util.*
 @RunWith(JUnit4::class)
 class DefaultGsonSerializersTest {
 
-    private val gsonSerializer = GsonBuilder()
-        .setPrettyPrinting()
-        .serializeNulls()
-        .apply {
-            registerTypeAdapterFactory(TypeAppenderAdapterFactory)
-        }.create()
+    private val gsonSerializer = Gson()
 
     private val testUser = User(
         Id(UUID.randomUUID()),

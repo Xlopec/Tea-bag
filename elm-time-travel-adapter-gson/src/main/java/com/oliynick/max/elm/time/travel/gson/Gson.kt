@@ -14,5 +14,6 @@ fun Gson(config: GsonBuilder.() -> Unit = {}): Gson =
         .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         .registerTypeAdapter(UUID::class.java, UUIDAdapter)
         .registerTypeAdapter(ComponentId::class.java, ComponentIdAdapter)
+        .registerTypeAdapterFactory(TypeAppenderAdapterFactory)
         .apply(config)
         .create()

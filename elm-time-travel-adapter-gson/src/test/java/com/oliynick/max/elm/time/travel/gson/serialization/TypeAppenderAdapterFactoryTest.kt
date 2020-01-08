@@ -1,7 +1,6 @@
 package com.oliynick.max.elm.time.travel.gson.serialization
 
-import com.google.gson.GsonBuilder
-import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
+import com.oliynick.max.elm.time.travel.gson.Gson
 import io.kotlintest.shouldBe
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -10,12 +9,7 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 class TypeAppenderAdapterFactoryTest {
 
-    private val serializer = GsonBuilder()
-        .setPrettyPrinting()
-        .serializeNulls()
-        .apply {
-            registerTypeAdapterFactory(TypeAppenderAdapterFactory)
-        }.create()
+    private val serializer = Gson()
 
     @Test
     fun `test class hierarchy gets serialized correctly`() {

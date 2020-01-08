@@ -52,26 +52,6 @@ internal val localhost by lazy(::URL)
 @DslMarker
 private annotation class DslBuilder
 
-interface JsonConverter {
-    fun <T> toJsonTree(
-        any: T
-    ): JsonTree
-
-    fun <T> fromJsonTree(
-        json: JsonTree,
-        cl: Class<T>
-    ): T
-
-    fun <T> toJson(
-        any: T
-    ): String
-
-    fun <T> fromJson(
-        json: String,
-        cl: Class<T>
-    ): T
-}
-
 //todo add dsl
 data class DebugDependencies<M, C, S>(
     inline val componentEnv: Env<M, C, S>,
@@ -168,31 +148,43 @@ internal inline fun <reified M, reified C, reified S> CoroutineScope.webSocketCo
     val statesChannel = BroadcastChannel<S>(Channel.CONFLATED)
 
     launch {
-        // todo add IO exceptions handling
-        httpClient.ws(
-            HttpMethod.Get,
-            dependencies.serverSettings.url.host,
-            dependencies.serverSettings.url.port
-        ) {
-
-            val snapshots = Channel<NotifyComponentSnapshot>()
-
-            with(dependencies.withSpyingInterceptor(snapshots, dependencies.serverSettings.serializer)) {
-                launch {
-                    // says 'hello' to a server; the message will be suspended until
-                    // the very first state gets computed
-                    notifyAttached(statesChannel.asFlow().first(), serverSettings)
-                    // observes state changes and notifies server about them
-                    notifySnapshots(snapshots.consumeAsFlow(), serverSettings)
-                }
-                // observes incoming messages from server and applies them
-                observeMessages<M, C, S>(this@with, messages, statesChannel)
-            }
+        try {
+            connect(messages, statesChannel, dependencies)
+        } catch (th: Exception) {
+            throw RuntimeException("Failed to connect " +
+                                       "to the host: ${dependencies.serverSettings.url}", th)
         }
     }
 
     return messages to statesChannel.asFlow()
 }
+
+@PublishedApi
+internal suspend inline fun <reified M, reified C, reified S> connect(
+    messages: Channel<M>,
+    statesChannel: BroadcastChannel<S>,
+    dependencies: DebugDependencies<M, C, S>
+) =
+    httpClient.ws(
+        HttpMethod.Get,
+        dependencies.serverSettings.url.host,
+        dependencies.serverSettings.url.port
+    ) {
+
+        val snapshots = Channel<NotifyComponentSnapshot>()
+
+        with(dependencies.withSpyingInterceptor(snapshots, dependencies.serverSettings.serializer)) {
+            launch {
+                // says 'hello' to a server; the message will be suspended until
+                // the very first state gets computed
+                notifyAttached(statesChannel.asFlow().first(), serverSettings)
+                // observes state changes and notifies server about them
+                notifySnapshots(snapshots.consumeAsFlow(), serverSettings)
+            }
+            // observes incoming messages from server and applies them
+            observeMessages<M, C, S>(this@with, messages, statesChannel)
+        }
+    }
 
 @PublishedApi
 internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.observeMessages(
@@ -236,7 +228,14 @@ internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.app
         }
         is ApplyState -> {
             // cancels previous computation job and starts a new one
-            launch { loop<M, C, S>(dependencies.serverSettings.serializer.fromJsonTree(message.state, S::class.java), this@with, messages, states) }
+            launch {
+                loop<M, C, S>(
+                    dependencies.serverSettings.serializer.fromJsonTree(message.state, S::class.java),
+                    this@with,
+                    messages,
+                    states
+                )
+            }
         }
     }
 }
