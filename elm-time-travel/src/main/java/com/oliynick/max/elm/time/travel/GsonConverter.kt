@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory
 import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
-import com.oliynick.max.elm.time.travel.gson.gson
+import com.oliynick.max.elm.time.travel.gson.Gson
 import protocol.JsonTree
 import kotlin.reflect.KClass
 
@@ -34,7 +34,7 @@ private class GsonConverter(
 
 fun gsonSerializer(
     config: GsonBuilder.() -> Unit = { registerTypeAdapterFactory(TypeAppenderAdapterFactory) }
-): JsonConverter = GsonConverter(gson(config))
+): JsonConverter = GsonConverter(Gson(config))
 
 @PublishedApi
 internal fun <T : Any> RuntimeTypeAdapterFactory<T>.registerRecursively(sub: KClass<out T>) {

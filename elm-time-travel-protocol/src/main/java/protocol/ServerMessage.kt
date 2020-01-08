@@ -19,7 +19,6 @@ package protocol
 import com.google.gson.JsonElement
 import java.util.*
 
-typealias Json = String
 typealias JsonTree = JsonElement
 
 @Deprecated("should be replaced with concrete type tailored for server/client usage case")

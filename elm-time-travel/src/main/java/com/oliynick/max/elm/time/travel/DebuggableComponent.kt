@@ -85,20 +85,6 @@ data class ServerSettings(
     inline val url: URL
 )
 
-/*interface JsonSerializer {
-
-    fun <T> toJson(
-        any: T,
-        type: Class<out T>
-    ): Json
-
-    fun <T> fromJson(
-        json: Json,
-        type: Class<out T>
-    ): T?
-
-}*/
-
 @DslBuilder
 class ServerSettingsBuilder internal constructor(
     var id: ComponentId,

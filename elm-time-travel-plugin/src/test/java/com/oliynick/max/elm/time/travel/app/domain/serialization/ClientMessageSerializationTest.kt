@@ -4,7 +4,7 @@ import com.google.gson.JsonElement
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.transport.serialization.toValue
 import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
-import com.oliynick.max.elm.time.travel.gson.gson
+import com.oliynick.max.elm.time.travel.gson.Gson
 import core.data.Id
 import core.data.Name
 import core.data.User
@@ -21,7 +21,7 @@ import java.util.*
 @RunWith(JUnit4::class)
 class ClientMessageSerializationTest {
 
-    private val gson = gson {
+    private val gson = Gson {
         registerTypeAdapterFactory(TypeAppenderAdapterFactory)
     }
 
