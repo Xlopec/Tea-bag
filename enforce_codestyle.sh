@@ -9,5 +9,5 @@ if [[ ${branch} =~ master|^dev.*|^stage.* ]]; then
     chmod +x ./gradlew
 
     echo "performing code style checking and analysis"
-    ./gradlew elm-core:detekt
+    ./gradlew elm-core-api:detekt
 fi

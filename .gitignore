@@ -9,9 +9,15 @@
 /.idea/assetWizardSettings.xml
 /.idea/dbnavigator.xml
 /.idea/gradle.xml
+/.idea/uiDesigner.xml
+/.idea/misc.xml
+/.idea/codeStyles/
+/.idea/jarRepositories.xml
+/projectFilesBackup*/
 .DS_Store
 /build
 /captures
 .externalNativeBuild
 androidx_prebuilts/
 out/
+/.idea/$PRODUCT_WORKSPACE_FILE$
