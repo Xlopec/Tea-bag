@@ -33,9 +33,9 @@ typealias Formatter<M, S, C> = (message: M, prevState: S, newState: S, commands:
  * @param M message
  * @param S state
  * @param C command
- * @return ready to use [interceptor][Interceptor]
+ * @return ready to use [interceptor][LegacyInterceptor]
  */
-fun <M, C, S> androidLogger(tag: String, formatter: Formatter<M, S, C> = simpleFormatter()): Interceptor<M, S, C> {
+fun <M, C, S> androidLogger(tag: String, formatter: Formatter<M, S, C> = simpleFormatter()): LegacyInterceptor<M, S, C> {
     return { message, prevState, newState, commands ->
         // fixme rewrite and fix
         try {
@@ -52,7 +52,7 @@ fun <M, C, S> androidLogger(tag: String, formatter: Formatter<M, S, C> = simpleF
  * @param M message
  * @param S state
  * @param C command
- * @return ready to use [interceptor][Interceptor]
+ * @return ready to use [interceptor][LegacyInterceptor]
  */
 fun <M, C, S> simpleFormatter(): Formatter<M, S, C> {
     return { message: M, prevState: S, newState: S, commands: Set<C> ->

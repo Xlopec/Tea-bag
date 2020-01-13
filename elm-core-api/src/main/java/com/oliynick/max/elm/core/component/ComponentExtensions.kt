@@ -164,7 +164,7 @@ inline fun <M1, S1, M2, S2> CoroutineScope.bind(noinline producer: Component<M1,
  * @param M message
  * @param C command
  */
-inline infix fun <M, C, S> Interceptor<M, S, C>.with(crossinline with: Interceptor<M, S, C>): Interceptor<M, S, C> {
+inline infix fun <M, C, S> LegacyInterceptor<M, S, C>.with(crossinline with: LegacyInterceptor<M, S, C>): LegacyInterceptor<M, S, C> {
     return { message, prevState, newState, commands ->
         this(message, prevState, newState, commands); with(message, prevState, newState, commands)
     }

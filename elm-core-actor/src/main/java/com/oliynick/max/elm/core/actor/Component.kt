@@ -57,7 +57,7 @@ fun <M, C, S> CoroutineScope.Component(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
-    interceptor: Interceptor<M, S, C> = { _, _, _, _ -> }
+    interceptor: LegacyInterceptor<M, S, C> = { _, _, _, _ -> }
 ): Component<M, S> =
     Component(Env(initializer, resolver, update, interceptor))
 
@@ -126,7 +126,7 @@ fun <M, C, S> CoroutineScope.Component(
     initialState: S,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
-    interceptor: Interceptor<M, S, C> = { _, _, _, _ -> },
+    interceptor: LegacyInterceptor<M, S, C> = { _, _, _, _ -> },
     vararg initialCommands: C
 ): Component<M, S> {
 

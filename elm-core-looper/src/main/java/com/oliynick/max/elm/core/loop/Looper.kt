@@ -16,19 +16,14 @@
 
 package com.oliynick.max.elm.core.loop
 
-import com.oliynick.max.elm.core.component.Component
-import com.oliynick.max.elm.core.component.Env
-import com.oliynick.max.elm.core.component.Resolver
-import com.oliynick.max.elm.core.component.UpdateWith
+import com.oliynick.max.elm.core.component.*
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ChannelIterator
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Internal alias of a component
@@ -113,6 +108,55 @@ suspend fun <M, C, S> Env<M, C, S>.loop(
         loop(initState, resolver(initCommands).iterator(), states)
 
     return loop(nonTransient, messages.iterator(), states)
+}
+
+fun <M, C, S> Env<M, C, S>.snapshotComponent(): Component1<M, S, C> {
+
+    val snapshots = AtomicReference<Snapshot<M, S, C>>()
+
+    fun begin() = snapshots.get()?.let(::flowOf) ?: init()
+
+    return { input ->
+
+        channelFlow {
+
+            val messages = Channel<M>()
+
+            launch {
+                begin()
+                    .flatMapConcat { snapshot -> compute(messages.consumeAsFlow(), snapshot, snapshots::set) }
+                    .collect { send(it) }
+            }
+
+            launch {
+                input.collect { message ->
+                    messages.send(message)
+                }
+            }
+        }
+    }
+}
+
+fun <M, C, S> Env<M, C, S>.compute(
+    messages: Flow<M>,
+    startFrom: Snapshot<M, S, C>,
+    sink: (Snapshot<M, S, C>) -> Unit
+) = computeSnapshots(messages, startFrom)
+    .flatMapConcat { snapshot -> computeSnapshots(resolver(snapshot.commands).asFlow(), snapshot) }
+    .onEach { sink(it) }
+
+fun <M, S, C> Env<M, C, S>.init(): Flow<Initial<S, C>> =
+    flow { emit(initializer()) }
+        .map { (initState, initCommands) -> Initial(initState, initCommands) }
+
+private fun <M, S, C> Env<M, C, S>.computeSnapshots(
+    messages: Flow<M>,
+    acc: Snapshot<M, S, C>
+) = messages.scan(acc) { snapshot, message ->
+
+    val (nextState, commands) = update(message, snapshot.state)
+
+    Regular(message, nextState, commands)
 }
 
 /**

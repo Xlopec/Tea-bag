@@ -45,6 +45,7 @@ dependencies {
 
     testImplementation "io.strikt:strikt-core:0.22.2"
     testImplementation 'org.robolectric:robolectric:4.3'
+    testImplementation project(path: ':elm-core-test', configuration: 'default')
 
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 }

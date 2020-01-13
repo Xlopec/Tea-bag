@@ -12,13 +12,13 @@ data class Env<M, C, S>(
     inline val initializer: Initializer<S, C>,
     inline val resolver: Resolver<C, M>,
     inline val update: Update<M, S, C>,
-    inline val interceptor: Interceptor<M, S, C>
+    inline val interceptor: LegacyInterceptor<M, S, C>
 ) {
 
     constructor(initialState: S,
                 resolver: Resolver<C, M>,
                 update: Update<M, S, C>,
-                interceptor: Interceptor<M, S, C> = { _, _, _, _ -> },
+                interceptor: LegacyInterceptor<M, S, C> = { _, _, _, _ -> },
                 vararg initialCommands: C)
         : this(
         initializer(
@@ -33,7 +33,7 @@ data class Env<M, C, S>(
     constructor(initialState: S,
                 resolver: Resolver<C, M>,
                 update: Update<M, S, C>,
-                interceptor: Interceptor<M, S, C> = { _, _, _, _ -> },
+                interceptor: LegacyInterceptor<M, S, C> = { _, _, _, _ -> },
                 initialCommands: Set<C> = emptySet())
 
             : this(
@@ -52,7 +52,7 @@ class EnvBuilder<M, C, S>(
     var initializer: Initializer<S, C>,
     var resolver: Resolver<C, M>,
     var update: Update<M, S, C>,
-    var interceptor: Interceptor<M, S, C> = { _, _, _, _ -> }
+    var interceptor: LegacyInterceptor<M, S, C> = { _, _, _, _ -> }
 ) {
     constructor(env: Env<M, C, S>) : this(
         env.initializer,

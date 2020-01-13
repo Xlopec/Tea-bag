@@ -178,12 +178,14 @@ class ComponentExtensionsTest {
         val (interceptor2, sink2) = spyingInterceptor()
 
         Component<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
-            interceptor =  interceptor1 with interceptor2
+            interceptor = interceptor1 with interceptor2
         }
             .also { component -> /* modify state */ component("a", "b").first() }
 
-        val expected = listOf(InterceptData("a", "", "a", emptySet()),
-                              InterceptData("b", "a", "b", emptySet()))
+        val expected = listOf(
+            InterceptData("a", "", "a", emptySet()),
+            InterceptData("b", "a", "b", emptySet())
+        )
 
         expectThat(expected).containsExactly(sink1)
         expectThat(expected).containsExactly(sink2)
@@ -199,10 +201,10 @@ private fun <E> spyingIdentityTransformer(): Pair<IdentityTransformer<E>, List<E
 
 private fun <E> identityComponent(): Component<E, E> = { it }
 
-private fun spyingInterceptor(): Pair<Interceptor<String, String, String>, List<InterceptData>> {
+private fun spyingInterceptor(): Pair<LegacyInterceptor<String, String, String>, List<InterceptData>> {
     val sink = mutableListOf<InterceptData>()
 
-    val interceptor: Interceptor<String, String, String> = { msg, old, new, cmds -> sink += InterceptData(msg, old, new, cmds) }
+    val interceptor: LegacyInterceptor<String, String, String> = { msg, old, new, cmds -> sink += InterceptData(msg, old, new, cmds) }
 
     return interceptor to sink
 }

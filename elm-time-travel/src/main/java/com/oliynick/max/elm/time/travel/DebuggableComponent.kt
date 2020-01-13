@@ -19,9 +19,7 @@
 package com.oliynick.max.elm.time.travel
 
 import com.oliynick.max.elm.core.component.*
-import com.oliynick.max.elm.core.loop.ComponentInternal
-import com.oliynick.max.elm.core.loop.loop
-import com.oliynick.max.elm.core.loop.newComponent
+import com.oliynick.max.elm.core.loop.*
 import io.ktor.client.HttpClient
 import io.ktor.client.features.websocket.ClientWebSocketSession
 import io.ktor.client.features.websocket.WebSockets
@@ -36,11 +34,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import protocol.*
 import java.net.URL
 import java.util.*
+import java.util.concurrent.atomic.AtomicReference
 
 //TODO refactor internal api!
 
@@ -151,8 +151,10 @@ internal inline fun <reified M, reified C, reified S> CoroutineScope.webSocketCo
         try {
             connect(messages, statesChannel, dependencies)
         } catch (th: Exception) {
-            throw RuntimeException("Failed to connect " +
-                                       "to the host: ${dependencies.serverSettings.url}", th)
+            throw RuntimeException(
+                "Failed to connect " +
+                    "to the host: ${dependencies.serverSettings.url}", th
+            )
         }
     }
 
@@ -173,7 +175,12 @@ internal suspend inline fun <reified M, reified C, reified S> connect(
 
         val snapshots = Channel<NotifyComponentSnapshot>()
 
-        with(dependencies.withSpyingInterceptor(snapshots, dependencies.serverSettings.serializer)) {
+        with(
+            dependencies.withSpyingInterceptor(
+                snapshots,
+                dependencies.serverSettings.serializer
+            )
+        ) {
             launch {
                 // says 'hello' to a server; the message will be suspended until
                 // the very first state gets computed
@@ -185,6 +192,90 @@ internal suspend inline fun <reified M, reified C, reified S> connect(
             observeMessages<M, C, S>(this@with, messages, statesChannel)
         }
     }
+
+sealed class Either<out L, out R>
+
+data class Left<L>(
+    val l: L
+) : Either<L, Nothing>()
+
+data class Right<R>(
+    val r: R
+) : Either<Nothing, R>()
+
+inline fun <reified M, reified C, reified S> DebugDependencies<M, C, S>.snapshotComponent(): Component1<M, S, C> {
+
+    val snapshots = AtomicReference<Snapshot<M, S, C>>()
+
+    return { input ->
+
+        channelFlow {
+
+            httpClient.ws(
+                HttpMethod.Get,
+                serverSettings.url.host,
+                serverSettings.url.port
+            ) {
+
+                val messages = Channel<M>()
+
+                launch {
+
+                    val commands = incomingPackets(serverSettings.id, serverSettings.serializer)
+                        .map { packet ->
+                            when (val message = packet.message) {
+                                is ApplyMessage -> Left(
+                                    serverSettings.serializer.fromJsonTree(
+                                        message.message,
+                                        M::class.java
+                                    )
+                                )
+                                is ApplyState -> Right(
+                                    serverSettings.serializer.fromJsonTree(
+                                        message.state,
+                                        S::class.java
+                                    )
+                                )
+                            }
+                        }
+
+                    (snapshots.get()?.let(::flowOf) ?: componentEnv.init()).mergeWith(/*applies external state*/commands.filterIsInstance<Right<S>>().map {
+                        Initial(
+                            it.r,
+                            emptySet()
+                        )
+                    })
+                        .flatMapConcat { snapshot ->
+                            componentEnv.compute(
+                                messages.consumeAsFlow().mergeWith(/*applies external message*/commands.filterIsInstance<Left<M>>().map { it.l }),
+                                snapshot,
+                                snapshots::set
+                            )
+                        }
+                        .onEach { snapshot ->
+                            when(snapshot) {
+                                // says 'hello' to a server; the message will be suspended until
+                                // the very first state gets computed
+                                is Initial -> notifyAttached(snapshot.state, serverSettings)
+                                // observes state changes and notifies server about them
+                                is Regular -> send(serverSettings.id,
+                                    serverSettings.serializer.run { NotifyComponentSnapshot(toJsonTree(snapshot.message), toJsonTree(snapshot.state), toJsonTree(snapshot.state)) },
+                                    serverSettings.serializer)
+                            }.safe
+
+                        }
+                        .collect { send(it) }
+                }
+
+                launch {
+                    input.collect { message ->
+                        messages.send(message)
+                    }
+                }
+            }
+        }
+    }
+}
 
 @PublishedApi
 internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.observeMessages(
@@ -223,14 +314,22 @@ internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.app
     when (message) {
         // todo split into functions per message type
         is ApplyMessage -> {
-            messages.send(dependencies.serverSettings.serializer.fromJsonTree(message.message, M::class.java))
+            messages.send(
+                dependencies.serverSettings.serializer.fromJsonTree(
+                    message.message,
+                    M::class.java
+                )
+            )
             null
         }
         is ApplyState -> {
             // cancels previous computation job and starts a new one
             launch {
                 loop<M, C, S>(
-                    dependencies.serverSettings.serializer.fromJsonTree(message.state, S::class.java),
+                    dependencies.serverSettings.serializer.fromJsonTree(
+                        message.state,
+                        S::class.java
+                    ),
                     this@with,
                     messages,
                     states
@@ -325,7 +424,7 @@ internal suspend fun WebSocketSession.notifyApplied(
 internal inline fun <reified M, reified C, reified S> spyingInterceptor(
     sink: SendChannel<NotifyComponentSnapshot>,
     serializer: JsonConverter
-): Interceptor<M, S, C> = { message, prevState, newState, _ ->
+): LegacyInterceptor<M, S, C> = { message, prevState, newState, _ ->
     sink.send(
         NotifyComponentSnapshot(
             serializer.toJsonTree(message as Any),
@@ -366,3 +465,22 @@ internal fun <M, C, S> DebugEnvBuilder<M, C, S>.toDebugDependencies() =
 @PublishedApi
 internal fun ServerSettingsBuilder.toServerSettings() =
     ServerSettings(id, jsonSerializer, url)
+
+fun <T> Flow<T>.mergeWith(
+    another: Flow<T>
+): Flow<T> =
+    channelFlow {
+        coroutineScope {
+            launch {
+                another.collect {
+                    offer(it)
+                }
+            }
+
+            launch {
+                collect {
+                    offer(it)
+                }
+            }
+        }
+    }
