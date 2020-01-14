@@ -17,9 +17,17 @@ class TypeAppenderAdapterFactoryTest {
         val message = D()
         val json = serializer.toJson(message)
 
-        println(json)
-
         val fromJson = serializer.fromJson(json, A::class.java)
+
+        fromJson shouldBe message
+    }
+
+    @Test
+    fun `test simple string gets serialized correctly`() {
+
+        val message = "a"
+        val json = serializer.toJson(message)
+        val fromJson = serializer.fromJson(json, String::class.java)
 
         fromJson shouldBe message
     }

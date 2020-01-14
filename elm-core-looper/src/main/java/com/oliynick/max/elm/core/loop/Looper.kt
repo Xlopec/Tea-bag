@@ -114,28 +114,22 @@ fun <M, C, S> Env<M, C, S>.snapshotComponent(): Component1<M, S, C> {
 
     val snapshots = AtomicReference<Snapshot<M, S, C>>()
 
-    fun begin() = snapshots.get()?.let(::flowOf) ?: init()
-
     return { input ->
 
         channelFlow {
 
-            val messages = Channel<M>()
-
             launch {
-                begin()
-                    .flatMapConcat { snapshot -> compute(messages.consumeAsFlow(), snapshot, snapshots::set) }
+                begin(snapshots::get)
+                    .flatMapConcat { snapshot -> compute(input, snapshot, snapshots::set) }
                     .collect { send(it) }
-            }
-
-            launch {
-                input.collect { message ->
-                    messages.send(message)
-                }
             }
         }
     }
 }
+
+fun <M, C, S> Env<M, C, S>.begin(
+    store: () -> Snapshot<M, S, C>?
+) = (store()?.let(::flowOf) ?: init())
 
 fun <M, C, S> Env<M, C, S>.compute(
     messages: Flow<M>,

@@ -154,4 +154,15 @@ class DefaultGsonSerializersTest {
         fromJson should beInstanceOf(Singleton::class)
     }
 
+    @Test
+    fun `test NotifyServer gets serialized correctly`() = with(gsonSerializer) {
+
+        val message = NotifyServer(
+            UUID.randomUUID(), ComponentId("some"), NotifyComponentAttached(toJsonTree(testUser)))
+        val json = toJson(message)
+        val fromJson = fromJson(json, NotifyServer::class.java)
+
+        fromJson shouldBe message
+    }
+
 }

@@ -54,5 +54,6 @@ dependencies {
     implementation "io.ktor:ktor-client-okhttp:$ktor_version"
 
     testImplementation project(path: ':elm-core-test', configuration: 'default')
+    testImplementation "io.ktor:ktor-client-mock-jvm:$ktor_version"
 
 }

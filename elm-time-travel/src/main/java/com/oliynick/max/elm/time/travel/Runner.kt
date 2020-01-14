@@ -35,7 +35,7 @@ fun main() {
 
     runBlocking {
 
-        val dependencies = DebugDependencies(
+        val dependencies = DebugEnv(
             Env<SomeTestCommand, String, SomeTestState>(
                 SomeTestState(SomeTestString("initial")),
                 { emptySet() },
@@ -48,7 +48,8 @@ fun main() {
                 ComponentId("webSocketComponent"),
                 gsonSerializer(),
                 URL()
-            )
+            ),
+            ::WebSocketSession
         )
 
         Component(dependencies)

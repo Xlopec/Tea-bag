@@ -22,6 +22,7 @@ import com.oliynick.max.elm.core.component.*
 import com.oliynick.max.elm.core.loop.*
 import io.ktor.client.HttpClient
 import io.ktor.client.features.websocket.ClientWebSocketSession
+import io.ktor.client.features.websocket.DefaultClientWebSocketSession
 import io.ktor.client.features.websocket.WebSockets
 import io.ktor.client.features.websocket.ws
 import io.ktor.http.HttpMethod
@@ -34,6 +35,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.broadcast
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -44,6 +46,82 @@ import java.util.concurrent.atomic.AtomicReference
 
 //TODO refactor internal api!
 
+interface DebugSession<M, S> {
+
+    val messages: Flow<M>
+    val states: Flow<S>
+
+    suspend fun send(packet: NotifyServer)
+
+}
+
+typealias SessionBuilder<M, S> = suspend (ServerSettings) -> DebugSession<M, S>
+
+suspend inline fun <reified M, reified S> WebSocketSession(
+    settings: ServerSettings
+): DebugSession<M, S> =
+    channelFlow<DebugSession<M, S>> {
+        httpClient.ws(
+            method = HttpMethod.Get,
+            host = settings.url.host,
+            port = settings.url.port,
+            block = { send(DebugWebSocketSession(M::class.java, S::class.java, settings, this)) }
+        )
+    }.first()
+
+@PublishedApi
+internal class DebugWebSocketSession<M, S>(
+    private val mClass: Class<M>,
+    private val sClass: Class<S>,
+    private val settings: ServerSettings,
+    private val socketSession: DefaultClientWebSocketSession
+) : DebugSession<M, S> {
+
+    private val incomingPackets: Flow<Either<M, S>> by unsafeLazy { settings.incomingCommands(socketSession) }
+
+    override val messages: Flow<M> by unsafeLazy { incomingPackets.externalMessages() }
+    override val states: Flow<S> by unsafeLazy { incomingPackets.externalStates() }
+
+    override suspend fun send(packet: NotifyServer) =
+        socketSession.send(settings.serializer.toJson(packet))
+
+    private fun ServerSettings.incomingCommands(
+        session: ClientWebSocketSession
+    ) = incomingPackets(session)
+        .map { packet -> serializer.toCommand(packet) }
+
+    private fun JsonConverter.toCommand(
+        packet: NotifyClient
+    ) = when (val message = packet.message) {
+        is ApplyMessage -> Left(
+            fromJsonTree(
+                message.message,
+                mClass
+            )
+        )
+        is ApplyState -> Right(
+            fromJsonTree(
+                message.state,
+                sClass
+            )
+        )
+    }
+
+    private fun <T> unsafeLazy(
+        provider: () -> T
+    ) = lazy(LazyThreadSafetyMode.NONE, provider)
+
+}
+
+/*suspend inline fun <reified M, reified S> DebugEnv<M, *, S>.session(
+    crossinline block: DebugSession<M, S>.() -> Unit
+) = httpClient.ws(
+    method = HttpMethod.Get,
+    host = serverSettings.url.host,
+    port = serverSettings.url.port,
+    block = { block(DebugWebSocketSession(M::class.java, S::class.java, serverSettings, this)) }
+)*/
+
 @PublishedApi
 internal val httpClient by lazy { HttpClient { install(WebSockets) } }
 @PublishedApi
@@ -53,9 +131,10 @@ internal val localhost by lazy(::URL)
 private annotation class DslBuilder
 
 //todo add dsl
-data class DebugDependencies<M, C, S>(
+data class DebugEnv<M, C, S>(
     inline val componentEnv: Env<M, C, S>,
-    inline val serverSettings: ServerSettings
+    inline val serverSettings: ServerSettings,
+    val sessionBuilder: SessionBuilder<M, S>
 )
 
 //todo add dsl
@@ -131,17 +210,17 @@ inline fun <reified M, reified C, reified S> CoroutineScope.Component(
 )
 
 inline fun <reified M, reified C, reified S> CoroutineScope.Component(
-    debugDependencies: DebugDependencies<M, C, S>
+    debugEnv: DebugEnv<M, C, S>
 ): Component<M, S> {
 
-    val (messages, states) = webSocketComponent(debugDependencies)
+    val (messages, states) = webSocketComponent(debugEnv)
 
     return newComponent(states, messages)
 }
 
 @PublishedApi
 internal inline fun <reified M, reified C, reified S> CoroutineScope.webSocketComponent(
-    dependencies: DebugDependencies<M, C, S>
+    env: DebugEnv<M, C, S>
 ): ComponentInternal<M, S> {
 
     val messages = Channel<M>()
@@ -149,11 +228,11 @@ internal inline fun <reified M, reified C, reified S> CoroutineScope.webSocketCo
 
     launch {
         try {
-            connect(messages, statesChannel, dependencies)
+            connect(messages, statesChannel, env)
         } catch (th: Exception) {
             throw RuntimeException(
                 "Failed to connect " +
-                    "to the host: ${dependencies.serverSettings.url}", th
+                    "to the host: ${env.serverSettings.url}", th
             )
         }
     }
@@ -165,20 +244,20 @@ internal inline fun <reified M, reified C, reified S> CoroutineScope.webSocketCo
 internal suspend inline fun <reified M, reified C, reified S> connect(
     messages: Channel<M>,
     statesChannel: BroadcastChannel<S>,
-    dependencies: DebugDependencies<M, C, S>
+    env: DebugEnv<M, C, S>
 ) =
     httpClient.ws(
         HttpMethod.Get,
-        dependencies.serverSettings.url.host,
-        dependencies.serverSettings.url.port
+        env.serverSettings.url.host,
+        env.serverSettings.url.port
     ) {
 
         val snapshots = Channel<NotifyComponentSnapshot>()
 
         with(
-            dependencies.withSpyingInterceptor(
+            env.withSpyingInterceptor(
                 snapshots,
-                dependencies.serverSettings.serializer
+                env.serverSettings.serializer
             )
         ) {
             launch {
@@ -203,7 +282,8 @@ data class Right<R>(
     val r: R
 ) : Either<Nothing, R>()
 
-inline fun <reified M, reified C, reified S> DebugDependencies<M, C, S>.snapshotComponent(): Component1<M, S, C> {
+// todo implement a better naming
+inline fun <reified M, reified C, reified S> DebugEnv<M, C, S>.snapshotComponent(): Component1<M, S, C> {
 
     val snapshots = AtomicReference<Snapshot<M, S, C>>()
 
@@ -211,87 +291,79 @@ inline fun <reified M, reified C, reified S> DebugDependencies<M, C, S>.snapshot
 
         channelFlow {
 
-            httpClient.ws(
-                HttpMethod.Get,
-                serverSettings.url.host,
-                serverSettings.url.port
-            ) {
+            with(sessionBuilder(serverSettings)) {
 
-                val messages = Channel<M>()
-
-                launch {
-
-                    val commands = incomingPackets(serverSettings.id, serverSettings.serializer)
-                        .map { packet ->
-                            when (val message = packet.message) {
-                                is ApplyMessage -> Left(
-                                    serverSettings.serializer.fromJsonTree(
-                                        message.message,
-                                        M::class.java
-                                    )
-                                )
-                                is ApplyState -> Right(
-                                    serverSettings.serializer.fromJsonTree(
-                                        message.state,
-                                        S::class.java
-                                    )
-                                )
-                            }
-                        }
-
-                    (snapshots.get()?.let(::flowOf) ?: componentEnv.init()).mergeWith(/*applies external state*/commands.filterIsInstance<Right<S>>().map {
-                        Initial(
-                            it.r,
-                            emptySet()
+                componentEnv.begin(snapshots::get).mergeWith(states.map { s -> Initial(s, emptySet()) })
+                    .flatMapConcat { snapshot ->
+                        componentEnv.compute(
+                            input.mergeWith(messages),
+                            snapshot,
+                            snapshots::set
                         )
-                    })
-                        .flatMapConcat { snapshot ->
-                            componentEnv.compute(
-                                messages.consumeAsFlow().mergeWith(/*applies external message*/commands.filterIsInstance<Left<M>>().map { it.l }),
-                                snapshot,
-                                snapshots::set
-                            )
-                        }
-                        .onEach { snapshot ->
-                            when(snapshot) {
-                                // says 'hello' to a server; the message will be suspended until
-                                // the very first state gets computed
-                                is Initial -> notifyAttached(snapshot.state, serverSettings)
-                                // observes state changes and notifies server about them
-                                is Regular -> send(serverSettings.id,
-                                    serverSettings.serializer.run { NotifyComponentSnapshot(toJsonTree(snapshot.message), toJsonTree(snapshot.state), toJsonTree(snapshot.state)) },
-                                    serverSettings.serializer)
-                            }.safe
-
-                        }
-                        .collect { send(it) }
-                }
-
-                launch {
-                    input.collect { message ->
-                        messages.send(message)
                     }
-                }
+                    .onEach { snapshot -> notifyServer(this@with, snapshot) }
+                    .collect { send(it) }
             }
-        }
+
+        }.catch { th -> notifyConnectException(serverSettings, th) }
     }
 }
 
 @PublishedApi
+internal fun notifyConnectException(
+    serverSettings: ServerSettings,
+    th: Throwable
+): Nothing =
+    throw ConnectException(connectFailureMessage(serverSettings), th)
+
+@PublishedApi
+internal fun connectFailureMessage(
+    serverSettings: ServerSettings
+) = "Component '${serverSettings.id.id}' " +
+    "couldn't connect to the endpoint ${serverSettings.url.toExternalForm()}"
+
+@PublishedApi
+internal fun <S> Flow<Either<*, S>>.externalStates(): Flow<S> =
+    filterIsInstance<Right<S>>().map { (s) -> s }
+
+@PublishedApi
+internal fun <M> Flow<Either<M, *>>.externalMessages(): Flow<M> = filterIsInstance<Left<M>>().map { (m) -> m }
+
+@PublishedApi
+internal suspend inline fun <reified M, reified C, reified S> DebugEnv<M, C, S>.notifyServer(
+    session: DebugSession<M, S>,
+    snapshot: Snapshot<M, S, C>
+) = with(serverSettings.serializer) {
+    val message = when (snapshot) {
+        // says 'hello' to a server; the message will be suspended until
+        // the very first state gets computed
+        is Initial -> NotifyComponentAttached(toJsonTree(snapshot.state))
+        // observes state changes and notifies server about them
+        is Regular -> NotifyComponentSnapshot(
+            toJsonTree(snapshot.message),
+            toJsonTree(snapshot.state),
+            toJsonTree(snapshot.state)
+        )
+    }
+
+    session.send(NotifyServer(UUID.randomUUID(), serverSettings.id, message))
+}
+
+@PublishedApi
 internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.observeMessages(
-    dependencies: DebugDependencies<M, C, S>,
+    env: DebugEnv<M, C, S>,
     messages: Channel<M>,
     states: BroadcastChannel<S>
 ) {
 
-    with(dependencies) {
+    with(env) {
 
         var computationJob = launch { componentEnv.loop(messages, states) }
 
-        incomingPackets(serverSettings.id, serverSettings.serializer)
+        env.serverSettings.incomingPackets(this@observeMessages)
             .collect { packet ->
                 // todo consider replacing with some kind of stream and fold function
-                val newJob = applyMessage(packet.message, dependencies, messages, states)
+                val newJob = applyMessage(packet.message, env, messages, states)
 
                 if (newJob != null) {
                     computationJob.cancel()
@@ -306,16 +378,16 @@ internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.obs
 @PublishedApi
 internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.applyMessage(
     message: ClientMessage,
-    dependencies: DebugDependencies<M, C, S>,
+    env: DebugEnv<M, C, S>,
     messages: Channel<M>,
     states: BroadcastChannel<S>
-): Job? = with(dependencies) {
+): Job? = with(env) {
     @Suppress("UNCHECKED_CAST")
     when (message) {
         // todo split into functions per message type
         is ApplyMessage -> {
             messages.send(
-                dependencies.serverSettings.serializer.fromJsonTree(
+                env.serverSettings.serializer.fromJsonTree(
                     message.message,
                     M::class.java
                 )
@@ -326,7 +398,7 @@ internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.app
             // cancels previous computation job and starts a new one
             launch {
                 loop<M, C, S>(
-                    dependencies.serverSettings.serializer.fromJsonTree(
+                    env.serverSettings.serializer.fromJsonTree(
                         message.state,
                         S::class.java
                     ),
@@ -340,25 +412,48 @@ internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.app
 }
 
 @PublishedApi
-internal fun ClientWebSocketSession.incomingPackets(
-    id: ComponentId,
-    serializer: JsonConverter
+internal fun ServerSettings.incomingPackets(
+    clientWebSocketSession: ClientWebSocketSession
 ) =
-    incoming.consumeAsFlow()
+    clientWebSocketSession.incoming.broadcast().asFlow()
         .filterIsInstance<Frame.Text>()
         .map { frame -> frame.readText() }
         .map { json -> serializer.fromJson(json, NotifyClient::class.java) }
         .filter { packet -> packet.component == id }
 
 @PublishedApi
+internal inline fun <reified M, reified S> DebugEnv<M, *, S>.incomingCommands(
+    session: ClientWebSocketSession
+) = serverSettings.incomingPackets(session)
+    .map { packet -> toCommand(packet) }
+
+@PublishedApi
+internal inline fun <reified M, reified S> DebugEnv<M, *, S>.toCommand(
+    packet: NotifyClient
+) = when (val message = packet.message) {
+    is ApplyMessage -> Left(
+        serverSettings.serializer.fromJsonTree(
+            message.message,
+            M::class.java
+        )
+    )
+    is ApplyState -> Right(
+        serverSettings.serializer.fromJsonTree(
+            message.state,
+            S::class.java
+        )
+    )
+}
+
+@PublishedApi
 internal suspend inline fun <M, C, reified S> loop(
     stateValue: S,
-    inputDependencies: DebugDependencies<M, C, S>,
+    inputEnv: DebugEnv<M, C, S>,
     messages: Channel<M>,
     states: BroadcastChannel<S>
 ) {
 
-    with(inputDependencies) {
+    with(inputEnv) {
         componentEnv.withNewInitializer(stateValue)
             .loop(
                 messages,
@@ -435,7 +530,7 @@ internal inline fun <reified M, reified C, reified S> spyingInterceptor(
 }
 
 @PublishedApi
-internal inline fun <reified M, reified C, reified S> DebugDependencies<M, C, S>.withSpyingInterceptor(
+internal inline fun <reified M, reified C, reified S> DebugEnv<M, C, S>.withSpyingInterceptor(
     snapshots: Channel<NotifyComponentSnapshot>,
     serializer: JsonConverter
 ) = copy(
@@ -457,9 +552,10 @@ internal fun <M, C, S> Env<M, C, S>.withNewInitializer(s: S) =
 
 @PublishedApi
 internal fun <M, C, S> DebugEnvBuilder<M, C, S>.toDebugDependencies() =
-    DebugDependencies(
+    DebugEnv(
         dependenciesBuilder.toEnv(),
-        serverSettingsBuilder.toServerSettings()
+        serverSettingsBuilder.toServerSettings(),
+        ::WebSocketSession
     )
 
 @PublishedApi
@@ -473,13 +569,13 @@ fun <T> Flow<T>.mergeWith(
         coroutineScope {
             launch {
                 another.collect {
-                    offer(it)
+                    send(it)
                 }
             }
 
             launch {
                 collect {
-                    offer(it)
+                    send(it)
                 }
             }
         }

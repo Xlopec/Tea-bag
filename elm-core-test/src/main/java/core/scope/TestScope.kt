@@ -21,9 +21,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlin.coroutines.CoroutineContext
 
-inline fun runBlockingInTestScope(
+fun runBlockingInTestScope(
     context: CoroutineContext = Job(),
-    crossinline block: suspend TestCoroutineScope.() -> Unit
+    block: suspend TestCoroutineScope.() -> Unit
 ) {
     runBlocking { with(TestCoroutineScope(context)) { block() } }
 }
