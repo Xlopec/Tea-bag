@@ -115,7 +115,8 @@ suspend inline infix fun <C, M> C.effect(crossinline action: suspend C.() -> M?)
  * @param M message
  * @return [Flow] of component states
  */
-fun <M, S> Component<M, S>.changes(): Flow<S> = this(emptyFlow())
+@Deprecated("will be removed")
+fun <M, S> ComponentLegacy<M, S>.changes(): Flow<S> = this(emptyFlow())
 
 /**
  * Shortcut to supply multiple messages to the component without manually wrapping them into [flow][Flow]
@@ -126,7 +127,8 @@ fun <M, S> Component<M, S>.changes(): Flow<S> = this(emptyFlow())
  * @param messages messages to supply
  * @return [Flow] of component states
  */
-operator fun <M, S> Component<M, S>.invoke(vararg messages: M): Flow<S> = this(flowOf(*messages))
+@Deprecated("will be removed")
+operator fun <M, S> ComponentLegacy<M, S>.invoke(vararg messages: M): Flow<S> = this(flowOf(*messages))
 
 /**
  * Shortcut to supply a single message to the component without manually wrapping it into [flow][Flow]
@@ -137,7 +139,8 @@ operator fun <M, S> Component<M, S>.invoke(vararg messages: M): Flow<S> = this(f
  * @param message message to supply
  * @return [Flow] of component states
  */
-operator fun <M, S> Component<M, S>.invoke(message: M): Flow<S> = this(flowOf(message))
+@Deprecated("will be removed")
+operator fun <M, S> ComponentLegacy<M, S>.invoke(message: M): Flow<S> = this(flowOf(message))
 
 /**
  * Takes changes of the [producer] stream and feeds them as input to the [consumer] applying [transform] function
@@ -148,8 +151,9 @@ operator fun <M, S> Component<M, S>.invoke(message: M): Flow<S> = this(flowOf(me
  * @param transform function that maps produced states to the flow to be consumed by the consumer function
  * @return cancelable job to dispose binding
  */
-inline fun <M1, S1, M2, S2> CoroutineScope.bind(noinline producer: Component<M1, S1>,
-                                                noinline consumer: Component<M2, S2>,
+@Deprecated("will be removed")
+inline fun <M1, S1, M2, S2> CoroutineScope.bind(noinline producer: ComponentLegacy<M1, S1>,
+                                                noinline consumer: ComponentLegacy<M2, S2>,
                                                 crossinline transform: (S1) -> Flow<M2>): Job {
 
     return launch { producer.changes().map { s1 -> transform(s1) }.flattenConcat().flatMapConcat { m2 -> consumer(m2) }.collect() }
@@ -164,6 +168,7 @@ inline fun <M1, S1, M2, S2> CoroutineScope.bind(noinline producer: Component<M1,
  * @param M message
  * @param C command
  */
+@Deprecated("will be removed")
 inline infix fun <M, C, S> LegacyInterceptor<M, S, C>.with(crossinline with: LegacyInterceptor<M, S, C>): LegacyInterceptor<M, S, C> {
     return { message, prevState, newState, commands ->
         this(message, prevState, newState, commands); with(message, prevState, newState, commands)

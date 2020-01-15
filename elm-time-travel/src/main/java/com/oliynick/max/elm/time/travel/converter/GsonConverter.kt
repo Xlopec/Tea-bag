@@ -1,4 +1,6 @@
-package com.oliynick.max.elm.time.travel
+@file:Suppress("FunctionName")
+
+package com.oliynick.max.elm.time.travel.converter
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -29,6 +31,6 @@ private class GsonConverter(
 
 }
 
-fun gsonSerializer(
+fun GsonSerializer(
     config: GsonBuilder.() -> Unit = {}
 ): JsonConverter = GsonConverter(Gson(config))

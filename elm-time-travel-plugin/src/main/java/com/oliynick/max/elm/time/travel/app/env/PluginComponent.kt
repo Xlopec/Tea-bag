@@ -1,7 +1,7 @@
 package com.oliynick.max.elm.time.travel.app.env
 
-import com.oliynick.max.elm.core.actor.Component
-import com.oliynick.max.elm.core.component.Component
+import com.oliynick.max.elm.core.actor.ComponentLegacy
+import com.oliynick.max.elm.core.component.ComponentLegacy
 import com.oliynick.max.elm.core.component.Env
 import com.oliynick.max.elm.core.component.androidLogger
 import com.oliynick.max.elm.time.travel.app.domain.cms.PluginCommand
@@ -11,7 +11,7 @@ import com.oliynick.max.elm.time.travel.app.domain.cms.Stopped
 import com.oliynick.max.elm.time.travel.app.storage.pluginSettings
 
 @Suppress("FunctionName")
-fun Environment.PluginComponent(): Component<PluginMessage, PluginState> {
+fun Environment.PluginComponent(): ComponentLegacy<PluginMessage, PluginState> {
 
     suspend fun resolve(c: PluginCommand) = this.resolve(c)
 
@@ -20,7 +20,7 @@ fun Environment.PluginComponent(): Component<PluginMessage, PluginState> {
         state: PluginState
     ) = this.update(message, state)
 
-    return Component(Env(
+    return ComponentLegacy(Env(
         Stopped(properties.pluginSettings),
         ::resolve,
         ::update,

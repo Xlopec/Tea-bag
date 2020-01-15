@@ -16,14 +16,15 @@
 
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.elm.time.travel
+package com.oliynick.max.elm.time.travel.component
 
 import com.oliynick.max.elm.core.component.*
 import com.oliynick.max.elm.core.loop.*
-import io.ktor.client.HttpClient
+import com.oliynick.max.elm.time.travel.converter.GsonSerializer
+import com.oliynick.max.elm.time.travel.converter.JsonConverter
+import com.oliynick.max.elm.time.travel.exception.ConnectException
+import com.oliynick.max.elm.time.travel.session.DebugSession
 import io.ktor.client.features.websocket.ClientWebSocketSession
-import io.ktor.client.features.websocket.DefaultClientWebSocketSession
-import io.ktor.client.features.websocket.WebSockets
 import io.ktor.client.features.websocket.ws
 import io.ktor.http.HttpMethod
 import io.ktor.http.cio.websocket.Frame
@@ -46,119 +47,6 @@ import java.util.concurrent.atomic.AtomicReference
 
 //TODO refactor internal api!
 
-interface DebugSession<M, S> {
-
-    val messages: Flow<M>
-    val states: Flow<S>
-
-    suspend fun send(packet: NotifyServer)
-
-}
-
-typealias SessionBuilder<M, S> = suspend (ServerSettings) -> DebugSession<M, S>
-
-suspend inline fun <reified M, reified S> WebSocketSession(
-    settings: ServerSettings
-): DebugSession<M, S> =
-    channelFlow<DebugSession<M, S>> {
-        httpClient.ws(
-            method = HttpMethod.Get,
-            host = settings.url.host,
-            port = settings.url.port,
-            block = { send(DebugWebSocketSession(M::class.java, S::class.java, settings, this)) }
-        )
-    }.first()
-
-@PublishedApi
-internal class DebugWebSocketSession<M, S>(
-    private val mClass: Class<M>,
-    private val sClass: Class<S>,
-    private val settings: ServerSettings,
-    private val socketSession: DefaultClientWebSocketSession
-) : DebugSession<M, S> {
-
-    private val incomingPackets: Flow<Either<M, S>> by unsafeLazy { settings.incomingCommands(socketSession) }
-
-    override val messages: Flow<M> by unsafeLazy { incomingPackets.externalMessages() }
-    override val states: Flow<S> by unsafeLazy { incomingPackets.externalStates() }
-
-    override suspend fun send(packet: NotifyServer) =
-        socketSession.send(settings.serializer.toJson(packet))
-
-    private fun ServerSettings.incomingCommands(
-        session: ClientWebSocketSession
-    ) = incomingPackets(session)
-        .map { packet -> serializer.toCommand(packet) }
-
-    private fun JsonConverter.toCommand(
-        packet: NotifyClient
-    ) = when (val message = packet.message) {
-        is ApplyMessage -> Left(
-            fromJsonTree(
-                message.message,
-                mClass
-            )
-        )
-        is ApplyState -> Right(
-            fromJsonTree(
-                message.state,
-                sClass
-            )
-        )
-    }
-
-    private fun <T> unsafeLazy(
-        provider: () -> T
-    ) = lazy(LazyThreadSafetyMode.NONE, provider)
-
-}
-
-/*suspend inline fun <reified M, reified S> DebugEnv<M, *, S>.session(
-    crossinline block: DebugSession<M, S>.() -> Unit
-) = httpClient.ws(
-    method = HttpMethod.Get,
-    host = serverSettings.url.host,
-    port = serverSettings.url.port,
-    block = { block(DebugWebSocketSession(M::class.java, S::class.java, serverSettings, this)) }
-)*/
-
-@PublishedApi
-internal val httpClient by lazy { HttpClient { install(WebSockets) } }
-@PublishedApi
-internal val localhost by lazy(::URL)
-
-@DslMarker
-private annotation class DslBuilder
-
-//todo add dsl
-data class DebugEnv<M, C, S>(
-    inline val componentEnv: Env<M, C, S>,
-    inline val serverSettings: ServerSettings,
-    val sessionBuilder: SessionBuilder<M, S>
-)
-
-//todo add dsl
-data class ServerSettings(
-    inline val id: ComponentId,
-    inline val serializer: JsonConverter,
-    inline val url: URL
-)
-
-@DslBuilder
-class ServerSettingsBuilder internal constructor(
-    var id: ComponentId,
-    var url: URL,
-    var jsonSerializer: JsonConverter
-) {
-
-    fun installSerializer(
-        serializer: JsonConverter
-    ) {
-        jsonSerializer = serializer
-    }
-
-}
-
 fun URL(
     protocol: String = "http",
     host: String = "localhost",
@@ -166,40 +54,101 @@ fun URL(
 ) =
     URL(protocol, host, port.toInt(), "")
 
-@DslBuilder
-class DebugEnvBuilder<M, C, S> internal constructor(
-    var dependenciesBuilder: EnvBuilder<M, C, S>,
-    var serverSettingsBuilder: ServerSettingsBuilder
-) {
+inline fun <reified M, reified C, reified S> Component(
+    env: DebugEnv<M, C, S>
+): Component<M, S, C> {
 
-    fun dependencies(config: EnvBuilder<M, C, S>.() -> Unit) {
-        dependenciesBuilder.apply(config)
+    val snapshots = AtomicReference<Snapshot<M, S, C>>()
+
+    return { input ->
+
+        channelFlow {
+            with(env) {
+                sessionBuilder(serverSettings) {
+
+                    componentEnv.begin(snapshots::get).mergeWith(states.asSnapshots())
+                        .flatMapConcat { snapshot ->
+                            componentEnv.compute(
+                                input.mergeWith(messages),
+                                snapshot,
+                                snapshots::set
+                            )
+                        }
+                        .onEach { snapshot -> notifyServer(this@sessionBuilder, snapshot) }
+                        .collect { send(it) }
+                }
+            }
+        }.catch { th -> notifyConnectException(env.serverSettings, th) }
     }
-
-    fun serverSettings(config: ServerSettingsBuilder.() -> Unit) {
-        serverSettingsBuilder.apply(config)
-    }
-
 }
 
-fun <M, C, S> Dependencies(
-    id: ComponentId,
-    env: Env<M, C, S>,
-    url: URL = localhost,
-    serializer: JsonConverter = gsonSerializer(),
-    config: DebugEnvBuilder<M, C, S>.() -> Unit = {}
-) = DebugEnvBuilder(
-    EnvBuilder(env),
-    ServerSettingsBuilder(id, url, serializer)
-).apply(config).toDebugDependencies()
+@PublishedApi
+internal fun notifyConnectException(
+    serverSettings: ServerSettings,
+    th: Throwable
+): Nothing =
+    throw ConnectException(connectionFailureMessage(serverSettings), th)
 
-inline fun <reified M, reified C, reified S> CoroutineScope.Component(
+@PublishedApi
+internal fun <S> Flow<S>.asSnapshots(): Flow<Initial<S, Nothing>> =
+    map { s -> Initial(s, emptySet()) }
+
+@PublishedApi
+internal suspend inline fun <reified M, reified C, reified S> DebugEnv<M, C, S>.notifyServer(
+    session: DebugSession<M, S>,
+    snapshot: Snapshot<M, S, C>
+) = with(serverSettings.serializer) {
+    val message = when (snapshot) {
+        // says 'hello' to a server; the message will be suspended until
+        // the very first state gets computed
+        is Initial -> NotifyComponentAttached(toJsonTree(snapshot.state))
+        // observes state changes and notifies server about them
+        is Regular -> NotifyComponentSnapshot(
+            toJsonTree(snapshot.message),
+            toJsonTree(snapshot.state),
+            toJsonTree(snapshot.state)
+        )
+    }
+
+    session.send(NotifyServer(UUID.randomUUID(), serverSettings.id, message))
+}
+
+@PublishedApi
+internal fun <T> Flow<T>.mergeWith(
+    another: Flow<T>
+): Flow<T> = channelFlow {
+    coroutineScope {
+        launch {
+            another.collect {
+                send(it)
+            }
+        }
+
+        launch {
+            collect {
+                send(it)
+            }
+        }
+    }
+}
+
+internal fun connectionFailureMessage(
+    serverSettings: ServerSettings
+) = "Component '${serverSettings.id.id}' " +
+    "couldn't connect to the endpoint ${serverSettings.url.toExternalForm()}"
+
+///////////////////////
+// Deprecated API
+//////////////////////
+
+@Deprecated("will be removed")
+inline fun <reified M, reified C, reified S> CoroutineScope.ComponentLegacy(
     id: ComponentId,
     env: Env<M, C, S>,
     url: URL = localhost,
-    serializer: JsonConverter = gsonSerializer(),
+    serializer: JsonConverter = GsonSerializer(),
     noinline config: DebugEnvBuilder<M, C, S>.() -> Unit = {}
-) = Component(
+) = ComponentLegacy(
     Dependencies(
         id,
         env,
@@ -209,9 +158,10 @@ inline fun <reified M, reified C, reified S> CoroutineScope.Component(
     )
 )
 
-inline fun <reified M, reified C, reified S> CoroutineScope.Component(
+@Deprecated("will be removed, use Component instead")
+inline fun <reified M, reified C, reified S> CoroutineScope.ComponentLegacy(
     debugEnv: DebugEnv<M, C, S>
-): Component<M, S> {
+): ComponentLegacy<M, S> {
 
     val (messages, states) = webSocketComponent(debugEnv)
 
@@ -219,6 +169,7 @@ inline fun <reified M, reified C, reified S> CoroutineScope.Component(
 }
 
 @PublishedApi
+@Deprecated("will be removed, use snapshotComponent instead")
 internal inline fun <reified M, reified C, reified S> CoroutineScope.webSocketComponent(
     env: DebugEnv<M, C, S>
 ): ComponentInternal<M, S> {
@@ -241,6 +192,7 @@ internal inline fun <reified M, reified C, reified S> CoroutineScope.webSocketCo
 }
 
 @PublishedApi
+@Deprecated("will be removed")
 internal suspend inline fun <reified M, reified C, reified S> connect(
     messages: Channel<M>,
     statesChannel: BroadcastChannel<S>,
@@ -272,83 +224,8 @@ internal suspend inline fun <reified M, reified C, reified S> connect(
         }
     }
 
-sealed class Either<out L, out R>
 
-data class Left<L>(
-    val l: L
-) : Either<L, Nothing>()
-
-data class Right<R>(
-    val r: R
-) : Either<Nothing, R>()
-
-// todo implement a better naming
-inline fun <reified M, reified C, reified S> DebugEnv<M, C, S>.snapshotComponent(): Component1<M, S, C> {
-
-    val snapshots = AtomicReference<Snapshot<M, S, C>>()
-
-    return { input ->
-
-        channelFlow {
-
-            with(sessionBuilder(serverSettings)) {
-
-                componentEnv.begin(snapshots::get).mergeWith(states.map { s -> Initial(s, emptySet()) })
-                    .flatMapConcat { snapshot ->
-                        componentEnv.compute(
-                            input.mergeWith(messages),
-                            snapshot,
-                            snapshots::set
-                        )
-                    }
-                    .onEach { snapshot -> notifyServer(this@with, snapshot) }
-                    .collect { send(it) }
-            }
-
-        }.catch { th -> notifyConnectException(serverSettings, th) }
-    }
-}
-
-@PublishedApi
-internal fun notifyConnectException(
-    serverSettings: ServerSettings,
-    th: Throwable
-): Nothing =
-    throw ConnectException(connectFailureMessage(serverSettings), th)
-
-@PublishedApi
-internal fun connectFailureMessage(
-    serverSettings: ServerSettings
-) = "Component '${serverSettings.id.id}' " +
-    "couldn't connect to the endpoint ${serverSettings.url.toExternalForm()}"
-
-@PublishedApi
-internal fun <S> Flow<Either<*, S>>.externalStates(): Flow<S> =
-    filterIsInstance<Right<S>>().map { (s) -> s }
-
-@PublishedApi
-internal fun <M> Flow<Either<M, *>>.externalMessages(): Flow<M> = filterIsInstance<Left<M>>().map { (m) -> m }
-
-@PublishedApi
-internal suspend inline fun <reified M, reified C, reified S> DebugEnv<M, C, S>.notifyServer(
-    session: DebugSession<M, S>,
-    snapshot: Snapshot<M, S, C>
-) = with(serverSettings.serializer) {
-    val message = when (snapshot) {
-        // says 'hello' to a server; the message will be suspended until
-        // the very first state gets computed
-        is Initial -> NotifyComponentAttached(toJsonTree(snapshot.state))
-        // observes state changes and notifies server about them
-        is Regular -> NotifyComponentSnapshot(
-            toJsonTree(snapshot.message),
-            toJsonTree(snapshot.state),
-            toJsonTree(snapshot.state)
-        )
-    }
-
-    session.send(NotifyServer(UUID.randomUUID(), serverSettings.id, message))
-}
-
+@Deprecated("will be removed")
 @PublishedApi
 internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.observeMessages(
     env: DebugEnv<M, C, S>,
@@ -375,6 +252,7 @@ internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.obs
     }
 }
 
+@Deprecated("will be removed")
 @PublishedApi
 internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.applyMessage(
     message: ClientMessage,
@@ -411,6 +289,7 @@ internal suspend inline fun <reified M, C, reified S> ClientWebSocketSession.app
     }
 }
 
+@Deprecated("will be removed")
 @PublishedApi
 internal fun ServerSettings.incomingPackets(
     clientWebSocketSession: ClientWebSocketSession
@@ -421,30 +300,7 @@ internal fun ServerSettings.incomingPackets(
         .map { json -> serializer.fromJson(json, NotifyClient::class.java) }
         .filter { packet -> packet.component == id }
 
-@PublishedApi
-internal inline fun <reified M, reified S> DebugEnv<M, *, S>.incomingCommands(
-    session: ClientWebSocketSession
-) = serverSettings.incomingPackets(session)
-    .map { packet -> toCommand(packet) }
-
-@PublishedApi
-internal inline fun <reified M, reified S> DebugEnv<M, *, S>.toCommand(
-    packet: NotifyClient
-) = when (val message = packet.message) {
-    is ApplyMessage -> Left(
-        serverSettings.serializer.fromJsonTree(
-            message.message,
-            M::class.java
-        )
-    )
-    is ApplyState -> Right(
-        serverSettings.serializer.fromJsonTree(
-            message.state,
-            S::class.java
-        )
-    )
-}
-
+@Deprecated("will be removed")
 @PublishedApi
 internal suspend inline fun <M, C, reified S> loop(
     stateValue: S,
@@ -462,6 +318,7 @@ internal suspend inline fun <M, C, reified S> loop(
     }
 }
 
+@Deprecated("will be removed")
 @PublishedApi
 internal suspend inline fun <reified S> WebSocketSession.notifyAttached(
     first: S,
@@ -475,6 +332,7 @@ internal suspend inline fun <reified S> WebSocketSession.notifyAttached(
     send(serverSettings.serializer.toJson(message))
 }
 
+@Deprecated("will be removed")
 @PublishedApi
 internal suspend fun WebSocketSession.notifySnapshots(
     snapshots: Flow<NotifyComponentSnapshot>,
@@ -489,6 +347,7 @@ internal suspend fun WebSocketSession.notifySnapshots(
     }
 }
 
+@Deprecated("will be removed")
 @PublishedApi
 internal fun notifyMessage(
     message: ServerMessage,
@@ -497,6 +356,7 @@ internal fun notifyMessage(
 ) =
     NotifyServer(packetId, componentId, message)
 
+@Deprecated("will be removed")
 @PublishedApi
 internal suspend fun WebSocketSession.send(
     componentId: ComponentId,
@@ -506,6 +366,7 @@ internal suspend fun WebSocketSession.send(
     send(serializer.toJson(NotifyServer(UUID.randomUUID(), componentId, message)))
 }
 
+@Deprecated("will be removed")
 @PublishedApi
 internal suspend fun WebSocketSession.notifyApplied(
     packetId: UUID,
@@ -516,6 +377,7 @@ internal suspend fun WebSocketSession.notifyApplied(
 }
 
 @PublishedApi
+@Deprecated("will be removed")
 internal inline fun <reified M, reified C, reified S> spyingInterceptor(
     sink: SendChannel<NotifyComponentSnapshot>,
     serializer: JsonConverter
@@ -530,6 +392,7 @@ internal inline fun <reified M, reified C, reified S> spyingInterceptor(
 }
 
 @PublishedApi
+@Deprecated("will be removed")
 internal inline fun <reified M, reified C, reified S> DebugEnv<M, C, S>.withSpyingInterceptor(
     snapshots: Channel<NotifyComponentSnapshot>,
     serializer: JsonConverter
@@ -541,12 +404,19 @@ internal inline fun <reified M, reified C, reified S> DebugEnv<M, C, S>.withSpyi
 )
 
 @PublishedApi
+@Deprecated("will be removed")
 internal inline fun <reified M, reified C, reified S> Env<M, C, S>.withSpyingInterceptor(
     snapshots: Channel<NotifyComponentSnapshot>,
     serializer: JsonConverter
-) = copy(interceptor = spyingInterceptor<M, C, S>(snapshots, serializer).with(interceptor))
+) = copy(
+    interceptor = spyingInterceptor<M, C, S>(
+        snapshots,
+        serializer
+    ).with(interceptor)
+)
 
 @PublishedApi
+@Deprecated("will be removed")
 internal fun <M, C, S> Env<M, C, S>.withNewInitializer(s: S) =
     copy(initializer = { s to emptySet() })
 
@@ -562,21 +432,3 @@ internal fun <M, C, S> DebugEnvBuilder<M, C, S>.toDebugDependencies() =
 internal fun ServerSettingsBuilder.toServerSettings() =
     ServerSettings(id, jsonSerializer, url)
 
-fun <T> Flow<T>.mergeWith(
-    another: Flow<T>
-): Flow<T> =
-    channelFlow {
-        coroutineScope {
-            launch {
-                another.collect {
-                    send(it)
-                }
-            }
-
-            launch {
-                collect {
-                    send(it)
-                }
-            }
-        }
-    }

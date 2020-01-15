@@ -1,11 +1,16 @@
 package com.oliynick.max.elm.time.travel
 
 import com.oliynick.max.elm.core.component.*
+import com.oliynick.max.elm.time.travel.component.Component
+import com.oliynick.max.elm.time.travel.component.WebSocketSession
+import com.oliynick.max.elm.time.travel.component.connectionFailureMessage
+import com.oliynick.max.elm.time.travel.exception.ConnectException
 import core.misc.throwingResolver
 import core.scope.runBlockingInTestScope
 import io.kotlintest.fail
 import io.kotlintest.matchers.numerics.shouldBeExactly
 import io.kotlintest.matchers.numerics.shouldNotBeExactly
+import io.kotlintest.matchers.throwable.shouldHaveCauseOfType
 import io.kotlintest.matchers.throwable.shouldHaveMessage
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrowExactlyUnit
@@ -34,20 +39,27 @@ class DebuggableComponentTest {
     @Test
     fun `test debuggable component throws expected exception when it can't connect to a server`() = runBlockingInTestScope {
 
-        val component = TestEnv(env = testEnv, sessionBuilder = ::WebSocketSession).snapshotComponent()
+        val component = Component(
+            TestEnv(
+                env = testEnv,
+                sessionBuilder = ::WebSocketSession
+            )
+        )
 
         val th = shouldThrowExactlyUnit<ConnectException> {
             component("a").collect()
         }
 
-        th shouldHaveMessage connectFailureMessage(testServerSettings)
+        th shouldHaveMessage connectionFailureMessage(testServerSettings)
+        th.shouldHaveCauseOfType<java.net.ConnectException>()
     }
 
     @Test
     fun `test debuggable component sends the same sequence of events as the original component`() = runBlocking {
 
         val testSession = TestDebugSession<String, String>()
-        val component = TestEnv(env = testEnv, testDebugSession = testSession).snapshotComponent()
+        val component =
+            Component(TestEnv(env = testEnv, testDebugSession = testSession))
         val messages = arrayOf("a", "b", "c")
         val snapshots = component(*messages).take(messages.size + 1).toCollection(ArrayList(messages.size + 1))
 
@@ -58,7 +70,7 @@ class DebuggableComponentTest {
             Regular("c", "c", emptySet())
         )
 
-        testSession.sentPackets.forEachIndexed { index, elem ->
+        testSession.packets.forEachIndexed { index, elem ->
 
             elem.componentId shouldBe testComponentId
 

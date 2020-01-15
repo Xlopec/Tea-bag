@@ -9,11 +9,14 @@ private annotation class DslBuilder
  * Dependencies holder
  */
 data class Env<M, C, S>(
-    inline val initializer: Initializer<S, C>,
+    @Deprecated("will be removed", ReplaceWith("newInitializer"))
+    inline val initializer: InitializerLegacy<S, C>,
     inline val resolver: Resolver<C, M>,
     inline val update: Update<M, S, C>,
     inline val interceptor: LegacyInterceptor<M, S, C>
 ) {
+
+    val newInitializer: Initializer<S, C> = { initializer().let { (s, c) -> Initial(s, c) } }
 
     constructor(initialState: S,
                 resolver: Resolver<C, M>,
@@ -49,9 +52,11 @@ data class Env<M, C, S>(
 
 @DslBuilder
 class EnvBuilder<M, C, S>(
-    var initializer: Initializer<S, C>,
+    @Deprecated("will be removed")
+    var initializer: InitializerLegacy<S, C>,
     var resolver: Resolver<C, M>,
     var update: Update<M, S, C>,
+    @ObsoleteComponentApi
     var interceptor: LegacyInterceptor<M, S, C> = { _, _, _, _ -> }
 ) {
     constructor(env: Env<M, C, S>) : this(
@@ -63,7 +68,7 @@ class EnvBuilder<M, C, S>(
 }
 
 fun <M, C, S> Env(
-    initializer: Initializer<S, C>,
+    initializer: InitializerLegacy<S, C>,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     config: EnvBuilder<M, C, S>.() -> Unit = {}
@@ -87,9 +92,9 @@ fun <M, C, S> Env(
     config: EnvBuilder<M, C, S>.() -> Unit = {}
 ) = Env(initializer(initialState, initialCommands), resolver, update, config)
 
-fun <S, C> initializer(s: S, commands: Set<C>): Initializer<S, C> = { s to commands }
+fun <S, C> initializer(s: S, commands: Set<C>): InitializerLegacy<S, C> = { s to commands }
 
-fun <S, C> initializer(s: S, vararg commands: C): Initializer<S, C> =
+fun <S, C> initializer(s: S, vararg commands: C): InitializerLegacy<S, C> =
     initializer(s, setOf(*commands))
 
 fun <M, C, S> EnvBuilder<M, C, S>.toEnv() =

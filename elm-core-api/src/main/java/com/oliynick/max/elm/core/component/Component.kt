@@ -48,23 +48,27 @@ typealias UpdateWith<S, C> = Pair<S, Set<C>>
  * @param M incoming messages
  * @param S state of the component
  */
-typealias Component<M, S> = (messages: Flow<M>) -> Flow<S>
+@Deprecated("will be removed")
+typealias ComponentLegacy<M, S> = (messages: Flow<M>) -> Flow<S>
 
-
-typealias Component1<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
+typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
 
 /**
  * Alias for a function that loads initial state of the component and initial set of commands
  * @param C initial commands to execute
  * @param S initial state of the component
  */
-typealias Initializer<S, C> = suspend () -> InitArgs<S, C>
+@Deprecated("will be removed")
+typealias InitializerLegacy<S, C> = suspend () -> InitArgs<S, C>
+
+typealias Initializer<S, C> = suspend () -> Initial<S, C>
 
 /**
- * Alias for result of the [init][Initializer] function
+ * Alias for result of the [init][InitializerLegacy] function
  * @param C initial commands to execute
  * @param S initial state of the component
  */
+@Deprecated("will be removed", ReplaceWith("Initial()"))
 typealias InitArgs<S, C> = Pair<S, Set<C>>
 
 /**

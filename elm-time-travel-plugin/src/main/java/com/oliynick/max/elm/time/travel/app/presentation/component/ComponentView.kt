@@ -18,7 +18,7 @@ package com.oliynick.max.elm.time.travel.app.presentation.component
 
 import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
-import com.oliynick.max.elm.core.component.Component
+import com.oliynick.max.elm.core.component.ComponentLegacy
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.presentation.misc.*
 import com.oliynick.max.elm.time.travel.app.presentation.sidebar.getIcon
@@ -35,7 +35,7 @@ import javax.swing.tree.DefaultMutableTreeNode
 
 class ComponentView(
     private val scope: CoroutineScope,
-    private val component: Component<PluginMessage, PluginState>,
+    private val component: ComponentLegacy<PluginMessage, PluginState>,
     componentState: ComponentDebugState
 ) : CoroutineScope by scope {
 

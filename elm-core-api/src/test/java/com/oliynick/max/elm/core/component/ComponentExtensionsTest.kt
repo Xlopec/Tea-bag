@@ -16,7 +16,7 @@
 
 package com.oliynick.max.elm.core.component
 
-import com.oliynick.max.elm.core.actor.Component
+import com.oliynick.max.elm.core.actor.ComponentLegacy
 import core.component.*
 import core.misc.invokeCollecting
 import core.misc.throwingResolver
@@ -160,7 +160,7 @@ class ComponentExtensionsTest {
     fun `test component binding`() = runBlockingInTestScope {
 
         val supplier =
-            Component<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
+            ComponentLegacy<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
 
             }
         val (transformer, sink) = spyingIdentityTransformer<String>()
@@ -177,7 +177,7 @@ class ComponentExtensionsTest {
         val (interceptor1, sink1) = spyingInterceptor()
         val (interceptor2, sink2) = spyingInterceptor()
 
-        Component<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
+        ComponentLegacy<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
             interceptor = interceptor1 with interceptor2
         }
             .also { component -> /* modify state */ component("a", "b").first() }
@@ -199,7 +199,7 @@ private fun <E> spyingIdentityTransformer(): Pair<IdentityTransformer<E>, List<E
     return { input: E -> sink += input; flowOf(input) } to sink
 }
 
-private fun <E> identityComponent(): Component<E, E> = { it }
+private fun <E> identityComponent(): ComponentLegacy<E, E> = { it }
 
 private fun spyingInterceptor(): Pair<LegacyInterceptor<String, String, String>, List<InterceptData>> {
     val sink = mutableListOf<InterceptData>()

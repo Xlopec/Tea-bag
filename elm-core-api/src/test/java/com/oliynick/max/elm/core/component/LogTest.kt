@@ -16,7 +16,7 @@
 
 package com.oliynick.max.elm.core.component
 
-import com.oliynick.max.elm.core.actor.Component
+import com.oliynick.max.elm.core.actor.ComponentLegacy
 import core.component.InterceptData
 import core.misc.throwingResolver
 import core.scope.runBlockingInTestScope
@@ -36,7 +36,7 @@ class LogTest {
     fun androidLogger() = runBlockingInTestScope {
         val (formatter, sink) = spyFormatter()
 
-        Component<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
+        ComponentLegacy<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
             interceptor = androidLogger("Test", formatter)
         }
             .also { component -> /* modify state */ component("a", "b").first() }

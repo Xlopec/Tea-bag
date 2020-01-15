@@ -20,7 +20,7 @@ import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.components.JBTabbedPane
-import com.oliynick.max.elm.core.component.Component
+import com.oliynick.max.elm.core.component.ComponentLegacy
 import com.oliynick.max.elm.core.component.changes
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.presentation.component.ComponentView
@@ -46,7 +46,7 @@ import java.awt.Component as AwtComponent
 class ToolWindowView(
     private val project: Project,
     private val scope: CoroutineScope,
-    private val component: Component<PluginMessage, PluginState>,
+    private val component: ComponentLegacy<PluginMessage, PluginState>,
     private val uiEvents: Channel<PluginMessage>
 ) : CoroutineScope by scope {
 
@@ -193,7 +193,7 @@ private fun JTextField.setText(
     document.addDocumentListener(listener)
 }
 
-private suspend fun Component<PluginMessage, PluginState>.showProgressOnTransientState(project: Project) {
+private suspend fun ComponentLegacy<PluginMessage, PluginState>.showProgressOnTransientState(project: Project) {
     changes().filter { state -> state.isTransient }.collect { transientState ->
         runBackgroundableTask(transientState.progressDescription, project, false) {
             runBlocking { changes().first { state -> !state.isTransient } }

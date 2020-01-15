@@ -16,16 +16,27 @@
 
 package com.oliynick.max.elm.core.component
 
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 
-fun <M, S, C> Component1<M, S, C>.changes() = this(emptyFlow())
+fun <M, S, C> Component<M, S, C>.snapshotChanges(): Flow<Snapshot<M, S, C>> =
+    this(emptyFlow())
 
-operator fun <M, S, C> Component1<M, S, C>.invoke(vararg messages: M) = this(flowOf(*messages))
+fun <M, S, C> Component<M, S, C>.stateChanges(): Flow<S> =
+    snapshotChanges().map { snapshot -> snapshot.state }
 
-operator fun <M, S, C> Component1<M, S, C>.invoke(message: M) = this(flowOf(message))
+operator fun <M, S, C> Component<M, S, C>.invoke(vararg messages: M) =
+    this(flowOf(*messages))
 
-inline infix fun <M, S, C> Component1<M, S, C>.with(
+operator fun <M, S, C> Component<M, S, C>.invoke(messages: Iterable<M>) =
+    this(messages.asFlow())
+
+operator fun <M, S, C> Component<M, S, C>.invoke(message: M) =
+    this(flowOf(message))
+
+inline infix fun <M, S, C> Component<M, S, C>.with(
     crossinline interceptor: Interceptor<M, S, C>
-): Component1<M, S, C> = { input -> this(input).onEach { interceptor(it) } }
+): Component<M, S, C> =
+    { input -> this(input).onEach { interceptor(it) } }
+
+fun <M, S, C> Component<M, S, C>.states(): ((Flow<M>) -> Flow<S>) =
+    { input -> this(input).map { snapshot -> snapshot.state } }

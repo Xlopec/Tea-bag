@@ -1,6 +1,6 @@
 package com.oliynick.max.elm.core.component
 
-import com.oliynick.max.elm.core.loop.snapshotComponent
+import com.oliynick.max.elm.core.loop.Component
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.boolean.shouldBeTrue
 import io.kotlintest.shouldBe
@@ -27,7 +27,7 @@ class LooperTest {
             { m, _ -> m.noCommand() }
         )
 
-        val component = env.snapshotComponent()
+        val component = Component(env)
         val messages = arrayOf("a", "b", "c")
         val snapshots = component(*messages).take(messages.size + 1).toList(ArrayList(messages.size + 1))
 
@@ -49,7 +49,7 @@ class LooperTest {
         )
 
         val sink = mutableListOf<Snapshot<String, String, String>>()
-        val component = env.snapshotComponent() with { sink.add(it) }
+        val component = Component(env) with { sink.add(it) }
         val messages = arrayOf("a", "b", "c")
         val snapshots = component(*messages).take(messages.size + 1).toList(ArrayList(messages.size + 1))
 
@@ -65,7 +65,7 @@ class LooperTest {
             { m, _ -> m.command(m) }
         )
 
-        val component = env.snapshotComponent()
+        val component = Component(env)
         val job = launch { component("a", "b", "c").toList(ArrayList()) }
 
         yield()

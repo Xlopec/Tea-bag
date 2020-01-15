@@ -50,52 +50,56 @@ import kotlin.coroutines.CoroutineContext
  * @param M incoming messages
  * @param S state of the component
  * @param C commands to be executed
- * @return configured instance of [Component]
+ * @return configured instance of [ComponentLegacy]
  */
 @Deprecated("too many params")
-fun <M, C, S> CoroutineScope.Component(
-    initializer: Initializer<S, C>,
+fun <M, C, S> CoroutineScope.ComponentLegacy(
+    initializer: InitializerLegacy<S, C>,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     interceptor: LegacyInterceptor<M, S, C> = { _, _, _, _ -> }
-): Component<M, S> =
-    Component(Env(initializer, resolver, update, interceptor))
+): ComponentLegacy<M, S> =
+    ComponentLegacy(Env(initializer, resolver, update, interceptor))
 
-fun <M, C, S> CoroutineScope.Component(env: Env<M, C, S>): Component<M, S> {
+@Deprecated("will be removed")
+fun <M, C, S> CoroutineScope.ComponentLegacy(env: Env<M, C, S>): ComponentLegacy<M, S> {
 
     val (messages, states) = actorComponent(env)
 
     return newComponent(states, messages)
 }
 
-fun <M, C, S> CoroutineScope.Component(
-    initializer: Initializer<S, C>,
+@Deprecated("will be removed")
+fun <M, C, S> CoroutineScope.ComponentLegacy(
+    initializer: InitializerLegacy<S, C>,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     config: EnvBuilder<M, C, S>.() -> Unit = {}
-) = Component(
+) = ComponentLegacy(
     EnvBuilder(initializer, resolver, update)
         .apply(config)
         .toEnv()
 )
 
-fun <M, C, S> CoroutineScope.Component(
+@Deprecated("will be removed")
+fun <M, C, S> CoroutineScope.ComponentLegacy(
     initialState: S,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     vararg initialCommands: C,
     config: EnvBuilder<M, C, S>.() -> Unit = {}
-) = Component(
+) = ComponentLegacy(
     Env(initializer(initialState, setOf(*initialCommands)), resolver, update, config)
 )
 
-fun <M, C, S> CoroutineScope.Component(
+@Deprecated("will be removed")
+fun <M, C, S> CoroutineScope.ComponentLegacy(
     initialState: S,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     initialCommands: Set<C>,
     config: EnvBuilder<M, C, S>.() -> Unit = {}
-) = Component(
+) = ComponentLegacy(
     Env(initializer(initialState, initialCommands), resolver, update, config)
 )
 
@@ -119,23 +123,24 @@ fun <M, C, S> CoroutineScope.Component(
  * @param M incoming messages
  * @param S state of the component
  * @param C commands to be executed
- * @return configured instance of [Component]
+ * @return configured instance of [ComponentLegacy]
  */
 @Deprecated("too many params")
-fun <M, C, S> CoroutineScope.Component(
+fun <M, C, S> CoroutineScope.ComponentLegacy(
     initialState: S,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     interceptor: LegacyInterceptor<M, S, C> = { _, _, _, _ -> },
     vararg initialCommands: C
-): Component<M, S> {
+): ComponentLegacy<M, S> {
 
     @Suppress("RedundantSuspendModifier")
     suspend fun loader() = initialState to setOf(*initialCommands)
 
-    return Component(::loader, resolver, update, interceptor)
+    return ComponentLegacy(::loader, resolver, update, interceptor)
 }
 
+@Deprecated("will be removed")
 private fun <M, C, S> CoroutineScope.actorComponent(
     env: Env<M, C, S>
 ): ComponentInternal<M, S> {

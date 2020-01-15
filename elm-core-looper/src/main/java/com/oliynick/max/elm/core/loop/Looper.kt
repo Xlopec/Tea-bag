@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.elm.core.loop
 
 import com.oliynick.max.elm.core.component.*
@@ -28,11 +30,13 @@ import java.util.concurrent.atomic.AtomicReference
 /**
  * Internal alias of a component
  */
+@Deprecated("will be removed")
 typealias ComponentInternal<M, S> = Pair<SendChannel<M>, Flow<S>>
 
 /**
  * Stores a new state to channel and notifies subscribers about changes
  */
+@Deprecated("will be removed")
 suspend fun <M, C, S> Env<M, C, S>.updateMutating(
     message: M,
     state: S,
@@ -48,6 +52,7 @@ suspend fun <M, C, S> Env<M, C, S>.updateMutating(
  * Before polling a message from the channel it tries to computes all
  * subsequent states produced by resolved commands
  */
+@Deprecated("will be removed")
 tailrec suspend fun <M, C, S> Env<M, C, S>.loop(
     state: S,
     it: ChannelIterator<M>,
@@ -72,6 +77,7 @@ tailrec suspend fun <M, C, S> Env<M, C, S>.loop(
 /**
  * Polls messages from collection's iterator and computes next states until collection is empty
  */
+@Deprecated("will be removed")
 suspend fun <M, C, S> Env<M, C, S>.loop(
     state: S,
     it: Iterator<M>,
@@ -96,6 +102,7 @@ suspend fun <M, C, S> Env<M, C, S>.loop(
 /**
  * Loads an initial state using supplied initializer and starts component's loop
  */
+@Deprecated("will be removed")
 suspend fun <M, C, S> Env<M, C, S>.loop(
     messages: Channel<M>,
     states: BroadcastChannel<S>
@@ -110,7 +117,9 @@ suspend fun <M, C, S> Env<M, C, S>.loop(
     return loop(nonTransient, messages.iterator(), states)
 }
 
-fun <M, C, S> Env<M, C, S>.snapshotComponent(): Component1<M, S, C> {
+fun <M, C, S> Component(
+    env: Env<M, C, S>
+): Component<M, S, C> {
 
     val snapshots = AtomicReference<Snapshot<M, S, C>>()
 
@@ -119,8 +128,8 @@ fun <M, C, S> Env<M, C, S>.snapshotComponent(): Component1<M, S, C> {
         channelFlow {
 
             launch {
-                begin(snapshots::get)
-                    .flatMapConcat { snapshot -> compute(input, snapshot, snapshots::set) }
+                env.begin(snapshots::get)
+                    .flatMapConcat { snapshot -> env.compute(input, snapshot, snapshots::set) }
                     .collect { send(it) }
             }
         }
@@ -140,8 +149,7 @@ fun <M, C, S> Env<M, C, S>.compute(
     .onEach { sink(it) }
 
 fun <M, S, C> Env<M, C, S>.init(): Flow<Initial<S, C>> =
-    flow { emit(initializer()) }
-        .map { (initState, initCommands) -> Initial(initState, initCommands) }
+    flow { emit(newInitializer()) }
 
 private fun <M, S, C> Env<M, C, S>.computeSnapshots(
     messages: Flow<M>,
@@ -156,7 +164,8 @@ private fun <M, S, C> Env<M, C, S>.computeSnapshots(
 /**
  * Combines given flow of states and message channel into TEA component
  */
-fun <M, S> newComponent(state: Flow<S>, messages: SendChannel<M>): Component<M, S> =
+@Deprecated("will be removed")
+fun <M, S> newComponent(state: Flow<S>, messages: SendChannel<M>): ComponentLegacy<M, S> =
     { input ->
 
         channelFlow {
@@ -175,13 +184,17 @@ fun <M, S> newComponent(state: Flow<S>, messages: SendChannel<M>): Component<M, 
         }
     }
 
+@Deprecated("will be removed")
 fun <E> BroadcastChannel<E>.offerChecking(e: E) =
     check(offer(e)) { "Couldn't offer next element - $e" }
 
+@Deprecated("will be removed")
 fun <E> Iterator<E>.nextOrNull() = if (hasNext()) next() else null
 
+@Deprecated("will be removed")
 suspend fun <E> ChannelIterator<E>.nextOrNull() = if (hasNext()) next() else null
 
+@Deprecated("will be removed")
 suspend fun <E> SendChannel<E>.sendChecking(e: E) {
     check(!isClosedForSend) { "Component was already disposed" }
     send(e)
@@ -190,5 +203,3 @@ suspend fun <E> SendChannel<E>.sendChecking(e: E) {
 suspend operator fun <C, M> Resolver<C, M>.invoke(commands: Collection<C>): Set<M> {
     return commands.fold(HashSet(commands.size)) { acc, cmd -> acc.addAll(this(cmd)); acc }
 }
-
-val Unit?.safe get() = this

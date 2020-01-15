@@ -1,4 +1,4 @@
-package com.oliynick.max.elm.time.travel
+package com.oliynick.max.elm.time.travel.converter
 
 import protocol.JsonTree
 

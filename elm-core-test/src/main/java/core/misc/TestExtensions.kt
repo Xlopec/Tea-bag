@@ -16,11 +16,11 @@
 
 package core.misc
 
-import com.oliynick.max.elm.core.component.Component
+import com.oliynick.max.elm.core.component.ComponentLegacy
 import com.oliynick.max.elm.core.component.invoke
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toCollection
 
-suspend fun <I : Any, O : Any> Component<I, O>.invokeCollecting(vararg input: I, elems: Int = input.size): ArrayList<O> {
+suspend fun <I : Any, O : Any> ComponentLegacy<I, O>.invokeCollecting(vararg input: I, elems: Int = input.size): ArrayList<O> {
     return this(*input).take(elems).toCollection(ArrayList())
 }

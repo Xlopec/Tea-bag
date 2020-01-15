@@ -13,23 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.oliynick.max.elm.time.travel
 
 import com.oliynick.max.elm.core.component.Env
 import com.oliynick.max.elm.core.component.invoke
 import com.oliynick.max.elm.core.component.noCommand
+import com.oliynick.max.elm.time.travel.component.*
+import com.oliynick.max.elm.time.travel.converter.GsonSerializer
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import protocol.ComponentId
 import kotlin.random.Random
 
-data class SomeTestString(val value: String)
+// fixme remove and replace with automated tests
 
-data class SomeTestCommand(val str: SomeTestString/*, val collection : Collection<Any>*/)
+private data class SomeTestString(val value: String)
 
-data class SomeTestState(val string: SomeTestString/*, val uri: Uri*/)
+private data class SomeTestCommand(val str: SomeTestString/*, val collection : Collection<Any>*/)
+
+private data class SomeTestState(val string: SomeTestString/*, val uri: Uri*/)
 
 fun main() {
 
@@ -46,13 +49,13 @@ fun main() {
             ),
             ServerSettings(
                 ComponentId("webSocketComponent"),
-                gsonSerializer(),
+                GsonSerializer(),
                 URL()
             ),
             ::WebSocketSession
         )
 
-        Component(dependencies)
+        ComponentLegacy(dependencies)
             .also {
                 launch {
                     it.invoke(
