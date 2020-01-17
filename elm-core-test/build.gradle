@@ -39,6 +39,7 @@ dependencies {
     implementation project(configuration: 'default', path: ':elm-core-component')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    api 'org.jetbrains.kotlinx:atomicfu:0.14.1'
 
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     api 'junit:junit:4.12'

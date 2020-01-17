@@ -87,12 +87,12 @@ sealed class Snapshot<out M, out S, out C> {
     abstract val commands: Set<C>
 }
 
-data class Initial<S, C>(
+data class Initial<out S, out C>(
     override val state: S,
     override val commands: Set<C>
 ) : Snapshot<Nothing, S, C>()
 
-data class Regular<M, S, C>(
+data class Regular<out M, out S, out C>(
     val message: M,
     override val state: S,
     override val commands: Set<C>

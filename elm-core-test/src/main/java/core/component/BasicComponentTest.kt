@@ -1,8 +1,8 @@
-package com.oliynick.max.elm.core.component
+package core.component
 
-import com.oliynick.max.elm.core.loop.zalop.Component
+import com.oliynick.max.elm.core.component.*
 import core.misc.throwingResolver
-import core.scope.runBlockingInNewScope
+import core.scope.runBlockingInTestScope
 import io.kotlintest.matchers.asClue
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.boolean.shouldBeTrue
@@ -12,65 +12,64 @@ import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.test.setMain
-import org.junit.AfterClass
-import org.junit.BeforeClass
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
-import java.util.concurrent.Executors
 
-@RunWith(JUnit4::class)
-class LooperTest {
+abstract class BasicComponentTest(
+    private val factory: CoroutineScope.(Env<Char, Char, String>) -> Component<Char, String, Char>
+) {
 
     @Test
-    fun `test component emits a correct sequence of snapshots`() = runBlockingInNewScope {
+    fun `test component emits a correct sequence of snapshots`() = runBlocking {
 
-        val env = Env<String, String, String>(
+        val env = Env<Char, Char, String>(
             "",
             { c -> setOf(c) },
-            { m, _ -> m.noCommand() }
+            { m, _ -> m.toString().noCommand() }
         )
 
-        val component = Component(env)
-        val messages = arrayOf("a", "b", "c")
+        val component = factory(env)
+        val messages = arrayOf('a', 'b', 'c')
         val snapshots =
             component(*messages).take(messages.size + 1).toList(ArrayList(messages.size + 1))
 
-        snapshots shouldBe listOf(
+        snapshots shouldContainExactly listOf(
             Initial("", emptySet()),
-            Regular("a", "a", emptySet()),
-            Regular("b", "b", emptySet()),
-            Regular("c", "c", emptySet())
+            Regular('a', "a", emptySet()),
+            Regular('b', "b", emptySet()),
+            Regular('c', "c", emptySet())
         )
     }
 
     @Test
     fun `test component emits a correct sequence of snapshots if initial commands were present`() =
-        runBlockingInNewScope {
+        runBlocking {
 
-            val env = Env<String, String, String>(
-                InitializerLegacy("", "a", "b", "c"),
+            val env = Env<Char, Char, String>(
+                InitializerLegacy("", 'a', 'b', 'c'),
                 { c -> setOf(c) },
-                { m, _ -> m.noCommand() }
+                { m, _ -> m.toString().noCommand() }
             )
 
-            val component = Component(env)
-            val messages = arrayOf("d", "f", "g")
+            val component = factory(env)
+            val messages = arrayOf('d', 'e', 'f')
             val snapshots =
-                component(*messages).take(messages.size + 1).toList(ArrayList(messages.size + 1))
+                component(*messages).take(3 + messages.size + 1)
+                    .toList(ArrayList(3 + messages.size + 1))
 
-            snapshots shouldBe listOf(
-                Initial("", setOf("a", "b", "c")),
-                Regular("a", "a", emptySet()),
-                Regular("b", "b", emptySet()),
-                Regular("c", "c", emptySet())
+            snapshots shouldContainExactly listOf(
+                Initial("", setOf('a', 'b', 'c')),
+                Regular('a', "a", emptySet()),
+                Regular('b', "b", emptySet()),
+                Regular('c', "c", emptySet()),
+                Regular('d', "d", emptySet()),
+                Regular('e', "e", emptySet()),
+                Regular('f', "f", emptySet())
             )
         }
 
     @Test
     fun `test component emits a correct sequence of snapshots if we have recursive calculations`() =
-        runBlockingInNewScope {
+        runBlocking {
 
             val env = Env<Char, Char, String>(
                 "",
@@ -84,7 +83,7 @@ class LooperTest {
                 { m, str -> (str + m).command(m) }
             )
 
-            val component = Component(env)
+            val component = factory(env)
             val snapshots = component('a').take(3).toCollection(ArrayList())
 
             @Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
@@ -97,14 +96,14 @@ class LooperTest {
 
     @Test
     fun `test component emits a correct sequence of snapshots if update returns set of messages`() =
-        runBlockingInNewScope {
+        runBlocking {
 
-            val env = Env<Char, Char, Pair<String, Boolean>>(
-                "" to true,
+            val env = Env<Char, Char, String>(
+                "",
                 { ch -> setOf(ch) },
-                { m, (str, flag) ->
-                    (str + m to false).command(
-                        if (flag) setOf(
+                { m, str ->
+                    (str + m).command(
+                        if (str.isEmpty()) setOf(
                             'b',
                             'c'
                         ) else emptySet()
@@ -112,37 +111,36 @@ class LooperTest {
                 }
             )
 
-            val component = Component(env)
+            val component = factory(env)
             val snapshots = component('a').take(3).toCollection(ArrayList())
 
-            @Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
-            snapshots shouldBe listOf<Snapshot<Char, Pair<String, Boolean>, Char>>(
-                Initial("" to true, emptySet()),
-                Regular('a', "a" to false, setOf('b', 'c')),
-                Regular('b', "ab" to false, emptySet())
+            snapshots shouldContainExactly listOf(
+                Initial("", emptySet()),
+                Regular('a', "a", setOf('b', 'c')),
+                Regular('b', "ab", emptySet())
             )
         }
 
     @Test
-    fun `test interceptor sees an original sequence of snapshots`() = runBlockingInNewScope {
+    fun `test interceptor sees an original sequence of snapshots`() = runBlocking {
 
-        val env = Env<String, String, String>(
+        val env = Env<Char, Char, String>(
             "",
             { c -> setOf(c) },
-            { m, _ -> m.noCommand() }
+            { m, _ -> m.toString().noCommand() }
         )
 
-        val sink = mutableListOf<Snapshot<String, String, String>>()
-        val component = Component(env) with { sink.add(it) }
-        val messages = arrayOf("a", "b", "c")
+        val sink = mutableListOf<Snapshot<Char, String, Char>>()
+        val component = factory(env) with { sink.add(it) }
+        val messages = arrayOf('a', 'b', 'c')
         val snapshots =
             component(*messages).take(messages.size + 1).toList(ArrayList(messages.size + 1))
 
-        sink shouldBe snapshots
+        sink shouldContainExactly snapshots
     }
 
     @Test
-    fun `test component's snapshots shared among consumers`() = runBlockingInNewScope {
+    fun `test component's snapshots shared among consumers`() = runBlocking {
 
         val env = Env<Char, Char, String>(
             "",
@@ -157,14 +155,14 @@ class LooperTest {
         )
 
         val take = 3
-        val component = Component(env)
+        val component = factory(env)
         val snapshots2Deferred =
             async {
-                component(emptyFlow()).onEach { println("2 $it") }.take(take)
+                component(emptyFlow()).take(take)
                     .toCollection(ArrayList())
             }
         val snapshots1Deferred = async {
-            component('a').onEach { println("1 $it") }.take(take).toCollection(ArrayList())
+            component('a').take(take).toCollection(ArrayList())
         }
 
         @Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
@@ -174,13 +172,13 @@ class LooperTest {
             Regular('b', "ab", setOf('b'))
         )
 
-        snapshots1Deferred.await().asClue { it shouldBe expected }
-        snapshots2Deferred.await().asClue { it shouldBe expected }
+        snapshots1Deferred.await().asClue { it shouldContainExactly expected }
+        snapshots2Deferred.await().asClue { it shouldContainExactly expected }
     }
 
     @Test
     fun `test component gets initialized only once if we have multiple consumers`() =
-        runBlockingInNewScope {
+        runBlocking {
 
             val countingInitializer = object {
 
@@ -199,7 +197,7 @@ class LooperTest {
                 { _, s -> s.noCommand() }
             )
 
-            val component = Component(env)
+            val component = factory(env)
 
             countingInitializer.invocations.value shouldBe 0
 
@@ -213,16 +211,16 @@ class LooperTest {
         }
 
     @Test
-    fun `test component's job gets canceled properly`() = runBlockingInNewScope {
+    fun `test component's job gets canceled properly`() = runBlocking {
 
-        val env = Env(
+        val env = Env<Char, Char, String>(
             "",
             ::foreverWaitingResolver,
-            { m, _ -> m.command(m) }
+            { m, _ -> m.toString().command(m) }
         )
 
-        val component = Component(env)
-        val job = launch { component("a", "b", "c").toList(ArrayList()) }
+        val component = factory(env)
+        val job = launch { component('a', 'b', 'c').toList(ArrayList()) }
 
         yield()
         job.cancel()
@@ -231,36 +229,9 @@ class LooperTest {
         isActive.shouldBeTrue()
     }
 
-    companion object {
-
-        val mainThreadSurrogate = Executors.newSingleThreadExecutor().asCoroutineDispatcher().also {
-            Dispatchers.setMain(it)
-        }
-
-        @BeforeClass
-        @JvmStatic
-        fun setup() {
-
-            // things to execute once and keep around for the class
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun teardown() {
-            // Dispatchers.resetMain() // reset main dispatcher to the original Main dispatcher
-            //mainThreadSurrogate.close()
-        }
-    }
-
-    /*@After
-    fun tearDown() {
-        Dispatchers.resetMain() // reset main dispatcher to the original Main dispatcher
-        mainThreadSurrogate.close()
-    }*/
-
     @Test
     fun `test component doesn't block if serves multiple message sources`() =
-        runBlockingInNewScope(Dispatchers.Main + Job()) {
+        runBlockingInTestScope {
 
             val env = Env<Char, Char, String>(
                 "",
@@ -269,19 +240,19 @@ class LooperTest {
             )
 
             val range = 'a'..'h'
-            val component = Component(env)
+            val component = factory(env)
 
             val chan1 = Channel<Char>()
             val chan2 = Channel<Char>()
 
             val snapshots2Deferred = async {
-                component(chan2.consumeAsFlow().delayEach(50)).onEach { println("1 $it") }
+                component(chan2.consumeAsFlow())
                     .take(1 + range.count())
                     .toCollection(ArrayList())
             }
 
             val snapshots1Deferred = async {
-                component(chan1.consumeAsFlow().delayEach(50)).onEach { println("2 $it") }
+                component(chan1.consumeAsFlow())
                     .take(1 + range.count())
                     .toCollection(ArrayList())
             }
@@ -289,18 +260,14 @@ class LooperTest {
             range.forEachIndexed { index, ch ->
                 if (index % 2 == 0) {
                     chan1.send(ch)
-                    println("offer1 $ch")
                 } else {
                     chan2.send(ch)
-                    println("offer2 $ch")
                 }
 
             }
 
-            val head = listOf(Initial("", emptySet<Char>()))
-
-            val expected1: List<Snapshot<Char, String, Char>> =
-                head + range/*.filterIndexed { index, _ -> index % 2 == 0 }*/.map { ch ->
+            val expected: List<Snapshot<Char, String, Char>> =
+                listOf(Initial("", emptySet<Char>())) + range.map { ch ->
                     Regular(
                         ch,
                         ch.toString(),
@@ -308,17 +275,18 @@ class LooperTest {
                     )
                 }
 
-            snapshots1Deferred.await().asClue { it shouldContainExactly expected1 }
-            snapshots2Deferred.await().asClue { it shouldContainExactly expected1 }
+            snapshots1Deferred.await().asClue { it shouldContainExactly expected }
+            snapshots2Deferred.await().asClue { it shouldContainExactly expected }
         }
 
 }
 
-private suspend fun foreverWaitingResolver(
-    m: String
-): Set<String> {
+private suspend fun <T> foreverWaitingResolver(
+    m: T
+): Nothing {
 
     delay(Long.MAX_VALUE)
 
     error("Improper cancellation, message=$m")
 }
+

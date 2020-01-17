@@ -8,11 +8,11 @@ import com.max.weatherviewer.screens.feed.FeedLoading
 import com.max.weatherviewer.screens.feed.LoadCriteria
 import com.oliynick.max.elm.core.component.Initializer
 import com.oliynick.max.elm.core.component.states
-import com.oliynick.max.elm.core.loop.Component
+import com.oliynick.max.elm.core.component.with
+import com.oliynick.max.elm.core.loop.ComponentFock
 import com.oliynick.max.elm.time.travel.component.Component
 import com.oliynick.max.elm.time.travel.component.URL
 import com.oliynick.max.elm.time.travel.converter.GsonSerializer
-import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.flow.Flow
 import protocol.ComponentId
@@ -44,23 +44,26 @@ fun Environment.appComponent(): (Flow<Message>) -> Flow<State> {
         }.states()
     }
 
-    return Component(AppInitializer(), ::resolve, ::update).states()
+    return ComponentFock(AppInitializer(), ::resolve, ::update).with { println(it) }.states()
 
 }
 
-private fun AppInitializer(): Initializer<State, Command> =
-    Initializer(
-        State(
-            FeedLoading(
-                UUID.randomUUID(),
-                LoadCriteria.Query("android")
-            )
-        )
+private fun AppInitializer(): Initializer<State, Command> {
+
+    val initScreen = FeedLoading(
+        UUID.randomUUID(),
+        LoadCriteria.Query("android")
     )
 
+    return Initializer(
+        State(initScreen),
+        LoadByCriteria(
+            initScreen.id,
+            initScreen.criteria
+        )
+    )
+}
+
 private fun AppGsonSerializer() = GsonSerializer {
-
     registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
-    registerTypeAdapterFactory(TypeAppenderAdapterFactory)
-
 }

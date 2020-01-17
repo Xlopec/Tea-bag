@@ -16,8 +16,7 @@
 
 package core.scope
 
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlin.coroutines.CoroutineContext
 
@@ -26,6 +25,20 @@ fun runBlockingInTestScope(
     block: suspend TestCoroutineScope.() -> Unit
 ) {
     runBlocking { with(TestCoroutineScope(context)) { block() } }
+}
+
+fun runBlockingInNewScope(
+    context: CoroutineContext = Dispatchers.Main + Job(),
+    block: suspend CoroutineScope.() -> Unit
+) {
+    runBlocking {
+
+        val testScope = CoroutineScope(context)
+
+        with(testScope) { block() }
+
+        testScope.cancel()
+    }
 }
 
 
