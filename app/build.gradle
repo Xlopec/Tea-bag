@@ -89,6 +89,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(':elm-core-actor')
+    implementation project(':elm-core-looper')
     implementation project(':elm-time-travel')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

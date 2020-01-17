@@ -15,7 +15,7 @@
  */
 
 include ':app',
-        ':elm-core-api',
+    ':elm-core-component',
         ':elm-core-looper',
         ':elm-core-actor',
         ':elm-time-travel',

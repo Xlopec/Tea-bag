@@ -108,7 +108,7 @@ junitJacoco {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    api project(path: ':elm-core-api', configuration: 'default')
+    api project(configuration: 'default', path: ':elm-core-component')
     implementation project(path: ':elm-core-looper', configuration: 'default')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"

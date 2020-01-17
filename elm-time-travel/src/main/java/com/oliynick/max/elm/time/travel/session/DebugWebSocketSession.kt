@@ -28,7 +28,7 @@ private data class Right<R>(
 internal class DebugWebSocketSession<M, S>(
     private val mClass: Class<M>,
     private val sClass: Class<S>,
-    private val settings: ServerSettings,
+    private val settings: ServerSettings<M, S>,
     private val socketSession: DefaultClientWebSocketSession
 ) : DebugSession<M, S> {
 
@@ -40,7 +40,7 @@ internal class DebugWebSocketSession<M, S>(
     override suspend fun send(packet: NotifyServer) =
         socketSession.send(settings.serializer.toJson(packet))
 
-    private fun ServerSettings.incomingCommands(
+    private fun ServerSettings<M, S>.incomingCommands(
         session: ClientWebSocketSession
     ) = incomingPackets(session)
         .map { packet -> serializer.toCommand(packet) }

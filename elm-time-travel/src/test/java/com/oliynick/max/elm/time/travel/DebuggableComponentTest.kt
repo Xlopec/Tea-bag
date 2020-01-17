@@ -2,11 +2,10 @@ package com.oliynick.max.elm.time.travel
 
 import com.oliynick.max.elm.core.component.*
 import com.oliynick.max.elm.time.travel.component.Component
-import com.oliynick.max.elm.time.travel.component.WebSocketSession
 import com.oliynick.max.elm.time.travel.component.connectionFailureMessage
 import com.oliynick.max.elm.time.travel.exception.ConnectException
+import com.oliynick.max.elm.time.travel.session.WebSocketSession
 import core.misc.throwingResolver
-import core.scope.runBlockingInTestScope
 import io.kotlintest.fail
 import io.kotlintest.matchers.numerics.shouldBeExactly
 import io.kotlintest.matchers.numerics.shouldNotBeExactly
@@ -26,7 +25,6 @@ import protocol.JsonTree
 import protocol.NotifyComponentAttached
 import protocol.NotifyComponentSnapshot
 
-
 @RunWith(JUnit4::class)
 class DebuggableComponentTest {
 
@@ -37,12 +35,12 @@ class DebuggableComponentTest {
     )
 
     @Test
-    fun `test debuggable component throws expected exception when it can't connect to a server`() = runBlockingInTestScope {
+    fun `test debuggable component throws expected exception when it can't connect to a server`() = runBlocking {
 
         val component = Component(
             TestEnv(
                 env = testEnv,
-                sessionBuilder = ::WebSocketSession
+                serverSettings = TestServerSettings(sessionBuilder = ::WebSocketSession)
             )
         )
 
@@ -50,7 +48,7 @@ class DebuggableComponentTest {
             component("a").collect()
         }
 
-        th shouldHaveMessage connectionFailureMessage(testServerSettings)
+        th shouldHaveMessage connectionFailureMessage(TestServerSettings<String, String>())
         th.shouldHaveCauseOfType<java.net.ConnectException>()
     }
 
@@ -58,8 +56,14 @@ class DebuggableComponentTest {
     fun `test debuggable component sends the same sequence of events as the original component`() = runBlocking {
 
         val testSession = TestDebugSession<String, String>()
-        val component =
-            Component(TestEnv(env = testEnv, testDebugSession = testSession))
+        val component = Component(
+            TestEnv(
+                env = testEnv,
+                serverSettings = TestServerSettings(
+                    sessionBuilder = { _, block -> testSession.apply { block() } }
+                )
+            )
+        )
         val messages = arrayOf("a", "b", "c")
         val snapshots = component(*messages).take(messages.size + 1).toCollection(ArrayList(messages.size + 1))
 

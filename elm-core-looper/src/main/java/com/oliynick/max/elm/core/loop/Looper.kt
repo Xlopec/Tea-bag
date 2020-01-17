@@ -117,6 +117,22 @@ suspend fun <M, C, S> Env<M, C, S>.loop(
     return loop(nonTransient, messages.iterator(), states)
 }
 
+inline fun <reified M, reified C, reified S> Component(
+    noinline initializer: Initializer<S, C>,
+    noinline resolver: Resolver<C, M>,
+    noinline update: Update<M, S, C>
+): Component<M, S, C> = Component(
+    Env(
+        initializer = toLegacy(initializer),
+        resolver = resolver,
+        update = update
+    )
+)
+
+fun <S, C> toLegacy(
+    initializer: Initializer<S, C>
+): InitializerLegacy<S, C> = { initializer().let { (s, c) -> s to c } }
+
 fun <M, C, S> Component(
     env: Env<M, C, S>
 ): Component<M, S, C> {
@@ -155,7 +171,9 @@ private fun <M, S, C> Env<M, C, S>.computeSnapshots(
     messages: Flow<M>,
     acc: Snapshot<M, S, C>
 ) = messages.scan(acc) { snapshot, message ->
-
+    // todo: we need to add possibility to return own versions
+    //  of snapshots, e.g. user might be interested only in current
+    //  version of state
     val (nextState, commands) = update(message, snapshot.state)
 
     Regular(message, nextState, commands)

@@ -18,8 +18,12 @@ package com.oliynick.max.elm.time.travel
 import com.oliynick.max.elm.core.component.Env
 import com.oliynick.max.elm.core.component.invoke
 import com.oliynick.max.elm.core.component.noCommand
-import com.oliynick.max.elm.time.travel.component.*
+import com.oliynick.max.elm.time.travel.component.ComponentLegacy
+import com.oliynick.max.elm.time.travel.component.DebugEnv
+import com.oliynick.max.elm.time.travel.component.ServerSettings
+import com.oliynick.max.elm.time.travel.component.URL
 import com.oliynick.max.elm.time.travel.converter.GsonSerializer
+import com.oliynick.max.elm.time.travel.session.WebSocketSession
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -50,9 +54,9 @@ fun main() {
             ServerSettings(
                 ComponentId("webSocketComponent"),
                 GsonSerializer(),
-                URL()
-            ),
-            ::WebSocketSession
+                URL(),
+                ::WebSocketSession
+            )
         )
 
         ComponentLegacy(dependencies)

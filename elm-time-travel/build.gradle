@@ -42,7 +42,7 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    api project(path: ':elm-core-api', configuration: 'default')
+    api project(configuration: 'default', path: ':elm-core-component')
     api project(path: ':elm-time-travel-protocol', configuration: 'default')
 
     implementation project(path: ':elm-core-looper', configuration: 'default')

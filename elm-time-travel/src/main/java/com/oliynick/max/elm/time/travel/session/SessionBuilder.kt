@@ -1,16 +1,16 @@
-package com.oliynick.max.elm.time.travel.component
+package com.oliynick.max.elm.time.travel.session
 
-import com.oliynick.max.elm.time.travel.session.DebugSession
-import com.oliynick.max.elm.time.travel.session.DebugWebSocketSession
+import com.oliynick.max.elm.time.travel.component.ServerSettings
+import com.oliynick.max.elm.time.travel.component.URL
 import io.ktor.client.HttpClient
 import io.ktor.client.features.websocket.WebSockets
 import io.ktor.client.features.websocket.ws
 import io.ktor.http.HttpMethod
 
-typealias SessionBuilder<M, S> = suspend (ServerSettings, suspend DebugSession<M, S>.() -> Unit) -> Unit
+typealias SessionBuilder<M, S> = suspend (ServerSettings<M, S>, suspend DebugSession<M, S>.() -> Unit) -> Unit
 
 suspend inline fun <reified M, reified S> WebSocketSession(
-    settings: ServerSettings,
+    settings: ServerSettings<M, S>,
     crossinline block: suspend DebugSession<M, S>.() -> Unit
 ) = httpClient.ws(
     method = HttpMethod.Get,

@@ -24,7 +24,7 @@ data class Env<M, C, S>(
                 interceptor: LegacyInterceptor<M, S, C> = { _, _, _, _ -> },
                 vararg initialCommands: C)
         : this(
-        initializer(
+        initializerLegacy(
             initialState,
             setOf(*initialCommands)
         ),
@@ -40,7 +40,7 @@ data class Env<M, C, S>(
                 initialCommands: Set<C> = emptySet())
 
             : this(
-        initializer(
+        initializerLegacy(
             initialState,
             initialCommands
         ),
@@ -82,7 +82,7 @@ fun <M, C, S> Env(
     update: Update<M, S, C>,
     vararg initialCommands: C,
     config: EnvBuilder<M, C, S>.() -> Unit = {}
-) = Env(initializer(initialState, setOf(*initialCommands)), resolver, update, config)
+) = Env(initializerLegacy(initialState, setOf(*initialCommands)), resolver, update, config)
 
 fun <M, C, S> Env(
     initialState: S,
@@ -90,12 +90,18 @@ fun <M, C, S> Env(
     update: Update<M, S, C>,
     initialCommands: Set<C>,
     config: EnvBuilder<M, C, S>.() -> Unit = {}
-) = Env(initializer(initialState, initialCommands), resolver, update, config)
+) = Env(initializerLegacy(initialState, initialCommands), resolver, update, config)
 
-fun <S, C> initializer(s: S, commands: Set<C>): InitializerLegacy<S, C> = { s to commands }
+fun <S, C> Initializer(s: S, commands: Set<C>): Initializer<S, C> = { Initial(s, commands) }
 
-fun <S, C> initializer(s: S, vararg commands: C): InitializerLegacy<S, C> =
-    initializer(s, setOf(*commands))
+fun <S, C> Initializer(s: S, vararg commands: C): Initializer<S, C> = Initializer(s, setOf(*commands))
+
+fun <S, C> Initializer(s: S): Initializer<S, C> = Initializer(s, emptySet())
+
+fun <S, C> initializerLegacy(s: S, commands: Set<C>): InitializerLegacy<S, C> = { s to commands }
+
+fun <S, C> initializerLegacy(s: S, vararg commands: C): InitializerLegacy<S, C> =
+    initializerLegacy(s, setOf(*commands))
 
 fun <M, C, S> EnvBuilder<M, C, S>.toEnv() =
         Env(initializer, resolver, update, interceptor)

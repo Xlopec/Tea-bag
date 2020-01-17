@@ -89,7 +89,7 @@ fun <M, C, S> CoroutineScope.ComponentLegacy(
     vararg initialCommands: C,
     config: EnvBuilder<M, C, S>.() -> Unit = {}
 ) = ComponentLegacy(
-    Env(initializer(initialState, setOf(*initialCommands)), resolver, update, config)
+    Env(initializerLegacy(initialState, setOf(*initialCommands)), resolver, update, config)
 )
 
 @Deprecated("will be removed")
@@ -100,7 +100,7 @@ fun <M, C, S> CoroutineScope.ComponentLegacy(
     initialCommands: Set<C>,
     config: EnvBuilder<M, C, S>.() -> Unit = {}
 ) = ComponentLegacy(
-    Env(initializer(initialState, initialCommands), resolver, update, config)
+    Env(initializerLegacy(initialState, initialCommands), resolver, update, config)
 )
 
 /**

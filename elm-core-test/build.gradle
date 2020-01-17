@@ -36,7 +36,7 @@ test {
 dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(path: ':elm-core-api', configuration: 'default')
+    implementation project(configuration: 'default', path: ':elm-core-component')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
