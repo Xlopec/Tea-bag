@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toCollection
 import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -42,6 +43,7 @@ class DebuggableComponentTest : BasicComponentTest({ env ->
     )
 
     @Test
+    @Ignore
     fun `test debuggable component throws expected exception when it can't connect to a server`() = runBlocking {
 
         val component = Component(

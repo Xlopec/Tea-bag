@@ -27,8 +27,6 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
 /**
  * Internal alias of a component
@@ -148,7 +146,7 @@ fun <M, C, S> ComponentFock(
 
     val upstream =
         with(env) {
-            beginNew().flatMapConcat { initial -> doCompute(initial) }.shareConflated()
+            begin().flatMapConcat { initial -> doCompute(initial) }.shareConflated()
         }
 
     return { messages ->
@@ -187,30 +185,8 @@ fun <M, C, S> Env<M, C, S>.messages(
 ) = flow { emitAll(resolver(commands).asFlow()) }
     .onCompletion { th -> if (th != null) throw th else emitAll(input) }
 
-fun <M, C, S> Env<M, C, S>.beginNew(): Flow<Initial<S, C>> =
+fun <M, C, S> Env<M, C, S>.begin(): Flow<Initial<S, C>> =
     flow { emit(newInitializer()) }
-
-fun <M, C, S> Env<M, C, S>.begin(
-    channel: BroadcastChannel<Snapshot<M, S, C>>,
-    mutex: Mutex
-): Flow<Snapshot<M, S, C>> =
-    flow { emit(load(channel, mutex)) }
-
-private suspend fun <M, C, S> Env<M, C, S>.load(
-    channel: BroadcastChannel<Snapshot<M, S, C>>,
-    mutex: Mutex
-) = mutex.withLock {
-    var latest = channel.latest()
-
-    if (latest == null) {
-        latest = newInitializer()
-        channel.send(latest)
-    }
-
-    latest
-}
-
-fun <E> BroadcastChannel<E>.latest() = openSubscription().poll()
 
 fun <M, C, S> Env<M, C, S>.compute(
     messages: Flow<M>,
@@ -246,54 +222,8 @@ suspend fun <M, C, S> Env<M, C, S>.computeNextSnapshot(
         .startFrom(Regular(message, nextState, commands))
 }
 
-@ObsoleteComponentApi
-fun <M, C, S> Env<M, C, S>.compute(
-    messages: Flow<M>,
-    startFrom: Snapshot<M, S, C>,
-    sink: (Snapshot<M, S, C>) -> Unit
-): Flow<Snapshot<M, S, C>> {
-
-    suspend fun computeNextSnapshotsRecursively(
-        state: S,
-        messages: Iterator<M>
-    ): Flow<Regular<M, S, C>> {
-
-        val message = messages.nextOrNull() ?: return emptyFlow()
-
-        val (nextState, commands) = update(message, state)
-
-        return computeNextSnapshotsRecursively(nextState, resolver(commands).iterator())
-            .startFrom(Regular(message, nextState, commands))
-    }
-
-    suspend fun computeNextSnapshot(
-        snapshot: Snapshot<M, S, C>,
-        message: M
-    ): Flow<Regular<M, S, C>> {
-        // todo: we need to add possibility to return own versions
-        //  of snapshots, e.g. user might be interested only in current
-        //  version of state
-        val (nextState, commands) = update(message, snapshot.state)
-
-        return computeNextSnapshotsRecursively(nextState, resolver(commands).iterator())
-            .startFrom(Regular(message, nextState, commands))
-    }
-
-    return messages
-        .onStart { emitAll(resolver(startFrom.initialCommands()).asFlow()) }
-        .foldFlatten(startFrom, ::computeNextSnapshot)
-        .onEach { snapshot -> sink(snapshot) }
-}
-
 fun <M, S, C> Env<M, C, S>.init(): Flow<Initial<S, C>> =
     flow { emit(newInitializer()) }
-
-private fun <C> Snapshot<*, *, C>.initialCommands(): Set<C> {
-    /*contract {
-        returns()
-    }*/
-    return if (this is Initial) commands else emptySet()
-}
 
 private inline fun <T, R> Flow<T>.foldFlatten(
     acc: R,
@@ -354,20 +284,3 @@ suspend operator fun <C, M> Resolver<C, M>.invoke(commands: Collection<C>): Set<
     return commands.fold(LinkedHashSet(commands.size)) { acc, cmd -> acc.addAll(this(cmd)); acc }
 }
 
-fun <T> Flow<T>.mergeWith(
-    another: Flow<T>
-): Flow<T> = channelFlow {
-    coroutineScope {
-        launch {
-            another.collect {
-                send(it)
-            }
-        }
-
-        launch {
-            collect {
-                send(it)
-            }
-        }
-    }
-}

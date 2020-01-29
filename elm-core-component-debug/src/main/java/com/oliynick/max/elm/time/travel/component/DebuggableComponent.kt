@@ -59,57 +59,61 @@ inline fun <reified M, reified C, reified S> Component(
 ): Component<M, S, C> =
     Component(Dependencies(id, Env(toLegacy(initializer), resolver, update), config))
 
-fun <M, S, C> Env<M, C, S>.doCompute(
+private fun <M, S, C> Env<M, C, S>.doCompute(
     startFrom: Snapshot<M, S, C>,
     messages: Flow<M>
 ): Flow<Snapshot<M, S, C>> =
     compute(messages(startFrom.commands(), messages), startFrom)
         .startFrom(startFrom)
 
+@PublishedApi
+internal fun <M, S, C> Env<M, C, S>.upstream(
+    messages: Flow<M>,
+    snapshots: Flow<Snapshot<M, S, C>>
+) = begin().mergeWith(snapshots)
+    .flatMapConcat { startFrom ->
+        doCompute(
+            startFrom,
+            messages
+        )
+    }
+
+@PublishedApi
+internal fun <M, C, S> DebugEnv<M, C, S>.debugSession(
+    input: Flow<M>
+) = channelFlow {
+
+    sessionBuilder(serverSettings) {
+        @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
+        componentEnv.upstream(input.mergeWith(messages), states.asSnapshots())
+            .onEach { snapshot -> notifyServer(this@sessionBuilder, snapshot) }
+            .collectTo(channel)
+    }
+}.catch { th -> notifyConnectException(serverSettings, th) }
+    .shareConflated()
+
 inline fun <reified M, reified C, reified S> Component(
     env: DebugEnv<M, C, S>
 ): Component<M, S, C> {
 
     val input = Channel<M>(Channel.RENDEZVOUS)
-    val snapshots = Channel<Snapshot<M, S, C>>(Channel.RENDEZVOUS)
-
-    val upstream =
-        with(env.componentEnv) {
-            beginNew().mergeWith(snapshots.consumeAsFlow())
-                .flatMapConcat { startFrom -> doCompute(startFrom, input.consumeAsFlow()) }
-                .shareConflated()
-        }
+    val debugSession = env.debugSession(input.consumeAsFlow())
 
     return { messages ->
-        with(env) {
 
-            channelFlow {
+        channelFlow {
+            // todo create `collect` extension for producer scope
+            val messageJob = launch(start = CoroutineStart.LAZY) {
+                messages.collectTo(input)
+            }
 
-                sessionBuilder(serverSettings) {
-
-                    // fixme refactor
-
-                    val j1 = launch(start = CoroutineStart.LAZY) {
-                        states.asSnapshots().collectTo(snapshots)
-                    }
-                    val j2 = launch(start = CoroutineStart.LAZY) {
-                        this@sessionBuilder.messages.collectTo(input)
-                    }
-                    val j3 = launch(start = CoroutineStart.LAZY) { messages.collectTo(input) }
-
-                    launch {
-                        upstream
-                            .onStart { j1.start(); j2.start(); j3.start() }
-                            .onEach { snapshot -> notifyServer(this@sessionBuilder, snapshot) }
-                            .collect { s -> send(s) }
-                    }
-                }
-            }.catch { th -> notifyConnectException(serverSettings, th) }
+            @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
+            debugSession.onStart { messageJob.start() }.collectTo(channel)
         }
     }
 }
 
-fun <C> Snapshot<*, *, C>.commands() = if (this is Initial) commands else emptySet()
+private fun <C> Snapshot<*, *, C>.commands() = if (this is Initial) commands else emptySet()
 
 @PublishedApi
 internal inline val <M, S> DebugEnv<M, *, S>.sessionBuilder: SessionBuilder<M, S>
@@ -127,7 +131,7 @@ internal fun <S> Flow<S>.asSnapshots(): Flow<Initial<S, Nothing>> =
     map { s -> Initial(s, emptySet()) }
 
 @PublishedApi
-internal suspend inline fun <reified M, reified C, reified S> DebugEnv<M, C, S>.notifyServer(
+internal suspend fun <M, C, S> DebugEnv<M, C, S>.notifyServer(
     session: DebugSession<M, S>,
     snapshot: Snapshot<M, S, C>
 ) = with(serverSettings.serializer) {
