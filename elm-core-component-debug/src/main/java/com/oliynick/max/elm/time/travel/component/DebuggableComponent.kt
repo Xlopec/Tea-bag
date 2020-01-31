@@ -31,12 +31,15 @@ import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.WebSocketSession
 import io.ktor.http.cio.websocket.readText
 import io.ktor.http.cio.websocket.send
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.broadcast
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import protocol.*
 import java.net.URL
 import java.util.*
@@ -103,12 +106,8 @@ inline fun <reified M, reified C, reified S> Component(
 
         channelFlow {
             // todo create `collect` extension for producer scope
-            val messageJob = launch(start = CoroutineStart.LAZY) {
-                messages.collectTo(input)
-            }
-
             @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
-            debugSession.onStart { messageJob.start() }.collectTo(channel)
+            debugSession.onStart { launch { messages.collectTo(input) } }.collectTo(channel)
         }
     }
 }

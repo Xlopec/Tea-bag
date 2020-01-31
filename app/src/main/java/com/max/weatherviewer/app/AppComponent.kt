@@ -29,7 +29,7 @@ fun Environment.appComponent(): (Flow<Message>) -> Flow<State> {
 
     // todo state persistence
 
-    if (false && isDebug) {
+    if (isDebug) {
 
         return Component(
             ComponentId("News Reader App"),
@@ -41,7 +41,7 @@ fun Environment.appComponent(): (Flow<Message>) -> Flow<State> {
                 url(URL(host = "10.0.2.2"))
                 installSerializer(AppGsonSerializer())
             }
-        }.states()
+        }.with { println(it) }.states()
     }
 
     return ComponentFock(AppInitializer(), ::resolve, ::update).with { println(it) }.states()

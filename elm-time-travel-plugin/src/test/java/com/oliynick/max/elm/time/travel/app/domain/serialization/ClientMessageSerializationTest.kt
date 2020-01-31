@@ -2,6 +2,7 @@ package com.oliynick.max.elm.time.travel.app.domain.serialization
 
 import com.google.gson.JsonElement
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
+import com.oliynick.max.elm.time.travel.app.transport.serialization.toJsonElement
 import com.oliynick.max.elm.time.travel.app.transport.serialization.toValue
 import com.oliynick.max.elm.time.travel.gson.Gson
 import core.data.Id
@@ -13,6 +14,8 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import protocol.ApplyMessage
 import protocol.ClientMessage
+import protocol.ComponentId
+import protocol.NotifyClient
 import java.io.File
 import java.io.FileReader
 import java.util.*
@@ -37,6 +40,24 @@ class ClientMessageSerializationTest {
         val fromJson = gson.fromJson(json, ClientMessage::class.java)
 
         applyMessage shouldBe fromJson
+    }
+
+    @Test
+    fun `test from Value is mapped to Gson tree properly`() = with(gson) {
+
+        val user = User(
+            Id(UUID.randomUUID()),
+            Name("John"),
+            listOf()
+        )
+
+        val userTree = gson.toJsonTree(user)
+        val expectedMessageTree = gson.toJsonTree(NotifyClient(UUID.randomUUID(), ComponentId("test"), ApplyMessage(userTree)))
+
+        val actualMessageValue = expectedMessageTree.asJsonObject.toValue()
+        val actualMessageTree = actualMessageValue.toJsonElement()
+
+        actualMessageTree shouldBe expectedMessageTree
     }
 
     @Test

@@ -77,10 +77,10 @@ class DefaultGsonSerializersTest {
     @Test
     fun `test ApplyMessage gets serialized properly`() = with(gsonSerializer) {
 
-        val applyMessage = ApplyMessage(toJsonTree(testUser))
+        val applyMessage = NotifyClient(ApplyMessage(toJsonTree(testUser)))
 
         val json = gsonSerializer.toJson(applyMessage)
-        val fromJson = gsonSerializer.fromJson(json, ClientMessage::class.java)
+        val fromJson = gsonSerializer.fromJson(json, NotifyClient::class.java)
 
         fromJson shouldBe applyMessage
     }
@@ -166,3 +166,9 @@ class DefaultGsonSerializersTest {
     }
 
 }
+
+@Suppress("TestFunctionName")
+private fun NotifyClient(
+    message: ClientMessage
+) = NotifyClient(UUID.randomUUID(), ComponentId("test"), message)
+

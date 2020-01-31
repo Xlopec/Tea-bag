@@ -67,7 +67,7 @@ interface LiveStorage<Env> : Storage<Env> where Env : HasMongoCollection,
         }
 
     override suspend fun Env.fetch(criteria: LoadCriteria.Query): List<Article> =
-        toArticles(api.fetchFromEverything(API_KEY, mapOf("q" to criteria.query)))
+        toArticles(api.fetchFromEverything(API_KEY, mapOf("q" to criteria.query))).take(2)
 
     override suspend fun Env.fetchTrending(): List<Article> =
         toArticles(api.fetchTopHeadlines(API_KEY, application.countryCode))

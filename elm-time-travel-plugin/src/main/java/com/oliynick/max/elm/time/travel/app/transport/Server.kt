@@ -37,7 +37,6 @@ import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
 import org.slf4j.event.Level
@@ -54,10 +53,9 @@ data class RemoteCallArgs(
 @Suppress("MemberVisibilityCanBePrivate")
 class Server private constructor(
     val settings: Settings,
-    private val events: Channel<PluginMessage>,//fixme broadcast
-    private val completions: BroadcastChannel<UUID>,
+    private val events: BroadcastChannel<PluginMessage>,
     private val calls: BroadcastChannel<RemoteCallArgs>
-) : ApplicationEngine by server(settings, events, completions, calls) {
+) : ApplicationEngine by server(settings, events, calls) {
 
     companion object {
 
@@ -65,10 +63,9 @@ class Server private constructor(
 
         fun newInstance(
             settings: Settings,
-            events: Channel<PluginMessage>
-        ): Server {
-            return Server(settings, events, BroadcastChannel(1), BroadcastChannel(1))
-        }
+            events: BroadcastChannel<PluginMessage>
+        ): Server = Server(settings, events, BroadcastChannel(1))
+
     }
 
     suspend operator fun invoke(
@@ -79,10 +76,10 @@ class Server private constructor(
             withTimeout(timeout) {
                 //todo un-hardcode
                 val callId = UUID.randomUUID()
-                val completionJob = launch { completions.asFlow().first { id -> id == callId } }
+                //val completionJob = launch { completions.asFlow().first { id -> id == callId } }
 
                 calls.send(RemoteCallArgs(callId, component, message))
-                completionJob.join()
+               // completionJob.join()
             }
         } catch (th: TimeoutCancellationException) {
             throw NetworkException("Timed out waiting for $timeout ms to perform operation",
@@ -117,11 +114,11 @@ fun main() {
 
                 webSocket("/") {
 
-                    val pluginMessages = Channel<PluginMessage>()
+                    val pluginMessages = BroadcastChannel<PluginMessage>(1)
                     val completions = BroadcastChannel<UUID>(1)
 
                     launch {
-                        for (msg in pluginMessages) {
+                        for (msg in pluginMessages.openSubscription()) {
                             println("Plugin message $msg")
                         }
                     }
@@ -134,7 +131,6 @@ fun main() {
 
                     installPacketReceiver(
                         pluginMessages,
-                        completions,
                         incoming.consumeAsFlow().filterIsInstance()
                     )
                 }
@@ -145,8 +141,7 @@ fun main() {
 
 private fun server(
     settings: Settings,
-    events: Channel<PluginMessage>,
-    completions: BroadcastChannel<UUID>,
+    events: BroadcastChannel<PluginMessage>,
     calls: BroadcastChannel<RemoteCallArgs>
 ): NettyApplicationEngine {
 
@@ -171,14 +166,13 @@ private fun server(
             timeout = Duration.ofSeconds(5)
         }
 
-        configureWebSocketRouting(calls.asFlow(), events, completions)
+        configureWebSocketRouting(calls.asFlow(), events)
     }
 }
 
 private fun Application.configureWebSocketRouting(
     calls: Flow<RemoteCallArgs>,
-    events: Channel<PluginMessage>,
-    completions: BroadcastChannel<UUID>
+    events: BroadcastChannel<PluginMessage>
 ) {
     routing {
 
@@ -188,7 +182,7 @@ private fun Application.configureWebSocketRouting(
                 installPacketSender(calls, outgoing)
             }
 
-            installPacketReceiver(events, completions, incoming.consumeAsFlow().filterIsInstance())
+            installPacketReceiver(events, incoming.consumeAsFlow().filterIsInstance())
         }
     }
 }
@@ -208,19 +202,17 @@ private suspend fun installPacketSender(
 }
 
 private suspend fun installPacketReceiver(
-    events: Channel<PluginMessage>,
-    completions: BroadcastChannel<UUID>,
+    events: BroadcastChannel<PluginMessage>,
     incoming: Flow<Frame.Text>
 ) {
 
-    incoming.collect { frame -> processPacket(frame, events, completions) }
+    incoming.collect { frame -> processPacket(frame, events) }
 }
 
 
 private suspend fun processPacket(
     frame: Frame.Text,
-    events: Channel<PluginMessage>,
-    completions: BroadcastChannel<UUID>
+    events: BroadcastChannel<PluginMessage>
 ) {
     coroutineScope {
 
@@ -247,7 +239,7 @@ private suspend fun processPacket(
                         message.state.asJsonObject.toValue()
                     )
                 )
-                is ActionApplied -> completions.send(message.id)
+                is ActionApplied -> error("ActionApplied instances shouldn't be sent anymore")
             }
 
         } catch (e: Throwable) {

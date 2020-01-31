@@ -20,7 +20,7 @@ import com.oliynick.max.elm.time.travel.app.domain.cms.PluginMessage
 import com.oliynick.max.elm.time.travel.app.domain.cms.Settings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -36,7 +36,7 @@ class ServerHandler {
 
     suspend fun start(
         settings: Settings,
-        events: Channel<PluginMessage>
+        events: BroadcastChannel<PluginMessage>
     ) {
         mutex.withLock {
 

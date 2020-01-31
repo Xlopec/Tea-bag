@@ -20,7 +20,7 @@ object LiveFeedUpdater : FeedUpdater {
             message is ArticlesLoaded -> Preview(feed.id, feed.criteria, message.articles).noCommand()
             message is LoadArticles -> FeedLoading(feed.id, feed.criteria) command LoadByCriteria(feed.id, feed.criteria)
             message is FeedOperationException -> Error(feed.id, feed.criteria, message.cause).noCommand()
-            message is ToggleArticleIsFavorite && feed is Preview -> markArticleAsFavorite(message.article, feed)
+            message is ToggleArticleIsFavorite && feed is Preview -> toggleFavorite(message.article, feed)
             message is ArticleUpdated && feed is Preview -> updateArticle(message.article, feed)
             message is OpenArticle -> openArticle(message.article, feed)
             message is ShareArticle -> shareArticle(message.article, feed)
@@ -43,7 +43,7 @@ object LiveFeedUpdater : FeedUpdater {
         return updated.noCommand()
     }
 
-    fun markArticleAsFavorite(
+    fun toggleFavorite(
         article: Article,
         state: Preview
     ): UpdateWith<Feed, Command> {

@@ -11,7 +11,6 @@ import com.oliynick.max.elm.time.travel.app.storage.serverSettings
 import com.oliynick.max.elm.time.travel.app.transport.ServerHandler
 import com.oliynick.max.elm.time.travel.app.transport.serialization.toJsonElement
 import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
 import protocol.ApplyMessage
 import protocol.ApplyState
 
@@ -27,7 +26,7 @@ fun HasSystemProperties(properties: PropertiesComponent) =
     }
 
 fun HasChannels(
-    events: Channel<PluginMessage> = Channel(),
+    events: BroadcastChannel<PluginMessage> = BroadcastChannel(1),
     exceptions: BroadcastChannel<DoNotifyOperationException> = BroadcastChannel(1),
     notifications: BroadcastChannel<NotificationMessage> = BroadcastChannel(1)
 ) =
@@ -42,7 +41,7 @@ fun HasChannels(channels: Channels) =
     }
 
 data class Channels(
-    val events: Channel<PluginMessage>,
+    val events: BroadcastChannel<PluginMessage>,
     val exceptions: BroadcastChannel<DoNotifyOperationException>,
     val notifications: BroadcastChannel<NotificationMessage>
 )

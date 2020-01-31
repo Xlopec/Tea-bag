@@ -28,9 +28,9 @@ import com.oliynick.max.elm.time.travel.app.presentation.info.InfoView
 import com.oliynick.max.elm.time.travel.app.presentation.misc.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -47,7 +47,7 @@ class ToolWindowView(
     private val project: Project,
     private val scope: CoroutineScope,
     private val component: ComponentLegacy<PluginMessage, PluginState>,
-    private val uiEvents: Channel<PluginMessage>
+    private val uiEvents: BroadcastChannel<PluginMessage>
 ) : CoroutineScope by scope {
 
     private lateinit var panel: JPanel
@@ -71,14 +71,14 @@ class ToolWindowView(
     val root: JPanel get() = panel
 
     init {
-        launch { component(uiEvents.consumeAsFlow()).collect { state -> render(state, uiEvents) } }
+        launch { component(uiEvents.asFlow()).collect { state -> render(state, uiEvents::offer) } }
         launch { component.showProgressOnTransientState(project) }
     }
 
     //todo consider exposing a single callback
     private fun render(
         state: PluginState,
-        messages: Channel<PluginMessage>
+        messages: (PluginMessage) -> Unit
     ) {
 
         portTextField.isEnabled = state is Stopped
@@ -94,7 +94,7 @@ class ToolWindowView(
 
     private fun render(
         state: Stopped,
-        messages: Channel<PluginMessage>
+        messages: (PluginMessage) -> Unit
     ) {
         portTextField.setText(state.settings.serverSettings.port.toString(), portListener)
         hostTextField.setText(state.settings.serverSettings.host, hostListener)
@@ -102,7 +102,7 @@ class ToolWindowView(
         startButton.icon = getIcon("run")
         startButton.disabledIcon = getIcon("run_disabled")
 
-        startButton.setOnClickListenerEnabling { messages.offer(StartServer) }
+        startButton.setOnClickListenerEnabling { messages(StartServer) }
 
         val shouldRemoveOrEmpty = componentsPanel.isEmpty || (componentsPanel.isNotEmpty && componentsPanel.first().name != InfoView.NAME)
 
@@ -122,12 +122,12 @@ class ToolWindowView(
 
     private fun render(
         state: Started,
-        messages: Channel<PluginMessage>
+        messages: (PluginMessage) -> Unit
     ) {
         startButton.icon = getIcon("suspend")
         startButton.disabledIcon = getIcon("suspend_disabled")
 
-        startButton.setOnClickListenerEnabling { messages.offer(StopServer) }
+        startButton.setOnClickListenerEnabling { messages(StopServer) }
 
         require(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children()}" }
 
@@ -167,13 +167,13 @@ class ToolWindowView(
 
     private fun JTabbedPane.update(
         debugState: DebugState,
-        messages: Channel<PluginMessage>
+        messages: (PluginMessage) -> Unit
     ) {
         debugState.components
             .filter { e -> indexOfTab(e.key.id) == -1 }
             .forEach { (id, s) ->
                 addCloseableTab(id, ComponentView(scope, component, s)._root) { component ->
-                    messages.offer(RemoveComponent(component))
+                    messages(RemoveComponent(component))
                 }
             }
     }

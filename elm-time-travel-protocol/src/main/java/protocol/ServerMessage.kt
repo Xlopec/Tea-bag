@@ -33,6 +33,7 @@ data class NotifyComponentAttached(
     val state: JsonElement
 ) : ServerMessage()
 
+@Deprecated("not needed anymore, will be removed")
 data class ActionApplied(
     val id: UUID
 ) : ServerMessage()

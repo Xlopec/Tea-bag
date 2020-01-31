@@ -3,6 +3,7 @@ package com.oliynick.max.elm.time.travel.app.transport.serialization
 import com.google.gson.*
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.gson.Gson
+import com.oliynick.max.elm.time.travel.gson.JsonObject
 
 internal val GSON by lazy {
     Gson {}
@@ -10,6 +11,22 @@ internal val GSON by lazy {
 
 fun Value<*>.toJsonElement(): JsonElement =
     when (this) {
+        is PrimitiveWrapper<*> -> toJsonElement()
+        is Null -> toJsonElement()
+        is CollectionWrapper -> this.toJsonElement()
+        is Ref -> this.toJsonElement()
+    }
+
+private fun Null.toJsonElement(): JsonObject = JsonObject {
+    addProperty("@type", type.name)
+    add("@value", JsonNull.INSTANCE)
+}
+
+private fun PrimitiveWrapper<*>.toJsonElement(): JsonObject = JsonObject {
+
+    addProperty("@type", type.name)
+
+    val property = when (this@toJsonElement) {
         is IntWrapper -> JsonPrimitive(value)
         is ByteWrapper -> JsonPrimitive(value)
         is ShortWrapper -> JsonPrimitive(value)
@@ -19,10 +36,10 @@ fun Value<*>.toJsonElement(): JsonElement =
         is FloatWrapper -> JsonPrimitive(value)
         is StringWrapper -> JsonPrimitive(value)
         is BooleanWrapper -> JsonPrimitive(value)
-        is Null -> JsonNull.INSTANCE
-        is CollectionWrapper -> this.toJsonElement()
-        is Ref -> this.toJsonElement()
     }
+
+    add("@value", property)
+}
 
 fun JsonObject.toValue(): Value<*> {
 
@@ -40,17 +57,30 @@ fun JsonObject.toValue(): Value<*> {
 
 private fun Ref.toJsonElement(): JsonElement {
     return JsonObject().apply {
-        for (property in properties) {
-            add(property.name, property.v.toJsonElement())
+
+        addProperty("@type", type.name)
+
+        val nested = JsonObject {
+            for (property in properties) {
+                add(property.name, property.v.toJsonElement())
+            }
         }
+
+        add("@value", nested)
     }
 }
 
-private fun CollectionWrapper.toJsonElement(): JsonElement =
-    value.fold(JsonArray(value.size)) { acc, v ->
+private fun CollectionWrapper.toJsonElement(): JsonObject = JsonObject {
+
+    addProperty("@type", type.name)
+
+    val arr = value.fold(JsonArray(value.size)) { acc, v ->
         acc.add(v.toJsonElement())
         acc
     }
+
+    add("@value", arr)
+}
 
 private fun JsonObject.toValueInner(
     type: Type
