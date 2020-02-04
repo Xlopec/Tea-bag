@@ -1,35 +1,33 @@
 package com.oliynick.max.elm.time.travel.gson.serialization.serializer
 
 import com.google.gson.*
-import com.google.gson.reflect.TypeToken
+import com.oliynick.max.elm.time.travel.gson.isJsonPrimitive
+import com.oliynick.max.elm.time.travel.gson.type
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
+import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 object PersistentListSerializer : JsonSerializer<PersistentList<*>>,
     JsonDeserializer<PersistentList<*>> {
 
-    val typeToken = object : TypeToken<Any?>() {}
-
     override fun deserialize(
         json: JsonElement,
-        typeOfT: Type?,
+        typeOfT: Type,
         context: JsonDeserializationContext
     ): PersistentList<*> {
 
-        val l = json.asJsonArray.asSequence()
-            .map { e -> e.asJsonObject }
-            .map { o ->
+        val genericArgType = (typeOfT as ParameterizedType).actualTypeArguments[0] as Class<*>
 
-                val deser = context.deserialize<Any?>(o["@value"], o["@type"].asString.let { Class.forName(it) })
-
-
-
-                deser
-            }.toList()
-
-        return l.toPersistentList()
-        //context.deserialize<Collection<Any?>>(json, Collection::class.java).toPersistentList()
+        return json.asJsonArray.asSequence()
+            .map { element ->
+                context.deserialize<Any?>(
+                    element,
+                    if (genericArgType.isJsonPrimitive) genericArgType else element.asJsonObject.type
+                )
+            }
+            .toList()
+            .toPersistentList()
     }
 
     override fun serialize(

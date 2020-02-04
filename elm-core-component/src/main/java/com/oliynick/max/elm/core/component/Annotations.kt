@@ -10,3 +10,8 @@ package com.oliynick.max.elm.core.component
 @Retention(value = AnnotationRetention.BINARY)
 @Experimental(level = Experimental.Level.WARNING)
 annotation class ObsoleteComponentApi
+
+@MustBeDocumented
+@Retention(value = AnnotationRetention.BINARY)
+@Experimental(level = Experimental.Level.WARNING)
+annotation class UnstableApi

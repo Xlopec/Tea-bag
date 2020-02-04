@@ -4,29 +4,26 @@ import com.google.gson.*
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.gson.Gson
 import com.oliynick.max.elm.time.travel.gson.JsonObject
+import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
 
 internal val GSON by lazy {
-    Gson {}
+    Gson {
+        registerTypeAdapterFactory(TypeAppenderAdapterFactory)
+    }
 }
 
 fun Value<*>.toJsonElement(): JsonElement =
     when (this) {
         is PrimitiveWrapper<*> -> toJsonElement()
         is Null -> toJsonElement()
-        is CollectionWrapper -> this.toJsonElement()
-        is Ref -> this.toJsonElement()
+        is CollectionWrapper -> toJsonElement()
+        is Ref -> toJsonElement()
     }
 
-private fun Null.toJsonElement(): JsonObject = JsonObject {
-    addProperty("@type", type.name)
-    add("@value", JsonNull.INSTANCE)
-}
+private fun Null.toJsonElement(): JsonNull = JsonNull.INSTANCE
 
-private fun PrimitiveWrapper<*>.toJsonElement(): JsonObject = JsonObject {
-
-    addProperty("@type", type.name)
-
-    val property = when (this@toJsonElement) {
+private fun PrimitiveWrapper<*>.toJsonElement(): JsonPrimitive =
+    when (this@toJsonElement) {
         is IntWrapper -> JsonPrimitive(value)
         is ByteWrapper -> JsonPrimitive(value)
         is ShortWrapper -> JsonPrimitive(value)
@@ -38,91 +35,62 @@ private fun PrimitiveWrapper<*>.toJsonElement(): JsonObject = JsonObject {
         is BooleanWrapper -> JsonPrimitive(value)
     }
 
-    add("@value", property)
-}
-
-fun JsonObject.toValue(): Value<*> {
-
-    val value: JsonElement? = get("@value")
-    val type = Type.of(get("@type").asString)
-
-    return when {
-        value == null || value.isJsonNull -> Null(type)
-        value.isJsonPrimitive -> value.asJsonPrimitive.toValue(type)
-        value.isJsonArray -> value.asJsonArray.toValue(type)
-        value.isJsonObject -> value.asJsonObject.toValueInner(type)
+fun JsonElement.toValue(): Value<*> =
+    when {
+        isJsonPrimitive -> asJsonPrimitive.toValue()
+        isJsonArray -> asJsonArray.toValue()
+        isJsonObject -> asJsonObject.toValue()
+        isJsonNull -> Null
         else -> error("Don't know how to deserialize $this")
     }
-}
 
-private fun Ref.toJsonElement(): JsonElement {
-    return JsonObject().apply {
+private fun Ref.toJsonElement(): JsonElement = JsonObject {
+    addProperty("@type", type.name)
 
-        addProperty("@type", type.name)
-
-        val nested = JsonObject {
-            for (property in properties) {
-                add(property.name, property.v.toJsonElement())
-            }
-        }
-
-        add("@value", nested)
+    for (property in properties) {
+        add(property.name, property.v.toJsonElement())
     }
 }
 
-private fun CollectionWrapper.toJsonElement(): JsonObject = JsonObject {
-
-    addProperty("@type", type.name)
-
-    val arr = value.fold(JsonArray(value.size)) { acc, v ->
+private fun CollectionWrapper.toJsonElement(): JsonArray =
+    value.fold(JsonArray(value.size)) { acc, v ->
         acc.add(v.toJsonElement())
         acc
     }
 
-    add("@value", arr)
-}
+private fun JsonObject.toValue(): Ref {
 
-private fun JsonObject.toValueInner(
-    type: Type
-): Ref {
-    val entrySet = entrySet()
+    val entrySet = entrySet().filter { e -> e.key != "@type" }
 
     val props = entrySet.mapTo(HashSet<Property<*>>(entrySet.size)) { entry ->
-
         Property(
             entry.key,
-            entry.value.asJsonObject.toValue()
+            entry.value.toValue()
         )
     }
 
-    return Ref(type, props)
+    return Ref(Type.of(this["@type"].asString), props)
 }
 
 // fixme add explicit type param
-private fun JsonPrimitive.toValue(
-    type: Type
-): Value<*> = when {
-    isBoolean -> BooleanWrapper(type, asBoolean)
-    isString -> StringWrapper(type, asString)
-    isNumber -> toNumberValue(type)
+private fun JsonPrimitive.toValue(): Value<*> = when {
+    isBoolean -> BooleanWrapper(asBoolean)
+    isString -> StringWrapper(asString)
+    isNumber -> toNumberValue()
     else -> error("Don't know how to wrap $this")
 }
 
-private fun JsonPrimitive.toNumberValue(
-    type: Type
-): PrimitiveWrapper<*> =
+private fun JsonPrimitive.toNumberValue(): PrimitiveWrapper<*> =
     when (asNumber) {
-        is Float -> FloatWrapper(type, asFloat)
-        is Double -> DoubleWrapper(type, asDouble)
-        is Int -> IntWrapper(type, asInt)
-        is Long -> LongWrapper(type, asLong)
-        is Short -> ShortWrapper(type, asShort)
-        is Byte -> ByteWrapper(type, asByte)
+        is Float -> FloatWrapper(asFloat)
+        is Double -> DoubleWrapper(asDouble)
+        is Int -> IntWrapper(asInt)
+        is Long -> LongWrapper(asLong)
+        is Short -> ShortWrapper(asShort)
+        is Byte -> ByteWrapper(asByte)
         else -> error("Don't know how to wrap $this")
     }
 
-private fun JsonArray.toValue(
-    type: Type
-): Value<*> =
-    CollectionWrapper(type, map { it.asJsonObject.toValue() })
+private fun JsonArray.toValue(): Value<*> =
+    CollectionWrapper(map { it.asJsonObject.toValue() })
 

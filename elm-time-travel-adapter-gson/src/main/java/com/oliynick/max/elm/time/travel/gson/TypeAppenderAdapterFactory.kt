@@ -7,6 +7,7 @@ import com.google.gson.internal.ConstructorConstructor
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
+import com.oliynick.max.elm.core.component.UnstableApi
 import java.lang.reflect.Array
 import kotlin.Array as KArray
 
@@ -33,6 +34,7 @@ import kotlin.Array as KArray
  * }
  * ```
  */
+@UnstableApi
 object TypeAppenderAdapterFactory : TypeAdapterFactory {
 
     override fun <T : Any?> create(
@@ -45,15 +47,28 @@ object TypeAppenderAdapterFactory : TypeAdapterFactory {
         override fun write(
             out: JsonWriter,
             value: T
-        ) = elementAdapter.write(out, value.toJsonTree(gson, type.cast(), this@TypeAppenderAdapterFactory))
+        ) = elementAdapter.write(
+            out,
+            value.toJsonTree(gson, type.cast(), this@TypeAppenderAdapterFactory)
+        )
 
         @Suppress("UNCHECKED_CAST")
         override fun read(
             `in`: JsonReader
-        ): T = elementAdapter
-            .read(`in`)
-            .asJsonObject
-            .asAny(gson, this@TypeAppenderAdapterFactory) as T
+        ): T {
+
+            println(type)
+
+            val jsonElement = elementAdapter
+                .read(`in`)
+
+            if (jsonElement.isJsonObject) {
+                return jsonElement.asJsonObject
+                    .asAny(gson, this@TypeAppenderAdapterFactory, type) as T
+            }
+
+            return gson.getDelegateAdapter(this@TypeAppenderAdapterFactory, type).fromJsonTree(jsonElement)
+        }
     }
 
 }
@@ -62,9 +77,8 @@ private fun Any?.toJsonTree(
     gson: Gson,
     type: TypeToken<Any?>,
     skipFactory: TypeAdapterFactory
-) = JsonObject {
+): JsonElement {
 
-    addProperty("@type", this@toJsonTree.clazz.name)
     // workaround to serialize null values properly
     val tree: JsonElement = when (this@toJsonTree) {
         is Map<*, *> -> this@toJsonTree.toJsonTree(gson, skipFactory)
@@ -72,7 +86,11 @@ private fun Any?.toJsonTree(
         else -> gson.getDelegateAdapter(skipFactory, type).toJsonTree(this@toJsonTree)
     }
 
-    add("@value", tree)
+    if (tree.isJsonObject) {
+        tree.asJsonObject.addProperty("@type", this@toJsonTree.clazz.name)
+    }
+
+    return tree
 }
 
 private fun Iterable<*>.toJsonTree(
@@ -89,7 +107,7 @@ private fun Map<*, *>.toJsonTree(
     gson: Gson,
     skipFactory: TypeAdapterFactory
 ): JsonArray = JsonArray(entries.size) {
-
+    TODO("not implemented")
     entries.forEach { e ->
         add(JsonObject {
             add("@key", e.key.toJsonTree(gson, TypeToken(e.key.clazz).cast(), skipFactory))
@@ -100,7 +118,8 @@ private fun Map<*, *>.toJsonTree(
 
 private fun JsonObject.asAny(
     gson: Gson,
-    skipFactory: TypeAdapterFactory
+    skipFactory: TypeAdapterFactory,
+    type: TypeToken<*>
 ): Any? {
 
     require(has("@type")) {
@@ -108,16 +127,16 @@ private fun JsonObject.asAny(
     }
 
     val token by unsafeLazy { TypeToken(get("@type").asString) }
-    val value: JsonElement? = get("@value")
-    val array by unsafeLazy { value!!.asJsonArray }
+
+    return gson.getDelegateAdapter(skipFactory, token).fromJsonTree(this)
+    /*val array by unsafeLazy { value!!.asJsonArray }
 
     return when {
-        value == null || value.isJsonNull -> null
         isArray(token, value) -> array.asArray(token.rawType, gson, skipFactory)
         isCollection(token, value) -> array.asCollection(gson, token.cast(), skipFactory)
         isMap(token, value) -> array.asMap(gson, token.cast(), skipFactory)
-        else -> gson.getDelegateAdapter(skipFactory, token).fromJsonTree(value)
-    }
+        else -> gson.getDelegateAdapter(skipFactory, token).fromJsonTree(this)
+    }*/
 }
 
 private fun JsonArray.asArray(
@@ -129,7 +148,7 @@ private fun JsonArray.asArray(
         .newArray(size())
         .also { array ->
             this@asArray.forEachIndexed { index, jsonElement ->
-                array[index] = jsonElement.asJsonObject.asAny(gson, skipFactory)
+                array[index] = jsonElement.asJsonObject.asAny(gson, skipFactory, TODO())
             }
         }
 
@@ -143,7 +162,8 @@ private fun JsonArray.asCollection(
         .mapTo(gson.constructorConstructor.construct(cl)) { jsonObject ->
             jsonObject.asAny(
                 gson,
-                skipFactory
+                skipFactory,
+                TODO()
             )
         }
 
@@ -156,8 +176,8 @@ private fun JsonArray.asMap(
         .map { jsonElement -> jsonElement.asJsonObject }
         .associateByTo(
             destination = gson.constructorConstructor.construct(cl),
-            keySelector = { entry -> entry["@key"].asJsonObject.asAny(gson, skipFactory) },
-            valueTransform = { entry -> entry["@value"].asJsonObject.asAny(gson, skipFactory) }
+            keySelector = { entry -> entry["@key"].asJsonObject.asAny(gson, skipFactory, TODO()) },
+            valueTransform = { entry -> entry["@value"].asJsonObject.asAny(gson, skipFactory, TODO()) }
         )
 
 private fun <T> Class<T>.newArray(

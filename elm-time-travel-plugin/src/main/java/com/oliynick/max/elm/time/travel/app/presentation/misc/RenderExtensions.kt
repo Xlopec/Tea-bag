@@ -130,13 +130,12 @@ private fun Ref.toReadableString(): String =
 private fun toReadableString(field: Property<*>): String =
     "${field.name}=${field.v.toReadableString()}"
 
-private fun CollectionWrapper.toReadableString(): String {
-    return "${type.name} ${value.joinToString(
+private fun CollectionWrapper.toReadableString(): String =
+    value.joinToString(
         prefix = "[",
         postfix = "]",
         transform = { it.toReadableString() }
-    )}"
-}
+    )
 
 private val Value<*>.icon: Icon?
     inline get() = when (this) {

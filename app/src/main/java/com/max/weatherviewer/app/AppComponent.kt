@@ -13,6 +13,7 @@ import com.oliynick.max.elm.core.loop.ComponentFock
 import com.oliynick.max.elm.time.travel.component.Component
 import com.oliynick.max.elm.time.travel.component.URL
 import com.oliynick.max.elm.time.travel.converter.GsonSerializer
+import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.flow.Flow
 import protocol.ComponentId
@@ -65,5 +66,6 @@ private fun AppInitializer(): Initializer<State, Command> {
 }
 
 private fun AppGsonSerializer() = GsonSerializer {
+    registerTypeAdapterFactory(TypeAppenderAdapterFactory)
     registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
 }

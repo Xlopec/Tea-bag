@@ -1,4 +1,4 @@
-package com.oliynick.max.elm.time.travel.gson.serialization
+package com.oliynick.max.elm.time.travel.gson.serialization.data
 
 sealed class A
 
@@ -15,8 +15,8 @@ data class D(
         C(), null),
     val arrC: Array<C?> = arrayOf(
         C(), null),
-    val nilC: C? = null,
-    val nilMap: Map<Any?, Any?> = mapOf<Any?, Any?>(null to C(), null to null, "some" to C(), "some" to null)
+    val nilC: C? = null/*,
+    val nilMap: Map<Any?, Any?> = mapOf<Any?, Any?>(null to C(), null to null, "some" to C(), "some" to null)*/
 ) : A() {
 
     override fun equals(other: Any?): Boolean {

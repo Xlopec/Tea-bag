@@ -1,6 +1,9 @@
-package com.oliynick.max.elm.time.travel.gson.serialization
+package com.oliynick.max.elm.time.travel.gson.serialization.test
 
+import com.google.gson.reflect.TypeToken
 import com.oliynick.max.elm.time.travel.gson.Gson
+import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
+import com.oliynick.max.elm.time.travel.gson.serialization.data.Singleton
 import core.data.Id
 import core.data.Name
 import core.data.Photo
@@ -17,7 +20,9 @@ import java.util.*
 @RunWith(JUnit4::class)
 class DefaultGsonSerializersTest {
 
-    private val gsonSerializer = Gson()
+    private val gsonSerializer = Gson {
+        registerTypeAdapterFactory(TypeAppenderAdapterFactory)
+    }
 
     private val testUser = User(
         Id(UUID.randomUUID()),
@@ -77,7 +82,10 @@ class DefaultGsonSerializersTest {
     @Test
     fun `test ApplyMessage gets serialized properly`() = with(gsonSerializer) {
 
-        val applyMessage = NotifyClient(ApplyMessage(toJsonTree(testUser)))
+        val applyMessage =
+            NotifyClient(
+                ApplyMessage(toJsonTree(testUser))
+            )
 
         val json = gsonSerializer.toJson(applyMessage)
         val fromJson = gsonSerializer.fromJson(json, NotifyClient::class.java)
@@ -120,7 +128,7 @@ class DefaultGsonSerializersTest {
         )
 
         val json = gsonSerializer.toJson(nullableList)
-        val fromJson = gsonSerializer.fromJson(json, List::class.java)
+        val fromJson = gsonSerializer.fromJson<List<Photo?>>(json, TypeToken.getParameterized(List::class.java, Photo::class.java).type)
 
         fromJson shouldBe nullableList
     }
