@@ -3,6 +3,7 @@ package com.oliynick.max.elm.time.travel.gson.serialization.test
 import com.oliynick.max.elm.time.travel.gson.Gson
 import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
 import com.oliynick.max.elm.time.travel.gson.serialization.data.*
+import com.oliynick.max.elm.time.travel.gson.serialization.serializer.MapDeserializer
 import com.oliynick.max.elm.time.travel.gson.serialization.serializer.PersistentListSerializer
 import io.kotlintest.shouldBe
 import kotlinx.collections.immutable.PersistentList
@@ -15,14 +16,18 @@ import org.junit.runners.JUnit4
 class TypeAppenderAdapterFactoryTest {
 
     private val serializer = Gson {
+        setPrettyPrinting()
+        enableComplexMapKeySerialization()
         registerTypeAdapterFactory(TypeAppenderAdapterFactory)
     }
 
     @Test
-    fun `test class hierarchy gets serialized correctly`() = with(serializer) {
+    fun `test class hierarchy gets serialized correctly`() = with(Gson {
+        registerTypeAdapterFactory(TypeAppenderAdapterFactory)
+        registerTypeAdapter(Map::class.java, MapDeserializer)
+    }) {
 
-        val message =
-            D()
+        val message = D()
         val json = toJson(message)
 
         val fromJson = fromJson(json, A::class.java)
@@ -58,7 +63,7 @@ class TypeAppenderAdapterFactoryTest {
 
     @Test
     fun `test AppenderFactory serializes polymorphic values`() =
-        with(Gson {// todo add clone method
+        with(Gson {
             registerTypeAdapterFactory(TypeAppenderAdapterFactory)
             registerTypeAdapter(PersistentList::class.java, PersistentListSerializer)
         }) {
@@ -66,8 +71,6 @@ class TypeAppenderAdapterFactoryTest {
             val container = PolyContainer(persistentListOf(PolyA(), PolyB()))
 
             val json = toJson(container)
-
-            println(json)
 
             val fromJson = fromJson(json, PolyContainer::class.java)
 

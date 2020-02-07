@@ -15,7 +15,6 @@ fun Gson(
 ): Gson =
     GsonBuilder()
         .serializeNulls()
-        .setPrettyPrinting()
         .setDateFormat(DATE_FORMAT)
         .registerTypeHierarchyAdapter(ServerMessage::class.java, ServerMessageAdapter)
         .registerTypeAdapter(UUID::class.java, UUIDAdapter)
