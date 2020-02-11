@@ -3,7 +3,7 @@
 package com.oliynick.max.elm.time.travel.app.env
 
 import com.oliynick.max.elm.core.component.*
-import com.oliynick.max.elm.core.loop.ComponentFock
+import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.time.travel.app.domain.cms.PluginCommand
 import com.oliynick.max.elm.time.travel.app.domain.cms.PluginMessage
 import com.oliynick.max.elm.time.travel.app.domain.cms.PluginState
@@ -20,7 +20,13 @@ fun Environment.PluginComponent(): (Flow<PluginMessage>) -> Flow<PluginState> {
         state: PluginState
     ) = this.update(message, state)
 
-    return ComponentFock(Initializer(Stopped(properties.pluginSettings)), ::resolve, ::update).with(Logger()).states()
+    return Component(
+        Initializer(
+            Stopped(
+                properties.pluginSettings
+            )
+        ), ::resolve, ::update
+    ).with(Logger()).states()
 }
 
 private fun Logger(): Interceptor<PluginMessage, PluginState, PluginCommand> =

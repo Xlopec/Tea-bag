@@ -2,8 +2,12 @@ package com.oliynick.max.elm.time.travel.component
 
 import com.oliynick.max.elm.core.component.Env
 import com.oliynick.max.elm.core.component.EnvBuilder
+import com.oliynick.max.elm.core.component.toEnv
+import com.oliynick.max.elm.time.travel.converter.GsonSerializer
 import com.oliynick.max.elm.time.travel.converter.JsonConverter
 import com.oliynick.max.elm.time.travel.session.SessionBuilder
+import com.oliynick.max.elm.time.travel.session.WebSocketSession
+import com.oliynick.max.elm.time.travel.session.localhost
 import protocol.ComponentId
 import java.net.URL
 
@@ -80,3 +84,20 @@ inline fun <reified M, reified C, reified S> Dependencies(
     EnvBuilder(env),
     ServerSettingsBuilder(id)
 ).apply(config).toDebugDependencies()
+
+@PublishedApi
+internal inline fun <reified M, reified C, reified S> DebugEnvBuilder<M, C, S>.toDebugDependencies() =
+    DebugEnv(
+        dependenciesBuilder.toEnv(),
+        serverSettingsBuilder.toServerSettings()
+    )
+
+
+@PublishedApi
+internal inline fun <reified M, reified S> ServerSettingsBuilder<M, S>.toServerSettings() =
+    ServerSettings(
+        id,
+        jsonSerializer ?: GsonSerializer(),
+        url ?: localhost,
+        sessionBuilder ?: ::WebSocketSession
+    )

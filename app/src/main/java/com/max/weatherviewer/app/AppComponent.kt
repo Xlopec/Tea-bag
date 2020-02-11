@@ -9,7 +9,7 @@ import com.max.weatherviewer.screens.feed.LoadCriteria
 import com.oliynick.max.elm.core.component.Initializer
 import com.oliynick.max.elm.core.component.states
 import com.oliynick.max.elm.core.component.with
-import com.oliynick.max.elm.core.loop.ComponentFock
+import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.time.travel.component.Component
 import com.oliynick.max.elm.time.travel.component.URL
 import com.oliynick.max.elm.time.travel.converter.GsonSerializer
@@ -45,7 +45,11 @@ fun Environment.appComponent(): (Flow<Message>) -> Flow<State> {
         }.with { println(it) }.states()
     }
 
-    return ComponentFock(AppInitializer(), ::resolve, ::update).with { println(it) }.states()
+    return Component(
+        AppInitializer(),
+        ::resolve,
+        ::update
+    ).with { println(it) }.states()
 
 }
 

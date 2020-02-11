@@ -88,7 +88,7 @@ androidExtensions {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation project(':elm-core-looper')
+    implementation project(':elm-core-component')
     implementation project(':elm-core-component-debug')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

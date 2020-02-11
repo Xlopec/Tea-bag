@@ -16,113 +16,20 @@
 
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.elm.core.loop
+package com.oliynick.max.elm.core.component
 
-import com.oliynick.max.elm.core.component.*
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ChannelIterator
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-/**
- * Internal alias of a component
- */
-@Deprecated("will be removed")
-typealias ComponentInternal<M, S> = Pair<SendChannel<M>, Flow<S>>
-
-/**
- * Stores a new state to channel and notifies subscribers about changes
- */
-@Deprecated("will be removed")
-suspend fun <M, C, S> Env<M, C, S>.updateMutating(
-    message: M,
-    state: S,
-    states: BroadcastChannel<S>
-): UpdateWith<S, C> =
-    update(message, state)
-        // we don't want to suspend here
-        .also { (nextState, _) -> states.offerChecking(nextState) }
-        .also { (nextState, commands) -> interceptor(message, state, nextState, commands) }
-
-/**
- * Polls messages from channel's iterator and computes subsequent component's states.
- * Before polling a message from the channel it tries to computes all
- * subsequent states produced by resolved commands
- */
-@Deprecated("will be removed")
-tailrec suspend fun <M, C, S> Env<M, C, S>.loop(
-    state: S,
-    it: ChannelIterator<M>,
-    states: BroadcastChannel<S>
-): S {
-
-    val message = it.nextOrNull() ?: return state
-
-    val (nextState, commands) = updateMutating(message, state, states)
-
-    return loop(
-        loop(
-            nextState,
-            resolver(commands).iterator(),
-            states
-        ),
-        it,
-        states
-    )
-}
-
-/**
- * Polls messages from collection's iterator and computes next states until collection is empty
- */
-@Deprecated("will be removed")
-suspend fun <M, C, S> Env<M, C, S>.loop(
-    state: S,
-    it: Iterator<M>,
-    states: BroadcastChannel<S>
-): S {
-
-    val message = it.nextOrNull() ?: return state
-
-    val (nextState, commands) = updateMutating(message, state, states)
-
-    return loop(
-        loop(
-            nextState,
-            it,
-            states
-        ),
-        resolver(commands).iterator(),
-        states
-    )
-}
-
-/**
- * Loads an initial state using supplied initializer and starts component's loop
- */
-@Deprecated("will be removed")
-suspend fun <M, C, S> Env<M, C, S>.loop(
-    messages: Channel<M>,
-    states: BroadcastChannel<S>
-): S {
-
-    val (initState, initCommands) = initializer()
-        .also { (initialState, _) -> states.offerChecking(initialState) }
-
-    val nonTransient =
-        loop(initState, resolver(initCommands).iterator(), states)
-
-    return loop(nonTransient, messages.iterator(), states)
-}
-
-inline fun <reified M, reified C, reified S> ComponentFock(
+inline fun <reified M, reified C, reified S> Component(
     noinline initializer: Initializer<S, C>,
     noinline resolver: Resolver<C, M>,
     noinline update: Update<M, S, C>
-): Component<M, S, C> = ComponentFock(
+): Component<M, S, C> = Component(
     Env(
         initializer = toLegacy(initializer),
         resolver = resolver,
@@ -134,7 +41,7 @@ fun <S, C> toLegacy(
     initializer: Initializer<S, C>
 ): InitializerLegacy<S, C> = { initializer().let { (s, c) -> s to c } }
 
-fun <M, C, S> ComponentFock(
+fun <M, C, S> Component(
     env: Env<M, C, S>
 ): Component<M, S, C> {
 
@@ -242,45 +149,9 @@ fun <T> Flow<T>.startFrom(
     t: T
 ) = onStart { emit(t) }
 
-/**
- * Combines given flow of states and message channel into TEA component
- */
-@Deprecated("will be removed")
-fun <M, S> newComponent(state: Flow<S>, messages: SendChannel<M>): ComponentLegacy<M, S> =
-    { input ->
+private fun <E> Iterator<E>.nextOrNull() = if (hasNext()) next() else null
 
-        channelFlow {
-
-            launch {
-                state.distinctUntilChanged().collect { state ->
-                    send(state)
-                }
-            }
-
-            launch {
-                input.collect { message ->
-                    messages.sendChecking(message)
-                }
-            }
-        }
-    }
-
-@Deprecated("will be removed")
-fun <E> BroadcastChannel<E>.offerChecking(e: E) =
-    check(offer(e)) { "Couldn't offer next element - $e" }
-
-fun <E> Iterator<E>.nextOrNull() = if (hasNext()) next() else null
-
-@Deprecated("will be removed")
-suspend fun <E> ChannelIterator<E>.nextOrNull() = if (hasNext()) next() else null
-
-@Deprecated("will be removed")
-suspend fun <E> SendChannel<E>.sendChecking(e: E) {
-    check(!isClosedForSend) { "Component was already disposed" }
-    send(e)
-}
-
-suspend operator fun <C, M> Resolver<C, M>.invoke(commands: Collection<C>): Set<M> {
+private suspend operator fun <C, M> Resolver<C, M>.invoke(commands: Collection<C>): Set<M> {
     return commands.fold(LinkedHashSet(commands.size)) { acc, cmd -> acc.addAll(this(cmd)); acc }
 }
 

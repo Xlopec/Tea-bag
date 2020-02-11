@@ -1,14 +1,14 @@
 package com.oliynick.max.elm.time.travel.session
 
 import com.oliynick.max.elm.time.travel.component.ServerSettings
-import com.oliynick.max.elm.time.travel.component.incomingPackets
 import com.oliynick.max.elm.time.travel.converter.JsonConverter
 import io.ktor.client.features.websocket.ClientWebSocketSession
 import io.ktor.client.features.websocket.DefaultClientWebSocketSession
+import io.ktor.http.cio.websocket.Frame
+import io.ktor.http.cio.websocket.readText
 import io.ktor.http.cio.websocket.send
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.channels.broadcast
+import kotlinx.coroutines.flow.*
 import protocol.ApplyMessage
 import protocol.ApplyState
 import protocol.NotifyClient
@@ -73,3 +73,14 @@ internal class DebugWebSocketSession<M, S>(
     ) = lazy(LazyThreadSafetyMode.NONE, provider)
 
 }
+
+@Deprecated("will be removed")
+@PublishedApi
+internal fun <M, S> ServerSettings<M, S>.incomingPackets(
+    clientWebSocketSession: ClientWebSocketSession
+) =
+    clientWebSocketSession.incoming.broadcast().asFlow()
+        .filterIsInstance<Frame.Text>()
+        .map { frame -> frame.readText() }
+        .map { json -> serializer.fromJson(json, NotifyClient::class.java) }
+        .filter { packet -> packet.component == id }

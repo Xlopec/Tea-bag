@@ -1,4 +1,4 @@
-package com.oliynick.max.elm.core.loop
+package com.oliynick.max.elm.core.component
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -136,14 +136,22 @@ internal class MulticastFlow<T>(
         val channel = Channel<T>()
         try {
             ensureActorActive()
-            actor.send(MulticastActorAction.AddCollector(channel))
+            actor.send(
+                MulticastActorAction.AddCollector(
+                    channel
+                )
+            )
 
             emitAll(channel.consumeAsFlow())
         } catch (th: Throwable) {
             throw th
         }
         finally {
-            actor.send(MulticastActorAction.RemoveCollector(channel))
+            actor.send(
+                MulticastActorAction.RemoveCollector(
+                    channel
+                )
+            )
         }
     }
 
@@ -166,4 +174,8 @@ fun <T> Flow<T>.shareConflated(
  */
 fun <T> Flow<T>.share(
     debounceMs: Int = 0
-): Flow<T> = MulticastFlow(this, false, debounceMs).multicastedFlow
+): Flow<T> = MulticastFlow(
+    this,
+    false,
+    debounceMs
+).multicastedFlow

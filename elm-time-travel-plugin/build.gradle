@@ -62,7 +62,7 @@ configurations.all {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(path: ':elm-core-looper', configuration: 'default')
+    implementation project(path: ':elm-core-component', configuration: 'default')
     implementation project(path: ':elm-time-travel-protocol', configuration: 'default')
     implementation project(path: ':elm-time-travel-adapter-gson', configuration: 'default')
 
