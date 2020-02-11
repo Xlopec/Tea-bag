@@ -75,7 +75,6 @@ private fun <T> T?.toJsonTree(
         .also { jsonElement ->
 
             if (shouldAddTypeLabel(this@toJsonTree, jsonElement)) {
-                // fixme null keys in the Map aren't serialized properly
                 @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
                 jsonElement.addProperty("@type", this@toJsonTree!!::class.java.name)
             }

@@ -112,7 +112,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     testImplementation project(path: ':elm-core-test', configuration: 'default')
-    testImplementation project(path: ':elm-core-actor', configuration: 'default')
 
     testImplementation 'org.robolectric:robolectric:4.3'
 

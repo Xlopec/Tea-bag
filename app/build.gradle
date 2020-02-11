@@ -88,7 +88,6 @@ androidExtensions {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation project(':elm-core-actor')
     implementation project(':elm-core-looper')
     implementation project(':elm-core-component-debug')
 

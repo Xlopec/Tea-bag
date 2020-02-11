@@ -16,17 +16,10 @@
 
 package com.oliynick.max.elm.core.component
 
-import com.oliynick.max.elm.core.actor.ComponentLegacy
 import core.component.*
-import core.misc.invokeCollecting
-import core.misc.throwingResolver
-import core.scope.runBlockingInTestScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
@@ -36,7 +29,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import strikt.api.expectThat
-import strikt.assertions.containsExactly
 import strikt.assertions.containsExactlyInAnyOrder
 import strikt.assertions.isEmpty
 import strikt.assertions.isEqualTo
@@ -132,80 +124,14 @@ class ComponentExtensionsTest {
     }
 
     @Test
-    fun `test when effect returns command the result is set containing the messages`() = runBlockingTest {
-        val item = Item("some")
-        val expectedMessage = Updated(listOf(item))
-        val messages = DoAddItem(item, emptyList()).effect { expectedMessage }
+    fun `test when effect returns command the result is set containing the messages`() =
+        runBlockingTest {
+            val item = Item("some")
+            val expectedMessage = Updated(listOf(item))
+            val messages = DoAddItem(item, emptyList()).effect { expectedMessage }
 
 
-        expectThat(messages).containsExactlyInAnyOrder(expectedMessage)
-    }
-
-    @Test
-    fun `test changes extension uses an empty flow as param`() = runBlockingTest {
-        expectThat(identityComponent<Unit>().changes()).isEqualTo(emptyFlow())
-    }
-
-    @Test
-    fun `test when supplying the identity component with items it returns the same ordered sequence of items`() = runBlockingTest {
-        expectThat(identityComponent<String>().invokeCollecting("a", "b", "c")).containsExactly("a", "b", "c")
-    }
-
-    @Test
-    fun `test when supplying the identity component with single item it returns the same item`() = runBlockingTest {
-        expectThat(identityComponent<Int>()(1).first()).isEqualTo(1)
-    }
-
-    @Test
-    fun `test component binding`() = runBlockingInTestScope {
-
-        val supplier =
-            ComponentLegacy<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
-
-            }
-        val (transformer, sink) = spyingIdentityTransformer<String>()
-
-        bind(supplier, identityComponent(), transformer)
-
-        supplier("a", "b").first()
-
-        expectThat(listOf("", "a", "b")).containsExactly(sink)
-    }
-
-    @Test
-    fun `test interceptors composition`() = runBlockingInTestScope {
-        val (interceptor1, sink1) = spyingInterceptor()
-        val (interceptor2, sink2) = spyingInterceptor()
-
-        ComponentLegacy<String, String, String>("", ::throwingResolver, { m, _ -> m.noCommand() }) {
-            interceptor = interceptor1 with interceptor2
+            expectThat(messages).containsExactlyInAnyOrder(expectedMessage)
         }
-            .also { component -> /* modify state */ component("a", "b").first() }
-
-        val expected = listOf(
-            InterceptData("a", "", "a", emptySet()),
-            InterceptData("b", "a", "b", emptySet())
-        )
-
-        expectThat(expected).containsExactly(sink1)
-        expectThat(expected).containsExactly(sink2)
-    }
 
 }
-
-private fun <E> spyingIdentityTransformer(): Pair<IdentityTransformer<E>, List<E>> {
-    val sink = mutableListOf<E>()
-
-    return { input: E -> sink += input; flowOf(input) } to sink
-}
-
-private fun <E> identityComponent(): ComponentLegacy<E, E> = { it }
-
-private fun spyingInterceptor(): Pair<LegacyInterceptor<String, String, String>, List<InterceptData>> {
-    val sink = mutableListOf<InterceptData>()
-
-    val interceptor: LegacyInterceptor<String, String, String> = { msg, old, new, cmds -> sink += InterceptData(msg, old, new, cmds) }
-
-    return interceptor to sink
-}
-

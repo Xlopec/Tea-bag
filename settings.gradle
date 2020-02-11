@@ -17,7 +17,6 @@
 include ':app',
     ':elm-core-component',
         ':elm-core-looper',
-        ':elm-core-actor',
     ':elm-core-component-debug',
         ':elm-time-travel-protocol',
         ':elm-time-travel-plugin',
