@@ -43,42 +43,9 @@ typealias Resolver<C, M> = suspend (command: C) -> Set<M>
  */
 typealias UpdateWith<S, C> = Pair<S, Set<C>>
 
-/**
- * Alias for a function that accepts input flow of messages and returns flow of states produced by that messages
- * @param M incoming messages
- * @param S state of the component
- */
-@Deprecated("will be removed")
-typealias ComponentLegacy<M, S> = (messages: Flow<M>) -> Flow<S>
-
 typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
 
-/**
- * Alias for a function that loads initial state of the component and initial set of commands
- * @param C initial commands to execute
- * @param S initial state of the component
- */
-@Deprecated("will be removed")
-typealias InitializerLegacy<S, C> = suspend () -> InitArgs<S, C>
-
 typealias Initializer<S, C> = suspend () -> Initial<S, C>
-
-/**
- * Alias for result of the [init][InitializerLegacy] function
- * @param C initial commands to execute
- * @param S initial state of the component
- */
-@Deprecated("will be removed", ReplaceWith("Initial()"))
-typealias InitArgs<S, C> = Pair<S, Set<C>>
-
-/**
- * Alias for a function that observes changes made inside component
- * @param M incoming message
- * @param C commands to be executed
- * @param S state of the component
- */
-@Deprecated("will be removed", replaceWith = ReplaceWith("Interceptor"))
-typealias LegacyInterceptor<M, S, C> = suspend (message: M, prevState: S, newState: S, commands: Set<C>) -> Unit
 
 typealias Interceptor<M, S, C> = suspend (snapshot: Snapshot<M, S, C>) -> Unit
 

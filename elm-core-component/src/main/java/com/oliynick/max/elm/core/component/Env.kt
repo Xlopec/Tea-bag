@@ -9,66 +9,26 @@ private annotation class DslBuilder
  * Dependencies holder
  */
 data class Env<M, C, S>(
-    @Deprecated("will be removed", ReplaceWith("newInitializer"))
-    inline val initializer: InitializerLegacy<S, C>,
+    inline val initializer: Initializer<S, C>,
     inline val resolver: Resolver<C, M>,
-    inline val update: Update<M, S, C>,
-    inline val interceptor: LegacyInterceptor<M, S, C>
-) {
-
-    val newInitializer: Initializer<S, C> = { initializer().let { (s, c) -> Initial(s, c) } }
-
-    constructor(initialState: S,
-                resolver: Resolver<C, M>,
-                update: Update<M, S, C>,
-                interceptor: LegacyInterceptor<M, S, C> = { _, _, _, _ -> },
-                vararg initialCommands: C)
-        : this(
-        InitializerLegacy(
-            initialState,
-            setOf(*initialCommands)
-        ),
-        resolver,
-        update,
-        interceptor
-    )
-
-    constructor(initialState: S,
-                resolver: Resolver<C, M>,
-                update: Update<M, S, C>,
-                interceptor: LegacyInterceptor<M, S, C> = { _, _, _, _ -> },
-                initialCommands: Set<C> = emptySet())
-
-            : this(
-        InitializerLegacy(
-            initialState,
-            initialCommands
-        ),
-        resolver,
-        update,
-        interceptor
-    )
-}
+    inline val update: Update<M, S, C>
+)
 
 @DslBuilder
 class EnvBuilder<M, C, S>(
-    @Deprecated("will be removed")
-    var initializer: InitializerLegacy<S, C>,
+    var initializer: Initializer<S, C>,
     var resolver: Resolver<C, M>,
-    var update: Update<M, S, C>,
-    @ObsoleteComponentApi
-    var interceptor: LegacyInterceptor<M, S, C> = { _, _, _, _ -> }
+    var update: Update<M, S, C>
 ) {
     constructor(env: Env<M, C, S>) : this(
         env.initializer,
         env.resolver,
-        env.update,
-        env.interceptor
+        env.update
     )
 }
 
 fun <M, C, S> Env(
-    initializer: InitializerLegacy<S, C>,
+    initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     config: EnvBuilder<M, C, S>.() -> Unit = {}
@@ -82,7 +42,7 @@ fun <M, C, S> Env(
     update: Update<M, S, C>,
     vararg initialCommands: C,
     config: EnvBuilder<M, C, S>.() -> Unit = {}
-) = Env(InitializerLegacy(initialState, setOf(*initialCommands)), resolver, update, config)
+) = Env(Initializer(initialState, setOf(*initialCommands)), resolver, update, config)
 
 fun <M, C, S> Env(
     initialState: S,
@@ -90,7 +50,7 @@ fun <M, C, S> Env(
     update: Update<M, S, C>,
     initialCommands: Set<C>,
     config: EnvBuilder<M, C, S>.() -> Unit = {}
-) = Env(InitializerLegacy(initialState, initialCommands), resolver, update, config)
+) = Env(Initializer(initialState, initialCommands), resolver, update, config)
 
 fun <S, C> Initializer(s: S, commands: Set<C>): Initializer<S, C> = { Initial(s, commands) }
 
@@ -98,10 +58,5 @@ fun <S, C> Initializer(s: S, vararg commands: C): Initializer<S, C> = Initialize
 
 fun <S, C> Initializer(s: S): Initializer<S, C> = Initializer(s, emptySet())
 
-fun <S, C> InitializerLegacy(s: S, commands: Set<C>): InitializerLegacy<S, C> = { s to commands }
-
-fun <S, C> InitializerLegacy(s: S, vararg commands: C): InitializerLegacy<S, C> =
-    InitializerLegacy(s, setOf(*commands))
-
-fun <M, C, S> EnvBuilder<M, C, S>.toEnv() =
-        Env(initializer, resolver, update, interceptor)
+fun <M, C, S> EnvBuilder<M, C, S>.toEnv(): Env<M, C, S> =
+        Env(initializer, resolver, update)

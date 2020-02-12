@@ -49,10 +49,7 @@ inline fun <reified M, reified C, reified S> Component(
     noinline update: Update<M, S, C>,
     noinline config: DebugEnvBuilder<M, C, S>.() -> Unit = {}
 ): Component<M, S, C> =
-    Component(Dependencies(id, Env(
-        toLegacy(
-            initializer
-        ), resolver, update), config))
+    Component(Dependencies(id, Env(initializer, resolver, update), config))
 
 private fun <M, S, C> Env<M, C, S>.doCompute(
     startFrom: Snapshot<M, S, C>,

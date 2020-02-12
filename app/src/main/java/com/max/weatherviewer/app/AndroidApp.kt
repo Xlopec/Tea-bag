@@ -8,7 +8,6 @@ import android.app.Application
 import com.max.weatherviewer.BuildConfig
 import com.max.weatherviewer.app.env.Environment
 import com.max.weatherviewer.misc.unsafeLazy
-import com.oliynick.max.elm.core.component.ComponentLegacy
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -27,7 +26,7 @@ class AndroidApp : Application() {
 inline val Activity.androidApp: AndroidApp
     get() = application as AndroidApp
 
-inline val Activity.appComponent: ComponentLegacy<Message, State>
+inline val Activity.appComponent: (Flow<Message>) -> Flow<State>
     get() = androidApp.component
 
 inline val Activity.appMessages: BroadcastChannel<Message>

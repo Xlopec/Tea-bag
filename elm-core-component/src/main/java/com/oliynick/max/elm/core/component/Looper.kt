@@ -29,17 +29,7 @@ inline fun <reified M, reified C, reified S> Component(
     noinline initializer: Initializer<S, C>,
     noinline resolver: Resolver<C, M>,
     noinline update: Update<M, S, C>
-): Component<M, S, C> = Component(
-    Env(
-        initializer = toLegacy(initializer),
-        resolver = resolver,
-        update = update
-    )
-)
-
-fun <S, C> toLegacy(
-    initializer: Initializer<S, C>
-): InitializerLegacy<S, C> = { initializer().let { (s, c) -> s to c } }
+): Component<M, S, C> = Component(Env(initializer, resolver, update))
 
 fun <M, C, S> Component(
     env: Env<M, C, S>
@@ -93,7 +83,7 @@ fun <M, C, S> Env<M, C, S>.messages(
     .onCompletion { th -> if (th != null) throw th else emitAll(input) }
 
 fun <M, C, S> Env<M, C, S>.begin(): Flow<Initial<S, C>> =
-    flow { emit(newInitializer()) }
+    flow { emit(initializer()) }
 
 fun <M, C, S> Env<M, C, S>.compute(
     messages: Flow<M>,
@@ -130,7 +120,7 @@ suspend fun <M, C, S> Env<M, C, S>.computeNextSnapshot(
 }
 
 fun <M, S, C> Env<M, C, S>.init(): Flow<Initial<S, C>> =
-    flow { emit(newInitializer()) }
+    flow { emit(initializer()) }
 
 private inline fun <T, R> Flow<T>.foldFlatten(
     acc: R,

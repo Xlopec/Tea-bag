@@ -16,13 +16,13 @@
 
 package com.oliynick.max.elm.time.travel.app.presentation.info
 
-import com.oliynick.max.elm.core.component.ComponentLegacy
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.presentation.misc.safe
 import com.oliynick.max.elm.time.travel.app.presentation.misc.setOnClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
@@ -31,7 +31,7 @@ import javax.swing.JPanel
 import kotlin.coroutines.CoroutineContext
 
 class InfoView(
-    component: ComponentLegacy<PluginMessage, PluginState>,
+    component: (Flow<PluginMessage>) -> Flow<PluginState>,
     context: CoroutineContext
 ) : CoroutineScope {
 

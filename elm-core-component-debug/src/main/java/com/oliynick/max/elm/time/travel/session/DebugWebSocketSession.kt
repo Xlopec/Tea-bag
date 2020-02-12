@@ -62,21 +62,19 @@ internal class DebugWebSocketSession<M, S>(
         )
     }
 
-    private fun <S> Flow<Either<*, S>>.externalStates(): Flow<S> =
-        filterIsInstance<Right<S>>().map { (s) -> s }
-
-    private fun <M> Flow<Either<M, *>>.externalMessages(): Flow<M> =
-        filterIsInstance<Left<M>>().map { (m) -> m }
-
-    private fun <T> unsafeLazy(
-        provider: () -> T
-    ) = lazy(LazyThreadSafetyMode.NONE, provider)
-
 }
 
-@Deprecated("will be removed")
-@PublishedApi
-internal fun <M, S> ServerSettings<M, S>.incomingPackets(
+private fun <S> Flow<Either<*, S>>.externalStates(): Flow<S> =
+    filterIsInstance<Right<S>>().map { (s) -> s }
+
+private fun <M> Flow<Either<M, *>>.externalMessages(): Flow<M> =
+    filterIsInstance<Left<M>>().map { (m) -> m }
+
+private fun <T> unsafeLazy(
+    provider: () -> T
+) = lazy(LazyThreadSafetyMode.NONE, provider)
+
+private fun <M, S> ServerSettings<M, S>.incomingPackets(
     clientWebSocketSession: ClientWebSocketSession
 ) =
     clientWebSocketSession.incoming.broadcast().asFlow()

@@ -18,12 +18,12 @@ package com.oliynick.max.elm.time.travel.app.presentation.component
 
 import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
-import com.oliynick.max.elm.core.component.ComponentLegacy
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.presentation.misc.*
 import com.oliynick.max.elm.time.travel.app.presentation.sidebar.getIcon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.mapNotNull
@@ -35,7 +35,7 @@ import javax.swing.tree.DefaultMutableTreeNode
 
 class ComponentView(
     private val scope: CoroutineScope,
-    private val component: ComponentLegacy<PluginMessage, PluginState>,
+    private val component: (Flow<PluginMessage>) -> Flow<PluginState>,
     componentState: ComponentDebugState
 ) : CoroutineScope by scope {
 

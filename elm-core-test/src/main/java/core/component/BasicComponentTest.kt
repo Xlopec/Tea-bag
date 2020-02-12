@@ -45,7 +45,7 @@ abstract class BasicComponentTest(
         runBlocking {
 
             val env = Env<Char, Char, String>(
-                InitializerLegacy("", 'a', 'b', 'c'),
+                Initializer("", 'a', 'b', 'c'),
                 { c -> setOf(c) },
                 { m, _ -> m.toString().noCommand() }
             )
@@ -184,10 +184,10 @@ abstract class BasicComponentTest(
 
                 val invocations = atomic(0)
 
-                fun initializer(): InitializerLegacy<String, Nothing> = {
+                fun initializer(): Initializer<String, Nothing> = {
                     invocations.incrementAndGet()
                     yield()
-                    "bar" to emptySet()
+                    Initial("bar", emptySet())
                 }
             }
 

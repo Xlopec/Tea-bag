@@ -16,12 +16,9 @@
 
 package com.oliynick.max.elm.time.travel.app.presentation.sidebar
 
-import com.intellij.openapi.progress.runBackgroundableTask
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.components.JBTabbedPane
-import com.oliynick.max.elm.core.component.ComponentLegacy
-import com.oliynick.max.elm.core.component.changes
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.presentation.component.ComponentView
 import com.oliynick.max.elm.time.travel.app.presentation.info.InfoView
@@ -29,12 +26,10 @@ import com.oliynick.max.elm.time.travel.app.presentation.misc.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import protocol.ComponentId
 import java.awt.Container
 import java.awt.FlowLayout
@@ -46,7 +41,7 @@ import java.awt.Component as AwtComponent
 class ToolWindowView(
     private val project: Project,
     private val scope: CoroutineScope,
-    private val component: ComponentLegacy<PluginMessage, PluginState>,
+    private val component: (Flow<PluginMessage>) -> Flow<PluginState>,
     private val uiEvents: BroadcastChannel<PluginMessage>
 ) : CoroutineScope by scope {
 
@@ -72,7 +67,6 @@ class ToolWindowView(
 
     init {
         launch { component(uiEvents.asFlow()).collect { state -> render(state, uiEvents::offer) } }
-        launch { component.showProgressOnTransientState(project) }
     }
 
     //todo consider exposing a single callback
@@ -192,25 +186,6 @@ private fun JTextField.setText(
     this.text = text
     document.addDocumentListener(listener)
 }
-
-private suspend fun ComponentLegacy<PluginMessage, PluginState>.showProgressOnTransientState(project: Project) {
-    changes().filter { state -> state.isTransient }.collect { transientState ->
-        runBackgroundableTask(transientState.progressDescription, project, false) {
-            runBlocking { changes().first { state -> !state.isTransient } }
-        }
-    }
-}
-
-private val PluginState.isTransient inline get() = this is Starting || this is Stopping
-
-private val ServerSettings.asHumanReadable: String inline get() = "$host:$port"
-
-private val PluginState.progressDescription: String
-    inline get() = when (this) {
-        is Starting -> "Starting server on ${settings.serverSettings.asHumanReadable}"
-        is Stopping -> "Stopping server on ${settings.serverSettings.asHumanReadable}"
-        is Stopped, is Started -> throw IllegalStateException("Can't get description for $this")
-    }
 
 private fun AwtComponent.setOnClickListenerEnabling(l: (MouseEvent) -> Unit) {
     setOnClickListener(l)

@@ -16,10 +16,7 @@
 
 package com.oliynick.max.elm.core.component
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 /**
  * Handy extension to combine a single command with state
@@ -107,70 +104,25 @@ suspend inline infix fun <C, M> C.effect(crossinline action: suspend C.() -> M?)
     return action(this@effect)?.let(::setOf) ?: emptySet()
 }
 
-/**
- * Returns flow that listens to changes of a component
- *
- * @receiver component for which [flow][Flow] of states should be returned
- * @param S state
- * @param M message
- * @return [Flow] of component states
- */
-@Deprecated("will be removed")
-fun <M, S> ComponentLegacy<M, S>.changes(): Flow<S> = this(emptyFlow())
+fun <M, S, C> Component<M, S, C>.snapshotChanges(): Flow<Snapshot<M, S, C>> =
+    this(emptyFlow())
 
-/**
- * Shortcut to supply multiple messages to the component without manually wrapping them into [flow][Flow]
- *
- * @receiver component that should receive specified messages
- * @param S state
- * @param M message
- * @param messages messages to supply
- * @return [Flow] of component states
- */
-@Deprecated("will be removed")
-operator fun <M, S> ComponentLegacy<M, S>.invoke(vararg messages: M): Flow<S> = this(flowOf(*messages))
+fun <M, S, C> Component<M, S, C>.stateChanges(): Flow<S> =
+    snapshotChanges().map { snapshot -> snapshot.state }
 
-/**
- * Shortcut to supply a single message to the component without manually wrapping it into [flow][Flow]
- *
- * @receiver component that should receive specified messages
- * @param S state
- * @param M message
- * @param message message to supply
- * @return [Flow] of component states
- */
-@Deprecated("will be removed")
-operator fun <M, S> ComponentLegacy<M, S>.invoke(message: M): Flow<S> = this(flowOf(message))
+operator fun <M, S, C> Component<M, S, C>.invoke(vararg messages: M) =
+    this(flowOf(*messages))
 
-/**
- * Takes changes of the [producer] stream and feeds them as input to the [consumer] applying [transform] function
- *
- * @receiver coroutine scope to be used
- * @param producer the producer flow function
- * @param consumer the consumer flow function
- * @param transform function that maps produced states to the flow to be consumed by the consumer function
- * @return cancelable job to dispose binding
- */
-@Deprecated("will be removed")
-inline fun <M1, S1, M2, S2> CoroutineScope.bind(noinline producer: ComponentLegacy<M1, S1>,
-                                                noinline consumer: ComponentLegacy<M2, S2>,
-                                                crossinline transform: (S1) -> Flow<M2>): Job {
+operator fun <M, S, C> Component<M, S, C>.invoke(messages: Iterable<M>) =
+    this(messages.asFlow())
 
-    return launch { producer.changes().map { s1 -> transform(s1) }.flattenConcat().flatMapConcat { m2 -> consumer(m2) }.collect() }
-}
+operator fun <M, S, C> Component<M, S, C>.invoke(message: M) =
+    this(flowOf(message))
 
-/**
- * Appends [interceptor][with] to this one
- *
- * @receiver interceptor for which another one should be appended
- * @param with interceptor to append
- * @param S state
- * @param M message
- * @param C command
- */
-@Deprecated("will be removed")
-inline infix fun <M, C, S> LegacyInterceptor<M, S, C>.with(crossinline with: LegacyInterceptor<M, S, C>): LegacyInterceptor<M, S, C> {
-    return { message, prevState, newState, commands ->
-        this(message, prevState, newState, commands); with(message, prevState, newState, commands)
-    }
-}
+inline infix fun <M, S, C> Component<M, S, C>.with(
+    crossinline interceptor: Interceptor<M, S, C>
+): Component<M, S, C> =
+    { input -> this(input).onEach { interceptor(it) } }
+
+fun <M, S, C> Component<M, S, C>.states(): ((Flow<M>) -> Flow<S>) =
+    { input -> this(input).map { snapshot -> snapshot.state } }
