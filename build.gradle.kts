@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.URL
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-
-    /* ext {
-         kotlin_version = "1.3.61"
-         ktor_version = "1.2.4"
-         coroutines_version = "1.3.3"
-     }*/
 
     repositories {
         mavenLocal()
@@ -44,12 +41,77 @@ buildscript {
     }
 }
 
-//apply plugin: "idea"
-//apply plugin: "com.vanniktech.android.junit.jacoco"
+plugins {
+    kotlin("jvm") version "1.3.61"
+    id("io.gitlab.arturbosch.detekt") version "1.0.0-RC16"
+    id("org.jetbrains.dokka") version "0.10.1"
+}
 
-/*idea.module {
-    excludeDirs += file("$projectDir/androidx_prebuilts")
-}*/
+detekt {
+    toolVersion = "1.0.0-RC16"
+    input = files("src/main/kotlin", "src/main/java")
+    filters = ".*/resources/.*,.*/build/.*"
+    baseline = file("$rootDir/detekt/detekt-baseline.xml")
+    config = files("$rootDir/detekt/detekt-config.yml")
+}
+
+val dokka by tasks.getting(org.jetbrains.dokka.gradle.DokkaTask::class) {
+    outputFormat = "html"
+    outputDirectory = "$buildDir/javadoc"
+
+    subProjects = listOf(
+        "elm-core-component",
+        "elm-core-component-debug",
+        "elm-time-travel-adapter-gson",
+        "elm-time-travel-protocol"
+    )
+
+    configuration {
+
+        moduleName = "Tea Core"
+
+        externalDocumentationLink {
+            url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+            url = URL("https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/")
+        }
+
+        jdkVersion = 8
+    }
+
+}
+
+val detektFormat by tasks.creating(io.gitlab.arturbosch.detekt.Detekt::class) {
+    parallel = true
+    autoCorrect = true
+    buildUponDefaultConfig = true
+    failFast = false
+    ignoreFailures = false
+    setSource(files(projectDir))
+
+    include("**/*.kt")
+    include("**/*.kts")
+    exclude("**/resources/**")
+    exclude("**/build/**")
+
+    config = files("$rootDir/detekt/detekt-config.yml")
+}
+
+val javadocJar by tasks.creating(org.gradle.jvm.tasks.Jar::class) {
+    classifier = "javadoc"
+    from("$buildDir/javadoc")
+    dependsOn(dokka)
+}
+
+val sourcesJar by tasks.creating(Jar::class) {
+    dependsOn(JavaPlugin.CLASSES_TASK_NAME)
+    classifier = "sources"
+    from(sourceSets["main"].allSource)
+}
+
+artifacts {
+    add("archives", sourcesJar)
+    add("archives", javadocJar)
+}
 
 allprojects {
     repositories {
@@ -59,24 +121,16 @@ allprojects {
         maven {
             setUrl("https://artifactory.cronapp.io/public-release/")
         }
-        // maven { url = java.net.URI("https://dl.bintray.com/kotlin/kotlin-eap") }
-        // maven { url "https://artifactory.cronapp.io/public-release/" }
-
     }
-
-}
-
-tasks.register("clean").configure {
-    delete(rootProject.buildDir)
 }
 
 project.afterEvaluate {
 
     allprojects {
 
-        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
+        tasks.withType<KotlinCompile>().all {
             kotlinOptions {
-                // will disable warning about usage of experimental Kotlin features
+                // disables warning about usage of experimental Kotlin features
                 freeCompilerArgs = listOf(
                     "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
                     "-Xuse-experimental=kotlin.Experimental",
