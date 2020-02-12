@@ -22,6 +22,7 @@ targetCompatibility = "8"
 
 mainClassName = 'com.oliynick.max.elm.time.travel.RunnerKt'
 
+/*
 buildscript {
 
     repositories {
@@ -30,9 +31,10 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath BuildPl"org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
+*/
 
 repositories {
     mavenLocal()
@@ -48,12 +50,12 @@ dependencies {
     implementation project(path: ':elm-core-component', configuration: 'default')
     api project(path: ':elm-time-travel-adapter-gson', configuration: 'default')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation Libraries.kotlinStdLib//"org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    implementation "io.ktor:ktor-client-websockets:$ktor_version"
-    implementation "io.ktor:ktor-client-okhttp:$ktor_version"
+    implementation Libraries.ktorWebsockets//"io.ktor:ktor-client-websockets:$ktor_version"
+    implementation Libraries.ktorOkHttp//"io.ktor:ktor-client-okhttp:$ktor_version"
 
     testImplementation project(path: ':elm-core-test', configuration: 'default')
-    testImplementation "io.ktor:ktor-client-mock-jvm:$ktor_version"
+    testImplementation TestLibraries.ktorMockJvm//"io.ktor:ktor-client-mock-jvm:$ktor_version"
 
 }

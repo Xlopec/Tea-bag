@@ -45,12 +45,6 @@ repositories {
     jcenter()
 }
 
-mainClassName = "com.oliynick.max.elm.core.component.RunnerKt"
-
-project.afterEvaluate {
-    //tasks.findByName("jar").dependsOn("detekt")
-}
-
 detekt {
     toolVersion = detect_version
     input = files("src/main/kotlin", "src/main/java")
@@ -102,18 +96,14 @@ artifacts {
     archives sourcesJar
 }
 
-junitJacoco {
-    jacocoVersion = '0.8.4'
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation Libraries.kotlinStdLib//"org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation Libraries.kotlinReflect //"org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     testImplementation project(path: ':elm-core-test', configuration: 'default')
 
     testImplementation 'org.robolectric:robolectric:4.3'
 
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    api Libraries.coroutinesCore//"org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 }

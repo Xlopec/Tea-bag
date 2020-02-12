@@ -122,8 +122,8 @@ dependencies {
 
     testImplementation project(path: ':elm-core-test', configuration: 'default')
     testImplementation "junit:junit:4.12"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+    testImplementation Libraries.coroutinesAndroid//"org.jetbrains.kotlinx:kotlinx-coroutines-android:$DependenciesKt.coroutines_version"
+    testImplementation Libraries.coroutinesTest//"org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
     
     androidTestImplementation "androidx.test:runner:1.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
