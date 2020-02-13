@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -20,6 +21,7 @@ import org.junit.runners.JUnit4
 class ComponentTest {
 
     @Test(timeout = 500L)
+    @Ignore
     fun test() = runBlocking {
 
         val resolver = object : AppResolver<TestEnvironment> {

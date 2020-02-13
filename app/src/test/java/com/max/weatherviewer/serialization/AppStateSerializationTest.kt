@@ -11,6 +11,7 @@ import com.max.weatherviewer.screens.feed.FeedLoading
 import com.max.weatherviewer.screens.feed.LoadArticles
 import com.max.weatherviewer.screens.feed.LoadCriteria
 import com.max.weatherviewer.screens.feed.Preview
+import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
 import io.kotlintest.shouldBe
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -30,6 +31,7 @@ class AppStateSerializationTest {
     private val gsonSerializer = GsonBuilder()
         .setPrettyPrinting()
         .apply {
+            registerTypeAdapterFactory(TypeAppenderAdapterFactory)
             registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
         }.create()
 
