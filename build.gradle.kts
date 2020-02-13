@@ -26,16 +26,12 @@ buildscript {
         jcenter()
         maven { setUrl("https://jitpack.io") }
         maven { setUrl("https://plugins.gradle.org/m2/") }
-        maven { setUrl("https://kotlin.bintray.com/ktor") }
-        maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
-
     }
+
     dependencies {
         classpath(BuildPlugins.kotlinGradlePlugin)
         classpath(BuildPlugins.androidGradlePlugin)
         classpath(BuildPlugins.androidMaven)
-        classpath(BuildPlugins.androidJacoco)
-
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -118,9 +114,6 @@ allprojects {
         mavenLocal()
         google()
         jcenter()
-        maven {
-            setUrl("https://artifactory.cronapp.io/public-release/")
-        }
     }
 }
 
@@ -131,7 +124,7 @@ project.afterEvaluate {
         tasks.withType<KotlinCompile>().all {
             kotlinOptions {
                 // disables warning about usage of experimental Kotlin features
-                freeCompilerArgs = listOf(
+                freeCompilerArgs += listOf(
                     "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
                     "-Xuse-experimental=kotlin.Experimental",
                     "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",

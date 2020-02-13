@@ -1,6 +1,7 @@
-import Libraries.coroutinesCore
-import Libraries.kotlinReflect
 import Libraries.kotlinStdLib
+import Libraries.ktorOkHttp
+import Libraries.ktorWebsockets
+import TestLibraries.ktorMockJvm
 
 /*
  * Copyright (C) 2019 Maksym Oliinyk.
@@ -22,22 +23,21 @@ plugins {
     kotlin("jvm")
 }
 
-group = "com.github.Xlopec"
-version = "0.0.2-alpha1"
-
-repositories {
-    mavenLocal()
-    jcenter()
-}
-
-
 dependencies {
-
-    api(coroutinesCore)
-
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+
+    api(project(path = ":elm-core-component", configuration = "default"))
+    api(project(path = ":elm-time-travel-protocol", configuration = "default"))
+    api(project(path = ":elm-time-travel-adapter-gson", configuration = "default"))
+
+    implementation(project(path = ":elm-core-component", configuration = "default"))
+
     implementation(kotlinStdLib)
-    implementation(kotlinReflect)
+
+    implementation(ktorWebsockets)
+    implementation(ktorOkHttp)
 
     testImplementation(project(path = ":elm-core-test", configuration = "default"))
+    testImplementation(ktorMockJvm)
+
 }
