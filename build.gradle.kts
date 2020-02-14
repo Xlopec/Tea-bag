@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import io.gitlab.arturbosch.detekt.Detekt
+import org.gradle.jvm.tasks.Jar
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
 
@@ -38,20 +41,45 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.3.61"
-    id("io.gitlab.arturbosch.detekt") version "1.0.0-RC16"
-    id("org.jetbrains.dokka") version "0.10.1"
+    kotlin()
+    detekt()
+    dokka()
 }
 
-detekt {
-    toolVersion = "1.0.0-RC16"
-    input = files("src/main/kotlin", "src/main/java")
-    filters = ".*/resources/.*,.*/build/.*"
-    baseline = file("$rootDir/detekt/detekt-baseline.xml")
-    config = files("$rootDir/detekt/detekt-config.yml")
+subprojects {
+
+    apply {
+        plugin("io.gitlab.arturbosch.detekt")
+    }
+
+    detekt {
+        toolVersion = BuildPlugins.Versions.detektVersion
+        input = files("src/main/kotlin", "src/main/java")
+    }
 }
 
-val dokka by tasks.getting(org.jetbrains.dokka.gradle.DokkaTask::class) {
+val detektAll by tasks.registering(Detekt::class) {
+    description = "Runs analysis task over whole code"
+    debug = true
+    parallel = true
+    ignoreFailures = false
+    disableDefaultRuleSets = false
+    buildUponDefaultConfig = true
+    setSource(files(projectDir))
+    config.setFrom(files("$rootDir/detekt/detekt-config.yml"))
+    baseline.set(file("$rootDir/detekt/detekt-baseline.xml"))
+
+    include("**/*.kt", "**/*.kts")
+    exclude("resources/", "build/")
+
+    reports {
+        xml.enabled = false
+        txt.enabled = false
+        html.enabled = true
+    }
+}
+
+val dokka by tasks.getting(DokkaTask::class) {
     outputFormat = "html"
     outputDirectory = "$buildDir/javadoc"
 
@@ -76,7 +104,7 @@ val dokka by tasks.getting(org.jetbrains.dokka.gradle.DokkaTask::class) {
 
 }
 
-val detektFormat by tasks.creating(io.gitlab.arturbosch.detekt.Detekt::class) {
+val detektFormat by tasks.creating(Detekt::class) {
     parallel = true
     autoCorrect = true
     buildUponDefaultConfig = true
@@ -89,10 +117,10 @@ val detektFormat by tasks.creating(io.gitlab.arturbosch.detekt.Detekt::class) {
     exclude("**/resources/**")
     exclude("**/build/**")
 
-    config = files("$rootDir/detekt/detekt-config.yml")
+    config.setFrom(files("$rootDir/detekt/detekt-config.yml"))
 }
 
-val javadocJar by tasks.creating(org.gradle.jvm.tasks.Jar::class) {
+val javadocJar by tasks.creating(Jar::class) {
     classifier = "javadoc"
     from("$buildDir/javadoc")
     dependsOn(dokka)
@@ -115,26 +143,20 @@ allprojects {
         google()
         jcenter()
     }
-}
 
-project.afterEvaluate {
-
-    allprojects {
-
-        tasks.withType<KotlinCompile>().all {
-            kotlinOptions {
-                // disables warning about usage of experimental Kotlin features
-                freeCompilerArgs += listOf(
-                    "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
-                    "-Xuse-experimental=kotlin.Experimental",
-                    "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
-                    "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
-                    "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                    "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
-                    "-XXLanguage:+NewInference",
-                    "-XXLanguage:+InlineClasses"
-                )
-            }
+    tasks.withType<KotlinCompile>().all {
+        kotlinOptions {
+            // disables warning about usage of experimental Kotlin features
+            freeCompilerArgs += listOf(
+                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
+                "-Xuse-experimental=kotlin.Experimental",
+                "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
+                "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
+                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
+                "-XXLanguage:+NewInference",
+                "-XXLanguage:+InlineClasses"
+            )
         }
     }
 }

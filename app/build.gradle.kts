@@ -21,9 +21,9 @@ buildscript {
         google()
         jcenter()
         maven { setUrl("https://jitpack.io") }
-        maven { setUrl ("https://plugins.gradle.org/m2/") }
-        maven { setUrl ("https://kotlin.bintray.com/ktor") }
-        maven { setUrl ("https://dl.bintray.com/kotlin/kotlin-eap") }
+        maven { setUrl("https://plugins.gradle.org/m2/") }
+        maven { setUrl("https://kotlin.bintray.com/ktor") }
+        maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
     }
 }
 
@@ -46,7 +46,10 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles (getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -65,9 +68,9 @@ android {
     }
 
     packagingOptions {
-        exclude ("META-INF/ktor*")
-        exclude ("META-INF/kotlin*")
-        exclude ("META-INF/atomicfu*")
+        exclude("META-INF/ktor*")
+        exclude("META-INF/kotlin*")
+        exclude("META-INF/atomicfu*")
     }
 }
 
@@ -112,7 +115,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.6.0")
     implementation("com.squareup.okhttp3:logging-interceptor:3.11.0")
 
-    testImplementation (project(path= ":elm-core-test", configuration= "default"))
+    testImplementation(project(path = ":elm-core-test", configuration = "default"))
     testImplementation("junit:junit:4.12")
     testImplementation(Libraries.coroutinesAndroid)
     testImplementation(Libraries.coroutinesTest)

@@ -1,5 +1,9 @@
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
+import org.gradle.kotlin.dsl.kotlin
+import org.gradle.kotlin.dsl.version
+import org.gradle.plugin.use.PluginDependenciesSpec
+import org.gradle.plugin.use.PluginDependencySpec
 
 const val kotlinVersion = "1.3.61"
 
@@ -7,6 +11,8 @@ object BuildPlugins {
 
     object Versions {
         const val buildToolsVersion = "3.5.3"
+        const val detektVersion = "1.5.1"
+        const val dokkaVersion = "0.10.1"
     }
 
     const val androidGradlePlugin = "com.android.tools.build:gradle:${Versions.buildToolsVersion}"
@@ -53,3 +59,12 @@ object TestLibraries {
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.3"
 
 }
+
+fun PluginDependenciesSpec.kotlin(): PluginDependencySpec =
+    kotlin("jvm") version kotlinVersion
+
+fun PluginDependenciesSpec.detekt(): PluginDependencySpec =
+    id("io.gitlab.arturbosch.detekt").version(BuildPlugins.Versions.detektVersion)
+
+fun PluginDependenciesSpec.dokka(): PluginDependencySpec =
+    id("org.jetbrains.dokka").version(BuildPlugins.Versions.dokkaVersion)
