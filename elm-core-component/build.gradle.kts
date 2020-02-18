@@ -18,19 +18,6 @@ import Libraries.kotlinStdLib
  * limitations under the License.
  */
 
-plugins {
-    kotlin("jvm")
-}
-
-group = "com.github.Xlopec"
-version = "0.0.2-alpha1"
-
-repositories {
-    mavenLocal()
-    jcenter()
-}
-
-
 dependencies {
 
     api(coroutinesCore)

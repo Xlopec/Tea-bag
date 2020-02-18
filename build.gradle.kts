@@ -15,7 +15,6 @@
  */
 
 import io.gitlab.arturbosch.detekt.Detekt
-import org.gradle.jvm.tasks.Jar
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
@@ -44,19 +43,84 @@ plugins {
     kotlin()
     detekt()
     dokka()
+    `maven-publish`
 }
 
-subprojects {
-
+allprojects {
     apply {
         plugin("io.gitlab.arturbosch.detekt")
     }
-
-    detekt {
-        toolVersion = BuildPlugins.Versions.detektVersion
-        input = files("src/main/kotlin", "src/main/java")
-    }
 }
+
+allprojects
+    .filterNot { project -> project.name == "app" }
+    .forEachApplying {
+
+        apply {
+            plugin("maven-publish")
+            plugin("org.jetbrains.kotlin.jvm")
+            plugin("org.jetbrains.dokka")
+        }
+
+        val dokka by tasks.getting(DokkaTask::class) {
+            outputFormat = "html"
+            outputDirectory = "$buildDir/javadoc"
+
+            configuration {
+
+                moduleName = name
+
+                externalDocumentationLink {
+                    url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+                    url = URL("https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/")
+                }
+
+                jdkVersion = JavaVersion.VERSION_1_8.majorVersionInt
+            }
+
+        }
+
+        val sourcesJar by tasks.creating(Jar::class) {
+            dependsOn(tasks.classes)
+            archiveClassifier.set("sources")
+            from(sourceSets.main.get().allSource)
+        }
+
+        val javadocJar by tasks.creating(Jar::class) {
+            dependsOn(dokka)
+            archiveClassifier.set("javadoc")
+            from("$buildDir/javadoc")
+        }
+
+        publishing {
+
+            publications {
+                create<MavenPublication>(name) {
+                    from(components["java"])
+                    artifact(sourcesJar)
+                    artifact(javadocJar)
+
+                    groupId = "com.github.Xlopec"
+                    artifactId = name
+                    version = "0.0.2-alpha1"
+                }
+            }
+
+            repositories {
+                mavenLocal()
+            }
+        }
+
+        artifacts {
+            archives(sourcesJar)
+            archives(javadocJar)
+        }
+
+        detekt {
+            toolVersion = BuildPlugins.Versions.detektVersion
+            input = files("src/main/kotlin", "src/main/java")
+        }
+    }
 
 val detektAll by tasks.registering(Detekt::class) {
     description = "Runs analysis task over whole code"
@@ -79,31 +143,6 @@ val detektAll by tasks.registering(Detekt::class) {
     }
 }
 
-val dokka by tasks.getting(DokkaTask::class) {
-    outputFormat = "html"
-    outputDirectory = "$buildDir/javadoc"
-
-    subProjects = listOf(
-        "elm-core-component",
-        "elm-core-component-debug",
-        "elm-time-travel-adapter-gson",
-        "elm-time-travel-protocol"
-    )
-
-    configuration {
-
-        moduleName = "Tea Core"
-
-        externalDocumentationLink {
-            url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-            url = URL("https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/")
-        }
-
-        jdkVersion = 8
-    }
-
-}
-
 val detektFormat by tasks.creating(Detekt::class) {
     parallel = true
     autoCorrect = true
@@ -120,23 +159,6 @@ val detektFormat by tasks.creating(Detekt::class) {
     config.setFrom(files("$rootDir/detekt/detekt-config.yml"))
 }
 
-val javadocJar by tasks.creating(Jar::class) {
-    classifier = "javadoc"
-    from("$buildDir/javadoc")
-    dependsOn(dokka)
-}
-
-val sourcesJar by tasks.creating(Jar::class) {
-    dependsOn(JavaPlugin.CLASSES_TASK_NAME)
-    classifier = "sources"
-    from(sourceSets["main"].allSource)
-}
-
-artifacts {
-    add("archives", sourcesJar)
-    add("archives", javadocJar)
-}
-
 allprojects {
     repositories {
         mavenLocal()
@@ -147,6 +169,7 @@ allprojects {
     tasks.withType<KotlinCompile>().all {
         kotlinOptions {
             // disables warning about usage of experimental Kotlin features
+            @Suppress("SuspiciousCollectionReassignment")
             freeCompilerArgs += listOf(
                 "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
                 "-Xuse-experimental=kotlin.Experimental",

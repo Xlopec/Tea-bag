@@ -17,7 +17,6 @@
 buildscript {
 
     repositories {
-        mavenLocal()
         google()
         jcenter()
         maven { setUrl("https://jitpack.io") }

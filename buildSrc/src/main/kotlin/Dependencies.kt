@@ -1,9 +1,5 @@
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
-import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.version
-import org.gradle.plugin.use.PluginDependenciesSpec
-import org.gradle.plugin.use.PluginDependencySpec
 
 const val kotlinVersion = "1.3.61"
 
@@ -60,11 +56,3 @@ object TestLibraries {
 
 }
 
-fun PluginDependenciesSpec.kotlin(): PluginDependencySpec =
-    kotlin("jvm") version kotlinVersion
-
-fun PluginDependenciesSpec.detekt(): PluginDependencySpec =
-    id("io.gitlab.arturbosch.detekt").version(BuildPlugins.Versions.detektVersion)
-
-fun PluginDependenciesSpec.dokka(): PluginDependencySpec =
-    id("org.jetbrains.dokka").version(BuildPlugins.Versions.dokkaVersion)
