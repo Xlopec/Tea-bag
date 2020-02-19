@@ -18,10 +18,8 @@
 
 package com.oliynick.max.elm.core.component
 
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -36,64 +34,51 @@ fun <M, C, S> Component(
 ): Component<M, S, C> {
 
     val input = Channel<M>(Channel.RENDEZVOUS)
+    val upstream = env.upstream(input.consumeAsFlow(), env.init()).shareConflated()
 
-    fun Env<M, C, S>.doCompute(
-        initial: Initial<S, C>
-    ) = compute(messages(initial, input.consumeAsFlow()), initial).startFrom(initial)
-
-    val upstream =
-        with(env) {
-            begin().flatMapConcat { initial -> doCompute(initial) }.shareConflated()
-        }
-
-    return { messages ->
-
-        channelFlow {
-
-            coroutineScope {
-
-                val messageJob = launch(start = CoroutineStart.LAZY) {
-                    messages.collectTo(input)
-                }
-
-                launch {
-                    @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
-                    upstream
-                        .onStart { messageJob.start() }
-                        .collectTo(channel)
-                }
-            }
-        }
-    }
+    return { messages -> upstream.downstream(messages, input) }
 }
+
+fun <M, S, C> Env<M, C, S>.upstream(
+    messages: Flow<M>,
+    snapshots: Flow<Initial<S, C>>
+) = snapshots.flatMapConcat { startFrom -> doCompute(startFrom, messages) }
+
+fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
+    input: Flow<M>,
+    upstreamInput: Channel<M>
+): Flow<Snapshot<M, S, C>> = channelFlow {
+    @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
+    onStart { launch { input.collectTo(upstreamInput) } }
+        .collectTo(channel)
+}
+
+fun <M, S, C> Env<M, C, S>.doCompute(
+    startFrom: Initial<S, C>,
+    messages: Flow<M>
+): Flow<Snapshot<M, S, C>> =
+    compute(messages(startFrom.commands, messages), startFrom)
+        .startFrom(startFrom)
 
 suspend fun <T> Flow<T>.collectTo(
     sendChannel: SendChannel<T>
 ) = collect(sendChannel::send)
 
-fun <M, C, S> Env<M, C, S>.messages(
-    initial: Initial<S, C>,
-    input: Flow<M>
-) = messages(initial.commands, input)
-
-fun <M, C, S> Env<M, C, S>.messages(
+private fun <M, C, S> Env<M, C, S>.messages(
     commands: Collection<C>,
     input: Flow<M>
 ) = flow { emitAll(resolver(commands).asFlow()) }
     .onCompletion { th -> if (th != null) throw th else emitAll(input) }
 
-fun <M, C, S> Env<M, C, S>.begin(): Flow<Initial<S, C>> =
-    flow { emit(initializer()) }
-
-fun <M, C, S> Env<M, C, S>.compute(
+private fun <M, C, S> Env<M, C, S>.compute(
     messages: Flow<M>,
     startFrom: Snapshot<M, S, C>
 ): Flow<Snapshot<M, S, C>> =
     messages.foldFlatten(startFrom) { snapshot, message ->
-        computeNextSnapshot(snapshot, message)
+        computeNextSnapshot(snapshot.state, message)
     }
 
-suspend fun <M, C, S> Env<M, C, S>.computeNextSnapshotsRecursively(
+private suspend fun <M, C, S> Env<M, C, S>.computeNextSnapshotsRecursively(
     state: S,
     messages: Iterator<M>
 ): Flow<Snapshot<M, S, C>> {
@@ -103,20 +88,20 @@ suspend fun <M, C, S> Env<M, C, S>.computeNextSnapshotsRecursively(
     val (nextState, commands) = update(message, state)
 
     return computeNextSnapshotsRecursively(nextState, resolver(commands).iterator())
-        .startFrom(Regular(message, nextState, commands))
+        .startFrom(Regular(nextState, commands, state, message))
 }
 
-suspend fun <M, C, S> Env<M, C, S>.computeNextSnapshot(
-    snapshot: Snapshot<M, S, C>,
+private suspend fun <M, C, S> Env<M, C, S>.computeNextSnapshot(
+    state: S,
     message: M
 ): Flow<Snapshot<M, S, C>> {
     // todo: we need to add possibility to return own versions
     //  of snapshots, e.g. user might be interested only in current
     //  version of state
-    val (nextState, commands) = update(message, snapshot.state)
+    val (nextState, commands) = update(message, state)
 
     return computeNextSnapshotsRecursively(nextState, resolver(commands).iterator())
-        .startFrom(Regular(message, nextState, commands))
+        .startFrom(Regular(nextState, commands, state, message))
 }
 
 fun <M, S, C> Env<M, C, S>.init(): Flow<Initial<S, C>> =
@@ -135,13 +120,12 @@ private inline fun <T, R> Flow<T>.foldFlatten(
     }
 }
 
-fun <T> Flow<T>.startFrom(
+private fun <T> Flow<T>.startFrom(
     t: T
 ) = onStart { emit(t) }
 
 private fun <E> Iterator<E>.nextOrNull() = if (hasNext()) next() else null
 
-private suspend operator fun <C, M> Resolver<C, M>.invoke(commands: Collection<C>): Set<M> {
-    return commands.fold(LinkedHashSet(commands.size)) { acc, cmd -> acc.addAll(this(cmd)); acc }
-}
+private suspend operator fun <C, M> Resolver<C, M>.invoke(commands: Collection<C>): Set<M> =
+    commands.fold(LinkedHashSet(commands.size)) { acc, cmd -> acc.addAll(this(cmd)); acc }
 

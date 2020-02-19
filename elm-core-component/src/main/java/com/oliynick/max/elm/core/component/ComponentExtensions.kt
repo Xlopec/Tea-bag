@@ -26,7 +26,9 @@ import kotlinx.coroutines.flow.*
  * @param command command to combine with state
  * @return [UpdateWith] instance with given state and set that consists from a single command
  */
-infix fun <S, C> S.command(command: C): UpdateWith<S, C> = this to setOf(command)
+infix fun <S, C> S.command(
+    command: C
+): UpdateWith<S, C> = this to setOf(command)
 
 /**
  * Handy extension to combine two commands with state
@@ -37,7 +39,10 @@ infix fun <S, C> S.command(command: C): UpdateWith<S, C> = this to setOf(command
  * @param second the second command to combine with state
  * @return [UpdateWith] instance with given state and set of commands
  */
-fun <S, C> S.command(first: C, second: C): UpdateWith<S, C> = this to setOf(first, second)
+fun <S, C> S.command(
+    first: C,
+    second: C
+): UpdateWith<S, C> = this to setOf(first, second)
 
 /**
  * Handy extension to combine three commands with state
@@ -49,7 +54,12 @@ fun <S, C> S.command(first: C, second: C): UpdateWith<S, C> = this to setOf(firs
  * @param third the third command to combine with state
  * @return [UpdateWith] instance with given state and set of commands
  */
-fun <S, C> S.command(first: C, second: C, third: C): UpdateWith<S, C> = this to setOf(first, second, third)
+fun <S, C> S.command(
+    first: C,
+    second: C,
+    third: C
+): UpdateWith<S, C> =
+    this to setOf(first, second, third)
 
 /**
  * Handy extension to combine multiple commands with state
@@ -100,9 +110,9 @@ suspend inline infix fun <C, M> C.sideEffect(crossinline action: suspend C.() ->
  * @param action action to perform that might produce message to be consumed by a component
  * @return set of messages to be consumed a component
  */
-suspend inline infix fun <C, M> C.effect(crossinline action: suspend C.() -> M?): Set<M> {
-    return action(this@effect)?.let(::setOf) ?: emptySet()
-}
+suspend inline infix fun <C, M> C.effect(
+    crossinline action: suspend C.() -> M?
+): Set<M> = action(this@effect)?.let(::setOf) ?: emptySet()
 
 fun <M, S, C> Component<M, S, C>.snapshotChanges(): Flow<Snapshot<M, S, C>> =
     this(emptyFlow())

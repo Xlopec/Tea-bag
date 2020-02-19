@@ -60,7 +60,18 @@ data class Initial<out S, out C>(
 ) : Snapshot<Nothing, S, C>()
 
 data class Regular<out M, out S, out C>(
-    val message: M,
     override val state: S,
-    override val commands: Set<C>
+    override val commands: Set<C>,
+    val oldState: S,
+    val message: M
 ) : Snapshot<M, S, C>()
+
+operator fun <S> Snapshot<*, S, *>.component1(): S = when(this) {
+    is Initial -> state
+    is Regular -> state
+}
+
+operator fun <C> Snapshot<*, *, C>.component2(): Set<C> = when(this) {
+    is Initial -> commands
+    is Regular -> commands
+}

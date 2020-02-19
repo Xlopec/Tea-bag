@@ -51,33 +51,14 @@ inline fun <reified M, reified C, reified S> Component(
 ): Component<M, S, C> =
     Component(Dependencies(id, Env(initializer, resolver, update), config))
 
-private fun <M, S, C> Env<M, C, S>.doCompute(
-    startFrom: Snapshot<M, S, C>,
-    messages: Flow<M>
-): Flow<Snapshot<M, S, C>> =
-    compute(messages(startFrom.commands(), messages), startFrom)
-        .startFrom(startFrom)
-
 @PublishedApi
-internal fun <M, S, C> Env<M, C, S>.upstream(
-    messages: Flow<M>,
-    snapshots: Flow<Snapshot<M, S, C>>
-) = begin().mergeWith(snapshots)
-    .flatMapConcat { startFrom ->
-        doCompute(
-            startFrom,
-            messages
-        )
-    }
-
-@PublishedApi
-internal fun <M, C, S> DebugEnv<M, C, S>.debugSession(
+internal fun <M, C, S> DebugEnv<M, C, S>.upstream(
     input: Flow<M>
 ) = channelFlow {
 
     sessionBuilder(serverSettings) {
         @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
-        componentEnv.upstream(input.mergeWith(messages), states.asSnapshots())
+        componentEnv.upstream(input.mergeWith(messages), init().mergeWith(states.asSnapshots()))
             .onEach { snapshot -> notifyServer(this@sessionBuilder, snapshot) }
             .collectTo(channel)
     }
@@ -89,19 +70,10 @@ inline fun <reified M, reified C, reified S> Component(
 ): Component<M, S, C> {
 
     val input = Channel<M>(Channel.RENDEZVOUS)
-    val debugSession = env.debugSession(input.consumeAsFlow())
+    val upstream = env.upstream(input.consumeAsFlow())
 
-    return { messages ->
-
-        channelFlow {
-            // todo create `collect` extension for producer scope
-            @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
-            debugSession.onStart { launch { messages.collectTo(input) } }.collectTo(channel)
-        }
-    }
+    return { messages -> upstream.downstream(messages, input) }
 }
-
-private fun <C> Snapshot<*, *, C>.commands() = if (this is Initial) commands else emptySet()
 
 @PublishedApi
 internal inline val <M, S> DebugEnv<M, *, S>.sessionBuilder: SessionBuilder<M, S>
@@ -114,12 +86,11 @@ internal fun notifyConnectException(
 ): Nothing =
     throw ConnectException(connectionFailureMessage(serverSettings), th)
 
-@PublishedApi
-internal fun <S> Flow<S>.asSnapshots(): Flow<Initial<S, Nothing>> =
+private fun <S> Flow<S>.asSnapshots(): Flow<Initial<S, Nothing>> =
+    // fixme what if Initial isn't what we're looking for?
     map { s -> Initial(s, emptySet()) }
 
-@PublishedApi
-internal suspend fun <M, C, S> DebugEnv<M, C, S>.notifyServer(
+private suspend fun <M, C, S> DebugEnv<M, C, S>.notifyServer(
     session: DebugSession<M, S>,
     snapshot: Snapshot<M, S, C>
 ) = with(serverSettings.serializer) {
@@ -138,8 +109,7 @@ internal suspend fun <M, C, S> DebugEnv<M, C, S>.notifyServer(
     session.send(NotifyServer(UUID.randomUUID(), serverSettings.id, message))
 }
 
-@PublishedApi
-internal fun <T> Flow<T>.mergeWith(
+private fun <T> Flow<T>.mergeWith(
     another: Flow<T>
 ): Flow<T> = channelFlow {
     coroutineScope {
@@ -161,3 +131,5 @@ internal fun connectionFailureMessage(
     serverSettings: ServerSettings<*, *>
 ) = "Component '${serverSettings.id.id}' " +
     "couldn't connect to the endpoint ${serverSettings.url.toExternalForm()}"
+
+private fun <M, S, C> DebugEnv<M, C, S>.init(): Flow<Initial<S, C>> = componentEnv.init()

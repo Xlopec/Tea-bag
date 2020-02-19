@@ -8,13 +8,16 @@ import com.oliynick.max.elm.time.travel.session.WebSocketSession
 import core.component.BasicComponentTest
 import core.misc.throwingResolver
 import io.kotlintest.fail
+import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.numerics.shouldBeExactly
 import io.kotlintest.matchers.numerics.shouldNotBeExactly
 import io.kotlintest.matchers.throwable.shouldHaveCauseOfType
 import io.kotlintest.matchers.throwable.shouldHaveMessage
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrowExactlyUnit
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toCollection
 import kotlinx.coroutines.runBlocking
@@ -29,12 +32,12 @@ import protocol.NotifyComponentSnapshot
 
 @RunWith(JUnit4::class)
 class DebuggableComponentTest : BasicComponentTest({ env ->
-    Component(
-        TestEnv(
-            env = env
-        )
-    )
-}) {
+                                                       Component(
+                                                           TestEnv(
+                                                               env = env
+                                                           )
+                                                       )
+                                                   }) {
 
     private val testEnv = Env(
         "",
@@ -78,9 +81,9 @@ class DebuggableComponentTest : BasicComponentTest({ env ->
 
         snapshots shouldBe listOf(
             Initial("", emptySet<String>()),
-            Regular("a", "a", emptySet()),
-            Regular("b", "b", emptySet()),
-            Regular("c", "c", emptySet())
+            Regular("a", emptySet(), "", "a"),
+            Regular("b", emptySet(), "a", "b"),
+            Regular("c", emptySet(), "b", "c")
         )
 
         testSession.packets.forEachIndexed { index, elem ->
@@ -102,6 +105,29 @@ class DebuggableComponentTest : BasicComponentTest({ env ->
                 is ActionApplied -> fail("Shouldn't get here. Index=$index, elem=$elem")
             }
         }
+    }
+
+    @Test
+    fun `test debuggable component processes server snapshots properly`() = runBlocking {
+
+        val testSession = TestDebugSession<String, String>(states = flowOf("a"))
+        val component = Component(
+            TestEnv(
+                env = testEnv.copy(initializer = { delay(Long.MAX_VALUE); error("shouldn't get here") }),
+                serverSettings = TestServerSettings(
+                    sessionBuilder = { _, block -> testSession.apply { block() } }
+                )
+            )
+        )
+
+        val snapshots = component("b")
+            .take(2)
+            .toCollection(ArrayList(2))
+
+        snapshots shouldContainExactly listOf(
+            Initial("a", emptySet()),
+            Regular("b", emptySet(), "a", "b")
+        )
     }
 
 }

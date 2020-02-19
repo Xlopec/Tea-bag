@@ -17,13 +17,25 @@
 package core.misc
 
 import com.oliynick.max.elm.core.component.UpdateWith
+import com.oliynick.max.elm.core.component.command
 import com.oliynick.max.elm.core.component.noCommand
 
 @Suppress("RedundantSuspendModifier")
 suspend fun <C> throwingResolver(c: C): Nothing {
-    throw IllegalArgumentException("Unexpected command $c")
+    throw IllegalStateException("Unexpected command $c")
 }
 
-fun messageAsStateUpdate(message: String, @Suppress("UNUSED_PARAMETER") state: String) : UpdateWith<String, Set<String>> {
+fun <M, S> throwingUpdater(
+    m: M,
+    s: S
+): Nothing {
+    throw IllegalStateException("message=$m, state=$s")
+}
+
+fun messageAsStateUpdate(message: String, @Suppress("UNUSED_PARAMETER") state: String): UpdateWith<String, Set<String>> {
     return message.noCommand()
+}
+
+fun messageAsCommandUpdate(message: String, @Suppress("UNUSED_PARAMETER") state: String): UpdateWith<String, String> {
+    return state.command(message)
 }

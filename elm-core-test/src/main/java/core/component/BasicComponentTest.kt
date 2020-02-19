@@ -34,9 +34,9 @@ abstract class BasicComponentTest(
 
         snapshots shouldContainExactly listOf(
             Initial("", emptySet()),
-            Regular('a', "a", emptySet()),
-            Regular('b', "b", emptySet()),
-            Regular('c', "c", emptySet())
+            Regular("a", emptySet(), "", 'a'),
+            Regular("b", emptySet(), "a", 'b'),
+            Regular("c", emptySet(), "b", 'c')
         )
     }
 
@@ -58,12 +58,12 @@ abstract class BasicComponentTest(
 
             snapshots shouldContainExactly listOf(
                 Initial("", setOf('a', 'b', 'c')),
-                Regular('a', "a", emptySet()),
-                Regular('b', "b", emptySet()),
-                Regular('c', "c", emptySet()),
-                Regular('d', "d", emptySet()),
-                Regular('e', "e", emptySet()),
-                Regular('f', "f", emptySet())
+                Regular("a", emptySet(), "", 'a'),
+                Regular("b", emptySet(), "a", 'b'),
+                Regular("c", emptySet(), "b", 'c'),
+                Regular("d", emptySet(), "c", 'd'),
+                Regular("e", emptySet(), "d", 'e'),
+                Regular("f", emptySet(), "e", 'f')
             )
         }
 
@@ -89,8 +89,8 @@ abstract class BasicComponentTest(
             @Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
             snapshots shouldBe listOf<Snapshot<Char, String, Char>>(
                 Initial("", emptySet()),
-                Regular('a', "a", setOf('a')),
-                Regular('b', "ab", setOf('b'))
+                Regular("a", setOf('a'), "", 'a'),
+                Regular("ab", setOf('b'), "a", 'b')
             )
         }
 
@@ -116,8 +116,8 @@ abstract class BasicComponentTest(
 
             snapshots shouldContainExactly listOf(
                 Initial("", emptySet()),
-                Regular('a', "a", setOf('b', 'c')),
-                Regular('b', "ab", emptySet())
+                Regular("a", setOf('b', 'c'), "", 'a'),
+                Regular("ab", emptySet(), "a", 'b')
             )
         }
 
@@ -168,8 +168,8 @@ abstract class BasicComponentTest(
         @Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
         val expected = listOf<Snapshot<Char, String, Char>>(
             Initial("", emptySet()),
-            Regular('a', "a", setOf('a')),
-            Regular('b', "ab", setOf('b'))
+            Regular("a", setOf('a'), "", 'a'),
+            Regular("ab", setOf('b'), "a", 'b')
         )
 
         snapshots1Deferred.await().asClue { it shouldContainExactly expected }
@@ -267,11 +267,12 @@ abstract class BasicComponentTest(
             }
 
             val expected: List<Snapshot<Char, String, Char>> =
-                listOf(Initial("", emptySet<Char>())) + range.map { ch ->
+                listOf(Initial("", emptySet<Char>())) + range.mapIndexed { index, ch ->
                     Regular(
-                        ch,
                         ch.toString(),
-                        emptySet()
+                        emptySet(),
+                        if (index == 0) "" else ch.dec().toString(),
+                        ch
                     )
                 }
 
