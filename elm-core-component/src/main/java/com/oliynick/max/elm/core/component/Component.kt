@@ -15,10 +15,19 @@
  */
 
 @file:Suppress("unused", "MemberVisibilityCanBePrivate", "FunctionName")
+@file:UseExperimental(InternalComponentApi::class)
 
 package com.oliynick.max.elm.core.component
 
+import com.oliynick.max.elm.core.component.internal.downstream
+import com.oliynick.max.elm.core.component.internal.init
+import com.oliynick.max.elm.core.component.internal.shareConflated
+import com.oliynick.max.elm.core.component.internal.upstream
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.consumeAsFlow
+
+typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
 
 /**
  * Alias for a pure function that accepts message with current state and returns the next state with possible empty set of commands
@@ -43,35 +52,26 @@ typealias Resolver<C, M> = suspend (command: C) -> Set<M>
  */
 typealias UpdateWith<S, C> = Pair<S, Set<C>>
 
-typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
+inline fun <reified M, reified C, reified S> Component(
+    noinline initializer: Initializer<S, C>,
+    noinline resolver: Resolver<C, M>,
+    noinline update: Update<M, S, C>
+): Component<M, S, C> =
+    Component(
+        Env(
+            initializer,
+            resolver,
+            update
+        )
+    )
 
-typealias Initializer<S, C> = suspend () -> Initial<S, C>
+fun <M, C, S> Component(
+    env: Env<M, C, S>
+): Component<M, S, C> {
 
-typealias Interceptor<M, S, C> = suspend (snapshot: Snapshot<M, S, C>) -> Unit
+    val input = Channel<M>(Channel.RENDEZVOUS)
+    val upstream = env.upstream(input.consumeAsFlow(), env.init()).shareConflated()
 
-sealed class Snapshot<out M, out S, out C> {
-    abstract val state: S
-    abstract val commands: Set<C>
+    return { messages -> upstream.downstream(messages, input) }
 }
 
-data class Initial<out S, out C>(
-    override val state: S,
-    override val commands: Set<C>
-) : Snapshot<Nothing, S, C>()
-
-data class Regular<out M, out S, out C>(
-    override val state: S,
-    override val commands: Set<C>,
-    val oldState: S,
-    val message: M
-) : Snapshot<M, S, C>()
-
-operator fun <S> Snapshot<*, S, *>.component1(): S = when(this) {
-    is Initial -> state
-    is Regular -> state
-}
-
-operator fun <C> Snapshot<*, *, C>.component2(): Set<C> = when(this) {
-    is Initial -> commands
-    is Regular -> commands
-}

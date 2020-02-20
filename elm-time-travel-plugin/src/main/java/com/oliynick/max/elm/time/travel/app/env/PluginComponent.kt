@@ -3,7 +3,6 @@
 package com.oliynick.max.elm.time.travel.app.env
 
 import com.oliynick.max.elm.core.component.*
-import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.time.travel.app.domain.cms.PluginCommand
 import com.oliynick.max.elm.time.travel.app.domain.cms.PluginMessage
 import com.oliynick.max.elm.time.travel.app.domain.cms.PluginState
@@ -36,11 +35,11 @@ private fun <M, C, S> format(
     snapshot: Snapshot<M, C, S>
 ): String = when(snapshot) {
     is Initial -> """
-        Init with state=${snapshot.state} ${snapshot.state.hashCode()}
+        Init with state=${snapshot.currentState} ${snapshot.currentState.hashCode()}
         ${if (snapshot.commands.isEmpty()) "" else "commands=${snapshot.commands}"}
     """.trimIndent()
     is Regular -> """
-        Regular with state=${snapshot.state} ${snapshot.state.hashCode()}
+        Regular with state=${snapshot.currentState} ${snapshot.currentState.hashCode()}
         message=${snapshot.message}
         ${if (snapshot.commands.isEmpty()) "" else "commands=${snapshot.commands}"}
     """.trimIndent()

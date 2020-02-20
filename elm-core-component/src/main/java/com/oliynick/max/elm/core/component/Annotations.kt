@@ -15,3 +15,8 @@ annotation class ObsoleteComponentApi
 @Retention(value = AnnotationRetention.BINARY)
 @Experimental(level = Experimental.Level.WARNING)
 annotation class UnstableApi
+
+@Retention(value = AnnotationRetention.BINARY)
+@Experimental(level = Experimental.Level.ERROR)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.TYPEALIAS, AnnotationTarget.PROPERTY)
+annotation class InternalComponentApi

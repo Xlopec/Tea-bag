@@ -15,10 +15,12 @@
  */
 
 @file:Suppress("FunctionName")
+@file:UseExperimental(InternalComponentApi::class)
 
 package com.oliynick.max.elm.time.travel.component
 
 import com.oliynick.max.elm.core.component.*
+import com.oliynick.max.elm.core.component.internal.*
 import com.oliynick.max.elm.time.travel.exception.ConnectException
 import com.oliynick.max.elm.time.travel.session.DebugSession
 import com.oliynick.max.elm.time.travel.session.SessionBuilder
@@ -60,7 +62,7 @@ internal fun <M, C, S> DebugEnv<M, C, S>.upstream(
         @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
         componentEnv.upstream(input.mergeWith(messages), init().mergeWith(states.asSnapshots()))
             .onEach { snapshot -> notifyServer(this@sessionBuilder, snapshot) }
-            .collectTo(channel)
+            .into(channel)
     }
 }.catch { th -> notifyConnectException(serverSettings, th) }
     .shareConflated()
@@ -97,12 +99,12 @@ private suspend fun <M, C, S> DebugEnv<M, C, S>.notifyServer(
     val message = when (snapshot) {
         // says 'hello' to a server; the message will be suspended until
         // the very first state gets computed
-        is Initial -> NotifyComponentAttached(toJsonTree(snapshot.state))
+        is Initial -> NotifyComponentAttached(toJsonTree(snapshot.currentState))
         // observes state changes and notifies server about them
         is Regular -> NotifyComponentSnapshot(
             toJsonTree(snapshot.message),
-            toJsonTree(snapshot.state),
-            toJsonTree(snapshot.state)
+            toJsonTree(snapshot.currentState),
+            toJsonTree(snapshot.currentState)
         )
     }
 

@@ -267,7 +267,12 @@ abstract class BasicComponentTest(
             }
 
             val expected: List<Snapshot<Char, String, Char>> =
-                listOf(Initial("", emptySet<Char>())) + range.mapIndexed { index, ch ->
+                listOf(
+                    Initial(
+                        "",
+                        emptySet<Char>()
+                    )
+                ) + range.mapIndexed { index, ch ->
                     Regular(
                         ch.toString(),
                         emptySet(),

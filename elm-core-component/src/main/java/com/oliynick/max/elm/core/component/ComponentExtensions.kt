@@ -18,6 +18,8 @@ package com.oliynick.max.elm.core.component
 
 import kotlinx.coroutines.flow.*
 
+typealias Interceptor<M, S, C> = suspend (snapshot: Snapshot<M, S, C>) -> Unit
+
 /**
  * Handy extension to combine a single command with state
  *
@@ -118,7 +120,7 @@ fun <M, S, C> Component<M, S, C>.snapshotChanges(): Flow<Snapshot<M, S, C>> =
     this(emptyFlow())
 
 fun <M, S, C> Component<M, S, C>.stateChanges(): Flow<S> =
-    snapshotChanges().map { snapshot -> snapshot.state }
+    snapshotChanges().map { snapshot -> snapshot.currentState }
 
 operator fun <M, S, C> Component<M, S, C>.invoke(vararg messages: M) =
     this(flowOf(*messages))
@@ -135,4 +137,4 @@ inline infix fun <M, S, C> Component<M, S, C>.with(
     { input -> this(input).onEach { interceptor(it) } }
 
 fun <M, S, C> Component<M, S, C>.states(): ((Flow<M>) -> Flow<S>) =
-    { input -> this(input).map { snapshot -> snapshot.state } }
+    { input -> this(input).map { snapshot -> snapshot.currentState } }

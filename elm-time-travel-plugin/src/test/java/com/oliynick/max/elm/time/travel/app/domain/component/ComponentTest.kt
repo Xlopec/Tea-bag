@@ -1,14 +1,11 @@
 package com.oliynick.max.elm.time.travel.app.domain.component
 
-import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.core.component.effect
-import com.oliynick.max.elm.core.component.with
 import com.oliynick.max.elm.time.travel.app.domain.cms.*
 import com.oliynick.max.elm.time.travel.app.domain.resolver.AppResolver
 import com.oliynick.max.elm.time.travel.app.domain.resolver.HasChannels
 import com.oliynick.max.elm.time.travel.app.domain.updater.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking

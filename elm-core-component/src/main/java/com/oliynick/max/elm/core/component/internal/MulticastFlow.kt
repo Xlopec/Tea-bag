@@ -1,4 +1,4 @@
-package com.oliynick.max.elm.core.component
+package com.oliynick.max.elm.core.component.internal
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -10,12 +10,31 @@ import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
+fun <T> Flow<T>.shareConflated(
+    debounceMs: Int = 0
+): Flow<T> =
+    MulticastFlow(this, true, debounceMs).multicastedFlow
+
+/**
+ * Allow multiple collectors to collect same instance of this flow
+ *
+ * @param debounceMs Number of milliseconds to wait after last collector closes
+ * before closing original flow. Set to 0 to disable.
+ */
+fun <T> Flow<T>.share(
+    debounceMs: Int = 0
+): Flow<T> = MulticastFlow(
+    this,
+    false,
+    debounceMs
+).multicastedFlow
+
 /**
  * https://gist.github.com/matejdro/a9c838bf0066595fb52b4b8816f49252
  */
 @UseExperimental(InternalCoroutinesApi::class)
 @Suppress("EXPERIMENTAL_API_USAGE")
-internal class MulticastFlow<T>(
+private class MulticastFlow<T>(
     private val original: Flow<T>,
     private val conflate: Boolean,
     private val debounceMs: Int
@@ -160,22 +179,3 @@ internal class MulticastFlow<T>(
         class RemoveCollector<T>(val channel: SendChannel<T>) : MulticastActorAction<T>()
     }
 }
-
-fun <T> Flow<T>.shareConflated(
-    debounceMs: Int = 0
-): Flow<T> =
-    MulticastFlow(this, true, debounceMs).multicastedFlow
-
-/**
- * Allow multiple collectors to collect same instance of this flow
- *
- * @param debounceMs Number of milliseconds to wait after last collector closes
- * before closing original flow. Set to 0 to disable.
- */
-fun <T> Flow<T>.share(
-    debounceMs: Int = 0
-): Flow<T> = MulticastFlow(
-    this,
-    false,
-    debounceMs
-).multicastedFlow

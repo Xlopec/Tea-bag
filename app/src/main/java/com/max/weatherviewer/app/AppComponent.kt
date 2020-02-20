@@ -6,10 +6,10 @@ import com.max.weatherviewer.app.env.Environment
 import com.max.weatherviewer.app.serialization.PersistentListSerializer
 import com.max.weatherviewer.screens.feed.FeedLoading
 import com.max.weatherviewer.screens.feed.LoadCriteria
+import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.core.component.Initializer
 import com.oliynick.max.elm.core.component.states
 import com.oliynick.max.elm.core.component.with
-import com.oliynick.max.elm.core.component.Component
 import com.oliynick.max.elm.time.travel.component.Component
 import com.oliynick.max.elm.time.travel.component.URL
 import com.oliynick.max.elm.time.travel.converter.GsonSerializer
