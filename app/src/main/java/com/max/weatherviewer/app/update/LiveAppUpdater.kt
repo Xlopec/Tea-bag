@@ -6,9 +6,9 @@ import com.max.weatherviewer.app.*
 import com.max.weatherviewer.screens.feed.*
 import com.max.weatherviewer.screens.feed.update.FeedUpdater
 import com.max.weatherviewer.screens.feed.update.LiveFeedUpdater.update
-import com.oliynick.max.elm.core.component.UpdateWith
-import com.oliynick.max.elm.core.component.command
-import com.oliynick.max.elm.core.component.noCommand
+import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.component.noCommand
 import java.util.*
 
 fun <Env> AppUpdater(): AppUpdater<Env> where Env : FeedUpdater = object :

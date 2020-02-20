@@ -11,7 +11,7 @@ import com.max.weatherviewer.screens.feed.FeedLoading
 import com.max.weatherviewer.screens.feed.LoadArticles
 import com.max.weatherviewer.screens.feed.LoadCriteria
 import com.max.weatherviewer.screens.feed.Preview
-import com.oliynick.max.elm.time.travel.gson.TypeAppenderAdapterFactory
+import com.oliynick.max.tea.core.debug.gson.TypeAppenderAdapterFactory
 import io.kotlintest.shouldBe
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf

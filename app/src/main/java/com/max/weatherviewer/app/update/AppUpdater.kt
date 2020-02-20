@@ -3,7 +3,7 @@ package com.max.weatherviewer.app.update
 import com.max.weatherviewer.app.Command
 import com.max.weatherviewer.app.Message
 import com.max.weatherviewer.app.State
-import com.oliynick.max.elm.core.component.UpdateWith
+import com.oliynick.max.tea.core.component.UpdateWith
 
 interface AppUpdater<Env> {
 

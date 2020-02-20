@@ -15,8 +15,8 @@ import com.max.weatherviewer.screens.feed.ArticleUpdated
 import com.max.weatherviewer.screens.feed.ArticlesLoaded
 import com.max.weatherviewer.screens.feed.FeedOperationException
 import com.max.weatherviewer.screens.feed.LoadCriteria
-import com.oliynick.max.elm.core.component.effect
-import com.oliynick.max.elm.core.component.sideEffect
+import com.oliynick.max.tea.core.component.effect
+import com.oliynick.max.tea.core.component.sideEffect
 
 fun <Env> LiveFeedResolver(): FeedResolver<Env> where Env : HasAppContext,
                                                       Env : HasGson,

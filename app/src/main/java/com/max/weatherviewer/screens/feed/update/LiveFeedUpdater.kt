@@ -4,9 +4,9 @@ import com.max.weatherviewer.app.*
 import com.max.weatherviewer.domain.Article
 import com.max.weatherviewer.domain.toggleFavorite
 import com.max.weatherviewer.screens.feed.*
-import com.oliynick.max.elm.core.component.UpdateWith
-import com.oliynick.max.elm.core.component.command
-import com.oliynick.max.elm.core.component.noCommand
+import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.component.noCommand
 
 // nothing is private in our world
 @Suppress("MemberVisibilityCanBePrivate")

@@ -7,7 +7,7 @@ import com.max.weatherviewer.app.Command
 import com.max.weatherviewer.app.FeedCommand
 import com.max.weatherviewer.app.Message
 import com.max.weatherviewer.screens.feed.resolve.FeedResolver
-import com.oliynick.max.elm.core.component.sideEffect
+import com.oliynick.max.tea.core.component.sideEffect
 import kotlinx.coroutines.channels.BroadcastChannel
 
 fun <Env> AppResolver(): AppResolver<Env> where Env : HasCommandTransport,

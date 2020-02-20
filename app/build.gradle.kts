@@ -80,8 +80,8 @@ androidExtensions {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
-    implementation(project(":elm-core-component"))
-    implementation(project(":elm-core-component-debug"))
+    implementation(project(":tea-core"))
+    implementation(project(":tea-time-travel"))
 
     val kotlin_version = "1.3.60-eap-76"
 
@@ -114,7 +114,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.6.0")
     implementation("com.squareup.okhttp3:logging-interceptor:3.11.0")
 
-    testImplementation(project(path = ":elm-core-test", configuration = "default"))
+    testImplementation(project(path = ":tea-test", configuration = "default"))
     testImplementation("junit:junit:4.12")
     testImplementation(Libraries.coroutinesAndroid)
     testImplementation(Libraries.coroutinesTest)
