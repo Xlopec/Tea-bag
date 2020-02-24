@@ -14,13 +14,11 @@ import java.net.URL
 @DslMarker
 private annotation class DslBuilder
 
-//todo add dsl
 data class DebugEnv<M, C, S>(
     inline val componentEnv: Env<M, C, S>,
     inline val serverSettings: ServerSettings<M, S>
 )
 
-//todo add dsl
 data class ServerSettings<M, S>(
     inline val id: ComponentId,
     inline val serializer: JsonConverter,

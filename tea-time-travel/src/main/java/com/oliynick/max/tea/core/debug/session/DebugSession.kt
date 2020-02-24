@@ -8,7 +8,7 @@ interface DebugSession<M, S> {
     val messages: Flow<M>
     val states: Flow<S>
 
-    suspend fun send(
+    suspend operator fun invoke(
         packet: NotifyServer
     )
 

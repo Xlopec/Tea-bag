@@ -14,7 +14,7 @@ class TestDebugSession<M, S>(
 
     val packets: List<NotifyServer> = _packets
 
-    override suspend fun send(packet: NotifyServer) {
+    override suspend fun invoke(packet: NotifyServer) {
         _packets += packet
     }
 

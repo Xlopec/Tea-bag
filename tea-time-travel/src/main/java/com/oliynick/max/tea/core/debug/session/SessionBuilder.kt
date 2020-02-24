@@ -11,6 +11,12 @@ import io.ktor.http.HttpMethod
 
 typealias SessionBuilder<M, S> = suspend (ServerSettings<M, S>, suspend DebugSession<M, S>.() -> Unit) -> Unit
 
+@PublishedApi
+internal val httpClient by lazy { HttpClient { install(WebSockets) } }
+
+@PublishedApi
+internal val localhost by lazy(::URL)
+
 suspend inline fun <reified M, reified S> WebSocketSession(
     settings: ServerSettings<M, S>,
     crossinline block: suspend DebugSession<M, S>.() -> Unit
@@ -25,9 +31,3 @@ suspend inline fun <reified M, reified S> WebSocketSession(
         this
     ).apply { block() } }
 )
-
-@PublishedApi
-internal val httpClient by lazy { HttpClient { install(WebSockets) } }
-
-@PublishedApi
-internal val localhost by lazy(::URL)

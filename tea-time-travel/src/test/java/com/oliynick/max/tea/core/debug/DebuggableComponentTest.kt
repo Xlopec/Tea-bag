@@ -6,7 +6,6 @@ import com.oliynick.max.tea.core.Regular
 import com.oliynick.max.tea.core.component.invoke
 import com.oliynick.max.tea.core.component.noCommand
 import com.oliynick.max.tea.core.debug.component.Component
-import com.oliynick.max.tea.core.debug.component.connectionFailureMessage
 import com.oliynick.max.tea.core.debug.exception.ConnectException
 import com.oliynick.max.tea.core.debug.session.WebSocketSession
 import core.component.BasicComponentTest
@@ -16,7 +15,6 @@ import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.numerics.shouldBeExactly
 import io.kotlintest.matchers.numerics.shouldNotBeExactly
 import io.kotlintest.matchers.throwable.shouldHaveCauseOfType
-import io.kotlintest.matchers.throwable.shouldHaveMessage
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrowExactlyUnit
 import kotlinx.coroutines.delay
@@ -64,7 +62,6 @@ class DebuggableComponentTest : BasicComponentTest({ env ->
             component("a").collect()
         }
 
-        th shouldHaveMessage connectionFailureMessage(TestServerSettings<String, String>())
         th.shouldHaveCauseOfType<java.net.ConnectException>()
     }
 

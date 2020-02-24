@@ -37,7 +37,7 @@ internal class DebugWebSocketSession<M, S>(
     override val messages: Flow<M> by unsafeLazy { incomingPackets.externalMessages() }
     override val states: Flow<S> by unsafeLazy { incomingPackets.externalStates() }
 
-    override suspend fun send(packet: NotifyServer) =
+    override suspend fun invoke(packet: NotifyServer) =
         socketSession.send(settings.serializer.toJson(packet))
 
     private fun ServerSettings<M, S>.incomingCommands(

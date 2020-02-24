@@ -1,10 +1,10 @@
 package com.oliynick.max.tea.core.component.internal
 
-import com.oliynick.max.tea.core.InternalComponentApi
+import com.oliynick.max.tea.core.UnstableApi
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
 
-@InternalComponentApi
+@UnstableApi
 suspend fun <T> Flow<T>.into(
     sendChannel: SendChannel<T>
 ) = collect(sendChannel::send)

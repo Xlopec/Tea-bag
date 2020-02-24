@@ -15,14 +15,14 @@
  */
 
 @file:Suppress("unused", "MemberVisibilityCanBePrivate", "FunctionName")
-@file:UseExperimental(InternalComponentApi::class)
+@file:UseExperimental(UnstableApi::class)
 
 package com.oliynick.max.tea.core.component
 
 import com.oliynick.max.tea.core.Env
 import com.oliynick.max.tea.core.Initializer
-import com.oliynick.max.tea.core.InternalComponentApi
 import com.oliynick.max.tea.core.Snapshot
+import com.oliynick.max.tea.core.UnstableApi
 import com.oliynick.max.tea.core.component.internal.downstream
 import com.oliynick.max.tea.core.component.internal.init
 import com.oliynick.max.tea.core.component.internal.shareConflated
