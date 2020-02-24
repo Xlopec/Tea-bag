@@ -70,6 +70,5 @@ private fun AppInitializer(): Initializer<State, Command> {
 }
 
 private fun AppGsonSerializer() = GsonSerializer {
-    registerTypeAdapterFactory(TypeAppenderAdapterFactory)
     registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
 }

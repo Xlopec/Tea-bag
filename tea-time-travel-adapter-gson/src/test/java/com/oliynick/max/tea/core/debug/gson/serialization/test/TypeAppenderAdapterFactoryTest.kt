@@ -1,7 +1,6 @@
 package com.oliynick.max.tea.core.debug.gson.serialization.test
 
 import com.oliynick.max.tea.core.debug.gson.Gson
-import com.oliynick.max.tea.core.debug.gson.TypeAppenderAdapterFactory
 import com.oliynick.max.tea.core.debug.gson.serialization.data.*
 import com.oliynick.max.tea.core.debug.gson.serialization.serializer.MapDeserializer
 import com.oliynick.max.tea.core.debug.gson.serialization.serializer.PersistentListSerializer
@@ -18,12 +17,10 @@ class TypeAppenderAdapterFactoryTest {
     private val serializer = Gson {
         setPrettyPrinting()
         enableComplexMapKeySerialization()
-        registerTypeAdapterFactory(TypeAppenderAdapterFactory)
     }
 
     @Test
     fun `test class hierarchy gets serialized correctly`() = with(Gson {
-        registerTypeAdapterFactory(TypeAppenderAdapterFactory)
         registerTypeAdapter(Map::class.java, MapDeserializer)
     }) {
 
@@ -48,7 +45,6 @@ class TypeAppenderAdapterFactoryTest {
     @Test
     fun `test AppenderFactory delegates serialization to a user defined serializer`() =
         with(Gson {
-            registerTypeAdapterFactory(TypeAppenderAdapterFactory)
             registerTypeAdapter(PersistentList::class.java, PersistentListSerializer)
         }) {
 
@@ -64,7 +60,6 @@ class TypeAppenderAdapterFactoryTest {
     @Test
     fun `test AppenderFactory serializes polymorphic values`() =
         with(Gson {
-            registerTypeAdapterFactory(TypeAppenderAdapterFactory)
             registerTypeAdapter(PersistentList::class.java, PersistentListSerializer)
         }) {
 

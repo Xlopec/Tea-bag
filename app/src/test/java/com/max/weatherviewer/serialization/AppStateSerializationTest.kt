@@ -1,6 +1,5 @@
 package com.max.weatherviewer.serialization
 
-import com.google.gson.GsonBuilder
 import com.max.weatherviewer.app.ScreenMessage
 import com.max.weatherviewer.app.State
 import com.max.weatherviewer.app.serialization.PersistentListSerializer
@@ -11,7 +10,7 @@ import com.max.weatherviewer.screens.feed.FeedLoading
 import com.max.weatherviewer.screens.feed.LoadArticles
 import com.max.weatherviewer.screens.feed.LoadCriteria
 import com.max.weatherviewer.screens.feed.Preview
-import com.oliynick.max.tea.core.debug.gson.TypeAppenderAdapterFactory
+import com.oliynick.max.tea.core.debug.gson.Gson
 import io.kotlintest.shouldBe
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -28,12 +27,10 @@ import java.util.*
 @RunWith(JUnit4::class)
 class AppStateSerializationTest {
 
-    private val gsonSerializer = GsonBuilder()
-        .setPrettyPrinting()
-        .apply {
-            registerTypeAdapterFactory(TypeAppenderAdapterFactory)
-            registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
-        }.create()
+    private val gsonSerializer = Gson {
+        setPrettyPrinting()
+        registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
+    }
 
     private val previewScreenState = Preview(
         UUID.randomUUID(),

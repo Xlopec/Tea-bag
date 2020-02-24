@@ -23,9 +23,7 @@ import java.util.*
 @RunWith(JUnit4::class)
 class ClientMessageSerializationTest {
 
-    private val gson = Gson {
-        registerTypeAdapterFactory(TypeAppenderAdapterFactory)
-    }
+    private val gson = Gson()
 
     @Test
     fun `test subclasses of ClientMessage serialized properly`() = with(gson) {

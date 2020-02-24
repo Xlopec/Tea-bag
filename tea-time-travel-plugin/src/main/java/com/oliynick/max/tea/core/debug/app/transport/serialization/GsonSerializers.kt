@@ -6,11 +6,7 @@ import com.oliynick.max.tea.core.debug.gson.Gson
 import com.oliynick.max.tea.core.debug.gson.JsonObject
 import com.oliynick.max.tea.core.debug.gson.TypeAppenderAdapterFactory
 
-internal val GSON by lazy {
-    Gson {
-        registerTypeAdapterFactory(TypeAppenderAdapterFactory)
-    }
-}
+internal val GSON = Gson()
 
 fun Value<*>.toJsonElement(): JsonElement =
     when (this) {

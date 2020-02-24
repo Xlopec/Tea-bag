@@ -7,6 +7,10 @@ import com.google.gson.GsonBuilder
 import com.oliynick.max.tea.core.debug.gson.Gson
 import protocol.JsonTree
 
+fun GsonSerializer(
+    config: GsonBuilder.() -> Unit = {}
+): JsonConverter = GsonConverter(Gson(config))
+
 private class GsonConverter(
     private val gson: Gson
 ) : JsonConverter {
@@ -30,7 +34,3 @@ private class GsonConverter(
     ): T = gson.fromJson(json, cl)
 
 }
-
-fun GsonSerializer(
-    config: GsonBuilder.() -> Unit = {}
-): JsonConverter = GsonConverter(Gson(config))

@@ -2,7 +2,6 @@ package com.oliynick.max.tea.core.debug.gson.serialization.test
 
 import com.google.gson.reflect.TypeToken
 import com.oliynick.max.tea.core.debug.gson.Gson
-import com.oliynick.max.tea.core.debug.gson.TypeAppenderAdapterFactory
 import com.oliynick.max.tea.core.debug.gson.serialization.data.Singleton
 import core.data.Id
 import core.data.Name
@@ -20,9 +19,7 @@ import java.util.*
 @RunWith(JUnit4::class)
 class DefaultGsonSerializersTest {
 
-    private val gsonSerializer = Gson {
-        registerTypeAdapterFactory(TypeAppenderAdapterFactory)
-    }
+    private val gsonSerializer = Gson()
 
     private val testUser = User(
         Id(UUID.randomUUID()),
