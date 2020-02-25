@@ -16,18 +16,9 @@
 
 dependencies {
 
-    api(Libraries.coroutinesCore)
-    api("com.google.code.gson:gson:2.8.6")
-
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-
     implementation(Libraries.kotlinStdLib)
-    implementation(Libraries.kotlinReflect)
-
-    implementation(Libraries.ktorWebsockets)
-    implementation(Libraries.ktorOkHttp)
 
     testImplementation(project(path = ":tea-test", configuration = "default"))
-
 }
 

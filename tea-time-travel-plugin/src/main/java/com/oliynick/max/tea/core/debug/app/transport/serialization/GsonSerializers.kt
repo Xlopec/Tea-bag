@@ -3,8 +3,6 @@ package com.oliynick.max.tea.core.debug.app.transport.serialization
 import com.google.gson.*
 import com.oliynick.max.tea.core.debug.app.domain.cms.*
 import com.oliynick.max.tea.core.debug.gson.Gson
-import com.oliynick.max.tea.core.debug.gson.JsonObject
-import com.oliynick.max.tea.core.debug.gson.TypeAppenderAdapterFactory
 
 internal val GSON = Gson()
 
@@ -40,7 +38,7 @@ fun JsonElement.toValue(): Value<*> =
         else -> error("Don't know how to deserialize $this")
     }
 
-private fun Ref.toJsonElement(): JsonElement = JsonObject {
+private fun Ref.toJsonElement(): JsonElement = JsonObject().apply {
     addProperty("@type", type.name)
 
     for (property in properties) {

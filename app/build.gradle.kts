@@ -82,6 +82,7 @@ dependencies {
 
     implementation(project(":tea-core"))
     implementation(project(":tea-time-travel"))
+    implementation(project(":tea-time-travel-adapter-gson"))
 
     val kotlin_version = "1.3.60-eap-76"
 

@@ -1,4 +1,4 @@
-@file:Suppress("UNCHECKED_CAST")
+@file:Suppress("UNCHECKED_CAST", "FunctionName")
 
 package com.oliynick.max.tea.core.debug.gson
 
@@ -148,37 +148,6 @@ internal object ClientMessageAdapter : JsonSerializer<ClientMessage<JsonElement>
 
 }
 
-/*
-internal object ApplyStateAdapter : JsonSerializer<ApplyState>, JsonDeserializer<ApplyState> {
-
-    override fun serialize(
-        src: ApplyState,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ): JsonElement = context.toTypedJson(src.state)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): ApplyState =
-        context.fromTypedJson<JsonElement>(json)
-            .let(::ApplyState)
-}
-
-internal object ApplyMessageAdapter : JsonSerializer<ApplyMessage>, JsonDeserializer<ApplyMessage> {
-
-    override fun serialize(
-        src: ApplyMessage,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ): JsonElement = context.toTypedJson(src.message)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): ApplyMessage = ApplyMessage(json)
-
-}
-*/
+private inline fun JsonObject(
+    builder: JsonObject.() -> Unit
+): JsonObject = JsonObject().apply(builder)

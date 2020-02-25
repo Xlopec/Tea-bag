@@ -5,7 +5,6 @@ import com.oliynick.max.tea.core.debug.app.domain.cms.*
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
 import com.oliynick.max.tea.core.debug.gson.Gson
-import com.oliynick.max.tea.core.debug.gson.TypeAppenderAdapterFactory
 import core.data.*
 import io.kotlintest.shouldBe
 import org.junit.Ignore

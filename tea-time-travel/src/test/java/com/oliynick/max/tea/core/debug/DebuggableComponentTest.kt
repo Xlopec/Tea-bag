@@ -92,15 +92,15 @@ class DebuggableComponentTest : BasicComponentTest({ env ->
             elem.componentId shouldBe testComponentId
 
             when (val payload = elem.payload) {
-                is NotifyComponentSnapshot<*> -> {
+                is NotifyComponentSnapshot<JsonElement> -> {
                     index shouldNotBeExactly 0
-                    fromJson(payload.message as JsonElement) shouldBe messages[index - 1]
-                    fromJson(payload.newState as JsonElement) shouldBe messages[index - 1]
+                    fromJson(payload.message) shouldBe messages[index - 1]
+                    fromJson(payload.newState) shouldBe messages[index - 1]
                 }
 
-                is NotifyComponentAttached<*> -> {
+                is NotifyComponentAttached<JsonElement> -> {
                     index shouldBeExactly 0
-                    fromJson(payload.state as JsonElement) shouldBe ""
+                    fromJson(payload.state) shouldBe ""
                 }
 
                 is ActionApplied -> fail("Shouldn't get here. Index=$index, elem=$elem")

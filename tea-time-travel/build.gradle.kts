@@ -22,11 +22,8 @@ import TestLibraries.ktorMockJvm
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
-    api(project(path = ":tea-core", configuration = "default"))
-    api(project(path = ":tea-time-travel-protocol", configuration = "default"))
-    api(project(path = ":tea-time-travel-adapter-gson", configuration = "default"))
-
     implementation(project(path = ":tea-core", configuration = "default"))
+    implementation(project(path = ":tea-time-travel-protocol", configuration = "default"))
 
     implementation(kotlinStdLib)
 
@@ -34,6 +31,7 @@ dependencies {
     implementation(ktorOkHttp)
 
     testImplementation(project(path = ":tea-test", configuration = "default"))
+    testImplementation(project(path = ":tea-time-travel-adapter-gson", configuration = "default"))
     testImplementation(ktorMockJvm)
 
 }

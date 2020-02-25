@@ -10,16 +10,6 @@ import kotlinx.coroutines.channels.broadcast
 import kotlinx.coroutines.flow.*
 import protocol.*
 
-private sealed class Either<out L, out R>
-
-private data class Left<L>(
-    val l: L
-) : Either<L, Nothing>()
-
-private data class Right<R>(
-    val r: R
-) : Either<Nothing, R>()
-
 @PublishedApi
 internal class DebugWebSocketSession<M, S, J>(
     private val mClass: Class<M>,
@@ -44,21 +34,21 @@ internal class DebugWebSocketSession<M, S, J>(
     private fun JsonConverter<J>.toCommand(
         packet: NotifyClient<J>
     ) = when (val message = packet.message) {
-        is ApplyMessage<J> -> Left(
-            fromJsonTree(
-                message.message,
-                mClass
-            )
-        )
-        is ApplyState<J> -> Right(
-            fromJsonTree(
-                message.state,
-                sClass
-            )
-        )
+        is ApplyMessage<J> -> Left(fromJsonTree(message.message, mClass))
+        is ApplyState<J> -> Right(fromJsonTree(message.state, sClass))
     }
 
 }
+
+private sealed class Either<out L, out R>
+
+private data class Left<L>(
+    val l: L
+) : Either<L, Nothing>()
+
+private data class Right<R>(
+    val r: R
+) : Either<Nothing, R>()
 
 private fun <S> Flow<Either<*, S>>.externalStates(): Flow<S> =
     filterIsInstance<Right<S>>().map { (s) -> s }
@@ -76,5 +66,10 @@ private fun <M, S, J> ServerSettings<M, S, J>.incomingPackets(
     clientWebSocketSession.incoming.broadcast().asFlow()
         .filterIsInstance<Frame.Text>()
         .map { frame -> frame.readText() }
-        .map { json -> serializer.fromJson(json, NotifyClient::class.java) as NotifyClient<J> }
+        .map { json -> serializer.asNotifyClientPacket(json) }
         .filter { packet -> packet.component == id }
+
+@Suppress("UNCHECKED_CAST")
+private fun <J> JsonConverter<J>.asNotifyClientPacket(
+    json: String
+) = fromJson(json, NotifyClient::class.java) as NotifyClient<J>

@@ -29,7 +29,7 @@ import kotlin.contracts.contract
  * **Note** that [Map] which can hold entry with ```null``` key will be deserialized incorrectly since ```null``` key will
  * be transformed to a string during serialization.
  */
-object TypeAppenderAdapterFactory : TypeAdapterFactory {
+internal object TypeAppenderAdapterFactory : TypeAdapterFactory {
 
     override fun <T> create(
         gson: Gson,
