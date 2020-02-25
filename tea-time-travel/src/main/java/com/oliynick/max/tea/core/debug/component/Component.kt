@@ -25,29 +25,26 @@ import com.oliynick.max.tea.core.component.Resolver
 import com.oliynick.max.tea.core.component.Update
 import com.oliynick.max.tea.core.component.internal.*
 import com.oliynick.max.tea.core.debug.component.internal.mergeWith
-import com.oliynick.max.tea.core.debug.converter.JsonConverter
 import com.oliynick.max.tea.core.debug.exception.ConnectException
 import com.oliynick.max.tea.core.debug.session.DebugSession
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
-import protocol.ComponentId
-import protocol.NotifyComponentAttached
-import protocol.NotifyComponentSnapshot
-import protocol.NotifyServer
+import protocol.*
 import java.util.*
 
-inline fun <reified M, reified C, reified S> Component(
+inline fun <reified M, reified C, reified S, J> Component(
     id: ComponentId,
     noinline initializer: Initializer<S, C>,
     noinline resolver: Resolver<C, M>,
     noinline update: Update<M, S, C>,
-    noinline config: DebugEnvBuilder<M, C, S>.() -> Unit = {}
+    jsonConverter: JsonConverter<J>,
+    noinline config: DebugEnvBuilder<M, C, S, J>.() -> Unit = {}
 ): Component<M, S, C> =
-    Component(Dependencies(id, Env(initializer, resolver, update), config))
+    Component(Dependencies(id, Env(initializer, resolver, update), jsonConverter, config))
 
-fun <M, C, S> Component(
-    env: DebugEnv<M, C, S>
+fun <M, C, S, J> Component(
+    env: DebugEnv<M, C, S, J>
 ): Component<M, S, C> {
 
     val input = Channel<M>(Channel.RENDEZVOUS)
@@ -56,11 +53,11 @@ fun <M, C, S> Component(
     return { messages -> upstream.downstream(messages, input) }
 }
 
-private fun <M, C, S> DebugEnv<M, C, S>.upstream(
+private fun <M, C, S, J> DebugEnv<M, C, S, J>.upstream(
     input: Flow<M>
 ): Flow<Snapshot<M, S, C>> {
 
-    fun DebugSession<M, S>.debugUpstream() =
+    fun DebugSession<M, S, J>.debugUpstream() =
         componentEnv.upstream(input.mergeWith(messages), init().mergeWith(states.asSnapshots()))
             .onEach { snapshot -> notifyServer(this, snapshot) }
 
@@ -70,8 +67,8 @@ private fun <M, C, S> DebugEnv<M, C, S>.upstream(
 }
 
 @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
-private fun <M, S, C> DebugEnv<M, C, S>.session(
-    block: suspend DebugSession<M, S>.(input: SendChannel<Snapshot<M, S, C>>) -> Unit
+private fun <M, S, C, J> DebugEnv<M, C, S, J>.session(
+    block: suspend DebugSession<M, S, J>.(input: SendChannel<Snapshot<M, S, C>>) -> Unit
 ): Flow<Snapshot<M, S, C>> = channelFlow { serverSettings.sessionBuilder(serverSettings) { block(channel) } }
 
 private fun <S> Flow<S>.asSnapshots(): Flow<Initial<S, Nothing>> =
@@ -81,14 +78,14 @@ private fun <S> Flow<S>.asSnapshots(): Flow<Initial<S, Nothing>> =
 /**
  * Notifies server about state changes
  */
-private suspend fun <M, C, S> DebugEnv<M, C, S>.notifyServer(
-    session: DebugSession<M, S>,
+private suspend fun <M, C, S, J> DebugEnv<M, C, S, J>.notifyServer(
+    session: DebugSession<M, S, J>,
     snapshot: Snapshot<M, S, C>
 ) = with(serverSettings) {
     session(NotifyServer(UUID.randomUUID(), id, serializer.toServerMessage(snapshot)))
 }
 
-private fun <M, C, S> JsonConverter.toServerMessage(
+private fun <M, C, S, J> JsonConverter<J>.toServerMessage(
     snapshot: Snapshot<M, S, C>
 ) = when (snapshot) {
     is Initial -> NotifyComponentAttached(toJsonTree(snapshot.currentState))
@@ -100,14 +97,14 @@ private fun <M, C, S> JsonConverter.toServerMessage(
 }
 
 private fun notifyConnectException(
-    serverSettings: ServerSettings<*, *>,
+    serverSettings: ServerSettings<*, *, *>,
     th: Throwable
 ): Nothing =
     throw ConnectException(connectionFailureMessage(serverSettings), th)
 
 private fun connectionFailureMessage(
-    serverSettings: ServerSettings<*, *>
+    serverSettings: ServerSettings<*, *, *>
 ) = "Component '${serverSettings.id.id}' " +
     "couldn't connect to the endpoint ${serverSettings.url.toExternalForm()}"
 
-private fun <M, S, C> DebugEnv<M, C, S>.init(): Flow<Initial<S, C>> = componentEnv.init()
+private fun <M, S, C> DebugEnv<M, C, S, *>.init(): Flow<Initial<S, C>> = componentEnv.init()

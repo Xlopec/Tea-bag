@@ -12,8 +12,7 @@ import com.oliynick.max.tea.core.component.states
 import com.oliynick.max.tea.core.component.with
 import com.oliynick.max.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.component.URL
-import com.oliynick.max.tea.core.debug.converter.GsonSerializer
-import com.oliynick.max.tea.core.debug.gson.TypeAppenderAdapterFactory
+import com.oliynick.max.tea.core.debug.gson.GsonSerializer
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.flow.Flow
 import protocol.ComponentId
@@ -36,11 +35,11 @@ fun Environment.appComponent(): (Flow<Message>) -> Flow<State> {
             ComponentId("News Reader App"),
             AppInitializer(),
             ::resolve,
-            ::update
+            ::update,
+            AppGsonSerializer()
         ) {
             serverSettings {
                 url(URL(host = "10.0.2.2"))
-                installSerializer(AppGsonSerializer())
             }
         }.with { println(it) }.states()
     }

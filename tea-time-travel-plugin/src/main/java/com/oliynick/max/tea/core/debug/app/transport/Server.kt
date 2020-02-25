@@ -16,6 +16,7 @@
 
 package com.oliynick.max.tea.core.debug.app.transport
 
+import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.debug.app.domain.cms.*
 import com.oliynick.max.tea.core.debug.app.transport.serialization.GSON
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
@@ -47,7 +48,7 @@ import java.util.*
 data class RemoteCallArgs(
     val callId: UUID,
     val component: ComponentId,
-    val message: ClientMessage
+    val message: ClientMessage<JsonElement>
 )
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -70,7 +71,7 @@ class Server private constructor(
 
     suspend operator fun invoke(
         component: ComponentId,
-        message: ClientMessage
+        message: ClientMessage<JsonElement>
     ) {
         try {
             withTimeout(timeout) {
@@ -225,18 +226,18 @@ private suspend fun processPacket(
         try {
 
             when (val message = packet.payload) {// todo consider removing `?`
-                is NotifyComponentSnapshot -> events.send(
+                is NotifyComponentSnapshot<*> -> events.send(
                     AppendSnapshot(
                         packet.componentId,
-                        message.message.asJsonObject.toValue(),
-                        message.oldState.asJsonObject.toValue(),
-                        message.newState.asJsonObject.toValue()
+                        (message.message as JsonElement).asJsonObject.toValue(),
+                        (message.oldState as JsonElement).asJsonObject.toValue(),
+                        (message.newState as JsonElement).asJsonObject.toValue()
                     )
                 )
-                is NotifyComponentAttached -> events.send(
+                is NotifyComponentAttached<*> -> events.send(
                     ComponentAttached(
                         packet.componentId,
-                        message.state.asJsonObject.toValue()
+                        (message.state as JsonElement).asJsonObject.toValue()
                     )
                 )
                 is ActionApplied -> error("ActionApplied instances shouldn't be sent anymore")

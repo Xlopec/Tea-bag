@@ -1,26 +1,26 @@
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.converter
+package com.oliynick.max.tea.core.debug.gson
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.oliynick.max.tea.core.debug.gson.Gson
-import protocol.JsonTree
+import com.google.gson.JsonElement
+import protocol.JsonConverter
 
 fun GsonSerializer(
     config: GsonBuilder.() -> Unit = {}
-): JsonConverter = GsonConverter(Gson(config))
+): JsonConverter<JsonElement> = GsonConverter(Gson(config))
 
 private class GsonConverter(
     private val gson: Gson
-) : JsonConverter {
+) : JsonConverter<JsonElement> {
 
     override fun <T> toJsonTree(
         any: T
-    ): JsonTree = gson.toJsonTree(any)
+    ): JsonElement = gson.toJsonTree(any)
 
     override fun <T> fromJsonTree(
-        json: JsonTree,
+        json: JsonElement,
         cl: Class<T>
     ): T = gson.fromJson(json, cl)
 

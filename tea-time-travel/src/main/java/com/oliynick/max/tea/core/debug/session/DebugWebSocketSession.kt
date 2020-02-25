@@ -1,7 +1,6 @@
 package com.oliynick.max.tea.core.debug.session
 
 import com.oliynick.max.tea.core.debug.component.ServerSettings
-import com.oliynick.max.tea.core.debug.converter.JsonConverter
 import io.ktor.client.features.websocket.ClientWebSocketSession
 import io.ktor.client.features.websocket.DefaultClientWebSocketSession
 import io.ktor.http.cio.websocket.Frame
@@ -9,10 +8,7 @@ import io.ktor.http.cio.websocket.readText
 import io.ktor.http.cio.websocket.send
 import kotlinx.coroutines.channels.broadcast
 import kotlinx.coroutines.flow.*
-import protocol.ApplyMessage
-import protocol.ApplyState
-import protocol.NotifyClient
-import protocol.NotifyServer
+import protocol.*
 
 private sealed class Either<out L, out R>
 
@@ -25,36 +21,36 @@ private data class Right<R>(
 ) : Either<Nothing, R>()
 
 @PublishedApi
-internal class DebugWebSocketSession<M, S>(
+internal class DebugWebSocketSession<M, S, J>(
     private val mClass: Class<M>,
     private val sClass: Class<S>,
-    private val settings: ServerSettings<M, S>,
+    private val settings: ServerSettings<M, S, J>,
     private val socketSession: DefaultClientWebSocketSession
-) : DebugSession<M, S> {
+) : DebugSession<M, S, J> {
 
     private val incomingPackets: Flow<Either<M, S>> by unsafeLazy { settings.incomingCommands(socketSession) }
 
     override val messages: Flow<M> by unsafeLazy { incomingPackets.externalMessages() }
     override val states: Flow<S> by unsafeLazy { incomingPackets.externalStates() }
 
-    override suspend fun invoke(packet: NotifyServer) =
+    override suspend fun invoke(packet: NotifyServer<J>) =
         socketSession.send(settings.serializer.toJson(packet))
 
-    private fun ServerSettings<M, S>.incomingCommands(
+    private fun ServerSettings<M, S, J>.incomingCommands(
         session: ClientWebSocketSession
     ) = incomingPackets(session)
         .map { packet -> serializer.toCommand(packet) }
 
-    private fun JsonConverter.toCommand(
-        packet: NotifyClient
+    private fun JsonConverter<J>.toCommand(
+        packet: NotifyClient<J>
     ) = when (val message = packet.message) {
-        is ApplyMessage -> Left(
+        is ApplyMessage<J> -> Left(
             fromJsonTree(
                 message.message,
                 mClass
             )
         )
-        is ApplyState -> Right(
+        is ApplyState<J> -> Right(
             fromJsonTree(
                 message.state,
                 sClass
@@ -74,11 +70,11 @@ private fun <T> unsafeLazy(
     provider: () -> T
 ) = lazy(LazyThreadSafetyMode.NONE, provider)
 
-private fun <M, S> ServerSettings<M, S>.incomingPackets(
+private fun <M, S, J> ServerSettings<M, S, J>.incomingPackets(
     clientWebSocketSession: ClientWebSocketSession
-) =
+): Flow<NotifyClient<J>> =
     clientWebSocketSession.incoming.broadcast().asFlow()
         .filterIsInstance<Frame.Text>()
         .map { frame -> frame.readText() }
-        .map { json -> serializer.fromJson(json, NotifyClient::class.java) }
+        .map { json -> serializer.fromJson(json, NotifyClient::class.java) as NotifyClient<J> }
         .filter { packet -> packet.component == id }

@@ -1,9 +1,10 @@
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.tea.core.debug.component
 
 import com.oliynick.max.tea.core.Env
 import com.oliynick.max.tea.core.EnvBuilder
-import com.oliynick.max.tea.core.debug.converter.GsonSerializer
-import com.oliynick.max.tea.core.debug.converter.JsonConverter
+import protocol.JsonConverter
 import com.oliynick.max.tea.core.debug.session.SessionBuilder
 import com.oliynick.max.tea.core.debug.session.WebSocketSession
 import com.oliynick.max.tea.core.debug.session.localhost
@@ -14,29 +15,29 @@ import java.net.URL
 @DslMarker
 private annotation class DslBuilder
 
-data class DebugEnv<M, C, S>(
+data class DebugEnv<M, C, S, J>(
     inline val componentEnv: Env<M, C, S>,
-    inline val serverSettings: ServerSettings<M, S>
+    inline val serverSettings: ServerSettings<M, S, J>
 )
 
-data class ServerSettings<M, S>(
+data class ServerSettings<M, S, J>(
     inline val id: ComponentId,
-    inline val serializer: JsonConverter,
+    inline val serializer: JsonConverter<J>,
     inline val url: URL,
-    inline val sessionBuilder: SessionBuilder<M, S>
+    inline val sessionBuilder: SessionBuilder<M, S, J>
 )
 
 @DslBuilder
-class ServerSettingsBuilder<M, S> @PublishedApi internal constructor(
-    val id: ComponentId
+class ServerSettingsBuilder<M, S, J> @PublishedApi internal constructor(
+    val id: ComponentId,
+    @PublishedApi
+    internal var jsonSerializer: JsonConverter<J>
 ) {
 
     @PublishedApi
     internal var url: URL? = null
     @PublishedApi
-    internal var jsonSerializer: JsonConverter? = null
-    @PublishedApi
-    internal var sessionBuilder: SessionBuilder<M, S>? = null
+    internal var sessionBuilder: SessionBuilder<M, S, J>? = null
 
     fun url(
         u: URL
@@ -45,13 +46,13 @@ class ServerSettingsBuilder<M, S> @PublishedApi internal constructor(
     }
 
     fun installSessionBuilder(
-        builder: SessionBuilder<M, S>
+        builder: SessionBuilder<M, S, J>
     ) {
         sessionBuilder = builder
     }
 
     fun installSerializer(
-        serializer: JsonConverter
+        serializer: JsonConverter<J>
     ) {
         jsonSerializer = serializer
     }
@@ -59,43 +60,43 @@ class ServerSettingsBuilder<M, S> @PublishedApi internal constructor(
 }
 
 @DslBuilder
-class DebugEnvBuilder<M, C, S> @PublishedApi internal constructor(
+class DebugEnvBuilder<M, C, S, J> @PublishedApi internal constructor(
     var dependenciesBuilder: EnvBuilder<M, C, S>,
-    var serverSettingsBuilder: ServerSettingsBuilder<M, S>
+    var serverSettingsBuilder: ServerSettingsBuilder<M, S, J>
 ) {
 
     fun dependencies(config: EnvBuilder<M, C, S>.() -> Unit) {
         dependenciesBuilder.apply(config)
     }
 
-    fun serverSettings(config: ServerSettingsBuilder<M, S>.() -> Unit) {
+    fun serverSettings(config: ServerSettingsBuilder<M, S, J>.() -> Unit) {
         serverSettingsBuilder.apply(config)
     }
 
 }
 
-inline fun <reified M, reified C, reified S> Dependencies(
+inline fun <reified M, reified C, reified S, J> Dependencies(
     id: ComponentId,
     env: Env<M, C, S>,
-    config: DebugEnvBuilder<M, C, S>.() -> Unit = {}
+    jsonConverter: JsonConverter<J>,
+    config: DebugEnvBuilder<M, C, S, J>.() -> Unit = {}
 ) = DebugEnvBuilder(
     EnvBuilder(env),
-    ServerSettingsBuilder(id)
+    ServerSettingsBuilder(id, jsonConverter)
 ).apply(config).toDebugDependencies()
 
 @PublishedApi
-internal inline fun <reified M, reified C, reified S> DebugEnvBuilder<M, C, S>.toDebugDependencies() =
+internal inline fun <reified M, reified C, reified S, J> DebugEnvBuilder<M, C, S, J>.toDebugDependencies() =
     DebugEnv(
         dependenciesBuilder.toEnv(),
         serverSettingsBuilder.toServerSettings()
     )
 
-
 @PublishedApi
-internal inline fun <reified M, reified S> ServerSettingsBuilder<M, S>.toServerSettings() =
+internal inline fun <reified M, reified S, J> ServerSettingsBuilder<M, S, J>.toServerSettings() =
     ServerSettings(
         id,
-        jsonSerializer ?: GsonSerializer(),
+        jsonSerializer,
         url ?: localhost,
         sessionBuilder ?: ::WebSocketSession
     )

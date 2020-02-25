@@ -9,7 +9,7 @@ import io.ktor.client.features.websocket.WebSockets
 import io.ktor.client.features.websocket.ws
 import io.ktor.http.HttpMethod
 
-typealias SessionBuilder<M, S> = suspend (ServerSettings<M, S>, suspend DebugSession<M, S>.() -> Unit) -> Unit
+typealias SessionBuilder<M, S, J> = suspend (ServerSettings<M, S, J>, suspend DebugSession<M, S, J>.() -> Unit) -> Unit
 
 @PublishedApi
 internal val httpClient by lazy { HttpClient { install(WebSockets) } }
@@ -17,9 +17,9 @@ internal val httpClient by lazy { HttpClient { install(WebSockets) } }
 @PublishedApi
 internal val localhost by lazy(::URL)
 
-suspend inline fun <reified M, reified S> WebSocketSession(
-    settings: ServerSettings<M, S>,
-    crossinline block: suspend DebugSession<M, S>.() -> Unit
+suspend inline fun <reified M, reified S, J> WebSocketSession(
+    settings: ServerSettings<M, S, J>,
+    crossinline block: suspend DebugSession<M, S, J>.() -> Unit
 ) = httpClient.ws(
     method = HttpMethod.Get,
     host = settings.url.host,

@@ -1,5 +1,6 @@
 package com.oliynick.max.tea.core.debug
 
+import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.Env
 import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Regular
@@ -28,7 +29,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import protocol.ActionApplied
-import protocol.JsonTree
 import protocol.NotifyComponentAttached
 import protocol.NotifyComponentSnapshot
 
@@ -92,15 +92,15 @@ class DebuggableComponentTest : BasicComponentTest({ env ->
             elem.componentId shouldBe testComponentId
 
             when (val payload = elem.payload) {
-                is NotifyComponentSnapshot -> {
+                is NotifyComponentSnapshot<*> -> {
                     index shouldNotBeExactly 0
-                    fromJson(payload.message) shouldBe messages[index - 1]
-                    fromJson(payload.newState) shouldBe messages[index - 1]
+                    fromJson(payload.message as JsonElement) shouldBe messages[index - 1]
+                    fromJson(payload.newState as JsonElement) shouldBe messages[index - 1]
                 }
 
-                is NotifyComponentAttached -> {
+                is NotifyComponentAttached<*> -> {
                     index shouldBeExactly 0
-                    fromJson(payload.state) shouldBe ""
+                    fromJson(payload.state as JsonElement) shouldBe ""
                 }
 
                 is ActionApplied -> fail("Shouldn't get here. Index=$index, elem=$elem")
@@ -134,6 +134,6 @@ class DebuggableComponentTest : BasicComponentTest({ env ->
 }
 
 private fun fromJson(
-    tree: JsonTree
+    tree: JsonElement
 ) = testSerializer.fromJsonTree(tree, String::class.java)
 

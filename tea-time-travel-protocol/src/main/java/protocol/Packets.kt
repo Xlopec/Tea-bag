@@ -20,24 +20,15 @@ package protocol
 
 import java.util.*
 
-data class SomeTestString(val value: String)
-
-data class SomeTestCommand constructor(
-    val str: SomeTestString,
-    val collection: Collection<Any>
-)
-
-data class SomeTestState(val string: SomeTestString/*, val uri: Uri*/)
-
-data class NotifyServer(
+data class NotifyServer<out J>(
     val messageId: UUID,
     val componentId: ComponentId,
-    val payload: ServerMessage
+    val payload: ServerMessage<J>
 )
 
-data class NotifyClient(
+data class NotifyClient<out J>(
     val id: UUID,
     val component: ComponentId,
-    val message: ClientMessage
+    val message: ClientMessage<J>
 )
 

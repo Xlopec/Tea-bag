@@ -16,24 +16,21 @@
 
 package protocol
 
-import com.google.gson.JsonElement
 import java.util.*
 
-typealias JsonTree = JsonElement
+sealed class ServerMessage<out J>
 
-sealed class ServerMessage
+data class NotifyComponentSnapshot<out J>(
+    val message: J,
+    val oldState: J,
+    val newState: J
+) : ServerMessage<J>()
 
-data class NotifyComponentSnapshot(
-    val message: JsonElement,
-    val oldState: JsonElement,
-    val newState: JsonElement
-) : ServerMessage()
-
-data class NotifyComponentAttached(
-    val state: JsonElement
-) : ServerMessage()
+data class NotifyComponentAttached<out J>(
+    val state: J
+) : ServerMessage<J>()
 
 @Deprecated("not needed anymore, will be removed")
 data class ActionApplied(
     val id: UUID
-) : ServerMessage()
+) : ServerMessage<Nothing>()

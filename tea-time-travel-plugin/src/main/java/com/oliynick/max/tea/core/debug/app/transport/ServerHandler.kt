@@ -16,6 +16,7 @@
 
 package com.oliynick.max.tea.core.debug.app.transport
 
+import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
 import com.oliynick.max.tea.core.debug.app.domain.cms.Settings
 import kotlinx.coroutines.Dispatchers
@@ -54,7 +55,7 @@ class ServerHandler {
 
     suspend operator fun invoke(
         component: ComponentId,
-        message: ClientMessage
+        message: ClientMessage<JsonElement>
     ) {
         mutex.withLock {
             server!!(component, message)

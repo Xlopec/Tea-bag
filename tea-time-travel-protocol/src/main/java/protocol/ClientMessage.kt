@@ -1,12 +1,11 @@
 package protocol
 
-@Deprecated("should be replaced with concrete type tailored for server/client usage case")
-sealed class ClientMessage
+sealed class ClientMessage<out J>
 
-data class ApplyMessage(
-    val message: JsonTree
-) : ClientMessage()
+data class ApplyMessage<out J>(
+    val message: J
+) : ClientMessage<J>()
 
-data class ApplyState(
-    val state: JsonTree
-) : ClientMessage()
+data class ApplyState<J>(
+    val state: J
+) : ClientMessage<J>()

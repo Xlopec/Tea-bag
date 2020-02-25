@@ -1,15 +1,13 @@
-package com.oliynick.max.tea.core.debug.converter
+package protocol
 
-import protocol.JsonTree
-
-interface JsonConverter {
+interface JsonConverter<J> {
 
     fun <T> toJsonTree(
         any: T
-    ): JsonTree
+    ): J
 
     fun <T> fromJsonTree(
-        json: JsonTree,
+        json: J,
         cl: Class<T>
     ): T
 

@@ -1,5 +1,6 @@
 package com.oliynick.max.tea.core.debug.gson.serialization.test
 
+import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
 import com.oliynick.max.tea.core.debug.gson.Gson
 import com.oliynick.max.tea.core.debug.gson.serialization.data.Singleton
@@ -133,7 +134,7 @@ class DefaultGsonSerializersTest {
     @Test
     fun `test null gets serialized properly`() {
 
-        val json = gsonSerializer.toJson(null, Any::class.java)
+        val json = gsonSerializer.toJson(null)
         val fromJson = gsonSerializer.fromJson(json, Any::class.java)
 
         fromJson shouldBe null
@@ -174,6 +175,6 @@ class DefaultGsonSerializersTest {
 
 @Suppress("TestFunctionName")
 private fun NotifyClient(
-    message: ClientMessage
+    message: ClientMessage<JsonElement>
 ) = NotifyClient(UUID.randomUUID(), ComponentId("test"), message)
 
