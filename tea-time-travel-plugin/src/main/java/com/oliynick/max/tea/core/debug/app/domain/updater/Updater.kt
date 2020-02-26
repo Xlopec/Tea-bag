@@ -22,14 +22,10 @@ import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
 import com.oliynick.max.tea.core.debug.app.domain.cms.PluginState
 
 interface Updater<Env> {
+
     fun Env.update(
         message: PluginMessage,
         state: PluginState
     ): UpdateWith<PluginState, PluginCommand>
-}
 
-fun notifyIllegalMessage(
-    message: PluginMessage,
-    state: PluginState
-): Nothing =
-    throw IllegalArgumentException("Can't handle message $message when plugin is in state $state")
+}

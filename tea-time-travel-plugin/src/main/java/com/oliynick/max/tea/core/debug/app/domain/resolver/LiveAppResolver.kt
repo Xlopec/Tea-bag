@@ -2,129 +2,49 @@
 
 package com.oliynick.max.tea.core.debug.app.domain.resolver
 
-import com.intellij.ide.util.PropertiesComponent
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
 import com.oliynick.max.tea.core.debug.app.domain.cms.*
-import com.oliynick.max.tea.core.debug.app.storage.paths
+import com.oliynick.max.tea.core.debug.app.presentation.sidebar.*
 import com.oliynick.max.tea.core.debug.app.storage.serverSettings
-import com.oliynick.max.tea.core.debug.app.transport.ServerHandler
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
-import kotlinx.coroutines.channels.BroadcastChannel
 import protocol.ApplyMessage
 import protocol.ApplyState
 
-
-fun HasServerService(server: ServerHandler = ServerHandler()) =
-    object : HasServerService {
-        override val server: ServerHandler = server
-    }
-
-fun HasSystemProperties(properties: PropertiesComponent) =
-    object : HasSystemProperties {
-        override val properties: PropertiesComponent = properties
-    }
-
-fun HasChannels(
-    events: BroadcastChannel<PluginMessage> = BroadcastChannel(1),
-    exceptions: BroadcastChannel<DoNotifyOperationException> = BroadcastChannel(1),
-    notifications: BroadcastChannel<NotificationMessage> = BroadcastChannel(1)
-) =
-    HasChannels(Channels(
-        events,
-        exceptions,
-        notifications))
-
-fun HasChannels(channels: Channels) =
-    object : HasChannels {
-        override val channels = channels
-    }
-
-data class Channels(
-    val events: BroadcastChannel<PluginMessage>,
-    val exceptions: BroadcastChannel<DoNotifyOperationException>,
-    val notifications: BroadcastChannel<NotificationMessage>
-)
-
-interface HasChannels {
-    val channels: Channels
-}
-
-interface HasServerService {
-    val server: ServerHandler
-}
-
-interface HasSystemProperties {
-    val properties: PropertiesComponent
-}
-
-fun <Env> LiveAppResolver() where Env : HasChannels,
-                                  Env : HasServerService,
+fun <Env> LiveAppResolver() where Env : HasMessageChannel,
+                                  Env : HasProject,
                                   Env : HasSystemProperties = object : LiveAppResolver<Env> {}
 
-interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasChannels,
-                                                        Env : HasServerService,
+interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
+                                                        Env : HasProject,
                                                         Env : HasSystemProperties {
 
-    override suspend fun Env.resolve(command: PluginCommand): Set<PluginMessage> {
+    override suspend fun Env.resolve(
+        command: PluginCommand
+    ): Set<PluginMessage> =
+        runCatching { doResolve(command) }
+            .getOrElse { th -> setOf(NotifyOperationException(th, command)) }
 
-        suspend fun resolve(): Set<PluginMessage> {
-            return when (command) {
-                is StoreFiles -> command sideEffect { properties.paths = files }
-                is StoreServerSettings -> command sideEffect {
-                    properties.serverSettings = serverSettings
-                }
-                is DoStartServer -> command effect {
-                    server.start(
-                        command.settings,
-                        channels.events
-                    ); NotifyStarted
-                }
-                DoStopServer -> command effect { server.stop(); NotifyStopped }
-                is DoApplyCommand -> command.sideEffect {
-                    server(
-                        id,
-                        // fixme fix
-                        ApplyMessage(command.command.toJsonElement())
-                    )
-                }
-                is DoNotifyOperationException -> command.sideEffect {
-                    channels.exceptions.send(
-                        command
-                    )
-                }
-                is DoApplyState -> command.effect {
-                    server(
-                        id,
-                        // fixme fix
-                        ApplyState(state.toJsonElement())
-                    )
-
-                    StateReApplied(
-                        id,
-                        state
-                    )
-                }
-            }
+    suspend fun Env.doResolve(
+        command: PluginCommand
+    ): Set<NotificationMessage> =
+        when (command) {
+            is DoStoreServerSettings -> command sideEffect { properties.serverSettings = serverSettings }
+            is DoStartServer -> command effect { NotifyStarted(server.start(settings, events)) }
+            is DoStopServer -> command effect { NotifyStopped(server.stop()) }
+            is DoApplyCommand -> command sideEffect { server(id, ApplyMessage(command.command.toJsonElement())) }
+            is DoApplyState -> reApplyState(command)
+            is DoNotifyOperationException -> command sideEffect { project.showBalloon(newExceptionBalloon(exception, operation)) }
+            is DoWarnUnacceptableMessage -> command sideEffect { project.showBalloon(newUnacceptableMessageBalloon(message, state)) }
+            is DoNotifyComponentAttached -> command sideEffect { project.showBalloon(newComponentAttachedBalloon(componentId)) }
         }
 
-        return runCatching {
-            resolve().also { messages ->
-                channels.notifications.send(messages.notifications())
-            }
-        }.getOrElse { th ->
-            setOf(
-                NotifyOperationException(
-                    th,
-                    command
-                )
-            )
-        }
+    suspend fun Env.reApplyState(
+        command: DoApplyState
+    ) = command effect {
+        server(id, ApplyState(state.toJsonElement()))
+        project.showBalloon(newStateReAppliedBalloon(id))
+        StateReApplied(id, state)
     }
-
-    fun Iterable<PluginMessage>.notifications() = filterIsInstance<NotificationMessage>()
-
-    suspend fun BroadcastChannel<NotificationMessage>.send(messages: Iterable<NotificationMessage>) =
-        messages.forEach { notification -> send(notification) }
 
 }

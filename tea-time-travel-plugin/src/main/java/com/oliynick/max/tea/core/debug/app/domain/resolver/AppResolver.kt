@@ -21,6 +21,8 @@ import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
 
 interface AppResolver<Env> {
 
-    suspend fun Env.resolve(command: PluginCommand): Set<PluginMessage>
+    suspend fun Env.resolve(
+        command: PluginCommand
+    ): Set<PluginMessage>
 
 }

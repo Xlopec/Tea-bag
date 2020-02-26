@@ -25,14 +25,14 @@ object AndroidSdk {
 object Libraries {
     private object Versions {
         const val coroutines = "1.3.3"
-        const val ktor = "1.2.4"
+        const val ktor = "1.3.1"
     }
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
     const val coroutinesSwing = "org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutines"
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines"
-    const val kotlinStdLib     = "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    const val kotlinStdLib     = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     const val kotlinReflect     = "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
     const val ktorServerCore = "io.ktor:ktor-server-core:$ktor"

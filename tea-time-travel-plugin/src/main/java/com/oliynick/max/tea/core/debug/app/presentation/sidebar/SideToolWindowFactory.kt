@@ -18,11 +18,15 @@ package com.oliynick.max.tea.core.debug.app.presentation.sidebar
 
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
+import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
-import com.oliynick.max.tea.core.debug.app.domain.cms.*
+import com.oliynick.max.tea.core.component.Component
+import com.oliynick.max.tea.core.component.states
+import com.oliynick.max.tea.core.debug.app.domain.cms.PluginCommand
+import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.domain.cms.PluginState
 import com.oliynick.max.tea.core.debug.app.env.Environment
 import com.oliynick.max.tea.core.debug.app.env.PluginComponent
 import com.oliynick.max.tea.core.debug.app.storage.properties
@@ -30,54 +34,33 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-
 class SideToolWindowFactory : ToolWindowFactory, DumbAware {
 
     override fun createToolWindowContent(
         project: Project,
         toolWindow: ToolWindow
     ) {
-        Environment(project.properties).createToolWindowContent(project, toolWindow)
+        val environment = Environment(project.properties, project)
+        val component = PluginComponent(environment)
+        val content = createToolWindowContent(environment, component)
+
+        toolWindow.contentManager.addContent(content)
+        // todo: find a better approach
+        environment.launch {
+            component(environment.events.asFlow()).collect()
+        }
     }
 
     override fun shouldBeAvailable(project: Project): Boolean = true
 }
 
-private fun Environment.createToolWindowContent(
-    project: Project,
-    toolWindow: ToolWindow
-) {
-    val myToolWindow = ToolWindowView(project, this, PluginComponent(), channels.events)
+private fun createToolWindowContent(
+    environment: Environment,
+    component: Component<PluginMessage, PluginState, PluginCommand>
+): Content {
+
+    val myToolWindow = ToolWindowView(environment, component.states())
     val contentFactory = ContentFactory.SERVICE.getInstance()
-    val content = contentFactory.createContent(myToolWindow.root, null, false)
 
-    toolWindow.contentManager.addContent(content)
-
-    launch {
-        channels.exceptions.asFlow().collect { command ->
-            project.showException(command)
-        }
-    }
-
-    launch {
-        channels.notifications.asFlow().collect { notification ->
-            project.showNotification(notification)
-        }
-    }
-}
-
-private fun Project.showException(command: DoNotifyOperationException) {
-    showBalloon(createBalloon(command.exception, command.operation))
-}
-
-private fun Project.showNotification(notification: NotificationMessage) {
-    val balloon: Balloon = when (notification) {
-        NotifyStarted -> createServerStartedBalloon()
-        NotifyStopped -> createServerStoppedBalloon()
-        is StateReApplied -> createStateReAppliedBalloon(notification.componentId)
-        is ComponentAttached -> createComponentAttachedBalloon(notification.componentId)
-        else -> return
-    }
-
-    showBalloon(balloon)
+    return contentFactory.createContent(myToolWindow.root, null, false)
 }

@@ -27,7 +27,9 @@ import io.ktor.features.ConditionalHeaders
 import io.ktor.features.DataConversion
 import io.ktor.features.DefaultHeaders
 import io.ktor.http.cio.websocket.Frame
+import io.ktor.http.cio.websocket.pingPeriod
 import io.ktor.http.cio.websocket.readText
+import io.ktor.http.cio.websocket.timeout
 import io.ktor.request.path
 import io.ktor.routing.routing
 import io.ktor.server.engine.ApplicationEngine
@@ -36,10 +38,13 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
-import kotlinx.coroutines.*
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.slf4j.event.Level
 import protocol.*
 import java.time.Duration
@@ -80,11 +85,11 @@ class Server private constructor(
                 //val completionJob = launch { completions.asFlow().first { id -> id == callId } }
 
                 calls.send(RemoteCallArgs(callId, component, message))
-               // completionJob.join()
+                // completionJob.join()
             }
         } catch (th: TimeoutCancellationException) {
             throw NetworkException("Timed out waiting for $timeout ms to perform operation",
-                                   th)
+                th)
         } catch (th: Throwable) {
             throw th.toPluginException()
         }
@@ -196,8 +201,6 @@ private suspend fun installPacketSender(
 
         val json = GSON.toJson(NotifyClient(callId, componentId, message))
 
-        println("Send json $json")
-
         outgoing.send(Frame.Text(json))
     }
 }
@@ -206,46 +209,38 @@ private suspend fun installPacketReceiver(
     events: BroadcastChannel<PluginMessage>,
     incoming: Flow<Frame.Text>
 ) {
-
     incoming.collect { frame -> processPacket(frame, events) }
 }
-
 
 private suspend fun processPacket(
     frame: Frame.Text,
     events: BroadcastChannel<PluginMessage>
 ) {
-    coroutineScope {
+    val json = frame.readText()
+    val packet = GSON.fromJson<NotifyServer<JsonElement>>(json, NotifyServer::class.java)
 
-        val json = frame.readText()
+    try {
 
-        println("Got json $json")
-
-        val packet = GSON.fromJson(json, NotifyServer::class.java)
-
-        try {
-
-            when (val message = packet.payload) {// todo consider removing `?`
-                is NotifyComponentSnapshot<*> -> events.send(
-                    AppendSnapshot(
-                        packet.componentId,
-                        (message.message as JsonElement).asJsonObject.toValue(),
-                        (message.oldState as JsonElement).asJsonObject.toValue(),
-                        (message.newState as JsonElement).asJsonObject.toValue()
-                    )
+        when (val message = packet.payload) {// todo consider removing `?`
+            is NotifyComponentSnapshot<JsonElement> -> events.send(
+                AppendSnapshot(
+                    packet.componentId,
+                    message.message.asJsonObject.toValue(),
+                    message.oldState.asJsonObject.toValue(),
+                    message.newState.asJsonObject.toValue()
                 )
-                is NotifyComponentAttached<*> -> events.send(
-                    ComponentAttached(
-                        packet.componentId,
-                        (message.state as JsonElement).asJsonObject.toValue()
-                    )
+            )
+            is NotifyComponentAttached<JsonElement> -> events.send(
+                ComponentAttached(
+                    packet.componentId,
+                    message.state.asJsonObject.toValue()
                 )
-                is ActionApplied -> error("ActionApplied instances shouldn't be sent anymore")
-            }
-
-        } catch (e: Throwable) {
-            events.send(NotifyOperationException(e))
+            )
+            is ActionApplied -> error("ActionApplied instances shouldn't be sent anymore")
         }
+
+    } catch (e: Throwable) {
+        events.send(NotifyOperationException(e))
     }
 }
 

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.tea.core.debug.app.presentation.misc
 
 import javax.swing.event.DocumentEvent
@@ -35,4 +37,10 @@ interface DefaultDocumentListener : DocumentListener {
 
     fun onValueUpdated(value: String) = Unit
 
+}
+
+inline fun DefaultDocumentListener(
+    crossinline l: (String) -> Unit
+): DocumentListener = object : DefaultDocumentListener {
+    override fun onValueUpdated(value: String) = l(value)
 }

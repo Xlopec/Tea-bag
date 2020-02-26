@@ -1,11 +1,11 @@
 package com.oliynick.max.tea.core.debug.app.domain.component
 
 import com.oliynick.max.tea.core.component.Component
-import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.with
 import com.oliynick.max.tea.core.debug.app.domain.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.resolver.AppResolver
-import com.oliynick.max.tea.core.debug.app.domain.resolver.HasChannels
+import com.oliynick.max.tea.core.debug.app.domain.resolver.HasMessageChannel
+import com.oliynick.max.tea.core.debug.app.domain.resolver.HasMessagesChannel
 import com.oliynick.max.tea.core.debug.app.domain.updater.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
@@ -27,13 +27,14 @@ class ComponentTest {
         val resolver = object : AppResolver<TestEnvironment> {
             override suspend fun TestEnvironment.resolve(command: PluginCommand): Set<PluginMessage> =
                 when (command) {
-                    is StoreFiles -> TODO()
-                    is StoreServerSettings -> TODO()
-                    is DoStartServer -> effect { NotifyStarted }
-                    DoStopServer -> effect { NotifyStopped }
+                    is DoStoreServerSettings -> TODO()
+                    is DoStartServer -> TODO()//effect { NotifyStarted }
+                    is DoStopServer -> TODO()//effect { NotifyStopped }
                     is DoApplyCommand -> TODO()
                     is DoApplyState -> TODO()
                     is DoNotifyOperationException -> TODO()
+                    is DoWarnUnacceptableMessage -> TODO()
+                    is DoNotifyComponentAttached -> TODO()
                 }
 
         }
@@ -72,7 +73,7 @@ interface TestEnvironment :
     NotificationUpdater,
     UiUpdater,
     AppResolver<TestEnvironment>,
-    HasChannels
+    HasMessageChannel
 
 @Suppress("FunctionName")
 fun TestEnvironment(
@@ -83,4 +84,4 @@ fun TestEnvironment(
              NotificationUpdater by LiveNotificationUpdater,
              UiUpdater by LiveUiUpdater,
              AppResolver<TestEnvironment> by resolver,
-             HasChannels by HasChannels() {}
+             HasMessageChannel by HasMessagesChannel() {}

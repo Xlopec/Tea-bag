@@ -14,67 +14,66 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.tea.core.debug.app.transport
 
 import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
 import com.oliynick.max.tea.core.debug.app.domain.cms.Settings
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import protocol.ClientMessage
 import protocol.ComponentId
-import java.util.concurrent.TimeUnit
 
-// fixme shiii
-class ServerHandler {
-    private var server: Server? = null
-    private var collectJob: Job? = null
-    private val mutex = Mutex()
+sealed class ServerResource
 
-    suspend fun start(
+abstract class StoppedServer : ServerResource() {
+
+    abstract suspend fun start(
         settings: Settings,
         events: BroadcastChannel<PluginMessage>
-    ) {
-        mutex.withLock {
+    ): StartedServer
+}
 
-            require(server == null) { "server haven't been disposed" }
+abstract class StartedServer : ServerResource() {
 
-            val newServer = Server.newInstance(settings, events)
+    abstract suspend fun stop(): StoppedServer
 
-            server = newServer
-            // fixme handle errors
-            withContext(Dispatchers.IO) {
-                newServer.start()
-            }
-        }
-    }
-
-    suspend operator fun invoke(
+    abstract suspend operator fun invoke(
         component: ComponentId,
         message: ClientMessage<JsonElement>
-    ) {
-        mutex.withLock {
-            server!!(component, message)
+    )
+
+}
+
+fun NewStoppedServer(): StoppedServer = StoppedServerImpl()
+
+private class StoppedServerImpl : StoppedServer() {
+
+    override suspend fun start(settings: Settings, events: BroadcastChannel<PluginMessage>): StartedServer =
+        withContext(Dispatchers.IO) {
+            val newServer = Server.newInstance(settings, events)
+            newServer.start()
+            StartedServerImpl(newServer)
         }
-    }
 
-    suspend fun stop() {
-        // todo some kind of readLock
-        mutex.withLock {
-            val old = server
+}
 
-            requireNotNull(old) { "server haven't been started" }
+private class StartedServerImpl(
+    private val server: Server
+) : StartedServer() {
 
-            server = null
-
-            withContext(Dispatchers.IO) {
-                collectJob?.cancel()
-                old.stop(1, 1, TimeUnit.SECONDS)
-            }
+    override suspend fun stop(): StoppedServer =
+        withContext(Dispatchers.IO) {
+            server.stop(1, 1)
+            StoppedServerImpl()
         }
-    }
+
+    override suspend fun invoke(
+        component: ComponentId,
+        message: ClientMessage<JsonElement>
+    ) = server(component, message)
+
 }

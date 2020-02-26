@@ -16,7 +16,6 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.sidebar
 
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.components.JBTabbedPane
 import com.oliynick.max.tea.core.debug.app.domain.cms.*
@@ -39,10 +38,8 @@ import javax.swing.event.DocumentListener
 import java.awt.Component as AwtComponent
 
 class ToolWindowView(
-    private val project: Project,
     private val scope: CoroutineScope,
-    private val component: (Flow<PluginMessage>) -> Flow<PluginState>,
-    private val uiEvents: BroadcastChannel<PluginMessage>
+    private val component: (Flow<PluginMessage>) -> Flow<PluginState>
 ) : CoroutineScope by scope {
 
     private lateinit var panel: JPanel
@@ -51,16 +48,14 @@ class ToolWindowView(
     private lateinit var hostTextField: JTextField
     private lateinit var componentsPanel: JPanel
 
-    private val portListener = object : DefaultDocumentListener {
-        override fun onValueUpdated(value: String) {
-            uiEvents.offer(UpdatePort(value.toUIntOrNull() ?: return))
-        }
+    private val uiEvents = BroadcastChannel<PluginMessage>(1)
+
+    private val portListener = DefaultDocumentListener { value ->
+        uiEvents.offer(UpdatePort(value.toUIntOrNull() ?: return@DefaultDocumentListener))
     }
 
-    private val hostListener = object : DefaultDocumentListener {
-        override fun onValueUpdated(value: String) {
-            uiEvents.offer(UpdateHost(value))
-        }
+    private val hostListener = DefaultDocumentListener { value ->
+        uiEvents.offer(UpdateHost(value))
     }
 
     val root: JPanel get() = panel
@@ -69,7 +64,6 @@ class ToolWindowView(
         launch { component(uiEvents.asFlow()).collect { state -> render(state, uiEvents::offer) } }
     }
 
-    //todo consider exposing a single callback
     private fun render(
         state: PluginState,
         messages: (PluginMessage) -> Unit
@@ -104,7 +98,7 @@ class ToolWindowView(
             showEmptyComponentsView()
         }
 
-        check(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children()}" }
+        check(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children}" }
     }
 
     private fun render(@Suppress("UNUSED_PARAMETER") state: Starting) {
@@ -123,7 +117,7 @@ class ToolWindowView(
 
         startButton.setOnClickListenerEnabling { messages(StopServer) }
 
-        require(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children()}" }
+        require(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children}" }
 
         if (state.debugState.components.isEmpty()) {
             // show empty view
@@ -141,7 +135,7 @@ class ToolWindowView(
             (componentsPanel.first() as JTabbedPane).update(state.debugState, messages)
         }
 
-        check(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children()}" }
+        check(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children}" }
     }
 
     private fun render(@Suppress("UNUSED_PARAMETER") state: Stopping) {
@@ -162,15 +156,13 @@ class ToolWindowView(
     private fun JTabbedPane.update(
         debugState: DebugState,
         messages: (PluginMessage) -> Unit
-    ) {
-        debugState.components
-            .filter { e -> indexOfTab(e.key.id) == -1 }
-            .forEach { (id, s) ->
-                addCloseableTab(id, ComponentView(scope, component, s)._root) { component ->
-                    messages(RemoveComponent(component))
-                }
+    ) = debugState.components
+        .filter { e -> indexOfTab(e.key.id) == -1 }
+        .forEach { (id, s) ->
+            addCloseableTab(id, ComponentView(scope, component, s)._root) { component ->
+                messages(RemoveComponent(component))
             }
-    }
+        }
 
 }
 
@@ -203,7 +195,9 @@ inline val Container.isNotEmpty inline get() = !isEmpty
 
 fun Container.first() = this[0]
 
-operator fun Container.get(i: Int): AwtComponent = getComponent(i)
+operator fun Container.get(
+    i: Int
+): AwtComponent = getComponent(i)
 
 fun Container.clearCancelling() {
     for (i in 0 until componentCount) {
@@ -224,9 +218,10 @@ fun AwtComponent.cancel() {
     }
 }
 
-fun Container.children() = (0 until componentCount).map { i -> this[i] }
+private inline val Container.children: List<java.awt.Component>
+    get() = (0 until componentCount).map { i -> this[i] }
 
-inline fun JTabbedPane.addCloseableTab(
+private inline fun JTabbedPane.addCloseableTab(
     component: ComponentId,
     content: AwtComponent,
     icon: Icon? = null,
@@ -247,6 +242,6 @@ inline fun JTabbedPane.addCloseableTab(
     setTabComponentAt(indexOfComponent(content), panel)
 }
 
-fun getIcon(name: String): Icon {
-    return IconLoader.getIcon("images/$name.png")
-}
+fun getIcon(
+    name: String
+): Icon = IconLoader.getIcon("images/$name.png")

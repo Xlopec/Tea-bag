@@ -16,6 +16,8 @@
 
 package com.oliynick.max.tea.core.debug.app.domain.cms
 
+import com.oliynick.max.tea.core.debug.app.transport.StartedServer
+import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentListOf
@@ -61,7 +63,8 @@ sealed class PluginState {
 }
 
 data class Stopped(
-    override val settings: Settings
+    override val settings: Settings,
+    val server: StoppedServer
 ) : PluginState()
 
 data class Starting(
@@ -70,7 +73,8 @@ data class Starting(
 
 data class Started(
     override val settings: Settings,
-    val debugState: DebugState
+    val debugState: DebugState,
+    val server: StartedServer
 ) : PluginState()
 
 data class Stopping(

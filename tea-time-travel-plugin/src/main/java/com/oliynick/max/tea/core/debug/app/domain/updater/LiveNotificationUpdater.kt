@@ -4,6 +4,8 @@ import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
 import com.oliynick.max.tea.core.debug.app.domain.cms.*
+import com.oliynick.max.tea.core.debug.app.transport.StartedServer
+import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
 import protocol.ComponentId
 import java.time.LocalDateTime
 import java.util.*
@@ -17,35 +19,30 @@ object LiveNotificationUpdater : NotificationUpdater {
         state: PluginState
     ): UpdateWith<PluginState, PluginCommand> =
         when {
-            message === NotifyStarted -> toStartedState(
-                state.settings)
-            message === NotifyStopped -> toStoppedState(
-                state.settings)
-            message is AppendSnapshot && state is Started -> appendSnapshot(
-                message,
-                state)
-            message is StateReApplied && state is Started -> reApplyState(
-                message,
-                state)
-            message is ComponentAttached && state is Started -> attachComponent(
-                message,
-                state)
-            message is NotifyOperationException -> recoverFromException(
-                message.exception,
-                message.operation,
-                state
-            )
-            else -> notifyIllegalMessage(message, state)
+            message is NotifyStarted -> toStartedState(message.server, state.settings)
+            message is NotifyStopped -> toStoppedState(message.server, state.settings)
+            message is AppendSnapshot && state is Started -> appendSnapshot(message, state)
+            message is StateReApplied && state is Started -> reApplyState(message, state)
+            message is ComponentAttached && state is Started -> attachComponent(message, state)
+            message is NotifyOperationException -> recoverFromException(message.exception, message.operation, state)
+            else -> warnUnacceptableMessage(message, state)
         }
 
-    fun toStartedState(settings: Settings): UpdateWith<Started, PluginCommand> =
+    fun toStartedState(
+        server: StartedServer,
+        settings: Settings
+    ): UpdateWith<Started, PluginCommand> =
         Started(
             settings,
-            DebugState()
+            DebugState(),
+            server
         ).noCommand()
 
-    fun toStoppedState(settings: Settings): UpdateWith<Stopped, PluginCommand> =
-        Stopped(settings).noCommand()
+    fun toStoppedState(
+        server: StoppedServer,
+        settings: Settings
+    ): UpdateWith<Stopped, PluginCommand> =
+        Stopped(settings, server).noCommand()
 
     fun appendSnapshot(
         message: AppendSnapshot,
@@ -68,13 +65,9 @@ object LiveNotificationUpdater : NotificationUpdater {
         val id = message.componentId
         val currentState = message.state
         val componentState = state.debugState.components[id]?.copy(currentState = currentState)
-            ?: ComponentDebugState(
-                id,
-                currentState
-            )
+            ?: ComponentDebugState(id, currentState)
 
-        return state.updateComponents { mapping -> mapping.put(componentState.id, componentState) }
-            .noCommand()
+        return state.updateComponents { mapping -> mapping.put(componentState.id, componentState) } command DoNotifyComponentAttached(id)
     }
 
     fun reApplyState(
@@ -89,38 +82,25 @@ object LiveNotificationUpdater : NotificationUpdater {
             .noCommand()
     }
 
-
     fun recoverFromException(
         th: PluginException,
         op: PluginCommand?,
         state: PluginState
-    ): UpdateWith<PluginState, PluginCommand> {
+    ): UpdateWith<PluginState, PluginCommand> =
+        if (isFatalProblem(th, op)) notifyDeveloperException(th)
+        else state command DoNotifyOperationException(th, op)
 
-        val notification by lazy {
-            DoNotifyOperationException(
-                th,
-                op
-            )
-        }
-
-        return when {
-            isStartStopProblem(op) -> Stopped(state.settings).command(notification)
-            isFatalProblem(th,
-                           op) -> notifyDeveloperException(
-                th)
-            else -> state.command(notification)
-        }
-    }
-
-    fun isStartStopProblem(op: PluginCommand?): Boolean =
-        op === DoStopServer || op is DoStartServer
+    fun warnUnacceptableMessage(
+        message: PluginMessage,
+        state: PluginState
+    ): UpdateWith<PluginState, PluginCommand> =
+        state command DoWarnUnacceptableMessage(message, state)
 
     fun isFatalProblem(
         th: PluginException,
         op: PluginCommand?
     ): Boolean =
-        op is StoreFiles || op is StoreServerSettings || op is DoNotifyOperationException
-            || th is InternalException
+        op is DoStopServer || op is DoStoreServerSettings || th is InternalException
 
     fun AppendSnapshot.toSnapshot(): Snapshot =
         Snapshot(
@@ -133,11 +113,7 @@ object LiveNotificationUpdater : NotificationUpdater {
     fun DebugState.componentOrNew(
         id: ComponentId,
         state: Value<*>
-    ) =
-        components[id] ?: ComponentDebugState(
-            id,
-            state
-        )
+    ) = components[id] ?: ComponentDebugState(id, state)
 
     fun notifyDeveloperException(cause: Throwable): Nothing =
         throw IllegalStateException(
@@ -146,3 +122,4 @@ object LiveNotificationUpdater : NotificationUpdater {
         )
 
 }
+

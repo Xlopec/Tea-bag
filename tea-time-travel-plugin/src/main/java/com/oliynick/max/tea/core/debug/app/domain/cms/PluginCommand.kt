@@ -16,34 +16,35 @@
 
 package com.oliynick.max.tea.core.debug.app.domain.cms
 
+import com.oliynick.max.tea.core.debug.app.transport.StartedServer
+import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
 import protocol.ComponentId
-import java.io.File
 
 sealed class PluginCommand
 
-@Deprecated("will be removed or replaced")
-data class StoreFiles(
-    val files: List<File>
-) : PluginCommand()
-
-data class StoreServerSettings(
+data class DoStoreServerSettings(
     val serverSettings: ServerSettings
 ) : PluginCommand()
 
 data class DoStartServer(
-    val settings: Settings
+    val settings: Settings,
+    val server: StoppedServer
 ) : PluginCommand()
 
-object DoStopServer : PluginCommand()
+data class DoStopServer(
+    val server: StartedServer
+) : PluginCommand()
 
 data class DoApplyCommand(
     val id: ComponentId,
-    val command: Value<*>
+    val command: Value<*>,
+    val server: StartedServer
 ) : PluginCommand()
 
 data class DoApplyState(
     val id: ComponentId,
-    val state: Value<*>
+    val state: Value<*>,
+    val server: StartedServer
 ) : PluginCommand()
 
 data class DoNotifyOperationException(
@@ -51,3 +52,11 @@ data class DoNotifyOperationException(
     val operation: PluginCommand?
 ) : PluginCommand()
 
+data class DoWarnUnacceptableMessage(
+    val message: PluginMessage,
+    val state: PluginState
+) : PluginCommand()
+
+data class DoNotifyComponentAttached(
+    val componentId: ComponentId
+) : PluginCommand()

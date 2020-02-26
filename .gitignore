@@ -13,6 +13,8 @@
 /.idea/misc.xml
 /.idea/codeStyles/
 /.idea/jarRepositories.xml
+/.idea/shelf/
+/.idea/runConfigurations.xml
 /projectFilesBackup*/
 .DS_Store
 /build

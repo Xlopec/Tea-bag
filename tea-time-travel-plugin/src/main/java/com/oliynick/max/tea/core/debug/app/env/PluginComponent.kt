@@ -2,52 +2,52 @@
 
 package com.oliynick.max.tea.core.debug.app.env
 
+import com.intellij.openapi.diagnostic.Logger
 import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.Regular
 import com.oliynick.max.tea.core.Snapshot
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.Interceptor
-import com.oliynick.max.tea.core.component.states
 import com.oliynick.max.tea.core.component.with
 import com.oliynick.max.tea.core.debug.app.domain.cms.PluginCommand
 import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
 import com.oliynick.max.tea.core.debug.app.domain.cms.PluginState
 import com.oliynick.max.tea.core.debug.app.domain.cms.Stopped
 import com.oliynick.max.tea.core.debug.app.storage.pluginSettings
-import kotlinx.coroutines.flow.Flow
+import com.oliynick.max.tea.core.debug.app.transport.NewStoppedServer
 
-fun Environment.PluginComponent(): (Flow<PluginMessage>) -> Flow<PluginState> {
+fun PluginComponent(
+    environment: Environment
+): Component<PluginMessage, PluginState, PluginCommand> {
 
-    suspend fun resolve(c: PluginCommand) = this.resolve(c)
+    suspend fun doResolve(
+        c: PluginCommand
+    ): Set<PluginMessage> = with(environment) { resolve(c) }
 
-    fun update(
+    fun doUpdate(
         message: PluginMessage,
         state: PluginState
-    ) = this.update(message, state)
-
-    return Component(
-        Initializer(
-            Stopped(
-                properties.pluginSettings
-            )
-        ), ::resolve, ::update
-    ).with(Logger()).states()
+    ) = with(environment) { update(message, state) }
+    // fixme implement proper initializer properly
+    return Component(Initializer(Stopped(environment.properties.pluginSettings, NewStoppedServer())), ::doResolve, ::doUpdate)
+        .with(Logger())
 }
 
-private fun Logger(): Interceptor<PluginMessage, PluginState, PluginCommand> =
-    { snapshot -> println(format(snapshot)) }
+private fun Logger(): Interceptor<PluginMessage, PluginState, PluginCommand> {
+    val logger = Logger.getInstance("Tea-Bag-Plugin")
 
-private fun <M, S, C> format(
-    snapshot: Snapshot<M, S, C>
-): String = when (snapshot) {
-    is Initial -> """
-        Init with state=${snapshot.currentState} ${snapshot.currentState.hashCode()}
-        ${if (snapshot.commands.isEmpty()) "" else "commands=${snapshot.commands}"}
-    """.trimIndent()
-    is Regular -> """
-        Regular with state=${snapshot.currentState} ${snapshot.currentState.hashCode()}
-        message=${snapshot.message}
-        ${if (snapshot.commands.isEmpty()) "" else "commands=${snapshot.commands}"}
-    """.trimIndent()
+    return { snapshot -> logger.info(snapshot.formatted()) }
 }
+
+private fun Snapshot<*, *, *>.formatted(): String =
+    when (this) {
+        is Initial -> "Init with state=$currentState" +
+                if (commands.isEmpty()) "" else ", commands=$commands"
+        is Regular -> """
+        Regular with new state=$currentState,
+        prev state=$previousState,
+        caused by message=$message
+        ${if (commands.isEmpty()) "" else "\ncommands=$commands"}
+    """.trimIndent()
+    }

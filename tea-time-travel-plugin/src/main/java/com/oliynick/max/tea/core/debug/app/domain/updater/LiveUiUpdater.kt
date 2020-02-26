@@ -17,6 +17,7 @@ object LiveUiUpdater : UiUpdater {
     ): UpdateWith<PluginState, PluginCommand> =
         when {
             message is UpdatePort && state is Stopped -> updateServerSettings(
+                // fixme чому ЇЇЇЇЇЇЇїїїїїїї??777(((99
                 state.updatedServerSettings {
                     copy(
                         port = message.port
@@ -37,48 +38,38 @@ object LiveUiUpdater : UiUpdater {
             message is ReApplyState && state is Started -> reApplyState(message, state)
             message is RemoveComponent && state is Started -> removeComponent(message, state)
             message is RemoveAllSnapshots && state is Started -> removeSnapshots(message.componentId, state)
-            else -> notifyIllegalMessage(message, state)
+            else -> warnUnacceptableMessage(message, state)
         }
 
     fun updateServerSettings(
         serverSettings: ServerSettings,
         state: Stopped
-    ): UpdateWith<Stopped, StoreServerSettings> {
+    ): UpdateWith<Stopped, DoStoreServerSettings> {
         //todo consider implementing generic memoization?
         if (state.settings.serverSettings == serverSettings) {
             return state.noCommand()
         }
 
-        return state.update(serverSettings) command StoreServerSettings(
-            serverSettings
-        )
+        return state.update(serverSettings) command DoStoreServerSettings(serverSettings)
     }
 
     fun startServer(state: Stopped): UpdateWith<Starting, DoStartServer> =
-        Starting(state.settings) command DoStartServer(
-            state.settings
-        )
+        Starting(state.settings) command DoStartServer(state.settings, state.server)
 
     fun stopServer(state: Started): UpdateWith<Stopping, DoStopServer> =
-        Stopping(state.settings) command DoStopServer
+        Stopping(state.settings) command DoStopServer(state.server)
 
     fun reApplyState(
         message: ReApplyState,
         state: Started
     ): UpdateWith<PluginState, PluginCommand> =
-        state command DoApplyState(
-            message.componentId,
-            message.state
-        )
+        state command DoApplyState(message.componentId, message.state, state.server)
 
     fun reApplyCommands(
         message: ReApplyCommands,
         state: Started
     ): UpdateWith<PluginState, PluginCommand> =
-        state command DoApplyCommand(
-            message.componentId,
-            message.command
-        )
+        state command DoApplyCommand(message.componentId, message.command, state.server)
 
     fun removeSnapshots(
         componentId: ComponentId,

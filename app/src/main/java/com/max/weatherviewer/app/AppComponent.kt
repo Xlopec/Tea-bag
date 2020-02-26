@@ -41,7 +41,7 @@ fun Environment.appComponent(): (Flow<Message>) -> Flow<State> {
             serverSettings {
                 url(URL(host = "10.0.2.2"))
             }
-        }.with { println(it) }.states()
+        }.states()
     }
 
     return Component(
