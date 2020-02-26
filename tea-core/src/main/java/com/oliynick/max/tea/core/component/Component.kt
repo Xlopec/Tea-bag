@@ -62,8 +62,8 @@ inline fun <reified M, reified C, reified S> Component(
     noinline update: Update<M, S, C>
 ): Component<M, S, C> = Component(Env(initializer, resolver, update))
 
-fun <M, C, S> Component(
-    env: Env<M, C, S>
+fun <M, S, C> Component(
+    env: Env<M, S, C>
 ): Component<M, S, C> {
 
     val input = Channel<M>(Channel.RENDEZVOUS)

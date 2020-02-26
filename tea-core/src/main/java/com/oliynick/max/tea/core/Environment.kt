@@ -8,39 +8,39 @@ import com.oliynick.max.tea.core.component.Update
 /**
  * Dependencies holder
  */
-data class Env<M, C, S>(
+data class Env<M, S, C>(
     inline val initializer: Initializer<S, C>,
     inline val resolver: Resolver<C, M>,
     inline val update: Update<M, S, C>
 )
 
-class EnvBuilder<M, C, S>(
+class EnvBuilder<M, S, C>(
     var initializer: Initializer<S, C>,
     var resolver: Resolver<C, M>,
     var update: Update<M, S, C>
 ) {
-    constructor(env: Env<M, C, S>) : this(
+    constructor(env: Env<M, S, C>) : this(
         env.initializer,
         env.resolver,
         env.update
     )
 }
 
-fun <M, C, S> Env(
+fun <M, S, C> Env(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
-    config: EnvBuilder<M, C, S>.() -> Unit = {}
+    config: EnvBuilder<M, S, C>.() -> Unit = {}
 ) = EnvBuilder(initializer, resolver, update)
     .apply(config)
     .toEnv()
 
-fun <M, C, S> Env(
+fun <M, S, C> Env(
     initialState: S,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     vararg initialCommands: C,
-    config: EnvBuilder<M, C, S>.() -> Unit = {}
+    config: EnvBuilder<M, S, C>.() -> Unit = {}
 ) = Env(
     Initializer(
         initialState,
@@ -48,12 +48,12 @@ fun <M, C, S> Env(
     ), resolver, update, config
 )
 
-fun <M, C, S> Env(
+fun <M, S, C> Env(
     initialState: S,
     resolver: Resolver<C, M>,
     update: Update<M, S, C>,
     initialCommands: Set<C>,
-    config: EnvBuilder<M, C, S>.() -> Unit = {}
+    config: EnvBuilder<M, S, C>.() -> Unit = {}
 ) = Env(
     Initializer(
         initialState,
@@ -61,5 +61,5 @@ fun <M, C, S> Env(
     ), resolver, update, config
 )
 
-fun <M, C, S> EnvBuilder<M, C, S>.toEnv(): Env<M, C, S> =
+fun <M, S, C> EnvBuilder<M, S, C>.toEnv(): Env<M, S, C> =
     Env(initializer, resolver, update)

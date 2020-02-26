@@ -38,9 +38,9 @@ fun Environment.PluginComponent(): (Flow<PluginMessage>) -> Flow<PluginState> {
 private fun Logger(): Interceptor<PluginMessage, PluginState, PluginCommand> =
     { snapshot -> println(format(snapshot)) }
 
-private fun <M, C, S> format(
-    snapshot: Snapshot<M, C, S>
-): String = when(snapshot) {
+private fun <M, S, C> format(
+    snapshot: Snapshot<M, S, C>
+): String = when (snapshot) {
     is Initial -> """
         Init with state=${snapshot.currentState} ${snapshot.currentState.hashCode()}
         ${if (snapshot.commands.isEmpty()) "" else "commands=${snapshot.commands}"}

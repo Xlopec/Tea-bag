@@ -29,8 +29,8 @@ fun <M, S> TestServerSettings(
     sessionBuilder
 )
 
-fun <M, C, S> TestEnv(
-    env: Env<M, C, S>,
+fun <M,S,C> TestEnv(
+    env: Env<M,S,C>,
     serverSettings: ServerSettings<M, S, JsonElement> = TestServerSettings()
 ) = DebugEnv(
     env,

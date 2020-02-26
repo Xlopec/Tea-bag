@@ -16,13 +16,13 @@ import kotlinx.coroutines.flow.*
 import org.junit.Test
 
 abstract class BasicComponentTest(
-    private val factory: CoroutineScope.(Env<Char, Char, String>) -> Component<Char, String, Char>
+    private val factory: CoroutineScope.(Env<Char, String, Char>) -> Component<Char, String, Char>
 ) {
 
     @Test
     fun `test component emits a correct sequence of snapshots`() = runBlocking {
 
-        val env = Env<Char, Char, String>(
+        val env = Env<Char, String, Char>(
             "",
             { c -> setOf(c) },
             { m, _ -> m.toString().noCommand() }
@@ -45,7 +45,7 @@ abstract class BasicComponentTest(
     fun `test component emits a correct sequence of snapshots if initial commands were present`() =
         runBlocking {
 
-            val env = Env<Char, Char, String>(
+            val env = Env<Char, String, Char>(
                 Initializer("", 'a', 'b', 'c'),
                 { c -> setOf(c) },
                 { m, _ -> m.toString().noCommand() }
@@ -72,7 +72,7 @@ abstract class BasicComponentTest(
     fun `test component emits a correct sequence of snapshots if we have recursive calculations`() =
         runBlocking {
 
-            val env = Env<Char, Char, String>(
+            val env = Env<Char, String, Char>(
                 "",
                 { ch ->
                     if (ch == 'a') setOf(
@@ -99,7 +99,7 @@ abstract class BasicComponentTest(
     fun `test component emits a correct sequence of snapshots if update returns set of messages`() =
         runBlocking {
 
-            val env = Env<Char, Char, String>(
+            val env = Env<Char, String, Char>(
                 "",
                 { ch -> setOf(ch) },
                 { m, str ->
@@ -125,7 +125,7 @@ abstract class BasicComponentTest(
     @Test
     fun `test interceptor sees an original sequence of snapshots`() = runBlocking {
 
-        val env = Env<Char, Char, String>(
+        val env = Env<Char, String, Char>(
             "",
             { c -> setOf(c) },
             { m, _ -> m.toString().noCommand() }
@@ -143,7 +143,7 @@ abstract class BasicComponentTest(
     @Test
     fun `test component's snapshots shared among consumers`() = runBlocking {
 
-        val env = Env<Char, Char, String>(
+        val env = Env<Char, String, Char>(
             "",
             { ch ->
                 if (ch == 'a') setOf(
@@ -192,7 +192,7 @@ abstract class BasicComponentTest(
                 }
             }
 
-            val env = Env<Char, Char, String>(
+            val env = Env<Char, String, Char>(
                 countingInitializer.initializer(),
                 ::throwingResolver,
                 { _, s -> s.noCommand() }
@@ -214,7 +214,7 @@ abstract class BasicComponentTest(
     @Test
     fun `test component's job gets canceled properly`() = runBlocking {
 
-        val env = Env<Char, Char, String>(
+        val env = Env<Char, String, Char>(
             "",
             ::foreverWaitingResolver,
             { m, _ -> m.toString().command(m) }
@@ -234,7 +234,7 @@ abstract class BasicComponentTest(
     fun `test component doesn't block if serves multiple message sources`() =
         runBlockingInTestScope {
 
-            val env = Env<Char, Char, String>(
+            val env = Env<Char, String, Char>(
                 "",
                 ::throwingResolver,
                 { m, _ -> m.toString().noCommand() }

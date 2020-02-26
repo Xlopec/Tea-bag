@@ -86,7 +86,7 @@ dependencies {
 
     val kotlin_version = "1.3.60-eap-76"
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7")
 
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3")
 

@@ -4,19 +4,19 @@ package com.oliynick.max.tea.core.debug.component
 
 import com.oliynick.max.tea.core.Env
 import com.oliynick.max.tea.core.EnvBuilder
-import protocol.JsonConverter
 import com.oliynick.max.tea.core.debug.session.SessionBuilder
 import com.oliynick.max.tea.core.debug.session.WebSocketSession
 import com.oliynick.max.tea.core.debug.session.localhost
 import com.oliynick.max.tea.core.toEnv
 import protocol.ComponentId
+import protocol.JsonConverter
 import java.net.URL
 
 @DslMarker
 private annotation class DslBuilder
 
-data class DebugEnv<M, C, S, J>(
-    inline val componentEnv: Env<M, C, S>,
+data class DebugEnv<M, S, C, J>(
+    inline val componentEnv: Env<M, S, C>,
     inline val serverSettings: ServerSettings<M, S, J>
 )
 
@@ -60,12 +60,12 @@ class ServerSettingsBuilder<M, S, J> @PublishedApi internal constructor(
 }
 
 @DslBuilder
-class DebugEnvBuilder<M, C, S, J> @PublishedApi internal constructor(
-    var dependenciesBuilder: EnvBuilder<M, C, S>,
+class DebugEnvBuilder<M, S, C, J> @PublishedApi internal constructor(
+    var dependenciesBuilder: EnvBuilder<M, S, C>,
     var serverSettingsBuilder: ServerSettingsBuilder<M, S, J>
 ) {
 
-    fun dependencies(config: EnvBuilder<M, C, S>.() -> Unit) {
+    fun dependencies(config: EnvBuilder<M, S, C>.() -> Unit) {
         dependenciesBuilder.apply(config)
     }
 
@@ -77,16 +77,16 @@ class DebugEnvBuilder<M, C, S, J> @PublishedApi internal constructor(
 
 inline fun <reified M, reified C, reified S, J> Dependencies(
     id: ComponentId,
-    env: Env<M, C, S>,
+    env: Env<M, S, C>,
     jsonConverter: JsonConverter<J>,
-    config: DebugEnvBuilder<M, C, S, J>.() -> Unit = {}
+    config: DebugEnvBuilder<M, S, C, J>.() -> Unit = {}
 ) = DebugEnvBuilder(
     EnvBuilder(env),
     ServerSettingsBuilder(id, jsonConverter)
 ).apply(config).toDebugDependencies()
 
 @PublishedApi
-internal inline fun <reified M, reified C, reified S, J> DebugEnvBuilder<M, C, S, J>.toDebugDependencies() =
+internal inline fun <reified M, reified C, reified S, J> DebugEnvBuilder<M, S, C, J>.toDebugDependencies() =
     DebugEnv(
         dependenciesBuilder.toEnv(),
         serverSettingsBuilder.toServerSettings()

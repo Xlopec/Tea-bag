@@ -1,30 +1,32 @@
+@file:Suppress("TestFunctionName")
+
 package com.oliynick.max.tea.core.debug
 
 import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.Env
 import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Regular
+import com.oliynick.max.tea.core.Snapshot
+import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.invoke
-import com.oliynick.max.tea.core.component.noCommand
 import com.oliynick.max.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.exception.ConnectException
 import com.oliynick.max.tea.core.debug.session.WebSocketSession
 import core.component.BasicComponentTest
+import core.misc.messageAsStateUpdate
 import core.misc.throwingResolver
+import core.scope.runBlockingInTestScope
 import io.kotlintest.fail
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.numerics.shouldBeExactly
 import io.kotlintest.matchers.numerics.shouldNotBeExactly
-import io.kotlintest.matchers.throwable.shouldHaveCauseOfType
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrowExactlyUnit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toCollection
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -32,24 +34,27 @@ import protocol.ActionApplied
 import protocol.NotifyComponentAttached
 import protocol.NotifyComponentSnapshot
 
+typealias StringSnapshot = Snapshot<String, String, String>
+
 @RunWith(JUnit4::class)
-class DebuggableComponentTest : BasicComponentTest({ env ->
-                                                       Component(
-                                                           TestEnv(
-                                                               env = env
-                                                           )
-                                                       )
-                                                   }) {
+class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
+
+    private companion object {
+
+        fun ComponentFactory(
+            @Suppress("UNUSED_PARAMETER") scope: CoroutineScope,
+            env: Env<Char, String, Char>
+        ): Component<Char, String, Char> = Component(TestEnv(env = env))
+    }
 
     private val testEnv = Env(
         "",
         ::throwingResolver,
-        { m: String, _ -> m.noCommand<String, String>() }
+        ::messageAsStateUpdate
     )
 
     @Test
-    @Ignore
-    fun `test debuggable component throws expected exception when it can't connect to a server`() = runBlocking {
+    fun `test debuggable component throws expected exception when it can't connect to a server`() = runBlockingInTestScope {
 
         val component = Component(
             TestEnv(
@@ -58,11 +63,9 @@ class DebuggableComponentTest : BasicComponentTest({ env ->
             )
         )
 
-        val th = shouldThrowExactlyUnit<ConnectException> {
+        shouldThrowExactlyUnit<ConnectException> {
             component("a").collect()
         }
-
-        th.shouldHaveCauseOfType<java.net.ConnectException>()
     }
 
     @Test
@@ -78,9 +81,9 @@ class DebuggableComponentTest : BasicComponentTest({ env ->
             )
         )
         val messages = arrayOf("a", "b", "c")
-        val snapshots = component(*messages).take(messages.size + 1).toCollection(ArrayList(messages.size + 1))
+        val actual = component(*messages).take(messages.size + 1).toCollection(ArrayList(messages.size + 1))
 
-        snapshots shouldBe listOf(
+        actual shouldBe listOf(
             Initial("", emptySet<String>()),
             Regular("a", emptySet(), "", "a"),
             Regular("b", emptySet(), "a", "b"),
@@ -121,14 +124,45 @@ class DebuggableComponentTest : BasicComponentTest({ env ->
             )
         )
 
-        val snapshots = component("b")
-            .take(2)
-            .toCollection(ArrayList(2))
-
-        snapshots shouldContainExactly listOf(
+        val expected = listOf<StringSnapshot>(
             Initial("a", emptySet()),
             Regular("b", emptySet(), "a", "b")
         )
+
+        val actual = component("b")
+            .take(2)
+            .toCollection(ArrayList(2))
+
+        actual shouldContainExactly expected
+    }
+
+    @Test
+    fun `test debuggable component processes server messages properly`() = runBlocking {
+
+        val serverMessages = Channel<String>()
+        val testSession = TestDebugSession<String, String>(messages = serverMessages.consumeAsFlow())
+        val component = Component(
+            TestEnv(
+                env = testEnv,
+                serverSettings = TestServerSettings(
+                    sessionBuilder = { _, block -> testSession.apply { block() } }
+                )
+            )
+        )
+
+        val expected = listOf<StringSnapshot>(
+            Initial("", emptySet()),
+            Regular("a", emptySet(), "", "a"),
+            Regular("b", emptySet(), "a", "b"),
+            Regular("c", emptySet(), "b", "c"),
+            Regular("d", emptySet(), "c", "d")
+        )
+
+        val actual = component(flowOf("a").onCompletion { serverMessages.send("b", "c", "d") })
+            .take(expected.size)
+            .toCollection(ArrayList(expected.size))
+
+        actual shouldContainExactly expected
     }
 
 }
@@ -137,3 +171,6 @@ private fun fromJson(
     tree: JsonElement
 ) = testSerializer.fromJsonTree(tree, String::class.java)
 
+private suspend fun <E> Channel<E>.send(
+    vararg e: E
+) = e.forEach { elem -> send(elem) }

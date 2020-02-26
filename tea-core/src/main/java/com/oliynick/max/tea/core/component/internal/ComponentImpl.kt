@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 @UnstableApi
-fun <M, S, C> Env<M, C, S>.upstream(
+fun <M, S, C> Env<M, S, C>.upstream(
     messages: Flow<M>,
     snapshots: Flow<Initial<S, C>>
 ) = snapshots.flatMapConcat { startFrom -> compute(startFrom, messages) }
@@ -24,11 +24,11 @@ fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
     }
 
 @UnstableApi
-fun <M, S, C> Env<M, C, S>.init(): Flow<Initial<S, C>> =
+fun <S, C> Env<*, S, C>.init(): Flow<Initial<S, C>> =
     flow { emit(initializer()) }
 
 @UnstableApi
-fun <M, S, C> Env<M, C, S>.compute(
+fun <M, S, C> Env<M, S, C>.compute(
     startFrom: Initial<S, C>,
     messages: Flow<M>
 ): Flow<Snapshot<M, S, C>> =
@@ -38,7 +38,7 @@ fun <M, S, C> Env<M, C, S>.compute(
 
 
 @UnstableApi
-suspend fun <M, C, S> Env<M, C, S>.computeNextSnapshotsRecursively(
+suspend fun <M, S, C> Env<M, S, C>.computeNextSnapshotsRecursively(
     state: S,
     messages: Iterator<M>
 ): Flow<Snapshot<M, S, C>> {
@@ -52,7 +52,7 @@ suspend fun <M, C, S> Env<M, C, S>.computeNextSnapshotsRecursively(
 }
 
 @UnstableApi
-suspend fun <M, C, S> Env<M, C, S>.computeNextSnapshot(
+suspend fun <M, S, C> Env<M, S, C>.computeNextSnapshot(
     state: S,
     message: M
 ): Flow<Snapshot<M, S, C>> {
@@ -65,7 +65,7 @@ suspend fun <M, C, S> Env<M, C, S>.computeNextSnapshot(
         .startFrom(Regular(nextState, commands, state, message))
 }
 
-private fun <M, C, S> Env<M, C, S>.resolve(commands: Collection<C>): Flow<M> =
+private fun <M, S, C> Env<M, S, C>.resolve(commands: Collection<C>): Flow<M> =
     flow { emitAll(resolver(commands).asFlow()) }
 
 private fun <E> Iterator<E>.nextOrNull() = if (hasNext()) next() else null

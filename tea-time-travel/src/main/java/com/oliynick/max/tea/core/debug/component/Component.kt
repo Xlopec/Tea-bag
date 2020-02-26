@@ -39,12 +39,12 @@ inline fun <reified M, reified C, reified S, J> Component(
     noinline resolver: Resolver<C, M>,
     noinline update: Update<M, S, C>,
     jsonConverter: JsonConverter<J>,
-    noinline config: DebugEnvBuilder<M, C, S, J>.() -> Unit = {}
+    noinline config: DebugEnvBuilder<M, S, C, J>.() -> Unit = {}
 ): Component<M, S, C> =
     Component(Dependencies(id, Env(initializer, resolver, update), jsonConverter, config))
 
-fun <M, C, S, J> Component(
-    env: DebugEnv<M, C, S, J>
+fun <M, S, C, J> Component(
+    env: DebugEnv<M, S, C, J>
 ): Component<M, S, C> {
 
     val input = Channel<M>(Channel.RENDEZVOUS)
@@ -53,7 +53,7 @@ fun <M, C, S, J> Component(
     return { messages -> upstream.downstream(messages, input) }
 }
 
-private fun <M, C, S, J> DebugEnv<M, C, S, J>.upstream(
+private fun <M, S, C, J> DebugEnv<M, S, C, J>.upstream(
     input: Flow<M>
 ): Flow<Snapshot<M, S, C>> {
 
@@ -67,7 +67,7 @@ private fun <M, C, S, J> DebugEnv<M, C, S, J>.upstream(
 }
 
 @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
-private fun <M, S, C, J> DebugEnv<M, C, S, J>.session(
+private fun <M, S, C, J> DebugEnv<M, S, C, J>.session(
     block: suspend DebugSession<M, S, J>.(input: SendChannel<Snapshot<M, S, C>>) -> Unit
 ): Flow<Snapshot<M, S, C>> = channelFlow { serverSettings.sessionBuilder(serverSettings) { block(channel) } }
 
@@ -78,14 +78,14 @@ private fun <S> Flow<S>.asSnapshots(): Flow<Initial<S, Nothing>> =
 /**
  * Notifies server about state changes
  */
-private suspend fun <M, C, S, J> DebugEnv<M, C, S, J>.notifyServer(
+private suspend fun <M, S, C, J> DebugEnv<M, S, C, J>.notifyServer(
     session: DebugSession<M, S, J>,
     snapshot: Snapshot<M, S, C>
 ) = with(serverSettings) {
     session(NotifyServer(UUID.randomUUID(), id, serializer.toServerMessage(snapshot)))
 }
 
-private fun <M, C, S, J> JsonConverter<J>.toServerMessage(
+private fun <M, S, C, J> JsonConverter<J>.toServerMessage(
     snapshot: Snapshot<M, S, C>
 ) = when (snapshot) {
     is Initial -> NotifyComponentAttached(toJsonTree(snapshot.currentState))
@@ -105,6 +105,6 @@ private fun notifyConnectException(
 private fun connectionFailureMessage(
     serverSettings: ServerSettings<*, *, *>
 ) = "Component '${serverSettings.id.id}' " +
-    "couldn't connect to the endpoint ${serverSettings.url.toExternalForm()}"
+        "couldn't connect to the endpoint ${serverSettings.url.toExternalForm()}"
 
-private fun <M, S, C> DebugEnv<M, C, S, *>.init(): Flow<Initial<S, C>> = componentEnv.init()
+private fun <S, C> DebugEnv<*, S, C, *>.init(): Flow<Initial<S, C>> = componentEnv.init()
