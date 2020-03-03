@@ -17,7 +17,11 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.jfrog.bintray.gradle.BintrayExtension
 import java.net.URL
+import java.util.Date
+import java.util.Locale
+import java.text.SimpleDateFormat
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
@@ -33,7 +37,7 @@ buildscript {
     dependencies {
         classpath(BuildPlugins.kotlinGradlePlugin)
         classpath(BuildPlugins.androidGradlePlugin)
-        classpath(BuildPlugins.androidMaven)
+        classpath(BuildPlugins.intellijPlugin)
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -42,8 +46,9 @@ buildscript {
 plugins {
     kotlin()
     detekt()
-    dokka()
+    dokka() apply false
     `maven-publish`
+    bintray() apply false
 }
 
 allprojects {
@@ -52,15 +57,23 @@ allprojects {
     }
 }
 
-allprojects
-    .filterNot { project -> project.name == "app" }
+nonAndroidAppProjects()
     .forEachApplying {
 
-        apply {
-            plugin("maven-publish")
-            plugin("org.jetbrains.kotlin.jvm")
-            plugin("org.jetbrains.dokka")
+        apply(plugin = "org.jetbrains.kotlin.jvm")
+
+        detekt {
+            toolVersion = BuildPlugins.Versions.detektVersion
+            input = files("src/main/kotlin", "src/main/java")
         }
+    }
+
+libraryProjects()
+    .forEachApplying {
+
+        apply(plugin = "maven-publish")
+        apply(plugin = "org.jetbrains.dokka")
+        apply(plugin = "com.jfrog.bintray")
 
         val dokka by tasks.getting(DokkaTask::class) {
             outputFormat = "html"
@@ -71,6 +84,9 @@ allprojects
                 moduleName = name
 
                 externalDocumentationLink {
+                    noJdkLink = true
+                    noStdlibLink = true
+                    noAndroidSdkLink = true
                     url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
                     url = URL("https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/")
                 }
@@ -92,6 +108,16 @@ allprojects
             from("$buildDir/javadoc")
         }
 
+        val copyArtifacts by tasks.creating(Copy::class) {
+            from("$buildDir/libs/")
+            into("${rootProject.buildDir}/artifacts/${this@forEachApplying.name}")
+            dependsOn("publishToMavenLocal")
+        }
+
+        tasks.create("rolloutLibrary") {
+            dependsOn("bintrayUpload", copyArtifacts)
+        }
+
         publishing {
 
             publications {
@@ -102,7 +128,7 @@ allprojects
 
                     groupId = "com.github.Xlopec"
                     artifactId = name
-                    version = "0.0.2-alpha1"
+                    version = versionName()
                 }
             }
 
@@ -116,11 +142,47 @@ allprojects
             archives(javadocJar)
         }
 
-        detekt {
-            toolVersion = BuildPlugins.Versions.detektVersion
-            input = files("src/main/kotlin", "src/main/java")
+        the<BintrayExtension>().apply {
+
+            user = "xlopec"
+            key = bintrayApiKey()
+            setPublications(name)
+
+            with(pkg) {
+
+                setLicenses("Apache-2.0")
+                repo = "tea-bag"
+                name = this@forEachApplying.name
+                userOrg = "xlopec"
+                vcsUrl = "https://github.com/Xlopec/Tea-bag.git"
+
+                with(version) {
+
+                    val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ", Locale.ENGLISH)
+
+                    name = versionName()
+                    released = format.format(Date())
+                    desc = "debug"
+                }
+            }
         }
     }
+
+pluginProject().forEachApplying {
+
+    apply(plugin = "org.jetbrains.intellij")
+
+    val copyArtifacts1 by tasks.creating(Copy::class) {
+        from("$buildDir/libs/")
+        into("${rootProject.buildDir}/artifacts/name")
+        dependsOn("buildPlugin")
+    }
+
+    tasks.create("rolloutPlugin") {
+        dependsOn("publishPlugin", copyArtifacts1)
+    }
+
+}
 
 val detektAll by tasks.registering(Detekt::class) {
     description = "Runs analysis task over whole code"
@@ -134,7 +196,7 @@ val detektAll by tasks.registering(Detekt::class) {
     baseline.set(file("$rootDir/detekt/detekt-baseline.xml"))
 
     include("**/*.kt", "**/*.kts")
-    exclude("resources/", "build/")
+    exclude("resources/", "build/", "**/test/java/**")
 
     reports {
         xml.enabled = false
@@ -157,6 +219,10 @@ val detektFormat by tasks.creating(Detekt::class) {
     exclude("**/build/**")
 
     config.setFrom(files("$rootDir/detekt/detekt-config.yml"))
+}
+
+tasks.create("fullRollout") {
+    setDependsOn((libraryProjects().map { p -> p.rolloutTask } + pluginProject().map { p -> p.rolloutTask }).toList())
 }
 
 allprojects {
@@ -183,3 +249,23 @@ allprojects {
         }
     }
 }
+
+val Project.rolloutTask: Task
+    get() = tasks.findByName("rolloutLibrary")
+        ?: tasks.findByName("rolloutPlugin")
+        ?: error("Couldn't find rollout task for project $name")
+
+fun bintrayApiKey(): String? =
+    if (System.getenv("CI")?.toBoolean() == true) System.getenv("BINTRAY_API_KEY") else null
+
+fun versionName(): String =
+    System.getenv("TRAVIS_TAG").takeUnless { s -> s.isNullOrEmpty() } ?: System.getenv("TRAVIS_COMMIT") ?: "SNAPSHOT"
+
+fun nonAndroidAppProjects() =
+    subprojects.asSequence().filterNot { project -> project.name == "app" }
+
+fun libraryProjects() =
+    nonAndroidAppProjects().filterNot { project -> project.name == "tea-time-travel-plugin" || project.name == "tea-test" }
+
+fun pluginProject() =
+    subprojects.asSequence().filter { project -> project.name == "tea-time-travel-plugin" }

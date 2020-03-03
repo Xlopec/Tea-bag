@@ -1,7 +1,8 @@
+import BuildPlugins.Versions.intellijVersion
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 
-const val kotlinVersion = "1.3.61"
+const val kotlinVersion = "1.3.70"
 
 object BuildPlugins {
 
@@ -9,11 +10,13 @@ object BuildPlugins {
         const val buildToolsVersion = "3.5.3"
         const val detektVersion = "1.5.1"
         const val dokkaVersion = "0.10.1"
+        const val bintrayVersion = "1.8.4"
+        const val intellijVersion = "0.4.16"
     }
 
     const val androidGradlePlugin = "com.android.tools.build:gradle:${Versions.buildToolsVersion}"
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    const val androidMaven = "com.github.dcendents:android-maven-gradle-plugin:1.4.1"
+    const val intellijPlugin = "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:$intellijVersion"
 }
 
 object Libraries {

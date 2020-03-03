@@ -11,3 +11,9 @@ fun PluginDependenciesSpec.detekt(): PluginDependencySpec =
 
 fun PluginDependenciesSpec.dokka(): PluginDependencySpec =
     id("org.jetbrains.dokka").version(BuildPlugins.Versions.dokkaVersion)
+
+fun PluginDependenciesSpec.bintray(): PluginDependencySpec =
+    id("com.jfrog.bintray").version(BuildPlugins.Versions.bintrayVersion)
+
+fun PluginDependenciesSpec.intellij(): PluginDependencySpec =
+    id("org.jetbrains.intellij").version(BuildPlugins.Versions.intellijVersion)

@@ -1,6 +1,5 @@
 language: android
 jdk: oraclejdk8
-sudo: false
 
 dist: xenial
 
@@ -22,20 +21,34 @@ cache:
     - $HOME/.android/build-cache
 
 before_install:
-  - yes | sdkmanager "platforms;android-28"
-  - yes | sdkmanager "build-tools;28.0.3"
+  - yes | sdkmanager "platforms;android-29"
+  - yes | sdkmanager "build-tools;29.0.3"
   - export LANG=en_US.UTF-8
+
+stages:
+  - check
+  - test
+  - deploy
 
 jobs:
   include:
-    - stage: "Tests"
+    - stage: check
+      name: "Analysis"
+      script: ./gradlew detektAll
+    - stage: test
       name: "Unit Tests"
-      script: ./gradlew testReleaseUnitTest
-    - stage: build
-      name: "Build"
-      script: ./gradlew build
+      script: ./gradlew test
+    - stage: deploy
+      name: "Publish"
+      script: ./gradlew fullRollout
+      deploy:
+        provider: releases
+        api_key: "$GITHUB_TOKEN"
+        file_glob: true
+        file: build/artifacts/**/*
+        skip_cleanup: true
+        draft: true
+        on:
+          all_branches: true
 
-if: tag IS present
-
-after_success:
-  - ./gradlew :elm-core:jacocoTestReportRelease && bash <(curl -s https://codecov.io/bash) -t $COVERAGE_TOKEN
+#if: tag IS present

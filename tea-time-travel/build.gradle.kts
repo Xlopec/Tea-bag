@@ -23,7 +23,7 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     implementation(project(path = ":tea-core", configuration = "default"))
-    implementation(project(path = ":tea-time-travel-protocol", configuration = "default"))
+    api(project(path = ":tea-time-travel-protocol", configuration = "default"))
 
     implementation(kotlinStdLib)
 
