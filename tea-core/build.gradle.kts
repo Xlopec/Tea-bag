@@ -24,7 +24,6 @@ dependencies {
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(kotlinStdLib)
-    implementation(kotlinReflect)
 
     testImplementation(project(path = ":tea-test", configuration = "default"))
 }

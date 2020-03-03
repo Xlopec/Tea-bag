@@ -1,3 +1,7 @@
+import Libraries.coroutinesAndroid
+import Libraries.immutableCollections
+import Libraries.kotlinStdLib
+
 /*
  * Copyright (C) 2019 Maksym Oliinyk.
  *
@@ -13,18 +17,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-buildscript {
-
-    repositories {
-        google()
-        jcenter()
-        maven { setUrl("https://jitpack.io") }
-        maven { setUrl("https://plugins.gradle.org/m2/") }
-        maven { setUrl("https://kotlin.bintray.com/ktor") }
-        maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
-    }
-}
 
 plugins {
     id("com.android.application")
@@ -84,28 +76,25 @@ dependencies {
     implementation(project(":tea-time-travel"))
     implementation(project(":tea-time-travel-adapter-gson"))
 
-    val kotlin_version = "1.3.60-eap-76"
+    implementation(kotlinStdLib)
+    implementation(immutableCollections)
+    implementation(coroutinesAndroid)
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version")
+    val composeVersion = "0.1.0-dev03"
 
-    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3")
-
-    val compose_version = "0.1.0-dev03"
-
-
-    implementation("androidx.compose:compose-runtime:$compose_version")
-    implementation("androidx.ui:ui-framework:$compose_version")
-    implementation("androidx.ui:ui-layout:$compose_version")
-    implementation("androidx.ui:ui-material:$compose_version")
-    implementation("androidx.ui:ui-foundation:$compose_version")
-    implementation("androidx.ui:ui-animation:$compose_version")
-    implementation("androidx.ui:ui-tooling:$compose_version")
+    implementation("androidx.compose:compose-runtime:$composeVersion")
+    implementation("androidx.ui:ui-framework:$composeVersion")
+    implementation("androidx.ui:ui-layout:$composeVersion")
+    implementation("androidx.ui:ui-material:$composeVersion")
+    implementation("androidx.ui:ui-foundation:$composeVersion")
+    implementation("androidx.ui:ui-animation:$composeVersion")
+    implementation("androidx.ui:ui-tooling:$composeVersion")
 
     implementation("com.github.bumptech.glide:glide:4.10.0")
 
     implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("androidx.activity:activity-ktx:1.0.0")
-    implementation("androidx.core:core-ktx:1.1.0")
+    implementation("androidx.activity:activity-ktx:1.1.0")
+    implementation("androidx.core:core-ktx:1.2.0")
 
     implementation("org.mongodb:stitch-android-sdk:4.1.0")
 
@@ -116,13 +105,9 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:3.11.0")
 
     testImplementation(project(path = ":tea-test", configuration = "default"))
-    testImplementation("junit:junit:4.12")
-    testImplementation(Libraries.coroutinesAndroid)
-    testImplementation(Libraries.coroutinesTest)
+    testImplementation(coroutinesAndroid)
 
     androidTestImplementation("androidx.test:runner:1.2.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.1")
 
 }

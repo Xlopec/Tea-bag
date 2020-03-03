@@ -1,3 +1,5 @@
+import Libraries.kotlinStdLib
+
 /*
  * Copyright (C) 2019 Maksym Oliinyk.
  *
@@ -17,7 +19,7 @@
 dependencies {
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation(Libraries.kotlinStdLib)
+    implementation(kotlinStdLib)
 
     testImplementation(project(path = ":tea-test", configuration = "default"))
 }

@@ -1,6 +1,6 @@
 import Libraries.kotlinStdLib
-import Libraries.ktorOkHttp
-import Libraries.ktorWebsockets
+import Libraries.ktorClientOkHttp
+import Libraries.ktorClientWebsockets
 import TestLibraries.ktorMockJvm
 
 /*
@@ -27,8 +27,8 @@ dependencies {
 
     implementation(kotlinStdLib)
 
-    implementation(ktorWebsockets)
-    implementation(ktorOkHttp)
+    implementation(ktorClientWebsockets)
+    implementation(ktorClientOkHttp)
 
     testImplementation(project(path = ":tea-test", configuration = "default"))
     testImplementation(project(path = ":tea-time-travel-adapter-gson", configuration = "default"))

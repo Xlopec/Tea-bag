@@ -1,3 +1,13 @@
+import Libraries.coroutinesCore
+import Libraries.coroutinesSwing
+import Libraries.immutableCollections
+import Libraries.kotlinStdLib
+import Libraries.ktorServerCore
+import Libraries.ktorServerNetty
+import Libraries.ktorServerWebsockets
+import TestLibraries.ktorServerTests
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /*
  * Copyright (C) 2019 Maksym Oliinyk.
  *
@@ -15,15 +25,6 @@
  */
 
 buildscript {
-
-    repositories {
-        jcenter()
-        google()
-        mavenCentral()
-        maven {
-            setUrl("https://plugins.gradle.org/m2/")
-        }
-    }
 
     dependencies {
         classpath(BuildPlugins.kotlinGradlePlugin)
@@ -46,14 +47,14 @@ sourceSets {
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 }
 
 configurations.all {
-    resolutionStrategy.force(Libraries.coroutinesCore)
+    resolutionStrategy.force(coroutinesCore)
 }
 
 dependencies {
@@ -62,17 +63,17 @@ dependencies {
     implementation(project(path = ":tea-time-travel-protocol", configuration = "default"))
     implementation(project(path = ":tea-time-travel-adapter-gson", configuration = "default"))
 
-    implementation(Libraries.kotlinStdLib)
+    implementation(kotlinStdLib)
 
     implementation("ch.qos.logback:logback-classic:1.2.3")
-    implementation(Libraries.ktorServerCore)
-    implementation(Libraries.ktorServerNetty)
-    implementation(Libraries.ktorServerWebsockets)
-    implementation(Libraries.coroutinesCore)
-    implementation(Libraries.coroutinesSwing)
-    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3")
+    implementation(ktorServerCore)
+    implementation(ktorServerNetty)
+    implementation(ktorServerWebsockets)
+    implementation(coroutinesCore)
+    implementation(coroutinesSwing)
+    implementation(immutableCollections)
 
-    testImplementation(TestLibraries.ktorServerTests)
+    testImplementation(ktorServerTests)
     testImplementation(project(path = ":tea-test", configuration = "default"))
 }
 

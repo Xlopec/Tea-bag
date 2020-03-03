@@ -1,3 +1,7 @@
+import Libraries.coroutinesCore
+import Libraries.coroutinesTest
+import Libraries.kotlinStdLib
+
 /*
  * Copyright (C) 2019 Maksym Oliinyk.
  *
@@ -23,12 +27,12 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(configuration = "default", path = ":tea-core"))
 
-    implementation(Libraries.kotlinStdLib)
+    api(kotlinStdLib)
     api("org.jetbrains.kotlinx:atomicfu:0.14.1")
 
-    api(Libraries.coroutinesCore)
+    api(coroutinesCore)
     api("junit:junit:4.12")
-    api(Libraries.coroutinesTest)
+    api(coroutinesTest)
     // todo remove dependency on strikt
     api("io.strikt:strikt-core:0.22.2")
     api("io.kotlintest:kotlintest-runner-junit5:3.4.2")
