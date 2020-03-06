@@ -24,16 +24,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * limitations under the License.
  */
 
-buildscript {
+/*plugins {
+    id("org.jetbrains.intellij")
+}*/
 
-    dependencies {
-        classpath(BuildPlugins.kotlinGradlePlugin)
-        classpath("gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.4.16")
-    }
-}
-
-plugins {
-    id("org.jetbrains.intellij") version "0.4.16"
+intellij {
+    version = "2019.1"
 }
 
 group = "com.github.Xlopec.time.travel"
@@ -75,8 +71,4 @@ dependencies {
 
     testImplementation(ktorServerTests)
     testImplementation(project(path = ":tea-test", configuration = "default"))
-}
-
-intellij {
-    version = "2019.1"
 }

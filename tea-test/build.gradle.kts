@@ -18,10 +18,6 @@ import Libraries.kotlinStdLib
  * limitations under the License.
  */
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
-
 dependencies {
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
@@ -35,6 +31,6 @@ dependencies {
     api(coroutinesTest)
     // todo remove dependency on strikt
     api("io.strikt:strikt-core:0.22.2")
-    api("io.kotlintest:kotlintest-runner-junit5:3.4.2")
+    api("io.kotlintest:kotlintest-runner-junit4:3.4.2")
 
 }
