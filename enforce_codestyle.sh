@@ -4,10 +4,21 @@
 
 branch=$(git rev-parse --abbrev-ref HEAD)
 
-if [[ ${branch} =~ master|^dev.*|^stage.* ]]; then
+die () {
+    echo
+    echo "$*"
+    echo
+    exit 1
+}
+
+if [[ ${branch} =~ master|^dev.*|^release.* ]]; then
 
     chmod +x ./gradlew
 
     echo "performing code style checking and analysis"
-    ./gradlew elm-core-api:detekt
+
+    ./gradlew detektAll > /dev/null || die "code analysis has failed!"
+
+    echo "done performing code analysis"
+
 fi
