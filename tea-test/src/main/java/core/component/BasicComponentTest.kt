@@ -1,7 +1,15 @@
 package core.component
 
-import com.oliynick.max.tea.core.*
-import com.oliynick.max.tea.core.component.*
+import com.oliynick.max.tea.core.Env
+import com.oliynick.max.tea.core.Initial
+import com.oliynick.max.tea.core.Initializer
+import com.oliynick.max.tea.core.Regular
+import com.oliynick.max.tea.core.Snapshot
+import com.oliynick.max.tea.core.component.Component
+import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.component.invoke
+import com.oliynick.max.tea.core.component.noCommand
+import com.oliynick.max.tea.core.component.with
 import core.misc.throwingResolver
 import core.scope.runBlockingInTestScope
 import io.kotlintest.matchers.asClue
@@ -10,9 +18,21 @@ import io.kotlintest.matchers.boolean.shouldBeTrue
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.shouldBe
 import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toCollection
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
 import org.junit.Test
 
 abstract class BasicComponentTest(

@@ -12,7 +12,7 @@ import kotlinx.coroutines.channels.BroadcastChannel
 
 fun <Env> AppResolver(): AppResolver<Env> where Env : HasCommandTransport,
                                                 Env : FeedResolver<Env> = object :
-    LiveAppResolver<Env> {}
+        LiveAppResolver<Env> {}
 
 interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasCommandTransport,
                                                         Env : FeedResolver<Env> {

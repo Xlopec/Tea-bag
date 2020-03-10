@@ -1,9 +1,31 @@
 package com.max.weatherviewer.screens.feed.update
 
-import com.max.weatherviewer.app.*
+import com.max.weatherviewer.app.Command
+import com.max.weatherviewer.app.DoOpenArticle
+import com.max.weatherviewer.app.DoShareArticle
+import com.max.weatherviewer.app.FeedCommand
+import com.max.weatherviewer.app.LoadByCriteria
+import com.max.weatherviewer.app.RemoveArticle
+import com.max.weatherviewer.app.SaveArticle
 import com.max.weatherviewer.domain.Article
 import com.max.weatherviewer.domain.toggleFavorite
-import com.max.weatherviewer.screens.feed.*
+import com.max.weatherviewer.screens.feed.ArticleUpdated
+import com.max.weatherviewer.screens.feed.ArticlesLoaded
+import com.max.weatherviewer.screens.feed.Error
+import com.max.weatherviewer.screens.feed.Feed
+import com.max.weatherviewer.screens.feed.FeedLoading
+import com.max.weatherviewer.screens.feed.FeedMessage
+import com.max.weatherviewer.screens.feed.FeedOperationException
+import com.max.weatherviewer.screens.feed.LoadArticles
+import com.max.weatherviewer.screens.feed.LoadCriteria
+import com.max.weatherviewer.screens.feed.OnQueryUpdated
+import com.max.weatherviewer.screens.feed.OpenArticle
+import com.max.weatherviewer.screens.feed.Preview
+import com.max.weatherviewer.screens.feed.ShareArticle
+import com.max.weatherviewer.screens.feed.ToggleArticleIsFavorite
+import com.max.weatherviewer.screens.feed.prependArticle
+import com.max.weatherviewer.screens.feed.removeArticle
+import com.max.weatherviewer.screens.feed.updateArticle
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -35,7 +57,7 @@ object LiveFeedUpdater : FeedUpdater {
         state: Preview
     ): UpdateWith<Feed, Command> {
 
-        val updated = when(state.criteria) {
+        val updated = when (state.criteria) {
             is LoadCriteria.Query, LoadCriteria.Trending -> state.updateArticle(article)
             LoadCriteria.Favorite -> if (article.isFavorite) state.prependArticle(article) else state.removeArticle(article)
         }
@@ -67,7 +89,7 @@ object LiveFeedUpdater : FeedUpdater {
         query: String,
         criteria: LoadCriteria.Query,
         state: Feed
-    ): UpdateWith<Feed, FeedCommand> = when(state) {
+    ): UpdateWith<Feed, FeedCommand> = when (state) {
         is FeedLoading -> state.copy(criteria = criteria.copy(query = query))
         is Preview -> state.copy(criteria = criteria.copy(query = query))
         is Error -> state.copy(criteria = criteria.copy(query = query))

@@ -14,7 +14,10 @@ import androidx.ui.material.ripple.Ripple
 import androidx.ui.res.vectorResource
 
 @Composable
-fun VectorImageButton(@DrawableRes id: Int, onClick: () -> Unit) {
+fun VectorImageButton(
+    @DrawableRes id: Int,
+    onClick: () -> Unit
+) {
     Ripple(bounded = false) {
         Clickable(onClick = onClick) {
             VectorImage(id = id)
@@ -23,7 +26,11 @@ fun VectorImageButton(@DrawableRes id: Int, onClick: () -> Unit) {
 }
 
 @Composable
-fun VectorImage(modifier: Modifier = Modifier.None, @DrawableRes id: Int, tint: Color = Color.Transparent) {
+fun VectorImage(
+    modifier: Modifier = Modifier.None,
+    @DrawableRes id: Int,
+    tint: Color = Color.Transparent
+) {
     val vector = +vectorResource(id)
     WithDensity {
         Container(

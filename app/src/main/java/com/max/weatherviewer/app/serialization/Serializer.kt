@@ -1,6 +1,11 @@
 package com.max.weatherviewer.app.serialization
 
-import com.google.gson.*
+import com.google.gson.JsonArray
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import java.lang.reflect.Type
@@ -34,7 +39,7 @@ object PersistentListSerializer : Serializer<PersistentList<*>> {
     ): JsonElement = //context.serialize(src, Collection::class.java)
 
 
-     JsonArray().apply {
+        JsonArray().apply {
             for (v in src) {
                 add(context.serialize(v))
                 /*add(JsonObject().also {

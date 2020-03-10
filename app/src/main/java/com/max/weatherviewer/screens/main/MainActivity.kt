@@ -4,13 +4,23 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.ui.core.setContent
 import com.max.weatherviewer.R
-import com.max.weatherviewer.app.*
+import com.max.weatherviewer.app.Message
+import com.max.weatherviewer.app.Pop
+import com.max.weatherviewer.app.Screen
+import com.max.weatherviewer.app.appComponent
+import com.max.weatherviewer.app.appMessages
+import com.max.weatherviewer.app.closeAppCommands
+import com.max.weatherviewer.app.screen
 import com.max.weatherviewer.misc.collect
 import com.max.weatherviewer.screens.feed.Feed
 import com.max.weatherviewer.screens.home.HomeScreen
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class MainActivity : Activity(), CoroutineScope by MainScope() {
 
@@ -42,10 +52,13 @@ class MainActivity : Activity(), CoroutineScope by MainScope() {
 
 }
 
-private fun Activity.render(screen: Screen, onMessage: (Message) -> Unit) =
+private fun Activity.render(
+    screen: Screen,
+    onMessage: (Message) -> Unit
+) =
     setContent {
 
-        when(screen) {
+        when (screen) {
             is Feed -> HomeScreen(screen, onMessage)
         }
     }

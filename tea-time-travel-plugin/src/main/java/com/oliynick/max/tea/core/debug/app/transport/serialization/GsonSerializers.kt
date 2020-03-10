@@ -1,7 +1,26 @@
 package com.oliynick.max.tea.core.debug.app.transport.serialization
 
-import com.google.gson.*
-import com.oliynick.max.tea.core.debug.app.domain.cms.*
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonNull
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
+import com.oliynick.max.tea.core.debug.app.domain.cms.BooleanWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.ByteWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.CharWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.CollectionWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.DoubleWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.FloatWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.IntWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.LongWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.Null
+import com.oliynick.max.tea.core.debug.app.domain.cms.PrimitiveWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.Property
+import com.oliynick.max.tea.core.debug.app.domain.cms.Ref
+import com.oliynick.max.tea.core.debug.app.domain.cms.ShortWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.StringWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.Type
+import com.oliynick.max.tea.core.debug.app.domain.cms.Value
 import com.oliynick.max.tea.core.debug.gson.Gson
 
 internal val GSON = Gson()

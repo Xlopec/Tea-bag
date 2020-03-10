@@ -18,8 +18,31 @@ package com.oliynick.max.tea.core.debug.app.presentation.component
 
 import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
-import com.oliynick.max.tea.core.debug.app.domain.cms.*
-import com.oliynick.max.tea.core.debug.app.presentation.misc.*
+import com.oliynick.max.tea.core.debug.app.domain.cms.ComponentDebugState
+import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.domain.cms.PluginState
+import com.oliynick.max.tea.core.debug.app.domain.cms.ReApplyCommands
+import com.oliynick.max.tea.core.debug.app.domain.cms.ReApplyState
+import com.oliynick.max.tea.core.debug.app.domain.cms.RemoveAllSnapshots
+import com.oliynick.max.tea.core.debug.app.domain.cms.RemoveSnapshots
+import com.oliynick.max.tea.core.debug.app.domain.cms.Snapshot
+import com.oliynick.max.tea.core.debug.app.domain.cms.Started
+import com.oliynick.max.tea.core.debug.app.domain.cms.Value
+import com.oliynick.max.tea.core.debug.app.presentation.misc.DefaultMouseListener
+import com.oliynick.max.tea.core.debug.app.presentation.misc.EntryKeyNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.EntryValueNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.IndexedNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.MessageNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.PropertyNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.RenderTree
+import com.oliynick.max.tea.core.debug.app.presentation.misc.RootNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.SnapshotNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.SnapshotTreeModel
+import com.oliynick.max.tea.core.debug.app.presentation.misc.SnapshotTreeRenderer
+import com.oliynick.max.tea.core.debug.app.presentation.misc.StateNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.StateTreeModel
+import com.oliynick.max.tea.core.debug.app.presentation.misc.StateTreeRenderer
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueNode
 import com.oliynick.max.tea.core.debug.app.presentation.sidebar.getIcon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -30,7 +53,11 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import protocol.ComponentId
 import java.awt.event.MouseEvent
-import javax.swing.*
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JPopupMenu
+import javax.swing.JTree
+import javax.swing.SwingUtilities
 import javax.swing.tree.DefaultMutableTreeNode
 
 class ComponentView(

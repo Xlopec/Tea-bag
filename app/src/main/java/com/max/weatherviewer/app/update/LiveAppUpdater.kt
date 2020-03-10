@@ -2,8 +2,33 @@
 
 package com.max.weatherviewer.app.update
 
-import com.max.weatherviewer.app.*
-import com.max.weatherviewer.screens.feed.*
+import com.max.weatherviewer.app.CloseApp
+import com.max.weatherviewer.app.Command
+import com.max.weatherviewer.app.LoadByCriteria
+import com.max.weatherviewer.app.Message
+import com.max.weatherviewer.app.NavigateToFavorite
+import com.max.weatherviewer.app.NavigateToFeed
+import com.max.weatherviewer.app.NavigateToTrending
+import com.max.weatherviewer.app.Navigation
+import com.max.weatherviewer.app.Pop
+import com.max.weatherviewer.app.ScreenId
+import com.max.weatherviewer.app.ScreenMessage
+import com.max.weatherviewer.app.State
+import com.max.weatherviewer.app.popScreen
+import com.max.weatherviewer.app.pushScreen
+import com.max.weatherviewer.app.updateScreen
+import com.max.weatherviewer.screens.feed.ArticleUpdated
+import com.max.weatherviewer.screens.feed.ArticlesLoaded
+import com.max.weatherviewer.screens.feed.Feed
+import com.max.weatherviewer.screens.feed.FeedLoading
+import com.max.weatherviewer.screens.feed.FeedMessage
+import com.max.weatherviewer.screens.feed.FeedOperationException
+import com.max.weatherviewer.screens.feed.LoadArticles
+import com.max.weatherviewer.screens.feed.LoadCriteria
+import com.max.weatherviewer.screens.feed.OnQueryUpdated
+import com.max.weatherviewer.screens.feed.OpenArticle
+import com.max.weatherviewer.screens.feed.ShareArticle
+import com.max.weatherviewer.screens.feed.ToggleArticleIsFavorite
 import com.max.weatherviewer.screens.feed.update.FeedUpdater
 import com.max.weatherviewer.screens.feed.update.LiveFeedUpdater.update
 import com.oliynick.max.tea.core.component.UpdateWith
@@ -12,7 +37,7 @@ import com.oliynick.max.tea.core.component.noCommand
 import java.util.*
 
 fun <Env> AppUpdater(): AppUpdater<Env> where Env : FeedUpdater = object :
-    LiveAppUpdater<Env> {}
+        LiveAppUpdater<Env> {}
 
 interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : FeedUpdater {
 
@@ -61,8 +86,8 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : FeedUpdater {
         criteria: LoadCriteria,
         nav: Navigation
     ) = (criteria is LoadCriteria.Query && nav === NavigateToFeed)
-        || (criteria == LoadCriteria.Trending && nav === NavigateToTrending)
-        || (criteria == LoadCriteria.Favorite && nav === NavigateToFavorite)
+            || (criteria == LoadCriteria.Trending && nav === NavigateToTrending)
+            || (criteria == LoadCriteria.Favorite && nav === NavigateToFavorite)
 
     fun State.pushScreen(
         nav: Navigation,

@@ -16,7 +16,7 @@ abstract class Screen {
 }
 
 data class State(
-  //  @JsonSerialize(using = PersistentListSerializer::class)
+    //  @JsonSerialize(using = PersistentListSerializer::class)
     val screens: PersistentList<Screen>
 ) {
 

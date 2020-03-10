@@ -8,9 +8,9 @@ import com.oliynick.max.tea.core.debug.component.DebugEnv
 import com.oliynick.max.tea.core.debug.component.ServerSettings
 import com.oliynick.max.tea.core.debug.component.URL
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
-import protocol.JsonConverter
 import com.oliynick.max.tea.core.debug.session.SessionBuilder
 import protocol.ComponentId
+import protocol.JsonConverter
 import java.net.URL
 
 val testComponentId = ComponentId("test")

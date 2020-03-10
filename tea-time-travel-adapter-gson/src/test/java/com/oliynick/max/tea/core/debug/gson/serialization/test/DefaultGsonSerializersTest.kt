@@ -14,7 +14,16 @@ import io.kotlintest.shouldBe
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import protocol.*
+import protocol.ActionApplied
+import protocol.ApplyMessage
+import protocol.ApplyState
+import protocol.ClientMessage
+import protocol.ComponentId
+import protocol.NotifyClient
+import protocol.NotifyComponentAttached
+import protocol.NotifyComponentSnapshot
+import protocol.NotifyServer
+import protocol.ServerMessage
 import java.util.*
 
 @RunWith(JUnit4::class)

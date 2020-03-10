@@ -14,7 +14,11 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import java.net.URL
 
-suspend fun loadImage(url: URL, width: Int, height: Int): Bitmap =
+suspend fun loadImage(
+    url: URL,
+    width: Int,
+    height: Int
+): Bitmap =
     coroutineScope {
 
         withContext(Dispatchers.IO) {
@@ -42,7 +46,12 @@ suspend fun loadImage(url: URL, width: Int, height: Int): Bitmap =
         }
     }
 
-fun loadImage2(url: URL, width: Int, height: Int, cb: (Bitmap) -> Unit){
+fun loadImage2(
+    url: URL,
+    width: Int,
+    height: Int,
+    cb: (Bitmap) -> Unit
+) {
     val options = url.openStream().use { input ->
 
         BitmapFactory.Options().apply {

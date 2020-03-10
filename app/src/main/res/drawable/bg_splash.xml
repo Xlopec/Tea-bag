@@ -3,7 +3,7 @@
     <item android:drawable="@color/colorBackground" />
     <item>
         <bitmap
-            android:gravity="center"
-            android:src="@drawable/img_jetpack_compose" />
+                android:gravity="center"
+                android:src="@drawable/img_jetpack_compose" />
     </item>
 </layer-list>

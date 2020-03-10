@@ -15,6 +15,7 @@
 /.idea/jarRepositories.xml
 /.idea/shelf/
 /.idea/runConfigurations.xml
+/.idea/vcs.xml
 /projectFilesBackup*/
 .DS_Store
 /build

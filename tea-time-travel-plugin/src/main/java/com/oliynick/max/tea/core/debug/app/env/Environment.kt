@@ -2,8 +2,18 @@ package com.oliynick.max.tea.core.debug.app.env
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
-import com.oliynick.max.tea.core.debug.app.domain.resolver.*
-import com.oliynick.max.tea.core.debug.app.domain.updater.*
+import com.oliynick.max.tea.core.debug.app.domain.resolver.AppResolver
+import com.oliynick.max.tea.core.debug.app.domain.resolver.HasMessageChannel
+import com.oliynick.max.tea.core.debug.app.domain.resolver.HasMessagesChannel
+import com.oliynick.max.tea.core.debug.app.domain.resolver.HasProject
+import com.oliynick.max.tea.core.debug.app.domain.resolver.HasSystemProperties
+import com.oliynick.max.tea.core.debug.app.domain.resolver.LiveAppResolver
+import com.oliynick.max.tea.core.debug.app.domain.updater.LiveNotificationUpdater
+import com.oliynick.max.tea.core.debug.app.domain.updater.LiveUiUpdater
+import com.oliynick.max.tea.core.debug.app.domain.updater.LiveUpdater
+import com.oliynick.max.tea.core.debug.app.domain.updater.NotificationUpdater
+import com.oliynick.max.tea.core.debug.app.domain.updater.UiUpdater
+import com.oliynick.max.tea.core.debug.app.domain.updater.Updater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

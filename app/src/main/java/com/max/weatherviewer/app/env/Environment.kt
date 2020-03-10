@@ -23,17 +23,17 @@ import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
 interface Environment :
-    AppUpdater<Environment>,
-    AppResolver<Environment>,
-    FeedUpdater,
-    HasCommandTransport,
-    HasAppContext,
-    FeedResolver<Environment>,
-    HasNewsApi,
-    HasMongoCollection,
-    HasGson,
-    Storage<Environment>,
-    CoroutineScope {
+        AppUpdater<Environment>,
+        AppResolver<Environment>,
+        FeedUpdater,
+        HasCommandTransport,
+        HasAppContext,
+        FeedResolver<Environment>,
+        HasNewsApi,
+        HasMongoCollection,
+        HasGson,
+        Storage<Environment>,
+        CoroutineScope {
     val isDebug: Boolean
 }
 
@@ -47,17 +47,17 @@ fun Environment(
     val retrofit = buildRetrofit(gson)
 
     return object : Environment,
-        AppUpdater<Environment> by AppUpdater(),
-        FeedUpdater by LiveFeedUpdater,
-        AppResolver<Environment> by AppResolver(),
-        HasCommandTransport by CommandTransport(),
-        FeedResolver<Environment> by LiveFeedResolver(),
-        HasNewsApi by NewsApi(retrofit),
-        HasMongoCollection by MongoCollection(application),
-        HasGson by Gson(gson),
-        HasAppContext by AppContext(application),
-        Storage<Environment> by Storage(),
-        CoroutineScope by AppComponentScope {
+                    AppUpdater<Environment> by AppUpdater(),
+                    FeedUpdater by LiveFeedUpdater,
+                    AppResolver<Environment> by AppResolver(),
+                    HasCommandTransport by CommandTransport(),
+                    FeedResolver<Environment> by LiveFeedResolver(),
+                    HasNewsApi by NewsApi(retrofit),
+                    HasMongoCollection by MongoCollection(application),
+                    HasGson by Gson(gson),
+                    HasAppContext by AppContext(application),
+                    Storage<Environment> by Storage(),
+                    CoroutineScope by AppComponentScope {
         override val isDebug: Boolean = isDebug
     }
 }

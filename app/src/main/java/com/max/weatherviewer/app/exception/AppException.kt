@@ -13,7 +13,10 @@ sealed class AppException : RuntimeException {
 
     constructor(message: String) : super(message)
 
-    constructor(message: String, cause: Throwable) : super(message, cause)
+    constructor(
+        message: String,
+        cause: Throwable
+    ) : super(message, cause)
 
     constructor(cause: Throwable) : super(cause)
 
@@ -28,9 +31,15 @@ sealed class AppException : RuntimeException {
 
 }
 
-class NetworkException(message: String, cause: Throwable) : AppException(message, cause)
+class NetworkException(
+    message: String,
+    cause: Throwable
+) : AppException(message, cause)
 
-class InternalException(message: String, cause: Throwable) : AppException(message, cause)
+class InternalException(
+    message: String,
+    cause: Throwable
+) : AppException(message, cause)
 
 fun <Env> Env.toAppException(th: Throwable): AppException where Env : HasGson =
     th.wrap { raw ->

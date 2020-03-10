@@ -18,10 +18,25 @@ package com.oliynick.max.tea.core.debug.app.presentation.sidebar
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.components.JBTabbedPane
-import com.oliynick.max.tea.core.debug.app.domain.cms.*
+import com.oliynick.max.tea.core.debug.app.domain.cms.DebugState
+import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.domain.cms.PluginState
+import com.oliynick.max.tea.core.debug.app.domain.cms.RemoveComponent
+import com.oliynick.max.tea.core.debug.app.domain.cms.StartServer
+import com.oliynick.max.tea.core.debug.app.domain.cms.Started
+import com.oliynick.max.tea.core.debug.app.domain.cms.Starting
+import com.oliynick.max.tea.core.debug.app.domain.cms.StopServer
+import com.oliynick.max.tea.core.debug.app.domain.cms.Stopped
+import com.oliynick.max.tea.core.debug.app.domain.cms.Stopping
+import com.oliynick.max.tea.core.debug.app.domain.cms.UpdateHost
+import com.oliynick.max.tea.core.debug.app.domain.cms.UpdatePort
 import com.oliynick.max.tea.core.debug.app.presentation.component.ComponentView
 import com.oliynick.max.tea.core.debug.app.presentation.info.InfoView
-import com.oliynick.max.tea.core.debug.app.presentation.misc.*
+import com.oliynick.max.tea.core.debug.app.presentation.misc.DefaultDocumentListener
+import com.oliynick.max.tea.core.debug.app.presentation.misc.removeMouseListeners
+import com.oliynick.max.tea.core.debug.app.presentation.misc.safe
+import com.oliynick.max.tea.core.debug.app.presentation.misc.setHover
+import com.oliynick.max.tea.core.debug.app.presentation.misc.setOnClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
@@ -33,7 +48,13 @@ import protocol.ComponentId
 import java.awt.Container
 import java.awt.FlowLayout
 import java.awt.event.MouseEvent
-import javax.swing.*
+import javax.swing.DefaultSingleSelectionModel
+import javax.swing.Icon
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JTabbedPane
+import javax.swing.JTextField
+import javax.swing.SwingConstants
 import javax.swing.event.DocumentListener
 import java.awt.Component as AwtComponent
 

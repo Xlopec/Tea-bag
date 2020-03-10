@@ -2,8 +2,21 @@
 
 package com.oliynick.max.tea.core.debug.gson
 
-import com.google.gson.*
-import protocol.*
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
+import protocol.ActionApplied
+import protocol.ApplyMessage
+import protocol.ApplyState
+import protocol.ClientMessage
+import protocol.ComponentId
+import protocol.NotifyComponentAttached
+import protocol.NotifyComponentSnapshot
+import protocol.ServerMessage
 import java.lang.reflect.Type
 import java.util.*
 

@@ -19,18 +19,36 @@
 
 package com.oliynick.max.tea.core.debug.component
 
-import com.oliynick.max.tea.core.*
+import com.oliynick.max.tea.core.Env
+import com.oliynick.max.tea.core.Initial
+import com.oliynick.max.tea.core.Initializer
+import com.oliynick.max.tea.core.Regular
+import com.oliynick.max.tea.core.Snapshot
+import com.oliynick.max.tea.core.UnstableApi
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.Resolver
 import com.oliynick.max.tea.core.component.Update
-import com.oliynick.max.tea.core.component.internal.*
+import com.oliynick.max.tea.core.component.internal.downstream
+import com.oliynick.max.tea.core.component.internal.init
+import com.oliynick.max.tea.core.component.internal.into
+import com.oliynick.max.tea.core.component.internal.shareConflated
+import com.oliynick.max.tea.core.component.internal.upstream
 import com.oliynick.max.tea.core.debug.component.internal.mergeWith
 import com.oliynick.max.tea.core.debug.exception.ConnectException
 import com.oliynick.max.tea.core.debug.session.DebugSession
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.flow.*
-import protocol.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import protocol.ComponentId
+import protocol.JsonConverter
+import protocol.NotifyComponentAttached
+import protocol.NotifyComponentSnapshot
+import protocol.NotifyServer
 import java.util.*
 
 inline fun <reified M, reified C, reified S, J> Component(

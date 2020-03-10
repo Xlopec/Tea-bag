@@ -7,8 +7,8 @@
     <ID>ComplexMethod:MyImage.kt$toComposeColorSpace</ID>
     <ID>ForbiddenComment:ComponentImpl.kt$// todo: we need to add possibility to return own versions</ID>
     <ID>ForbiddenComment:SideToolWindowFactory.kt$SideToolWindowFactory$// todo: find a better approach</ID>
-    <ID>FunctionNaming:Vectors.kt$@Composable fun VectorImage(modifier: Modifier = Modifier.None, @DrawableRes id: Int, tint: Color = Color.Transparent)</ID>
-    <ID>FunctionNaming:Vectors.kt$@Composable fun VectorImageButton(@DrawableRes id: Int, onClick: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:Vectors.kt$@Composable fun VectorImage( modifier: Modifier = Modifier.None, @DrawableRes id: Int, tint: Color = Color.Transparent )</ID>
+    <ID>FunctionNaming:Vectors.kt$@Composable fun VectorImageButton( @DrawableRes id: Int, onClick: () -&gt; Unit )</ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") private fun Null.toReadableString(): String</ID>
     <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C&gt;, noinline resolver: Resolver&lt;C, M&gt;, noinline update: Update&lt;M, S, C&gt;, jsonConverter: JsonConverter&lt;J&gt;, noinline config: DebugEnvBuilder&lt;M, S, C, J&gt;.() -&gt; Unit = {} )</ID>
     <ID>MagicNumber:Balloon.kt$0x33412E</ID>
@@ -237,62 +237,5 @@
     <ID>UnnecessaryAbstractClass:BasicComponentTest.kt$BasicComponentTest</ID>
     <ID>UnnecessaryAbstractClass:State.kt$Screen</ID>
     <ID>VariableNaming:ComponentView.kt$ComponentView$val _root get() = root</ID>
-    <ID>WildcardImport:Baloon.kt$import com.oliynick.max.tea.core.debug.app.domain.cms.*</ID>
-    <ID>WildcardImport:BasicComponentTest.kt$import com.oliynick.max.tea.core.*</ID>
-    <ID>WildcardImport:BasicComponentTest.kt$import com.oliynick.max.tea.core.component.*</ID>
-    <ID>WildcardImport:BasicComponentTest.kt$import kotlinx.coroutines.*</ID>
-    <ID>WildcardImport:BasicComponentTest.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:Component.kt$import com.oliynick.max.tea.core.*</ID>
-    <ID>WildcardImport:Component.kt$import com.oliynick.max.tea.core.component.internal.*</ID>
-    <ID>WildcardImport:Component.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:Component.kt$import protocol.*</ID>
-    <ID>WildcardImport:ComponentExtensions.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:ComponentImpl.kt$import com.oliynick.max.tea.core.*</ID>
-    <ID>WildcardImport:ComponentImpl.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:ComponentView.kt$import com.oliynick.max.tea.core.debug.app.domain.cms.*</ID>
-    <ID>WildcardImport:ComponentView.kt$import com.oliynick.max.tea.core.debug.app.presentation.misc.*</ID>
-    <ID>WildcardImport:ComponentView.kt$import javax.swing.*</ID>
-    <ID>WildcardImport:DebugWebSocketSession.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:DebugWebSocketSession.kt$import protocol.*</ID>
-    <ID>WildcardImport:Environment.kt$import com.oliynick.max.tea.core.debug.app.domain.resolver.*</ID>
-    <ID>WildcardImport:Environment.kt$import com.oliynick.max.tea.core.debug.app.domain.updater.*</ID>
-    <ID>WildcardImport:FeedScreen.kt$import androidx.compose.*</ID>
-    <ID>WildcardImport:FeedScreen.kt$import androidx.ui.core.*</ID>
-    <ID>WildcardImport:FeedScreen.kt$import androidx.ui.layout.*</ID>
-    <ID>WildcardImport:FeedScreen.kt$import com.max.weatherviewer.screens.feed.*</ID>
-    <ID>WildcardImport:FeedScreen.kt$import kotlinx.coroutines.*</ID>
-    <ID>WildcardImport:FlowExtensions.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:GsonAdapters.kt$import com.google.gson.*</ID>
-    <ID>WildcardImport:GsonAdapters.kt$import protocol.*</ID>
-    <ID>WildcardImport:GsonSerializers.kt$import com.google.gson.*</ID>
-    <ID>WildcardImport:GsonSerializers.kt$import com.oliynick.max.tea.core.debug.app.domain.cms.*</ID>
-    <ID>WildcardImport:HomeView.kt$import androidx.ui.layout.*</ID>
-    <ID>WildcardImport:HomeView.kt$import androidx.ui.material.*</ID>
-    <ID>WildcardImport:HomeView.kt$import com.max.weatherviewer.app.*</ID>
-    <ID>WildcardImport:InfoView.kt$import com.oliynick.max.tea.core.debug.app.domain.cms.*</ID>
-    <ID>WildcardImport:LiveAppResolver.kt$import com.oliynick.max.tea.core.debug.app.domain.cms.*</ID>
-    <ID>WildcardImport:LiveAppResolver.kt$import com.oliynick.max.tea.core.debug.app.presentation.sidebar.*</ID>
-    <ID>WildcardImport:LiveAppUpdater.kt$import com.max.weatherviewer.app.*</ID>
-    <ID>WildcardImport:LiveAppUpdater.kt$import com.max.weatherviewer.screens.feed.*</ID>
-    <ID>WildcardImport:LiveFeedResolver.kt$import com.max.weatherviewer.app.*</ID>
-    <ID>WildcardImport:LiveFeedUpdater.kt$import com.max.weatherviewer.app.*</ID>
-    <ID>WildcardImport:LiveFeedUpdater.kt$import com.max.weatherviewer.screens.feed.*</ID>
-    <ID>WildcardImport:LiveNotificationUpdater.kt$import com.oliynick.max.tea.core.debug.app.domain.cms.*</ID>
-    <ID>WildcardImport:LiveUiUpdater.kt$import com.oliynick.max.tea.core.debug.app.domain.cms.*</ID>
-    <ID>WildcardImport:LiveUpdater.kt$import com.oliynick.max.tea.core.debug.app.domain.cms.*</ID>
-    <ID>WildcardImport:MainActivity.kt$import com.max.weatherviewer.app.*</ID>
-    <ID>WildcardImport:MainActivity.kt$import kotlinx.coroutines.*</ID>
-    <ID>WildcardImport:MulticastFlow.kt$import kotlinx.coroutines.*</ID>
-    <ID>WildcardImport:MulticastFlow.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:RenderExtensions.kt$import com.oliynick.max.tea.core.debug.app.domain.cms.*</ID>
-    <ID>WildcardImport:Serializer.kt$import com.google.gson.*</ID>
-    <ID>WildcardImport:Server.kt$import com.oliynick.max.tea.core.debug.app.domain.cms.*</ID>
-    <ID>WildcardImport:Server.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:Server.kt$import protocol.*</ID>
-    <ID>WildcardImport:TestScope.kt$import kotlinx.coroutines.*</ID>
-    <ID>WildcardImport:ToolWindowView.kt$import com.oliynick.max.tea.core.debug.app.domain.cms.*</ID>
-    <ID>WildcardImport:ToolWindowView.kt$import com.oliynick.max.tea.core.debug.app.presentation.misc.*</ID>
-    <ID>WildcardImport:ToolWindowView.kt$import javax.swing.*</ID>
-    <ID>WildcardImport:TypeAppenderAdapterFactory.kt$import com.google.gson.*</ID>
   </Whitelist>
 </SmellBaseline>

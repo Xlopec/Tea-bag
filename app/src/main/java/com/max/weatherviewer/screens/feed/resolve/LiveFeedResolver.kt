@@ -4,7 +4,14 @@ package com.max.weatherviewer.screens.feed.resolve
 
 import android.content.Intent
 import android.net.Uri
-import com.max.weatherviewer.app.*
+import com.max.weatherviewer.app.DoOpenArticle
+import com.max.weatherviewer.app.DoShareArticle
+import com.max.weatherviewer.app.FeedCommand
+import com.max.weatherviewer.app.LoadByCriteria
+import com.max.weatherviewer.app.RemoveArticle
+import com.max.weatherviewer.app.SaveArticle
+import com.max.weatherviewer.app.ScreenId
+import com.max.weatherviewer.app.ScreenMessage
 import com.max.weatherviewer.app.env.HasAppContext
 import com.max.weatherviewer.app.env.storage.HasGson
 import com.max.weatherviewer.app.env.storage.Storage

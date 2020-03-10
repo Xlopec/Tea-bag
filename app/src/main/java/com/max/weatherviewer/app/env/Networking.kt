@@ -28,8 +28,16 @@ fun buildRetrofit(gson: Gson = gson()): Retrofit {
             })
 
             val trustManager = object : X509TrustManager {
-                override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) = Unit
-                override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) = Unit
+                override fun checkClientTrusted(
+                    chain: Array<out X509Certificate>?,
+                    authType: String?
+                ) = Unit
+
+                override fun checkServerTrusted(
+                    chain: Array<out X509Certificate>?,
+                    authType: String?
+                ) = Unit
+
                 override fun getAcceptedIssuers(): Array<X509Certificate> = emptyArray()
             }
 

@@ -28,8 +28,8 @@ data class RemoveArticle(
 
 data class DoOpenArticle(
     val article: Article
-): FeedCommand()
+) : FeedCommand()
 
 data class DoShareArticle(
     val article: Article
-): FeedCommand()
+) : FeedCommand()

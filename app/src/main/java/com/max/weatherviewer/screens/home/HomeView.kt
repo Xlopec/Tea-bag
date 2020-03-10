@@ -15,13 +15,36 @@ import androidx.ui.foundation.selection.Toggleable
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
 import androidx.ui.graphics.vector.DrawVector
-import androidx.ui.layout.*
-import androidx.ui.material.*
+import androidx.ui.layout.Column
+import androidx.ui.layout.Container
+import androidx.ui.layout.Expanded
+import androidx.ui.layout.ExpandedWidth
+import androidx.ui.layout.FlexRow
+import androidx.ui.layout.Gravity
+import androidx.ui.layout.Height
+import androidx.ui.layout.HeightSpacer
+import androidx.ui.layout.Padding
+import androidx.ui.layout.Row
+import androidx.ui.layout.Size
+import androidx.ui.layout.Spacing
+import androidx.ui.layout.WidthSpacer
+import androidx.ui.material.Button
+import androidx.ui.material.Divider
+import androidx.ui.material.DrawerState
+import androidx.ui.material.MaterialTheme
+import androidx.ui.material.ModalDrawerLayout
+import androidx.ui.material.TextButtonStyle
+import androidx.ui.material.TopAppBar
 import androidx.ui.material.ripple.Ripple
 import androidx.ui.material.surface.Surface
 import androidx.ui.res.vectorResource
 import com.max.weatherviewer.R
-import com.max.weatherviewer.app.*
+import com.max.weatherviewer.app.Message
+import com.max.weatherviewer.app.NavigateToFavorite
+import com.max.weatherviewer.app.NavigateToFeed
+import com.max.weatherviewer.app.NavigateToTrending
+import com.max.weatherviewer.app.Navigation
+import com.max.weatherviewer.app.Screen
 import com.max.weatherviewer.screens.feed.Feed
 import com.max.weatherviewer.screens.feed.LoadCriteria
 import com.max.weatherviewer.screens.feed.ui.FeedScreen
@@ -281,7 +304,7 @@ fun BookmarkButton(
 }
 
 private fun Feed.toScreenTitle(): String =
-    when(criteria) {
+    when (criteria) {
         is LoadCriteria.Query -> "Feed"
         is LoadCriteria.Favorite -> "Favorite"
         is LoadCriteria.Trending -> "Trending"

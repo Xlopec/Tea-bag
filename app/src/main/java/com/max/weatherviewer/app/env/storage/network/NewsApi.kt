@@ -74,7 +74,11 @@ data class ArticleResponse(
 )
 
 private object StringAdapter : TypeAdapter<String> {
-    override fun serialize(src: String, typeOfSrc: Type?, context: JsonSerializationContext?) =
+    override fun serialize(
+        src: String,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext?
+    ) =
         JsonPrimitive(src)
 
     override fun deserialize(
@@ -85,7 +89,11 @@ private object StringAdapter : TypeAdapter<String> {
 }
 
 private object URLAdapter : TypeAdapter<URL> {
-    override fun serialize(src: URL, typeOfSrc: Type?, context: JsonSerializationContext?) =
+    override fun serialize(
+        src: URL,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext?
+    ) =
         JsonPrimitive(src.toExternalForm())
 
     override fun deserialize(
@@ -96,7 +104,11 @@ private object URLAdapter : TypeAdapter<URL> {
 }
 
 private object TitleAdapter : TypeAdapter<Title> {
-    override fun serialize(src: Title, typeOfSrc: Type?, context: JsonSerializationContext?) =
+    override fun serialize(
+        src: Title,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext?
+    ) =
         JsonPrimitive(src.value)
 
     override fun deserialize(
@@ -107,7 +119,11 @@ private object TitleAdapter : TypeAdapter<Title> {
 }
 
 private object AuthorAdapter : TypeAdapter<Author> {
-    override fun serialize(src: Author, typeOfSrc: Type?, context: JsonSerializationContext?) =
+    override fun serialize(
+        src: Author,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext?
+    ) =
         JsonPrimitive(src.value)
 
     override fun deserialize(
@@ -118,7 +134,11 @@ private object AuthorAdapter : TypeAdapter<Author> {
 }
 
 private object DescriptionAdapter : TypeAdapter<Description> {
-    override fun serialize(src: Description, typeOfSrc: Type?, context: JsonSerializationContext?) =
+    override fun serialize(
+        src: Description,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext?
+    ) =
         JsonPrimitive(src.value)
 
     override fun deserialize(
