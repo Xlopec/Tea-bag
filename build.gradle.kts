@@ -15,6 +15,7 @@
  */
 
 import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.jfrog.bintray.gradle.BintrayExtension
@@ -22,6 +23,7 @@ import java.net.URL
 import java.util.Date
 import java.util.Locale
 import java.text.SimpleDateFormat
+import java.nio.file.Paths
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
@@ -192,8 +194,8 @@ val detektAll by tasks.registering(Detekt::class) {
     disableDefaultRuleSets = false
     buildUponDefaultConfig = true
     setSource(files(projectDir))
-    config.setFrom(files("$rootDir/detekt/detekt-config.yml"))
-    baseline.set(file("$rootDir/detekt/detekt-baseline.xml"))
+    config.setFrom(detektConfig)
+    baseline.set(detektBaseline)
 
     include("**/*.kt", "**/*.kts")
     exclude("resources/", "build/", "**/test/java/**")
@@ -203,6 +205,19 @@ val detektAll by tasks.registering(Detekt::class) {
         txt.enabled = false
         html.enabled = true
     }
+}
+
+val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) {
+    buildUponDefaultConfig.set(true)
+    ignoreFailures.set(true)
+    parallel.set(true)
+    setSource(files(rootDir))
+    config.setFrom(detektConfig)
+    baseline.set(detektBaseline)
+    include("**/*.kt")
+    include("**/*.kts")
+    exclude("**/resources/**")
+    exclude("**/build/**")
 }
 
 val detektFormat by tasks.creating(Detekt::class) {
@@ -269,3 +284,9 @@ fun libraryProjects() =
 
 fun pluginProject() =
     subprojects.asSequence().filter { project -> project.name == "tea-time-travel-plugin" }
+
+val Project.detektConfig: File
+    get() = Paths.get(rootDir.path, "detekt", "detekt-config.yml").toFile()
+
+val Project.detektBaseline: File
+    get() = Paths.get(rootDir.path, "detekt", "detekt-baseline.xml").toFile()
