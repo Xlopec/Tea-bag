@@ -4,6 +4,8 @@ package com.oliynick.max.tea.core
 
 import com.oliynick.max.tea.core.component.Resolver
 import com.oliynick.max.tea.core.component.Update
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Dependencies holder
@@ -11,18 +13,21 @@ import com.oliynick.max.tea.core.component.Update
 data class Env<M, S, C>(
     inline val initializer: Initializer<S, C>,
     inline val resolver: Resolver<C, M>,
-    inline val update: Update<M, S, C>
+    inline val update: Update<M, S, C>,
+    val io: CoroutineDispatcher
 )
 
 class EnvBuilder<M, S, C>(
     var initializer: Initializer<S, C>,
     var resolver: Resolver<C, M>,
-    var update: Update<M, S, C>
+    var update: Update<M, S, C>,
+    var io: CoroutineDispatcher = Dispatchers.IO
 ) {
     constructor(env: Env<M, S, C>) : this(
         env.initializer,
         env.resolver,
-        env.update
+        env.update,
+        env.io
     )
 }
 
@@ -62,4 +67,4 @@ fun <M, S, C> Env(
 )
 
 fun <M, S, C> EnvBuilder<M, S, C>.toEnv(): Env<M, S, C> =
-    Env(initializer, resolver, update)
+    Env(initializer, resolver, update, io)

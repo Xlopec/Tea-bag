@@ -32,11 +32,12 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.yield
 import org.junit.Test
 
 abstract class BasicComponentTest(
-    private val factory: CoroutineScope.(Env<Char, String, Char>) -> Component<Char, String, Char>
+    protected val factory: CoroutineScope.(Env<Char, String, Char>) -> Component<Char, String, Char>
 ) {
 
     @Test
@@ -96,9 +97,9 @@ abstract class BasicComponentTest(
                 "",
                 { ch ->
                     if (ch == 'a') setOf(
-                        ch.inc(),// only this message should be consumed
-                        ch.inc().inc(),
-                        ch.inc().inc().inc()
+                        ch + 1,// only this message should be consumed
+                        ch + 2,
+                        ch + 3
                     ) else emptySet()
                 },
                 { m, str -> (str + m).command(m) }
@@ -167,9 +168,9 @@ abstract class BasicComponentTest(
             "",
             { ch ->
                 if (ch == 'a') setOf(
-                    ch.inc(),// only this message should be consumed
-                    ch.inc().inc(),
-                    ch.inc().inc().inc()
+                    ch + 1,// only this message should be consumed
+                    ch + 2,
+                    ch + 3
                 ) else emptySet()
             },
             { m, str -> (str + m).command(m) }
@@ -305,6 +306,8 @@ abstract class BasicComponentTest(
             snapshots1Deferred.await().asClue { it shouldContainExactly expected }
             snapshots2Deferred.await().asClue { it shouldContainExactly expected }
         }
+
+
 
 }
 

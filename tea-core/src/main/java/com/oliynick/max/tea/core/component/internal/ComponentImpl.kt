@@ -5,12 +5,9 @@ import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Regular
 import com.oliynick.max.tea.core.Snapshot
 import com.oliynick.max.tea.core.UnstableApi
-import com.oliynick.max.tea.core.component.Resolver
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
@@ -43,7 +40,7 @@ fun <M, S, C> Env<M, S, C>.compute(
     startFrom: Initial<S, C>,
     messages: Flow<M>
 ): Flow<Snapshot<M, S, C>> =
-    resolve(startFrom.commands).finishWith(messages)
+    resolveAsFlow(startFrom.commands).finishWith(messages)
         .foldFlatten<M, Snapshot<M, S, C>>(startFrom) { s, m -> computeNextSnapshot(s.currentState, m) }
         .startFrom(startFrom)
 
@@ -58,7 +55,7 @@ suspend fun <M, S, C> Env<M, S, C>.computeNextSnapshotsRecursively(
 
     val (nextState, commands) = update(message, state)
 
-    return computeNextSnapshotsRecursively(nextState, resolver(commands).iterator())
+    return computeNextSnapshotsRecursively(nextState, resolve(commands).iterator())
         .startFrom(Regular(nextState, commands, state, message))
 }
 
@@ -72,14 +69,20 @@ suspend fun <M, S, C> Env<M, S, C>.computeNextSnapshot(
     //  version of state
     val (nextState, commands) = update(message, state)
 
-    return computeNextSnapshotsRecursively(nextState, resolver(commands).iterator())
+    return computeNextSnapshotsRecursively(nextState, resolve(commands).iterator())
         .startFrom(Regular(nextState, commands, state, message))
 }
 
-private fun <M, S, C> Env<M, S, C>.resolve(commands: Collection<C>): Flow<M> =
-    flow { emitAll(resolver(commands).asFlow()) }
+private fun <M, S, C> Env<M, S, C>.resolveAsFlow(
+    commands: Collection<C>
+): Flow<M> =
+    flow { emitAll(resolve(commands)) }
+
+private suspend fun <M, C> Env<M, *, C>.resolve(
+    commands: Collection<C>
+): Iterable<M> =
+    commands
+        .parMapTo(dispatcher = io) { cmd -> resolver(cmd) }
+        .flatten()
 
 private fun <E> Iterator<E>.nextOrNull() = if (hasNext()) next() else null
-
-private suspend operator fun <C, M> Resolver<C, M>.invoke(commands: Collection<C>): Set<M> =
-    commands.fold(LinkedHashSet(commands.size)) { acc, cmd -> acc.addAll(this(cmd)); acc }

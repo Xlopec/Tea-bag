@@ -3,6 +3,7 @@ package com.oliynick.max.tea.core.component.internal
 import com.oliynick.max.tea.core.UnstableApi
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapConcat
@@ -35,3 +36,7 @@ internal inline fun <T, R> Flow<T>.foldFlatten(
 internal fun <T> Flow<T>.startFrom(
     t: T
 ) = onStart { emit(t) }
+
+internal suspend fun <T> FlowCollector<T>.emitAll(
+    elements: Iterable<T>
+) = elements.forEach { element -> emit(element) }

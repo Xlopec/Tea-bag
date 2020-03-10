@@ -38,9 +38,6 @@ import strikt.assertions.isEmpty
 import strikt.assertions.isEqualTo
 import java.util.concurrent.Executors
 
-typealias Transformer<E, R> = (E) -> Flow<R>
-typealias IdentityTransformer<E> = Transformer<E, E>
-
 @RunWith(JUnit4::class)
 class ComponentExtensionsTest {
 
