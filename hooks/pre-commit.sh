@@ -17,7 +17,7 @@ if [[ ${branch} =~ master|^dev.*|^release.* ]]; then
 
     echo "performing code style checking and analysis"
 
-    ./gradlew detektAll > /dev/null || die "code analysis has failed!"
+    ./gradlew detektAll -q || die "code analysis has failed!"
 
     echo "done performing code analysis"
 

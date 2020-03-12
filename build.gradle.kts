@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import com.jfrog.bintray.gradle.BintrayExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import com.jfrog.bintray.gradle.BintrayExtension
 import java.net.URL
-import java.util.Date
-import java.util.Locale
 import java.text.SimpleDateFormat
-import java.nio.file.Paths
+import java.util.*
+
+installGitHooks()
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
@@ -174,21 +174,21 @@ pluginProject().forEachApplying {
 
     apply(plugin = "org.jetbrains.intellij")
 
-    val copyArtifacts1 by tasks.creating(Copy::class) {
+    val copyArtifacts by tasks.creating(Copy::class) {
         from("$buildDir/libs/")
-        into("${rootProject.buildDir}/artifacts/name")
+        into("${rootProject.buildDir}/artifacts/$name")
         dependsOn("buildPlugin")
     }
 
     tasks.create("rolloutPlugin") {
-        dependsOn("publishPlugin", copyArtifacts1)
+        dependsOn("publishPlugin", copyArtifacts)
     }
 
 }
 
 val detektAll by tasks.registering(Detekt::class) {
     description = "Runs analysis task over whole code"
-    debug = true
+    debug = false
     parallel = true
     ignoreFailures = false
     disableDefaultRuleSets = false
@@ -270,12 +270,6 @@ val Project.rolloutTask: Task
         ?: tasks.findByName("rolloutPlugin")
         ?: error("Couldn't find rollout task for project $name")
 
-fun bintrayApiKey(): String? =
-    if (System.getenv("CI")?.toBoolean() == true) System.getenv("BINTRAY_API_KEY") else null
-
-fun versionName(): String =
-    System.getenv("TRAVIS_TAG").takeUnless { s -> s.isNullOrEmpty() } ?: System.getenv("TRAVIS_COMMIT") ?: "SNAPSHOT"
-
 fun nonAndroidAppProjects() =
     subprojects.asSequence().filterNot { project -> project.name == "app" }
 
@@ -284,9 +278,3 @@ fun libraryProjects() =
 
 fun pluginProject() =
     subprojects.asSequence().filter { project -> project.name == "tea-time-travel-plugin" }
-
-val Project.detektConfig: File
-    get() = Paths.get(rootDir.path, "detekt", "detekt-config.yml").toFile()
-
-val Project.detektBaseline: File
-    get() = Paths.get(rootDir.path, "detekt", "detekt-baseline.xml").toFile()
