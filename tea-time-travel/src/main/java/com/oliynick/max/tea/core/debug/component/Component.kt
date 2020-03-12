@@ -28,11 +28,11 @@ import com.oliynick.max.tea.core.UnstableApi
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.Resolver
 import com.oliynick.max.tea.core.component.Updater
-import com.oliynick.max.tea.core.component.internal.downstream
-import com.oliynick.max.tea.core.component.internal.init
+import com.oliynick.max.tea.core.component.downstream
+import com.oliynick.max.tea.core.component.init
 import com.oliynick.max.tea.core.component.internal.into
 import com.oliynick.max.tea.core.component.internal.shareConflated
-import com.oliynick.max.tea.core.component.internal.upstream
+import com.oliynick.max.tea.core.component.upstream
 import com.oliynick.max.tea.core.debug.component.internal.mergeWith
 import com.oliynick.max.tea.core.debug.exception.ConnectException
 import com.oliynick.max.tea.core.debug.session.DebugSession

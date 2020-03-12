@@ -127,9 +127,7 @@
     <ID>TooGenericExceptionCaught:Server.kt$e: Throwable</ID>
     <ID>TooGenericExceptionThrown:ComponentTest.kt$ComponentTest$throw RuntimeException("hello")</ID>
     <ID>TooManyFunctions:ComponentExtensions.kt$com.oliynick.max.tea.core.component.ComponentExtensions.kt</ID>
-    <ID>TooManyFunctions:FeedScreen.kt$com.max.weatherviewer.screens.feed.ui.FeedScreen.kt</ID>
     <ID>TooManyFunctions:LiveNotificationUpdater.kt$LiveNotificationUpdater$LiveNotificationUpdater</ID>
-    <ID>TooManyFunctions:RenderExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.RenderExtensions.kt</ID>
     <ID>TooManyFunctions:StateExtensions.kt$com.oliynick.max.tea.core.debug.app.domain.cms.StateExtensions.kt</ID>
     <ID>TopLevelPropertyNaming:Dependencies.kt$const val kotlinVersion = "1.3.70"</ID>
     <ID>TopLevelPropertyNaming:PluginState.kt$const val defaultHost = "0.0.0.0"</ID>
@@ -158,6 +156,12 @@
     <ID>UndocumentedPublicClass:Snapshot.kt$Initial&lt;out S, out C&gt; : Snapshot</ID>
     <ID>UndocumentedPublicClass:Snapshot.kt$Regular&lt;out M, out S, out C&gt; : Snapshot</ID>
     <ID>UndocumentedPublicClass:Snapshot.kt$Snapshot&lt;out M, out S, out C&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.compute( startFrom: Initial&lt;S, C&gt;, messages: Flow&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.upstream( messages: Flow&lt;M&gt;, snapshots: Flow&lt;Initial&lt;S, C&gt;&gt; )</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Flow&lt;Snapshot&lt;M, S, C&gt;&gt;.downstream( input: Flow&lt;M&gt;, upstreamInput: SendChannel&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;S, C&gt; Env&lt;*, S, C&gt;.init(): Flow&lt;Initial&lt;S, C&gt;&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi suspend fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.computeNextSnapshot( state: S, message: M ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi suspend fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.computeNextSnapshotsRecursively( state: S, messages: Iterator&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, C, S&gt; Component( initializer: Initializer&lt;S, C&gt;, resolver: Resolver&lt;C, M&gt;, updater: Updater&lt;M, S, C&gt;, config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit = {} ): Component&lt;M, S, C&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C, J&gt; Component( env: DebugEnv&lt;M, S, C, J&gt; ): Component&lt;M, S, C&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C&gt; Component( env: Env&lt;M, S, C&gt; ): Component&lt;M, S, C&gt;</ID>
@@ -169,17 +173,8 @@
     <ID>UndocumentedPublicFunction:ComponentExtensions.kt$operator fun &lt;M, S, C&gt; Component&lt;M, S, C&gt;.invoke(message: M)</ID>
     <ID>UndocumentedPublicFunction:ComponentExtensions.kt$operator fun &lt;M, S, C&gt; Component&lt;M, S, C&gt;.invoke(messages: Iterable&lt;M&gt;)</ID>
     <ID>UndocumentedPublicFunction:ComponentExtensions.kt$operator fun &lt;M, S, C&gt; Component&lt;M, S, C&gt;.invoke(vararg messages: M)</ID>
-    <ID>UndocumentedPublicFunction:ComponentImpl.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.compute( startFrom: Initial&lt;S, C&gt;, messages: Flow&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:ComponentImpl.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.upstream( messages: Flow&lt;M&gt;, snapshots: Flow&lt;Initial&lt;S, C&gt;&gt; )</ID>
-    <ID>UndocumentedPublicFunction:ComponentImpl.kt$@UnstableApi fun &lt;M, S, C&gt; Flow&lt;Snapshot&lt;M, S, C&gt;&gt;.downstream( input: Flow&lt;M&gt;, upstreamInput: SendChannel&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:ComponentImpl.kt$@UnstableApi fun &lt;S, C&gt; Env&lt;*, S, C&gt;.init(): Flow&lt;Initial&lt;S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:ComponentImpl.kt$@UnstableApi suspend fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.computeNextSnapshot( state: S, message: M ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:ComponentImpl.kt$@UnstableApi suspend fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.computeNextSnapshotsRecursively( state: S, messages: Iterator&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
     <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun environment( config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit )</ID>
     <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun serverSettings( config: ServerSettingsBuilder&lt;M, S, J&gt;.() -&gt; Unit )</ID>
-    <ID>UndocumentedPublicFunction:DebugEnvironment.kt$ServerSettingsBuilder$fun installSerializer( serializer: JsonConverter&lt;J&gt; )</ID>
-    <ID>UndocumentedPublicFunction:DebugEnvironment.kt$ServerSettingsBuilder$fun installSessionBuilder( builder: SessionBuilder&lt;M, S, J&gt; )</ID>
-    <ID>UndocumentedPublicFunction:DebugEnvironment.kt$ServerSettingsBuilder$fun url( u: URL )</ID>
     <ID>UndocumentedPublicFunction:DebugEnvironment.kt$inline fun &lt;reified M, reified C, reified S, J&gt; Dependencies( id: ComponentId, env: EnvBuilder&lt;M, S, C&gt;, jsonConverter: JsonConverter&lt;J&gt;, config: DebugEnvBuilder&lt;M, S, C, J&gt;.() -&gt; Unit = {} )</ID>
     <ID>UndocumentedPublicFunction:DebugSession.kt$DebugSession$suspend operator fun invoke( packet: NotifyServer&lt;J&gt; )</ID>
     <ID>UndocumentedPublicFunction:Environment.kt$fun &lt;M, S, C&gt; Env( initialState: S, resolver: Resolver&lt;C, M&gt;, updater: Updater&lt;M, S, C&gt;, initialCommands: Set&lt;C&gt;, config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit = {} )</ID>
@@ -196,7 +191,7 @@
     <ID>UndocumentedPublicFunction:JsonConverter.kt$JsonConverter$fun &lt;T&gt; fromJsonTree( json: J, cl: Class&lt;T&gt; ): T</ID>
     <ID>UndocumentedPublicFunction:JsonConverter.kt$JsonConverter$fun &lt;T&gt; toJson( any: T ): String</ID>
     <ID>UndocumentedPublicFunction:JsonConverter.kt$JsonConverter$fun &lt;T&gt; toJsonTree( any: T ): J</ID>
-    <ID>UndocumentedPublicFunction:MulticastFlow.kt$fun &lt;T&gt; Flow&lt;T&gt;.shareConflated( debounceMs: Int = 0 ): Flow&lt;T&gt;</ID>
+    <ID>UndocumentedPublicFunction:MulticastFlow.kt$@UnstableApi fun &lt;T&gt; Flow&lt;T&gt;.shareConflated( debounceMs: Int = 0 ): Flow&lt;T&gt;</ID>
     <ID>UndocumentedPublicFunction:SessionBuilder.kt$suspend inline fun &lt;reified M, reified S, J&gt; WebSocketSession( settings: ServerSettings&lt;M, S, J&gt;, crossinline block: suspend DebugSession&lt;M, S, J&gt;.() -&gt; Unit )</ID>
     <ID>UndocumentedPublicFunction:SnapshotExtensions.kt$operator fun &lt;C&gt; Snapshot&lt;*, *, C&gt;.component2(): Set&lt;C&gt;</ID>
     <ID>UndocumentedPublicFunction:SnapshotExtensions.kt$operator fun &lt;M&gt; Snapshot&lt;M, *, *&gt;.component4(): M?</ID>

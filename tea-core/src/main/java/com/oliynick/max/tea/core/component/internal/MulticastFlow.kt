@@ -1,5 +1,6 @@
 package com.oliynick.max.tea.core.component.internal
 
+import com.oliynick.max.tea.core.UnstableApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -18,6 +19,7 @@ import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
+@UnstableApi
 fun <T> Flow<T>.shareConflated(
     debounceMs: Int = 0
 ): Flow<T> =
@@ -29,6 +31,7 @@ fun <T> Flow<T>.shareConflated(
  * @param debounceMs Number of milliseconds to wait after last collector closes
  * before closing original flow. Set to 0 to disable.
  */
+@UnstableApi
 fun <T> Flow<T>.share(
     debounceMs: Int = 0
 ): Flow<T> = MulticastFlow(
@@ -40,7 +43,7 @@ fun <T> Flow<T>.share(
 /**
  * https://gist.github.com/matejdro/a9c838bf0066595fb52b4b8816f49252
  */
-@UseExperimental(InternalCoroutinesApi::class)
+@OptIn(InternalCoroutinesApi::class)
 @Suppress("EXPERIMENTAL_API_USAGE")
 private class MulticastFlow<T>(
     private val original: Flow<T>,
