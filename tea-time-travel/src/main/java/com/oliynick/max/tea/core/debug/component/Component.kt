@@ -15,7 +15,7 @@
  */
 
 @file:Suppress("FunctionName")
-@file:UseExperimental(UnstableApi::class)
+@file:OptIn(UnstableApi::class)
 
 package com.oliynick.max.tea.core.debug.component
 

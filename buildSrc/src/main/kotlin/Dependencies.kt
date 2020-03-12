@@ -21,7 +21,7 @@ object BuildPlugins {
 
 object Libraries {
     private object Versions {
-        const val coroutines = "1.3.3"
+        const val coroutines = "1.3.4"
         const val ktor = "1.3.1"
     }
 
@@ -45,6 +45,7 @@ object Libraries {
 object TestLibraries {
     private object Versions {
         const val junit4 = "4.12"
+        const val coroutines = "1.3.4"
         const val testRunner = "1.1.0-alpha4"
         const val espresso = "3.1.0-alpha4"
         const val ktor = "1.2.4"
@@ -53,7 +54,7 @@ object TestLibraries {
     const val junit4 = "junit:junit:${Versions.junit4}"
     const val ktorMockJvm = "io.ktor:ktor-client-mock-jvm:${Versions.ktor}"
     const val ktorServerTests = "io.ktor:ktor-server-tests:${Versions.ktor}"
-    const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.3"
+    const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}"
 
 }
 

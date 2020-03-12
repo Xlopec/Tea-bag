@@ -32,10 +32,16 @@ fun <M, S> throwingUpdater(
     throw IllegalStateException("message=$m, state=$s")
 }
 
-fun messageAsStateUpdate(message: String, @Suppress("UNUSED_PARAMETER") state: String): UpdateWith<String, Set<String>> {
+fun <S> messageAsStateUpdate(
+    message: S,
+    @Suppress("UNUSED_PARAMETER") state: S
+): UpdateWith<S, S> {
     return message.noCommand()
 }
 
-fun messageAsCommandUpdate(message: String, @Suppress("UNUSED_PARAMETER") state: String): UpdateWith<String, String> {
+fun <M, S> messageAsCommand(
+    message: M,
+    @Suppress("UNUSED_PARAMETER") state: S
+): UpdateWith<S, M> {
     return state.command(message)
 }

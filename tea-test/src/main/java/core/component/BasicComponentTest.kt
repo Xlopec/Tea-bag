@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package core.component
 
 import com.oliynick.max.tea.core.Env
@@ -6,22 +8,28 @@ import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.Regular
 import com.oliynick.max.tea.core.Snapshot
 import com.oliynick.max.tea.core.component.Component
+import com.oliynick.max.tea.core.component.Resolver
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.invoke
 import com.oliynick.max.tea.core.component.noCommand
 import com.oliynick.max.tea.core.component.with
+import core.misc.messageAsCommand
 import core.misc.throwingResolver
 import core.scope.runBlockingInTestScope
 import io.kotlintest.matchers.asClue
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.boolean.shouldBeTrue
 import io.kotlintest.matchers.collections.shouldContainExactly
+import io.kotlintest.matchers.types.shouldBeSameInstanceAs
 import io.kotlintest.shouldBe
 import kotlinx.atomicfu.atomic
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
@@ -32,9 +40,10 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.yield
 import org.junit.Test
+import kotlin.coroutines.ContinuationInterceptor
+import kotlin.coroutines.coroutineContext
 
 abstract class BasicComponentTest(
     protected val factory: CoroutineScope.(Env<Char, String, Char>) -> Component<Char, String, Char>
@@ -307,8 +316,50 @@ abstract class BasicComponentTest(
             snapshots2Deferred.await().asClue { it shouldContainExactly expected }
         }
 
+    @Test
+    fun `test resolver runs on a given dispatcher`() = runBlockingInTestScope {
 
+        val testDispatcher = Dispatchers.Unconfined
 
+        val env = Env<Char, String, Char>(
+            Initializer(""),
+            CheckingResolver(testDispatcher),
+            ::messageAsCommand,
+            testDispatcher
+        )
+
+        factory(env)('a'..'d').take('d' - 'a').collect()
+    }
+
+    @Test
+    fun `test initializer runs on a given dispatcher`() = runBlockingInTestScope {
+
+        val testDispatcher = Dispatchers.Unconfined
+
+        val env = Env<Char, String, Char>(
+            CheckingInitializer(testDispatcher),
+            ::throwingResolver,
+            { m, _ -> m.toString().noCommand() },
+            testDispatcher
+        )
+
+        factory(env)('a'..'d').take('d' - 'a').collect()
+    }
+
+}
+
+private fun CheckingInitializer(
+    expectedDispatcher: CoroutineDispatcher
+): Initializer<String, Nothing> = {
+    coroutineContext[ContinuationInterceptor] shouldBeSameInstanceAs expectedDispatcher
+    Initial("", emptySet())
+}
+
+private fun CheckingResolver(
+    expectedDispatcher: CoroutineDispatcher
+): Resolver<Any?, Nothing> = {
+    coroutineContext[ContinuationInterceptor] shouldBeSameInstanceAs expectedDispatcher
+    emptySet()
 }
 
 private suspend fun <T> foreverWaitingResolver(

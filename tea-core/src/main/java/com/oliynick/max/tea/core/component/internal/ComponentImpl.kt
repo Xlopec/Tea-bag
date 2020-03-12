@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @UnstableApi
 fun <M, S, C> Env<M, S, C>.upstream(
@@ -33,7 +34,14 @@ fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
 
 @UnstableApi
 fun <S, C> Env<*, S, C>.init(): Flow<Initial<S, C>> =
-    flow { emit(initializer()) }
+    flow {
+        // FIXME: do not inline variable, Back-end (JVM) KtCallExpression will be thrown
+        val initial = withContext(io) {
+            initializer()
+        }
+
+        emit(initial)
+    }
 
 @UnstableApi
 fun <M, S, C> Env<M, S, C>.compute(

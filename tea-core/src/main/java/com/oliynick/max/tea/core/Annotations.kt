@@ -8,10 +8,10 @@ package com.oliynick.max.tea.core
  */
 @MustBeDocumented
 @Retention(value = AnnotationRetention.BINARY)
-@Experimental(level = Experimental.Level.WARNING)
+@RequiresOptIn(level = RequiresOptIn.Level.WARNING)
 annotation class ObsoleteComponentApi
 
 @MustBeDocumented
 @Retention(value = AnnotationRetention.BINARY)
-@Experimental(level = Experimental.Level.WARNING)
+@RequiresOptIn(level = RequiresOptIn.Level.WARNING)
 annotation class UnstableApi
