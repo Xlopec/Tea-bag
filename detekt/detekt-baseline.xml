@@ -5,12 +5,9 @@
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
     <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$update</ID>
     <ID>ComplexMethod:MyImage.kt$toComposeColorSpace</ID>
-    <ID>ForbiddenComment:ComponentImpl.kt$// todo: we need to add possibility to return own versions</ID>
-    <ID>ForbiddenComment:SideToolWindowFactory.kt$SideToolWindowFactory$// todo: find a better approach</ID>
     <ID>FunctionNaming:Vectors.kt$@Composable fun VectorImage( modifier: Modifier = Modifier.None, @DrawableRes id: Int, tint: Color = Color.Transparent )</ID>
     <ID>FunctionNaming:Vectors.kt$@Composable fun VectorImageButton( @DrawableRes id: Int, onClick: () -&gt; Unit )</ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") private fun Null.toReadableString(): String</ID>
-    <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C&gt;, noinline resolver: Resolver&lt;C, M&gt;, noinline update: Update&lt;M, S, C&gt;, jsonConverter: JsonConverter&lt;J&gt;, noinline config: DebugEnvBuilder&lt;M, S, C, J&gt;.() -&gt; Unit = {} )</ID>
     <ID>MagicNumber:Balloon.kt$0x33412E</ID>
     <ID>MagicNumber:Balloon.kt$0x704745</ID>
     <ID>MagicNumber:Balloon.kt$0xbaeeba</ID>
@@ -19,8 +16,6 @@
     <ID>MagicNumber:Balloon.kt$15_000L</ID>
     <ID>MagicNumber:Balloon.kt$182</ID>
     <ID>MagicNumber:Balloon.kt$30</ID>
-    <ID>MagicNumber:BasicComponentTest.kt$BasicComponentTest$100</ID>
-    <ID>MagicNumber:BasicComponentTest.kt$BasicComponentTest$3</ID>
     <ID>MagicNumber:FeedScreen.kt$0.6f</ID>
     <ID>MagicNumber:FeedScreen.kt$0.87f</ID>
     <ID>MagicNumber:FeedScreen.kt$100</ID>
@@ -56,27 +51,7 @@
     <ID>MatchingDeclarationName:MongoDb.kt$HasMongoCollection</ID>
     <ID>MatchingDeclarationName:PersistentSerializer.kt$PersistentListSerializer : JsonSerializerJsonDeserializer</ID>
     <ID>MatchingDeclarationName:UpdateUI.kt$UiUpdater</ID>
-    <ID>MaxLineLength:Baloon.kt$is DoApplyState -&gt; "plugin failed to apply state to component \"${operation.id.id}\". Check the client is running"</ID>
-    <ID>MaxLineLength:Baloon.kt$is DoWarnUnacceptableMessage, is DoNotifyOperationException, is DoNotifyComponentAttached -&gt; error("will never happen")</ID>
-    <ID>MaxLineLength:CollectionExtensions.kt$while (x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))) { // move down val old = removeAt(x) update?.onItemRemoved(old, x) moodX -= 1 }</ID>
-    <ID>MaxLineLength:Component.kt$/** * Alias for a pure function that accepts message with current state and returns the next state with possible empty set of commands * to feed [resolver][Resolver] * @param M incoming messages * @param S state of the component * @param C commands to be executed */ typealias Update&lt;M, S, C&gt; = (message: M, state: S) -&gt; UpdateWith&lt;S, C&gt;</ID>
-    <ID>MaxLineLength:Component.kt$fun messageAsStateUpdate(message: String, @Suppress("UNUSED_PARAMETER") state: String): UpdateWith&lt;String, Set&lt;String&gt;&gt;</ID>
-    <ID>MaxLineLength:ComponentView.kt$is PropertyNode, is ValueNode, is IndexedNode, is EntryKeyNode, is EntryValueNode -&gt; return</ID>
-    <ID>MaxLineLength:DebuggableComponentTest.kt$DebuggableComponentTest$@Test fun `test debuggable component throws expected exception when it can't connect to a server`()</ID>
-    <ID>MaxLineLength:DefaultGsonSerializersTest.kt$DefaultGsonSerializersTest$val fromJson = gsonSerializer.fromJson&lt;List&lt;Photo?&gt;&gt;(json, TypeToken.getParameterized(List::class.java, Photo::class.java).type)</ID>
-    <ID>MaxLineLength:DiffingListModel.kt$DiffingListModel.ObservableList$private inner</ID>
-    <ID>MaxLineLength:LiveAppResolver.kt$LiveAppResolver$is DoNotifyComponentAttached -&gt; command sideEffect { project.showBalloon(newComponentAttachedBalloon(componentId)) }</ID>
-    <ID>MaxLineLength:LiveAppResolver.kt$LiveAppResolver$is DoNotifyOperationException -&gt; command sideEffect { project.showBalloon(newExceptionBalloon(exception, operation)) }</ID>
-    <ID>MaxLineLength:LiveAppResolver.kt$LiveAppResolver$is DoWarnUnacceptableMessage -&gt; command sideEffect { project.showBalloon(newUnacceptableMessageBalloon(message, state)) }</ID>
-    <ID>MaxLineLength:LiveFeedUpdater.kt$LiveFeedUpdater$LoadCriteria.Favorite -&gt; if (article.isFavorite) state.prependArticle(article) else state.removeArticle(article)</ID>
-    <ID>MaxLineLength:LiveFeedUpdater.kt$LiveFeedUpdater$message is LoadArticles -&gt; FeedLoading(feed.id, feed.criteria) command LoadByCriteria(feed.id, feed.criteria)</ID>
     <ID>MaxLineLength:LiveFeedUpdater.kt$LiveFeedUpdater$message is OnQueryUpdated &amp;&amp; feed.criteria is LoadCriteria.Query -&gt; updateQuery(message.query, feed.criteria as LoadCriteria.Query, feed)</ID>
-    <ID>MaxLineLength:LiveNotificationUpdater.kt$LiveNotificationUpdater$return state.updateComponents { mapping -&gt; mapping.put(componentState.id, componentState) } command DoNotifyComponentAttached(id)</ID>
-    <ID>MaxLineLength:PluginComponent.kt$return Component(Initializer(Stopped(environment.properties.pluginSettings, NewStoppedServer())), ::doResolve, ::doUpdate) .with(Logger())</ID>
-    <ID>MaxLineLength:ToolWindowView.kt$ToolWindowView$require(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children}" }</ID>
-    <ID>MaxLineLength:ToolWindowView.kt$ToolWindowView$val shouldRemoveOrEmpty = componentsPanel.isEmpty || (componentsPanel.isNotEmpty &amp;&amp; componentsPanel.first().name != InfoView.NAME)</ID>
-    <ID>MaxLineLength:TypeAppenderAdapterFactory.kt$TypeAppenderAdapterFactory : TypeAdapterFactory</ID>
-    <ID>MaxLineLength:build.gradle.kts$nonAndroidAppProjects().filterNot { project -&gt; project.name == "tea-time-travel-plugin" || project.name == "tea-test" }</ID>
     <ID>NestedBlockDepth:MulticastFlow.kt$MulticastFlow$onOriginalFlowData</ID>
     <ID>NewLineAtEndOfFile:AppResolver.kt$com.max.weatherviewer.app.resolve.AppResolver.kt</ID>
     <ID>NewLineAtEndOfFile:AppUpdater.kt$com.max.weatherviewer.app.update.AppUpdater.kt</ID>
@@ -88,7 +63,6 @@
     <ID>NewLineAtEndOfFile:Component.kt$protocol.Component.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentExtensions.kt$com.oliynick.max.tea.core.component.ComponentExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.ComponentExtensions.kt</ID>
-    <ID>NewLineAtEndOfFile:ComponentImpl.kt$com.oliynick.max.tea.core.component.internal.ComponentImpl.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentLogic.kt$core.component.ComponentLogic.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentTest.kt$com.oliynick.max.tea.core.debug.app.domain.component.ComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentTestSuite.kt$com.oliynick.max.tea.core.component.ComponentTestSuite.kt</ID>
@@ -104,7 +78,6 @@
     <ID>NewLineAtEndOfFile:FeedUpdater.kt$com.max.weatherviewer.screens.feed.update.FeedUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:FlowExtension.kt$com.oliynick.max.tea.core.debug.component.internal.FlowExtension.kt</ID>
     <ID>NewLineAtEndOfFile:FlowExtensions.kt$com.max.weatherviewer.misc.FlowExtensions.kt</ID>
-    <ID>NewLineAtEndOfFile:FlowExtensions.kt$com.oliynick.max.tea.core.component.internal.FlowExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:GsonAdapters.kt$com.oliynick.max.tea.core.debug.gson.GsonAdapters.kt</ID>
     <ID>NewLineAtEndOfFile:GsonConverter.kt$com.oliynick.max.tea.core.debug.gson.GsonConverter.kt</ID>
     <ID>NewLineAtEndOfFile:HasMessageChannel.kt$com.oliynick.max.tea.core.debug.app.domain.resolver.HasMessageChannel.kt</ID>
@@ -185,10 +158,10 @@
     <ID>UndocumentedPublicClass:Snapshot.kt$Initial&lt;out S, out C&gt; : Snapshot</ID>
     <ID>UndocumentedPublicClass:Snapshot.kt$Regular&lt;out M, out S, out C&gt; : Snapshot</ID>
     <ID>UndocumentedPublicClass:Snapshot.kt$Snapshot&lt;out M, out S, out C&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, C, S&gt; Component( initializer: Initializer&lt;S, C&gt;, resolver: Resolver&lt;C, M&gt;, updater: Updater&lt;M, S, C&gt;, config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit = {} ): Component&lt;M, S, C&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C, J&gt; Component( env: DebugEnv&lt;M, S, C, J&gt; ): Component&lt;M, S, C&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C&gt; Component( env: Env&lt;M, S, C&gt; ): Component&lt;M, S, C&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$inline fun &lt;reified M, reified C, reified S, J&gt; Component( id: ComponentId, noinline initializer: Initializer&lt;S, C&gt;, noinline resolver: Resolver&lt;C, M&gt;, noinline update: Update&lt;M, S, C&gt;, jsonConverter: JsonConverter&lt;J&gt;, noinline config: DebugEnvBuilder&lt;M, S, C, J&gt;.() -&gt; Unit = {} ): Component&lt;M, S, C&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$inline fun &lt;reified M, reified C, reified S&gt; Component( noinline initializer: Initializer&lt;S, C&gt;, noinline resolver: Resolver&lt;C, M&gt;, noinline update: Update&lt;M, S, C&gt; ): Component&lt;M, S, C&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$inline fun &lt;reified M, reified C, reified S, J&gt; Component( id: ComponentId, noinline initializer: Initializer&lt;S, C&gt;, noinline resolver: Resolver&lt;C, M&gt;, noinline updater: Updater&lt;M, S, C&gt;, jsonConverter: JsonConverter&lt;J&gt;, noinline config: DebugEnvBuilder&lt;M, S, C, J&gt;.() -&gt; Unit = {} ): Component&lt;M, S, C&gt;</ID>
     <ID>UndocumentedPublicFunction:ComponentExtensions.kt$fun &lt;M, S, C&gt; Component&lt;M, S, C&gt;.snapshotChanges(): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
     <ID>UndocumentedPublicFunction:ComponentExtensions.kt$fun &lt;M, S, C&gt; Component&lt;M, S, C&gt;.stateChanges(): Flow&lt;S&gt;</ID>
     <ID>UndocumentedPublicFunction:ComponentExtensions.kt$fun &lt;M, S, C&gt; Component&lt;M, S, C&gt;.states(): ((Flow&lt;M&gt;) -&gt; Flow&lt;S&gt;)</ID>
@@ -202,16 +175,16 @@
     <ID>UndocumentedPublicFunction:ComponentImpl.kt$@UnstableApi fun &lt;S, C&gt; Env&lt;*, S, C&gt;.init(): Flow&lt;Initial&lt;S, C&gt;&gt;</ID>
     <ID>UndocumentedPublicFunction:ComponentImpl.kt$@UnstableApi suspend fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.computeNextSnapshot( state: S, message: M ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
     <ID>UndocumentedPublicFunction:ComponentImpl.kt$@UnstableApi suspend fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.computeNextSnapshotsRecursively( state: S, messages: Iterator&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun dependencies(config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit)</ID>
-    <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun serverSettings(config: ServerSettingsBuilder&lt;M, S, J&gt;.() -&gt; Unit)</ID>
+    <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun environment( config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit )</ID>
+    <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun serverSettings( config: ServerSettingsBuilder&lt;M, S, J&gt;.() -&gt; Unit )</ID>
     <ID>UndocumentedPublicFunction:DebugEnvironment.kt$ServerSettingsBuilder$fun installSerializer( serializer: JsonConverter&lt;J&gt; )</ID>
     <ID>UndocumentedPublicFunction:DebugEnvironment.kt$ServerSettingsBuilder$fun installSessionBuilder( builder: SessionBuilder&lt;M, S, J&gt; )</ID>
     <ID>UndocumentedPublicFunction:DebugEnvironment.kt$ServerSettingsBuilder$fun url( u: URL )</ID>
-    <ID>UndocumentedPublicFunction:DebugEnvironment.kt$inline fun &lt;reified M, reified C, reified S, J&gt; Dependencies( id: ComponentId, env: Env&lt;M, S, C&gt;, jsonConverter: JsonConverter&lt;J&gt;, config: DebugEnvBuilder&lt;M, S, C, J&gt;.() -&gt; Unit = {} )</ID>
+    <ID>UndocumentedPublicFunction:DebugEnvironment.kt$inline fun &lt;reified M, reified C, reified S, J&gt; Dependencies( id: ComponentId, env: EnvBuilder&lt;M, S, C&gt;, jsonConverter: JsonConverter&lt;J&gt;, config: DebugEnvBuilder&lt;M, S, C, J&gt;.() -&gt; Unit = {} )</ID>
     <ID>UndocumentedPublicFunction:DebugSession.kt$DebugSession$suspend operator fun invoke( packet: NotifyServer&lt;J&gt; )</ID>
-    <ID>UndocumentedPublicFunction:Environment.kt$fun &lt;M, S, C&gt; Env( initialState: S, resolver: Resolver&lt;C, M&gt;, update: Update&lt;M, S, C&gt;, initialCommands: Set&lt;C&gt;, config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit = {} )</ID>
-    <ID>UndocumentedPublicFunction:Environment.kt$fun &lt;M, S, C&gt; Env( initialState: S, resolver: Resolver&lt;C, M&gt;, update: Update&lt;M, S, C&gt;, vararg initialCommands: C, config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit = {} )</ID>
-    <ID>UndocumentedPublicFunction:Environment.kt$fun &lt;M, S, C&gt; Env( initializer: Initializer&lt;S, C&gt;, resolver: Resolver&lt;C, M&gt;, update: Update&lt;M, S, C&gt;, config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit = {} )</ID>
+    <ID>UndocumentedPublicFunction:Environment.kt$fun &lt;M, S, C&gt; Env( initialState: S, resolver: Resolver&lt;C, M&gt;, updater: Updater&lt;M, S, C&gt;, initialCommands: Set&lt;C&gt;, config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit = {} )</ID>
+    <ID>UndocumentedPublicFunction:Environment.kt$fun &lt;M, S, C&gt; Env( initialState: S, resolver: Resolver&lt;C, M&gt;, updater: Updater&lt;M, S, C&gt;, vararg initialCommands: C, config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit = {} )</ID>
+    <ID>UndocumentedPublicFunction:Environment.kt$fun &lt;M, S, C&gt; Env( initializer: Initializer&lt;S, C&gt;, resolver: Resolver&lt;C, M&gt;, updater: Updater&lt;M, S, C&gt;, config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit = {} )</ID>
     <ID>UndocumentedPublicFunction:Environment.kt$fun &lt;M, S, C&gt; EnvBuilder&lt;M, S, C&gt;.toEnv(): Env&lt;M, S, C&gt;</ID>
     <ID>UndocumentedPublicFunction:FlowExtensions.kt$@UnstableApi suspend fun &lt;T&gt; Flow&lt;T&gt;.into( sendChannel: SendChannel&lt;T&gt; )</ID>
     <ID>UndocumentedPublicFunction:Gson.kt$fun Gson( config: GsonBuilder.() -&gt; Unit = {} ): Gson</ID>

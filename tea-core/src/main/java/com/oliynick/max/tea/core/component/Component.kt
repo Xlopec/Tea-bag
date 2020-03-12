@@ -20,6 +20,7 @@
 package com.oliynick.max.tea.core.component
 
 import com.oliynick.max.tea.core.Env
+import com.oliynick.max.tea.core.EnvBuilder
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.Snapshot
 import com.oliynick.max.tea.core.UnstableApi
@@ -40,27 +41,28 @@ typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
  * @param S state of the component
  * @param C commands to be executed
  */
-typealias Update<M, S, C> = (message: M, state: S) -> UpdateWith<S, C>
+typealias Updater<M, S, C> = (message: M, state: S) -> UpdateWith<S, C>
 
 /**
- * Alias for a function that resolves effects and returns messages to feed [update][Update] function
+ * Alias for a function that resolves effects and returns messages to feed [update][Updater] function
  * @param M incoming messages
  * @param C commands to be executed
  */
 typealias Resolver<C, M> = suspend (command: C) -> Set<M>
 
 /**
- * Alias for result of the [update][Update] function
+ * Alias for result of the [update][Updater] function
  * @param S state of the component
  * @param C commands to be executed
  */
 typealias UpdateWith<S, C> = Pair<S, Set<C>>
 
-inline fun <reified M, reified C, reified S> Component(
-    noinline initializer: Initializer<S, C>,
-    noinline resolver: Resolver<C, M>,
-    noinline update: Update<M, S, C>
-): Component<M, S, C> = Component(Env(initializer, resolver, update))
+fun <M, C, S> Component(
+    initializer: Initializer<S, C>,
+    resolver: Resolver<C, M>,
+    updater: Updater<M, S, C>,
+    config: EnvBuilder<M, S, C>.() -> Unit = {}
+): Component<M, S, C> = Component(Env(initializer, resolver, updater, config))
 
 fun <M, S, C> Component(
     env: Env<M, S, C>

@@ -30,46 +30,26 @@ data class ServerSettings<M, S, J>(
 @DslBuilder
 class ServerSettingsBuilder<M, S, J> @PublishedApi internal constructor(
     val id: ComponentId,
-    @PublishedApi
-    internal var jsonSerializer: JsonConverter<J>
-) {
-
-    @PublishedApi
-    internal var url: URL? = null
-    @PublishedApi
-    internal var sessionBuilder: SessionBuilder<M, S, J>? = null
-
-    fun url(
-        u: URL
-    ) {
-        url = u
-    }
-
-    fun installSessionBuilder(
-        builder: SessionBuilder<M, S, J>
-    ) {
-        sessionBuilder = builder
-    }
-
-    fun installSerializer(
-        serializer: JsonConverter<J>
-    ) {
-        jsonSerializer = serializer
-    }
-
-}
+    var jsonSerializer: JsonConverter<J>,
+    var sessionBuilder: SessionBuilder<M, S, J>,
+    var url: URL = localhost
+)
 
 @DslBuilder
 class DebugEnvBuilder<M, S, C, J> @PublishedApi internal constructor(
-    var dependenciesBuilder: EnvBuilder<M, S, C>,
+    var envBuilder: EnvBuilder<M, S, C>,
     var serverSettingsBuilder: ServerSettingsBuilder<M, S, J>
 ) {
 
-    fun dependencies(config: EnvBuilder<M, S, C>.() -> Unit) {
-        dependenciesBuilder.apply(config)
+    fun environment(
+        config: EnvBuilder<M, S, C>.() -> Unit
+    ) {
+        envBuilder.apply(config)
     }
 
-    fun serverSettings(config: ServerSettingsBuilder<M, S, J>.() -> Unit) {
+    fun serverSettings(
+        config: ServerSettingsBuilder<M, S, J>.() -> Unit
+    ) {
         serverSettingsBuilder.apply(config)
     }
 
@@ -77,18 +57,18 @@ class DebugEnvBuilder<M, S, C, J> @PublishedApi internal constructor(
 
 inline fun <reified M, reified C, reified S, J> Dependencies(
     id: ComponentId,
-    env: Env<M, S, C>,
+    env: EnvBuilder<M, S, C>,
     jsonConverter: JsonConverter<J>,
     config: DebugEnvBuilder<M, S, C, J>.() -> Unit = {}
 ) = DebugEnvBuilder(
-    EnvBuilder(env),
-    ServerSettingsBuilder(id, jsonConverter)
+    env,
+    ServerSettingsBuilder(id, jsonConverter, ::WebSocketSession)
 ).apply(config).toDebugDependencies()
 
 @PublishedApi
 internal inline fun <reified M, reified C, reified S, J> DebugEnvBuilder<M, S, C, J>.toDebugDependencies() =
     DebugEnv(
-        dependenciesBuilder.toEnv(),
+        envBuilder.toEnv(),
         serverSettingsBuilder.toServerSettings()
     )
 
@@ -97,6 +77,6 @@ internal inline fun <reified M, reified S, J> ServerSettingsBuilder<M, S, J>.toS
     ServerSettings(
         id,
         jsonSerializer,
-        url ?: localhost,
-        sessionBuilder ?: ::WebSocketSession
+        url,
+        sessionBuilder
     )

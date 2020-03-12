@@ -19,7 +19,7 @@
 
 package com.oliynick.max.tea.core.debug.component
 
-import com.oliynick.max.tea.core.Env
+import com.oliynick.max.tea.core.EnvBuilder
 import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.Regular
@@ -27,7 +27,7 @@ import com.oliynick.max.tea.core.Snapshot
 import com.oliynick.max.tea.core.UnstableApi
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.Resolver
-import com.oliynick.max.tea.core.component.Update
+import com.oliynick.max.tea.core.component.Updater
 import com.oliynick.max.tea.core.component.internal.downstream
 import com.oliynick.max.tea.core.component.internal.init
 import com.oliynick.max.tea.core.component.internal.into
@@ -55,11 +55,11 @@ inline fun <reified M, reified C, reified S, J> Component(
     id: ComponentId,
     noinline initializer: Initializer<S, C>,
     noinline resolver: Resolver<C, M>,
-    noinline update: Update<M, S, C>,
+    noinline updater: Updater<M, S, C>,
     jsonConverter: JsonConverter<J>,
     noinline config: DebugEnvBuilder<M, S, C, J>.() -> Unit = {}
 ): Component<M, S, C> =
-    Component(Dependencies(id, Env(initializer, resolver, update), jsonConverter, config))
+    Component(Dependencies(id, EnvBuilder(initializer, resolver, updater), jsonConverter, config))
 
 fun <M, S, C, J> Component(
     env: DebugEnv<M, S, C, J>

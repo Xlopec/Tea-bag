@@ -9,6 +9,7 @@ import com.oliynick.max.tea.core.Regular
 import com.oliynick.max.tea.core.Snapshot
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.Resolver
+import com.oliynick.max.tea.core.component.Updater
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.invoke
 import com.oliynick.max.tea.core.component.noCommand
@@ -40,6 +41,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import org.junit.Test
 import kotlin.coroutines.ContinuationInterceptor
@@ -346,6 +348,22 @@ abstract class BasicComponentTest(
         factory(env)('a'..'d').take('d' - 'a').collect()
     }
 
+    @Test
+    fun `test updater runs on a given dispatcher`() = runBlockingInTestScope {
+
+        val testDispatcher = Dispatchers.Unconfined
+        val expectedDispatcherName = withContext(testDispatcher) { currentThreadGroupName() }
+
+        val env = Env<Char, String, Char>(
+            Initializer(""),
+            ::throwingResolver,
+            CheckingUpdater(expectedDispatcherName),
+            computation = testDispatcher
+        )
+
+        factory(env)('a'..'d').take('d' - 'a').collect()
+    }
+
 }
 
 private fun CheckingInitializer(
@@ -360,6 +378,16 @@ private fun CheckingResolver(
 ): Resolver<Any?, Nothing> = {
     coroutineContext[ContinuationInterceptor] shouldBeSameInstanceAs expectedDispatcher
     emptySet()
+}
+
+private fun currentThreadGroupName(): String =
+    Thread.currentThread().threadGroup.name
+
+private fun <M, S> CheckingUpdater(
+    expectedThreadGroup: String
+): Updater<M, S, Nothing> = { _, s ->
+    currentThreadGroupName() shouldBe expectedThreadGroup
+    s.noCommand()
 }
 
 private suspend fun <T> foreverWaitingResolver(

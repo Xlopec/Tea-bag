@@ -5,6 +5,7 @@ import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Regular
 import com.oliynick.max.tea.core.Snapshot
 import com.oliynick.max.tea.core.UnstableApi
+import com.oliynick.max.tea.core.component.UpdateWith
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -85,6 +86,12 @@ private fun <M, S, C> Env<M, S, C>.resolveAsFlow(
     commands: Collection<C>
 ): Flow<M> =
     flow { emitAll(resolve(commands)) }
+
+private suspend fun <M, S, C> Env<M, S, C>.update(
+    message: M,
+    state: S
+): UpdateWith<S, C> =
+    withContext(computation) { updater(message, state) }
 
 private suspend fun <M, C> Env<M, *, C>.resolve(
     commands: Collection<C>

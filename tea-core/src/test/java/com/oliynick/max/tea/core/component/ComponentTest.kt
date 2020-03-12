@@ -56,4 +56,3 @@ class ComponentTest : BasicComponentTest(::ComponentFactory) {
     }
 
 }
-

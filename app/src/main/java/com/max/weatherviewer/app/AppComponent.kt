@@ -39,7 +39,7 @@ fun Environment.appComponent(): (Flow<Message>) -> Flow<State> {
             AppGsonSerializer()
         ) {
             serverSettings {
-                url(URL(host = "10.0.2.2"))
+                url = URL(host = "10.0.2.2")
             }
         }.states()
     }
