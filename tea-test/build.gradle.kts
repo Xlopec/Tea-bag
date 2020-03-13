@@ -29,8 +29,6 @@ dependencies {
     api(coroutinesCore)
     api("junit:junit:4.12")
     api(coroutinesTest)
-    // todo remove dependency on strikt
-    api("io.strikt:strikt-core:0.22.2")
     api("io.kotlintest:kotlintest-runner-junit4:3.4.2")
 
 }

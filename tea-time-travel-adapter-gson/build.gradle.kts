@@ -1,5 +1,5 @@
+
 import Libraries.immutableCollections
-import Libraries.kotlinReflect
 import Libraries.kotlinStdLib
 
 dependencies {
@@ -8,7 +8,6 @@ dependencies {
     api(project(path = ":tea-time-travel-protocol", configuration = "default"))
 
     implementation(kotlinStdLib)
-    implementation(kotlinReflect)
 
     api("com.google.code.gson:gson:2.8.6")
 

@@ -21,39 +21,18 @@ import core.component.DoAddItem
 import core.component.Item
 import core.component.TodoState
 import core.component.Updated
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.test.resetMain
+import io.kotlintest.matchers.collections.shouldBeEmpty
+import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotlintest.shouldBe
 import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import strikt.api.expectThat
-import strikt.assertions.containsExactlyInAnyOrder
-import strikt.assertions.isEmpty
-import strikt.assertions.isEqualTo
-import java.util.concurrent.Executors
 
 @RunWith(JUnit4::class)
 class ComponentExtensionsTest {
 
     private val initialState = TodoState(Item("some1"), Item("some2"), Item("some3"))
-    private val mainThreadSurrogate = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-
-    @Before
-    fun setUp() {
-        Dispatchers.setMain(mainThreadSurrogate)
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain() // reset main dispatcher to the original Main dispatcher
-        mainThreadSurrogate.close()
-    }
 
     @Test
     fun `test single command extension`() {
@@ -61,8 +40,8 @@ class ComponentExtensionsTest {
 
         val (state, commands) = initialState.command(DoAddItem(Item("some4"), initialState.items))
 
-        expectThat(initialState).isEqualTo(state)
-        expectThat(commands).containsExactlyInAnyOrder(first)
+        initialState shouldBe state
+        commands shouldContainExactlyInAnyOrder setOf(first)
     }
 
     @Test
@@ -72,8 +51,8 @@ class ComponentExtensionsTest {
 
         val (state, commands) = initialState.command(first, second)
 
-        expectThat(initialState).isEqualTo(state)
-        expectThat(commands).containsExactlyInAnyOrder(first, second)
+        initialState shouldBe state
+        commands shouldContainExactlyInAnyOrder setOf(first, second)
     }
 
     @Test
@@ -84,8 +63,8 @@ class ComponentExtensionsTest {
 
         val (state, commands) = initialState.command(first, second, third)
 
-        expectThat(initialState).isEqualTo(state)
-        expectThat(commands).containsExactlyInAnyOrder(first, second, third)
+        initialState shouldBe state
+        commands shouldContainExactlyInAnyOrder setOf(first, second, third)
     }
 
     @Test
@@ -97,16 +76,16 @@ class ComponentExtensionsTest {
 
         val (state, commands) = initialState.command(first, second, third, fourth)
 
-        expectThat(initialState).isEqualTo(state)
-        expectThat(commands).containsExactlyInAnyOrder(first, second, third, fourth)
+        initialState shouldBe state
+        commands shouldContainExactlyInAnyOrder setOf(first, second, third, fourth)
     }
 
     @Test
     fun `test no commands extension`() {
         val (state, commands) = initialState.noCommand<TodoState, DoAddItem>()
 
-        expectThat(initialState).isEqualTo(state)
-        expectThat(commands).isEmpty()
+        initialState shouldBe state
+        commands.shouldBeEmpty()
     }
 
     @Test
@@ -114,14 +93,14 @@ class ComponentExtensionsTest {
 
         val messages = DoAddItem(Item("some"), emptyList()).sideEffect<Command, Updated> { }
 
-        expectThat(messages).isEmpty()
+        messages.shouldBeEmpty()
     }
 
     @Test
     fun `test when effect returns no command the result is empty set`() = runBlockingTest {
         val messages = DoAddItem(Item("some"), emptyList()).effect<Command, Updated> { null }
 
-        expectThat(messages).isEmpty()
+        messages.shouldBeEmpty()
     }
 
     @Test
@@ -132,7 +111,7 @@ class ComponentExtensionsTest {
             val messages = DoAddItem(item, emptyList()).effect { expectedMessage }
 
 
-            expectThat(messages).containsExactlyInAnyOrder(expectedMessage)
+            messages shouldContainExactlyInAnyOrder setOf(expectedMessage)
         }
 
 }
