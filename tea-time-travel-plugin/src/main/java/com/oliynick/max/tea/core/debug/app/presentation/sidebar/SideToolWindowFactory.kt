@@ -42,7 +42,7 @@ class SideToolWindowFactory : ToolWindowFactory, DumbAware {
     ) {
         val environment = Environment(project.properties, project)
         val component = PluginComponent(environment)
-        val content = createToolWindowContent(environment, component)
+        val content = createToolWindowContent(project, environment, component)
 
         toolWindow.contentManager.addContent(content)
         // todo: find a better approach
@@ -55,11 +55,12 @@ class SideToolWindowFactory : ToolWindowFactory, DumbAware {
 }
 
 private fun createToolWindowContent(
+    project: Project,
     environment: Environment,
     component: Component<PluginMessage, PluginState, PluginCommand>
 ): Content {
 
-    val myToolWindow = ToolWindowView(environment, component.states())
+    val myToolWindow = ToolWindowView(project, environment, component.states())
     val contentFactory = ContentFactory.SERVICE.getInstance()
 
     return contentFactory.createContent(myToolWindow.root, null, false)

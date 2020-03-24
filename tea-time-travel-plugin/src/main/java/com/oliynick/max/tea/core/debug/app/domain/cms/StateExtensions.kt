@@ -37,8 +37,6 @@ fun ComponentDebugState.removeSnapshots(): ComponentDebugState {
     return copy(snapshots = persistentListOf())
 }
 
-fun ComponentDebugState.asPair() = id to this
-
 fun DebugState.component(
     id: ComponentId
 ) = components[id] ?: notifyUnknownComponent(id)

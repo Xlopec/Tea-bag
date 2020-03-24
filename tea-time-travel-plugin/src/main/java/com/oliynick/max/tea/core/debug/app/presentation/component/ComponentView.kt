@@ -16,6 +16,7 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.component
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
 import com.oliynick.max.tea.core.debug.app.domain.cms.ComponentDebugState
@@ -53,14 +54,16 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import protocol.ComponentId
 import java.awt.event.MouseEvent
-import javax.swing.JLabel
+import javax.swing.JCheckBox
 import javax.swing.JPanel
 import javax.swing.JPopupMenu
+import javax.swing.JTextField
 import javax.swing.JTree
 import javax.swing.SwingUtilities
 import javax.swing.tree.DefaultMutableTreeNode
 
 class ComponentView(
+    private val project: Project,
     private val scope: CoroutineScope,
     private val component: (Flow<PluginMessage>) -> Flow<PluginState>,
     componentState: ComponentDebugState
@@ -69,8 +72,9 @@ class ComponentView(
     private lateinit var root: JPanel
     private lateinit var snapshotsTree: JTree
     private lateinit var stateTree: JTree
-    private lateinit var applyCommandButton: JLabel
-    private lateinit var removeCommandButton: JLabel
+    private lateinit var searchField: JTextField
+    private lateinit var matchCaseCheckBox: JCheckBox
+    private lateinit var regexCheckBox: JCheckBox
 
     val _root get() = root
 
@@ -170,7 +174,7 @@ private fun snapshotPopup(
 
 private fun messagePopup(
     id: ComponentId,
-    message: Value<*>,
+    message: Value,
     onAction: (PluginMessage) -> Unit
 ): JPopupMenu {
     return JBPopupMenu().apply {
@@ -184,7 +188,7 @@ private fun messagePopup(
 
 private fun statePopup(
     id: ComponentId,
-    state: Value<*>,
+    state: Value,
     onAction: (PluginMessage) -> Unit
 ): JPopupMenu {
     return JBPopupMenu().apply {

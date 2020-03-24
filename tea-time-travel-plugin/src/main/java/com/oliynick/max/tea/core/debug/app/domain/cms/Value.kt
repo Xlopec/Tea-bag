@@ -17,75 +17,83 @@ inline class Type(
     }
 }
 
-data class Property<T>(
+data class Property(
     val name: String,
-    val v: Value<T>
+    val v: Value
 )
 
-sealed class Value<out T>
+sealed class Value
 
-sealed class PrimitiveWrapper<T>(val value: T) : Value<T>() {
+object Null : Value()
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is PrimitiveWrapper<*>) return false
-
-        if (value != other.value) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return value?.hashCode() ?: 0
-    }
-
-    override fun toString() = "PrimitiveWrapper(value=$value)"
-
-}
-
-object Null : Value<Any>()
+//todo replace by overloaded factory function
 
 class IntWrapper(
-    value: Int
-) : PrimitiveWrapper<Int>(value)
+    val value: Int
+) : Value()
 
 class ByteWrapper(
-    value: Byte
-) : PrimitiveWrapper<Byte>(value)
+    val value: Byte
+) : Value()
 
 class ShortWrapper(
-    value: Short
-) : PrimitiveWrapper<Short>(value)
+    val value: Short
+) : Value()
 
 class CharWrapper(
-    value: Char
-) : PrimitiveWrapper<Char>(value)
+    val value: Char
+) : Value()
 
 class LongWrapper(
-    value: Long
-) : PrimitiveWrapper<Long>(value)
+    val value: Long
+) : Value()
 
 class DoubleWrapper(
-    value: Double
-) : PrimitiveWrapper<Double>(value)
+    val value: Double
+) : Value()
 
 class FloatWrapper(
-    value: Float
-) : PrimitiveWrapper<Float>(value)
+    val value: Float
+) : Value()
 
 class StringWrapper(
-    value: String
-) : PrimitiveWrapper<String>(value)
+    val value: String
+) : Value()
 
-class BooleanWrapper(
-    value: Boolean
-) : PrimitiveWrapper<Boolean>(value)
+class BooleanWrapper private constructor(
+    val value: Boolean
+) : Value() {
+
+    companion object {
+        private val TRUE by lazy(LazyThreadSafetyMode.NONE) { BooleanWrapper(true) }
+        private val FALSE by lazy(LazyThreadSafetyMode.NONE) { BooleanWrapper(false) }
+
+        fun of(
+            value: Boolean
+        ) = if (value) TRUE else FALSE
+    }
+}
 
 data class CollectionWrapper(
-    val value: List<Value<*>>
-) : Value<List<Value<*>>>()
+    val value: List<Value>
+) : Value()
 
 data class Ref(
     val type: Type,
-    val properties: Set<Property<*>>
-) : Value<Any>()
+    val properties: Set<Property>
+) : Value()
+
+inline val Value.isPrimitive: Boolean
+    get() = when (this) {
+        is IntWrapper,
+        is ByteWrapper,
+        is ShortWrapper,
+        is CharWrapper,
+        is LongWrapper,
+        is DoubleWrapper,
+        is FloatWrapper,
+        is StringWrapper,
+        is BooleanWrapper -> true
+        Null, is CollectionWrapper, is Ref -> false
+    }
+

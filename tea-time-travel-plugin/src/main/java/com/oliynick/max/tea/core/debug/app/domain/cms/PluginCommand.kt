@@ -37,13 +37,13 @@ data class DoStopServer(
 
 data class DoApplyCommand(
     val id: ComponentId,
-    val command: Value<*>,
+    val command: Value,
     val server: StartedServer
 ) : PluginCommand()
 
 data class DoApplyState(
     val id: ComponentId,
-    val state: Value<*>,
+    val state: Value,
     val server: StartedServer
 ) : PluginCommand()
 

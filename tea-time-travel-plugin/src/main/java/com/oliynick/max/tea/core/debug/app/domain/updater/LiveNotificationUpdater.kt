@@ -137,7 +137,7 @@ object LiveNotificationUpdater : NotificationUpdater {
 
     fun DebugState.componentOrNew(
         id: ComponentId,
-        state: Value<*>
+        state: Value
     ) = components[id] ?: ComponentDebugState(id, state)
 
     fun notifyDeveloperException(cause: Throwable): Nothing =

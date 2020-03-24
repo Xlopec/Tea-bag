@@ -22,7 +22,6 @@ import com.oliynick.max.tea.core.debug.app.domain.cms.ServerSettings
 import com.oliynick.max.tea.core.debug.app.domain.cms.Settings
 import com.oliynick.max.tea.core.debug.app.domain.cms.defaultHost
 import com.oliynick.max.tea.core.debug.app.domain.cms.defaultPort
-import java.io.File
 
 private const val PLUGIN_ID = "com.oliynick.max.elm.time.travel.plugin"
 
@@ -34,11 +33,6 @@ var PropertiesComponent.pluginSettings: Settings
         serverSettings = value.serverSettings
     }
     get() = Settings(serverSettings)
-
-@Deprecated("will be removed or replaced")
-var PropertiesComponent.paths: List<File>
-    set(value) = setValues("$PLUGIN_ID.paths", Array(value.size) { i -> value[i].absolutePath })
-    get() = getValues("$PLUGIN_ID.paths")?.map(::File) ?: emptyList()
 
 var PropertiesComponent.serverSettings: ServerSettings
     set(value) {

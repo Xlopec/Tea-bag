@@ -4,7 +4,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import java.net.ProtocolException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import java.util.concurrent.TimeoutException
+import java.util.concurrent.*
 import javax.net.ssl.SSLException
 
 sealed class PluginException : Throwable {

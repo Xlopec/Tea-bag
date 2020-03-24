@@ -16,14 +16,22 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.misc
 
+import com.oliynick.max.tea.core.debug.app.domain.cms.BooleanWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.ByteWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.CharWrapper
 import com.oliynick.max.tea.core.debug.app.domain.cms.CollectionWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.DoubleWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.FloatWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.IntWrapper
+import com.oliynick.max.tea.core.debug.app.domain.cms.LongWrapper
 import com.oliynick.max.tea.core.debug.app.domain.cms.Null
-import com.oliynick.max.tea.core.debug.app.domain.cms.PrimitiveWrapper
 import com.oliynick.max.tea.core.debug.app.domain.cms.Property
 import com.oliynick.max.tea.core.debug.app.domain.cms.Ref
+import com.oliynick.max.tea.core.debug.app.domain.cms.ShortWrapper
 import com.oliynick.max.tea.core.debug.app.domain.cms.Snapshot
 import com.oliynick.max.tea.core.debug.app.domain.cms.StringWrapper
 import com.oliynick.max.tea.core.debug.app.domain.cms.Value
+import com.oliynick.max.tea.core.debug.app.domain.cms.isPrimitive
 import com.oliynick.max.tea.core.debug.app.presentation.sidebar.getIcon
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -37,12 +45,20 @@ private val DATE_TIME_FORMATTER: DateTimeFormatter by lazy {
     )
 }
 
-fun Value<*>.toJTree(): DefaultMutableTreeNode =
+fun Value.toJTree(): DefaultMutableTreeNode =
     when (this) {
-        is PrimitiveWrapper<*> -> toJTree()
         is Null -> toJTree()
         is CollectionWrapper -> toJTree()
         is Ref -> toJTree()
+        is IntWrapper -> primitive(this)
+        is ByteWrapper -> primitive(this)
+        is ShortWrapper -> primitive(this)
+        is CharWrapper -> primitive(this)
+        is LongWrapper -> primitive(this)
+        is DoubleWrapper -> primitive(this)
+        is FloatWrapper -> primitive(this)
+        is StringWrapper -> primitive(this)
+        is BooleanWrapper -> primitive(this)
     }
 
 fun Snapshot.toReadableString(formatter: DateTimeFormatter = DATE_TIME_FORMATTER): String =
@@ -74,8 +90,10 @@ val RenderTree.icon: Icon?
         is EntryValueNode -> value.icon
     }
 
-private fun PrimitiveWrapper<*>.toJTree(): DefaultMutableTreeNode =
-    DefaultMutableTreeNode(ValueNode(this))
+private fun primitive(
+    value: Value
+): DefaultMutableTreeNode =
+    DefaultMutableTreeNode(ValueNode(value))
 
 private fun Null.toJTree(): DefaultMutableTreeNode =
     DefaultMutableTreeNode(ValueNode(this))
@@ -106,11 +124,20 @@ private fun CollectionWrapper.toJTree(
         acc
     }
 
-private fun Value<*>.tryAppendSubTree(parent: DefaultMutableTreeNode): DefaultMutableTreeNode? =
+private fun Value.tryAppendSubTree(parent: DefaultMutableTreeNode): DefaultMutableTreeNode? =
     when (this) {
-        is PrimitiveWrapper<*>, is Null -> null
         is CollectionWrapper -> toJTree(parent)
         is Ref -> toJTree(parent)
+        is IntWrapper,
+        is ByteWrapper,
+        is ShortWrapper,
+        is CharWrapper,
+        is LongWrapper,
+        is DoubleWrapper,
+        is FloatWrapper,
+        is StringWrapper,
+        is BooleanWrapper,
+        is Null -> null
     }
 
 private operator fun DefaultMutableTreeNode.plusAssign(children: Iterable<MutableTreeNode>) =
@@ -118,12 +145,19 @@ private operator fun DefaultMutableTreeNode.plusAssign(children: Iterable<Mutabl
 
 private operator fun DefaultMutableTreeNode.plusAssign(child: MutableTreeNode) = add(child)
 
-private fun Value<*>.toReadableString(): String = when (this) {
+private fun Value.toReadableString(): String = when (this) {
     is StringWrapper -> toReadableString()
-    is PrimitiveWrapper<*> -> value.toString()
     is Null -> toReadableString()
     is Ref -> toReadableString()
     is CollectionWrapper -> toReadableString()
+    is IntWrapper -> value.toString()
+    is ByteWrapper -> value.toString()
+    is ShortWrapper -> value.toString()
+    is CharWrapper -> value.toString()
+    is LongWrapper -> value.toString()
+    is DoubleWrapper -> value.toString()
+    is FloatWrapper -> value.toString()
+    is BooleanWrapper -> value.toString()
 }
 
 @Suppress("unused")
@@ -134,7 +168,7 @@ private fun StringWrapper.toReadableString(): String = "\"$value\""
 private fun Ref.toReadableString(): String =
     "${type.name}(${properties.joinToString(transform = ::toReadableString, limit = 120)})"
 
-private fun toReadableString(field: Property<*>): String =
+private fun toReadableString(field: Property): String =
     "${field.name}=${field.v.toReadableString()}"
 
 private fun CollectionWrapper.toReadableString(): String =
@@ -144,9 +178,9 @@ private fun CollectionWrapper.toReadableString(): String =
         transform = { it.toReadableString() }
     )
 
-private val Value<*>.icon: Icon?
-    inline get() = when (this) {
-        is PrimitiveWrapper<*> -> getIcon("variable")
-        is CollectionWrapper, is Ref -> getIcon("class")
-        is Null -> null
+private val Value.icon: Icon?
+    inline get() = when {
+        isPrimitive -> getIcon("variable")
+        this is CollectionWrapper || this is Ref -> getIcon("class")
+        else -> null
     }

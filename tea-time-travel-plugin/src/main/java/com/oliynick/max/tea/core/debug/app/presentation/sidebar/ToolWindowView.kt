@@ -16,6 +16,7 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.sidebar
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.components.JBTabbedPane
 import com.oliynick.max.tea.core.debug.app.domain.cms.DebugState
@@ -59,6 +60,7 @@ import javax.swing.event.DocumentListener
 import java.awt.Component as AwtComponent
 
 class ToolWindowView(
+    private val project: Project,
     private val scope: CoroutineScope,
     private val component: (Flow<PluginMessage>) -> Flow<PluginState>
 ) : CoroutineScope by scope {
@@ -180,7 +182,7 @@ class ToolWindowView(
     ) = debugState.components
         .filter { e -> indexOfTab(e.key.id) == -1 }
         .forEach { (id, s) ->
-            addCloseableTab(id, ComponentView(scope, component, s)._root) { component ->
+            addCloseableTab(id, ComponentView(project, scope, component, s)._root) { component ->
                 messages(RemoveComponent(component))
             }
         }

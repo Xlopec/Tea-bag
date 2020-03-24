@@ -14,7 +14,6 @@ import com.oliynick.max.tea.core.debug.app.domain.cms.FloatWrapper
 import com.oliynick.max.tea.core.debug.app.domain.cms.IntWrapper
 import com.oliynick.max.tea.core.debug.app.domain.cms.LongWrapper
 import com.oliynick.max.tea.core.debug.app.domain.cms.Null
-import com.oliynick.max.tea.core.debug.app.domain.cms.PrimitiveWrapper
 import com.oliynick.max.tea.core.debug.app.domain.cms.Property
 import com.oliynick.max.tea.core.debug.app.domain.cms.Ref
 import com.oliynick.max.tea.core.debug.app.domain.cms.ShortWrapper
@@ -25,18 +24,11 @@ import com.oliynick.max.tea.core.debug.gson.Gson
 
 internal val GSON = Gson()
 
-fun Value<*>.toJsonElement(): JsonElement =
+fun Value.toJsonElement(): JsonElement =
     when (this) {
-        is PrimitiveWrapper<*> -> toJsonElement()
-        is Null -> toJsonElement()
+        is Null -> JsonNull.INSTANCE
         is CollectionWrapper -> toJsonElement()
         is Ref -> toJsonElement()
-    }
-
-private fun Null.toJsonElement(): JsonNull = JsonNull.INSTANCE
-
-private fun PrimitiveWrapper<*>.toJsonElement(): JsonPrimitive =
-    when (this@toJsonElement) {
         is IntWrapper -> JsonPrimitive(value)
         is ByteWrapper -> JsonPrimitive(value)
         is ShortWrapper -> JsonPrimitive(value)
@@ -48,7 +40,7 @@ private fun PrimitiveWrapper<*>.toJsonElement(): JsonPrimitive =
         is BooleanWrapper -> JsonPrimitive(value)
     }
 
-fun JsonElement.toValue(): Value<*> =
+fun JsonElement.toValue(): Value =
     when {
         isJsonPrimitive -> asJsonPrimitive.toValue()
         isJsonArray -> asJsonArray.toValue()
@@ -75,7 +67,7 @@ private fun JsonObject.toValue(): Ref {
 
     val entrySet = entrySet().filter { e -> e.key != "@type" }
 
-    val props = entrySet.mapTo(HashSet<Property<*>>(entrySet.size)) { entry ->
+    val props = entrySet.mapTo(HashSet<Property>(entrySet.size)) { entry ->
         Property(
             entry.key,
             entry.value.toValue()
@@ -86,14 +78,14 @@ private fun JsonObject.toValue(): Ref {
 }
 
 // fixme add explicit type param
-private fun JsonPrimitive.toValue(): Value<*> = when {
-    isBoolean -> BooleanWrapper(asBoolean)
+private fun JsonPrimitive.toValue(): Value = when {
+    isBoolean -> BooleanWrapper.of(asBoolean)
     isString -> StringWrapper(asString)
     isNumber -> toNumberValue()
     else -> error("Don't know how to wrap $this")
 }
 
-private fun JsonPrimitive.toNumberValue(): PrimitiveWrapper<*> =
+private fun JsonPrimitive.toNumberValue(): Value =
     when (asNumber) {
         is Float -> FloatWrapper(asFloat)
         is Double -> DoubleWrapper(asDouble)
@@ -104,6 +96,6 @@ private fun JsonPrimitive.toNumberValue(): PrimitiveWrapper<*> =
         else -> error("Don't know how to wrap $this")
     }
 
-private fun JsonArray.toValue(): Value<*> =
+private fun JsonArray.toValue(): Value =
     CollectionWrapper(map { it.asJsonObject.toValue() })
 

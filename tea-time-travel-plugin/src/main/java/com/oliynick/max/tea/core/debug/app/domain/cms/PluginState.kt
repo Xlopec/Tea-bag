@@ -48,13 +48,14 @@ data class DebugState(
 data class Snapshot(
     val id: UUID,
     val timestamp: LocalDateTime,
-    val message: Value<*>,
-    val state: Value<*>
+    val message: Value,
+    val state: Value
 )
 
 data class ComponentDebugState(
     val id: ComponentId,
-    val currentState: Value<*>,
+    val currentState: Value,
+    val filter: Regex? = null,
     val snapshots: PersistentList<Snapshot> = persistentListOf()
 )
 

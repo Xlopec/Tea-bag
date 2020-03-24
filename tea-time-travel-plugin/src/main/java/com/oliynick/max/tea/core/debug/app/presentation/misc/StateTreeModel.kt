@@ -24,16 +24,16 @@ import javax.swing.tree.TreeModel
 
 class StateTreeModel private constructor(
     private val delegate: DefaultTreeModel,
-    initial: Value<*>
+    initial: Value
 ) : TreeModel by delegate {
 
     companion object {
-        fun newInstance(state: Value<*>): StateTreeModel {
+        fun newInstance(state: Value): StateTreeModel {
             return StateTreeModel(DefaultTreeModel(DefaultMutableTreeNode("State", true)), state)
         }
     }
 
-    var state: Value<*> = initial
+    var state: Value = initial
         set(value) {
             if (value !== field) {
                 field = value
