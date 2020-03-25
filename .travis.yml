@@ -39,7 +39,8 @@ jobs:
       name: "Unit Tests"
       script: ./gradlew test
     - stage: deploy
-      name: "Publish"
+      name: "Publishing"
+      if: branch =~ ^(master|^release.*)$
       script: ./gradlew fullRollout
       deploy:
         provider: releases
@@ -50,5 +51,4 @@ jobs:
         draft: true
         on:
           all_branches: true
-
-#if: tag IS present
+          tags: true
