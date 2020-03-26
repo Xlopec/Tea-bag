@@ -1,6 +1,6 @@
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.app.domain.resolver
+package com.oliynick.max.tea.core.debug.app.component.resolver
 
 import com.intellij.ide.util.PropertiesComponent
 

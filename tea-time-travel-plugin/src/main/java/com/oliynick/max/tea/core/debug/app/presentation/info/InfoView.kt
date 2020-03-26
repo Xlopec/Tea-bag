@@ -16,13 +16,13 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.info
 
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.domain.cms.StartServer
-import com.oliynick.max.tea.core.debug.app.domain.cms.Started
-import com.oliynick.max.tea.core.debug.app.domain.cms.Starting
-import com.oliynick.max.tea.core.debug.app.domain.cms.Stopped
-import com.oliynick.max.tea.core.debug.app.domain.cms.Stopping
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
+import com.oliynick.max.tea.core.debug.app.component.cms.StartServer
+import com.oliynick.max.tea.core.debug.app.component.cms.Started
+import com.oliynick.max.tea.core.debug.app.component.cms.Starting
+import com.oliynick.max.tea.core.debug.app.component.cms.Stopped
+import com.oliynick.max.tea.core.debug.app.component.cms.Stopping
 import com.oliynick.max.tea.core.debug.app.presentation.misc.safe
 import com.oliynick.max.tea.core.debug.app.presentation.misc.setOnClickListener
 import kotlinx.coroutines.CoroutineScope

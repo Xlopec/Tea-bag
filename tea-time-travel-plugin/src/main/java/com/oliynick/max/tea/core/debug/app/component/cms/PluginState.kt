@@ -14,50 +14,12 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.domain.cms
+package com.oliynick.max.tea.core.debug.app.component.cms
 
+import com.oliynick.max.tea.core.debug.app.domain.DebugState
+import com.oliynick.max.tea.core.debug.app.domain.Settings
 import com.oliynick.max.tea.core.debug.app.transport.StartedServer
 import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.PersistentMap
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentMapOf
-import protocol.ComponentId
-import java.time.LocalDateTime
-import java.util.*
-
-typealias ComponentMapping = PersistentMap<ComponentId, ComponentDebugState>
-
-const val defaultHost = "0.0.0.0"
-const val defaultPort = 8080U
-
-//todo add remote call timeout
-data class ServerSettings(
-    val host: String,
-    val port: UInt
-)
-
-data class Settings(
-    val serverSettings: ServerSettings
-)
-
-data class DebugState(
-    val components: ComponentMapping = persistentMapOf()
-)
-
-data class Snapshot(
-    val id: UUID,
-    val timestamp: LocalDateTime,
-    val message: Value,
-    val state: Value
-)
-
-data class ComponentDebugState(
-    val id: ComponentId,
-    val currentState: Value,
-    val filter: Regex? = null,
-    val snapshots: PersistentList<Snapshot> = persistentListOf()
-)
 
 sealed class PluginState {
     abstract val settings: Settings

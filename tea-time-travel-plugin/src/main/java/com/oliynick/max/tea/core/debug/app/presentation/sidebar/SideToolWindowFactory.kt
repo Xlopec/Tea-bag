@@ -24,9 +24,9 @@ import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.states
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginState
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
 import com.oliynick.max.tea.core.debug.app.env.Environment
 import com.oliynick.max.tea.core.debug.app.env.PluginComponent
 import com.oliynick.max.tea.core.debug.app.storage.properties

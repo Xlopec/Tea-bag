@@ -16,23 +16,26 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.misc
 
-import com.oliynick.max.tea.core.debug.app.domain.cms.BooleanWrapper
-import com.oliynick.max.tea.core.debug.app.domain.cms.ByteWrapper
-import com.oliynick.max.tea.core.debug.app.domain.cms.CharWrapper
-import com.oliynick.max.tea.core.debug.app.domain.cms.CollectionWrapper
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoubleWrapper
-import com.oliynick.max.tea.core.debug.app.domain.cms.FloatWrapper
-import com.oliynick.max.tea.core.debug.app.domain.cms.IntWrapper
-import com.oliynick.max.tea.core.debug.app.domain.cms.LongWrapper
-import com.oliynick.max.tea.core.debug.app.domain.cms.Null
-import com.oliynick.max.tea.core.debug.app.domain.cms.Property
-import com.oliynick.max.tea.core.debug.app.domain.cms.Ref
-import com.oliynick.max.tea.core.debug.app.domain.cms.ShortWrapper
-import com.oliynick.max.tea.core.debug.app.domain.cms.Snapshot
-import com.oliynick.max.tea.core.debug.app.domain.cms.StringWrapper
-import com.oliynick.max.tea.core.debug.app.domain.cms.Value
-import com.oliynick.max.tea.core.debug.app.domain.cms.isPrimitive
-import com.oliynick.max.tea.core.debug.app.presentation.sidebar.getIcon
+import com.oliynick.max.tea.core.debug.app.domain.BooleanWrapper
+import com.oliynick.max.tea.core.debug.app.domain.ByteWrapper
+import com.oliynick.max.tea.core.debug.app.domain.CharWrapper
+import com.oliynick.max.tea.core.debug.app.domain.CollectionWrapper
+import com.oliynick.max.tea.core.debug.app.domain.DoubleWrapper
+import com.oliynick.max.tea.core.debug.app.domain.FloatWrapper
+import com.oliynick.max.tea.core.debug.app.domain.IntWrapper
+import com.oliynick.max.tea.core.debug.app.domain.LongWrapper
+import com.oliynick.max.tea.core.debug.app.domain.Null
+import com.oliynick.max.tea.core.debug.app.domain.Property
+import com.oliynick.max.tea.core.debug.app.domain.Ref
+import com.oliynick.max.tea.core.debug.app.domain.ShortWrapper
+import com.oliynick.max.tea.core.debug.app.domain.Snapshot
+import com.oliynick.max.tea.core.debug.app.domain.StringWrapper
+import com.oliynick.max.tea.core.debug.app.domain.Value
+import com.oliynick.max.tea.core.debug.app.domain.isPrimitive
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.CLASS_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.PROPERTY_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.VARIABLE_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.WATCH_ICON
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import javax.swing.Icon
@@ -82,8 +85,8 @@ fun EntryValueNode.toReadableString(): String =
 val RenderTree.icon: Icon?
     get() = when (this) {
         RootNode, is MessageNode, is StateNode -> null
-        is SnapshotNode -> getIcon("watch")
-        is PropertyNode -> getIcon("property")
+        is SnapshotNode -> WATCH_ICON
+        is PropertyNode -> PROPERTY_ICON
         is ValueNode -> value.icon
         is IndexedNode -> value.icon
         is EntryKeyNode -> key.icon
@@ -137,7 +140,8 @@ private fun Value.tryAppendSubTree(parent: DefaultMutableTreeNode): DefaultMutab
         is FloatWrapper,
         is StringWrapper,
         is BooleanWrapper,
-        is Null -> null
+        is Null
+        -> null
     }
 
 private operator fun DefaultMutableTreeNode.plusAssign(children: Iterable<MutableTreeNode>) =
@@ -180,7 +184,7 @@ private fun CollectionWrapper.toReadableString(): String =
 
 private val Value.icon: Icon?
     inline get() = when {
-        isPrimitive -> getIcon("variable")
-        this is CollectionWrapper || this is Ref -> getIcon("class")
+        isPrimitive -> VARIABLE_ICON
+        this is CollectionWrapper || this is Ref -> CLASS_ICON
         else -> null
     }

@@ -1,5 +1,14 @@
+@file:Suppress("TestFunctionName")
+
 package com.oliynick.max.tea.core.debug.app.domain.cms
 
+import com.oliynick.max.tea.core.debug.app.domain.IntWrapper
+import com.oliynick.max.tea.core.debug.app.domain.Property
+import com.oliynick.max.tea.core.debug.app.domain.Ref
+import com.oliynick.max.tea.core.debug.app.domain.RegexPredicate
+import com.oliynick.max.tea.core.debug.app.domain.Type
+import com.oliynick.max.tea.core.debug.app.domain.Valid
+import com.oliynick.max.tea.core.debug.app.domain.applyTo
 import io.kotlintest.shouldBe
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,19 +35,6 @@ class FiltersTest {
     )
 
     @Test
-    fun `test no filter is applied, whole Ref remains unchanged`() {
-
-        val ref = Ref(
-            Type.of("com.example.Test"),
-            testProperties
-        )
-
-        val regex: Regex? = null
-
-        regex.applyTo(ref) shouldBe ref
-    }
-
-    @Test
     fun `test if top level Ref matches expression, whole Ref remains unchanged`() {
 
         val ref = Ref(
@@ -46,8 +42,7 @@ class FiltersTest {
             testProperties
         )
 
-        val filtered = Regex("com\\.example\\.Test")
-            .applyTo(ref)
+        val filtered = applyTo(ref, (RegexPredicate("com\\.example\\.Test", false) as Valid).t)
 
         filtered shouldBe ref
     }
@@ -60,8 +55,7 @@ class FiltersTest {
             testProperties
         )
 
-        val filtered = Regex("com\\.example\\.another.*")
-            .applyTo(ref)
+        val filtered = applyTo(ref, UnsafeRegexPredicate("com\\.example\\.another.*"))
 
         filtered shouldBe Ref(
             Type.of("com.example.Test"),
@@ -77,8 +71,7 @@ class FiltersTest {
             testProperties
         )
 
-        val filtered = Regex(testProperties.first().name)
-            .applyTo(ref)
+        val filtered = applyTo(ref, UnsafeRegexPredicate(testProperties.first().name))
 
         filtered shouldBe Ref(
             Type.of("com.example.Test"),
@@ -96,8 +89,7 @@ class FiltersTest {
             testProperties + promitiveProperty
         )
 
-        val filtered = Regex("int")
-            .applyTo(ref)
+        val filtered = applyTo(ref, UnsafeRegexPredicate("int"))
 
         filtered shouldBe Ref(
             Type.of("com.example.Test"),
@@ -107,3 +99,9 @@ class FiltersTest {
 
 
 }
+
+private fun UnsafeRegexPredicate(
+    input: String,
+    ignoreCase: Boolean = false
+) =
+    (RegexPredicate(input, ignoreCase) as Valid).t

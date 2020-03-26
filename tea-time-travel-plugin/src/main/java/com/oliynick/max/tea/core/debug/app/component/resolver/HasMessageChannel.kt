@@ -1,8 +1,8 @@
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.app.domain.resolver
+package com.oliynick.max.tea.core.debug.app.component.resolver
 
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
 import kotlinx.coroutines.channels.BroadcastChannel
 
 fun HasMessagesChannel(

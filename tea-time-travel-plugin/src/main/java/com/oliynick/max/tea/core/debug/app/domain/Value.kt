@@ -1,4 +1,4 @@
-package com.oliynick.max.tea.core.debug.app.domain.cms
+package com.oliynick.max.tea.core.debug.app.domain
 
 inline class Type(
     val name: String
@@ -28,35 +28,35 @@ object Null : Value()
 
 //todo replace by overloaded factory function
 
-class IntWrapper(
+data class IntWrapper(
     val value: Int
 ) : Value()
 
-class ByteWrapper(
+data class ByteWrapper(
     val value: Byte
 ) : Value()
 
-class ShortWrapper(
+data class ShortWrapper(
     val value: Short
 ) : Value()
 
-class CharWrapper(
+data class CharWrapper(
     val value: Char
 ) : Value()
 
-class LongWrapper(
+data class LongWrapper(
     val value: Long
 ) : Value()
 
-class DoubleWrapper(
+data class DoubleWrapper(
     val value: Double
 ) : Value()
 
-class FloatWrapper(
+data class FloatWrapper(
     val value: Float
 ) : Value()
 
-class StringWrapper(
+data class StringWrapper(
     val value: String
 ) : Value()
 
@@ -65,13 +65,41 @@ class BooleanWrapper private constructor(
 ) : Value() {
 
     companion object {
-        private val TRUE by lazy(LazyThreadSafetyMode.NONE) { BooleanWrapper(true) }
-        private val FALSE by lazy(LazyThreadSafetyMode.NONE) { BooleanWrapper(false) }
+        private val TRUE by lazy(LazyThreadSafetyMode.NONE) {
+            BooleanWrapper(
+                true
+            )
+        }
+        private val FALSE by lazy(LazyThreadSafetyMode.NONE) {
+            BooleanWrapper(
+                false
+            )
+        }
 
         fun of(
             value: Boolean
         ) = if (value) TRUE else FALSE
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as BooleanWrapper
+
+        if (value != other.value) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return value.hashCode()
+    }
+
+    override fun toString(): String {
+        return "BooleanWrapper(value=$value)"
+    }
+
 }
 
 data class CollectionWrapper(

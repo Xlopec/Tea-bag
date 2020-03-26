@@ -51,15 +51,17 @@
     <ID>MatchingDeclarationName:MongoDb.kt$HasMongoCollection</ID>
     <ID>MatchingDeclarationName:PersistentSerializer.kt$PersistentListSerializer : JsonSerializerJsonDeserializer</ID>
     <ID>MatchingDeclarationName:UpdateUI.kt$UiUpdater</ID>
+    <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
     <ID>MaxLineLength:LiveFeedUpdater.kt$LiveFeedUpdater$message is OnQueryUpdated &amp;&amp; feed.criteria is LoadCriteria.Query -&gt; updateQuery(message.query, feed.criteria as LoadCriteria.Query, feed)</ID>
     <ID>NestedBlockDepth:MulticastFlow.kt$MulticastFlow$onOriginalFlowData</ID>
     <ID>NewLineAtEndOfFile:AppResolver.kt$com.max.weatherviewer.app.resolve.AppResolver.kt</ID>
     <ID>NewLineAtEndOfFile:AppUpdater.kt$com.max.weatherviewer.app.update.AppUpdater.kt</ID>
-    <ID>NewLineAtEndOfFile:Baloon.kt$com.oliynick.max.tea.core.debug.app.domain.resolver.Baloon.kt</ID>
+    <ID>NewLineAtEndOfFile:Baloon.kt$com.oliynick.max.tea.core.debug.app.component.resolver.Baloon.kt</ID>
     <ID>NewLineAtEndOfFile:ChooserUtils.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.ChooserUtils.kt</ID>
     <ID>NewLineAtEndOfFile:ClientMessageSerializationTest.kt$com.oliynick.max.tea.core.debug.app.domain.serialization.ClientMessageSerializationTest.kt</ID>
     <ID>NewLineAtEndOfFile:CollectionExt.kt$.CollectionExt.kt</ID>
     <ID>NewLineAtEndOfFile:CollectionExtensions.kt$com.oliynick.max.tea.core.debug.app.misc.CollectionExtensions.kt</ID>
+    <ID>NewLineAtEndOfFile:CollectionExtensionsTest.kt$com.oliynick.max.tea.core.debug.app.misc.CollectionExtensionsTest.kt</ID>
     <ID>NewLineAtEndOfFile:Component.kt$protocol.Component.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentExtensions.kt$com.oliynick.max.tea.core.component.ComponentExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.ComponentExtensions.kt</ID>
@@ -76,12 +78,13 @@
     <ID>NewLineAtEndOfFile:FeedResolver.kt$com.max.weatherviewer.screens.feed.resolve.FeedResolver.kt</ID>
     <ID>NewLineAtEndOfFile:FeedScreen.kt$com.max.weatherviewer.screens.feed.ui.FeedScreen.kt</ID>
     <ID>NewLineAtEndOfFile:FeedUpdater.kt$com.max.weatherviewer.screens.feed.update.FeedUpdater.kt</ID>
+    <ID>NewLineAtEndOfFile:FiltersTest.kt$com.oliynick.max.tea.core.debug.app.domain.cms.FiltersTest.kt</ID>
     <ID>NewLineAtEndOfFile:FlowExtension.kt$com.oliynick.max.tea.core.debug.component.internal.FlowExtension.kt</ID>
     <ID>NewLineAtEndOfFile:FlowExtensions.kt$com.max.weatherviewer.misc.FlowExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:GsonAdapters.kt$com.oliynick.max.tea.core.debug.gson.GsonAdapters.kt</ID>
     <ID>NewLineAtEndOfFile:GsonConverter.kt$com.oliynick.max.tea.core.debug.gson.GsonConverter.kt</ID>
-    <ID>NewLineAtEndOfFile:HasMessageChannel.kt$com.oliynick.max.tea.core.debug.app.domain.resolver.HasMessageChannel.kt</ID>
-    <ID>NewLineAtEndOfFile:HasSystemProperties.kt$com.oliynick.max.tea.core.debug.app.domain.resolver.HasSystemProperties.kt</ID>
+    <ID>NewLineAtEndOfFile:HasMessageChannel.kt$com.oliynick.max.tea.core.debug.app.component.resolver.HasMessageChannel.kt</ID>
+    <ID>NewLineAtEndOfFile:HasSystemProperties.kt$com.oliynick.max.tea.core.debug.app.component.resolver.HasSystemProperties.kt</ID>
     <ID>NewLineAtEndOfFile:Initializer.kt$com.oliynick.max.tea.core.Initializer.kt</ID>
     <ID>NewLineAtEndOfFile:InterceptData.kt$core.component.InterceptData.kt</ID>
     <ID>NewLineAtEndOfFile:JLabelExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.JLabelExtensions.kt</ID>
@@ -89,7 +92,7 @@
     <ID>NewLineAtEndOfFile:JsonConverter.kt$protocol.JsonConverter.kt</ID>
     <ID>NewLineAtEndOfFile:LRUCacheTest.kt$com.oliynick.max.tea.core.debug.app.domain.LRUCacheTest.kt</ID>
     <ID>NewLineAtEndOfFile:LiveFeedUpdater.kt$com.max.weatherviewer.screens.feed.update.LiveFeedUpdater.kt</ID>
-    <ID>NewLineAtEndOfFile:LiveUpdater.kt$com.oliynick.max.tea.core.debug.app.domain.updater.LiveUpdater.kt</ID>
+    <ID>NewLineAtEndOfFile:LiveUpdater.kt$com.oliynick.max.tea.core.debug.app.component.updater.LiveUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:LruCache.kt$com.oliynick.max.tea.core.debug.app.misc.LruCache.kt</ID>
     <ID>NewLineAtEndOfFile:MainActivity.kt$com.max.weatherviewer.screens.main.MainActivity.kt</ID>
     <ID>NewLineAtEndOfFile:MongoDb.kt$com.max.weatherviewer.app.env.storage.local.MongoDb.kt</ID>
@@ -97,12 +100,14 @@
     <ID>NewLineAtEndOfFile:Networking.kt$com.max.weatherviewer.app.env.Networking.kt</ID>
     <ID>NewLineAtEndOfFile:NewsApi.kt$com.max.weatherviewer.app.env.storage.network.NewsApi.kt</ID>
     <ID>NewLineAtEndOfFile:PluginDependenciesSpecExt.kt$.PluginDependenciesSpecExt.kt</ID>
-    <ID>NewLineAtEndOfFile:PluginException.kt$com.oliynick.max.tea.core.debug.app.domain.cms.PluginException.kt</ID>
-    <ID>NewLineAtEndOfFile:PluginMessage.kt$com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage.kt</ID>
-    <ID>NewLineAtEndOfFile:PluginState.kt$com.oliynick.max.tea.core.debug.app.domain.cms.PluginState.kt</ID>
+    <ID>NewLineAtEndOfFile:PluginException.kt$com.oliynick.max.tea.core.debug.app.component.cms.PluginException.kt</ID>
+    <ID>NewLineAtEndOfFile:PluginMessage.kt$com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage.kt</ID>
+    <ID>NewLineAtEndOfFile:PluginState.kt$com.oliynick.max.tea.core.debug.app.component.cms.PluginState.kt</ID>
+    <ID>NewLineAtEndOfFile:PluginState.kt$com.oliynick.max.tea.core.debug.app.domain.PluginState.kt</ID>
     <ID>NewLineAtEndOfFile:Poly.kt$com.oliynick.max.tea.core.debug.gson.serialization.data.Poly.kt</ID>
     <ID>NewLineAtEndOfFile:RefDiffer.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.RefDiffer.kt</ID>
     <ID>NewLineAtEndOfFile:RenderTree.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.RenderTree.kt</ID>
+    <ID>NewLineAtEndOfFile:Settings.kt$com.oliynick.max.tea.core.debug.app.domain.Settings.kt</ID>
     <ID>NewLineAtEndOfFile:SideToolWindowFactory.kt$com.oliynick.max.tea.core.debug.app.presentation.sidebar.SideToolWindowFactory.kt</ID>
     <ID>NewLineAtEndOfFile:Snapshot.kt$com.oliynick.max.tea.core.Snapshot.kt</ID>
     <ID>NewLineAtEndOfFile:SnapshotExtensions.kt$com.oliynick.max.tea.core.SnapshotExtensions.kt</ID>
@@ -128,10 +133,9 @@
     <ID>TooGenericExceptionThrown:ComponentTest.kt$ComponentTest$throw RuntimeException("hello")</ID>
     <ID>TooManyFunctions:ComponentExtensions.kt$com.oliynick.max.tea.core.component.ComponentExtensions.kt</ID>
     <ID>TooManyFunctions:LiveNotificationUpdater.kt$LiveNotificationUpdater$LiveNotificationUpdater</ID>
-    <ID>TooManyFunctions:StateExtensions.kt$com.oliynick.max.tea.core.debug.app.domain.cms.StateExtensions.kt</ID>
-    <ID>TopLevelPropertyNaming:Dependencies.kt$const val kotlinVersion = "1.3.70"</ID>
-    <ID>TopLevelPropertyNaming:PluginState.kt$const val defaultHost = "0.0.0.0"</ID>
-    <ID>TopLevelPropertyNaming:PluginState.kt$const val defaultPort = 8080U</ID>
+    <ID>TooManyFunctions:StateExtensions.kt$com.oliynick.max.tea.core.debug.app.component.cms.StateExtensions.kt</ID>
+    <ID>TopLevelPropertyNaming:Settings.kt$const val defaultHost = "0.0.0.0"</ID>
+    <ID>TopLevelPropertyNaming:Settings.kt$const val defaultPort = 8080U</ID>
     <ID>UndocumentedPublicClass:Annotations.kt$UnstableApi</ID>
     <ID>UndocumentedPublicClass:ClientMessage.kt$ApplyMessage&lt;out J&gt; : ClientMessage</ID>
     <ID>UndocumentedPublicClass:ClientMessage.kt$ApplyState&lt;J&gt; : ClientMessage</ID>

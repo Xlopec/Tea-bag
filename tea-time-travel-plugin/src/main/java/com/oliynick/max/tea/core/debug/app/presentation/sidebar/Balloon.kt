@@ -11,13 +11,13 @@ import java.awt.Color
 import java.awt.Insets
 import javax.swing.Icon
 
-private val exceptionBalloonTextColor = JBColor(Color.BLACK, Color(182, 182, 182))
-private val exceptionBalloonFillColor = JBColor(0xffcccc, 0x704745)
-private val exceptionBalloonIcon by lazy { AllIcons.General.NotificationError!! }
+val exceptionBalloonTextColor = JBColor(Color.BLACK, Color(182, 182, 182))
+val exceptionBalloonFillColor = JBColor(0xffcccc, 0x704745)
+val exceptionBalloonIcon by lazy { AllIcons.General.NotificationError!! }
 
-private val notificationBalloonTextColor = JBColor(Color.BLACK, Color(182, 182, 182))
-private val notificationBalloonFillColor = JBColor(0xbaeeba, 0x33412E)
-private val notificationBalloonIcon by lazy { AllIcons.General.NotificationInfo!! }
+val notificationBalloonTextColor = JBColor(Color.BLACK, Color(182, 182, 182))
+val notificationBalloonFillColor = JBColor(0xbaeeba, 0x33412E)
+val notificationBalloonIcon by lazy { AllIcons.General.NotificationInfo!! }
 
 fun Project.showBalloon(balloon: Balloon) {
     val point = RelativePoint.getNorthEastOf(WindowManager.getInstance().getStatusBar(this).component)

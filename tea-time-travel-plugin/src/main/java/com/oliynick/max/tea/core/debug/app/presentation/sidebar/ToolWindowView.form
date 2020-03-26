@@ -36,7 +36,7 @@
               <component id="f3acb" class="javax.swing.JLabel" binding="startButton">
                 <constraints/>
                 <properties>
-                  <icon value="images/toolWindowRun.png"/>
+                  <icon value="/icons/toolWindowRun.png"/>
                   <inheritsPopupMenu value="true"/>
                   <maximumSize width="16" height="16"/>
                   <minimumSize width="16" height="16"/>

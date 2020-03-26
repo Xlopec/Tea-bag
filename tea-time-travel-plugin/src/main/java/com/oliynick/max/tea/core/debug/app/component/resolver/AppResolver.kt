@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.domain.updater
+package com.oliynick.max.tea.core.debug.app.component.resolver
 
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.domain.cms.UIMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
 
-interface UiUpdater {
+interface AppResolver<Env> {
 
-    fun update(
-        message: UIMessage,
-        state: PluginState
-    ): UpdateWith<PluginState, PluginCommand>
+    suspend fun Env.resolve(
+        command: PluginCommand
+    ): Set<PluginMessage>
 
 }

@@ -16,13 +16,17 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.misc
 
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import java.awt.Component
 import java.awt.event.MouseEvent
+import javax.swing.SwingUtilities
 
 inline fun Component.setOnClickListener(crossinline l: (MouseEvent) -> Unit) {
     removeMouseListeners()
@@ -34,6 +38,23 @@ inline fun Component.setOnClickListener(crossinline l: (MouseEvent) -> Unit) {
 fun Component.removeMouseListeners() {
     mouseListeners.forEach(this::removeMouseListener)
 }
+
+fun Component.mouseEvents(): Flow<MouseEvent> =
+    callbackFlow {
+
+        val l = object : DefaultMouseListener {
+            override fun mouseClicked(e: MouseEvent) {
+                offer(e)
+            }
+        }
+
+        addMouseListener(l)
+
+        awaitClose { removeMouseListener(l) }
+    }
+
+fun Component.rightClicks(): Flow<MouseEvent> =
+    mouseEvents().filter { SwingUtilities.isRightMouseButton(it) }
 
 fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
     channelFlow {

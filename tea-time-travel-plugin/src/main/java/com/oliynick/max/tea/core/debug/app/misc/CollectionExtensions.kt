@@ -16,6 +16,9 @@
 
 package com.oliynick.max.tea.core.debug.app.misc
 
+import java.util.*
+import kotlin.collections.ArrayList
+
 interface DiffCallback<in T1, in T2> {
 
     fun areItemsTheSame(
@@ -121,11 +124,13 @@ fun <L : MutableList<T>, T> L.replaceAll(
     return replaceAll(replaceWith, diffCallback, update, ::identity)
 }
 
-fun <E> List<E>.mergeWith(with: Collection<E>): List<E> {
+fun <E> List<E>.mergeWith(
+    with: Collection<E>
+): List<E> {
     val merged = ArrayList<E>(this)
 
     for (e in with) {
-        if (!merged.contains(e)) {
+        if (e !in merged) {
             merged += e
         }
     }
@@ -135,3 +140,28 @@ fun <E> List<E>.mergeWith(with: Collection<E>): List<E> {
 }
 
 private fun <T> identity(t: T): T = t
+
+fun <E> setOfNonNull(
+    vararg elements: E?
+): Set<E> {
+    val set = HashSet<E>(elements.size)
+
+    for (e in elements) {
+        if (e != null) {
+            set += e
+        }
+    }
+
+    return set
+}
+
+inline fun <E, M : MutableList<E>> M.mapInPlace(
+    how: (E) -> E
+): M {
+
+    for (i in indices) {
+        this[i] = how(this[i])
+    }
+
+    return this
+}

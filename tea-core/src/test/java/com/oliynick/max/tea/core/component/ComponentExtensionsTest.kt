@@ -110,7 +110,6 @@ class ComponentExtensionsTest {
             val expectedMessage = Updated(listOf(item))
             val messages = DoAddItem(item, emptyList()).effect { expectedMessage }
 
-
             messages shouldContainExactlyInAnyOrder setOf(expectedMessage)
         }
 

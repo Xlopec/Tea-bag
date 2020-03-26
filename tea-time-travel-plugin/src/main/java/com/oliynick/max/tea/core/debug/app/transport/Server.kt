@@ -17,13 +17,13 @@
 package com.oliynick.max.tea.core.debug.app.transport
 
 import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.debug.app.domain.cms.AppendSnapshot
-import com.oliynick.max.tea.core.debug.app.domain.cms.ComponentAttached
-import com.oliynick.max.tea.core.debug.app.domain.cms.NetworkException
-import com.oliynick.max.tea.core.debug.app.domain.cms.NotifyOperationException
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.domain.cms.Settings
-import com.oliynick.max.tea.core.debug.app.domain.cms.toPluginException
+import com.oliynick.max.tea.core.debug.app.component.cms.AppendSnapshot
+import com.oliynick.max.tea.core.debug.app.component.cms.ComponentAttached
+import com.oliynick.max.tea.core.debug.app.component.cms.NetworkException
+import com.oliynick.max.tea.core.debug.app.component.cms.NotifyOperationException
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.toPluginException
+import com.oliynick.max.tea.core.debug.app.domain.Settings
 import com.oliynick.max.tea.core.debug.app.transport.serialization.GSON
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
 import io.ktor.application.Application

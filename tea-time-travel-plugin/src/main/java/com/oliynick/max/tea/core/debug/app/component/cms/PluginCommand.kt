@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.domain.cms
+package com.oliynick.max.tea.core.debug.app.component.cms
 
+import com.oliynick.max.tea.core.debug.app.domain.ServerSettings
+import com.oliynick.max.tea.core.debug.app.domain.Settings
+import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.transport.StartedServer
 import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
 import protocol.ComponentId

@@ -2,7 +2,7 @@ import BuildPlugins.Versions.intellijVersion
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 
-const val kotlinVersion = "1.3.70"
+const val kotlinVersion = "1.3.71"
 
 object BuildPlugins {
 
@@ -21,7 +21,7 @@ object BuildPlugins {
 
 object Libraries {
     private object Versions {
-        const val coroutines = "1.3.4"
+        const val coroutines = "1.3.5"
         const val ktor = "1.3.1"
     }
 
@@ -38,7 +38,7 @@ object Libraries {
     const val ktorClientWebsockets = "io.ktor:ktor-client-websockets:$ktor"
     const val ktorClientOkHttp = "io.ktor:ktor-client-okhttp:$ktor"
 
-    const val immutableCollections = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3"
+    const val immutableCollections = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.1"
 }
 
 object TestLibraries {

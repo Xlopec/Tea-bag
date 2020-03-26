@@ -17,29 +17,43 @@
 package com.oliynick.max.tea.core.debug.app.presentation.sidebar
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.components.JBTabbedPane
-import com.oliynick.max.tea.core.debug.app.domain.cms.DebugState
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.domain.cms.RemoveComponent
-import com.oliynick.max.tea.core.debug.app.domain.cms.StartServer
-import com.oliynick.max.tea.core.debug.app.domain.cms.Started
-import com.oliynick.max.tea.core.debug.app.domain.cms.Starting
-import com.oliynick.max.tea.core.debug.app.domain.cms.StopServer
-import com.oliynick.max.tea.core.debug.app.domain.cms.Stopped
-import com.oliynick.max.tea.core.debug.app.domain.cms.Stopping
-import com.oliynick.max.tea.core.debug.app.domain.cms.UpdateHost
-import com.oliynick.max.tea.core.debug.app.domain.cms.UpdatePort
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
+import com.oliynick.max.tea.core.debug.app.component.cms.RemoveComponent
+import com.oliynick.max.tea.core.debug.app.component.cms.StartServer
+import com.oliynick.max.tea.core.debug.app.component.cms.Started
+import com.oliynick.max.tea.core.debug.app.component.cms.Starting
+import com.oliynick.max.tea.core.debug.app.component.cms.StopServer
+import com.oliynick.max.tea.core.debug.app.component.cms.Stopped
+import com.oliynick.max.tea.core.debug.app.component.cms.Stopping
+import com.oliynick.max.tea.core.debug.app.component.cms.UpdateHost
+import com.oliynick.max.tea.core.debug.app.component.cms.UpdatePort
+import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
+import com.oliynick.max.tea.core.debug.app.domain.DebugState
+import com.oliynick.max.tea.core.debug.app.misc.flatMapS
 import com.oliynick.max.tea.core.debug.app.presentation.component.ComponentView
 import com.oliynick.max.tea.core.debug.app.presentation.info.InfoView
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.CLOSE_DARK_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.CLOSE_DEFAULT_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RESUME_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RUN_DEFAULT_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RUN_DISABLED_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.STOPPING_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.SUSPEND_DEFAULT_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.SUSPEND_DISABLED_ICON
 import com.oliynick.max.tea.core.debug.app.presentation.misc.DefaultDocumentListener
+import com.oliynick.max.tea.core.debug.app.presentation.misc.children
+import com.oliynick.max.tea.core.debug.app.presentation.misc.get
+import com.oliynick.max.tea.core.debug.app.presentation.misc.isEmpty
+import com.oliynick.max.tea.core.debug.app.presentation.misc.isNotEmpty
+import com.oliynick.max.tea.core.debug.app.presentation.misc.plusAssign
 import com.oliynick.max.tea.core.debug.app.presentation.misc.removeMouseListeners
 import com.oliynick.max.tea.core.debug.app.presentation.misc.safe
 import com.oliynick.max.tea.core.debug.app.presentation.misc.setHover
 import com.oliynick.max.tea.core.debug.app.presentation.misc.setOnClickListener
+import com.oliynick.max.tea.core.debug.app.presentation.misc.textSafe
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -50,13 +64,11 @@ import java.awt.Container
 import java.awt.FlowLayout
 import java.awt.event.MouseEvent
 import javax.swing.DefaultSingleSelectionModel
-import javax.swing.Icon
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTabbedPane
 import javax.swing.JTextField
 import javax.swing.SwingConstants
-import javax.swing.event.DocumentListener
 import java.awt.Component as AwtComponent
 
 class ToolWindowView(
@@ -73,17 +85,18 @@ class ToolWindowView(
 
     private val uiEvents = BroadcastChannel<PluginMessage>(1)
 
-    private val portListener = DefaultDocumentListener { value ->
-        uiEvents.offer(UpdatePort(value.toUIntOrNull() ?: return@DefaultDocumentListener))
-    }
-
-    private val hostListener = DefaultDocumentListener { value ->
-        uiEvents.offer(UpdateHost(value))
-    }
-
     val root: JPanel get() = panel
 
     init {
+
+        portTextField.document.addDocumentListener(DefaultDocumentListener { value ->
+            uiEvents.offer(UpdatePort(value.toUIntOrNull() ?: return@DefaultDocumentListener))
+        })
+
+        hostTextField.document.addDocumentListener(DefaultDocumentListener { value ->
+            uiEvents.offer(UpdateHost(value))
+        })
+
         launch { component(uiEvents.asFlow()).collect { state -> render(state, uiEvents::offer) } }
     }
 
@@ -107,11 +120,11 @@ class ToolWindowView(
         state: Stopped,
         messages: (PluginMessage) -> Unit
     ) {
-        portTextField.setText(state.settings.serverSettings.port.toString(), portListener)
-        hostTextField.setText(state.settings.serverSettings.host, hostListener)
+        portTextField.textSafe = state.settings.serverSettings.port.toString()
+        hostTextField.textSafe = state.settings.serverSettings.host
 
-        startButton.icon = getIcon("run")
-        startButton.disabledIcon = getIcon("run_disabled")
+        startButton.icon = RUN_DEFAULT_ICON
+        startButton.disabledIcon = RUN_DISABLED_ICON
 
         startButton.setOnClickListenerEnabling { messages(StartServer) }
 
@@ -125,8 +138,8 @@ class ToolWindowView(
     }
 
     private fun render(@Suppress("UNUSED_PARAMETER") state: Starting) {
-        startButton.icon = getIcon("run")
-        startButton.disabledIcon = getIcon("resume")
+        startButton.icon = RUN_DISABLED_ICON
+        startButton.disabledIcon = RESUME_ICON
 
         startButton.removeMouseListenersDisabling()
     }
@@ -135,8 +148,8 @@ class ToolWindowView(
         state: Started,
         messages: (PluginMessage) -> Unit
     ) {
-        startButton.icon = getIcon("suspend")
-        startButton.disabledIcon = getIcon("suspend_disabled")
+        startButton.icon = SUSPEND_DEFAULT_ICON
+        startButton.disabledIcon = SUSPEND_DISABLED_ICON
 
         startButton.setOnClickListenerEnabling { messages(StopServer) }
 
@@ -151,7 +164,7 @@ class ToolWindowView(
 
             if (componentsPanel.first().name == InfoView.NAME) {
                 // swap panels
-                componentsPanel.clearCancelling()
+                componentsPanel.removeAll()
                 componentsPanel += tabbedComponentsView()
             }
 
@@ -162,14 +175,14 @@ class ToolWindowView(
     }
 
     private fun render(@Suppress("UNUSED_PARAMETER") state: Stopping) {
-        startButton.icon = getIcon("suspend")
-        startButton.disabledIcon = getIcon("killProcess")
+        startButton.icon = SUSPEND_DEFAULT_ICON
+        startButton.disabledIcon = STOPPING_ICON
 
         startButton.removeMouseListenersDisabling()
     }
 
     private fun showEmptyComponentsView() {
-        componentsPanel.clearCancelling()
+        componentsPanel.removeAll()
         componentsPanel += InfoView(component, scope.coroutineContext).root
     }
 
@@ -179,28 +192,33 @@ class ToolWindowView(
     private fun JTabbedPane.update(
         debugState: DebugState,
         messages: (PluginMessage) -> Unit
-    ) = debugState.components
-        .filter { e -> indexOfTab(e.key.id) == -1 }
-        .forEach { (id, s) ->
-            addCloseableTab(id, ComponentView(project, scope, component, s)._root) { component ->
-                messages(RemoveComponent(component))
-            }
-        }
+    ) {
+
+        fun closeHandler(
+            id: ComponentId
+        ) = messages(RemoveComponent(id))
+
+        fun addTab(
+            id: ComponentId,
+            initial: ComponentDebugState
+        ) = addCloseableTab(id, ComponentView.new(scope, childComponent(id), initial), ::closeHandler)
+
+        debugState.components
+            .filter { e -> indexOfTab(e.key.id) == -1 }
+            .forEach { (id, s) -> addTab(id, s) }
+    }
+
+    private fun childComponent(
+        id: ComponentId
+    ) = component.flatMapS { state -> componentState(state, id) }
 
 }
 
-private operator fun Container.plusAssign(component: AwtComponent) {
-    add(component)
-}
-
-private fun JTextField.setText(
-    text: String,
-    listener: DocumentListener
-) {
-    document.removeDocumentListener(listener)
-    this.text = text
-    document.addDocumentListener(listener)
-}
+private fun componentState(
+    state: PluginState,
+    id: ComponentId
+) =
+    (state as? Started)?.debugState?.components?.get(id)
 
 private fun AwtComponent.setOnClickListenerEnabling(l: (MouseEvent) -> Unit) {
     setOnClickListener(l)
@@ -212,42 +230,11 @@ private fun AwtComponent.removeMouseListenersDisabling() {
     isEnabled = false
 }
 
-inline val Container.isEmpty inline get() = componentCount == 0
-
-inline val Container.isNotEmpty inline get() = !isEmpty
-
-fun Container.first() = this[0]
-
-operator fun Container.get(
-    i: Int
-): AwtComponent = getComponent(i)
-
-fun Container.clearCancelling() {
-    for (i in 0 until componentCount) {
-        val c = getComponent(i)
-
-        if (c is CoroutineScope) {
-            c.cancel()
-        }
-
-        remove(c)
-    }
-}
-
-fun AwtComponent.cancel() {
-    if (this is CoroutineScope) {
-        // fixme, with CoroutineScope.cancel() it doesn't even compile
-        coroutineContext[Job.Key]?.cancel()
-    }
-}
-
-private inline val Container.children: List<java.awt.Component>
-    get() = (0 until componentCount).map { i -> this[i] }
+private fun Container.first() = this[0]
 
 private inline fun JTabbedPane.addCloseableTab(
     component: ComponentId,
     content: AwtComponent,
-    icon: Icon? = null,
     crossinline onClose: (ComponentId) -> Unit
 ) {
     addTab(component.id, content)
@@ -255,16 +242,12 @@ private inline fun JTabbedPane.addCloseableTab(
     val panel = JPanel(FlowLayout()).apply {
         isOpaque = false
 
-        add(JLabel(component.id, icon, SwingConstants.LEADING))
-        add(JLabel(getIcon("close")).apply {
-            setHover(getIcon("close_dark"))
+        add(JLabel(component.id, SwingConstants.LEADING))
+        add(JLabel(CLOSE_DEFAULT_ICON).apply {
+            setHover(CLOSE_DARK_ICON)
             setOnClickListener { onClose(component) }
         })
     }
 
     setTabComponentAt(indexOfComponent(content), panel)
 }
-
-fun getIcon(
-    name: String
-): Icon = IconLoader.getIcon("images/$name.png")

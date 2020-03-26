@@ -1,3 +1,4 @@
+
 import Libraries.coroutinesCore
 import Libraries.coroutinesSwing
 import Libraries.immutableCollections
@@ -29,7 +30,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 }*/
 
 intellij {
-    version = "2019.1"
+    version = "2019.3"
 }
 
 group = "com.github.Xlopec.time.travel"
@@ -55,18 +56,18 @@ configurations.all {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation(project(path = ":tea-core", configuration = "default"))
-    implementation(project(path = ":tea-time-travel-protocol", configuration = "default"))
-    implementation(project(path = ":tea-time-travel-adapter-gson", configuration = "default"))
+    compile(project(path = ":tea-core", configuration = "default"))
+    compile(project(path = ":tea-time-travel-protocol", configuration = "default"))
+    compile(project(path = ":tea-time-travel-adapter-gson", configuration = "default"))
 
-    implementation(kotlinStdLib)
+    compile(kotlinStdLib)
 
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation(ktorServerCore)
     implementation(ktorServerNetty)
     implementation(ktorServerWebsockets)
-    implementation(coroutinesCore)
-    implementation(coroutinesSwing)
+    compile(coroutinesCore)
+    compile(coroutinesSwing)
     implementation(immutableCollections)
 
     testImplementation(ktorServerTests)

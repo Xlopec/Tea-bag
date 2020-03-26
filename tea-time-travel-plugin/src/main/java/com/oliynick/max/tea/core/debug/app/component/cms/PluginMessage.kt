@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.domain.cms
+package com.oliynick.max.tea.core.debug.app.component.cms
 
+import com.oliynick.max.tea.core.debug.app.domain.FilterOption
+import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.transport.StartedServer
 import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
 import protocol.ComponentId
@@ -27,9 +29,20 @@ sealed class PluginMessage
  */
 sealed class UIMessage : PluginMessage()
 
-data class UpdatePort(val port: UInt) : UIMessage()
+data class UpdatePort(
+    val port: UInt
+) : UIMessage()
 
-data class UpdateHost(val host: String) : UIMessage()
+data class UpdateHost(
+    val host: String
+) : UIMessage()
+
+data class UpdateFilter(
+    val id: ComponentId,
+    val input: String,
+    val ignoreCase: Boolean,
+    val option: FilterOption
+) : UIMessage()
 
 object StartServer : UIMessage()
 
@@ -54,7 +67,9 @@ data class ReApplyState(
     val state: Value
 ) : UIMessage()
 
-data class RemoveComponent(val componentId: ComponentId) : UIMessage()
+data class RemoveComponent(
+    val componentId: ComponentId
+) : UIMessage()
 /*
  * Notifications
  */

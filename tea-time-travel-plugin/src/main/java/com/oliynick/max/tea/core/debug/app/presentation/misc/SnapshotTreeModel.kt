@@ -16,7 +16,7 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.misc
 
-import com.oliynick.max.tea.core.debug.app.domain.cms.Snapshot
+import com.oliynick.max.tea.core.debug.app.domain.Snapshot
 import com.oliynick.max.tea.core.debug.app.misc.UpdateCallback
 import com.oliynick.max.tea.core.debug.app.misc.replaceAll
 import javax.swing.tree.DefaultMutableTreeNode
@@ -43,6 +43,7 @@ class SnapshotTreeModel private constructor(
             newItem: Snapshot,
             newIndex: Int
         ) {
+            //fixme mutate instead
             rootNode.remove(oldIndex)
             delegate.insertNodeInto(newItem.toComponentSubTree(), rootNode, oldIndex)
         }
@@ -82,11 +83,17 @@ class SnapshotTreeModel private constructor(
 private fun Snapshot.toComponentSubTree(): DefaultMutableTreeNode {
     return DefaultMutableTreeNode(SnapshotNode(this))
         .apply {
-            add(DefaultMutableTreeNode(MessageNode(message)).apply {
-                add(message.toJTree())
-            })
-            add(DefaultMutableTreeNode(StateNode(state)).apply {
-                add(state.toJTree())
-            })
+
+            if (message != null) {
+                add(DefaultMutableTreeNode(MessageNode(message)).apply {
+                    add(message.toJTree())
+                })
+            }
+
+            if (state != null) {
+                add(DefaultMutableTreeNode(StateNode(state)).apply {
+                    add(state.toJTree())
+                })
+            }
         }
 }

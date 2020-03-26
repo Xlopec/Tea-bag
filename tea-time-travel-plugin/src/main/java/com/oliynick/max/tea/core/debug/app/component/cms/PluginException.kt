@@ -1,4 +1,4 @@
-package com.oliynick.max.tea.core.debug.app.domain.cms
+package com.oliynick.max.tea.core.debug.app.component.cms
 
 import kotlinx.coroutines.TimeoutCancellationException
 import java.net.ProtocolException

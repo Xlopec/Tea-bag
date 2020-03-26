@@ -1,34 +1,34 @@
-package com.oliynick.max.tea.core.debug.app.domain.updater
+package com.oliynick.max.tea.core.debug.app.component.updater
 
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
-import com.oliynick.max.tea.core.debug.app.domain.cms.AppendSnapshot
-import com.oliynick.max.tea.core.debug.app.domain.cms.ComponentAttached
-import com.oliynick.max.tea.core.debug.app.domain.cms.ComponentDebugState
-import com.oliynick.max.tea.core.debug.app.domain.cms.DebugState
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoNotifyComponentAttached
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoNotifyOperationException
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoStopServer
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoStoreServerSettings
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoWarnUnacceptableMessage
-import com.oliynick.max.tea.core.debug.app.domain.cms.InternalException
-import com.oliynick.max.tea.core.debug.app.domain.cms.NotificationMessage
-import com.oliynick.max.tea.core.debug.app.domain.cms.NotifyOperationException
-import com.oliynick.max.tea.core.debug.app.domain.cms.NotifyStarted
-import com.oliynick.max.tea.core.debug.app.domain.cms.NotifyStopped
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginException
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.domain.cms.Settings
-import com.oliynick.max.tea.core.debug.app.domain.cms.Snapshot
-import com.oliynick.max.tea.core.debug.app.domain.cms.Started
-import com.oliynick.max.tea.core.debug.app.domain.cms.StateReApplied
-import com.oliynick.max.tea.core.debug.app.domain.cms.Stopped
-import com.oliynick.max.tea.core.debug.app.domain.cms.Value
-import com.oliynick.max.tea.core.debug.app.domain.cms.appendSnapshot
-import com.oliynick.max.tea.core.debug.app.domain.cms.updateComponents
+import com.oliynick.max.tea.core.debug.app.component.cms.AppendSnapshot
+import com.oliynick.max.tea.core.debug.app.component.cms.ComponentAttached
+import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyComponentAttached
+import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyOperationException
+import com.oliynick.max.tea.core.debug.app.component.cms.DoStopServer
+import com.oliynick.max.tea.core.debug.app.component.cms.DoStoreServerSettings
+import com.oliynick.max.tea.core.debug.app.component.cms.DoWarnUnacceptableMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.InternalException
+import com.oliynick.max.tea.core.debug.app.component.cms.NotificationMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.NotifyOperationException
+import com.oliynick.max.tea.core.debug.app.component.cms.NotifyStarted
+import com.oliynick.max.tea.core.debug.app.component.cms.NotifyStopped
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginException
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
+import com.oliynick.max.tea.core.debug.app.component.cms.Started
+import com.oliynick.max.tea.core.debug.app.component.cms.StateReApplied
+import com.oliynick.max.tea.core.debug.app.component.cms.Stopped
+import com.oliynick.max.tea.core.debug.app.component.cms.appendSnapshot
+import com.oliynick.max.tea.core.debug.app.component.cms.updateComponents
+import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
+import com.oliynick.max.tea.core.debug.app.domain.DebugState
+import com.oliynick.max.tea.core.debug.app.domain.Settings
+import com.oliynick.max.tea.core.debug.app.domain.Snapshot
+import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.transport.StartedServer
 import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
 import protocol.ComponentId
@@ -75,8 +75,8 @@ object LiveNotificationUpdater : NotificationUpdater {
     ): UpdateWith<PluginState, PluginCommand> {
 
         val snapshot = message.toSnapshot()
-        val updated = state.debugState.componentOrNew(message.componentId, snapshot.state)
-            .appendSnapshot(snapshot)
+        val updated = state.debugState.componentOrNew(message.componentId, message.newState)
+            .appendSnapshot(snapshot, message.newState)
 
         return state.updateComponents { mapping -> mapping.put(updated.id, updated) }
             .noCommand()
@@ -89,7 +89,7 @@ object LiveNotificationUpdater : NotificationUpdater {
 
         val id = message.componentId
         val currentState = message.state
-        val componentState = state.debugState.components[id]?.copy(currentState = currentState)
+        val componentState = state.debugState.components[id]?.copy(state = currentState)
             ?: ComponentDebugState(id, currentState)
 
         return state.updateComponents { mapping -> mapping.put(componentState.id, componentState) } command DoNotifyComponentAttached(id)
@@ -101,7 +101,7 @@ object LiveNotificationUpdater : NotificationUpdater {
     ): UpdateWith<PluginState, PluginCommand> {
 
         val component = state.debugState.components[message.componentId] ?: return state.noCommand()
-        val updated = component.copy(currentState = message.state)
+        val updated = component.copy(state = message.state)
 
         return state.updateComponents { mapping -> mapping.put(updated.id, updated) }
             .noCommand()

@@ -1,15 +1,15 @@
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.app.domain.updater
+package com.oliynick.max.tea.core.debug.app.component.updater
 
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoWarnUnacceptableMessage
-import com.oliynick.max.tea.core.debug.app.domain.cms.NotificationMessage
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.domain.cms.UIMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.DoWarnUnacceptableMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.NotificationMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
+import com.oliynick.max.tea.core.debug.app.component.cms.UIMessage
 
 fun <Env> LiveUpdater() where Env : NotificationUpdater,
                               Env : UiUpdater =

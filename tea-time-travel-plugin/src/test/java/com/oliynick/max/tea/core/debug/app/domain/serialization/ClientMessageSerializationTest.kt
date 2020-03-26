@@ -1,11 +1,11 @@
 package com.oliynick.max.tea.core.debug.app.domain.serialization
 
 import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.debug.app.domain.cms.CollectionWrapper
-import com.oliynick.max.tea.core.debug.app.domain.cms.Property
-import com.oliynick.max.tea.core.debug.app.domain.cms.Ref
-import com.oliynick.max.tea.core.debug.app.domain.cms.StringWrapper
-import com.oliynick.max.tea.core.debug.app.domain.cms.Type
+import com.oliynick.max.tea.core.debug.app.domain.CollectionWrapper
+import com.oliynick.max.tea.core.debug.app.domain.Property
+import com.oliynick.max.tea.core.debug.app.domain.Ref
+import com.oliynick.max.tea.core.debug.app.domain.StringWrapper
+import com.oliynick.max.tea.core.debug.app.domain.Type
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
 import com.oliynick.max.tea.core.debug.gson.Gson

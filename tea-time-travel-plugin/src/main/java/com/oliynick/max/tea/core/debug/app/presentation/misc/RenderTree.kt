@@ -1,8 +1,8 @@
 package com.oliynick.max.tea.core.debug.app.presentation.misc
 
-import com.oliynick.max.tea.core.debug.app.domain.cms.Property
-import com.oliynick.max.tea.core.debug.app.domain.cms.Snapshot
-import com.oliynick.max.tea.core.debug.app.domain.cms.Value
+import com.oliynick.max.tea.core.debug.app.domain.Property
+import com.oliynick.max.tea.core.debug.app.domain.Snapshot
+import com.oliynick.max.tea.core.debug.app.domain.Value
 
 sealed class RenderTree
 object RootNode : RenderTree()

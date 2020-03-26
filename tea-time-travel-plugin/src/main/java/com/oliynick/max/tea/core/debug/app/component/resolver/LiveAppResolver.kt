@@ -1,24 +1,24 @@
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.app.domain.resolver
+package com.oliynick.max.tea.core.debug.app.component.resolver
 
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoApplyCommand
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoApplyState
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoNotifyComponentAttached
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoNotifyOperationException
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoStartServer
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoStopServer
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoStoreServerSettings
-import com.oliynick.max.tea.core.debug.app.domain.cms.DoWarnUnacceptableMessage
-import com.oliynick.max.tea.core.debug.app.domain.cms.NotificationMessage
-import com.oliynick.max.tea.core.debug.app.domain.cms.NotifyOperationException
-import com.oliynick.max.tea.core.debug.app.domain.cms.NotifyStarted
-import com.oliynick.max.tea.core.debug.app.domain.cms.NotifyStopped
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.domain.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.domain.cms.StateReApplied
+import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyCommand
+import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyState
+import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyComponentAttached
+import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyOperationException
+import com.oliynick.max.tea.core.debug.app.component.cms.DoStartServer
+import com.oliynick.max.tea.core.debug.app.component.cms.DoStopServer
+import com.oliynick.max.tea.core.debug.app.component.cms.DoStoreServerSettings
+import com.oliynick.max.tea.core.debug.app.component.cms.DoWarnUnacceptableMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.NotificationMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.NotifyOperationException
+import com.oliynick.max.tea.core.debug.app.component.cms.NotifyStarted
+import com.oliynick.max.tea.core.debug.app.component.cms.NotifyStopped
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.StateReApplied
 import com.oliynick.max.tea.core.debug.app.presentation.sidebar.showBalloon
 import com.oliynick.max.tea.core.debug.app.storage.serverSettings
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement

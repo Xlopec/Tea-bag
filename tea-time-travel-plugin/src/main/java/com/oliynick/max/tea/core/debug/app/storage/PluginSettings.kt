@@ -18,10 +18,10 @@ package com.oliynick.max.tea.core.debug.app.storage
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
-import com.oliynick.max.tea.core.debug.app.domain.cms.ServerSettings
-import com.oliynick.max.tea.core.debug.app.domain.cms.Settings
-import com.oliynick.max.tea.core.debug.app.domain.cms.defaultHost
-import com.oliynick.max.tea.core.debug.app.domain.cms.defaultPort
+import com.oliynick.max.tea.core.debug.app.domain.ServerSettings
+import com.oliynick.max.tea.core.debug.app.domain.Settings
+import com.oliynick.max.tea.core.debug.app.domain.defaultHost
+import com.oliynick.max.tea.core.debug.app.domain.defaultPort
 
 private const val PLUGIN_ID = "com.oliynick.max.elm.time.travel.plugin"
 

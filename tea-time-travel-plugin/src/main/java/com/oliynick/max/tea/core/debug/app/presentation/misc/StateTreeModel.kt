@@ -16,7 +16,7 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.misc
 
-import com.oliynick.max.tea.core.debug.app.domain.cms.Value
+import com.oliynick.max.tea.core.debug.app.domain.Value
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
