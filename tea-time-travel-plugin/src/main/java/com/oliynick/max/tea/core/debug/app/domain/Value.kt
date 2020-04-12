@@ -121,7 +121,8 @@ inline val Value.isPrimitive: Boolean
         is DoubleWrapper,
         is FloatWrapper,
         is StringWrapper,
-        is BooleanWrapper -> true
+        is BooleanWrapper
+        -> true
         Null, is CollectionWrapper, is Ref -> false
     }
 

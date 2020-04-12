@@ -21,6 +21,7 @@ import com.oliynick.max.tea.core.debug.app.domain.ByteWrapper
 import com.oliynick.max.tea.core.debug.app.domain.CharWrapper
 import com.oliynick.max.tea.core.debug.app.domain.CollectionWrapper
 import com.oliynick.max.tea.core.debug.app.domain.DoubleWrapper
+import com.oliynick.max.tea.core.debug.app.domain.FilteredSnapshot
 import com.oliynick.max.tea.core.debug.app.domain.FloatWrapper
 import com.oliynick.max.tea.core.debug.app.domain.IntWrapper
 import com.oliynick.max.tea.core.debug.app.domain.LongWrapper
@@ -28,7 +29,6 @@ import com.oliynick.max.tea.core.debug.app.domain.Null
 import com.oliynick.max.tea.core.debug.app.domain.Property
 import com.oliynick.max.tea.core.debug.app.domain.Ref
 import com.oliynick.max.tea.core.debug.app.domain.ShortWrapper
-import com.oliynick.max.tea.core.debug.app.domain.Snapshot
 import com.oliynick.max.tea.core.debug.app.domain.StringWrapper
 import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.domain.isPrimitive
@@ -41,6 +41,7 @@ import java.time.format.FormatStyle
 import javax.swing.Icon
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.MutableTreeNode
+import javax.swing.tree.TreeModel
 
 private val DATE_TIME_FORMATTER: DateTimeFormatter by lazy {
     DateTimeFormatter.ofLocalizedDateTime(
@@ -64,8 +65,10 @@ fun Value.toJTree(): DefaultMutableTreeNode =
         is BooleanWrapper -> primitive(this)
     }
 
-fun Snapshot.toReadableString(formatter: DateTimeFormatter = DATE_TIME_FORMATTER): String =
-    "${timestamp.format(formatter)}: $id"
+
+
+fun FilteredSnapshot.toReadableString(formatter: DateTimeFormatter = DATE_TIME_FORMATTER): String =
+    "${meta.timestamp.format(formatter)}: ${meta.id.value}"
 
 fun PropertyNode.toReadableString(): String =
     "${property.name}=${property.v.toReadableString()}"
@@ -92,6 +95,22 @@ val RenderTree.icon: Icon?
         is EntryKeyNode -> key.icon
         is EntryValueNode -> value.icon
     }
+
+fun RenderTree.toReadableString(
+    model: TreeModel
+): String {
+    return when (this) {
+        RootNode -> "Snapshots (${model.getChildCount(model.root)})"
+        is SnapshotNode -> snapshot.toReadableString()
+        is MessageNode -> "Message"
+        is StateNode -> "State"
+        is PropertyNode -> toReadableString()
+        is ValueNode -> toReadableString()
+        is IndexedNode -> toReadableString()
+        is EntryKeyNode -> toReadableString()
+        is EntryValueNode -> toReadableString()
+    }
+}
 
 private fun primitive(
     value: Value
@@ -188,3 +207,4 @@ private val Value.icon: Icon?
         this is CollectionWrapper || this is Ref -> CLASS_ICON
         else -> null
     }
+

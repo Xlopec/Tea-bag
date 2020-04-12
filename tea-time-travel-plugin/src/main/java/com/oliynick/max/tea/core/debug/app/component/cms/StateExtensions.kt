@@ -5,19 +5,20 @@ import com.oliynick.max.tea.core.debug.app.domain.ComponentMapping
 import com.oliynick.max.tea.core.debug.app.domain.DebugState
 import com.oliynick.max.tea.core.debug.app.domain.Filter
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption
+import com.oliynick.max.tea.core.debug.app.domain.FilteredSnapshot
 import com.oliynick.max.tea.core.debug.app.domain.Invalid
+import com.oliynick.max.tea.core.debug.app.domain.OriginalSnapshot
 import com.oliynick.max.tea.core.debug.app.domain.Predicate
 import com.oliynick.max.tea.core.debug.app.domain.ServerSettings
-import com.oliynick.max.tea.core.debug.app.domain.Snapshot
+import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
 import com.oliynick.max.tea.core.debug.app.domain.Valid
 import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.domain.applyTo
-import com.oliynick.max.tea.core.debug.app.domain.fold
-import com.oliynick.max.tea.core.debug.app.misc.mapInPlace
+import com.oliynick.max.tea.core.debug.app.misc.map
+import com.oliynick.max.tea.core.debug.app.misc.mapNotNull
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import protocol.ComponentId
-import java.util.*
 
 fun Started.update(
     debugState: DebugState
@@ -25,7 +26,7 @@ fun Started.update(
 
 fun Started.removeSnapshots(
     id: ComponentId,
-    snapshots: Set<UUID>
+    snapshots: Set<SnapshotId>
 ) = updateComponents { mapping -> mapping.put(id, debugState.component(id).removeSnapshots(snapshots)) }
 
 fun Started.removeSnapshots(
@@ -58,29 +59,36 @@ inline fun DebugState.updateComponent(
 ) =
     copy(components = components.builder().also { m -> m.computeIfPresent(id) { _, s -> how(s) } }.build())
 
-fun ComponentDebugState.appendSnapshot(
-    snapshot: Snapshot,
-    state: Value
-): ComponentDebugState =
-    copy(
-        snapshots = snapshots.add(snapshot),
-        filteredSnapshots = filteredSnapshots.add(filter.predicate?.fold({ v -> snapshot.filteredBy(v.t) }, { snapshot }) ?: snapshot),
-        state = state
-    )
+fun Started.snapshot(
+    componentId: ComponentId,
+    snapshotId: SnapshotId
+): OriginalSnapshot = debugState.components[componentId]?.snapshots?.first { s -> s.meta.id == snapshotId }
+    ?: error("Couldn't find a snapshot $snapshotId for component $componentId, available components ${debugState.components}")
 
-fun ComponentDebugState.removeSnapshots(
-    ids: Set<UUID>
+fun ComponentDebugState.appendSnapshot(
+    snapshot: OriginalSnapshot,
+    state: Value
 ): ComponentDebugState {
 
-    fun predicate(
-        s: Snapshot
-    ) = s.id in ids
+    val filtered = when (val validatedPredicate = filter.predicate) {
+        is Valid -> snapshot.filteredBy(validatedPredicate.t)
+        is Invalid, null -> snapshot.toFiltered()
+    }
 
     return copy(
-        snapshots = snapshots.removeAll(::predicate),
-        filteredSnapshots = filteredSnapshots.removeAll(::predicate)
+        snapshots = snapshots.add(snapshot),
+        filteredSnapshots = filtered?.let(filteredSnapshots::add) ?: filteredSnapshots,
+        state = state
     )
 }
+
+fun ComponentDebugState.removeSnapshots(
+    ids: Set<SnapshotId>
+): ComponentDebugState =
+    copy(
+        snapshots = snapshots.removeAll { s -> s.meta.id in ids },
+        filteredSnapshots = filteredSnapshots.removeAll { s -> s.meta.id in ids }
+    )
 
 fun ComponentDebugState.removeSnapshots(): ComponentDebugState =
     copy(
@@ -100,28 +108,46 @@ fun Started.updateFilter(
 ) = updateComponent(id) { s ->
 
     val filter = Filter.new(filterInput, option, ignoreCase)
-    val filtered = when(val predicate = filter.predicate) {
-        is Valid -> s.snapshots.filteredBy(predicate.t)
+    val filtered = when (val validatedPredicate = filter.predicate) {
+        is Valid -> s.snapshots.filteredBy(validatedPredicate.t)
         is Invalid -> s.filteredSnapshots
-        null -> s.snapshots
+        null -> s.snapshots.toFiltered()
     }
 
     s.copy(filter = filter, filteredSnapshots = filtered)
 }
 
-fun PersistentList<Snapshot>.filteredBy(
+fun PersistentList<OriginalSnapshot>.filteredBy(
     predicate: Predicate
-): PersistentList<Snapshot> =
-    builder().mapInPlace { s -> s.filteredBy(predicate) }.build()
+): PersistentList<FilteredSnapshot> =
+    mapNotNull { o -> o.filteredBy(predicate) }
 
-fun Snapshot.filteredBy(
+private fun PersistentList<OriginalSnapshot>.toFiltered(): PersistentList<FilteredSnapshot> =
+    map { o -> o.toFiltered() }
+
+private fun OriginalSnapshot.toFiltered() =
+    FilteredSnapshot.ofBoth(
+        meta,
+        message,
+        state
+    )
+
+private fun OriginalSnapshot.filteredBy(
     predicate: Predicate
-) = copy(
-    message = message?.let { applyTo(it, predicate) },
-    state = state?.let { applyTo(it, predicate) }
-)
+): FilteredSnapshot? {
 
-fun notifyUnknownComponent(
+    val m = applyTo(message, predicate)
+    val s = applyTo(state, predicate)
+
+    return when {
+        m != null && s != null -> FilteredSnapshot.ofBoth(meta, m, s)
+        m != null -> FilteredSnapshot.ofMessage(meta, m)
+        s != null -> FilteredSnapshot.ofState(meta, s)
+        else -> null
+    }
+}
+
+private fun notifyUnknownComponent(
     id: ComponentId
 ): Nothing =
     throw IllegalArgumentException("Unknown component $id")

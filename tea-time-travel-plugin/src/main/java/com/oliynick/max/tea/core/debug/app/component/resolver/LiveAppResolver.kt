@@ -4,7 +4,7 @@ package com.oliynick.max.tea.core.debug.app.component.resolver
 
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
-import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyCommand
+import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyMessage
 import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyState
 import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyComponentAttached
 import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyOperationException
@@ -46,7 +46,7 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
             is DoStoreServerSettings -> command sideEffect { properties.serverSettings = serverSettings }
             is DoStartServer -> command effect { NotifyStarted(server.start(settings, events)) }
             is DoStopServer -> command effect { NotifyStopped(server.stop()) }
-            is DoApplyCommand -> command sideEffect { server(id, ApplyMessage(command.command.toJsonElement())) }
+            is DoApplyMessage -> command sideEffect { server(id, ApplyMessage(command.command.toJsonElement())) }
             is DoApplyState -> reApplyState(command)
             is DoNotifyOperationException -> command sideEffect { project.showBalloon(newExceptionBalloon(exception, operation)) }
             is DoWarnUnacceptableMessage -> command sideEffect { project.showBalloon(newUnacceptableMessageBalloon(message, state)) }

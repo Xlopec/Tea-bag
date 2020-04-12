@@ -26,8 +26,10 @@ import com.oliynick.max.tea.core.debug.app.component.cms.appendSnapshot
 import com.oliynick.max.tea.core.debug.app.component.cms.updateComponents
 import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
 import com.oliynick.max.tea.core.debug.app.domain.DebugState
+import com.oliynick.max.tea.core.debug.app.domain.OriginalSnapshot
 import com.oliynick.max.tea.core.debug.app.domain.Settings
-import com.oliynick.max.tea.core.debug.app.domain.Snapshot
+import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
+import com.oliynick.max.tea.core.debug.app.domain.SnapshotMeta
 import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.transport.StartedServer
 import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
@@ -127,10 +129,12 @@ object LiveNotificationUpdater : NotificationUpdater {
     ): Boolean =
         op is DoStopServer || op is DoStoreServerSettings || th is InternalException
 
-    fun AppendSnapshot.toSnapshot(): Snapshot =
-        Snapshot(
-            UUID.randomUUID(),
-            LocalDateTime.now(),
+    fun AppendSnapshot.toSnapshot(): OriginalSnapshot =
+        OriginalSnapshot(
+            SnapshotMeta(
+                SnapshotId(UUID.randomUUID()),
+                LocalDateTime.now()
+            ),
             message,
             newState
         )

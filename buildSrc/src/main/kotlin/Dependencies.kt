@@ -38,7 +38,7 @@ object Libraries {
     const val ktorClientWebsockets = "io.ktor:ktor-client-websockets:$ktor"
     const val ktorClientOkHttp = "io.ktor:ktor-client-okhttp:$ktor"
 
-    const val immutableCollections = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.1"
+    const val immutableCollections = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.2"
 }
 
 object TestLibraries {

@@ -3,14 +3,14 @@ package com.oliynick.max.tea.core.debug.app.component.updater
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyCommand
+import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyMessage
 import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyState
 import com.oliynick.max.tea.core.debug.app.component.cms.DoStartServer
 import com.oliynick.max.tea.core.debug.app.component.cms.DoStopServer
 import com.oliynick.max.tea.core.debug.app.component.cms.DoStoreServerSettings
 import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
 import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.component.cms.ReApplyCommands
+import com.oliynick.max.tea.core.debug.app.component.cms.ReApplyMessage
 import com.oliynick.max.tea.core.debug.app.component.cms.ReApplyState
 import com.oliynick.max.tea.core.debug.app.component.cms.RemoveAllSnapshots
 import com.oliynick.max.tea.core.debug.app.component.cms.RemoveComponent
@@ -26,13 +26,14 @@ import com.oliynick.max.tea.core.debug.app.component.cms.UpdateFilter
 import com.oliynick.max.tea.core.debug.app.component.cms.UpdateHost
 import com.oliynick.max.tea.core.debug.app.component.cms.UpdatePort
 import com.oliynick.max.tea.core.debug.app.component.cms.removeSnapshots
+import com.oliynick.max.tea.core.debug.app.component.cms.snapshot
 import com.oliynick.max.tea.core.debug.app.component.cms.update
 import com.oliynick.max.tea.core.debug.app.component.cms.updateComponents
 import com.oliynick.max.tea.core.debug.app.component.cms.updateFilter
 import com.oliynick.max.tea.core.debug.app.component.cms.updatedServerSettings
 import com.oliynick.max.tea.core.debug.app.domain.ServerSettings
+import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
 import protocol.ComponentId
-import java.util.*
 
 // privacy is for pussies
 @Suppress("MemberVisibilityCanBePrivate")
@@ -63,7 +64,7 @@ object LiveUiUpdater : UiUpdater {
             message === StartServer && state is Stopped -> startServer(state)
             message === StopServer && state is Started -> stopServer(state)
             message is RemoveSnapshots && state is Started -> removeSnapshots(message.componentId, message.ids, state)
-            message is ReApplyCommands && state is Started -> reApplyCommands(message, state)
+            message is ReApplyMessage && state is Started -> reApplyCommands(message, state)
             message is ReApplyState && state is Started -> reApplyState(message, state)
             message is RemoveComponent && state is Started -> removeComponent(message, state)
             message is RemoveAllSnapshots && state is Started -> removeSnapshots(message.componentId, state)
@@ -93,17 +94,17 @@ object LiveUiUpdater : UiUpdater {
         message: ReApplyState,
         state: Started
     ): UpdateWith<PluginState, PluginCommand> =
-        state command DoApplyState(message.componentId, message.state, state.server)
+        state command DoApplyState(message.componentId, state.findState(message), state.server)
 
     fun reApplyCommands(
-        message: ReApplyCommands,
+        message: ReApplyMessage,
         state: Started
     ): UpdateWith<PluginState, PluginCommand> =
-        state command DoApplyCommand(message.componentId, message.command, state.server)
+        state command DoApplyMessage(message.componentId, state.findMessage(message), state.server)
 
     fun removeSnapshots(
         componentId: ComponentId,
-        ids: Set<UUID>,
+        ids: Set<SnapshotId>,
         state: Started
     ): UpdateWith<PluginState, PluginCommand> =
         state.removeSnapshots(componentId, ids).noCommand()
@@ -126,5 +127,13 @@ object LiveUiUpdater : UiUpdater {
         state: Started
     ): UpdateWith<PluginState, PluginCommand> =
         state.updateFilter(message.id, message.input, message.ignoreCase, message.option).noCommand()
+
+    fun Started.findState(
+        message: ReApplyState
+    ) = snapshot(message.componentId, message.snapshotId).state
+
+    fun Started.findMessage(
+        message: ReApplyMessage
+    ) = snapshot(message.componentId, message.snapshotId).message
 
 }

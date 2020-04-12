@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.tea.core.debug.app.presentation.component
 
 import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
 import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.ReApplyCommands
+import com.oliynick.max.tea.core.debug.app.component.cms.ReApplyMessage
 import com.oliynick.max.tea.core.debug.app.component.cms.ReApplyState
 import com.oliynick.max.tea.core.debug.app.component.cms.RemoveAllSnapshots
 import com.oliynick.max.tea.core.debug.app.component.cms.RemoveSnapshots
@@ -27,13 +29,13 @@ import com.oliynick.max.tea.core.debug.app.component.cms.UpdateFilter
 import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
 import com.oliynick.max.tea.core.debug.app.domain.Filter
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption
+import com.oliynick.max.tea.core.debug.app.domain.FilteredSnapshot
 import com.oliynick.max.tea.core.debug.app.domain.Invalid
-import com.oliynick.max.tea.core.debug.app.domain.Snapshot
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
-import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.domain.isValid
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.REMOVE_ICON
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.UPDATE_RUNNING_APP_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.DefaultMouseListener
 import com.oliynick.max.tea.core.debug.app.presentation.misc.EntryKeyNode
 import com.oliynick.max.tea.core.debug.app.presentation.misc.EntryValueNode
 import com.oliynick.max.tea.core.debug.app.presentation.misc.IndexedNode
@@ -49,10 +51,10 @@ import com.oliynick.max.tea.core.debug.app.presentation.misc.StateTreeModel
 import com.oliynick.max.tea.core.debug.app.presentation.misc.StateTreeRenderer
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueNode
 import com.oliynick.max.tea.core.debug.app.presentation.misc.mergeWith
-import com.oliynick.max.tea.core.debug.app.presentation.misc.rightClicks
 import com.oliynick.max.tea.core.debug.app.presentation.misc.selections
 import com.oliynick.max.tea.core.debug.app.presentation.misc.textChanges
 import com.oliynick.max.tea.core.debug.app.presentation.misc.textSafe
+import com.oliynick.max.tea.core.debug.app.presentation.misc.toReadableString
 import com.oliynick.max.tea.core.debug.app.presentation.sidebar.exceptionBalloonFillColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
@@ -63,20 +65,25 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import protocol.ComponentId
 import java.awt.Color
+import java.awt.datatransfer.StringSelection
+import java.awt.datatransfer.Transferable
 import java.awt.event.MouseEvent
 import javax.swing.JCheckBox
+import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JPopupMenu
 import javax.swing.JTextField
 import javax.swing.JTree
+import javax.swing.SwingUtilities
+import javax.swing.TransferHandler
 import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.TreeSelectionModel
 
 private const val INPUT_TIMEOUT_MILLIS = 400L
 
@@ -128,11 +135,13 @@ class ComponentView private constructor(
     private lateinit var regexCheckBox: JCheckBox
     private lateinit var wordsCheckBox: JCheckBox
 
-    private val snapshotsModel = SnapshotTreeModel.newInstance(initial.snapshots)
+    private val snapshotsModel = SnapshotTreeModel.newInstance(initial.filteredSnapshots)
     private val stateTreeModel = StateTreeModel.newInstance(initial.state)
 
     init {
         snapshotsTree.model = snapshotsModel
+        snapshotsTree.transferHandler = TreeRowValueTransferHandler
+        snapshotsTree.selectionModel.selectionMode = TreeSelectionModel.CONTIGUOUS_TREE_SELECTION
         snapshotsTree.cellRenderer = SnapshotTreeRenderer
 
         stateTree.model = stateTreeModel
@@ -185,8 +194,20 @@ private fun substringFlow(
 private fun JTree.asOptionMenuUpdates(
     id: ComponentId
 ): Flow<PluginMessage> =
-    rightClicks()
-        .flatMapConcat { e -> showActionPopup(e, id) }
+    callbackFlow {
+
+        val l = object : DefaultMouseListener {
+            override fun mouseClicked(e: MouseEvent) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    showActionPopup(e, id) { offer(it) }
+                }
+            }
+        }
+
+        addMouseListener(l)
+
+        awaitClose { removeMouseListener(l) }
+    }
 
 private fun JTextField.textFlow() =
     textChanges()
@@ -216,15 +237,6 @@ private fun JCheckBox.asMatchCaseFlow(
 
 private fun JTree.showActionPopup(
     e: MouseEvent,
-    id: ComponentId
-): Flow<PluginMessage> =
-    callbackFlow {
-        showActionPopup(e, id) { e -> if (offer(e)) close() }
-        awaitClose()
-    }
-
-private fun JTree.showActionPopup(
-    e: MouseEvent,
     id: ComponentId,
     onAction: (PluginMessage) -> Unit
 ) {
@@ -233,10 +245,10 @@ private fun JTree.showActionPopup(
     setSelectionRow(row)
 
     val menu: JPopupMenu = when (val treeNode = getSubTreeForRow(row)) {
-        is SnapshotNode -> snapshotPopup(id, treeNode.snapshot, onAction)
-        is MessageNode -> messagePopup(id, treeNode.message, onAction)
-        is StateNode -> statePopup(id, TODO(), onAction)
-        RootNode -> snapshotsPopup(id, onAction)
+        is SnapshotNode -> SnapshotPopup(id, treeNode.snapshot, onAction)
+        is MessageNode -> MessagePopup(id, treeNode.id, onAction)
+        is StateNode -> StatePopup(id, treeNode.id, onAction)
+        RootNode -> SnapshotsPopup(id, onAction)
         is PropertyNode, is ValueNode, is IndexedNode, is EntryKeyNode, is EntryValueNode -> return // todo modify value at this point
     }
 
@@ -247,7 +259,7 @@ private fun JTree.getSubTreeForRow(row: Int): RenderTree {
     return (getPathForRow(row).lastPathComponent as DefaultMutableTreeNode).userObject as RenderTree
 }
 
-private fun snapshotsPopup(
+private fun SnapshotsPopup(
     id: ComponentId,
     onAction: (PluginMessage) -> Unit
 ): JPopupMenu = JBPopupMenu("Snapshots").apply {
@@ -258,45 +270,44 @@ private fun snapshotsPopup(
     })
 }
 
-private fun snapshotPopup(
+private fun SnapshotPopup(
     component: ComponentId,
-    snapshot: Snapshot,
+    snapshot: FilteredSnapshot,
     onAction: (PluginMessage) -> Unit
 ): JPopupMenu =
-    JBPopupMenu("Snapshot ${snapshot.id}").apply {
+    JBPopupMenu("Snapshot ${snapshot.meta.id.value}").apply {
         add(JBMenuItem(
             "Reset to this",
             UPDATE_RUNNING_APP_ICON
         ).apply {
             addActionListener {
-                onAction(ReApplyState(component, snapshot.id))
+                onAction(ReApplyState(component, snapshot.meta.id))
             }
         })
 
         add(JBMenuItem("Delete", REMOVE_ICON).apply {
             addActionListener {
-                onAction(RemoveSnapshots(component, snapshot.id))
+                onAction(RemoveSnapshots(component, snapshot.meta.id))
             }
         })
     }
 
-private fun messagePopup(
-    id: ComponentId,
-    message: Value,
+private fun MessagePopup(
+    componentId: ComponentId,
+    snapshotId: SnapshotId,
     onAction: (PluginMessage) -> Unit
-): JPopupMenu {
-    return JBPopupMenu().apply {
+): JPopupMenu =
+    JBPopupMenu().apply {
         add(JBMenuItem(
             "Apply this message", UPDATE_RUNNING_APP_ICON
         ).apply {
             addActionListener {
-                onAction(ReApplyCommands(id, message))
+                onAction(ReApplyMessage(componentId, snapshotId))
             }
         })
     }
-}
 
-private fun statePopup(
+private fun StatePopup(
     componentId: ComponentId,
     snapshotId: SnapshotId,
     onAction: (PluginMessage) -> Unit
@@ -308,3 +319,16 @@ private fun statePopup(
             }
         })
     }
+
+private object TreeRowValueTransferHandler : TransferHandler() {
+    override fun getSourceActions(c: JComponent?): Int = COPY
+    override fun createTransferable(c: JComponent): Transferable? {
+
+        val tree = c as JTree
+
+        return tree.selectionRows
+            ?.map(tree::getSubTreeForRow)
+            ?.joinToString { r -> r.toReadableString(tree.model) }
+            ?.let(::StringSelection)
+    }
+}

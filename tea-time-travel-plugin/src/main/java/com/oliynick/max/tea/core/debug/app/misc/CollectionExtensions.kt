@@ -16,6 +16,8 @@
 
 package com.oliynick.max.tea.core.debug.app.misc
 
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -165,3 +167,19 @@ inline fun <E, M : MutableList<E>> M.mapInPlace(
 
     return this
 }
+
+inline fun <E, R> PersistentList<E>.mapNotNull(
+    how: (E) -> R?
+): PersistentList<R> =
+    persistentListOf<R>()
+        .builder()
+        .also { res -> forEach { o -> val t = how(o); if (t != null) res.add(t) } }
+        .build()
+
+inline fun <E, R> PersistentList<E>.map(
+    how: (E) -> R
+): PersistentList<R> =
+    persistentListOf<R>()
+        .builder()
+        .also { res -> forEach { o -> res.add(how(o)) } }
+        .build()

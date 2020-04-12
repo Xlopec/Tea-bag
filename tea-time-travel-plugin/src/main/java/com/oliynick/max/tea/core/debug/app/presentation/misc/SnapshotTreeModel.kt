@@ -16,7 +16,7 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.misc
 
-import com.oliynick.max.tea.core.debug.app.domain.Snapshot
+import com.oliynick.max.tea.core.debug.app.domain.FilteredSnapshot
 import com.oliynick.max.tea.core.debug.app.misc.UpdateCallback
 import com.oliynick.max.tea.core.debug.app.misc.replaceAll
 import javax.swing.tree.DefaultMutableTreeNode
@@ -26,21 +26,21 @@ import javax.swing.tree.TreeModel
 
 class SnapshotTreeModel private constructor(
     private val delegate: DefaultTreeModel,
-    initial: List<Snapshot>
+    initial: List<FilteredSnapshot>
 ) : TreeModel by delegate {
 
     companion object {
-        fun newInstance(data: List<Snapshot> = emptyList()): SnapshotTreeModel {
+        fun newInstance(data: List<FilteredSnapshot> = emptyList()): SnapshotTreeModel {
             return SnapshotTreeModel(DefaultTreeModel(DefaultMutableTreeNode(RootNode, true)), data)
         }
     }
 
-    private val updateCallback = object : UpdateCallback<Snapshot, Snapshot> {
+    private val updateCallback = object : UpdateCallback<FilteredSnapshot, FilteredSnapshot> {
 
         override fun onContentUpdated(
-            oldItem: Snapshot,
+            oldItem: FilteredSnapshot,
             oldIndex: Int,
-            newItem: Snapshot,
+            newItem: FilteredSnapshot,
             newIndex: Int
         ) {
             //fixme mutate instead
@@ -49,7 +49,7 @@ class SnapshotTreeModel private constructor(
         }
 
         override fun onItemInserted(
-            item: Snapshot,
+            item: FilteredSnapshot,
             index: Int
         ) {
             require(index == rootNode.childCount) { "$index != ${rootNode.childCount}" }
@@ -58,20 +58,21 @@ class SnapshotTreeModel private constructor(
         }
 
         override fun onItemRemoved(
-            item: Snapshot,
+            item: FilteredSnapshot,
             index: Int
         ) {
             delegate.removeNodeFromParent(rootNode.getChildAt(index) as MutableTreeNode)
         }
     }
 
-    private val logicalNodes = mutableListOf<Snapshot>().replaceAll(initial, RefDiffer, updateCallback)
+    private val logicalNodes = mutableListOf<FilteredSnapshot>()
+        .replaceAll(initial, EqDiffer, updateCallback)
 
     private val rootNode: MutableTreeNode
         inline get() = delegate.root as MutableTreeNode
 
-    fun swap(new: List<Snapshot>) {
-        logicalNodes.replaceAll(new, RefDiffer, updateCallback)
+    fun swap(new: List<FilteredSnapshot>) {
+        logicalNodes.replaceAll(new, EqDiffer, updateCallback)
     }
 
     override fun getRoot() = rootNode
@@ -80,20 +81,19 @@ class SnapshotTreeModel private constructor(
 
 }
 
-private fun Snapshot.toComponentSubTree(): DefaultMutableTreeNode {
-    return DefaultMutableTreeNode(SnapshotNode(this))
+private fun FilteredSnapshot.toComponentSubTree(): DefaultMutableTreeNode =
+    DefaultMutableTreeNode(SnapshotNode(this))
         .apply {
 
             if (message != null) {
-                add(DefaultMutableTreeNode(MessageNode(message)).apply {
+                add(DefaultMutableTreeNode(MessageNode(meta.id, message)).apply {
                     add(message.toJTree())
                 })
             }
 
             if (state != null) {
-                add(DefaultMutableTreeNode(StateNode(state)).apply {
+                add(DefaultMutableTreeNode(StateNode(meta.id, state)).apply {
                     add(state.toJTree())
                 })
             }
         }
-}

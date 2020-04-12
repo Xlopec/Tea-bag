@@ -37,21 +37,12 @@ object SnapshotTreeRenderer : TreeCellRenderer {
         val label = JLabel()
         val payload = (value as DefaultMutableTreeNode).userObject as RenderTree
 
-        label.text = when (payload) {
-            RootNode -> "Snapshots (${tree.model.getChildCount(tree.model.root)})"
-            is SnapshotNode -> payload.snapshot.toReadableString()
-            is MessageNode -> "Message"
-            is StateNode -> "State"
-            is PropertyNode -> payload.toReadableString()
-            is ValueNode -> payload.toReadableString()
-            is IndexedNode -> payload.toReadableString()
-            is EntryKeyNode -> payload.toReadableString()
-            is EntryValueNode -> payload.toReadableString()
-        }
-
+        label.text = payload.toReadableString(tree.model)
         label.icon = payload.icon
 
         return label
     }
+
+
 
 }

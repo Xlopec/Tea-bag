@@ -30,7 +30,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 }*/
 
 intellij {
-    version = "2019.3"
+    version = "2020.1"
 }
 
 group = "com.github.Xlopec.time.travel"

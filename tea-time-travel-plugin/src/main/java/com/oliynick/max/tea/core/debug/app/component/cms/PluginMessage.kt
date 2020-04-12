@@ -17,13 +17,14 @@
 package com.oliynick.max.tea.core.debug.app.component.cms
 
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption
+import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
 import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.transport.StartedServer
 import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
 import protocol.ComponentId
-import java.util.*
 
 sealed class PluginMessage
+
 /*
  * UI messages
  */
@@ -50,26 +51,34 @@ object StopServer : UIMessage()
 
 data class RemoveSnapshots(
     val componentId: ComponentId,
-    val ids: Set<UUID>
-) : UIMessage()
+    val ids: Set<SnapshotId>
+) : UIMessage() {
+
+    constructor(
+        componentId: ComponentId,
+        id: SnapshotId
+    ) : this(componentId, setOf(id))
+
+}
 
 data class RemoveAllSnapshots(
     val componentId: ComponentId
 ) : UIMessage()
 
-data class ReApplyCommands(
+data class ReApplyMessage(
     val componentId: ComponentId,
-    val command: Value
+    val snapshotId: SnapshotId
 ) : UIMessage()
 
 data class ReApplyState(
     val componentId: ComponentId,
-    val state: Value
+    val snapshotId: SnapshotId
 ) : UIMessage()
 
 data class RemoveComponent(
     val componentId: ComponentId
 ) : UIMessage()
+
 /*
  * Notifications
  */

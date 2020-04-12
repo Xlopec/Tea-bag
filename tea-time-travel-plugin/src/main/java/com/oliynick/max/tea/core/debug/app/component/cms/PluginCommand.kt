@@ -38,7 +38,7 @@ data class DoStopServer(
     val server: StartedServer
 ) : PluginCommand()
 
-data class DoApplyCommand(
+data class DoApplyMessage(
     val id: ComponentId,
     val command: Value,
     val server: StartedServer

@@ -1,7 +1,7 @@
 package com.oliynick.max.tea.core.debug.app.component.resolver
 
 import com.intellij.openapi.ui.popup.Balloon
-import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyCommand
+import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyMessage
 import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyState
 import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyComponentAttached
 import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyOperationException
@@ -55,7 +55,7 @@ private fun htmlDescription(
         is DoStoreServerSettings -> "plugin failed to store settings"
         is DoStartServer -> "plugin failed to start server"
         is DoStopServer -> "plugin failed to stop server"
-        is DoApplyCommand -> "plugin failed to apply commands to component \"${operation.id.id}\""
+        is DoApplyMessage -> "plugin failed to apply commands to component \"${operation.id.id}\""
         is DoApplyState -> "plugin failed to apply state to component \"${operation.id.id}\". Check the client is running"
         null -> cause.tryGetReadableMessage()
         is DoWarnUnacceptableMessage, is DoNotifyOperationException, is DoNotifyComponentAttached -> error("will never happen")

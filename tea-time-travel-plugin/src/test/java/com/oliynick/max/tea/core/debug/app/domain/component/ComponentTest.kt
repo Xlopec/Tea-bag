@@ -2,7 +2,7 @@ package com.oliynick.max.tea.core.debug.app.domain.component
 
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.with
-import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyCommand
+import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyMessage
 import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyState
 import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyComponentAttached
 import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyOperationException
@@ -47,7 +47,7 @@ class ComponentTest {
                     is DoStoreServerSettings -> TODO()
                     is DoStartServer -> TODO()//effect { NotifyStarted }
                     is DoStopServer -> TODO()//effect { NotifyStopped }
-                    is DoApplyCommand -> TODO()
+                    is DoApplyMessage -> TODO()
                     is DoApplyState -> TODO()
                     is DoNotifyOperationException -> TODO()
                     is DoWarnUnacceptableMessage -> TODO()
