@@ -8,7 +8,7 @@ import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyComponentAttach
 import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyOperationException
 import com.oliynick.max.tea.core.debug.app.component.cms.DoStartServer
 import com.oliynick.max.tea.core.debug.app.component.cms.DoStopServer
-import com.oliynick.max.tea.core.debug.app.component.cms.DoStoreServerSettings
+import com.oliynick.max.tea.core.debug.app.component.cms.DoStoreSettings
 import com.oliynick.max.tea.core.debug.app.component.cms.DoWarnUnacceptableMessage
 import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
 import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
@@ -44,7 +44,7 @@ class ComponentTest {
         val resolver = object : AppResolver<TestEnvironment> {
             override suspend fun TestEnvironment.resolve(command: PluginCommand): Set<PluginMessage> =
                 when (command) {
-                    is DoStoreServerSettings -> TODO()
+                    is DoStoreSettings -> TODO()
                     is DoStartServer -> TODO()//effect { NotifyStarted }
                     is DoStopServer -> TODO()//effect { NotifyStopped }
                     is DoApplyMessage -> TODO()

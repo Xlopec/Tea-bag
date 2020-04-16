@@ -16,7 +16,6 @@
 
 package com.oliynick.max.tea.core.debug.app.component.cms
 
-import com.oliynick.max.tea.core.debug.app.domain.ServerSettings
 import com.oliynick.max.tea.core.debug.app.domain.Settings
 import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.transport.StartedServer
@@ -25,8 +24,8 @@ import protocol.ComponentId
 
 sealed class PluginCommand
 
-data class DoStoreServerSettings(
-    val serverSettings: ServerSettings
+data class DoStoreSettings(
+    val settings: Settings
 ) : PluginCommand()
 
 data class DoStartServer(

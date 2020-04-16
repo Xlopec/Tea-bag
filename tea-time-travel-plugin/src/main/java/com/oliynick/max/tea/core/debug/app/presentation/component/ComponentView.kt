@@ -25,13 +25,18 @@ import com.oliynick.max.tea.core.debug.app.component.cms.ReApplyMessage
 import com.oliynick.max.tea.core.debug.app.component.cms.ReApplyState
 import com.oliynick.max.tea.core.debug.app.component.cms.RemoveAllSnapshots
 import com.oliynick.max.tea.core.debug.app.component.cms.RemoveSnapshots
+import com.oliynick.max.tea.core.debug.app.component.cms.Started
 import com.oliynick.max.tea.core.debug.app.component.cms.UpdateFilter
+import com.oliynick.max.tea.core.debug.app.component.cms.component
 import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
 import com.oliynick.max.tea.core.debug.app.domain.Filter
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption
 import com.oliynick.max.tea.core.debug.app.domain.FilteredSnapshot
 import com.oliynick.max.tea.core.debug.app.domain.Invalid
+import com.oliynick.max.tea.core.debug.app.domain.Predicate
+import com.oliynick.max.tea.core.debug.app.domain.Settings
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
+import com.oliynick.max.tea.core.debug.app.domain.Validated
 import com.oliynick.max.tea.core.debug.app.domain.isValid
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.REMOVE_ICON
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.UPDATE_RUNNING_APP_ICON
@@ -44,17 +49,16 @@ import com.oliynick.max.tea.core.debug.app.presentation.misc.PropertyNode
 import com.oliynick.max.tea.core.debug.app.presentation.misc.RenderTree
 import com.oliynick.max.tea.core.debug.app.presentation.misc.RootNode
 import com.oliynick.max.tea.core.debug.app.presentation.misc.SnapshotNode
-import com.oliynick.max.tea.core.debug.app.presentation.misc.SnapshotTreeModel
-import com.oliynick.max.tea.core.debug.app.presentation.misc.SnapshotTreeRenderer
 import com.oliynick.max.tea.core.debug.app.presentation.misc.StateNode
-import com.oliynick.max.tea.core.debug.app.presentation.misc.StateTreeModel
-import com.oliynick.max.tea.core.debug.app.presentation.misc.StateTreeRenderer
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueFormatter
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueNode
 import com.oliynick.max.tea.core.debug.app.presentation.misc.mergeWith
 import com.oliynick.max.tea.core.debug.app.presentation.misc.selections
 import com.oliynick.max.tea.core.debug.app.presentation.misc.textChanges
 import com.oliynick.max.tea.core.debug.app.presentation.misc.textSafe
 import com.oliynick.max.tea.core.debug.app.presentation.misc.toReadableString
+import com.oliynick.max.tea.core.debug.app.presentation.misc.toReadableStringDetailed
+import com.oliynick.max.tea.core.debug.app.presentation.misc.toReadableStringShort
 import com.oliynick.max.tea.core.debug.app.presentation.sidebar.exceptionBalloonFillColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
@@ -88,7 +92,7 @@ import javax.swing.tree.TreeSelectionModel
 private const val INPUT_TIMEOUT_MILLIS = 400L
 
 class ComponentView private constructor(
-    initial: ComponentDebugState
+    private val initial: ComponentViewState
 ) {
 
     companion object {
@@ -97,32 +101,22 @@ class ComponentView private constructor(
 
         fun new(
             scope: CoroutineScope,
-            component: (Flow<PluginMessage>) -> Flow<ComponentDebugState>,
-            componentState: ComponentDebugState
-        ): JPanel =
-            ComponentView(componentState)
-                .apply { scope.launch { render(componentState.id, componentState.filter, component) } }.root
-
-        private fun ComponentView.filterUpdates(
             id: ComponentId,
-            filter: Filter
-        ): Flow<UpdateFilter> {
+            component: (Flow<PluginMessage>) -> Flow<Started>,
+            state: Started
+        ): JPanel {
 
-            val regexFlow = regexCheckBox.asRegexFlow(filter)
-            val wordsFlow = wordsCheckBox.asWordsFlow(filter)
-            val substringFlow = substringFlow(regexFlow, wordsFlow)
-            val optionsChanges = merge(regexFlow, wordsFlow, substringFlow)
-                .distinctUntilChanged()
-                .filterNotNull()
+            val initial = state.toViewState(id)
 
-            return filterUpdates(id, searchField.textFlow(), matchCaseCheckBox.asMatchCaseFlow(filter), optionsChanges)
+            return ComponentView(initial)
+                .apply { scope.launch { render(id, component) } }.root
         }
 
         private suspend fun ComponentView.render(
             id: ComponentId,
-            filter: Filter,
-            component: (Flow<PluginMessage>) -> Flow<ComponentDebugState>
-        ) = component(filterUpdates(id, filter).mergeWith(snapshotsTree.asOptionMenuUpdates(id)))
+            component: (Flow<PluginMessage>) -> Flow<Started>
+        ) = component(messages())
+            .map { pluginState -> pluginState.toViewState(id) }
             .collect { componentState -> render(componentState) }
 
     }
@@ -135,26 +129,68 @@ class ComponentView private constructor(
     private lateinit var regexCheckBox: JCheckBox
     private lateinit var wordsCheckBox: JCheckBox
 
-    private val snapshotsModel = SnapshotTreeModel.newInstance(initial.filteredSnapshots)
-    private val stateTreeModel = StateTreeModel.newInstance(initial.state)
+    private val snapshotRenderer = SnapshotTreeRenderer(initial.formatter)
+    private val snapshotsModel = SnapshotTreeModel.newInstance(initial.component.filteredSnapshots)
+
+    private val stateTreeModel = StateTreeModel.newInstance(initial.component.state)
+    private val stateRenderer = StateTreeRenderer(initial.formatter)
+
+    private fun messages() =
+        filterUpdates(initial.component.id, initial.component.filter)
+            .mergeWith(snapshotsTree.asOptionMenuUpdates(initial.component.id))
 
     init {
         snapshotsTree.model = snapshotsModel
         snapshotsTree.transferHandler = TreeRowValueTransferHandler
         snapshotsTree.selectionModel.selectionMode = TreeSelectionModel.CONTIGUOUS_TREE_SELECTION
-        snapshotsTree.cellRenderer = SnapshotTreeRenderer
+        snapshotsTree.cellRenderer = snapshotRenderer
 
         stateTree.model = stateTreeModel
-        stateTree.cellRenderer = StateTreeRenderer
+        stateTree.cellRenderer = stateRenderer
+    }
+
+    private fun filterUpdates(
+        id: ComponentId,
+        filter: Filter
+    ): Flow<UpdateFilter> {
+
+        val regexFlow = regexCheckBox.asRegexFlow(filter)
+        val wordsFlow = wordsCheckBox.asWordsFlow(filter)
+        val substringFlow = substringFlow(regexFlow, wordsFlow)
+        val optionsChanges = merge(regexFlow, wordsFlow, substringFlow)
+            .distinctUntilChanged()
+            .filterNotNull()
+
+        return filterUpdates(id, searchField.textFlow(), matchCaseCheckBox.asMatchCaseFlow(filter), optionsChanges)
     }
 
     private fun render(
-        state: ComponentDebugState
+        state: ComponentViewState
     ) {
-        snapshotsModel.swap(state.filteredSnapshots)
-        stateTreeModel.state = state.state
+        updateValues(state)
+        updateSearchField(state.component.filter.predicate)
+        updateFilterOptions(state.component.filter)
+    }
 
-        val validatedPredicate = state.filter.predicate
+    private fun updateValues(
+        state: ComponentViewState
+    ) {
+        snapshotsModel.swap(state.component.filteredSnapshots)
+        stateTreeModel.state = state.component.state
+
+        val newFormatter = state.formatter
+
+        if (newFormatter !== snapshotRenderer.formatter
+            || newFormatter !== stateRenderer.formatter
+        ) {
+            snapshotRenderer.formatter = newFormatter
+            stateRenderer.formatter = newFormatter
+        }
+    }
+
+    private fun updateSearchField(
+        validatedPredicate: Validated<Predicate>?
+    ) {
 
         if (validatedPredicate == null || validatedPredicate.isValid()) {
             searchField.background = null
@@ -163,8 +199,6 @@ class ComponentView private constructor(
             searchField.background = ERROR_COLOR
             searchField.toolTipText = (validatedPredicate as Invalid).message
         }
-
-        updateFilterOptions(state.filter)
 
         searchField.textSafe = validatedPredicate?.input ?: ""
     }
@@ -178,6 +212,13 @@ class ComponentView private constructor(
     }
 
 }
+
+private inline val ComponentViewState.formatter: ValueFormatter
+    get() = if (settings.isDetailedOutput) ::toReadableStringDetailed else ::toReadableStringShort
+
+private fun Started.toViewState(
+    id: ComponentId
+) = ComponentViewState(debugState.component(id), settings)
 
 private fun filterUpdates(
     id: ComponentId,
@@ -328,7 +369,12 @@ private object TreeRowValueTransferHandler : TransferHandler() {
 
         return tree.selectionRows
             ?.map(tree::getSubTreeForRow)
-            ?.joinToString { r -> r.toReadableString(tree.model) }
+            ?.joinToString { r -> r.toReadableString(tree.model, ::toReadableStringDetailed) }
             ?.let(::StringSelection)
     }
 }
+
+private data class ComponentViewState(
+    val component: ComponentDebugState,
+    val settings: Settings
+)

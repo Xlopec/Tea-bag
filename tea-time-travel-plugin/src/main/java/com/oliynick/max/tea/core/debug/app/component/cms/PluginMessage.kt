@@ -30,6 +30,10 @@ sealed class PluginMessage
  */
 sealed class UIMessage : PluginMessage()
 
+data class UpdateDebugSettings(
+    val isDetailedToStringEnabled: Boolean
+) : UIMessage()
+
 data class UpdatePort(
     val port: UInt
 ) : UIMessage()

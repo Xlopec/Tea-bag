@@ -5,9 +5,9 @@ import kotlinx.coroutines.flow.mapNotNull
 
 inline fun <M, S1, S2> ((Flow<M>) -> Flow<S1>).mapS(
     crossinline mapper: (S1) -> S2
-): ((Flow<M>) -> Flow<S2>) = flatMapS(mapper)
+): ((Flow<M>) -> Flow<S2>) = mapNullableS(mapper)
 
-inline fun <M, S1, S2> ((Flow<M>) -> Flow<S1>).flatMapS(
+inline fun <M, S1, S2> ((Flow<M>) -> Flow<S1>).mapNullableS(
     crossinline mapper: (S1) -> S2?
 ): ((Flow<M>) -> Flow<S2>) =
     { input -> this(input).mapNotNull { s1 -> mapper(s1) }}

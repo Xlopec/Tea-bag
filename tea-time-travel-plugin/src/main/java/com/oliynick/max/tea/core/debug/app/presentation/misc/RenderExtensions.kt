@@ -43,6 +43,8 @@ import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.MutableTreeNode
 import javax.swing.tree.TreeModel
 
+typealias ValueFormatter = Value.() -> String
+
 private val DATE_TIME_FORMATTER: DateTimeFormatter by lazy {
     DateTimeFormatter.ofLocalizedDateTime(
         FormatStyle.MEDIUM
@@ -66,24 +68,33 @@ fun Value.toJTree(): DefaultMutableTreeNode =
     }
 
 
-
 fun FilteredSnapshot.toReadableString(formatter: DateTimeFormatter = DATE_TIME_FORMATTER): String =
     "${meta.timestamp.format(formatter)}: ${meta.id.value}"
 
-fun PropertyNode.toReadableString(): String =
-    "${property.name}=${property.v.toReadableString()}"
+fun PropertyNode.toReadableString(
+    formatter: ValueFormatter
+): String =
+    "${property.name}=${property.v.run(formatter)}"
 
-fun ValueNode.toReadableString(): String =
-    value.toReadableString()
+fun ValueNode.toReadableString(
+    formatter: ValueFormatter
+): String =
+    value.run(formatter)
 
-fun IndexedNode.toReadableString(): String =
-    "[$index] = ${value.toReadableString()}"
+fun IndexedNode.toReadableString(
+    formatter: ValueFormatter
+): String =
+    "[$index] = ${value.run(formatter)}"
 
-fun EntryKeyNode.toReadableString(): String =
-    "key = ${key.toReadableString()}"
+fun EntryKeyNode.toReadableString(
+    formatter: ValueFormatter
+): String =
+    "key = ${key.run(formatter)}"
 
-fun EntryValueNode.toReadableString(): String =
-    "value = ${value.toReadableString()}"
+fun EntryValueNode.toReadableString(
+    formatter: ValueFormatter
+): String =
+    "value = ${value.run(formatter)}"
 
 val RenderTree.icon: Icon?
     get() = when (this) {
@@ -97,20 +108,57 @@ val RenderTree.icon: Icon?
     }
 
 fun RenderTree.toReadableString(
-    model: TreeModel
+    model: TreeModel,
+    formatter: ValueFormatter
 ): String {
     return when (this) {
         RootNode -> "Snapshots (${model.getChildCount(model.root)})"
         is SnapshotNode -> snapshot.toReadableString()
         is MessageNode -> "Message"
         is StateNode -> "State"
-        is PropertyNode -> toReadableString()
-        is ValueNode -> toReadableString()
-        is IndexedNode -> toReadableString()
-        is EntryKeyNode -> toReadableString()
-        is EntryValueNode -> toReadableString()
+        is PropertyNode -> toReadableString(formatter)
+        is ValueNode -> toReadableString(formatter)
+        is IndexedNode -> toReadableString(formatter)
+        is EntryKeyNode -> toReadableString(formatter)
+        is EntryValueNode -> toReadableString(formatter)
     }
 }
+
+fun toReadableStringDetailed(
+    value: Value
+): String =
+    when (value) {
+        is StringWrapper -> value.toReadableString()
+        is Null -> value.toReadableString()
+        is Ref -> value.toReadableString()
+        is CollectionWrapper -> value.toReadableString()
+        is IntWrapper -> value.value.toString()
+        is ByteWrapper -> value.value.toString()
+        is ShortWrapper -> value.value.toString()
+        is CharWrapper -> value.value.toString()
+        is LongWrapper -> value.value.toString()
+        is DoubleWrapper -> value.value.toString()
+        is FloatWrapper -> value.value.toString()
+        is BooleanWrapper -> value.value.toString()
+    }
+
+fun toReadableStringShort(
+    value: Value
+): String =
+    when (value) {
+        is StringWrapper -> value.toReadableString()
+        is Null -> value.toReadableString()
+        is Ref -> value.toReadableStringShort()
+        is CollectionWrapper -> value.toReadableStringShort()
+        is IntWrapper -> value.value.toString()
+        is ByteWrapper -> value.value.toString()
+        is ShortWrapper -> value.value.toString()
+        is CharWrapper -> value.value.toString()
+        is LongWrapper -> value.value.toString()
+        is DoubleWrapper -> value.value.toString()
+        is FloatWrapper -> value.value.toString()
+        is BooleanWrapper -> value.value.toString()
+    }
 
 private fun primitive(
     value: Value
@@ -168,21 +216,6 @@ private operator fun DefaultMutableTreeNode.plusAssign(children: Iterable<Mutabl
 
 private operator fun DefaultMutableTreeNode.plusAssign(child: MutableTreeNode) = add(child)
 
-private fun Value.toReadableString(): String = when (this) {
-    is StringWrapper -> toReadableString()
-    is Null -> toReadableString()
-    is Ref -> toReadableString()
-    is CollectionWrapper -> toReadableString()
-    is IntWrapper -> value.toString()
-    is ByteWrapper -> value.toString()
-    is ShortWrapper -> value.toString()
-    is CharWrapper -> value.toString()
-    is LongWrapper -> value.toString()
-    is DoubleWrapper -> value.toString()
-    is FloatWrapper -> value.toString()
-    is BooleanWrapper -> value.toString()
-}
-
 @Suppress("unused")
 private fun Null.toReadableString(): String = "null"
 
@@ -191,15 +224,20 @@ private fun StringWrapper.toReadableString(): String = "\"$value\""
 private fun Ref.toReadableString(): String =
     "${type.name}(${properties.joinToString(transform = ::toReadableString, limit = 120)})"
 
+private fun Ref.toReadableStringShort(): String = type.name
+
 private fun toReadableString(field: Property): String =
-    "${field.name}=${field.v.toReadableString()}"
+    "${field.name}=${toReadableStringDetailed(field.v)}"
 
 private fun CollectionWrapper.toReadableString(): String =
     value.joinToString(
         prefix = "[",
         postfix = "]",
-        transform = { it.toReadableString() }
+        transform = { toReadableStringDetailed(it) }
     )
+
+private fun CollectionWrapper.toReadableStringShort(): String =
+    "[${value.size} element${if(value.size == 1) "" else "s"}]"
 
 private val Value.icon: Icon?
     inline get() = when {

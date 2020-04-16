@@ -7,7 +7,7 @@ import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyComponentAttach
 import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyOperationException
 import com.oliynick.max.tea.core.debug.app.component.cms.DoStartServer
 import com.oliynick.max.tea.core.debug.app.component.cms.DoStopServer
-import com.oliynick.max.tea.core.debug.app.component.cms.DoStoreServerSettings
+import com.oliynick.max.tea.core.debug.app.component.cms.DoStoreSettings
 import com.oliynick.max.tea.core.debug.app.component.cms.DoWarnUnacceptableMessage
 import com.oliynick.max.tea.core.debug.app.component.cms.MissingDependenciesException
 import com.oliynick.max.tea.core.debug.app.component.cms.NetworkException
@@ -52,7 +52,7 @@ private fun htmlDescription(
     operation: PluginCommand?
 ): String {
     val message: String? = when (operation) {
-        is DoStoreServerSettings -> "plugin failed to store settings"
+        is DoStoreSettings -> "plugin failed to store settings"
         is DoStartServer -> "plugin failed to start server"
         is DoStopServer -> "plugin failed to stop server"
         is DoApplyMessage -> "plugin failed to apply commands to component \"${operation.id.id}\""

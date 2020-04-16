@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.presentation.misc
+package com.oliynick.max.tea.core.debug.app.presentation.component
 
 import com.oliynick.max.tea.core.debug.app.domain.FilteredSnapshot
 import com.oliynick.max.tea.core.debug.app.misc.UpdateCallback
 import com.oliynick.max.tea.core.debug.app.misc.replaceAll
+import com.oliynick.max.tea.core.debug.app.presentation.misc.EqDiffer
+import com.oliynick.max.tea.core.debug.app.presentation.misc.MessageNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.RootNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.SnapshotNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.StateNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.toJTree
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode

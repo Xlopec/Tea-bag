@@ -10,6 +10,7 @@ import com.oliynick.max.tea.core.debug.app.domain.Invalid
 import com.oliynick.max.tea.core.debug.app.domain.OriginalSnapshot
 import com.oliynick.max.tea.core.debug.app.domain.Predicate
 import com.oliynick.max.tea.core.debug.app.domain.ServerSettings
+import com.oliynick.max.tea.core.debug.app.domain.Settings
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
 import com.oliynick.max.tea.core.debug.app.domain.Valid
 import com.oliynick.max.tea.core.debug.app.domain.Value
@@ -33,11 +34,20 @@ fun Started.removeSnapshots(
     id: ComponentId
 ) = updateComponents { mapping -> mapping.put(id, debugState.component(id).removeSnapshots()) }
 
+fun PluginState.updateSettings(
+    how: Settings.() -> Settings
+) = when (this) {
+    is Stopped -> copy(settings = settings.run(how))
+    is Starting -> copy(settings = settings.run(how))
+    is Started -> copy(settings = settings.run(how))
+    is Stopping -> copy(settings = settings.run(how))
+}
+
 fun Stopped.update(
     serverSettings: ServerSettings
 ) = copy(settings = settings.copy(serverSettings = serverSettings))
 
-inline fun Stopped.updatedServerSettings(
+inline fun Stopped.updateServerSettings(
     how: ServerSettings.() -> ServerSettings
 ): ServerSettings =
     settings.serverSettings.run(how)

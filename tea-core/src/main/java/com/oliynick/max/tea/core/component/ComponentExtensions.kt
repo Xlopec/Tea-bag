@@ -39,6 +39,18 @@ infix fun <S, C> S.command(
 ): UpdateWith<S, C> = this to setOf(command)
 
 /**
+ * Handy extension to combine state with a single command provider
+ *
+ * @receiver state to combine with command
+ * @param S state to combine with command
+ * @param command command to combine with state
+ * @return [UpdateWith] instance with given state and set that consists from a single command
+ */
+inline infix fun <S, C> S.command(
+    command: S.() -> C
+): UpdateWith<S, C> = this to setOf(run(command))
+
+/**
  * Handy extension to combine two commands with state
  *
  * @receiver state to combine with commands
@@ -77,7 +89,9 @@ fun <S, C> S.command(
  * @param commands commands to combine with state
  * @return [UpdateWith] instance with given state and set of commands
  */
-fun <S, C> S.command(vararg commands: C): UpdateWith<S, C> = this command setOf(*commands)
+fun <S, C> S.command(
+    vararg commands: C
+): UpdateWith<S, C> = this command setOf(*commands)
 
 /**
  * Handy extension to combine set of commands with state
@@ -87,7 +101,9 @@ fun <S, C> S.command(vararg commands: C): UpdateWith<S, C> = this command setOf(
  * @param commands commands to combine with state
  * @return [UpdateWith] instance with given state and set of commands
  */
-infix fun <S, C> S.command(commands: Set<C>): UpdateWith<S, C> = this to commands
+infix fun <S, C> S.command(
+    commands: Set<C>
+): UpdateWith<S, C> = this to commands
 
 /**
  * Handy extension to express absence of commands to execute combined with state
@@ -104,7 +120,9 @@ fun <S, C> S.noCommand(): UpdateWith<S, C> = this to emptySet()
  * @param action action to perform that produces no messages that can be consumed by a component
  * @return set of messages to be consumed by a component, always empty
  */
-suspend inline infix fun <C, M> C.sideEffect(crossinline action: suspend C.() -> Unit): Set<M> {
+suspend inline infix fun <C, M> C.sideEffect(
+    crossinline action: suspend C.() -> Unit
+): Set<M> {
     action()
     return emptySet()
 }

@@ -27,10 +27,16 @@ import com.oliynick.max.tea.core.component.states
 import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
 import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
 import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
+import com.oliynick.max.tea.core.debug.app.component.cms.UpdateDebugSettings
 import com.oliynick.max.tea.core.debug.app.env.Environment
 import com.oliynick.max.tea.core.debug.app.env.PluginComponent
+import com.oliynick.max.tea.core.debug.app.presentation.misc.mergeWith
+import com.oliynick.max.tea.core.debug.app.presentation.settings.PluginSettingsNotifier
 import com.oliynick.max.tea.core.debug.app.storage.properties
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -47,12 +53,26 @@ class SideToolWindowFactory : ToolWindowFactory, DumbAware {
         toolWindow.contentManager.addContent(content)
         // todo: find a better approach
         environment.launch {
-            component(environment.events.asFlow()).collect()
+            component(environment.events.asFlow().mergeWith(project.settingsMessages())).collect()
         }
     }
 
     override fun shouldBeAvailable(project: Project): Boolean = true
 }
+
+private fun Project.settingsMessages(): Flow<UpdateDebugSettings> =
+    callbackFlow {
+
+        val connection = messageBus.connect()
+
+        connection.subscribe(PluginSettingsNotifier.TOPIC, object : PluginSettingsNotifier {
+            override fun onSettingsUpdated(isDetailedToStringEnabled: Boolean) {
+                offer(UpdateDebugSettings(isDetailedToStringEnabled))
+            }
+        })
+
+        awaitClose { connection.disconnect() }
+    }
 
 private fun createToolWindowContent(
     project: Project,

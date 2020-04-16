@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.presentation.misc
+package com.oliynick.max.tea.core.debug.app.presentation.component
 
+import com.oliynick.max.tea.core.debug.app.presentation.misc.RenderTree
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueFormatter
+import com.oliynick.max.tea.core.debug.app.presentation.misc.icon
+import com.oliynick.max.tea.core.debug.app.presentation.misc.toReadableString
 import java.awt.Component
 import javax.swing.JLabel
 import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeCellRenderer
 
-object StateTreeRenderer : TreeCellRenderer {
+class SnapshotTreeRenderer(
+    var formatter: ValueFormatter
+) : TreeCellRenderer {
 
     override fun getTreeCellRendererComponent(
         tree: JTree,
@@ -32,31 +38,12 @@ object StateTreeRenderer : TreeCellRenderer {
         leaf: Boolean,
         row: Int,
         hasFocus: Boolean
-    ): Component {
+    ): Component =
+        JLabel().apply {
+            val payload = (value as DefaultMutableTreeNode).userObject as RenderTree
 
-        val label = JLabel()
-        val node = value as DefaultMutableTreeNode
-
-        if (node === tree.model.root) {
-            label.text = node.userObject.toString()
-            return label
+            text = payload.toReadableString(tree.model, formatter)
+            icon = payload.icon
         }
-
-        val payload = node.userObject as RenderTree
-
-        label.text = when (payload) {
-            RootNode -> "State"
-            is SnapshotNode, is MessageNode, is StateNode -> error("Can't render $payload")
-            is PropertyNode -> payload.toReadableString()
-            is ValueNode -> payload.toReadableString()
-            is IndexedNode -> payload.toReadableString()
-            is EntryKeyNode -> payload.toReadableString()
-            is EntryValueNode -> payload.toReadableString()
-        }
-
-        label.icon = payload.icon
-
-        return label
-    }
 
 }

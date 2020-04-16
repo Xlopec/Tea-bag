@@ -29,9 +29,7 @@ import com.oliynick.max.tea.core.debug.app.component.cms.Stopped
 import com.oliynick.max.tea.core.debug.app.component.cms.Stopping
 import com.oliynick.max.tea.core.debug.app.component.cms.UpdateHost
 import com.oliynick.max.tea.core.debug.app.component.cms.UpdatePort
-import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
-import com.oliynick.max.tea.core.debug.app.domain.DebugState
-import com.oliynick.max.tea.core.debug.app.misc.flatMapS
+import com.oliynick.max.tea.core.debug.app.misc.mapNullableS
 import com.oliynick.max.tea.core.debug.app.presentation.component.ComponentView
 import com.oliynick.max.tea.core.debug.app.presentation.info.InfoView
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.CLOSE_DARK_ICON
@@ -73,7 +71,7 @@ import java.awt.Component as AwtComponent
 
 class ToolWindowView(
     private val project: Project,
-    private val scope: CoroutineScope,
+    scope: CoroutineScope,
     private val component: (Flow<PluginMessage>) -> Flow<PluginState>
 ) : CoroutineScope by scope {
 
@@ -168,7 +166,7 @@ class ToolWindowView(
                 componentsPanel += tabbedComponentsView()
             }
 
-            (componentsPanel.first() as JTabbedPane).update(state.debugState, messages)
+            (componentsPanel.first() as JTabbedPane).update(state, messages)
         }
 
         check(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children}" }
@@ -183,14 +181,14 @@ class ToolWindowView(
 
     private fun showEmptyComponentsView() {
         componentsPanel.removeAll()
-        componentsPanel += InfoView(component, scope.coroutineContext).root
+        componentsPanel += InfoView(component, coroutineContext).root
     }
 
     private fun tabbedComponentsView() = JBTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT)
         .also { tabPane -> tabPane.model = DefaultSingleSelectionModel() }
 
     private fun JTabbedPane.update(
-        debugState: DebugState,
+        state: Started,
         messages: (PluginMessage) -> Unit
     ) {
 
@@ -199,26 +197,18 @@ class ToolWindowView(
         ) = messages(RemoveComponent(id))
 
         fun addTab(
-            id: ComponentId,
-            initial: ComponentDebugState
-        ) = addCloseableTab(id, ComponentView.new(scope, childComponent(id), initial), ::closeHandler)
+            id: ComponentId
+        ) = addCloseableTab(id, ComponentView.new(this@ToolWindowView, id, component.startedStates(), state), ::closeHandler)
 
-        debugState.components
+        state.debugState.components
             .filter { e -> indexOfTab(e.key.id) == -1 }
-            .forEach { (id, s) -> addTab(id, s) }
+            .forEach { (id, _) -> addTab(id) }
     }
-
-    private fun childComponent(
-        id: ComponentId
-    ) = component.flatMapS { state -> componentState(state, id) }
 
 }
 
-private fun componentState(
-    state: PluginState,
-    id: ComponentId
-) =
-    (state as? Started)?.debugState?.components?.get(id)
+private fun ((Flow<PluginMessage>) -> Flow<PluginState>).startedStates() =
+    mapNullableS { pluginState -> pluginState as? Started }
 
 private fun AwtComponent.setOnClickListenerEnabling(l: (MouseEvent) -> Unit) {
     setOnClickListener(l)

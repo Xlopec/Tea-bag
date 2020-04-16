@@ -18,12 +18,12 @@ package com.oliynick.max.tea.core.debug.app.storage
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
+import com.oliynick.max.tea.core.debug.app.domain.DEFAULT_HOST
+import com.oliynick.max.tea.core.debug.app.domain.DEFAULT_PORT
 import com.oliynick.max.tea.core.debug.app.domain.ServerSettings
 import com.oliynick.max.tea.core.debug.app.domain.Settings
-import com.oliynick.max.tea.core.debug.app.domain.defaultHost
-import com.oliynick.max.tea.core.debug.app.domain.defaultPort
 
-private const val PLUGIN_ID = "com.oliynick.max.elm.time.travel.plugin"
+const val PLUGIN_ID = "com.oliynick.max.tea.core.plugin"
 
 val Project.properties: PropertiesComponent
     get() = PropertiesComponent.getInstance(this)
@@ -31,8 +31,13 @@ val Project.properties: PropertiesComponent
 var PropertiesComponent.pluginSettings: Settings
     set(value) {
         serverSettings = value.serverSettings
+        isDetailedToStringEnabled = value.isDetailedOutput
     }
-    get() = Settings(serverSettings)
+    get() = Settings(serverSettings, isDetailedToStringEnabled)
+
+var PropertiesComponent.isDetailedToStringEnabled: Boolean
+    set(value) = setValue("$PLUGIN_ID.isDetailedToStringEnabled", value)
+    get() = getBoolean("$PLUGIN_ID.isDetailedToStringEnabled", false)
 
 var PropertiesComponent.serverSettings: ServerSettings
     set(value) {
@@ -40,6 +45,6 @@ var PropertiesComponent.serverSettings: ServerSettings
         setValue("$PLUGIN_ID.port", value.port.toInt(), 8080)
     }
     get() = ServerSettings(
-        getValue("$PLUGIN_ID.host", defaultHost),
-        getInt("$PLUGIN_ID.port", defaultPort.toInt()).toUInt()
+        getValue("$PLUGIN_ID.host", DEFAULT_HOST),
+        getInt("$PLUGIN_ID.port", DEFAULT_PORT.toInt()).toUInt()
     )

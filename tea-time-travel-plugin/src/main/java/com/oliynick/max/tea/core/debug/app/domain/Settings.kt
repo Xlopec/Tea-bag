@@ -1,7 +1,7 @@
 package com.oliynick.max.tea.core.debug.app.domain
 
-const val defaultHost = "0.0.0.0"
-const val defaultPort = 8080U
+const val DEFAULT_HOST = "127.0.0.1"
+const val DEFAULT_PORT = 8080U
 
 //todo add remote call timeout
 data class ServerSettings(
@@ -10,5 +10,6 @@ data class ServerSettings(
 )
 
 data class Settings(
-    val serverSettings: ServerSettings
+    val serverSettings: ServerSettings,
+    val isDetailedOutput: Boolean
 )

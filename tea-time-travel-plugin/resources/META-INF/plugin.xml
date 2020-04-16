@@ -30,7 +30,7 @@
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="173.0" />
+    <idea-version since-build="173.0"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -40,7 +40,12 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <toolWindow anchor="right" factoryClass="com.oliynick.max.tea.core.debug.app.presentation.sidebar.SideToolWindowFactory"
-            id="Time Traveller" />
+                    id="Time Traveller"/>
+
+        <projectConfigurable id="com.oliynick.max.tea.core.plugin"
+                             displayName="Time Traveller"
+                             groupId="tools"
+                             instance="com.oliynick.max.tea.core.debug.app.presentation.settings.PluginSettings"/>
     </extensions>
 
     <actions>

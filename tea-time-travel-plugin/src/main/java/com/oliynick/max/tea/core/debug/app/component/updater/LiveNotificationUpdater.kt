@@ -8,7 +8,7 @@ import com.oliynick.max.tea.core.debug.app.component.cms.ComponentAttached
 import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyComponentAttached
 import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyOperationException
 import com.oliynick.max.tea.core.debug.app.component.cms.DoStopServer
-import com.oliynick.max.tea.core.debug.app.component.cms.DoStoreServerSettings
+import com.oliynick.max.tea.core.debug.app.component.cms.DoStoreSettings
 import com.oliynick.max.tea.core.debug.app.component.cms.DoWarnUnacceptableMessage
 import com.oliynick.max.tea.core.debug.app.component.cms.InternalException
 import com.oliynick.max.tea.core.debug.app.component.cms.NotificationMessage
@@ -127,7 +127,7 @@ object LiveNotificationUpdater : NotificationUpdater {
         th: PluginException,
         op: PluginCommand?
     ): Boolean =
-        op is DoStopServer || op is DoStoreServerSettings || th is InternalException
+        op is DoStopServer || op is DoStoreSettings || th is InternalException
 
     fun AppendSnapshot.toSnapshot(): OriginalSnapshot =
         OriginalSnapshot(

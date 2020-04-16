@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.presentation.misc
+package com.oliynick.max.tea.core.debug.app.presentation.component
 
 import com.oliynick.max.tea.core.debug.app.domain.Value
+import com.oliynick.max.tea.core.debug.app.presentation.misc.toJTree
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.MutableTreeNode
@@ -35,7 +36,7 @@ class StateTreeModel private constructor(
 
     var state: Value = initial
         set(value) {
-            if (value !== field) {
+            if (value != field) {
                 field = value
 
                 val root = delegate.root as MutableTreeNode
