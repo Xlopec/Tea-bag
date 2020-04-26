@@ -46,17 +46,17 @@ import com.oliynick.max.tea.core.debug.app.presentation.misc.EntryValueNode
 import com.oliynick.max.tea.core.debug.app.presentation.misc.IndexedNode
 import com.oliynick.max.tea.core.debug.app.presentation.misc.MessageNode
 import com.oliynick.max.tea.core.debug.app.presentation.misc.PropertyNode
-import com.oliynick.max.tea.core.debug.app.presentation.misc.RenderTree
 import com.oliynick.max.tea.core.debug.app.presentation.misc.RootNode
 import com.oliynick.max.tea.core.debug.app.presentation.misc.SnapshotNode
 import com.oliynick.max.tea.core.debug.app.presentation.misc.StateNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.TreeRowValueTransferHandler
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueFormatter
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueNode
+import com.oliynick.max.tea.core.debug.app.presentation.misc.getSubTreeForRow
 import com.oliynick.max.tea.core.debug.app.presentation.misc.mergeWith
 import com.oliynick.max.tea.core.debug.app.presentation.misc.selections
 import com.oliynick.max.tea.core.debug.app.presentation.misc.textChanges
 import com.oliynick.max.tea.core.debug.app.presentation.misc.textSafe
-import com.oliynick.max.tea.core.debug.app.presentation.misc.toReadableString
 import com.oliynick.max.tea.core.debug.app.presentation.misc.toReadableStringDetailed
 import com.oliynick.max.tea.core.debug.app.presentation.misc.toReadableStringShort
 import com.oliynick.max.tea.core.debug.app.presentation.sidebar.exceptionBalloonFillColor
@@ -75,18 +75,13 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import protocol.ComponentId
 import java.awt.Color
-import java.awt.datatransfer.StringSelection
-import java.awt.datatransfer.Transferable
 import java.awt.event.MouseEvent
 import javax.swing.JCheckBox
-import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JPopupMenu
 import javax.swing.JTextField
 import javax.swing.JTree
 import javax.swing.SwingUtilities
-import javax.swing.TransferHandler
-import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeSelectionModel
 
 private const val INPUT_TIMEOUT_MILLIS = 400L
@@ -134,6 +129,7 @@ class ComponentView private constructor(
 
     private val stateTreeModel = StateTreeModel.newInstance(initial.component.state)
     private val stateRenderer = StateTreeRenderer(initial.formatter)
+    private val transferHandler = TreeRowValueTransferHandler(initial.formatter)
 
     private fun messages() =
         filterUpdates(initial.component.id, initial.component.filter)
@@ -141,7 +137,7 @@ class ComponentView private constructor(
 
     init {
         snapshotsTree.model = snapshotsModel
-        snapshotsTree.transferHandler = TreeRowValueTransferHandler
+        snapshotsTree.transferHandler = transferHandler
         snapshotsTree.selectionModel.selectionMode = TreeSelectionModel.CONTIGUOUS_TREE_SELECTION
         snapshotsTree.cellRenderer = snapshotRenderer
 
@@ -182,9 +178,11 @@ class ComponentView private constructor(
 
         if (newFormatter !== snapshotRenderer.formatter
             || newFormatter !== stateRenderer.formatter
+            || newFormatter !== transferHandler.formatter
         ) {
             snapshotRenderer.formatter = newFormatter
             stateRenderer.formatter = newFormatter
+            transferHandler.formatter = newFormatter
         }
     }
 
@@ -290,14 +288,15 @@ private fun JTree.showActionPopup(
         is MessageNode -> MessagePopup(id, treeNode.id, onAction)
         is StateNode -> StatePopup(id, treeNode.id, onAction)
         RootNode -> SnapshotsPopup(id, onAction)
-        is PropertyNode, is ValueNode, is IndexedNode, is EntryKeyNode, is EntryValueNode -> return // todo modify value at this point
+        is PropertyNode,
+        is ValueNode,
+        is IndexedNode,
+        is EntryKeyNode,
+        is EntryValueNode
+        -> return // todo modify value at this point
     }
 
     menu.show(e.component, e.x, e.y)
-}
-
-private fun JTree.getSubTreeForRow(row: Int): RenderTree {
-    return (getPathForRow(row).lastPathComponent as DefaultMutableTreeNode).userObject as RenderTree
 }
 
 private fun SnapshotsPopup(
@@ -360,19 +359,6 @@ private fun StatePopup(
             }
         })
     }
-
-private object TreeRowValueTransferHandler : TransferHandler() {
-    override fun getSourceActions(c: JComponent?): Int = COPY
-    override fun createTransferable(c: JComponent): Transferable? {
-
-        val tree = c as JTree
-
-        return tree.selectionRows
-            ?.map(tree::getSubTreeForRow)
-            ?.joinToString { r -> r.toReadableString(tree.model, ::toReadableStringDetailed) }
-            ?.let(::StringSelection)
-    }
-}
 
 private data class ComponentViewState(
     val component: ComponentDebugState,
