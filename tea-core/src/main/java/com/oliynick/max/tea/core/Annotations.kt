@@ -11,6 +11,10 @@ package com.oliynick.max.tea.core
 @RequiresOptIn(level = RequiresOptIn.Level.WARNING)
 annotation class ObsoleteComponentApi
 
+/**
+ * Marks declarations that are **unstable** in Component API, which means that the design of the corresponding
+ * declarations isn't stable and might be changed in the future.
+ */
 @MustBeDocumented
 @Retention(value = AnnotationRetention.BINARY)
 @RequiresOptIn(level = RequiresOptIn.Level.WARNING)

@@ -67,6 +67,9 @@ nonAndroidAppProjects()
         detekt {
             toolVersion = BuildPlugins.Versions.detektVersion
             input = files("src/main/kotlin", "src/main/java")
+            config.setFrom(detektConfig)
+            baseline = detektBaseline
+            autoCorrect = true
         }
     }
 

@@ -17,20 +17,22 @@
 package com.oliynick.max.tea.core.component
 
 import com.oliynick.max.tea.core.Snapshot
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 
+/**
+ * **Impure** function that performs some actions on snapshots
+ * @param M message
+ * @param S state
+ * @param C command
+ */
 typealias Interceptor<M, S, C> = suspend (snapshot: Snapshot<M, S, C>) -> Unit
 
 /**
- * Handy extension to combine a single command with state
+ * Extension to combine state with command
  *
  * @receiver state to combine with command
  * @param S state to combine with command
+ * @param C command
  * @param command command to combine with state
  * @return [UpdateWith] instance with given state and set that consists from a single command
  */
@@ -39,10 +41,11 @@ infix fun <S, C> S.command(
 ): UpdateWith<S, C> = this to setOf(command)
 
 /**
- * Handy extension to combine state with a single command provider
+ * Extension to combine state with a single command provider
  *
  * @receiver state to combine with command
  * @param S state to combine with command
+ * @param C command
  * @param command command to combine with state
  * @return [UpdateWith] instance with given state and set that consists from a single command
  */
@@ -51,10 +54,11 @@ inline infix fun <S, C> S.command(
 ): UpdateWith<S, C> = this to setOf(run(command))
 
 /**
- * Handy extension to combine two commands with state
+ * Extension to combine state with two commands
  *
  * @receiver state to combine with commands
  * @param S state to combine with command
+ * @param C command
  * @param first the first command to combine with state
  * @param second the second command to combine with state
  * @return [UpdateWith] instance with given state and set of commands
@@ -65,10 +69,11 @@ fun <S, C> S.command(
 ): UpdateWith<S, C> = this to setOf(first, second)
 
 /**
- * Handy extension to combine three commands with state
+ * Extension to combine state with three commands
  *
  * @receiver state to combine with commands
  * @param S state to combine with command
+ * @param C command
  * @param first the first command to combine with state
  * @param second the second command to combine with state
  * @param third the third command to combine with state
@@ -82,10 +87,11 @@ fun <S, C> S.command(
     this to setOf(first, second, third)
 
 /**
- * Handy extension to combine multiple commands with state
+ * Extension to combine state with multiple commands
  *
  * @receiver state to combine with commands
  * @param S state to combine with command
+ * @param C command
  * @param commands commands to combine with state
  * @return [UpdateWith] instance with given state and set of commands
  */
@@ -94,10 +100,11 @@ fun <S, C> S.command(
 ): UpdateWith<S, C> = this command setOf(*commands)
 
 /**
- * Handy extension to combine set of commands with state
+ * Extension to combine state with set of commands
  *
  * @receiver state to combine with commands
  * @param S state to combine with command
+ * @param C command
  * @param commands commands to combine with state
  * @return [UpdateWith] instance with given state and set of commands
  */
@@ -106,18 +113,21 @@ infix fun <S, C> S.command(
 ): UpdateWith<S, C> = this to commands
 
 /**
- * Handy extension to express absence of commands to execute combined with state
+ * Extension to combine state with empty set of commands
  *
  * @receiver state to combine with commands
  * @param S state to combine with command
+ * @param C command
  * @return [UpdateWith] instance with given state and empty set of commands
  */
 fun <S, C> S.noCommand(): UpdateWith<S, C> = this to emptySet()
 
 /**
- * Handy wrapper to perform side effect computations within coroutine scope. This function always
- * returns empty set of messages [M]
+ * Wrapper to perform **only** side effect using command as receiver. This function always returns
+ * empty set of messages
  * @param action action to perform that produces no messages that can be consumed by a component
+ * @param C command
+ * @param M message
  * @return set of messages to be consumed by a component, always empty
  */
 suspend inline infix fun <C, M> C.sideEffect(
@@ -128,9 +138,9 @@ suspend inline infix fun <C, M> C.sideEffect(
 }
 
 /**
- * Handy wrapper to perform side effect computations within coroutine scope
+ * Wrapper to perform side effect computations and possibly return a new message to be consumed by [Updater]
  *
- * @receiver command for which effect should be executed
+ * @receiver command to be used to execute effect
  * @param C command
  * @param M message
  * @param action action to perform that might produce message to be consumed by a component
@@ -140,25 +150,88 @@ suspend inline infix fun <C, M> C.effect(
     crossinline action: suspend C.() -> M?
 ): Set<M> = action(this@effect)?.let(::setOf) ?: emptySet()
 
-fun <M, S, C> Component<M, S, C>.snapshotChanges(): Flow<Snapshot<M, S, C>> =
+/**
+ * Transforms component into flow of snapshots
+ *
+ * @receiver component to transform
+ * @param C command
+ * @param M message
+ * @param S state
+ */
+fun <M, S, C> Component<M, S, C>.observeSnapshots(): Flow<Snapshot<M, S, C>> =
     this(emptyFlow())
 
-fun <M, S, C> Component<M, S, C>.stateChanges(): Flow<S> =
-    snapshotChanges().map { snapshot -> snapshot.currentState }
+/**
+ * Transforms component into flow of states
+ *
+ * @receiver component to transform
+ * @param C command
+ * @param M message
+ * @param S state
+ */
+fun <M, S, C> Component<M, S, C>.observeStates(): Flow<S> =
+    observeSnapshots().map { snapshot -> snapshot.currentState }
 
-operator fun <M, S, C> Component<M, S, C>.invoke(vararg messages: M) =
-    this(flowOf(*messages))
-
-operator fun <M, S, C> Component<M, S, C>.invoke(messages: Iterable<M>) =
-    this(messages.asFlow())
-
-operator fun <M, S, C> Component<M, S, C>.invoke(message: M) =
-    this(flowOf(message))
-
-inline infix fun <M, S, C> Component<M, S, C>.with(
-    crossinline interceptor: Interceptor<M, S, C>
-): Component<M, S, C> =
-    { input -> this(input).onEach { interceptor(it) } }
-
+/**
+ * Transforms component into function that accepts messages and returns flow that
+ * emits states only
+ *
+ * @receiver component to transform
+ * @param C command
+ * @param M message
+ * @param S state
+ */
 fun <M, S, C> Component<M, S, C>.states(): ((Flow<M>) -> Flow<S>) =
     { input -> this(input).map { snapshot -> snapshot.currentState } }
+
+/**
+ * Supplies [messages] to the component. Note that messages won't be consumed
+ * until terminal operator is called on the resulting flow
+ *
+ * @receiver component to transform
+ * @param C command
+ * @param M message
+ * @param S state
+ */
+operator fun <M, S, C> Component<M, S, C>.invoke(
+    vararg messages: M
+): Flow<Snapshot<M, S, C>> = this(flowOf(*messages))
+
+/**
+ * Supplies [messages] to the component. Note that messages won't be consumed
+ * until terminal operator is called on the resulting flow
+ *
+ * @receiver component to transform
+ * @param C command
+ * @param M message
+ * @param S state
+ */
+operator fun <M, S, C> Component<M, S, C>.invoke(
+    messages: Iterable<M>
+): Flow<Snapshot<M, S, C>> = this(messages.asFlow())
+
+/**
+ * Supplies [message] to the component. Note that messages won't be consumed
+ * until terminal operator is called on the resulting flow
+ *
+ * @receiver component to transform
+ * @param C command
+ * @param M message
+ * @param S state
+ */
+operator fun <M, S, C> Component<M, S, C>.invoke(
+    message: M
+): Flow<Snapshot<M, S, C>> = this(flowOf(message))
+
+/**
+ * Attaches [interceptor] to the component
+ *
+ * @receiver component to transform
+ * @param C command
+ * @param M message
+ * @param S state
+ */
+infix fun <M, S, C> Component<M, S, C>.with(
+    interceptor: Interceptor<M, S, C>
+): Component<M, S, C> =
+    { input -> this(input).onEach(interceptor) }

@@ -19,69 +19,89 @@
 
 package com.oliynick.max.tea.core.component
 
-import com.oliynick.max.tea.core.Env
-import com.oliynick.max.tea.core.EnvBuilder
-import com.oliynick.max.tea.core.Initial
-import com.oliynick.max.tea.core.Initializer
-import com.oliynick.max.tea.core.Regular
-import com.oliynick.max.tea.core.Snapshot
-import com.oliynick.max.tea.core.UnstableApi
-import com.oliynick.max.tea.core.component.internal.emitAll
-import com.oliynick.max.tea.core.component.internal.finishWith
-import com.oliynick.max.tea.core.component.internal.foldFlatten
-import com.oliynick.max.tea.core.component.internal.into
-import com.oliynick.max.tea.core.component.internal.parMapTo
-import com.oliynick.max.tea.core.component.internal.shareConflated
-import com.oliynick.max.tea.core.component.internal.startFrom
+import com.oliynick.max.tea.core.*
+import com.oliynick.max.tea.core.component.internal.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Component is a builder that accepts [flow][Flow] of messages as input and returns
+ * [flow][Flow] of [snapshots][Snapshot] as result.
+ *
+ * Some behavior notes:
+ * * the resulting flow of snapshots always provides observer with the latest available snapshot
+ * * the whole component is a lazy function which means that incoming messages won't be consumed
+ * unless there is an active collector because of the [Flow] semantic
+ *
+ * @param M incoming messages
+ * @param S state of the application
+ * @param C commands to be executed
+ */
 typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
 
 /**
- * Alias for a pure function that accepts message with current state and returns the next state with possible empty set of commands
- * to feed [resolver][Resolver]
+ * Updater is a **pure** function that accepts message and current state of the application and then returns
+ * a new state and possible empty set of commands to be resolved
+ *
  * @param M incoming messages
- * @param S state of the component
+ * @param S state of the application
  * @param C commands to be executed
  */
 typealias Updater<M, S, C> = (message: M, state: S) -> UpdateWith<S, C>
 
 /**
- * Alias for a function that resolves effects and returns messages to feed [update][Updater] function
+ * Alias for result of the [updater][Updater] function
+ *
+ * @param S state of the component
+ * @param C commands to be executed
+ */
+typealias UpdateWith<S, C> = Pair<S, Set<C>>
+
+/**
+ * Alias for an **impure** function that resolves commands and returns possibly empty set of messages to feed the
+ * [updater][Updater]
+ *
  * @param M incoming messages
  * @param C commands to be executed
  */
 typealias Resolver<C, M> = suspend (command: C) -> Set<M>
 
 /**
- * Alias for result of the [update][Updater] function
- * @param S state of the component
+ * Creates new component using supplied values
+ *
+ * @param initializer initializer to be used to provide initial values for application
+ * @param resolver resolver to be used to resolve messages from commands
+ * @param updater updater to be used to compute a new state with set of commands to execute
+ * @param config block to configure component
+ * @param M incoming messages
+ * @param S state of the application
  * @param C commands to be executed
  */
-typealias UpdateWith<S, C> = Pair<S, Set<C>>
-
 fun <M, C, S> Component(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     updater: Updater<M, S, C>,
     config: EnvBuilder<M, S, C>.() -> Unit = {}
-): Component<M, S, C> = Component(Env(initializer, resolver, updater, config))
+): Component<M, S, C> =
+    Component(Env(initializer, resolver, updater, config))
 
+/**
+ * Creates new component using preconfigured environment
+ *
+ * @param env environment to be used
+ * @param M incoming messages
+ * @param S state of the application
+ * @param C commands to be executed
+ */
 fun <M, S, C> Component(
     env: Env<M, S, C>
 ): Component<M, S, C> {
 
     val input = Channel<M>(Channel.RENDEZVOUS)
+    // todo consider implementing option to configure behavior of the component
     val upstream = env.upstream(input.consumeAsFlow(), env.init()).shareConflated()
 
     return { messages -> upstream.downstream(messages, input) }
@@ -167,7 +187,7 @@ private suspend fun <M, C> Env<M, *, C>.resolve(
     commands: Collection<C>
 ): Iterable<M> =
     commands
-        .parMapTo(dispatcher = io) { cmd -> resolver(cmd) }
+        .parMapTo(io, resolver::invoke)
         .flatten()
 
 private fun <E> Iterator<E>.nextOrNull() = if (hasNext()) next() else null

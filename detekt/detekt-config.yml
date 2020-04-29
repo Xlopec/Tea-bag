@@ -97,7 +97,7 @@ complexity:
   TooManyFunctions:
     active: true
     excludes: "**/tea-test/**,**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
-    thresholdInFiles: 15
+    thresholdInFiles: 17
     thresholdInClasses: 11
     thresholdInInterfaces: 11
     thresholdInObjects: 15
@@ -600,6 +600,6 @@ style:
   VarCouldBeVal:
     active: true
   WildcardImport:
-    active: true
+    active: false
     excludes: "**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
     excludeImports: 'java.util.*,kotlinx.android.synthetic.*'

@@ -1,20 +1,9 @@
 package com.oliynick.max.tea.core.component.internal
 
 import com.oliynick.max.tea.core.UnstableApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.channels.ValueOrClosed
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.produceIn
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -175,8 +164,7 @@ private class MulticastFlow<T>(
             emitAll(channel.consumeAsFlow())
         } catch (th: Throwable) {
             throw th
-        }
-        finally {
+        } finally {
             actor.send(
                 MulticastActorAction.RemoveCollector(
                     channel
