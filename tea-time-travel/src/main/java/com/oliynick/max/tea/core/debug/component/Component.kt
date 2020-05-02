@@ -19,38 +19,32 @@
 
 package com.oliynick.max.tea.core.debug.component
 
-import com.oliynick.max.tea.core.EnvBuilder
-import com.oliynick.max.tea.core.Initial
-import com.oliynick.max.tea.core.Initializer
-import com.oliynick.max.tea.core.Regular
-import com.oliynick.max.tea.core.Snapshot
-import com.oliynick.max.tea.core.UnstableApi
-import com.oliynick.max.tea.core.component.Component
-import com.oliynick.max.tea.core.component.Resolver
-import com.oliynick.max.tea.core.component.Updater
-import com.oliynick.max.tea.core.component.downstream
-import com.oliynick.max.tea.core.component.init
+import com.oliynick.max.tea.core.*
+import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.component.internal.into
 import com.oliynick.max.tea.core.component.internal.shareConflated
-import com.oliynick.max.tea.core.component.upstream
 import com.oliynick.max.tea.core.debug.component.internal.mergeWith
 import com.oliynick.max.tea.core.debug.exception.ConnectException
 import com.oliynick.max.tea.core.debug.session.DebugSession
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import protocol.ComponentId
-import protocol.JsonConverter
-import protocol.NotifyComponentAttached
-import protocol.NotifyComponentSnapshot
-import protocol.NotifyServer
+import kotlinx.coroutines.flow.*
+import protocol.*
 import java.util.*
 
+/**
+ * Creates new debuggable [component][Component]
+ *
+ * @param id component identifier
+ * @param initializer initializer to be used to provide initial values for application
+ * @param resolver resolver to be used to resolve messages from commands
+ * @param updater updater to be used to compute a new state with set of commands to execute
+ * @param jsonConverter json converter
+ * @param config block to configure component
+ * @param M incoming messages
+ * @param S state of the application
+ * @param C commands to be executed
+ */
 inline fun <reified M, reified C, reified S, J> Component(
     id: ComponentId,
     noinline initializer: Initializer<S, C>,
@@ -61,6 +55,14 @@ inline fun <reified M, reified C, reified S, J> Component(
 ): Component<M, S, C> =
     Component(Dependencies(id, EnvBuilder(initializer, resolver, updater), jsonConverter, config))
 
+/**
+ * Creates new component using preconfigured debug environment
+ *
+ * @param env environment to be used
+ * @param M incoming messages
+ * @param S state of the application
+ * @param C commands to be executed
+ */
 fun <M, S, C, J> Component(
     env: DebugEnv<M, S, C, J>
 ): Component<M, S, C> {
