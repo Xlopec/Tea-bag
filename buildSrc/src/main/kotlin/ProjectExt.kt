@@ -2,6 +2,8 @@ import org.gradle.api.Project
 import java.io.File
 import java.nio.file.Paths
 
+private const val COMMIT_HASH_LEN = 6
+
 fun isLocalEnv(): Boolean = !isCIEnv()
 
 fun isCIEnv(): Boolean =
@@ -10,8 +12,22 @@ fun isCIEnv(): Boolean =
 fun bintrayApiKey(): String? =
     if (isCIEnv()) System.getenv("BINTRAY_API_KEY") else null
 
+fun pluginReleaseChannels(): Array<String> {
+
+    val tag: String? = System.getenv("TRAVIS_TAG")
+
+    return when {
+        tag.isNullOrEmpty() -> arrayOf("dev")
+        tag.contains("alpha") -> arrayOf("eap")
+        tag.contains("beta") -> arrayOf("rc")
+        else -> emptyArray()
+    }
+}
+
 fun versionName(): String =
-    System.getenv("TRAVIS_TAG").takeUnless { s -> s.isNullOrEmpty() } ?: System.getenv("TRAVIS_COMMIT") ?: "SNAPSHOT"
+    System.getenv("TRAVIS_TAG").takeUnless { s -> s.isNullOrEmpty() } ?:
+    System.getenv("TRAVIS_COMMIT").takeUnless { s -> s.isNullOrEmpty() }?.let { commit -> "DEV-${commit.take(COMMIT_HASH_LEN)}" } ?:
+    "DEV"
 
 fun Project.installGitHooks() = afterEvaluate {
     (projectHooksDir.listFiles { f -> f.extension == "sh" } ?: emptyArray())

@@ -11,7 +11,7 @@ object BuildPlugins {
         const val detektVersion = "1.5.1"
         const val dokkaVersion = "0.10.1"
         const val bintrayVersion = "1.8.4"
-        const val intellijVersion = "0.4.16"
+        const val intellijVersion = "0.4.20"
     }
 
     const val androidGradlePlugin = "com.android.tools.build:gradle:${Versions.buildToolsVersion}"

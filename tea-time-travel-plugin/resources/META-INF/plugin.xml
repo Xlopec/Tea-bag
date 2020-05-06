@@ -17,15 +17,15 @@
 <idea-plugin>
     <id>com.github.Xlopec.elm.time.travel</id>
     <name>Time Travel Debugger</name>
-    <version>0.0.1</version>
-    <vendor email="maksimolejn720@gmail.com">No Name</vendor>
+    <version>0.0.1-deploy2</version>
+    <vendor email="maksimolejn720@gmail.com">Maksym Oliinyk</vendor>
 
     <description><![CDATA[
-      Elm time travel debugger to debug something
+    The Time Travel Debugger plugin provides support to debug TEA applications that use <a href="https://github.com/Xlopec/Tea-bag">TEA-bag library</a>
     ]]></description>
 
     <change-notes><![CDATA[
-      some meaningful change notes to read by other
+      Initial EAP version with basic debugging and rendering support
     ]]>
     </change-notes>
 

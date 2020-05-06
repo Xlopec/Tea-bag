@@ -8,6 +8,8 @@ import Libraries.ktorServerNetty
 import Libraries.ktorServerWebsockets
 import TestLibraries.ktorServerTests
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.intellij.tasks.PublishTask
+import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 
 /*
  * Copyright (C) 2019 Maksym Oliinyk.
@@ -25,16 +27,18 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * limitations under the License.
  */
 
-/*plugins {
-    id("org.jetbrains.intellij")
-}*/
-
 intellij {
     version = "2020.1"
 }
 
-group = "com.github.Xlopec.time.travel"
-version = "0.0.1"
+tasks.named<PatchPluginXmlTask>("patchPluginXml") {
+    setVersion(versionName())
+}
+
+tasks.named<PublishTask>("publishPlugin") {
+    token(System.getenv("PUBLISH_PLUGIN_TOKEN"))
+    channels(*pluginReleaseChannels())
+}
 
 sourceSets {
     main {
@@ -50,24 +54,20 @@ tasks.withType<KotlinCompile> {
     }
 }
 
-configurations.all {
-    resolutionStrategy.force(coroutinesCore)
-}
-
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    compile(project(path = ":tea-core", configuration = "default"))
-    compile(project(path = ":tea-time-travel-protocol", configuration = "default"))
-    compile(project(path = ":tea-time-travel-adapter-gson", configuration = "default"))
+    implementation(project(path = ":tea-core", configuration = "default"))
+    implementation(project(path = ":tea-time-travel-protocol", configuration = "default"))
+    implementation(project(path = ":tea-time-travel-adapter-gson", configuration = "default"))
 
-    compile(kotlinStdLib)
+    implementation(kotlinStdLib)
 
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation(ktorServerCore)
     implementation(ktorServerNetty)
     implementation(ktorServerWebsockets)
-    compile(coroutinesCore)
-    compile(coroutinesSwing)
+    implementation(coroutinesCore)
+    implementation(coroutinesSwing)
     implementation(immutableCollections)
 
     testImplementation(ktorServerTests)
