@@ -20,7 +20,7 @@ import com.oliynick.max.tea.core.debug.app.domain.Settings
 import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.transport.StartedServer
 import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
-import protocol.ComponentId
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 sealed class PluginCommand
 

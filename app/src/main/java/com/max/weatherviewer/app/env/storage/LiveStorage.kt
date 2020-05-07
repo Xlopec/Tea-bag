@@ -5,17 +5,11 @@ package com.max.weatherviewer.app.env.storage
 import android.app.Application
 import com.max.weatherviewer.app.env.HasAppContext
 import com.max.weatherviewer.app.env.storage.local.HasMongoCollection
-import com.max.weatherviewer.app.env.storage.network.ArticleElement
-import com.max.weatherviewer.app.env.storage.network.ArticleResponse
-import com.max.weatherviewer.app.env.storage.network.HasNewsApi
+import com.max.weatherviewer.app.env.storage.network.*
 import com.max.weatherviewer.domain.Article
 import com.max.weatherviewer.screens.feed.LoadCriteria
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.ReplaceOptions
-import com.mongodb.client.model.UpdateOptions
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
+import com.mongodb.client.model.*
+import kotlinx.coroutines.*
 import org.bson.Document
 import java.net.URL
 

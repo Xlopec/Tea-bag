@@ -3,7 +3,7 @@
 package com.oliynick.max.tea.core.debug.gson
 
 import com.google.gson.*
-import protocol.JsonConverter
+import com.oliynick.max.tea.core.debug.protocol.JsonConverter
 
 /**
  * Configures and creates a new [converter][GsonConverter] instance

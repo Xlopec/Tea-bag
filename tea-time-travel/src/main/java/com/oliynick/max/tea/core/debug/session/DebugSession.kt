@@ -1,7 +1,7 @@
 package com.oliynick.max.tea.core.debug.session
 
+import com.oliynick.max.tea.core.debug.protocol.NotifyServer
 import kotlinx.coroutines.flow.Flow
-import protocol.NotifyServer
 
 /**
  * Debug session with ability to observe messages and states from

@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-package protocol
+package com.oliynick.max.tea.core.debug.protocol
 
-data class ComponentId(val id: String) {
-    init {
-        require(id.isNotBlank() && id.isNotEmpty())
-    }
-}
+sealed class ServerMessage<out J>
+
+data class NotifyComponentSnapshot<out J>(
+    val message: J,
+    val oldState: J,
+    val newState: J
+) : ServerMessage<J>()
+
+data class NotifyComponentAttached<out J>(
+    val state: J
+) : ServerMessage<J>()

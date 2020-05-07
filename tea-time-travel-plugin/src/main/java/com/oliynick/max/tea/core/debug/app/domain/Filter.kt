@@ -2,9 +2,7 @@
 
 package com.oliynick.max.tea.core.debug.app.domain
 
-import com.oliynick.max.tea.core.debug.app.domain.FilterOption.REGEX
-import com.oliynick.max.tea.core.debug.app.domain.FilterOption.SUBSTRING
-import com.oliynick.max.tea.core.debug.app.domain.FilterOption.WORDS
+import com.oliynick.max.tea.core.debug.app.domain.FilterOption.*
 import java.util.*
 import kotlin.collections.HashSet
 

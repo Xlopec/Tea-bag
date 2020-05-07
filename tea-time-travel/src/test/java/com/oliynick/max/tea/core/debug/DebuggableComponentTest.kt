@@ -3,40 +3,29 @@
 package com.oliynick.max.tea.core.debug
 
 import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.Env
-import com.oliynick.max.tea.core.Initial
-import com.oliynick.max.tea.core.Regular
-import com.oliynick.max.tea.core.Snapshot
+import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.invoke
 import com.oliynick.max.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.exception.ConnectException
+import com.oliynick.max.tea.core.debug.protocol.NotifyComponentAttached
+import com.oliynick.max.tea.core.debug.protocol.NotifyComponentSnapshot
 import com.oliynick.max.tea.core.debug.session.WebSocketSession
 import core.component.BasicComponentTest
 import core.misc.messageAsStateUpdate
 import core.misc.throwingResolver
 import core.scope.runBlockingInTestScope
-import io.kotlintest.fail
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.numerics.shouldBeExactly
 import io.kotlintest.matchers.numerics.shouldNotBeExactly
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrowExactlyUnit
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toCollection
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import protocol.NotifyComponentAttached
-import protocol.NotifyComponentSnapshot
 
 typealias StringSnapshot = Snapshot<String, String, String>
 

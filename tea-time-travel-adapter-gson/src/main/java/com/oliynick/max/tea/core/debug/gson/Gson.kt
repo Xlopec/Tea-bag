@@ -4,7 +4,7 @@ package com.oliynick.max.tea.core.debug.gson
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import protocol.*
+import com.oliynick.max.tea.core.debug.protocol.*
 import java.util.*
 
 /**

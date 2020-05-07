@@ -2,20 +2,8 @@
 
 package com.oliynick.max.tea.core.debug.gson
 
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
-import com.google.gson.JsonSerializationContext
-import com.google.gson.JsonSerializer
-import protocol.ApplyMessage
-import protocol.ApplyState
-import protocol.ClientMessage
-import protocol.ComponentId
-import protocol.NotifyComponentAttached
-import protocol.NotifyComponentSnapshot
-import protocol.ServerMessage
+import com.google.gson.*
+import com.oliynick.max.tea.core.debug.protocol.*
 import java.lang.reflect.Type
 import java.util.*
 
@@ -46,7 +34,8 @@ internal object ComponentIdAdapter : JsonSerializer<ComponentId>, JsonDeserializ
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): ComponentId = ComponentId(json.asString)
+    ): ComponentId =
+        ComponentId(json.asString)
 }
 
 internal object ServerMessageAdapter : JsonSerializer<ServerMessage<JsonElement>>,
@@ -91,16 +80,17 @@ internal object ServerMessageAdapter : JsonSerializer<ServerMessage<JsonElement>
 
     private fun JsonElement.asNotifyComponentSnapshot() =
         NotifyComponentSnapshot(
-            asJsonObject["message"],
-            asJsonObject["oldState"],
-            asJsonObject["newState"]
+                asJsonObject["message"],
+                asJsonObject["oldState"],
+                asJsonObject["newState"]
         )
 
     private fun NotifyComponentAttached<JsonElement>.toJsonElement(): JsonObject = JsonObject {
         add("state", state)
     }
 
-    private fun JsonElement.asNotifyComponentAttached() = NotifyComponentAttached(asJsonObject["state"])
+    private fun JsonElement.asNotifyComponentAttached() =
+        NotifyComponentAttached(asJsonObject["state"])
 
 }
 
@@ -144,7 +134,8 @@ internal object ClientMessageAdapter : JsonSerializer<ClientMessage<JsonElement>
         add("state", state)
     }
 
-    private fun JsonElement.asApplyMessage() = ApplyMessage(asJsonObject["message"])
+    private fun JsonElement.asApplyMessage() =
+        ApplyMessage(asJsonObject["message"])
 
     private fun JsonElement.asApplyState() = ApplyState(asJsonObject["state"])
 

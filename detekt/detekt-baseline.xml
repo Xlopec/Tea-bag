@@ -103,7 +103,7 @@
     <ID>NewLineAtEndOfFile:InterceptData.kt$core.component.InterceptData.kt</ID>
     <ID>NewLineAtEndOfFile:JLabelExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.JLabelExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:JavaVersionExt.kt$.JavaVersionExt.kt</ID>
-    <ID>NewLineAtEndOfFile:JsonConverter.kt$protocol.JsonConverter.kt</ID>
+    <ID>NewLineAtEndOfFile:JsonConverter.kt$com.oliynick.max.tea.core.debug.protocol.JsonConverter.kt</ID>
     <ID>NewLineAtEndOfFile:LRUCacheTest.kt$com.oliynick.max.tea.core.debug.app.domain.LRUCacheTest.kt</ID>
     <ID>NewLineAtEndOfFile:LiveFeedUpdater.kt$com.max.weatherviewer.screens.feed.update.LiveFeedUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:LiveUpdater.kt$com.oliynick.max.tea.core.debug.app.component.updater.LiveUpdater.kt</ID>

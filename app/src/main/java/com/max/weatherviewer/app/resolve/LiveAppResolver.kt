@@ -2,10 +2,7 @@
 
 package com.max.weatherviewer.app.resolve
 
-import com.max.weatherviewer.app.CloseApp
-import com.max.weatherviewer.app.Command
-import com.max.weatherviewer.app.FeedCommand
-import com.max.weatherviewer.app.Message
+import com.max.weatherviewer.app.*
 import com.max.weatherviewer.screens.feed.resolve.FeedResolver
 import com.oliynick.max.tea.core.component.sideEffect
 import kotlinx.coroutines.channels.BroadcastChannel

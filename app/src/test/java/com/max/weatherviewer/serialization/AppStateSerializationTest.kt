@@ -3,23 +3,16 @@ package com.max.weatherviewer.serialization
 import com.max.weatherviewer.app.ScreenMessage
 import com.max.weatherviewer.app.State
 import com.max.weatherviewer.app.serialization.PersistentListSerializer
-import com.max.weatherviewer.domain.Article
-import com.max.weatherviewer.domain.Description
-import com.max.weatherviewer.domain.Title
-import com.max.weatherviewer.screens.feed.FeedLoading
-import com.max.weatherviewer.screens.feed.LoadArticles
-import com.max.weatherviewer.screens.feed.LoadCriteria
-import com.max.weatherviewer.screens.feed.Preview
+import com.max.weatherviewer.domain.*
+import com.max.weatherviewer.screens.feed.*
 import com.oliynick.max.tea.core.debug.gson.Gson
+import com.oliynick.max.tea.core.debug.protocol.*
 import io.kotlintest.shouldBe
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import protocol.NotifyComponentAttached
-import protocol.NotifyComponentSnapshot
-import protocol.ServerMessage
 import java.net.URL
 import java.util.*
 
@@ -74,9 +67,9 @@ class AppStateSerializationTest {
     fun `test NotifyComponentSnapshot is serializing correctly`() = with(gsonSerializer) {
 
         val message = NotifyComponentSnapshot(
-            toJsonTree("Message"),
-            toJsonTree(testState),
-            toJsonTree(loadingScreenState)
+                toJsonTree("Message"),
+                toJsonTree(testState),
+                toJsonTree(loadingScreenState)
         )
 
         val json = toJson(message)

@@ -16,22 +16,7 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.misc
 
-import com.oliynick.max.tea.core.debug.app.domain.BooleanWrapper
-import com.oliynick.max.tea.core.debug.app.domain.ByteWrapper
-import com.oliynick.max.tea.core.debug.app.domain.CharWrapper
-import com.oliynick.max.tea.core.debug.app.domain.CollectionWrapper
-import com.oliynick.max.tea.core.debug.app.domain.DoubleWrapper
-import com.oliynick.max.tea.core.debug.app.domain.FilteredSnapshot
-import com.oliynick.max.tea.core.debug.app.domain.FloatWrapper
-import com.oliynick.max.tea.core.debug.app.domain.IntWrapper
-import com.oliynick.max.tea.core.debug.app.domain.LongWrapper
-import com.oliynick.max.tea.core.debug.app.domain.Null
-import com.oliynick.max.tea.core.debug.app.domain.Property
-import com.oliynick.max.tea.core.debug.app.domain.Ref
-import com.oliynick.max.tea.core.debug.app.domain.ShortWrapper
-import com.oliynick.max.tea.core.debug.app.domain.StringWrapper
-import com.oliynick.max.tea.core.debug.app.domain.Value
-import com.oliynick.max.tea.core.debug.app.domain.isPrimitive
+import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.CLASS_ICON
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.PROPERTY_ICON
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.VARIABLE_ICON
@@ -39,9 +24,7 @@ import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.WATCH_ICO
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import javax.swing.Icon
-import javax.swing.tree.DefaultMutableTreeNode
-import javax.swing.tree.MutableTreeNode
-import javax.swing.tree.TreeModel
+import javax.swing.tree.*
 
 typealias ValueFormatter = Value.() -> String
 

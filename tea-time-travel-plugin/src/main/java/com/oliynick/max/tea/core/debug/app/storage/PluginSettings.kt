@@ -18,10 +18,7 @@ package com.oliynick.max.tea.core.debug.app.storage
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
-import com.oliynick.max.tea.core.debug.app.domain.DEFAULT_HOST
-import com.oliynick.max.tea.core.debug.app.domain.DEFAULT_PORT
-import com.oliynick.max.tea.core.debug.app.domain.ServerSettings
-import com.oliynick.max.tea.core.debug.app.domain.Settings
+import com.oliynick.max.tea.core.debug.app.domain.*
 
 const val PLUGIN_ID = "com.oliynick.max.tea.core.plugin"
 

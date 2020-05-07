@@ -1,23 +1,10 @@
 package com.oliynick.max.tea.core.debug.app.component.resolver
 
 import com.intellij.openapi.ui.popup.Balloon
-import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyState
-import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyComponentAttached
-import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyOperationException
-import com.oliynick.max.tea.core.debug.app.component.cms.DoStartServer
-import com.oliynick.max.tea.core.debug.app.component.cms.DoStopServer
-import com.oliynick.max.tea.core.debug.app.component.cms.DoStoreSettings
-import com.oliynick.max.tea.core.debug.app.component.cms.DoWarnUnacceptableMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.MissingDependenciesException
-import com.oliynick.max.tea.core.debug.app.component.cms.NetworkException
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginException
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
+import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.presentation.sidebar.createErrorBalloon
 import com.oliynick.max.tea.core.debug.app.presentation.sidebar.createNotificationBalloon
-import protocol.ComponentId
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 fun newExceptionBalloon(
     cause: PluginException,

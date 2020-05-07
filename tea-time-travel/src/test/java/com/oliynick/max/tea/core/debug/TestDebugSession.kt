@@ -1,10 +1,10 @@
 package com.oliynick.max.tea.core.debug
 
 import com.google.gson.JsonElement
+import com.oliynick.max.tea.core.debug.protocol.NotifyServer
 import com.oliynick.max.tea.core.debug.session.DebugSession
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import protocol.NotifyServer
 
 class TestDebugSession<M, S>(
     override val messages: Flow<M> = emptyFlow(),

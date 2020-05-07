@@ -1,41 +1,10 @@
 package com.oliynick.max.tea.core.debug.app.component.updater
 
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.DoApplyState
-import com.oliynick.max.tea.core.debug.app.component.cms.DoStartServer
-import com.oliynick.max.tea.core.debug.app.component.cms.DoStopServer
-import com.oliynick.max.tea.core.debug.app.component.cms.DoStoreSettings
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.component.cms.ReApplyMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.ReApplyState
-import com.oliynick.max.tea.core.debug.app.component.cms.RemoveAllSnapshots
-import com.oliynick.max.tea.core.debug.app.component.cms.RemoveComponent
-import com.oliynick.max.tea.core.debug.app.component.cms.RemoveSnapshots
-import com.oliynick.max.tea.core.debug.app.component.cms.StartServer
-import com.oliynick.max.tea.core.debug.app.component.cms.Started
-import com.oliynick.max.tea.core.debug.app.component.cms.Starting
-import com.oliynick.max.tea.core.debug.app.component.cms.StopServer
-import com.oliynick.max.tea.core.debug.app.component.cms.Stopped
-import com.oliynick.max.tea.core.debug.app.component.cms.Stopping
-import com.oliynick.max.tea.core.debug.app.component.cms.UIMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.UpdateDebugSettings
-import com.oliynick.max.tea.core.debug.app.component.cms.UpdateFilter
-import com.oliynick.max.tea.core.debug.app.component.cms.UpdateHost
-import com.oliynick.max.tea.core.debug.app.component.cms.UpdatePort
-import com.oliynick.max.tea.core.debug.app.component.cms.removeSnapshots
-import com.oliynick.max.tea.core.debug.app.component.cms.snapshot
-import com.oliynick.max.tea.core.debug.app.component.cms.update
-import com.oliynick.max.tea.core.debug.app.component.cms.updateComponents
-import com.oliynick.max.tea.core.debug.app.component.cms.updateFilter
-import com.oliynick.max.tea.core.debug.app.component.cms.updateServerSettings
-import com.oliynick.max.tea.core.debug.app.component.cms.updateSettings
+import com.oliynick.max.tea.core.component.*
+import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.ServerSettings
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
-import protocol.ComponentId
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 // privacy is for pussies
 @Suppress("MemberVisibilityCanBePrivate")

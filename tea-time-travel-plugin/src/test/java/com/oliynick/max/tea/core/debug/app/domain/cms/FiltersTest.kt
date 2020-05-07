@@ -2,13 +2,7 @@
 
 package com.oliynick.max.tea.core.debug.app.domain.cms
 
-import com.oliynick.max.tea.core.debug.app.domain.IntWrapper
-import com.oliynick.max.tea.core.debug.app.domain.Property
-import com.oliynick.max.tea.core.debug.app.domain.Ref
-import com.oliynick.max.tea.core.debug.app.domain.RegexPredicate
-import com.oliynick.max.tea.core.debug.app.domain.Type
-import com.oliynick.max.tea.core.debug.app.domain.Valid
-import com.oliynick.max.tea.core.debug.app.domain.applyTo
+import com.oliynick.max.tea.core.debug.app.domain.*
 import io.kotlintest.shouldBe
 import org.junit.Test
 import org.junit.runner.RunWith

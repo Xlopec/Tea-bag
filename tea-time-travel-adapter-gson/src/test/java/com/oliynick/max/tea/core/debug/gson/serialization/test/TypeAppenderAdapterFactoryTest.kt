@@ -1,12 +1,7 @@
 package com.oliynick.max.tea.core.debug.gson.serialization.test
 
 import com.oliynick.max.tea.core.debug.gson.Gson
-import com.oliynick.max.tea.core.debug.gson.serialization.data.A
-import com.oliynick.max.tea.core.debug.gson.serialization.data.Container
-import com.oliynick.max.tea.core.debug.gson.serialization.data.D
-import com.oliynick.max.tea.core.debug.gson.serialization.data.PolyA
-import com.oliynick.max.tea.core.debug.gson.serialization.data.PolyB
-import com.oliynick.max.tea.core.debug.gson.serialization.data.PolyContainer
+import com.oliynick.max.tea.core.debug.gson.serialization.data.*
 import com.oliynick.max.tea.core.debug.gson.serialization.serializer.MapDeserializer
 import com.oliynick.max.tea.core.debug.gson.serialization.serializer.PersistentListSerializer
 import io.kotlintest.shouldBe

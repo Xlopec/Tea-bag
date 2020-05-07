@@ -2,21 +2,13 @@
 
 package com.max.weatherviewer.app.env.storage.network
 
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonElement
-import com.google.gson.JsonPrimitive
-import com.google.gson.JsonSerializationContext
+import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import com.max.weatherviewer.app.env.storage.TypeAdapter
-import com.max.weatherviewer.domain.Author
-import com.max.weatherviewer.domain.Description
-import com.max.weatherviewer.domain.Title
-import com.max.weatherviewer.domain.tryCreate
+import com.max.weatherviewer.domain.*
 import retrofit2.Retrofit
 import retrofit2.create
-import retrofit2.http.GET
-import retrofit2.http.Query
-import retrofit2.http.QueryMap
+import retrofit2.http.*
 import java.lang.reflect.Type
 import java.net.URL
 import java.util.*

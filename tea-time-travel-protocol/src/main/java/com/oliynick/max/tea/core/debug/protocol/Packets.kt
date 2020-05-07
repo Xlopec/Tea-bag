@@ -16,7 +16,7 @@
 
 @file:Suppress("unused")
 
-package protocol
+package com.oliynick.max.tea.core.debug.protocol
 
 import java.util.*
 

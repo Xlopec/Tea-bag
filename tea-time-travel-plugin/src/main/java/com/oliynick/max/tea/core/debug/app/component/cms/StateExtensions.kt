@@ -1,25 +1,11 @@
 package com.oliynick.max.tea.core.debug.app.component.cms
 
-import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
-import com.oliynick.max.tea.core.debug.app.domain.ComponentMapping
-import com.oliynick.max.tea.core.debug.app.domain.DebugState
-import com.oliynick.max.tea.core.debug.app.domain.Filter
-import com.oliynick.max.tea.core.debug.app.domain.FilterOption
-import com.oliynick.max.tea.core.debug.app.domain.FilteredSnapshot
-import com.oliynick.max.tea.core.debug.app.domain.Invalid
-import com.oliynick.max.tea.core.debug.app.domain.OriginalSnapshot
-import com.oliynick.max.tea.core.debug.app.domain.Predicate
-import com.oliynick.max.tea.core.debug.app.domain.ServerSettings
-import com.oliynick.max.tea.core.debug.app.domain.Settings
-import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
-import com.oliynick.max.tea.core.debug.app.domain.Valid
-import com.oliynick.max.tea.core.debug.app.domain.Value
-import com.oliynick.max.tea.core.debug.app.domain.applyTo
+import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.map
 import com.oliynick.max.tea.core.debug.app.misc.mapNotNull
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import protocol.ComponentId
 
 fun Started.update(
     debugState: DebugState

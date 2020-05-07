@@ -7,15 +7,13 @@ import com.max.weatherviewer.app.serialization.PersistentListSerializer
 import com.max.weatherviewer.screens.feed.FeedLoading
 import com.max.weatherviewer.screens.feed.LoadCriteria
 import com.oliynick.max.tea.core.Initializer
-import com.oliynick.max.tea.core.component.Component
-import com.oliynick.max.tea.core.component.states
-import com.oliynick.max.tea.core.component.with
+import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.component.URL
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.flow.Flow
-import protocol.ComponentId
 import java.util.*
 
 fun Environment.appComponent(): (Flow<Message>) -> Flow<State> {
@@ -32,11 +30,11 @@ fun Environment.appComponent(): (Flow<Message>) -> Flow<State> {
     if (isDebug) {
 
         return Component(
-            ComponentId("News Reader App"),
-            AppInitializer(),
-            ::resolve,
-            ::update,
-            AppGsonSerializer()
+                ComponentId("News Reader App"),
+                AppInitializer(),
+                ::resolve,
+                ::update,
+                AppGsonSerializer()
         ) {
             serverSettings {
                 url = URL(host = "10.0.2.2")

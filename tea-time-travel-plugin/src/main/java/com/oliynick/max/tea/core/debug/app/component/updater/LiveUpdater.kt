@@ -4,12 +4,7 @@ package com.oliynick.max.tea.core.debug.app.component.updater
 
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.debug.app.component.cms.DoWarnUnacceptableMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.NotificationMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.component.cms.UIMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.*
 
 fun <Env> LiveUpdater() where Env : NotificationUpdater,
                               Env : UiUpdater =
