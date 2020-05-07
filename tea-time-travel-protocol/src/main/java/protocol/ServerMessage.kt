@@ -29,8 +29,3 @@ data class NotifyComponentSnapshot<out J>(
 data class NotifyComponentAttached<out J>(
     val state: J
 ) : ServerMessage<J>()
-
-@Deprecated("not needed anymore, will be removed")
-data class ActionApplied(
-    val id: UUID
-) : ServerMessage<Nothing>()

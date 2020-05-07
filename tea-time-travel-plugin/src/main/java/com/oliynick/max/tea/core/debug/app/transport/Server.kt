@@ -56,7 +56,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.slf4j.event.Level
-import protocol.ActionApplied
 import protocol.ClientMessage
 import protocol.ComponentId
 import protocol.NotifyClient
@@ -252,7 +251,6 @@ private suspend fun processPacket(
                     message.state.asJsonObject.toValue()
                 )
             )
-            is ActionApplied -> error("ActionApplied instances shouldn't be sent anymore")
         }
 
     } catch (e: Throwable) {

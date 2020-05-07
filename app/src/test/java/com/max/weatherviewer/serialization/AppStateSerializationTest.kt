@@ -17,7 +17,6 @@ import kotlinx.collections.immutable.persistentListOf
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import protocol.ActionApplied
 import protocol.NotifyComponentAttached
 import protocol.NotifyComponentSnapshot
 import protocol.ServerMessage
@@ -66,16 +65,6 @@ class AppStateSerializationTest {
         val message = NotifyComponentAttached(toJsonTree(testState))
         val json = toJson(message)
 
-        val fromJson = fromJson(json, ServerMessage::class.java)
-
-        fromJson shouldBe message
-    }
-
-    @Test
-    fun `test ActionApplied is serializing correctly`() = with(gsonSerializer) {
-
-        val message = ActionApplied(UUID.randomUUID())
-        val json = toJson(message)
         val fromJson = fromJson(json, ServerMessage::class.java)
 
         fromJson shouldBe message

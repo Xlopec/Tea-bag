@@ -35,7 +35,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import protocol.ActionApplied
 import protocol.NotifyComponentAttached
 import protocol.NotifyComponentSnapshot
 
@@ -110,8 +109,6 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
                     index shouldBeExactly 0
                     fromJson(payload.state) shouldBe ""
                 }
-
-                is ActionApplied -> fail("Shouldn't get here. Index=$index, elem=$elem")
             }
         }
     }

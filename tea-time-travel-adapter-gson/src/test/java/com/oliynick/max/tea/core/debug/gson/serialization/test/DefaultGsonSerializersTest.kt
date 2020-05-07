@@ -14,7 +14,6 @@ import io.kotlintest.shouldBe
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import protocol.ActionApplied
 import protocol.ApplyMessage
 import protocol.ApplyState
 import protocol.ClientMessage
@@ -49,16 +48,6 @@ class DefaultGsonSerializersTest {
     fun `test NotifyComponentAttached gets serialized correctly`() {
 
         val message = NotifyComponentAttached(gsonSerializer.toJsonTree(testUser))
-        val json = gsonSerializer.toJson(message)
-        val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
-
-        fromJson shouldBe message
-    }
-
-    @Test
-    fun `test ActionApplied gets serialized correctly`() {
-
-        val message = ActionApplied(UUID.randomUUID())
         val json = gsonSerializer.toJson(message)
         val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
 

@@ -9,7 +9,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import protocol.ActionApplied
 import protocol.ApplyMessage
 import protocol.ApplyState
 import protocol.ClientMessage
@@ -62,7 +61,6 @@ internal object ServerMessageAdapter : JsonSerializer<ServerMessage<JsonElement>
         val tree: JsonObject = when (src) {
             is NotifyComponentSnapshot<JsonElement> -> src.toJsonElement()
             is NotifyComponentAttached<JsonElement> -> src.toJsonElement()
-            is ActionApplied -> src.toJsonElement(context)
         }
 
         tree.addProperty("@type", src::class.java.name)
@@ -79,7 +77,7 @@ internal object ServerMessageAdapter : JsonSerializer<ServerMessage<JsonElement>
         when (obj["@type"].asString) {
             NotifyComponentSnapshot::class.java.name -> json.asNotifyComponentSnapshot()
             NotifyComponentAttached::class.java.name -> json.asNotifyComponentAttached()
-            ActionApplied::class.java.name -> json.asActionApplied(context)
+
             else -> error("unknown server message type, json\n\n$json\n")
         }
     }
@@ -103,15 +101,6 @@ internal object ServerMessageAdapter : JsonSerializer<ServerMessage<JsonElement>
     }
 
     private fun JsonElement.asNotifyComponentAttached() = NotifyComponentAttached(asJsonObject["state"])
-
-    private fun ActionApplied.toJsonElement(
-        context: JsonSerializationContext
-    ): JsonObject = JsonObject {
-        add("id", context.serialize(id))
-    }
-
-    private fun JsonElement.asActionApplied(context: JsonDeserializationContext) =
-        ActionApplied(context.deserialize(asJsonObject["id"], UUID::class.java))
 
 }
 
