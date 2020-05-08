@@ -108,7 +108,9 @@ class ToolWindowView(
         check(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children}" }
     }
 
-    private fun render(@Suppress("UNUSED_PARAMETER") state: Starting) {
+    private fun render(
+        @Suppress("UNUSED_PARAMETER") state: Starting
+    ) {
         startButton.icon = RUN_DISABLED_ICON
         startButton.disabledIcon = RESUME_ICON
 
@@ -154,7 +156,7 @@ class ToolWindowView(
 
     private fun showEmptyComponentsView() {
         componentsPanel.removeAll()
-        componentsPanel += InfoView(component, coroutineContext).root
+        componentsPanel += InfoView.new(this, component)
     }
 
     private fun tabbedComponentsView() = JBTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT)
