@@ -59,7 +59,6 @@ private fun JsonObject.toValue(): Ref {
     return Ref(Type.of(this["@type"].asString), props)
 }
 
-// fixme add explicit type param
 private fun JsonPrimitive.toValue(): Value = when {
     isBoolean -> BooleanWrapper.of(asBoolean)
     isString -> StringWrapper(asString)

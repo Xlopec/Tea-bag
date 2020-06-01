@@ -23,8 +23,8 @@ import com.intellij.openapi.ui.JBPopupMenu
 import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.presentation.misc.*
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.REMOVE_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.UPDATE_RUNNING_APP_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RemoveIcon
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.UpdateRunningAppIcon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ErrorColor
 import com.oliynick.max.tea.core.debug.app.presentation.ui.InputTimeoutMillis
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
@@ -264,7 +264,7 @@ private fun SnapshotsPopup(
     id: ComponentId,
     onAction: (PluginMessage) -> Unit
 ): JPopupMenu = JBPopupMenu("Snapshots").apply {
-    add(JBMenuItem("Delete all", REMOVE_ICON).apply {
+    add(JBMenuItem("Delete all", RemoveIcon).apply {
         addActionListener {
             onAction(RemoveAllSnapshots(id))
         }
@@ -279,14 +279,14 @@ private fun SnapshotPopup(
     JBPopupMenu("Snapshot ${snapshot.meta.id.value}").apply {
         add(JBMenuItem(
                 "Reset to this",
-                UPDATE_RUNNING_APP_ICON
+                UpdateRunningAppIcon
         ).apply {
             addActionListener {
                 onAction(ReApplyState(component, snapshot.meta.id))
             }
         })
 
-        add(JBMenuItem("Delete", REMOVE_ICON).apply {
+        add(JBMenuItem("Delete", RemoveIcon).apply {
             addActionListener {
                 onAction(RemoveSnapshots(component, snapshot.meta.id))
             }
@@ -300,7 +300,7 @@ private fun MessagePopup(
 ): JPopupMenu =
     JBPopupMenu().apply {
         add(JBMenuItem(
-                "Apply this message", UPDATE_RUNNING_APP_ICON
+                "Apply this message", UpdateRunningAppIcon
         ).apply {
             addActionListener {
                 onAction(ReApplyMessage(componentId, snapshotId))
@@ -314,7 +314,7 @@ private fun StatePopup(
     onAction: (PluginMessage) -> Unit
 ): JPopupMenu =
     JBPopupMenu().apply {
-        add(JBMenuItem("Apply this state", UPDATE_RUNNING_APP_ICON).apply {
+        add(JBMenuItem("Apply this state", UpdateRunningAppIcon).apply {
             addActionListener {
                 onAction(ReApplyState(componentId, snapshotId))
             }

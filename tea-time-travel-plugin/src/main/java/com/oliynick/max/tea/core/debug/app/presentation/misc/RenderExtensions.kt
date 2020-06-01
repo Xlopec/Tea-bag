@@ -17,10 +17,10 @@
 package com.oliynick.max.tea.core.debug.app.presentation.misc
 
 import com.oliynick.max.tea.core.debug.app.domain.*
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.CLASS_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.PROPERTY_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.VARIABLE_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.WATCH_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.ClassIcon
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.PropertyIcon
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.VariableIcon
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.WatchIcon
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import javax.swing.Icon
@@ -82,8 +82,8 @@ fun EntryValueNode.toReadableString(
 val RenderTree.icon: Icon?
     get() = when (this) {
         RootNode, is MessageNode, is StateNode -> null
-        is SnapshotNode -> WATCH_ICON
-        is PropertyNode -> PROPERTY_ICON
+        is SnapshotNode -> WatchIcon
+        is PropertyNode -> PropertyIcon
         is ValueNode -> value.icon
         is IndexedNode -> value.icon
         is EntryKeyNode -> key.icon
@@ -224,8 +224,8 @@ private fun CollectionWrapper.toReadableStringShort(): String =
 
 private val Value.icon: Icon?
     inline get() = when {
-        isPrimitive -> VARIABLE_ICON
-        this is CollectionWrapper || this is Ref -> CLASS_ICON
+        isPrimitive -> VariableIcon
+        this is CollectionWrapper || this is Ref -> ClassIcon
         else -> null
     }
 

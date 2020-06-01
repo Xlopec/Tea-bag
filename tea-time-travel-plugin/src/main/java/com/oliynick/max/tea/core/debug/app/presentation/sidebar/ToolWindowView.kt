@@ -25,14 +25,14 @@ import com.oliynick.max.tea.core.debug.app.misc.*
 import com.oliynick.max.tea.core.debug.app.presentation.component.ComponentView
 import com.oliynick.max.tea.core.debug.app.presentation.info.InfoView
 import com.oliynick.max.tea.core.debug.app.presentation.misc.*
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.CLOSE_DARK_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.CLOSE_DEFAULT_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RESUME_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RUN_DEFAULT_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RUN_DISABLED_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.STOPPING_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.SUSPEND_DEFAULT_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.SUSPEND_DISABLED_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.CloseDarkIcon
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.CloseDefaultIcon
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.ResumeIcon
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RunDefaultIcon
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RunDisabledIcon
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.StoppingIcon
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.SuspendDefaultIcon
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.SuspendDisabledIcon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ErrorColor
 import com.oliynick.max.tea.core.debug.app.presentation.ui.InputTimeoutMillis
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
@@ -125,8 +125,8 @@ class ToolWindowView private constructor(
         messages: (PluginMessage) -> Unit
     ) {
 
-        startButton.icon = RUN_DEFAULT_ICON
-        startButton.disabledIcon = RUN_DISABLED_ICON
+        startButton.icon = RunDefaultIcon
+        startButton.disabledIcon = RunDisabledIcon
 
         if (state.canStart) {
             startButton.setOnClickListenerEnabling { messages(StartServer) }
@@ -146,8 +146,8 @@ class ToolWindowView private constructor(
     private fun render(
         @Suppress("UNUSED_PARAMETER") state: Starting
     ) {
-        startButton.icon = RUN_DISABLED_ICON
-        startButton.disabledIcon = RESUME_ICON
+        startButton.icon = RunDisabledIcon
+        startButton.disabledIcon = ResumeIcon
 
         startButton.removeMouseListenersDisabling()
     }
@@ -156,8 +156,8 @@ class ToolWindowView private constructor(
         state: Started,
         messages: (PluginMessage) -> Unit
     ) {
-        startButton.icon = SUSPEND_DEFAULT_ICON
-        startButton.disabledIcon = SUSPEND_DISABLED_ICON
+        startButton.icon = SuspendDefaultIcon
+        startButton.disabledIcon = SuspendDisabledIcon
 
         startButton.setOnClickListenerEnabling { messages(StopServer) }
 
@@ -183,8 +183,8 @@ class ToolWindowView private constructor(
     }
 
     private fun render(@Suppress("UNUSED_PARAMETER") state: Stopping) {
-        startButton.icon = SUSPEND_DEFAULT_ICON
-        startButton.disabledIcon = STOPPING_ICON
+        startButton.icon = SuspendDefaultIcon
+        startButton.disabledIcon = StoppingIcon
 
         startButton.removeMouseListenersDisabling()
     }
@@ -264,8 +264,8 @@ private inline fun JTabbedPane.addCloseableTab(
         isOpaque = false
 
         add(JLabel(component.id, SwingConstants.LEADING))
-        add(JLabel(CLOSE_DEFAULT_ICON).apply {
-            setHover(CLOSE_DARK_ICON)
+        add(JLabel(CloseDefaultIcon).apply {
+            setHover(CloseDarkIcon)
             setOnClickListener { onClose(component) }
         })
     }

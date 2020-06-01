@@ -36,8 +36,11 @@ object LiveUiUpdater : UiUpdater {
     fun updateServerSettings(
         message: UpdateServerSettings,
         state: PluginState
-    ): UpdateWith<PluginState, DoStoreSettings> =
-        state.updateServerSettings(Settings.of(message.host, message.port, state.settings.isDetailedOutput)) command { DoStoreSettings(settings) }
+    ): UpdateWith<PluginState, DoStoreSettings> {
+        val settings = Settings.of(message.host, message.port, state.settings.isDetailedOutput)
+
+        return state.updateServerSettings(settings) command { DoStoreSettings(settings) }
+    }
 
     fun startServer(
         state: Stopped

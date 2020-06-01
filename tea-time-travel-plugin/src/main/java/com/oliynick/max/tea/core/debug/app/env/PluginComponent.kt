@@ -8,6 +8,7 @@ import com.intellij.openapi.diagnostic.trace
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.storage.PluginId
 import com.oliynick.max.tea.core.debug.app.storage.settings
 
 fun PluginComponent(
@@ -22,13 +23,18 @@ fun PluginComponent(
         message: PluginMessage,
         state: PluginState
     ) = with(environment) { update(message, state) }
-    // fixme implement proper initializer properly
-    return Component(Initializer(Stopped.reset(environment.properties.settings)), ::doResolve, ::doUpdate)
+
+    return Component(AppInitializer(environment), ::doResolve, ::doUpdate)
         .with(Logger())
 }
 
+private fun AppInitializer(
+    environment: Environment
+) : Initializer<Stopped, Nothing> =
+    { Initial(Stopped.reset(environment.properties.settings), emptySet()) }
+
 private fun Logger(
-    logger: Logger = Logger.getInstance("Tea-Bag-Plugin")
+    logger: Logger = Logger.getInstance(PluginId)
 ): Interceptor<PluginMessage, PluginState, PluginCommand> =
     { snapshot ->
         logger.info(snapshot.infoMessage())
