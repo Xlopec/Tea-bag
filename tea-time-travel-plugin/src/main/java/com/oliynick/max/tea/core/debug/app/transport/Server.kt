@@ -89,54 +89,6 @@ class Server private constructor(
 
 }
 
-fun main() {
-    runBlocking {
-        embeddedServer(Netty, host = "localhost", port = 8080) {
-
-            install(CallLogging) {
-                level = Level.INFO
-                filter { call -> call.request.path().startsWith("/") }
-            }
-
-            install(ConditionalHeaders)
-            install(DataConversion)
-
-            install(DefaultHeaders) { header("X-Engine", "Ktor") }
-
-            install(WebSockets) {
-                pingPeriod = Duration.ofSeconds(10)
-                timeout = Duration.ofSeconds(5)
-            }
-
-            routing {
-
-                webSocket("/") {
-
-                    val pluginMessages = BroadcastChannel<PluginMessage>(1)
-                    val completions = BroadcastChannel<UUID>(1)
-
-                    launch {
-                        for (msg in pluginMessages.openSubscription()) {
-                            println("Plugin message $msg")
-                        }
-                    }
-
-                    launch {
-                        for (c in completions.openSubscription()) {
-                            println("Plugin message $c")
-                        }
-                    }
-
-                    installPacketReceiver(
-                        pluginMessages,
-                        incoming.consumeAsFlow().filterIsInstance()
-                    )
-                }
-            }
-        }.start(true)
-    }
-}
-
 private fun server(
     address: ServerAddress,
     events: BroadcastChannel<PluginMessage>,
