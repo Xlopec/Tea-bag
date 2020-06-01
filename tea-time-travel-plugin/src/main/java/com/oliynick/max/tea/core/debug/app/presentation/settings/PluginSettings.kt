@@ -18,9 +18,9 @@ class PluginSettings(
     }
 
     override fun isModified(): Boolean =
-        project.properties.pluginSettings.isDetailedOutput != detailedToStringCheckBox.isSelected
+        project.properties.settings.isDetailedOutput != detailedToStringCheckBox.isSelected
 
-    override fun getId(): String = PLUGIN_ID
+    override fun getId(): String = PluginId
 
     override fun getDisplayName(): String = "Time Travel"
 

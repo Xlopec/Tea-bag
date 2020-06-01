@@ -5,6 +5,7 @@ import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.presentation.sidebar.createErrorBalloon
 import com.oliynick.max.tea.core.debug.app.presentation.sidebar.createNotificationBalloon
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import java.util.*
 
 fun newExceptionBalloon(
     cause: PluginException,
@@ -50,7 +51,7 @@ private fun htmlDescription(
 
     return """<html>
         <p>An exception occurred${message?.let { ", $it" } ?: ""}</p>
-        <p>Reason: ${cause.message}</p>
+        ${cause.message?.decapitalize(Locale.ENGLISH)?.let { causeMessage -> """<p>Reason: $causeMessage</p>""" }}
         </html>
     """.trimMargin()
 }

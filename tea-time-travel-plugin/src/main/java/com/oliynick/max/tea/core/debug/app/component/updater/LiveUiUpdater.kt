@@ -2,8 +2,7 @@ package com.oliynick.max.tea.core.debug.app.component.updater
 
 import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.debug.app.component.cms.*
-import com.oliynick.max.tea.core.debug.app.domain.ServerSettings
-import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
+import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 // privacy is for pussies
@@ -16,23 +15,7 @@ object LiveUiUpdater : UiUpdater {
     ): UpdateWith<PluginState, PluginCommand> =
         when {
             message is UpdateDebugSettings -> updateDebugSettings(message.isDetailedToStringEnabled, state)
-            message is UpdatePort && state is Stopped -> updateServerSettings(
-                // fixme чому ЇЇЇЇЇЇЇїїїїїїї??777(((99
-                state.updateServerSettings {
-                    copy(
-                        port = message.port
-                    )
-                },
-                state
-            )
-            message is UpdateHost && state is Stopped -> updateServerSettings(
-                state.updateServerSettings {
-                    copy(
-                        host = message.host
-                    )
-                },
-                state
-            )
+            message is UpdateServerSettings && state is Stopped -> updateServerSettings(message, state)
             message === StartServer && state is Stopped -> startServer(state)
             message === StopServer && state is Started -> stopServer(state)
             message is RemoveSnapshots && state is Started -> removeSnapshots(message.componentId, message.ids, state)
@@ -51,21 +34,26 @@ object LiveUiUpdater : UiUpdater {
         state.updateSettings { copy(isDetailedOutput = isDetailedToStringEnabled) } command { DoStoreSettings(settings) }
 
     fun updateServerSettings(
-        serverSettings: ServerSettings,
-        state: Stopped
-    ): UpdateWith<Stopped, DoStoreSettings> {
-        //todo consider implementing generic memoization?
-        if (state.settings.serverSettings == serverSettings) {
-            return state.noCommand()
-        }
+        message: UpdateServerSettings,
+        state: PluginState
+    ): UpdateWith<PluginState, DoStoreSettings> =
+        state.updateServerSettings(Settings.of(message.host, message.port, state.settings.isDetailedOutput)) command { DoStoreSettings(settings) }
 
-        return state.update(serverSettings) command { DoStoreSettings(settings) }
+    fun startServer(
+        state: Stopped
+    ): UpdateWith<PluginState, PluginCommand> {
+
+        val host = state.settings.host
+        val port = state.settings.port
+
+        return if (host is Valid && port is Valid) {
+            Starting(state.settings) command DoStartServer(ServerAddress(host.t, port.t), state.server)
+        } else state.noCommand()
     }
 
-    fun startServer(state: Stopped): UpdateWith<Starting, DoStartServer> =
-        Starting(state.settings) command DoStartServer(state.settings, state.server)
-
-    fun stopServer(state: Started): UpdateWith<Stopping, DoStopServer> =
+    fun stopServer(
+        state: Started
+    ): UpdateWith<Stopping, DoStopServer> =
         Stopping(state.settings) command DoStopServer(state.server)
 
     fun reApplyState(

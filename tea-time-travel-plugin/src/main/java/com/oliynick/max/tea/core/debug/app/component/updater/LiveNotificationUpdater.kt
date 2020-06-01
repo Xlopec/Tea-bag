@@ -86,8 +86,11 @@ object LiveNotificationUpdater : NotificationUpdater {
         op: PluginCommand?,
         state: PluginState
     ): UpdateWith<PluginState, PluginCommand> =
-        if (isFatalProblem(th, op)) notifyDeveloperException(th)
-        else state command DoNotifyOperationException(th, op)
+        when {
+            isFatalProblem(th, op) -> notifyDeveloperException(th)
+            op is DoStartServer && state is Starting -> Stopped.reset(state.settings) command DoNotifyOperationException(th, op)
+            else -> state command DoNotifyOperationException(th, op)
+        }
 
     fun warnUnacceptableMessage(
         message: PluginMessage,

@@ -27,14 +27,14 @@
     <ID>FunctionNaming:Vectors.kt$@Composable fun VectorImage( modifier: Modifier = Modifier.None, @DrawableRes id: Int, tint: Color = Color.Transparent )</ID>
     <ID>FunctionNaming:Vectors.kt$@Composable fun VectorImageButton( @DrawableRes id: Int, onClick: () -&gt; Unit )</ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") private fun Null.toReadableString(): String</ID>
-    <ID>MagicNumber:Balloon.kt$0x33412E</ID>
-    <ID>MagicNumber:Balloon.kt$0x704745</ID>
-    <ID>MagicNumber:Balloon.kt$0xbaeeba</ID>
-    <ID>MagicNumber:Balloon.kt$0xffcccc</ID>
     <ID>MagicNumber:Balloon.kt$15</ID>
     <ID>MagicNumber:Balloon.kt$15_000L</ID>
-    <ID>MagicNumber:Balloon.kt$182</ID>
     <ID>MagicNumber:Balloon.kt$30</ID>
+    <ID>MagicNumber:Colors.kt$0x33412E</ID>
+    <ID>MagicNumber:Colors.kt$0x704745</ID>
+    <ID>MagicNumber:Colors.kt$0xbaeeba</ID>
+    <ID>MagicNumber:Colors.kt$0xffcccc</ID>
+    <ID>MagicNumber:Colors.kt$182</ID>
     <ID>MagicNumber:FeedScreen.kt$0.6f</ID>
     <ID>MagicNumber:FeedScreen.kt$0.87f</ID>
     <ID>MagicNumber:FeedScreen.kt$100</ID>
@@ -58,6 +58,7 @@
     <ID>MagicNumber:Themes.kt$0xFFC20029</ID>
     <ID>MagicNumber:Themes.kt$0xFFD00036</ID>
     <ID>MagicNumber:Themes.kt$0xFFDD0D3C</ID>
+    <ID>MagicNumber:ToolWindowView.kt$ToolWindowView$400L</ID>
     <ID>MagicNumber:Typography.kt$12</ID>
     <ID>MagicNumber:Typography.kt$14</ID>
     <ID>MagicNumber:Typography.kt$16</ID>
@@ -80,7 +81,6 @@
     <ID>NewLineAtEndOfFile:ClientMessageSerializationTest.kt$com.oliynick.max.tea.core.debug.app.domain.serialization.ClientMessageSerializationTest.kt</ID>
     <ID>NewLineAtEndOfFile:CollectionExt.kt$.CollectionExt.kt</ID>
     <ID>NewLineAtEndOfFile:CollectionExtensionsTest.kt$com.oliynick.max.tea.core.debug.app.misc.CollectionExtensionsTest.kt</ID>
-    <ID>NewLineAtEndOfFile:Component.kt$protocol.Component.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.ComponentExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentLogic.kt$core.component.ComponentLogic.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentTest.kt$com.oliynick.max.tea.core.debug.app.domain.component.ComponentTest.kt</ID>
@@ -100,7 +100,6 @@
     <ID>NewLineAtEndOfFile:GsonConverter.kt$com.oliynick.max.tea.core.debug.gson.GsonConverter.kt</ID>
     <ID>NewLineAtEndOfFile:HasMessageChannel.kt$com.oliynick.max.tea.core.debug.app.component.resolver.HasMessageChannel.kt</ID>
     <ID>NewLineAtEndOfFile:HasSystemProperties.kt$com.oliynick.max.tea.core.debug.app.component.resolver.HasSystemProperties.kt</ID>
-    <ID>NewLineAtEndOfFile:InterceptData.kt$core.component.InterceptData.kt</ID>
     <ID>NewLineAtEndOfFile:JLabelExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.JLabelExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:JavaVersionExt.kt$.JavaVersionExt.kt</ID>
     <ID>NewLineAtEndOfFile:JsonConverter.kt$com.oliynick.max.tea.core.debug.protocol.JsonConverter.kt</ID>
@@ -141,22 +140,17 @@
     <ID>TooGenericExceptionCaught:Server.kt$Server$th: Throwable</ID>
     <ID>TooGenericExceptionCaught:Server.kt$e: Throwable</ID>
     <ID>TooGenericExceptionThrown:ComponentTest.kt$ComponentTest$throw RuntimeException("hello")</ID>
+    <ID>TooManyFunctions:StateExtensions.kt$com.oliynick.max.tea.core.debug.app.component.cms.StateExtensions.kt</ID>
     <ID>UndocumentedPublicClass:ClientMessage.kt$ApplyMessage&lt;out J&gt; : ClientMessage</ID>
     <ID>UndocumentedPublicClass:ClientMessage.kt$ApplyState&lt;J&gt; : ClientMessage</ID>
     <ID>UndocumentedPublicClass:ClientMessage.kt$ClientMessage&lt;out J&gt;</ID>
     <ID>UndocumentedPublicClass:Component.kt$ComponentId</ID>
-    <ID>UndocumentedPublicClass:ConnectException.kt$ConnectException : RuntimeException</ID>
-    <ID>UndocumentedPublicClass:DebugEnvironment.kt$DebugEnv&lt;M, S, C, J&gt;</ID>
     <ID>UndocumentedPublicClass:DebugEnvironment.kt$DebugEnvBuilder&lt;M, S, C, J&gt;</ID>
-    <ID>UndocumentedPublicClass:DebugEnvironment.kt$ServerSettings&lt;M, S, J&gt;</ID>
     <ID>UndocumentedPublicClass:DebugEnvironment.kt$ServerSettingsBuilder&lt;M, S, J&gt;</ID>
-    <ID>UndocumentedPublicClass:DebugSession.kt$DebugSession&lt;M, S, J&gt;</ID>
-    <ID>UndocumentedPublicClass:JsonConverter.kt$JsonConverter&lt;J&gt;</ID>
     <ID>UndocumentedPublicClass:MulticastFlow.kt$MulticastFlow.MulticastActorAction$AddCollector&lt;T&gt; : MulticastActorAction</ID>
     <ID>UndocumentedPublicClass:MulticastFlow.kt$MulticastFlow.MulticastActorAction$RemoveCollector&lt;T&gt; : MulticastActorAction</ID>
     <ID>UndocumentedPublicClass:Packets.kt$NotifyClient&lt;out J&gt;</ID>
     <ID>UndocumentedPublicClass:Packets.kt$NotifyServer&lt;out J&gt;</ID>
-    <ID>UndocumentedPublicClass:ServerMessage.kt$ActionApplied : ServerMessage</ID>
     <ID>UndocumentedPublicClass:ServerMessage.kt$NotifyComponentAttached&lt;out J&gt; : ServerMessage</ID>
     <ID>UndocumentedPublicClass:ServerMessage.kt$NotifyComponentSnapshot&lt;out J&gt; : ServerMessage</ID>
     <ID>UndocumentedPublicClass:ServerMessage.kt$ServerMessage&lt;out J&gt;</ID>
@@ -166,25 +160,11 @@
     <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;S, C&gt; Env&lt;*, S, C&gt;.init(): Flow&lt;Initial&lt;S, C&gt;&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi suspend fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.computeNextSnapshot( state: S, message: M ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi suspend fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.computeNextSnapshotsRecursively( state: S, messages: Iterator&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C, J&gt; Component( env: DebugEnv&lt;M, S, C, J&gt; ): Component&lt;M, S, C&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$inline fun &lt;reified M, reified C, reified S, J&gt; Component( id: ComponentId, noinline initializer: Initializer&lt;S, C&gt;, noinline resolver: Resolver&lt;C, M&gt;, noinline updater: Updater&lt;M, S, C&gt;, jsonConverter: JsonConverter&lt;J&gt;, noinline config: DebugEnvBuilder&lt;M, S, C, J&gt;.() -&gt; Unit = {} ): Component&lt;M, S, C&gt;</ID>
     <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun environment( config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit )</ID>
     <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun serverSettings( config: ServerSettingsBuilder&lt;M, S, J&gt;.() -&gt; Unit )</ID>
-    <ID>UndocumentedPublicFunction:DebugEnvironment.kt$inline fun &lt;reified M, reified C, reified S, J&gt; Dependencies( id: ComponentId, env: EnvBuilder&lt;M, S, C&gt;, jsonConverter: JsonConverter&lt;J&gt;, config: DebugEnvBuilder&lt;M, S, C, J&gt;.() -&gt; Unit = {} )</ID>
-    <ID>UndocumentedPublicFunction:DebugSession.kt$DebugSession$suspend operator fun invoke( packet: NotifyServer&lt;J&gt; )</ID>
     <ID>UndocumentedPublicFunction:Environment.kt$@UnstableApi fun &lt;M, S, C&gt; EnvBuilder&lt;M, S, C&gt;.toEnv(): Env&lt;M, S, C&gt;</ID>
     <ID>UndocumentedPublicFunction:FlowExtensions.kt$@UnstableApi suspend fun &lt;T&gt; Flow&lt;T&gt;.into( sendChannel: SendChannel&lt;T&gt; )</ID>
-    <ID>UndocumentedPublicFunction:Gson.kt$fun Gson( config: GsonBuilder.() -&gt; Unit = {} ): Gson</ID>
-    <ID>UndocumentedPublicFunction:GsonConverter.kt$fun GsonSerializer( config: GsonBuilder.() -&gt; Unit = {} ): JsonConverter&lt;JsonElement&gt;</ID>
-    <ID>UndocumentedPublicFunction:JsonConverter.kt$JsonConverter$fun &lt;T&gt; fromJson( json: String, cl: Class&lt;T&gt; ): T</ID>
-    <ID>UndocumentedPublicFunction:JsonConverter.kt$JsonConverter$fun &lt;T&gt; fromJsonTree( json: J, cl: Class&lt;T&gt; ): T</ID>
-    <ID>UndocumentedPublicFunction:JsonConverter.kt$JsonConverter$fun &lt;T&gt; toJson( any: T ): String</ID>
-    <ID>UndocumentedPublicFunction:JsonConverter.kt$JsonConverter$fun &lt;T&gt; toJsonTree( any: T ): J</ID>
     <ID>UndocumentedPublicFunction:MulticastFlow.kt$@UnstableApi fun &lt;T&gt; Flow&lt;T&gt;.shareConflated( debounceMs: Int = 0 ): Flow&lt;T&gt;</ID>
-    <ID>UndocumentedPublicFunction:SessionBuilder.kt$suspend inline fun &lt;reified M, reified S, J&gt; WebSocketSession( settings: ServerSettings&lt;M, S, J&gt;, crossinline block: suspend DebugSession&lt;M, S, J&gt;.() -&gt; Unit )</ID>
-    <ID>UndocumentedPublicFunction:Url.kt$fun URL( protocol: String = "http", host: String = "localhost", port: UInt = 8080U ): URL</ID>
-    <ID>UndocumentedPublicProperty:DebugSession.kt$DebugSession$val messages: Flow&lt;M&gt;</ID>
-    <ID>UndocumentedPublicProperty:DebugSession.kt$DebugSession$val states: Flow&lt;S&gt;</ID>
     <ID>UnnecessaryAbstractClass:BasicComponentTest.kt$BasicComponentTest</ID>
     <ID>UnnecessaryAbstractClass:State.kt$Screen</ID>
   </Whitelist>

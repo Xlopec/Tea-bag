@@ -52,6 +52,9 @@ fun Component.mouseEvents(): Flow<MouseEvent> =
 fun Component.rightClicks(): Flow<MouseEvent> =
     mouseEvents().filter { SwingUtilities.isRightMouseButton(it) }
 
+fun Component.leftClicks(): Flow<MouseEvent> =
+    mouseEvents().filter { SwingUtilities.isLeftMouseButton(it) }
+
 fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
     channelFlow {
         coroutineScope {

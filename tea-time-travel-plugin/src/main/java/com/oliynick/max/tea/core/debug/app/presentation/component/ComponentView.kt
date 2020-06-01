@@ -25,50 +25,44 @@ import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.presentation.misc.*
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.REMOVE_ICON
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.UPDATE_RUNNING_APP_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.sidebar.exceptionBalloonFillColor
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ErrorColor
+import com.oliynick.max.tea.core.debug.app.presentation.ui.InputTimeoutMillis
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.awt.Color
 import java.awt.event.MouseEvent
 import javax.swing.*
 import javax.swing.tree.TreeSelectionModel
 
-private const val INPUT_TIMEOUT_MILLIS = 400L
-
 class ComponentView private constructor(
-    private val initial: ComponentViewState
-) {
+    private val initial: ComponentViewState,
+    private val id: ComponentId,
+    private val component: (Flow<PluginMessage>) -> Flow<Started>,
+    scope: CoroutineScope
+) : CoroutineScope by scope {
 
     companion object {
-
-        private val ERROR_COLOR = Color(exceptionBalloonFillColor.rgb)
 
         fun new(
             scope: CoroutineScope,
             id: ComponentId,
             component: (Flow<PluginMessage>) -> Flow<Started>,
             state: Started
-        ): JPanel {
+        ): ComponentView {
 
             val initial = state.toViewState(id)
 
-            return ComponentView(initial)
-                .apply { scope.launch { render(id, component) } }.root
+            return ComponentView(initial, id, component, scope)
+                .apply { scope.launch { render(id, component) } }
         }
-
-        private suspend fun ComponentView.render(
-            id: ComponentId,
-            component: (Flow<PluginMessage>) -> Flow<Started>
-        ) = component(messages())
-            .map { pluginState -> pluginState.toViewState(id) }
-            .collect { componentState -> render(componentState) }
 
     }
 
-    private lateinit var root: JPanel
+    lateinit var root: JPanel
+        private set
+
     private lateinit var snapshotsTree: JTree
     private lateinit var stateTree: JTree
     private lateinit var searchField: JTextField
@@ -83,10 +77,6 @@ class ComponentView private constructor(
     private val stateRenderer = StateTreeRenderer(initial.formatter)
     private val transferHandler = TreeRowValueTransferHandler(initial.formatter)
 
-    private fun messages() =
-        filterUpdates(initial.component.id, initial.component.filter)
-            .mergeWith(snapshotsTree.asOptionMenuUpdates(initial.component.id))
-
     init {
         snapshotsTree.model = snapshotsModel
         snapshotsTree.transferHandler = transferHandler
@@ -96,6 +86,25 @@ class ComponentView private constructor(
         stateTree.model = stateTreeModel
         stateTree.cellRenderer = stateRenderer
     }
+
+    init {
+        launch {
+            component(messages())
+                .map { pluginState -> pluginState.toViewState(id) }
+                .collect { componentState -> render(componentState) }
+        }
+    }
+
+    private suspend fun render(
+        id: ComponentId,
+        component: (Flow<PluginMessage>) -> Flow<Started>
+    ) = component(messages())
+        .map { pluginState -> pluginState.toViewState(id) }
+        .collect { componentState -> render(componentState) }
+
+    private fun messages() =
+        filterUpdates(initial.component.id, initial.component.filter)
+            .mergeWith(snapshotsTree.asOptionMenuUpdates(initial.component.id))
 
     private fun filterUpdates(
         id: ComponentId,
@@ -146,7 +155,7 @@ class ComponentView private constructor(
             searchField.background = null
             searchField.toolTipText = null
         } else {
-            searchField.background = ERROR_COLOR
+            searchField.background = ErrorColor
             searchField.toolTipText = (validatedPredicate as Invalid).message
         }
 
@@ -203,7 +212,7 @@ private fun JTree.asOptionMenuUpdates(
 private fun JTextField.textFlow() =
     textChanges()
         .onStart { emit("") }
-        .debounce(INPUT_TIMEOUT_MILLIS)
+        .debounce(InputTimeoutMillis)
 
 private fun JCheckBox.asWordsFlow(
     filter: Filter
@@ -269,8 +278,8 @@ private fun SnapshotPopup(
 ): JPopupMenu =
     JBPopupMenu("Snapshot ${snapshot.meta.id.value}").apply {
         add(JBMenuItem(
-            "Reset to this",
-            UPDATE_RUNNING_APP_ICON
+                "Reset to this",
+                UPDATE_RUNNING_APP_ICON
         ).apply {
             addActionListener {
                 onAction(ReApplyState(component, snapshot.meta.id))
@@ -291,7 +300,7 @@ private fun MessagePopup(
 ): JPopupMenu =
     JBPopupMenu().apply {
         add(JBMenuItem(
-            "Apply this message", UPDATE_RUNNING_APP_ICON
+                "Apply this message", UPDATE_RUNNING_APP_ICON
         ).apply {
             addActionListener {
                 onAction(ReApplyMessage(componentId, snapshotId))

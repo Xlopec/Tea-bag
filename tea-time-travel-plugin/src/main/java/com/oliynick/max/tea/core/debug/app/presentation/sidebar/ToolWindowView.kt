@@ -19,7 +19,9 @@ package com.oliynick.max.tea.core.debug.app.presentation.sidebar
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBTabbedPane
 import com.oliynick.max.tea.core.debug.app.component.cms.*
-import com.oliynick.max.tea.core.debug.app.misc.mapNullableS
+import com.oliynick.max.tea.core.debug.app.domain.Validated
+import com.oliynick.max.tea.core.debug.app.domain.isValid
+import com.oliynick.max.tea.core.debug.app.misc.*
 import com.oliynick.max.tea.core.debug.app.presentation.component.ComponentView
 import com.oliynick.max.tea.core.debug.app.presentation.info.InfoView
 import com.oliynick.max.tea.core.debug.app.presentation.misc.*
@@ -31,22 +33,33 @@ import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RUN_DIS
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.STOPPING_ICON
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.SUSPEND_DEFAULT_ICON
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.SUSPEND_DISABLED_ICON
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ErrorColor
+import com.oliynick.max.tea.core.debug.app.presentation.ui.InputTimeoutMillis
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import java.awt.Container
 import java.awt.FlowLayout
 import java.awt.event.MouseEvent
 import javax.swing.*
 import java.awt.Component as AwtComponent
 
-class ToolWindowView(
+class ToolWindowView private constructor(
     private val project: Project,
     scope: CoroutineScope,
     private val component: (Flow<PluginMessage>) -> Flow<PluginState>
 ) : CoroutineScope by scope {
+
+    companion object {
+
+        fun new(
+            project: Project,
+            scope: CoroutineScope,
+            component: (Flow<PluginMessage>) -> Flow<PluginState>
+        ) = ToolWindowView(project, scope, component).panel
+
+    }
 
     private lateinit var panel: JPanel
     private lateinit var startButton: JLabel
@@ -54,22 +67,34 @@ class ToolWindowView(
     private lateinit var hostTextField: JTextField
     private lateinit var componentsPanel: JPanel
 
-    private val uiEvents = BroadcastChannel<PluginMessage>(1)
-
     val root: JPanel get() = panel
+
+    private val idToScope = mutableMapOf<Any, CoroutineScope>()
 
     init {
 
-        portTextField.document.addDocumentListener(DefaultDocumentListener { value ->
-            uiEvents.offer(UpdatePort(value.toUIntOrNull() ?: return@DefaultDocumentListener))
-        })
+        launch {
+            val uiEvents = Channel<PluginMessage>()
 
-        hostTextField.document.addDocumentListener(DefaultDocumentListener { value ->
-            uiEvents.offer(UpdateHost(value))
-        })
-
-        launch { component(uiEvents.asFlow()).collect { state -> render(state, uiEvents::offer) } }
+            component(uiEvents.consumeAsFlow().mergeWith(updateServerSettings(component.firstState())))
+                .collect { state -> render(state, uiEvents::offer) }
+        }
     }
+
+    private fun updateServerSettings(
+        initial: PluginState
+    ) =
+        hostInputChanges(initial).combine(portInputChanges(initial)) { host, port -> UpdateServerSettings(host, port) }
+            .distinctUntilChanged()
+            .debounce(InputTimeoutMillis)
+
+    private fun hostInputChanges(
+        initial: PluginState
+    ) = hostTextField.textChanges().onStart(initial.settings.host.input)
+
+    private fun portInputChanges(
+        initial: PluginState
+    ) = portTextField.textChanges().onStart(initial.settings.port.input)
 
     private fun render(
         state: PluginState,
@@ -78,6 +103,14 @@ class ToolWindowView(
 
         portTextField.isEnabled = state is Stopped
         hostTextField.isEnabled = portTextField.isEnabled
+
+        val serverSettings = state.settings
+
+        hostTextField.updateErrorMessage(serverSettings.host)
+        portTextField.updateErrorMessage(serverSettings.port)
+
+        hostTextField.textSafe = serverSettings.host.input
+        portTextField.textSafe = serverSettings.port.input
 
         when (state) {
             is Stopped -> render(state, messages)
@@ -91,13 +124,15 @@ class ToolWindowView(
         state: Stopped,
         messages: (PluginMessage) -> Unit
     ) {
-        portTextField.textSafe = state.settings.serverSettings.port.toString()
-        hostTextField.textSafe = state.settings.serverSettings.host
 
         startButton.icon = RUN_DEFAULT_ICON
         startButton.disabledIcon = RUN_DISABLED_ICON
 
-        startButton.setOnClickListenerEnabling { messages(StartServer) }
+        if (state.canStart) {
+            startButton.setOnClickListenerEnabling { messages(StartServer) }
+        } else {
+            startButton.removeMouseListenersDisabling()
+        }
 
         val shouldRemoveOrEmpty = componentsPanel.isEmpty || (componentsPanel.isNotEmpty && componentsPanel.first().name != InfoView.NAME)
 
@@ -156,7 +191,11 @@ class ToolWindowView(
 
     private fun showEmptyComponentsView() {
         componentsPanel.removeAll()
-        componentsPanel += InfoView.new(this, component)
+
+        val infoView = InfoView.new(childScope(), component)
+
+        this[InfoView.NAME] = infoView
+        componentsPanel += infoView.panel
     }
 
     private fun tabbedComponentsView() = JBTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT)
@@ -169,15 +208,34 @@ class ToolWindowView(
 
         fun closeHandler(
             id: ComponentId
-        ) = messages(RemoveComponent(id))
+        ) {
+            this@ToolWindowView -= id
+            messages(RemoveComponent(id))
+        }
 
         fun addTab(
             id: ComponentId
-        ) = addCloseableTab(id, ComponentView.new(this@ToolWindowView, id, component.startedStates(), state), ::closeHandler)
+        ) {
+            val componentView = ComponentView.new(childScope(), id, component.startedStates(), state)
+
+            this@ToolWindowView[id] = componentView
+            addCloseableTab(id, componentView.root, ::closeHandler)
+        }
 
         state.debugState.components
             .filter { e -> indexOfTab(e.key.id) == -1 }
             .forEach { (id, _) -> addTab(id) }
+    }
+
+    private operator fun set(
+        key: Any,
+        scope: CoroutineScope
+    ) = idToScope.compute(key) { _, old -> old?.cancel(); scope }
+
+    private operator fun minusAssign(
+        key: Any
+    ) {
+        idToScope.remove(key)?.cancel()
     }
 
 }
@@ -194,8 +252,6 @@ private fun AwtComponent.removeMouseListenersDisabling() {
     removeMouseListeners()
     isEnabled = false
 }
-
-private fun Container.first() = this[0]
 
 private inline fun JTabbedPane.addCloseableTab(
     component: ComponentId,
@@ -216,3 +272,19 @@ private inline fun JTabbedPane.addCloseableTab(
 
     setTabComponentAt(indexOfComponent(content), panel)
 }
+
+private fun JTextField.updateErrorMessage(
+    validated: Validated<*>
+) {
+    if (validated.isValid()) {
+        background = null
+        toolTipText = null
+    } else {
+        background = ErrorColor
+        toolTipText = validated.message
+    }
+}
+
+private fun Container.first() = this[0]
+
+private suspend fun ((Flow<PluginMessage>) -> Flow<PluginState>).firstState() = this(emptyFlow()).first()

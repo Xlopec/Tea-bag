@@ -18,6 +18,7 @@ package com.oliynick.max.tea.core.debug.app.transport
 
 import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
 import com.oliynick.max.tea.core.debug.app.domain.Settings
 import com.oliynick.max.tea.core.debug.app.transport.serialization.GSON
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
@@ -50,19 +51,19 @@ data class RemoteCallArgs(
 
 @Suppress("MemberVisibilityCanBePrivate")
 class Server private constructor(
-    val settings: Settings,
+    val address: ServerAddress,
     private val events: BroadcastChannel<PluginMessage>,
     private val calls: BroadcastChannel<RemoteCallArgs>
-) : ApplicationEngine by server(settings, events, calls) {
+) : ApplicationEngine by server(address, events, calls) {
 
     companion object {
 
         private const val timeout = 3000L
 
         fun newInstance(
-            settings: Settings,
+            address: ServerAddress,
             events: BroadcastChannel<PluginMessage>
-        ): Server = Server(settings, events, BroadcastChannel(1))
+        ): Server = Server(address, events, BroadcastChannel(1))
 
     }
 
@@ -138,15 +139,15 @@ fun main() {
 }
 
 private fun server(
-    settings: Settings,
+    address: ServerAddress,
     events: BroadcastChannel<PluginMessage>,
     calls: BroadcastChannel<RemoteCallArgs>
 ): NettyApplicationEngine {
 
     return embeddedServer(
         Netty,
-        host = settings.serverSettings.host,
-        port = settings.serverSettings.port.toInt()
+        host = address.host.value,
+        port = address.port.value.toInt()
     ) {
 
         install(CallLogging) {

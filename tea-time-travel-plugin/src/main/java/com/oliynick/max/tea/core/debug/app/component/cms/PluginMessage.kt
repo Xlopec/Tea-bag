@@ -32,12 +32,9 @@ data class UpdateDebugSettings(
     val isDetailedToStringEnabled: Boolean
 ) : UIMessage()
 
-data class UpdatePort(
-    val port: UInt
-) : UIMessage()
-
-data class UpdateHost(
-    val host: String
+data class UpdateServerSettings(
+    val host: String,
+    val port: String
 ) : UIMessage()
 
 data class UpdateFilter(

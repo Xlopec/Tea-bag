@@ -8,8 +8,7 @@ import com.intellij.openapi.diagnostic.trace
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.debug.app.component.cms.*
-import com.oliynick.max.tea.core.debug.app.storage.pluginSettings
-import com.oliynick.max.tea.core.debug.app.transport.NewStoppedServer
+import com.oliynick.max.tea.core.debug.app.storage.settings
 
 fun PluginComponent(
     environment: Environment
@@ -24,7 +23,7 @@ fun PluginComponent(
         state: PluginState
     ) = with(environment) { update(message, state) }
     // fixme implement proper initializer properly
-    return Component(Initializer(Stopped(environment.properties.pluginSettings, NewStoppedServer())), ::doResolve, ::doUpdate)
+    return Component(Initializer(Stopped.reset(environment.properties.settings)), ::doResolve, ::doUpdate)
         .with(Logger())
 }
 

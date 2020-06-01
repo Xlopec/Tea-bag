@@ -25,7 +25,10 @@ import kotlinx.coroutines.launch
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-class InfoView private constructor() {
+class InfoView private constructor(
+    scope: CoroutineScope,
+    component: (Flow<PluginMessage>) -> Flow<PluginState>
+) : CoroutineScope by scope {
 
     companion object {
         val NAME = InfoView::class.simpleName!!
@@ -33,22 +36,25 @@ class InfoView private constructor() {
         fun new(
             scope: CoroutineScope,
             component: (Flow<PluginMessage>) -> Flow<PluginState>
-        ): JPanel = InfoView().apply {
-
-            val uiEvents = Channel<PluginMessage>()
-
-            scope.launch {
-                component(uiEvents.consumeAsFlow())
-                    .collect { state -> render(state, uiEvents::offer) }
-            }
-        }.panel
+        ) = InfoView(scope, component)
     }
 
-    private lateinit var panel: JPanel
+    lateinit var panel: JPanel
+        private set
+
     private lateinit var messageText: JLabel
 
     init {
         panel.name = NAME
+    }
+
+    init {
+        val uiEvents = Channel<PluginMessage>()
+
+        scope.launch {
+            component(uiEvents.consumeAsFlow())
+                .collect { state -> render(state, uiEvents::offer) }
+        }
     }
 
     private fun render(

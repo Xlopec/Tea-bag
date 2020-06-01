@@ -43,4 +43,3 @@ fun <T> Validated<T>.isValid(): Boolean {
 
 inline val <T> Validated<T>?.value: T?
     get() = if (this is Valid) t else null
-

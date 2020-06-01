@@ -255,14 +255,15 @@ allprojects {
             // disables warning about usage of experimental Kotlin features
             @Suppress("SuspiciousCollectionReassignment")
             freeCompilerArgs += listOf(
-                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
-                "-Xuse-experimental=kotlin.Experimental",
-                "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
-                "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
-                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
-                "-XXLanguage:+NewInference",
-                "-XXLanguage:+InlineClasses"
+                    "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
+                    "-Xuse-experimental=kotlin.Experimental",
+                    "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
+                    "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
+                    "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                    "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
+                    "-Xuse-experimental=kotlin.ExperimentalStdlibApi",
+                    "-XXLanguage:+NewInference",
+                    "-XXLanguage:+InlineClasses"
             )
         }
     }

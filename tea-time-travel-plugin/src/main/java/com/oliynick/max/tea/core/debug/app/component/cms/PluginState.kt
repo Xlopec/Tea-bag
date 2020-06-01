@@ -16,8 +16,7 @@
 
 package com.oliynick.max.tea.core.debug.app.component.cms
 
-import com.oliynick.max.tea.core.debug.app.domain.DebugState
-import com.oliynick.max.tea.core.debug.app.domain.Settings
+import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.transport.StartedServer
 import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
 
@@ -28,7 +27,12 @@ sealed class PluginState {
 data class Stopped(
     override val settings: Settings,
     val server: StoppedServer
-) : PluginState()
+) : PluginState() {
+    companion object
+
+    val canStart: Boolean = settings.host.isValid()
+            && settings.port.isValid()
+}
 
 data class Starting(
     override val settings: Settings

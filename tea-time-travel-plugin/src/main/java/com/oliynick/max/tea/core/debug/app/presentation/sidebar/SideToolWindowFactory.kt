@@ -74,8 +74,8 @@ private fun createToolWindowContent(
     component: Component<PluginMessage, PluginState, PluginCommand>
 ): Content {
 
-    val myToolWindow = ToolWindowView(project, environment, component.states())
+    val myToolWindow = ToolWindowView.new(project, environment, component.states())
     val contentFactory = ContentFactory.SERVICE.getInstance()
 
-    return contentFactory.createContent(myToolWindow.root, null, false)
+    return contentFactory.createContent(myToolWindow, null, false)
 }

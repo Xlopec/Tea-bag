@@ -21,7 +21,7 @@ object BuildPlugins {
 
 object Libraries {
     private object Versions {
-        const val coroutines = "1.3.5"
+        const val coroutines = "1.3.6"
         const val ktor = "1.3.1"
     }
 
