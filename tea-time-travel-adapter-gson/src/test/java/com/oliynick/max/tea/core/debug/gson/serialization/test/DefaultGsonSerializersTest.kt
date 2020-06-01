@@ -3,6 +3,7 @@ package com.oliynick.max.tea.core.debug.gson.serialization.test
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
 import com.oliynick.max.tea.core.debug.gson.Gson
+import com.oliynick.max.tea.core.debug.gson.GsonClientMessage
 import com.oliynick.max.tea.core.debug.gson.serialization.data.Singleton
 import com.oliynick.max.tea.core.debug.protocol.*
 import core.data.*
@@ -166,7 +167,7 @@ class DefaultGsonSerializersTest {
 
 @Suppress("TestFunctionName")
 private fun NotifyClient(
-    message: ClientMessage<JsonElement>
+    message: GsonClientMessage
 ) = NotifyClient(
         UUID.randomUUID(),
         ComponentId("test"),

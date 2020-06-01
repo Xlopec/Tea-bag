@@ -16,12 +16,11 @@
 
 package com.oliynick.max.tea.core.debug.app.transport
 
-import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
-import com.oliynick.max.tea.core.debug.app.domain.Settings
 import com.oliynick.max.tea.core.debug.app.transport.serialization.GSON
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
+import com.oliynick.max.tea.core.debug.gson.*
 import com.oliynick.max.tea.core.debug.protocol.*
 import io.ktor.application.Application
 import io.ktor.application.install
@@ -46,7 +45,7 @@ import java.util.*
 data class RemoteCallArgs(
     val callId: UUID,
     val component: ComponentId,
-    val message: ClientMessage<JsonElement>
+    val message: GsonClientMessage
 )
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -69,7 +68,7 @@ class Server private constructor(
 
     suspend operator fun invoke(
         component: ComponentId,
-        message: ClientMessage<JsonElement>
+        message: GsonClientMessage
     ) {
         try {
             withTimeout(timeout) {
@@ -210,12 +209,12 @@ private suspend fun processPacket(
     events: BroadcastChannel<PluginMessage>
 ) {
     val json = frame.readText()
-    val packet = GSON.fromJson<NotifyServer<JsonElement>>(json, NotifyServer::class.java)
+    val packet = GSON.fromJson<GsonNotifyServer>(json, NotifyServer::class.java)
 
     try {
 
-        when (val message = packet.payload) {// todo consider removing `?`
-            is NotifyComponentSnapshot<JsonElement> -> events.send(
+        when (val message = packet.payload) {
+            is GsonNotifyComponentSnapshot -> events.send(
                 AppendSnapshot(
                     packet.componentId,
                     message.message.asJsonObject.toValue(),
@@ -223,7 +222,7 @@ private suspend fun processPacket(
                     message.newState.asJsonObject.toValue()
                 )
             )
-            is NotifyComponentAttached<JsonElement> -> events.send(
+            is GsonNotifyComponentAttached -> events.send(
                 ComponentAttached(
                     packet.componentId,
                     message.state.asJsonObject.toValue()

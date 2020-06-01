@@ -8,8 +8,8 @@ import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.invoke
 import com.oliynick.max.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.exception.ConnectException
-import com.oliynick.max.tea.core.debug.protocol.NotifyComponentAttached
-import com.oliynick.max.tea.core.debug.protocol.NotifyComponentSnapshot
+import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentAttached
+import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentSnapshot
 import com.oliynick.max.tea.core.debug.session.WebSocketSession
 import core.component.BasicComponentTest
 import core.misc.messageAsStateUpdate
@@ -88,13 +88,13 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
             elem.componentId shouldBe testComponentId
 
             when (val payload = elem.payload) {
-                is NotifyComponentSnapshot<JsonElement> -> {
+                is GsonNotifyComponentSnapshot -> {
                     index shouldNotBeExactly 0
                     fromJson(payload.message) shouldBe messages[index - 1]
                     fromJson(payload.newState) shouldBe messages[index - 1]
                 }
 
-                is NotifyComponentAttached<JsonElement> -> {
+                is GsonNotifyComponentAttached -> {
                     index shouldBeExactly 0
                     fromJson(payload.state) shouldBe ""
                 }
