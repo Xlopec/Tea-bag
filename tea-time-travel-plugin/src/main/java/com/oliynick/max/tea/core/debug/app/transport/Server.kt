@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.tea.core.debug.app.transport
 
 import com.oliynick.max.tea.core.debug.app.component.cms.*
@@ -42,22 +44,13 @@ import org.slf4j.event.Level
 import java.time.Duration
 import java.util.*
 
-data class RemoteCallArgs(
-    val callId: UUID,
-    val component: ComponentId,
-    val message: GsonClientMessage
-)
-
-@Suppress("MemberVisibilityCanBePrivate")
 class Server private constructor(
     val address: ServerAddress,
     private val events: BroadcastChannel<PluginMessage>,
     private val calls: BroadcastChannel<RemoteCallArgs>
-) : ApplicationEngine by server(address, events, calls) {
+) : ApplicationEngine by ServerImpl(address, events, calls) {
 
     companion object {
-
-        private const val timeout = 3000L
 
         fun newInstance(
             address: ServerAddress,
@@ -69,36 +62,25 @@ class Server private constructor(
     suspend operator fun invoke(
         component: ComponentId,
         message: GsonClientMessage
-    ) {
-        try {
-            withTimeout(timeout) {
-                //todo un-hardcode
-                val callId = UUID.randomUUID()
-                //val completionJob = launch { completions.asFlow().first { id -> id == callId } }
-
-                calls.send(RemoteCallArgs(callId, component, message))
-                // completionJob.join()
-            }
-        } catch (th: TimeoutCancellationException) {
-            throw NetworkException("Timed out waiting for $timeout ms to perform operation",
-                th)
-        } catch (th: Throwable) {
-            throw th.toPluginException()
-        }
-    }
+    ) = calls.send(RemoteCallArgs(UUID.randomUUID(), component, message))
 
 }
 
-private fun server(
+private data class RemoteCallArgs(
+    val callId: UUID,
+    val component: ComponentId,
+    val message: GsonClientMessage
+)
+
+private fun ServerImpl(
     address: ServerAddress,
     events: BroadcastChannel<PluginMessage>,
     calls: BroadcastChannel<RemoteCallArgs>
-): NettyApplicationEngine {
-
-    return embeddedServer(
-        Netty,
-        host = address.host.value,
-        port = address.port.value.toInt()
+): NettyApplicationEngine =
+    embeddedServer(
+            Netty,
+            host = address.host.value,
+            port = address.port.value.toInt()
     ) {
 
         install(CallLogging) {
@@ -108,7 +90,6 @@ private fun server(
 
         install(ConditionalHeaders)
         install(DataConversion)
-
         install(DefaultHeaders) { header("X-Engine", "Ktor") }
 
         install(WebSockets) {
@@ -118,7 +99,6 @@ private fun server(
 
         configureWebSocketRouting(calls.asFlow(), events)
     }
-}
 
 private fun Application.configureWebSocketRouting(
     calls: Flow<RemoteCallArgs>,
@@ -140,13 +120,11 @@ private fun Application.configureWebSocketRouting(
 private suspend fun installPacketSender(
     calls: Flow<RemoteCallArgs>,
     outgoing: SendChannel<Frame>
-) {
-    calls.collect { (callId, componentId, message) ->
+) = calls.collect { (callId, componentId, message) ->
 
-        val json = GSON.toJson(NotifyClient(callId, componentId, message))
+    val json = GSON.toJson(NotifyClient(callId, componentId, message))
 
-        outgoing.send(Frame.Text(json))
-    }
+    outgoing.send(Frame.Text(json))
 }
 
 private suspend fun installPacketReceiver(
@@ -159,31 +137,31 @@ private suspend fun installPacketReceiver(
 private suspend fun processPacket(
     frame: Frame.Text,
     events: BroadcastChannel<PluginMessage>
-) {
-    val json = frame.readText()
-    val packet = GSON.fromJson<GsonNotifyServer>(json, NotifyServer::class.java)
+) =
+    withContext(Dispatchers.IO) {
+        try {
+            val json = frame.readText()
+            val packet = GSON.fromJson<GsonNotifyServer>(json, NotifyServer::class.java)
 
-    try {
+            when (val message = packet.payload) {
+                is GsonNotifyComponentSnapshot -> events.send(message.toNotification(packet.componentId))
+                is GsonNotifyComponentAttached -> events.send(message.toNotification(packet.componentId))
+            }
 
-        when (val message = packet.payload) {
-            is GsonNotifyComponentSnapshot -> events.send(
-                AppendSnapshot(
-                    packet.componentId,
-                    message.message.asJsonObject.toValue(),
-                    message.oldState.asJsonObject.toValue(),
-                    message.newState.asJsonObject.toValue()
-                )
-            )
-            is GsonNotifyComponentAttached -> events.send(
-                ComponentAttached(
-                    packet.componentId,
-                    message.state.asJsonObject.toValue()
-                )
-            )
+        } catch (e: Throwable) {
+            events.send(NotifyOperationException(e))
         }
-
-    } catch (e: Throwable) {
-        events.send(NotifyOperationException(e))
     }
-}
 
+private fun GsonNotifyComponentSnapshot.toNotification(
+    id: ComponentId
+) = AppendSnapshot(
+        id,
+        message.asJsonObject.toValue(),
+        oldState.asJsonObject.toValue(),
+        newState.asJsonObject.toValue()
+)
+
+private fun GsonNotifyComponentAttached.toNotification(
+    id: ComponentId
+) = ComponentAttached(id, state.asJsonObject.toValue())
