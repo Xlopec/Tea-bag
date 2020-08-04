@@ -106,7 +106,7 @@ internal class LiveUiUpdaterTest {
     }
 
     @Test
-    fun `test when apply command and plugin state is Started then a proper Value is found and correct command is returned`() {
+    fun `test when apply message and plugin state is Started then a proper Value is found and correct command is returned`() {
 
         val componentId = ComponentId("a")
         val snapshotId = RandomSnapshotId()
