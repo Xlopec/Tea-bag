@@ -64,12 +64,12 @@ data class RemoveAllSnapshots(
     val componentId: ComponentId
 ) : UIMessage()
 
-data class ReApplyMessage(
+data class ApplyMessage(
     val componentId: ComponentId,
     val snapshotId: SnapshotId
 ) : UIMessage()
 
-data class ReApplyState(
+data class ApplyState(
     val componentId: ComponentId,
     val snapshotId: SnapshotId
 ) : UIMessage()

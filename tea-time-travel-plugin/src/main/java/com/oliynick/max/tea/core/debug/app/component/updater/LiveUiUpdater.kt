@@ -19,8 +19,8 @@ object LiveUiUpdater : UiUpdater {
             message === StartServer && state is Stopped -> startServer(state)
             message === StopServer && state is Started -> stopServer(state)
             message is RemoveSnapshots && state is Started -> removeSnapshots(message.componentId, message.ids, state)
-            message is ReApplyMessage && state is Started -> reApplyCommands(message, state)
-            message is ReApplyState && state is Started -> reApplyState(message, state)
+            message is ApplyMessage && state is Started -> applyCommand(message, state)
+            message is ApplyState && state is Started -> applyState(message, state)
             message is RemoveComponent && state is Started -> removeComponent(message, state)
             message is RemoveAllSnapshots && state is Started -> removeSnapshots(message.componentId, state)
             message is UpdateFilter && state is Started -> updateFilter(message, state)
@@ -59,14 +59,14 @@ object LiveUiUpdater : UiUpdater {
     ): UpdateWith<Stopping, DoStopServer> =
         Stopping(state.settings) command DoStopServer(state.server)
 
-    fun reApplyState(
-        message: ReApplyState,
+    fun applyState(
+        message: ApplyState,
         state: Started
     ): UpdateWith<PluginState, PluginCommand> =
         state command DoApplyState(message.componentId, state.findState(message), state.server)
 
-    fun reApplyCommands(
-        message: ReApplyMessage,
+    fun applyCommand(
+        message: ApplyMessage,
         state: Started
     ): UpdateWith<PluginState, PluginCommand> =
         state command DoApplyMessage(message.componentId, state.findMessage(message), state.server)
@@ -98,11 +98,11 @@ object LiveUiUpdater : UiUpdater {
         state.updateFilter(message.id, message.input, message.ignoreCase, message.option).noCommand()
 
     fun Started.findState(
-        message: ReApplyState
+        message: ApplyState
     ) = snapshot(message.componentId, message.snapshotId).state
 
     fun Started.findMessage(
-        message: ReApplyMessage
+        message: ApplyMessage
     ) = snapshot(message.componentId, message.snapshotId).message
 
 }

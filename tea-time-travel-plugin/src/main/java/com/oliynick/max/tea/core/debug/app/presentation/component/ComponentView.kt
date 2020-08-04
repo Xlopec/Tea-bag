@@ -282,7 +282,7 @@ private fun SnapshotPopup(
                 UpdateRunningAppIcon
         ).apply {
             addActionListener {
-                onAction(ReApplyState(component, snapshot.meta.id))
+                onAction(ApplyState(component, snapshot.meta.id))
             }
         })
 
@@ -303,7 +303,7 @@ private fun MessagePopup(
                 "Apply this message", UpdateRunningAppIcon
         ).apply {
             addActionListener {
-                onAction(ReApplyMessage(componentId, snapshotId))
+                onAction(ApplyMessage(componentId, snapshotId))
             }
         })
     }
@@ -316,7 +316,7 @@ private fun StatePopup(
     JBPopupMenu().apply {
         add(JBMenuItem("Apply this state", UpdateRunningAppIcon).apply {
             addActionListener {
-                onAction(ReApplyState(componentId, snapshotId))
+                onAction(ApplyState(componentId, snapshotId))
             }
         })
     }
