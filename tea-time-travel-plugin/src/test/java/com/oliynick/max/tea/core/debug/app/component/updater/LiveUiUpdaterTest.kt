@@ -10,8 +10,7 @@ import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentMap
+import kotlinx.collections.immutable.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -20,6 +19,10 @@ import java.util.*
 
 @RunWith(JUnit4::class)
 internal class LiveUiUpdaterTest {
+
+    private companion object {
+        val TestTimestamp: LocalDateTime = LocalDateTime.of(2000, 1, 1, 1, 1)
+    }
 
     private val updater: Updater<UIMessage, PluginState, PluginCommand> = LiveUiUpdater::update
 
@@ -52,68 +55,100 @@ internal class LiveUiUpdaterTest {
         }
 
     @Test
-    fun `test when remove snapshot by ids and state is Started snapshots are removed`() {
+    fun `test when remove snapshot by id and state is Started then snapshot gets removed`() {
 
-        val localTime = LocalDateTime.of(2000, 1, 1, 1, 1)
         val snapshotId = SnapshotId(UUID.randomUUID())
-
-        //todo implement some test data sequence generator
-        fun TestPair(
-            value: String
-        ) = ComponentId(value).let { id ->
-            id to ComponentDebugState(
-                    id, Null,
-                    snapshots = persistentListOf(
-                            OriginalSnapshot(
-                                    SnapshotMeta(snapshotId, localTime),
-                                    Null,
-                                    Null
-                            )
-                    ),
-                    filteredSnapshots = persistentListOf(
-                            FilteredSnapshot.ofBoth(
-                                    SnapshotMeta(snapshotId, localTime),
-                                    Null,
-                                    Null
-                            )
-                    )
-            )
-        }
-
-        fun RandomPair(
-            value: String
-        ) = ComponentId(value).let { id ->
-
-            val meta = SnapshotMeta(SnapshotId(UUID.randomUUID()), localTime)
-
-            id to ComponentDebugState(
-                    id,
-                    Null,
-                    snapshots = persistentListOf(OriginalSnapshot(meta, Null, Null)),
-                    filteredSnapshots = persistentListOf(FilteredSnapshot.ofBoth(meta, Null, Null))
-            )
-        }
-
-        fun EmptyStatePair(
-            value: String
-        ) = ComponentId(value).let { id -> id to ComponentDebugState(id, Null) }
+        val meta = SnapshotMeta(snapshotId, TestTimestamp)
 
         val data = ('b'..'z')
             .map { it.toString() }
-            .map(::RandomPair)
+            .map { componentId -> TestComponentDebugState(componentId, meta) }
 
-        val started = SimpleDebugState(data + TestPair("a"))
+        val started = StartedDebugState(data + TestComponentDebugState("a", meta))
 
         val (state, commands) = updater(RemoveSnapshots(ComponentId("a"), snapshotId), started)
 
         commands.shouldBeEmpty()
-        state shouldBe SimpleDebugState(data + EmptyStatePair("a"))
+        state shouldBe StartedDebugState(data + TestEmptyComponentDebugState("a"))
+    }
+
+    @Test
+    fun `test when remove snapshot by ids and state is Started then snapshot gets removed`() {
+
+        val data = ('b'..'z')
+            .map { it.toString() }
+            .map { componentId -> TestComponentDebugState(componentId, SnapshotMeta(SnapshotId(UUID.randomUUID()), TestTimestamp)) }
+
+        val iterations = 100
+        val hi = 50
+        val meta = iterations.times { SnapshotId(UUID.randomUUID()) }.map { id -> SnapshotMeta(id, TestTimestamp) }
+
+        val resultingOriginalSnapshots = meta.takeLast(iterations - hi).map(::EmptyOriginalSnapshot)
+        val resultingFilteredSnapshots = meta.takeLast(iterations - hi).map(::EmptyFilteredSnapshot)
+
+        val started = StartedDebugState(
+                data + TestComponentDebugState(
+                        "a",
+                        (meta.take(hi).map(::EmptyOriginalSnapshot) + resultingOriginalSnapshots).toPersistentList(),
+                        (meta.take(hi).map(::EmptyFilteredSnapshot) + resultingFilteredSnapshots).toPersistentList()
+                )
+        )
+
+        val (state, commands) = updater(
+                RemoveSnapshots(
+                        ComponentId("a"),
+                        meta.take(hi).map { (id, _) -> id }.toSet()
+                ),
+                started
+        )
+
+        commands.shouldBeEmpty()
+        state shouldBe StartedDebugState(
+                data + TestComponentDebugState(
+                        "a",
+                        resultingOriginalSnapshots.toPersistentList(),
+                        resultingFilteredSnapshots.toPersistentList()
+                )
+        )
     }
 
 }
 
+private fun EmptyOriginalSnapshot(
+    m: SnapshotMeta
+) = OriginalSnapshot(m, Null, Null)
 
-private fun SimpleDebugState(
+private fun EmptyFilteredSnapshot(
+    m: SnapshotMeta
+) = FilteredSnapshot.ofBoth(m, Null, Null)
+
+private fun TestEmptyComponentDebugState(
+    componentId: String
+) = ComponentId(componentId).let { id -> id to ComponentDebugState(id, Null) }
+
+private fun TestComponentDebugState(
+    componentId: String,
+    meta: SnapshotMeta
+) = TestComponentDebugState(
+        componentId,
+        persistentListOf(OriginalSnapshot(meta, Null, Null)),
+        persistentListOf(FilteredSnapshot.ofBoth(meta, Null, Null))
+)
+
+private fun TestComponentDebugState(
+    componentId: String,
+    snapshots: PersistentList<OriginalSnapshot>,
+    filteredSnapshots: PersistentList<FilteredSnapshot>
+) = ComponentId(componentId).let { id ->
+    id to ComponentDebugState(
+            id,
+            Null,
+            snapshots = snapshots,
+            filteredSnapshots = filteredSnapshots
+    )
+}
+
+private fun StartedDebugState(
     states: Iterable<Pair<ComponentId, ComponentDebugState>>
 ) = Started(
         Settings(Valid(TestHost.value, TestHost), Valid(TestPort.value.toString(), TestPort), false),
