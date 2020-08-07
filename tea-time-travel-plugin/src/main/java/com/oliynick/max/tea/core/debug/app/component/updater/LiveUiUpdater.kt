@@ -19,10 +19,10 @@ object LiveUiUpdater : UiUpdater {
             message === StartServer && state is Stopped -> startServer(state)
             message === StopServer && state is Started -> stopServer(state)
             message is RemoveSnapshots && state is Started -> removeSnapshots(message.componentId, message.ids, state)
-            message is ApplyMessage && state is Started -> applyCommand(message, state)
-            message is ApplyState && state is Started -> applyState(message, state)
-            message is RemoveComponent && state is Started -> removeComponent(message, state)
             message is RemoveAllSnapshots && state is Started -> removeSnapshots(message.componentId, state)
+            message is RemoveComponent && state is Started -> removeComponent(message, state)
+            message is ApplyMessage && state is Started -> applyMessage(message, state)
+            message is ApplyState && state is Started -> applyState(message, state)
             message is UpdateFilter && state is Started -> updateFilter(message, state)
             else -> warnUnacceptableMessage(message, state)
         }
@@ -63,13 +63,13 @@ object LiveUiUpdater : UiUpdater {
         message: ApplyState,
         state: Started
     ): UpdateWith<PluginState, PluginCommand> =
-        state command DoApplyState(message.componentId, state.findState(message), state.server)
+        state command DoApplyState(message.componentId, state.state(message), state.server)
 
-    fun applyCommand(
+    fun applyMessage(
         message: ApplyMessage,
         state: Started
     ): UpdateWith<PluginState, PluginCommand> =
-        state command DoApplyMessage(message.componentId, state.findMessage(message), state.server)
+        state command DoApplyMessage(message.componentId, state.message(message), state.server)
 
     fun removeSnapshots(
         componentId: ComponentId,
@@ -97,11 +97,11 @@ object LiveUiUpdater : UiUpdater {
     ): UpdateWith<PluginState, Nothing> =
         state.updateFilter(message.id, message.input, message.ignoreCase, message.option).noCommand()
 
-    fun Started.findState(
+    fun Started.state(
         message: ApplyState
-    ) = snapshot(message.componentId, message.snapshotId).state
+    ) = state(message.componentId, message.snapshotId)
 
-    fun Started.findMessage(
+    fun Started.message(
         message: ApplyMessage
     ) = snapshot(message.componentId, message.snapshotId).message
 

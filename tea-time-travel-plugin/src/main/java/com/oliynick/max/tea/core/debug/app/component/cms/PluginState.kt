@@ -30,8 +30,7 @@ data class Stopped(
 ) : PluginState() {
     companion object
 
-    val canStart: Boolean = settings.host.isValid()
-            && settings.port.isValid()
+    val canStart: Boolean = settings.host.isValid() && settings.port.isValid()
 }
 
 data class Starting(

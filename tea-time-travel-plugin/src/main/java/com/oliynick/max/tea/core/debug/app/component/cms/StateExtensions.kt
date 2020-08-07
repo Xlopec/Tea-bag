@@ -111,6 +111,16 @@ fun DebugState.component(
     id: ComponentId
 ) = components[id] ?: notifyUnknownComponent(id)
 
+fun Started.state(
+    componentId: ComponentId,
+    snapshotId: SnapshotId
+) = snapshot(componentId, snapshotId).state
+
+fun Started.message(
+    componentId: ComponentId,
+    snapshotId: SnapshotId
+) = snapshot(componentId, snapshotId).message
+
 fun Started.updateFilter(
     id: ComponentId,
     filterInput: String,

@@ -34,16 +34,16 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
             is DoStopServer -> command effect { NotifyStopped(server.stop()) }
             is DoApplyMessage -> command sideEffect { server(id, ApplyMessage(command.command.toJsonElement())) }
             is DoApplyState -> reApplyState(command)
-            is DoNotifyOperationException -> command sideEffect { project.showBalloon(newExceptionBalloon(exception, operation)) }
-            is DoWarnUnacceptableMessage -> command sideEffect { project.showBalloon(newUnacceptableMessageBalloon(message, state)) }
-            is DoNotifyComponentAttached -> command sideEffect { project.showBalloon(newComponentAttachedBalloon(componentId)) }
+            is DoNotifyOperationException -> command sideEffect { project.showBalloon(ExceptionBalloon(exception, operation)) }
+            is DoWarnUnacceptableMessage -> command sideEffect { project.showBalloon(UnacceptableMessageBalloon(message, state)) }
+            is DoNotifyComponentAttached -> command sideEffect { project.showBalloon(ComponentAttachedBalloon(componentId)) }
         }
 
     suspend fun Env.reApplyState(
         command: DoApplyState
     ) = command effect {
         server(id, ApplyState(state.toJsonElement()))
-        project.showBalloon(newStateReAppliedBalloon(id))
+        project.showBalloon(StateAppliedBalloon(id))
         StateReApplied(id, state)
     }
 

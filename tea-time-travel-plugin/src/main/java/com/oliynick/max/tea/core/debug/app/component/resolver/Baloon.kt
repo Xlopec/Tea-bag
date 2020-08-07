@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.tea.core.debug.app.component.resolver
 
 import com.intellij.openapi.ui.popup.Balloon
@@ -7,25 +9,25 @@ import com.oliynick.max.tea.core.debug.app.presentation.sidebar.createNotificati
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import java.util.*
 
-fun newExceptionBalloon(
+fun ExceptionBalloon(
     cause: PluginException,
     operation: PluginCommand?
 ): Balloon =
     createErrorBalloon(htmlDescription(cause, operation))
 
-fun newStateReAppliedBalloon(componentId: ComponentId): Balloon =
+fun StateAppliedBalloon(componentId: ComponentId): Balloon =
     createNotificationBalloon("""<html>
         <p>State was reapplied successfully for component "${componentId.id}"</p>
         </html>
     """.trimIndent())
 
-fun newComponentAttachedBalloon(componentId: ComponentId): Balloon =
+fun ComponentAttachedBalloon(componentId: ComponentId): Balloon =
     createNotificationBalloon("""<html>
         <p>Component "${componentId.id}" attached to the plugin</p>
         </html>
     """.trimIndent())
 
-fun newUnacceptableMessageBalloon(
+fun UnacceptableMessageBalloon(
     message: PluginMessage,
     state: PluginState
 ): Balloon =
