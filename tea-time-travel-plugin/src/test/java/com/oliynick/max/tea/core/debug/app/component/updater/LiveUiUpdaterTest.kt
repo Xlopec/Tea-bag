@@ -7,6 +7,7 @@ import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.*
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import core.misc.shouldForEach
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.matchers.collections.shouldContainExactly
@@ -299,17 +300,3 @@ private fun StartedDebugState(
 )
 
 private fun RandomSnapshotId() = SnapshotId(UUID.randomUUID())
-
-inline fun <T, E> Collection<T>.shouldForEach(
-    another: Collection<E>,
-    block: (t: T, e: E) -> Unit
-) {
-    size shouldBe another.size
-
-    val thisIter = iterator()
-    val anotherIter = another.iterator()
-
-    while(thisIter.hasNext()) {
-        block(thisIter.next(), anotherIter.next())
-    }
-}
