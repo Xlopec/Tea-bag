@@ -25,7 +25,7 @@ fun PluginComponent(
     ) = with(environment) { update(message, state) }
 
     return Component(AppInitializer(environment), ::doResolve, ::doUpdate)
-        .with(Logger())
+        .with(com.oliynick.max.tea.core.debug.app.env.Logger())
 }
 
 private fun AppInitializer(

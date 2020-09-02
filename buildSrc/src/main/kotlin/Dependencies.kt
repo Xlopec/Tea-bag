@@ -2,7 +2,7 @@ import BuildPlugins.Versions.intellijVersion
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 
-const val kotlinVersion = "1.3.72"
+const val kotlinVersion = "1.4.0"
 
 object BuildPlugins {
 
@@ -21,8 +21,8 @@ object BuildPlugins {
 
 object Libraries {
     private object Versions {
-        const val coroutines = "1.3.6"
-        const val ktor = "1.3.1"
+        const val coroutines = "1.3.9"
+        const val ktor = "1.4.0"
     }
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
