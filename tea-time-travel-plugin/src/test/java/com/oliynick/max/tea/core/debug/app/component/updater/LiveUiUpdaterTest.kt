@@ -23,6 +23,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 private val TestTimestamp: LocalDateTime = LocalDateTime.of(2000, 1, 1, 1, 1)
+private val TestSettings = Settings(Valid(TestHost.value, TestHost), Valid(TestPort.value.toString(), TestPort), false)
 
 @RunWith(JUnit4::class)
 internal class LiveUiUpdaterTest {
@@ -61,13 +62,14 @@ internal class LiveUiUpdaterTest {
         val meta = SnapshotMeta(snapshotId, TestTimestamp)
         val id = ComponentId("a")
 
-        val otherStates = testComponentDebugStates { strId -> NonEmptyComponentDebugState(ComponentId(strId), meta) }
-        val pluginState = StartedDebugState(otherStates + NonEmptyComponentDebugState(id, meta))
+        val otherStates = TestComponentDebugStates { strId -> NonEmptyComponentDebugState(ComponentId(strId), meta) }
+        val pluginState =
+            TestStartedState(otherStates + NonEmptyComponentDebugState(id, meta))
 
         val (state, commands) = updater(RemoveSnapshots(id, snapshotId), pluginState)
 
         commands.shouldBeEmpty()
-        state shouldBe StartedDebugState(otherStates + (id to ComponentDebugState(id, Null)))
+        state shouldBe TestStartedState(otherStates + (id to ComponentDebugState(id, Null)))
     }
 
     @Test
@@ -81,11 +83,11 @@ internal class LiveUiUpdaterTest {
         val resultingFilteredSnapshots = meta.takeLast(iterations - hi).map(::EmptyFilteredSnapshot)
         val id = ComponentId("a")
 
-        val otherStates = testComponentDebugStates { strId ->
+        val otherStates = TestComponentDebugStates { strId ->
             NonEmptyComponentDebugState(ComponentId(strId), SnapshotMeta(RandomSnapshotId(), TestTimestamp))
         }
 
-        val pluginState = StartedDebugState(
+        val pluginState = TestStartedState(
                 otherStates + NonEmptyComponentDebugState(
                         id,
                         (meta.take(hi).map(::EmptyOriginalSnapshot) + resultingOriginalSnapshots).toPersistentList(),
@@ -96,7 +98,7 @@ internal class LiveUiUpdaterTest {
         val (state, commands) = updater(RemoveSnapshots(id, meta.take(hi).map { (id, _) -> id }.toSet()), pluginState)
 
         commands.shouldBeEmpty()
-        state shouldBe StartedDebugState(
+        state shouldBe TestStartedState(
                 otherStates + NonEmptyComponentDebugState(
                         id,
                         resultingOriginalSnapshots.toPersistentList(),
@@ -112,13 +114,14 @@ internal class LiveUiUpdaterTest {
         val meta = SnapshotMeta(snapshotId, TestTimestamp)
         val id = ComponentId("a")
 
-        val otherStates = testComponentDebugStates { strId -> NonEmptyComponentDebugState(ComponentId(strId), meta) }
-        val pluginState = StartedDebugState(otherStates + NonEmptyComponentDebugState(id, meta))
+        val otherStates = TestComponentDebugStates { strId -> NonEmptyComponentDebugState(ComponentId(strId), meta) }
+        val pluginState =
+            TestStartedState(otherStates + NonEmptyComponentDebugState(id, meta))
 
         val (state, commands) = updater(RemoveAllSnapshots(id), pluginState)
 
         commands.shouldBeEmpty()
-        state shouldBe StartedDebugState(otherStates + (id to ComponentDebugState(id, Null)))
+        state shouldBe TestStartedState(otherStates + (id to ComponentDebugState(id, Null)))
 
     }
 
@@ -126,16 +129,16 @@ internal class LiveUiUpdaterTest {
     fun `test when remove component and plugin state is Started then that component is removed`() {
 
         val removalComponentId = ComponentId("a")
-        val otherStates = testComponentDebugStates()
+        val otherStates = TestComponentDebugStates()
 
-        val initialState = StartedDebugState(
+        val initialState = TestStartedState(
                 otherStates + NonEmptyComponentDebugState(removalComponentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp))
         )
 
         val (state, commands) = updater(RemoveComponent(removalComponentId), initialState)
 
         commands.shouldBeEmpty()
-        state shouldBe StartedDebugState(otherStates)
+        state shouldBe TestStartedState(otherStates)
     }
 
     @Test
@@ -146,7 +149,7 @@ internal class LiveUiUpdaterTest {
         val value = StringWrapper("some value")
         val meta = SnapshotMeta(snapshotId, TestTimestamp)
 
-        val initialState = StartedDebugState(
+        val initialState = TestStartedState(
                 NonEmptyComponentDebugState(
                         componentId,
                         persistentListOf(OriginalSnapshot(meta, value, Null)),
@@ -168,7 +171,7 @@ internal class LiveUiUpdaterTest {
         val value = StringWrapper("some value")
         val meta = SnapshotMeta(snapshotId, TestTimestamp)
 
-        val initialState = StartedDebugState(
+        val initialState = TestStartedState(
                 NonEmptyComponentDebugState(
                         componentId,
                         persistentListOf(OriginalSnapshot(meta, Null, value)),
@@ -186,7 +189,8 @@ internal class LiveUiUpdaterTest {
     fun `test when update filter with empty substring and SUBSTRING option and plugin state is Started then it's updated properly`() {
 
         val componentId = ComponentId("a")
-        val initialState = StartedDebugState(NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp)))
+        val initialState =
+            TestStartedState(NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp)))
 
         val (state, commands) = updater(
                 UpdateFilter(
@@ -221,7 +225,8 @@ internal class LiveUiUpdaterTest {
 
         val componentId = ComponentId("a")
         val input = "abc"
-        val initialState = StartedDebugState(NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp)))
+        val initialState =
+            TestStartedState(NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp)))
 
         val (state, commands) = updater(
                 UpdateFilter(
@@ -249,9 +254,19 @@ internal class LiveUiUpdaterTest {
         }
     }
 
+    @Test
+    fun `test when illegal combination of message and state warning command is returned`() {
+
+        val initialState = Stopped(TestSettings, StoppedTestServer)
+        val (state, commands) = updater(StopServer, initialState)
+
+        state shouldBeSameInstanceAs initialState
+        commands shouldContainExactly setOf(DoWarnUnacceptableMessage(StopServer, initialState))
+    }
+
 }
 
-private inline fun testComponentDebugStates(
+private inline fun TestComponentDebugStates(
     range: CharRange = 'b'..'z',
     block: (strId: String) -> Pair<ComponentId, ComponentDebugState> = { strId ->
         NonEmptyComponentDebugState(ComponentId(strId), SnapshotMeta(RandomSnapshotId(), TestTimestamp))
@@ -283,18 +298,18 @@ private fun NonEmptyComponentDebugState(
     filteredSnapshots: PersistentList<FilteredSnapshot>
 ) = componentId to ComponentDebugState(componentId, Null, snapshots = snapshots, filteredSnapshots = filteredSnapshots)
 
-private fun StartedDebugState(
+private fun TestStartedState(
     states: Iterable<Pair<ComponentId, ComponentDebugState>>
 ) = Started(
-        Settings(Valid(TestHost.value, TestHost), Valid(TestPort.value.toString(), TestPort), false),
+        TestSettings,
         DebugState(states.toMap().toPersistentMap()),
         StartedServerStub
 )
 
-private fun StartedDebugState(
+private fun TestStartedState(
     vararg states: Pair<ComponentId, ComponentDebugState>
 ) = Started(
-        Settings(Valid(TestHost.value, TestHost), Valid(TestPort.value.toString(), TestPort), false),
+        TestSettings,
         DebugState(states.toMap().toPersistentMap()),
         StartedServerStub
 )
