@@ -23,7 +23,6 @@ import java.time.LocalDateTime
 import java.util.*
 
 private val TestTimestamp: LocalDateTime = LocalDateTime.of(2000, 1, 1, 1, 1)
-private val TestSettings = Settings(Valid(TestHost.value, TestHost), Valid(TestPort.value.toString(), TestPort), false)
 
 @RunWith(JUnit4::class)
 internal class LiveUiUpdaterTest {
@@ -160,7 +159,7 @@ internal class LiveUiUpdaterTest {
         val (state, commands) = updater(ApplyMessage(componentId, snapshotId), initialState)
 
         state shouldBeSameInstanceAs initialState
-        commands shouldContainExactly setOf(DoApplyMessage(componentId, value, StartedServerStub))
+        commands shouldContainExactly setOf(DoApplyMessage(componentId, value, StartedTestServerStub))
     }
 
     @Test
@@ -182,7 +181,7 @@ internal class LiveUiUpdaterTest {
         val (state, commands) = updater(ApplyState(componentId, snapshotId), initialState)
 
         state shouldBeSameInstanceAs initialState
-        commands shouldContainExactly setOf(DoApplyState(componentId, value, StartedServerStub))
+        commands shouldContainExactly setOf(DoApplyState(componentId, value, StartedTestServerStub))
     }
 
     @Test
@@ -303,7 +302,7 @@ private fun TestStartedState(
 ) = Started(
         TestSettings,
         DebugState(states.toMap().toPersistentMap()),
-        StartedServerStub
+        StartedTestServerStub
 )
 
 private fun TestStartedState(
@@ -311,7 +310,7 @@ private fun TestStartedState(
 ) = Started(
         TestSettings,
         DebugState(states.toMap().toPersistentMap()),
-        StartedServerStub
+        StartedTestServerStub
 )
 
 private fun RandomSnapshotId() = SnapshotId(UUID.randomUUID())

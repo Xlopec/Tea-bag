@@ -23,6 +23,7 @@ import io.kotlintest.shouldThrowExactlyUnit
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -40,20 +41,22 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
         ): Component<Char, String, Char> = Component(TestEnv(env = env))
     }
 
-    private val testEnv = Env(
-        "",
-        ::throwingResolver,
-        ::messageAsStateUpdate
+    private val testEnv = Env<String, String, String>(
+            Initializer(""),
+            ::throwingResolver,
+            ::messageAsStateUpdate,
+            TestCoroutineDispatcher(),
+            TestCoroutineDispatcher()
     )
 
     @Test
     fun `test debuggable component throws expected exception when it can't connect to a server`() = runBlockingInTestScope {
 
         val component = Component(
-            TestEnv(
-                env = testEnv,
-                serverSettings = TestServerSettings(sessionBuilder = ::WebSocketSession)
-            )
+                TestEnv(
+                        env = testEnv,
+                        serverSettings = TestServerSettings(sessionBuilder = ::WebSocketSession)
+                )
         )
 
         shouldThrowExactlyUnit<ConnectException> {
@@ -66,21 +69,21 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
 
         val testSession = TestDebugSession<String, String>()
         val component = Component(
-            TestEnv(
-                env = testEnv,
-                serverSettings = TestServerSettings(
-                    sessionBuilder = { _, block -> testSession.apply { block() } }
+                TestEnv(
+                        env = testEnv,
+                        serverSettings = TestServerSettings(
+                                sessionBuilder = { _, block -> testSession.apply { block() } }
+                        )
                 )
-            )
         )
         val messages = arrayOf("a", "b", "c")
         val actual = component(*messages).take(messages.size + 1).toCollection(ArrayList(messages.size + 1))
 
         actual shouldBe listOf(
-            Initial("", emptySet<String>()),
-            Regular("a", emptySet(), "", "a"),
-            Regular("b", emptySet(), "a", "b"),
-            Regular("c", emptySet(), "b", "c")
+                Initial("", emptySet<String>()),
+                Regular("a", emptySet(), "", "a"),
+                Regular("b", emptySet(), "a", "b"),
+                Regular("c", emptySet(), "b", "c")
         )
 
         testSession.packets.forEachIndexed { index, elem ->
@@ -107,17 +110,17 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
 
         val testSession = TestDebugSession<String, String>(states = flowOf("a"))
         val component = Component(
-            TestEnv(
-                env = testEnv.copy(initializer = { delay(Long.MAX_VALUE); error("shouldn't get here") }),
-                serverSettings = TestServerSettings(
-                    sessionBuilder = { _, block -> testSession.apply { block() } }
+                TestEnv(
+                        env = testEnv.copy(initializer = { delay(Long.MAX_VALUE); error("shouldn't get here") }),
+                        serverSettings = TestServerSettings(
+                                sessionBuilder = { _, block -> testSession.apply { block() } }
+                        )
                 )
-            )
         )
 
         val expected = listOf<StringSnapshot>(
-            Initial("a", emptySet()),
-            Regular("b", emptySet(), "a", "b")
+                Initial("a", emptySet()),
+                Regular("b", emptySet(), "a", "b")
         )
 
         val actual = component("b")
@@ -133,20 +136,20 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
         val serverMessages = Channel<String>()
         val testSession = TestDebugSession<String, String>(messages = serverMessages.consumeAsFlow())
         val component = Component(
-            TestEnv(
-                env = testEnv,
-                serverSettings = TestServerSettings(
-                    sessionBuilder = { _, block -> testSession.apply { block() } }
+                TestEnv(
+                        env = testEnv,
+                        serverSettings = TestServerSettings(
+                                sessionBuilder = { _, block -> testSession.apply { block() } }
+                        )
                 )
-            )
         )
 
         val expected = listOf<StringSnapshot>(
-            Initial("", emptySet()),
-            Regular("a", emptySet(), "", "a"),
-            Regular("b", emptySet(), "a", "b"),
-            Regular("c", emptySet(), "b", "c"),
-            Regular("d", emptySet(), "c", "d")
+                Initial("", emptySet()),
+                Regular("a", emptySet(), "", "a"),
+                Regular("b", emptySet(), "a", "b"),
+                Regular("c", emptySet(), "b", "c"),
+                Regular("d", emptySet(), "c", "d")
         )
 
         val actual = component(flowOf("a").onCompletion { serverMessages.send("b", "c", "d") })
