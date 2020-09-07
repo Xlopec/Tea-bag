@@ -3,8 +3,7 @@ package com.oliynick.max.tea.core.debug.app.component.updater
 import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.*
-import com.oliynick.max.tea.core.debug.app.transport.StartedServer
-import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
+import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import java.time.LocalDateTime
 import java.util.*
@@ -19,7 +18,7 @@ object LiveNotificationUpdater : NotificationUpdater {
     ): UpdateWith<PluginState, PluginCommand> =
         when {
             message is NotifyStarted -> toStartedState(message.server, state.settings)
-            message is NotifyStopped -> toStoppedState(message.server, state.settings)
+            message is NotifyStopped -> toStoppedState(state.settings)
             message is AppendSnapshot && state is Started -> appendSnapshot(message, state)
             message is StateReApplied && state is Started -> reApplyState(message, state)
             message is ComponentAttached && state is Started -> attachComponent(message, state)
@@ -28,7 +27,7 @@ object LiveNotificationUpdater : NotificationUpdater {
         }
 
     fun toStartedState(
-        server: StartedServer,
+        server: Server,
         settings: Settings
     ): UpdateWith<Started, PluginCommand> =
         Started(
@@ -38,10 +37,9 @@ object LiveNotificationUpdater : NotificationUpdater {
         ).noCommand()
 
     fun toStoppedState(
-        server: StoppedServer,
         settings: Settings
     ): UpdateWith<Stopped, PluginCommand> =
-        Stopped(settings, server).noCommand()
+        Stopped(settings).noCommand()
 
     fun appendSnapshot(
         message: AppendSnapshot,
@@ -88,7 +86,7 @@ object LiveNotificationUpdater : NotificationUpdater {
     ): UpdateWith<PluginState, PluginCommand> =
         when {
             isFatalProblem(th, op) -> notifyDeveloperException(th)
-            op is DoStartServer && state is Starting -> Stopped.reset(state.settings) command DoNotifyOperationException(th, op)
+            op is DoStartServer && state is Starting -> Stopped(state.settings) command DoNotifyOperationException(th, op)
             else -> state command DoNotifyOperationException(th, op)
         }
 

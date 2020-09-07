@@ -31,7 +31,7 @@ fun PluginComponent(
 private fun AppInitializer(
     environment: Environment
 ) : Initializer<Stopped, Nothing> =
-    { Initial(Stopped.reset(environment.properties.settings), emptySet()) }
+    { Initial(Stopped(environment.properties.settings), emptySet()) }
 
 private fun Logger(
     logger: Logger = Logger.getInstance(PluginId)

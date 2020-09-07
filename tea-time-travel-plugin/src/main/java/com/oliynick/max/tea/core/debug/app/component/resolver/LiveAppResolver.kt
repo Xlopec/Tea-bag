@@ -13,11 +13,13 @@ import com.oliynick.max.tea.core.debug.protocol.ApplyState
 
 fun <Env> LiveAppResolver() where Env : HasMessageChannel,
                                   Env : HasProject,
-                                  Env : HasSystemProperties = object : LiveAppResolver<Env> {}
+                                  Env : HasSystemProperties,
+                                  Env : HasServer = object : LiveAppResolver<Env> {}
 
 interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
                                                         Env : HasProject,
-                                                        Env : HasSystemProperties {
+                                                        Env : HasSystemProperties,
+                                                        Env : HasServer {
 
     override suspend fun Env.resolve(
         command: PluginCommand
@@ -30,8 +32,8 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
     ): Set<NotificationMessage> =
         when (command) {
             is DoStoreSettings -> command sideEffect { properties.settings = settings }
-            is DoStartServer -> command effect { NotifyStarted(server.start(address, events)) }
-            is DoStopServer -> command effect { NotifyStopped(server.stop()) }
+            is DoStartServer -> command effect { NotifyStarted(newServer(address, events)) }
+            is DoStopServer -> command effect { server.stop(); NotifyStopped }
             is DoApplyMessage -> command sideEffect { server(id, ApplyMessage(command.command.toJsonElement())) }
             is DoApplyState -> reApplyState(command)
             is DoNotifyOperationException -> command sideEffect { project.showBalloon(ExceptionBalloon(exception, operation)) }

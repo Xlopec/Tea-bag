@@ -33,12 +33,12 @@ internal class LiveUiUpdaterTest {
     fun `test the result is calculated properly given plugin state is Stopped and message is StartServer`() =
         forAll(SettingsGen) { settings ->
 
-            val stopped = Stopped(settings, StoppedTestServer)
+            val stopped = Stopped(settings)
             val (state, commands) = updater(StartServer, stopped)
 
             if (settings.host.isValid() && settings.port.isValid()) {
                 state == Starting(settings)
-                        && commands == setOf(DoStartServer(ServerAddress(settings.host.value!!, settings.port.value!!), StoppedTestServer))
+                        && commands == setOf(DoStartServer(ServerAddress(settings.host.value!!, settings.port.value!!)))
             } else {
                 state === stopped && commands.isEmpty()
             }
@@ -48,7 +48,7 @@ internal class LiveUiUpdaterTest {
     fun `test the result is calculated properly given plugin state is Started and message is StopServer`() =
         forAll(SettingsGen) { settings ->
 
-            val pluginState = Started(settings, DebugState(), StartedTestServer())
+            val pluginState = Started(settings, DebugState(), StartedTestServerStub)
             val (state, commands) = updater(StopServer, pluginState)
 
             state == Stopping(settings) && commands == setOf(DoStopServer(pluginState.server))
@@ -256,7 +256,7 @@ internal class LiveUiUpdaterTest {
     @Test
     fun `test when illegal combination of message and state warning command is returned`() {
 
-        val initialState = Stopped(TestSettings, StoppedTestServer)
+        val initialState = Stopped(TestSettings)
         val (state, commands) = updater(StopServer, initialState)
 
         state shouldBeSameInstanceAs initialState

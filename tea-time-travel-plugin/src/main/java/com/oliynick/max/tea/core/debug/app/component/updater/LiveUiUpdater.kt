@@ -50,7 +50,7 @@ object LiveUiUpdater : UiUpdater {
         val port = state.settings.port
 
         return if (host is Valid && port is Valid) {
-            Starting(state.settings) command DoStartServer(ServerAddress(host.t, port.t), state.server)
+            Starting(state.settings) command DoStartServer(ServerAddress(host.t, port.t))
         } else state.noCommand()
     }
 

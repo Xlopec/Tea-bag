@@ -3,14 +3,9 @@ package com.oliynick.max.tea.core.debug.app.component.cms
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.map
 import com.oliynick.max.tea.core.debug.app.misc.mapNotNull
-import com.oliynick.max.tea.core.debug.app.transport.NewStoppedServer
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-
-fun Stopped.Companion.reset(
-    settings: Settings
-) = Stopped(settings, NewStoppedServer())
 
 fun Started.update(
     debugState: DebugState

@@ -17,8 +17,7 @@
 package com.oliynick.max.tea.core.debug.app.component.cms
 
 import com.oliynick.max.tea.core.debug.app.domain.*
-import com.oliynick.max.tea.core.debug.app.transport.StartedServer
-import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
+import com.oliynick.max.tea.core.debug.app.transport.*
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 sealed class PluginMessage
@@ -94,12 +93,10 @@ data class NotifyOperationException(
 }
 
 data class NotifyStarted(
-    val server: StartedServer
+    val server: Server
 ) : NotificationMessage()
 
-data class NotifyStopped(
-    val server: StoppedServer
-) : NotificationMessage()
+object NotifyStopped : NotificationMessage()
 
 data class AppendSnapshot(
     val componentId: ComponentId,

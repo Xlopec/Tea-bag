@@ -17,8 +17,7 @@
 package com.oliynick.max.tea.core.debug.app.component.cms
 
 import com.oliynick.max.tea.core.debug.app.domain.*
-import com.oliynick.max.tea.core.debug.app.transport.StartedServer
-import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
+import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 sealed class PluginCommand
@@ -28,24 +27,23 @@ data class DoStoreSettings(
 ) : PluginCommand()
 
 data class DoStartServer(
-    val address: ServerAddress,
-    val server: StoppedServer
+    val address: ServerAddress
 ) : PluginCommand()
 
 data class DoStopServer(
-    val server: StartedServer
+    val server: Server
 ) : PluginCommand()
 
 data class DoApplyMessage(
     val id: ComponentId,
     val command: Value,
-    val server: StartedServer
+    val server: Server
 ) : PluginCommand()
 
 data class DoApplyState(
     val id: ComponentId,
     val state: Value,
-    val server: StartedServer
+    val server: Server
 ) : PluginCommand()
 
 data class DoNotifyOperationException(
