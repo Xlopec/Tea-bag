@@ -37,3 +37,8 @@
 androidx_prebuilts/
 out/
 /.idea/$PRODUCT_WORKSPACE_FILE$
+!/.idea/compiler.xml
+.idea/.name
+.idea/compiler.xml
+.idea/markdown-navigator-enh.xml
+.idea/markdown-navigator.xml

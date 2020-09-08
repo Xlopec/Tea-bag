@@ -17,7 +17,7 @@
 package com.oliynick.max.tea.core.debug.app.component.cms
 
 import com.oliynick.max.tea.core.debug.app.domain.*
-import com.oliynick.max.tea.core.debug.app.transport.*
+import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 sealed class PluginMessage
@@ -100,6 +100,7 @@ object NotifyStopped : NotificationMessage()
 
 data class AppendSnapshot(
     val componentId: ComponentId,
+    val meta: SnapshotMeta,
     val message: Value,
     val oldState: Value,
     val newState: Value

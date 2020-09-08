@@ -28,7 +28,7 @@ internal object ComponentIdAdapter : JsonSerializer<ComponentId>, JsonDeserializ
         src: ComponentId,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement = JsonPrimitive(src.id)
+    ): JsonElement = JsonPrimitive(src.value)
 
     override fun deserialize(
         json: JsonElement,

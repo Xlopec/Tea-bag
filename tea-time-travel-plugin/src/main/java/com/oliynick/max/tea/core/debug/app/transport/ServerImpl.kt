@@ -19,7 +19,7 @@
 package com.oliynick.max.tea.core.debug.app.transport
 
 import com.oliynick.max.tea.core.debug.app.component.cms.*
-import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
+import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.transport.serialization.GSON
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
 import com.oliynick.max.tea.core.debug.gson.*
@@ -42,6 +42,7 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
 import org.slf4j.event.Level
 import java.time.Duration
+import java.time.LocalDateTime
 import java.util.*
 
 class ServerImpl private constructor(
@@ -151,7 +152,12 @@ private suspend fun processPacket(
             val packet = GSON.fromJson<GsonNotifyServer>(json, NotifyServer::class.java)
 
             when (val message = packet.payload) {
-                is GsonNotifyComponentSnapshot -> events.send(message.toNotification(packet.componentId))
+                is GsonNotifyComponentSnapshot -> events.send(
+                        message.toNotification(
+                                packet.componentId,
+                                SnapshotMeta(SnapshotId(UUID.randomUUID()), LocalDateTime.now())
+                        )
+                )
                 is GsonNotifyComponentAttached -> events.send(message.toNotification(packet.componentId))
             }
 
@@ -161,9 +167,11 @@ private suspend fun processPacket(
     }
 
 private fun GsonNotifyComponentSnapshot.toNotification(
-    id: ComponentId
+    componentId: ComponentId,
+    meta: SnapshotMeta
 ) = AppendSnapshot(
-        id,
+        componentId,
+        meta,
         message.asJsonObject.toValue(),
         oldState.asJsonObject.toValue(),
         newState.asJsonObject.toValue()

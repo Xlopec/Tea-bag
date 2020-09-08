@@ -130,7 +130,7 @@ private fun notifyConnectException(
 
 private fun connectionFailureMessage(
     serverSettings: ServerSettings<*, *, *>
-) = "Component '${serverSettings.id.id}' " +
+) = "Component '${serverSettings.id.value}' " +
         "couldn't connect to the endpoint ${serverSettings.url.toExternalForm()}"
 
 private fun <S, C> DebugEnv<*, S, C, *>.init(): Flow<Initial<S, C>> = componentEnv.init()

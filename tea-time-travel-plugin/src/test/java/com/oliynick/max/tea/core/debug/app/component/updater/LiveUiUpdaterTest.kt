@@ -19,10 +19,6 @@ import kotlinx.collections.immutable.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import java.time.LocalDateTime
-import java.util.*
-
-private val TestTimestamp: LocalDateTime = LocalDateTime.of(2000, 1, 1, 1, 1)
 
 @RunWith(JUnit4::class)
 internal class LiveUiUpdaterTest {
@@ -264,53 +260,3 @@ internal class LiveUiUpdaterTest {
     }
 
 }
-
-private inline fun TestComponentDebugStates(
-    range: CharRange = 'b'..'z',
-    block: (strId: String) -> Pair<ComponentId, ComponentDebugState> = { strId ->
-        NonEmptyComponentDebugState(ComponentId(strId), SnapshotMeta(RandomSnapshotId(), TestTimestamp))
-    }
-) = range
-    .map { it.toString() }
-    .map(block)
-
-private fun EmptyOriginalSnapshot(
-    m: SnapshotMeta
-) = OriginalSnapshot(m, Null, Null)
-
-private fun EmptyFilteredSnapshot(
-    m: SnapshotMeta
-) = FilteredSnapshot.ofBoth(m, Null, Null)
-
-private fun NonEmptyComponentDebugState(
-    componentId: ComponentId,
-    meta: SnapshotMeta
-) = NonEmptyComponentDebugState(
-        componentId,
-        persistentListOf(OriginalSnapshot(meta, Null, Null)),
-        persistentListOf(FilteredSnapshot.ofBoth(meta, Null, Null))
-)
-
-private fun NonEmptyComponentDebugState(
-    componentId: ComponentId,
-    snapshots: PersistentList<OriginalSnapshot>,
-    filteredSnapshots: PersistentList<FilteredSnapshot>
-) = componentId to ComponentDebugState(componentId, Null, snapshots = snapshots, filteredSnapshots = filteredSnapshots)
-
-private fun TestStartedState(
-    states: Iterable<Pair<ComponentId, ComponentDebugState>>
-) = Started(
-        TestSettings,
-        DebugState(states.toMap().toPersistentMap()),
-        StartedTestServerStub
-)
-
-private fun TestStartedState(
-    vararg states: Pair<ComponentId, ComponentDebugState>
-) = Started(
-        TestSettings,
-        DebugState(states.toMap().toPersistentMap()),
-        StartedTestServerStub
-)
-
-private fun RandomSnapshotId() = SnapshotId(UUID.randomUUID())

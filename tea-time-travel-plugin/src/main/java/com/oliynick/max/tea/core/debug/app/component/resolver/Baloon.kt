@@ -17,13 +17,13 @@ fun ExceptionBalloon(
 
 fun StateAppliedBalloon(componentId: ComponentId): Balloon =
     createNotificationBalloon("""<html>
-        <p>State was reapplied successfully for component "${componentId.id}"</p>
+        <p>State was reapplied successfully for component "${componentId.value}"</p>
         </html>
     """.trimIndent())
 
 fun ComponentAttachedBalloon(componentId: ComponentId): Balloon =
     createNotificationBalloon("""<html>
-        <p>Component "${componentId.id}" attached to the plugin</p>
+        <p>Component "${componentId.value}" attached to the plugin</p>
         </html>
     """.trimIndent())
 
@@ -45,8 +45,8 @@ private fun htmlDescription(
         is DoStoreSettings -> "plugin failed to store settings"
         is DoStartServer -> "plugin failed to start server"
         is DoStopServer -> "plugin failed to stop server"
-        is DoApplyMessage -> "plugin failed to apply commands to component \"${operation.id.id}\""
-        is DoApplyState -> "plugin failed to apply state to component \"${operation.id.id}\". Check the client is running"
+        is DoApplyMessage -> "plugin failed to apply commands to component \"${operation.id.value}\""
+        is DoApplyState -> "plugin failed to apply state to component \"${operation.id.value}\". Check the client is running"
         null -> cause.tryGetReadableMessage()
         is DoWarnUnacceptableMessage, is DoNotifyOperationException, is DoNotifyComponentAttached -> error("will never happen")
     }

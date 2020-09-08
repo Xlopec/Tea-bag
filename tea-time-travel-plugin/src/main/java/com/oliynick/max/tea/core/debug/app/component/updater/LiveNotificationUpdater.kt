@@ -5,8 +5,6 @@ import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import java.time.LocalDateTime
-import java.util.*
 
 // privacy is for pussies
 @Suppress("MemberVisibilityCanBePrivate")
@@ -102,15 +100,7 @@ object LiveNotificationUpdater : NotificationUpdater {
     ): Boolean =
         op is DoStopServer || op is DoStoreSettings || th is InternalException
 
-    fun AppendSnapshot.toSnapshot(): OriginalSnapshot =
-        OriginalSnapshot(
-            SnapshotMeta(
-                SnapshotId(UUID.randomUUID()),
-                LocalDateTime.now()
-            ),
-            message,
-            newState
-        )
+    fun AppendSnapshot.toSnapshot() = OriginalSnapshot(meta, message, newState)
 
     fun DebugState.componentOrNew(
         id: ComponentId,

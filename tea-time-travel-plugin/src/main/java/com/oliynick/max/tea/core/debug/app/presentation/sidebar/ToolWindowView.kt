@@ -223,7 +223,7 @@ class ToolWindowView private constructor(
         }
 
         state.debugState.components
-            .filter { e -> indexOfTab(e.key.id) == -1 }
+            .filter { e -> indexOfTab(e.key.value) == -1 }
             .forEach { (id, _) -> addTab(id) }
     }
 
@@ -258,12 +258,12 @@ private inline fun JTabbedPane.addCloseableTab(
     content: AwtComponent,
     crossinline onClose: (ComponentId) -> Unit
 ) {
-    addTab(component.id, content)
+    addTab(component.value, content)
 
     val panel = JPanel(FlowLayout()).apply {
         isOpaque = false
 
-        add(JLabel(component.id, SwingConstants.LEADING))
+        add(JLabel(component.value, SwingConstants.LEADING))
         add(JLabel(CloseDefaultIcon).apply {
             setHover(CloseDarkIcon)
             setOnClickListener { onClose(component) }
