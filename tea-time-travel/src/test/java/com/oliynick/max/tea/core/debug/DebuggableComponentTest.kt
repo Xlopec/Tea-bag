@@ -24,6 +24,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.TestCoroutineDispatcher
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -131,6 +132,7 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
     }
 
     @Test
+    @Ignore("race, can't make any assumptions regarding processing order")
     fun `test debuggable component processes server messages properly`() = runBlocking {
 
         val serverMessages = Channel<String>()
