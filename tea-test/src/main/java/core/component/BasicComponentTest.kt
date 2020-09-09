@@ -39,7 +39,7 @@ abstract class BasicComponentTest(
         val snapshots =
             component(*messages).take(messages.size + 1).toList(ArrayList(messages.size + 1))
 
-        snapshots shouldContainExactly listOf(
+        snapshots.shouldContainExactly(
             Initial("", emptySet()),
             Regular("a", emptySet(), "", 'a'),
             Regular("b", emptySet(), "a", 'b'),
@@ -63,7 +63,7 @@ abstract class BasicComponentTest(
                 component(*messages).take(3 + messages.size + 1)
                     .toList(ArrayList(3 + messages.size + 1))
 
-            snapshots shouldContainExactly listOf(
+            snapshots.shouldContainExactly(
                 Initial("", setOf('a', 'b', 'c')),
                 Regular("a", emptySet(), "", 'a'),
                 Regular("b", emptySet(), "a", 'b'),
@@ -121,7 +121,7 @@ abstract class BasicComponentTest(
             val component = factory(env)
             val snapshots = component('a').take(3).toCollection(ArrayList())
 
-            snapshots shouldContainExactly listOf(
+            snapshots.shouldContainExactly(
                 Initial("", emptySet()),
                 Regular("a", setOf('b', 'c'), "", 'a'),
                 Regular("ab", emptySet(), "a", 'b')

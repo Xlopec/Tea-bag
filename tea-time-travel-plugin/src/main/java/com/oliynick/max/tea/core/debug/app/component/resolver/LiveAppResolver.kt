@@ -46,7 +46,7 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
     ) = command effect {
         server(id, ApplyState(state.toJsonElement()))
         project.showBalloon(StateAppliedBalloon(id))
-        StateReApplied(id, state)
+        StateApplied(id, state)
     }
 
 }

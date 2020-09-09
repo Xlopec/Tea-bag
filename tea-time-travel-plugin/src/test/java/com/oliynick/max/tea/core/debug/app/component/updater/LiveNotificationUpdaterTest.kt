@@ -8,6 +8,8 @@ import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.*
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import io.kotlintest.matchers.collections.shouldBeEmpty
+import io.kotlintest.matchers.collections.shouldContainExactly
+import io.kotlintest.matchers.types.shouldBeSameInstanceAs
 import io.kotlintest.shouldBe
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Test
@@ -44,12 +46,12 @@ class LiveNotificationUpdaterTest {
         val message = StringWrapper("b")
         val oldState = StringWrapper("c")
         val newState = StringWrapper("d")
-        val otherStates = TestComponentDebugStates('b'..'z')
+        val otherStates = ComponentDebugStates('b'..'z')
         val meta = SnapshotMeta(TestSnapshotId, TestTimestamp)
 
         val (nextState, commands) = updater(
                 AppendSnapshot(componentId, meta, message, oldState, newState),
-                TestStartedState(otherStates)
+                Started(otherStates)
         )
 
         val expectedDebugState = ComponentDebugState(
@@ -59,18 +61,18 @@ class LiveNotificationUpdaterTest {
                 filteredSnapshots = persistentListOf(FilteredSnapshot.ofBoth(meta, message, newState))
         )
 
-        nextState shouldBe TestStartedState(otherStates + (componentId to expectedDebugState))
+        nextState shouldBe Started(otherStates + (componentId to expectedDebugState))
         commands.shouldBeEmpty()
     }
 
     @Test
     fun `test when append snapshot to existing component then it gets appended`() {
 
-        val otherStates = TestComponentDebugStates('a'..'z') { strId ->
+        val otherStates = ComponentDebugStates('a'..'z') { strId ->
 
             val id = ComponentId(strId)
 
-            if (id.value == "a") EmptyComponentDebugState(id)
+            if (id.value == "a") ComponentDebugState(id)
             else NonEmptyComponentDebugState(id, SnapshotMeta(RandomSnapshotId(), TestTimestamp))
         }
 
@@ -82,7 +84,7 @@ class LiveNotificationUpdaterTest {
 
         val (nextState, commands) = updater(
                 AppendSnapshot(componentId, meta, message, oldState, newState),
-                TestStartedState(otherStates)
+                Started(otherStates)
         )
 
         val expectedDebugState = ComponentDebugState(
@@ -92,8 +94,69 @@ class LiveNotificationUpdaterTest {
                 filteredSnapshots = persistentListOf(FilteredSnapshot.ofBoth(meta, message, newState))
         )
 
-        nextState shouldBe TestStartedState(otherStates + (componentId to expectedDebugState))
+        nextState shouldBe Started(otherStates + (componentId to expectedDebugState))
         commands.shouldBeEmpty()
+    }
+
+    @Test
+    fun `test when apply state then it gets applied`() {
+
+        val otherStates = ComponentDebugStates('a'..'z') { strId ->
+            val id = ComponentId(strId)
+
+            if (id.value == "a") ComponentDebugState(id)
+            else NonEmptyComponentDebugState(id, SnapshotMeta(RandomSnapshotId(), TestTimestamp))
+        }
+
+        val componentId = ComponentId("a")
+        val newState = StringWrapper("d")
+
+        val (nextState, commands) = updater(
+                StateApplied(componentId, newState),
+                Started(otherStates)
+        )
+
+        val expectedDebugState = ComponentDebugState(componentId, newState)
+
+        nextState shouldBe Started(otherStates.takeLast(otherStates.size - 1) + (componentId to expectedDebugState))
+        commands.shouldBeEmpty()
+    }
+
+    @Test
+    fun `test when apply state and component doesn't exist then it doesn't get applied`() {
+
+        val state = Started(ComponentDebugStates())
+
+        val (nextState, commands) = updater(StateApplied(ComponentId("a"), StringWrapper("d")), state)
+
+        nextState shouldBeSameInstanceAs state
+        commands.shouldBeEmpty()
+    }
+
+    @Test
+    fun `test when append new component then it gets appended`() {
+
+        val otherStates = ComponentDebugStates { strId -> ComponentDebugState(ComponentId(strId)) }
+        val componentId = ComponentId("a")
+        val state = StringWrapper("d")
+
+        val (nextState, commands) = updater(ComponentAttached(componentId, state),
+                Started(otherStates)
+        )
+
+        nextState shouldBe Started(otherStates + ComponentDebugState(componentId, state = state))
+        commands.shouldContainExactly(DoNotifyComponentAttached(componentId))
+    }
+
+    @Test
+    fun `test when illegal combination of message and state warning command is returned`() {
+
+        val initialState = Stopped(TestSettings)
+        val message = StateApplied(ComponentId("a"), Null)
+        val (state, commands) = updater(message, initialState)
+
+        state shouldBeSameInstanceAs initialState
+        commands.shouldContainExactly(DoWarnUnacceptableMessage(message, initialState))
     }
 
 }

@@ -22,7 +22,7 @@ val TestTimestamp: LocalDateTime = LocalDateTime.of(2000, 1, 1, 1, 1)
 
 val TestSnapshotId: SnapshotId  = SnapshotId(UUID.fromString("3853fab6-f20c-11ea-adc1-0242ac120002"))
 
-inline fun TestComponentDebugStates(
+inline fun ComponentDebugStates(
     range: CharRange = 'b'..'z',
     block: (strId: String) -> Pair<ComponentId, ComponentDebugState> = { strId ->
         NonEmptyComponentDebugState(ComponentId(strId), SnapshotMeta(RandomSnapshotId(), TestTimestamp))
@@ -42,23 +42,20 @@ fun EmptyFilteredSnapshot(
 fun NonEmptyComponentDebugState(
     componentId: ComponentId,
     meta: SnapshotMeta
-) = NonEmptyComponentDebugState(
+) = ComponentDebugState(
         componentId,
         persistentListOf(OriginalSnapshot(meta, Null, Null)),
         persistentListOf(FilteredSnapshot.ofBoth(meta, Null, Null))
 )
 
-fun NonEmptyComponentDebugState(
+fun ComponentDebugState(
     componentId: ComponentId,
-    snapshots: PersistentList<OriginalSnapshot>,
-    filteredSnapshots: PersistentList<FilteredSnapshot>
-) = componentId to ComponentDebugState(componentId, Null, snapshots = snapshots, filteredSnapshots = filteredSnapshots)
+    snapshots: PersistentList<OriginalSnapshot> = persistentListOf(),
+    filteredSnapshots: PersistentList<FilteredSnapshot> = persistentListOf(),
+    state: Value = Null
+) = componentId to ComponentDebugState(componentId, state, snapshots = snapshots, filteredSnapshots = filteredSnapshots)
 
-fun EmptyComponentDebugState(
-    componentId: ComponentId
-) = componentId to ComponentDebugState(componentId, Null)
-
-fun TestStartedState(
+fun Started(
     states: Iterable<Pair<ComponentId, ComponentDebugState>>
 ) = Started(
         TestSettings,
@@ -66,7 +63,7 @@ fun TestStartedState(
         StartedTestServerStub
 )
 
-fun TestStartedState(
+fun Started(
     vararg states: Pair<ComponentId, ComponentDebugState>
 ) = Started(
         TestSettings,

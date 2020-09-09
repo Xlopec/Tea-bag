@@ -18,7 +18,7 @@ object LiveNotificationUpdater : NotificationUpdater {
             message is NotifyStarted -> toStartedState(message.server, state.settings)
             message is NotifyStopped -> toStoppedState(state.settings)
             message is AppendSnapshot && state is Started -> appendSnapshot(message, state)
-            message is StateReApplied && state is Started -> reApplyState(message, state)
+            message is StateApplied && state is Started -> applyState(message, state)
             message is ComponentAttached && state is Started -> attachComponent(message, state)
             message is NotifyOperationException -> recoverFromException(message.exception, message.operation, state)
             else -> warnUnacceptableMessage(message, state)
@@ -65,8 +65,8 @@ object LiveNotificationUpdater : NotificationUpdater {
         return state.updateComponents { mapping -> mapping.put(componentState.id, componentState) } command DoNotifyComponentAttached(id)
     }
 
-    fun reApplyState(
-        message: StateReApplied,
+    fun applyState(
+        message: StateApplied,
         state: Started
     ): UpdateWith<PluginState, PluginCommand> {
 

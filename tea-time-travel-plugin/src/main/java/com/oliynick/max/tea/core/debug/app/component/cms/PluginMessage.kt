@@ -106,7 +106,7 @@ data class AppendSnapshot(
     val newState: Value
 ) : NotificationMessage()
 
-data class StateReApplied(
+data class StateApplied(
     val componentId: ComponentId,
     val state: Value
 ) : NotificationMessage()
