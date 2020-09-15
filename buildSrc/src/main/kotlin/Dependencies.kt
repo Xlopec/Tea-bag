@@ -1,20 +1,21 @@
+import BuildPlugins.Versions.buildToolsVersion
 import BuildPlugins.Versions.intellijVersion
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 
-const val kotlinVersion = "1.4.0"
+const val kotlinVersion = "1.4.10"
 
 object BuildPlugins {
 
     object Versions {
         const val buildToolsVersion = "4.0.1"
         const val detektVersion = "1.5.1"
-        const val dokkaVersion = "0.10.1"
+        const val dokkaVersion = "1.4.0"
         const val bintrayVersion = "1.8.4"
-        const val intellijVersion = "0.4.20"
+        const val intellijVersion = "0.4.22"
     }
 
-    const val androidGradlePlugin = "com.android.tools.build:gradle:${Versions.buildToolsVersion}"
+    const val androidGradlePlugin = "com.android.tools.build:gradle:$buildToolsVersion"
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     const val intellijPlugin = "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:$intellijVersion"
 }
@@ -38,12 +39,12 @@ object Libraries {
     const val ktorClientWebsockets = "io.ktor:ktor-client-websockets:$ktor"
     const val ktorClientOkHttp = "io.ktor:ktor-client-okhttp:$ktor"
 
-    const val immutableCollections = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.2"
+    const val immutableCollections = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.3"
 }
 
 object TestLibraries {
     private object Versions {
-        const val ktor = "1.2.4"
+        const val ktor = "1.4.0"
     }
 
     const val ktorMockJvm = "io.ktor:ktor-client-mock-jvm:${Versions.ktor}"

@@ -80,25 +80,23 @@ libraryProjects()
         apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.jfrog.bintray")
 
-        val dokka by tasks.getting(DokkaTask::class) {
-            outputFormat = "html"
-            outputDirectory = "$buildDir/javadoc"
+        tasks.withType<DokkaTask>().configureEach {
 
-            configuration {
+            outputDirectory.set(buildDir.resolve("javadoc"))
 
-                moduleName = name
-
-                externalDocumentationLink {
-                    noJdkLink = true
-                    noStdlibLink = true
-                    noAndroidSdkLink = true
-                    url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-                    url = URL("https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/")
+            dokkaSourceSets {
+                named("main") {
+                    moduleDisplayName.set(name)
+                    sourceLink {
+                        localDirectory.set(file("src/main/java"))
+                        remoteUrl.set(
+                            URL(
+                                "https://github.com/Xlopec/Tea-bag/tree/${branchName()}/tea-core/src/main/java"
+                            )
+                        )
+                    }
                 }
-
-                jdkVersion = JavaVersion.VERSION_1_8.majorVersionInt
             }
-
         }
 
         val sourcesJar by tasks.creating(Jar::class) {
@@ -108,7 +106,7 @@ libraryProjects()
         }
 
         val javadocJar by tasks.creating(Jar::class) {
-            dependsOn(dokka)
+            dependsOn(tasks.named("dokkaJavadoc"))
             archiveClassifier.set("javadoc")
             from("$buildDir/javadoc")
         }
@@ -255,15 +253,15 @@ allprojects {
             // disables warning about usage of experimental Kotlin features
             @Suppress("SuspiciousCollectionReassignment")
             freeCompilerArgs += listOf(
-                    "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
-                    "-Xuse-experimental=kotlin.Experimental",
-                    "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
-                    "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
-                    "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                    "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
-                    "-Xuse-experimental=kotlin.ExperimentalStdlibApi",
-                    "-XXLanguage:+NewInference",
-                    "-XXLanguage:+InlineClasses"
+                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
+                "-Xuse-experimental=kotlin.Experimental",
+                "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
+                "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
+                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
+                "-Xuse-experimental=kotlin.ExperimentalStdlibApi",
+                "-XXLanguage:+NewInference",
+                "-XXLanguage:+InlineClasses"
             )
         }
     }
