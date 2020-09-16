@@ -24,20 +24,14 @@ import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.states
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.component.cms.UpdateDebugSettings
+import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.env.Environment
 import com.oliynick.max.tea.core.debug.app.env.PluginComponent
 import com.oliynick.max.tea.core.debug.app.presentation.misc.mergeWith
 import com.oliynick.max.tea.core.debug.app.presentation.settings.PluginSettingsNotifier
 import com.oliynick.max.tea.core.debug.app.storage.properties
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class SideToolWindowFactory : ToolWindowFactory, DumbAware {
@@ -80,8 +74,8 @@ private fun createToolWindowContent(
     component: Component<PluginMessage, PluginState, PluginCommand>
 ): Content {
 
-    val myToolWindow = ToolWindowView(project, environment, component.states())
+    val myToolWindow = ToolWindowView.new(project, environment, component.states())
     val contentFactory = ContentFactory.SERVICE.getInstance()
 
-    return contentFactory.createContent(myToolWindow.root, null, false)
+    return contentFactory.createContent(myToolWindow, null, false)
 }

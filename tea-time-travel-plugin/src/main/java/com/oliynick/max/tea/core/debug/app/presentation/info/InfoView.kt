@@ -16,76 +16,69 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.info
 
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.component.cms.StartServer
-import com.oliynick.max.tea.core.debug.app.component.cms.Started
-import com.oliynick.max.tea.core.debug.app.component.cms.Starting
-import com.oliynick.max.tea.core.debug.app.component.cms.Stopped
-import com.oliynick.max.tea.core.debug.app.component.cms.Stopping
-import com.oliynick.max.tea.core.debug.app.presentation.misc.safe
-import com.oliynick.max.tea.core.debug.app.presentation.misc.setOnClickListener
+import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.presentation.misc.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.swing.JLabel
 import javax.swing.JPanel
-import kotlin.coroutines.CoroutineContext
 
-class InfoView(
-    component: (Flow<PluginMessage>) -> Flow<PluginState>,
-    context: CoroutineContext
-) : CoroutineScope {
+class InfoView private constructor(
+    scope: CoroutineScope,
+    component: (Flow<PluginMessage>) -> Flow<PluginState>
+) : CoroutineScope by scope {
 
     companion object {
         val NAME = InfoView::class.simpleName!!
+
+        fun new(
+            scope: CoroutineScope,
+            component: (Flow<PluginMessage>) -> Flow<PluginState>
+        ) = InfoView(scope, component)
     }
 
-    private lateinit var panel: JPanel
+    lateinit var panel: JPanel
+        private set
+
     private lateinit var messageText: JLabel
-
-    override val coroutineContext = context + Job(context[Job.Key])
-
-    val root get() = panel
 
     init {
         panel.name = NAME
     }
 
     init {
-        launch {
-            val uiEvents = Channel<PluginMessage>()
+        val uiEvents = Channel<PluginMessage>()
 
-            component(uiEvents.consumeAsFlow()).collect { state ->
-                render(state, uiEvents)
-            }
+        scope.launch {
+            component(uiEvents.consumeAsFlow())
+                .collect { state -> render(state, uiEvents::offer) }
         }
     }
 
     private fun render(
         state: PluginState,
-        uiEvents: Channel<PluginMessage>
-    ) {
+        uiEvents: (PluginMessage) -> Unit
+    ) =
         when (state) {
             is Stopped -> renderStopped(uiEvents)
             is Started -> renderStarted()
             is Starting, is Stopping -> Unit
         }.safe
-    }
 
     private fun renderStarted() {
         messageText.text = "There are no attached components yet"
+        messageText.removeMouseListeners()
     }
 
-    private fun renderStopped(uiEvents: Channel<PluginMessage>) {
-        messageText.text = "Debug server isn't running"
+    private fun renderStopped(
+        messages: (PluginMessage) -> Unit
+    ) {
+        messageText.text = "Debug server isn't running. Press to start"
 
         messageText.setOnClickListener {
-            uiEvents.offer(StartServer)
+            messages(StartServer)
         }
     }
 

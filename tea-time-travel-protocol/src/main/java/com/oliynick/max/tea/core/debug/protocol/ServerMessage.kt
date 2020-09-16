@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-@file:Suppress("unused")
+package com.oliynick.max.tea.core.debug.protocol
 
-package com.oliynick.max.tea.core.debug.app.transport.exception
+sealed class ServerMessage<out J>
 
-/*
-import com.google.gson.annotations.SerializedName
+data class NotifyComponentSnapshot<out J>(
+    val message: J,
+    val oldState: J,
+    val newState: J
+) : ServerMessage<J>()
 
-internal class ErrorResponse private constructor(@SerializedName("message") private val message: String) {
-
-    constructor(th: Throwable) : this(th.localizedMessage ?: "Unknown error")
-
-}*/
+data class NotifyComponentAttached<out J>(
+    val state: J
+) : ServerMessage<J>()

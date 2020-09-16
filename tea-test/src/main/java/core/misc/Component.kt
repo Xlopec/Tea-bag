@@ -16,9 +16,7 @@
 
 package core.misc
 
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
+import com.oliynick.max.tea.core.component.*
 
 @Suppress("RedundantSuspendModifier")
 suspend fun <C> throwingResolver(c: C): Nothing {

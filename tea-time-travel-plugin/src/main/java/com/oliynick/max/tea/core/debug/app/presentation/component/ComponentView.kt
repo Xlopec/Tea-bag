@@ -20,103 +20,49 @@ package com.oliynick.max.tea.core.debug.app.presentation.component
 
 import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.ReApplyMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.ReApplyState
-import com.oliynick.max.tea.core.debug.app.component.cms.RemoveAllSnapshots
-import com.oliynick.max.tea.core.debug.app.component.cms.RemoveSnapshots
-import com.oliynick.max.tea.core.debug.app.component.cms.Started
-import com.oliynick.max.tea.core.debug.app.component.cms.UpdateFilter
-import com.oliynick.max.tea.core.debug.app.component.cms.component
-import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
-import com.oliynick.max.tea.core.debug.app.domain.Filter
-import com.oliynick.max.tea.core.debug.app.domain.FilterOption
-import com.oliynick.max.tea.core.debug.app.domain.FilteredSnapshot
-import com.oliynick.max.tea.core.debug.app.domain.Invalid
-import com.oliynick.max.tea.core.debug.app.domain.Predicate
-import com.oliynick.max.tea.core.debug.app.domain.Settings
-import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
-import com.oliynick.max.tea.core.debug.app.domain.Validated
-import com.oliynick.max.tea.core.debug.app.domain.isValid
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.REMOVE_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.UPDATE_RUNNING_APP_ICON
-import com.oliynick.max.tea.core.debug.app.presentation.misc.DefaultMouseListener
-import com.oliynick.max.tea.core.debug.app.presentation.misc.EntryKeyNode
-import com.oliynick.max.tea.core.debug.app.presentation.misc.EntryValueNode
-import com.oliynick.max.tea.core.debug.app.presentation.misc.IndexedNode
-import com.oliynick.max.tea.core.debug.app.presentation.misc.MessageNode
-import com.oliynick.max.tea.core.debug.app.presentation.misc.PropertyNode
-import com.oliynick.max.tea.core.debug.app.presentation.misc.RootNode
-import com.oliynick.max.tea.core.debug.app.presentation.misc.SnapshotNode
-import com.oliynick.max.tea.core.debug.app.presentation.misc.StateNode
-import com.oliynick.max.tea.core.debug.app.presentation.misc.TreeRowValueTransferHandler
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueFormatter
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueNode
-import com.oliynick.max.tea.core.debug.app.presentation.misc.getSubTreeForRow
-import com.oliynick.max.tea.core.debug.app.presentation.misc.mergeWith
-import com.oliynick.max.tea.core.debug.app.presentation.misc.selections
-import com.oliynick.max.tea.core.debug.app.presentation.misc.textChanges
-import com.oliynick.max.tea.core.debug.app.presentation.misc.textSafe
-import com.oliynick.max.tea.core.debug.app.presentation.misc.toReadableStringDetailed
-import com.oliynick.max.tea.core.debug.app.presentation.misc.toReadableStringShort
-import com.oliynick.max.tea.core.debug.app.presentation.sidebar.exceptionBalloonFillColor
+import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.domain.*
+import com.oliynick.max.tea.core.debug.app.presentation.misc.*
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RemoveIcon
+import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.UpdateRunningAppIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ErrorColor
+import com.oliynick.max.tea.core.debug.app.presentation.ui.InputTimeoutMillis
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import protocol.ComponentId
-import java.awt.Color
 import java.awt.event.MouseEvent
-import javax.swing.JCheckBox
-import javax.swing.JPanel
-import javax.swing.JPopupMenu
-import javax.swing.JTextField
-import javax.swing.JTree
-import javax.swing.SwingUtilities
+import javax.swing.*
 import javax.swing.tree.TreeSelectionModel
 
-private const val INPUT_TIMEOUT_MILLIS = 400L
-
 class ComponentView private constructor(
-    private val initial: ComponentViewState
-) {
+    private val initial: ComponentViewState,
+    private val id: ComponentId,
+    private val component: (Flow<PluginMessage>) -> Flow<Started>,
+    scope: CoroutineScope
+) : CoroutineScope by scope {
 
     companion object {
-
-        private val ERROR_COLOR = Color(exceptionBalloonFillColor.rgb)
 
         fun new(
             scope: CoroutineScope,
             id: ComponentId,
             component: (Flow<PluginMessage>) -> Flow<Started>,
             state: Started
-        ): JPanel {
+        ): ComponentView {
 
             val initial = state.toViewState(id)
 
-            return ComponentView(initial)
-                .apply { scope.launch { render(id, component) } }.root
+            return ComponentView(initial, id, component, scope)
+                .apply { scope.launch { render(id, component) } }
         }
-
-        private suspend fun ComponentView.render(
-            id: ComponentId,
-            component: (Flow<PluginMessage>) -> Flow<Started>
-        ) = component(messages())
-            .map { pluginState -> pluginState.toViewState(id) }
-            .collect { componentState -> render(componentState) }
 
     }
 
-    private lateinit var root: JPanel
+    lateinit var root: JPanel
+        private set
+
     private lateinit var snapshotsTree: JTree
     private lateinit var stateTree: JTree
     private lateinit var searchField: JTextField
@@ -131,10 +77,6 @@ class ComponentView private constructor(
     private val stateRenderer = StateTreeRenderer(initial.formatter)
     private val transferHandler = TreeRowValueTransferHandler(initial.formatter)
 
-    private fun messages() =
-        filterUpdates(initial.component.id, initial.component.filter)
-            .mergeWith(snapshotsTree.asOptionMenuUpdates(initial.component.id))
-
     init {
         snapshotsTree.model = snapshotsModel
         snapshotsTree.transferHandler = transferHandler
@@ -144,6 +86,25 @@ class ComponentView private constructor(
         stateTree.model = stateTreeModel
         stateTree.cellRenderer = stateRenderer
     }
+
+    init {
+        launch {
+            component(messages())
+                .map { pluginState -> pluginState.toViewState(id) }
+                .collect { componentState -> render(componentState) }
+        }
+    }
+
+    private suspend fun render(
+        id: ComponentId,
+        component: (Flow<PluginMessage>) -> Flow<Started>
+    ) = component(messages())
+        .map { pluginState -> pluginState.toViewState(id) }
+        .collect { componentState -> render(componentState) }
+
+    private fun messages() =
+        filterUpdates(initial.component.id, initial.component.filter)
+            .mergeWith(snapshotsTree.asOptionMenuUpdates(initial.component.id))
 
     private fun filterUpdates(
         id: ComponentId,
@@ -194,7 +155,7 @@ class ComponentView private constructor(
             searchField.background = null
             searchField.toolTipText = null
         } else {
-            searchField.background = ERROR_COLOR
+            searchField.background = ErrorColor
             searchField.toolTipText = (validatedPredicate as Invalid).message
         }
 
@@ -251,7 +212,7 @@ private fun JTree.asOptionMenuUpdates(
 private fun JTextField.textFlow() =
     textChanges()
         .onStart { emit("") }
-        .debounce(INPUT_TIMEOUT_MILLIS)
+        .debounce(InputTimeoutMillis)
 
 private fun JCheckBox.asWordsFlow(
     filter: Filter
@@ -303,7 +264,7 @@ private fun SnapshotsPopup(
     id: ComponentId,
     onAction: (PluginMessage) -> Unit
 ): JPopupMenu = JBPopupMenu("Snapshots").apply {
-    add(JBMenuItem("Delete all", REMOVE_ICON).apply {
+    add(JBMenuItem("Delete all", RemoveIcon).apply {
         addActionListener {
             onAction(RemoveAllSnapshots(id))
         }
@@ -317,15 +278,15 @@ private fun SnapshotPopup(
 ): JPopupMenu =
     JBPopupMenu("Snapshot ${snapshot.meta.id.value}").apply {
         add(JBMenuItem(
-            "Reset to this",
-            UPDATE_RUNNING_APP_ICON
+                "Reset to this",
+                UpdateRunningAppIcon
         ).apply {
             addActionListener {
-                onAction(ReApplyState(component, snapshot.meta.id))
+                onAction(ApplyState(component, snapshot.meta.id))
             }
         })
 
-        add(JBMenuItem("Delete", REMOVE_ICON).apply {
+        add(JBMenuItem("Delete", RemoveIcon).apply {
             addActionListener {
                 onAction(RemoveSnapshots(component, snapshot.meta.id))
             }
@@ -339,10 +300,10 @@ private fun MessagePopup(
 ): JPopupMenu =
     JBPopupMenu().apply {
         add(JBMenuItem(
-            "Apply this message", UPDATE_RUNNING_APP_ICON
+                "Apply this message", UpdateRunningAppIcon
         ).apply {
             addActionListener {
-                onAction(ReApplyMessage(componentId, snapshotId))
+                onAction(ApplyMessage(componentId, snapshotId))
             }
         })
     }
@@ -353,9 +314,9 @@ private fun StatePopup(
     onAction: (PluginMessage) -> Unit
 ): JPopupMenu =
     JBPopupMenu().apply {
-        add(JBMenuItem("Apply this state", UPDATE_RUNNING_APP_ICON).apply {
+        add(JBMenuItem("Apply this state", UpdateRunningAppIcon).apply {
             addActionListener {
-                onAction(ReApplyState(componentId, snapshotId))
+                onAction(ApplyState(componentId, snapshotId))
             }
         })
     }

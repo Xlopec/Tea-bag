@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package protocol
+package com.oliynick.max.tea.core.debug.protocol
 
-data class ComponentId(val id: String) {
+data class ComponentId(val value: String) {
     init {
-        require(id.isNotBlank() && id.isNotEmpty())
+        require(value.isNotBlank() && value.isNotEmpty())
     }
 }

@@ -1,10 +1,7 @@
 package com.oliynick.max.tea.core.debug.app.domain
 
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.PersistentMap
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentMapOf
-import protocol.ComponentId
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import kotlinx.collections.immutable.*
 import java.time.LocalDateTime
 import java.util.*
 

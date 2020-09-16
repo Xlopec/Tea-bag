@@ -18,11 +18,7 @@ package com.oliynick.max.tea.core.debug.app.presentation.misc
 
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.awt.Component
 import java.awt.event.MouseEvent
@@ -55,6 +51,9 @@ fun Component.mouseEvents(): Flow<MouseEvent> =
 
 fun Component.rightClicks(): Flow<MouseEvent> =
     mouseEvents().filter { SwingUtilities.isRightMouseButton(it) }
+
+fun Component.leftClicks(): Flow<MouseEvent> =
+    mouseEvents().filter { SwingUtilities.isLeftMouseButton(it) }
 
 fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
     channelFlow {

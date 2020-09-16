@@ -25,11 +25,11 @@ import com.oliynick.max.tea.core.component.internal.into
 import com.oliynick.max.tea.core.component.internal.shareConflated
 import com.oliynick.max.tea.core.debug.component.internal.mergeWith
 import com.oliynick.max.tea.core.debug.exception.ConnectException
+import com.oliynick.max.tea.core.debug.protocol.*
 import com.oliynick.max.tea.core.debug.session.DebugSession
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
-import protocol.*
 import java.util.*
 
 /**
@@ -102,7 +102,13 @@ private suspend fun <M, S, C, J> DebugEnv<M, S, C, J>.notifyServer(
     session: DebugSession<M, S, J>,
     snapshot: Snapshot<M, S, C>
 ) = with(serverSettings) {
-    session(NotifyServer(UUID.randomUUID(), id, serializer.toServerMessage(snapshot)))
+    session(
+            NotifyServer(
+                    UUID.randomUUID(),
+                    id,
+                    serializer.toServerMessage(snapshot)
+            )
+    )
 }
 
 private fun <M, S, C, J> JsonConverter<J>.toServerMessage(
@@ -110,9 +116,9 @@ private fun <M, S, C, J> JsonConverter<J>.toServerMessage(
 ) = when (snapshot) {
     is Initial -> NotifyComponentAttached(toJsonTree(snapshot.currentState))
     is Regular -> NotifyComponentSnapshot(
-        toJsonTree(snapshot.message),
-        toJsonTree(snapshot.previousState),
-        toJsonTree(snapshot.currentState)
+            toJsonTree(snapshot.message),
+            toJsonTree(snapshot.previousState),
+            toJsonTree(snapshot.currentState)
     )
 }
 
@@ -124,7 +130,7 @@ private fun notifyConnectException(
 
 private fun connectionFailureMessage(
     serverSettings: ServerSettings<*, *, *>
-) = "Component '${serverSettings.id.id}' " +
+) = "Component '${serverSettings.id.value}' " +
         "couldn't connect to the endpoint ${serverSettings.url.toExternalForm()}"
 
 private fun <S, C> DebugEnv<*, S, C, *>.init(): Flow<Initial<S, C>> = componentEnv.init()

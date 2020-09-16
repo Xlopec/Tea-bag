@@ -1,25 +1,7 @@
 package com.oliynick.max.tea.core.debug.app.transport.serialization
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonNull
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
-import com.oliynick.max.tea.core.debug.app.domain.BooleanWrapper
-import com.oliynick.max.tea.core.debug.app.domain.ByteWrapper
-import com.oliynick.max.tea.core.debug.app.domain.CharWrapper
-import com.oliynick.max.tea.core.debug.app.domain.CollectionWrapper
-import com.oliynick.max.tea.core.debug.app.domain.DoubleWrapper
-import com.oliynick.max.tea.core.debug.app.domain.FloatWrapper
-import com.oliynick.max.tea.core.debug.app.domain.IntWrapper
-import com.oliynick.max.tea.core.debug.app.domain.LongWrapper
-import com.oliynick.max.tea.core.debug.app.domain.Null
-import com.oliynick.max.tea.core.debug.app.domain.Property
-import com.oliynick.max.tea.core.debug.app.domain.Ref
-import com.oliynick.max.tea.core.debug.app.domain.ShortWrapper
-import com.oliynick.max.tea.core.debug.app.domain.StringWrapper
-import com.oliynick.max.tea.core.debug.app.domain.Type
-import com.oliynick.max.tea.core.debug.app.domain.Value
+import com.google.gson.*
+import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.gson.Gson
 
 internal val GSON = Gson()
@@ -77,7 +59,6 @@ private fun JsonObject.toValue(): Ref {
     return Ref(Type.of(this["@type"].asString), props)
 }
 
-// fixme add explicit type param
 private fun JsonPrimitive.toValue(): Value = when {
     isBoolean -> BooleanWrapper.of(asBoolean)
     isString -> StringWrapper(asString)

@@ -2,21 +2,8 @@
 
 package com.oliynick.max.tea.core.debug.gson
 
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
-import com.google.gson.JsonSerializationContext
-import com.google.gson.JsonSerializer
-import protocol.ActionApplied
-import protocol.ApplyMessage
-import protocol.ApplyState
-import protocol.ClientMessage
-import protocol.ComponentId
-import protocol.NotifyComponentAttached
-import protocol.NotifyComponentSnapshot
-import protocol.ServerMessage
+import com.google.gson.*
+import com.oliynick.max.tea.core.debug.protocol.*
 import java.lang.reflect.Type
 import java.util.*
 
@@ -41,28 +28,28 @@ internal object ComponentIdAdapter : JsonSerializer<ComponentId>, JsonDeserializ
         src: ComponentId,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement = JsonPrimitive(src.id)
+    ): JsonElement = JsonPrimitive(src.value)
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): ComponentId = ComponentId(json.asString)
+    ): ComponentId =
+        ComponentId(json.asString)
 }
 
-internal object ServerMessageAdapter : JsonSerializer<ServerMessage<JsonElement>>,
-    JsonDeserializer<ServerMessage<JsonElement>> {
+internal object ServerMessageAdapter : JsonSerializer<GsonServerMessage>,
+    JsonDeserializer<GsonServerMessage> {
 
     override fun serialize(
-        src: ServerMessage<JsonElement>,
+        src: GsonServerMessage,
         typeOfSrc: Type?,
         context: JsonSerializationContext
     ): JsonElement {
 
         val tree: JsonObject = when (src) {
-            is NotifyComponentSnapshot<JsonElement> -> src.toJsonElement()
-            is NotifyComponentAttached<JsonElement> -> src.toJsonElement()
-            is ActionApplied -> src.toJsonElement(context)
+            is GsonNotifyComponentSnapshot -> src.toJsonElement()
+            is GsonNotifyComponentAttached -> src.toJsonElement()
         }
 
         tree.addProperty("@type", src::class.java.name)
@@ -74,17 +61,17 @@ internal object ServerMessageAdapter : JsonSerializer<ServerMessage<JsonElement>
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): ServerMessage<JsonElement> = json.asJsonObject.let { obj ->
+    ): GsonServerMessage = json.asJsonObject.let { obj ->
 
         when (obj["@type"].asString) {
             NotifyComponentSnapshot::class.java.name -> json.asNotifyComponentSnapshot()
             NotifyComponentAttached::class.java.name -> json.asNotifyComponentAttached()
-            ActionApplied::class.java.name -> json.asActionApplied(context)
+
             else -> error("unknown server message type, json\n\n$json\n")
         }
     }
 
-    private fun NotifyComponentSnapshot<JsonElement>.toJsonElement() =
+    private fun GsonNotifyComponentSnapshot.toJsonElement() =
         JsonObject {
             add("message", message)
             add("oldState", oldState)
@@ -93,40 +80,32 @@ internal object ServerMessageAdapter : JsonSerializer<ServerMessage<JsonElement>
 
     private fun JsonElement.asNotifyComponentSnapshot() =
         NotifyComponentSnapshot(
-            asJsonObject["message"],
-            asJsonObject["oldState"],
-            asJsonObject["newState"]
+                asJsonObject["message"],
+                asJsonObject["oldState"],
+                asJsonObject["newState"]
         )
 
-    private fun NotifyComponentAttached<JsonElement>.toJsonElement(): JsonObject = JsonObject {
+    private fun GsonNotifyComponentAttached.toJsonElement(): JsonObject = JsonObject {
         add("state", state)
     }
 
-    private fun JsonElement.asNotifyComponentAttached() = NotifyComponentAttached(asJsonObject["state"])
-
-    private fun ActionApplied.toJsonElement(
-        context: JsonSerializationContext
-    ): JsonObject = JsonObject {
-        add("id", context.serialize(id))
-    }
-
-    private fun JsonElement.asActionApplied(context: JsonDeserializationContext) =
-        ActionApplied(context.deserialize(asJsonObject["id"], UUID::class.java))
+    private fun JsonElement.asNotifyComponentAttached() =
+        NotifyComponentAttached(asJsonObject["state"])
 
 }
 
-internal object ClientMessageAdapter : JsonSerializer<ClientMessage<JsonElement>>,
-    JsonDeserializer<ClientMessage<JsonElement>> {
+internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
+    JsonDeserializer<GsonClientMessage> {
 
     override fun serialize(
-        src: ClientMessage<JsonElement>,
+        src: GsonClientMessage,
         typeOfSrc: Type?,
         context: JsonSerializationContext
     ): JsonElement {
 
         val tree: JsonObject = when(src) {
-            is ApplyMessage<JsonElement> -> src.toJsonElement()
-            is ApplyState<JsonElement> -> src.toJsonElement()
+            is GsonApplyMessage -> src.toJsonElement()
+            is GsonApplyState -> src.toJsonElement()
         }
 
         tree.addProperty("@type", src::class.java.name)
@@ -138,7 +117,7 @@ internal object ClientMessageAdapter : JsonSerializer<ClientMessage<JsonElement>
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): ClientMessage<JsonElement> = json.asJsonObject.let { obj ->
+    ): GsonClientMessage = json.asJsonObject.let { obj ->
 
         when (obj["@type"].asString) {
             ApplyMessage::class.java.name -> json.asApplyMessage()
@@ -147,15 +126,16 @@ internal object ClientMessageAdapter : JsonSerializer<ClientMessage<JsonElement>
         }
     }
 
-    private fun ApplyMessage<JsonElement>.toJsonElement() = JsonObject {
+    private fun GsonApplyMessage.toJsonElement() = JsonObject {
         add("message", message)
     }
 
-    private fun ApplyState<JsonElement>.toJsonElement() = JsonObject {
+    private fun GsonApplyState.toJsonElement() = JsonObject {
         add("state", state)
     }
 
-    private fun JsonElement.asApplyMessage() = ApplyMessage(asJsonObject["message"])
+    private fun JsonElement.asApplyMessage() =
+        ApplyMessage(asJsonObject["message"])
 
     private fun JsonElement.asApplyState() = ApplyState(asJsonObject["state"])
 

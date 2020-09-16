@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package protocol
+@file:Suppress("unused")
+
+package com.oliynick.max.tea.core.debug.protocol
 
 import java.util.*
 
-sealed class ServerMessage<out J>
+data class NotifyServer<out J>(
+    val messageId: UUID,
+    val componentId: ComponentId,
+    val payload: ServerMessage<J>
+)
 
-data class NotifyComponentSnapshot<out J>(
-    val message: J,
-    val oldState: J,
-    val newState: J
-) : ServerMessage<J>()
+data class NotifyClient<out J>(
+    val id: UUID,
+    val component: ComponentId,
+    val message: ClientMessage<J>
+)
 
-data class NotifyComponentAttached<out J>(
-    val state: J
-) : ServerMessage<J>()
-
-@Deprecated("not needed anymore, will be removed")
-data class ActionApplied(
-    val id: UUID
-) : ServerMessage<Nothing>()

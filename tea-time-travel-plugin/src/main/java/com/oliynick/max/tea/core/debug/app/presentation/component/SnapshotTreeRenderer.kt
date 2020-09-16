@@ -16,10 +16,7 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.component
 
-import com.oliynick.max.tea.core.debug.app.presentation.misc.RenderTree
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueFormatter
-import com.oliynick.max.tea.core.debug.app.presentation.misc.icon
-import com.oliynick.max.tea.core.debug.app.presentation.misc.toReadableString
+import com.oliynick.max.tea.core.debug.app.presentation.misc.*
 import java.awt.Component
 import javax.swing.JLabel
 import javax.swing.JTree

@@ -2,9 +2,7 @@
 
 package com.max.weatherviewer.app.env.storage
 
-import com.google.gson.Gson
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonSerializer
+import com.google.gson.*
 
 interface HasGson {
     val gson: Gson

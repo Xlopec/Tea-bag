@@ -1,28 +1,17 @@
 package com.oliynick.max.tea.core.debug.app.domain.serialization
 
 import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.debug.app.domain.CollectionWrapper
-import com.oliynick.max.tea.core.debug.app.domain.Property
-import com.oliynick.max.tea.core.debug.app.domain.Ref
-import com.oliynick.max.tea.core.debug.app.domain.StringWrapper
-import com.oliynick.max.tea.core.debug.app.domain.Type
+import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
 import com.oliynick.max.tea.core.debug.gson.Gson
-import core.data.Avatar
-import core.data.Id
-import core.data.Name
-import core.data.Photo
-import core.data.User
+import com.oliynick.max.tea.core.debug.protocol.*
+import core.data.*
 import io.kotlintest.shouldBe
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import protocol.ApplyMessage
-import protocol.ClientMessage
-import protocol.ComponentId
-import protocol.NotifyClient
 import java.io.File
 import java.io.FileReader
 import java.util.*
@@ -62,11 +51,11 @@ class ClientMessageSerializationTest {
         )
 
         val expectedMessageTree = toJsonTree(
-            NotifyClient(
-                UUID.randomUUID(),
-                ComponentId("test"),
-                ApplyMessage(toJsonTree(user))
-            )
+                NotifyClient(
+                        UUID.randomUUID(),
+                        ComponentId("test"),
+                        ApplyMessage(toJsonTree(user))
+                )
         )
 
         val actualMessageTree = expectedMessageTree.toValue().toJsonElement()

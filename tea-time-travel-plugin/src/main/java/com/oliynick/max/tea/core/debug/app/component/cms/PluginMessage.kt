@@ -16,12 +16,9 @@
 
 package com.oliynick.max.tea.core.debug.app.component.cms
 
-import com.oliynick.max.tea.core.debug.app.domain.FilterOption
-import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
-import com.oliynick.max.tea.core.debug.app.domain.Value
-import com.oliynick.max.tea.core.debug.app.transport.StartedServer
-import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
-import protocol.ComponentId
+import com.oliynick.max.tea.core.debug.app.domain.*
+import com.oliynick.max.tea.core.debug.app.transport.Server
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 sealed class PluginMessage
 
@@ -34,12 +31,9 @@ data class UpdateDebugSettings(
     val isDetailedToStringEnabled: Boolean
 ) : UIMessage()
 
-data class UpdatePort(
-    val port: UInt
-) : UIMessage()
-
-data class UpdateHost(
-    val host: String
+data class UpdateServerSettings(
+    val host: String,
+    val port: String
 ) : UIMessage()
 
 data class UpdateFilter(
@@ -69,12 +63,12 @@ data class RemoveAllSnapshots(
     val componentId: ComponentId
 ) : UIMessage()
 
-data class ReApplyMessage(
+data class ApplyMessage(
     val componentId: ComponentId,
     val snapshotId: SnapshotId
 ) : UIMessage()
 
-data class ReApplyState(
+data class ApplyState(
     val componentId: ComponentId,
     val snapshotId: SnapshotId
 ) : UIMessage()
@@ -99,21 +93,20 @@ data class NotifyOperationException(
 }
 
 data class NotifyStarted(
-    val server: StartedServer
+    val server: Server
 ) : NotificationMessage()
 
-data class NotifyStopped(
-    val server: StoppedServer
-) : NotificationMessage()
+object NotifyStopped : NotificationMessage()
 
 data class AppendSnapshot(
     val componentId: ComponentId,
+    val meta: SnapshotMeta,
     val message: Value,
     val oldState: Value,
     val newState: Value
 ) : NotificationMessage()
 
-data class StateReApplied(
+data class StateApplied(
     val componentId: ComponentId,
     val state: Value
 ) : NotificationMessage()

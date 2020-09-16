@@ -37,7 +37,7 @@ class ComponentExtensionsTest {
         val (state, commands) = initialState.command(DoAddItem(Item("some4"), initialState.items))
 
         initialState shouldBe state
-        commands shouldContainExactlyInAnyOrder setOf(first)
+        commands.shouldContainExactlyInAnyOrder(first)
     }
 
     @Test
@@ -48,7 +48,7 @@ class ComponentExtensionsTest {
         val (state, commands) = initialState.command(first, second)
 
         initialState shouldBe state
-        commands shouldContainExactlyInAnyOrder setOf(first, second)
+        commands.shouldContainExactlyInAnyOrder(first, second)
     }
 
     @Test
@@ -60,7 +60,7 @@ class ComponentExtensionsTest {
         val (state, commands) = initialState.command(first, second, third)
 
         initialState shouldBe state
-        commands shouldContainExactlyInAnyOrder setOf(first, second, third)
+        commands.shouldContainExactlyInAnyOrder(first, second, third)
     }
 
     @Test
@@ -73,7 +73,7 @@ class ComponentExtensionsTest {
         val (state, commands) = initialState.command(first, second, third, fourth)
 
         initialState shouldBe state
-        commands shouldContainExactlyInAnyOrder setOf(first, second, third, fourth)
+        commands.shouldContainExactlyInAnyOrder(first, second, third, fourth)
     }
 
     @Test
@@ -106,7 +106,7 @@ class ComponentExtensionsTest {
             val expectedMessage = Updated(listOf(item))
             val messages = DoAddItem(item, emptyList()).effect { expectedMessage }
 
-            messages shouldContainExactlyInAnyOrder setOf(expectedMessage)
+            messages.shouldContainExactlyInAnyOrder(expectedMessage)
         }
 
 }

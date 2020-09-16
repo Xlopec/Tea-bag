@@ -18,33 +18,30 @@ package com.oliynick.max.tea.core.debug.app.storage
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
-import com.oliynick.max.tea.core.debug.app.domain.DEFAULT_HOST
-import com.oliynick.max.tea.core.debug.app.domain.DEFAULT_PORT
-import com.oliynick.max.tea.core.debug.app.domain.ServerSettings
 import com.oliynick.max.tea.core.debug.app.domain.Settings
 
-const val PLUGIN_ID = "com.oliynick.max.tea.core.plugin"
+const val PluginId = "com.oliynick.max.tea.core.plugin"
 
 val Project.properties: PropertiesComponent
     get() = PropertiesComponent.getInstance(this)
 
-var PropertiesComponent.pluginSettings: Settings
+var PropertiesComponent.settings: Settings
     set(value) {
-        serverSettings = value.serverSettings
+        host = value.host.input
+        port = value.port.input
         isDetailedToStringEnabled = value.isDetailedOutput
     }
-    get() = Settings(serverSettings, isDetailedToStringEnabled)
+    get() = Settings.of(host, port, isDetailedToStringEnabled)
 
+// todo reduce visibility
 var PropertiesComponent.isDetailedToStringEnabled: Boolean
-    set(value) = setValue("$PLUGIN_ID.isDetailedToStringEnabled", value)
-    get() = getBoolean("$PLUGIN_ID.isDetailedToStringEnabled", false)
+    set(value) = setValue("$PluginId.isDetailedToStringEnabled", value)
+    get() = getBoolean("$PluginId.isDetailedToStringEnabled", false)
 
-var PropertiesComponent.serverSettings: ServerSettings
-    set(value) {
-        setValue("$PLUGIN_ID.host", value.host)
-        setValue("$PLUGIN_ID.port", value.port.toInt(), 8080)
-    }
-    get() = ServerSettings(
-        getValue("$PLUGIN_ID.host", DEFAULT_HOST),
-        getInt("$PLUGIN_ID.port", DEFAULT_PORT.toInt()).toUInt()
-    )
+private var PropertiesComponent.host: String?
+    set(value) = setValue("$PluginId.host", value)
+    get() = getValue("$PluginId.host")
+
+private var PropertiesComponent.port: String?
+    set(value) = setValue("$PluginId.port", value)
+    get() = getValue("$PluginId.port")

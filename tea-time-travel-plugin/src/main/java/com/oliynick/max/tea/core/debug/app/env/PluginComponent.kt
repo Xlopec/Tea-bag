@@ -5,19 +5,11 @@ package com.oliynick.max.tea.core.debug.app.env
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.debug
 import com.intellij.openapi.diagnostic.trace
-import com.oliynick.max.tea.core.Initial
-import com.oliynick.max.tea.core.Initializer
-import com.oliynick.max.tea.core.Regular
-import com.oliynick.max.tea.core.Snapshot
-import com.oliynick.max.tea.core.component.Component
-import com.oliynick.max.tea.core.component.Interceptor
-import com.oliynick.max.tea.core.component.with
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.component.cms.Stopped
-import com.oliynick.max.tea.core.debug.app.storage.pluginSettings
-import com.oliynick.max.tea.core.debug.app.transport.NewStoppedServer
+import com.oliynick.max.tea.core.*
+import com.oliynick.max.tea.core.component.*
+import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.storage.PluginId
+import com.oliynick.max.tea.core.debug.app.storage.settings
 
 fun PluginComponent(
     environment: Environment
@@ -31,13 +23,18 @@ fun PluginComponent(
         message: PluginMessage,
         state: PluginState
     ) = with(environment) { update(message, state) }
-    // fixme implement proper initializer properly
-    return Component(Initializer(Stopped(environment.properties.pluginSettings, NewStoppedServer())), ::doResolve, ::doUpdate)
-        .with(Logger())
+
+    return Component(AppInitializer(environment), ::doResolve, ::doUpdate)
+        .with(com.oliynick.max.tea.core.debug.app.env.Logger())
 }
 
+private fun AppInitializer(
+    environment: Environment
+) : Initializer<Stopped, Nothing> =
+    { Initial(Stopped(environment.properties.settings), emptySet()) }
+
 private fun Logger(
-    logger: Logger = Logger.getInstance("Tea-Bag-Plugin")
+    logger: Logger = Logger.getInstance(PluginId)
 ): Interceptor<PluginMessage, PluginState, PluginCommand> =
     { snapshot ->
         logger.info(snapshot.infoMessage())

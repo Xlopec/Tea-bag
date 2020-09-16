@@ -2,18 +2,8 @@
 
 package core.component
 
-import com.oliynick.max.tea.core.Env
-import com.oliynick.max.tea.core.Initial
-import com.oliynick.max.tea.core.Initializer
-import com.oliynick.max.tea.core.Regular
-import com.oliynick.max.tea.core.Snapshot
-import com.oliynick.max.tea.core.component.Component
-import com.oliynick.max.tea.core.component.Resolver
-import com.oliynick.max.tea.core.component.Updater
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.invoke
-import com.oliynick.max.tea.core.component.noCommand
-import com.oliynick.max.tea.core.component.with
+import com.oliynick.max.tea.core.*
+import com.oliynick.max.tea.core.component.*
 import core.misc.messageAsCommand
 import core.misc.throwingResolver
 import core.scope.runBlockingInTestScope
@@ -24,25 +14,9 @@ import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.types.shouldBeSameInstanceAs
 import io.kotlintest.shouldBe
 import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toCollection
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.yield
+import kotlinx.coroutines.flow.*
 import org.junit.Test
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.coroutineContext
@@ -65,7 +39,7 @@ abstract class BasicComponentTest(
         val snapshots =
             component(*messages).take(messages.size + 1).toList(ArrayList(messages.size + 1))
 
-        snapshots shouldContainExactly listOf(
+        snapshots.shouldContainExactly(
             Initial("", emptySet()),
             Regular("a", emptySet(), "", 'a'),
             Regular("b", emptySet(), "a", 'b'),
@@ -89,7 +63,7 @@ abstract class BasicComponentTest(
                 component(*messages).take(3 + messages.size + 1)
                     .toList(ArrayList(3 + messages.size + 1))
 
-            snapshots shouldContainExactly listOf(
+            snapshots.shouldContainExactly(
                 Initial("", setOf('a', 'b', 'c')),
                 Regular("a", emptySet(), "", 'a'),
                 Regular("b", emptySet(), "a", 'b'),
@@ -147,7 +121,7 @@ abstract class BasicComponentTest(
             val component = factory(env)
             val snapshots = component('a').take(3).toCollection(ArrayList())
 
-            snapshots shouldContainExactly listOf(
+            snapshots.shouldContainExactly(
                 Initial("", emptySet()),
                 Regular("a", setOf('b', 'c'), "", 'a'),
                 Regular("ab", emptySet(), "a", 'b')

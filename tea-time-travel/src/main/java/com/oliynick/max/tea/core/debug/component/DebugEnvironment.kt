@@ -4,9 +4,9 @@
 package com.oliynick.max.tea.core.debug.component
 
 import com.oliynick.max.tea.core.*
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import com.oliynick.max.tea.core.debug.protocol.JsonConverter
 import com.oliynick.max.tea.core.debug.session.*
-import protocol.ComponentId
-import protocol.JsonConverter
 import java.net.URL
 
 /**

@@ -80,25 +80,33 @@ libraryProjects()
         apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.jfrog.bintray")
 
-        val dokka by tasks.getting(DokkaTask::class) {
-            outputFormat = "html"
-            outputDirectory = "$buildDir/javadoc"
+        tasks.withType<DokkaTask>().configureEach {
 
-            configuration {
+            outputDirectory.set(buildDir.resolve("javadoc"))
 
-                moduleName = name
+            dokkaSourceSets {
+                named("main") {
+                    reportUndocumented.set(true)
+                    moduleDisplayName.set(project.name)
+                    includeNonPublic.set(false)
+                    skipEmptyPackages.set(true)
 
-                externalDocumentationLink {
-                    noJdkLink = true
-                    noStdlibLink = true
-                    noAndroidSdkLink = true
-                    url = URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-                    url = URL("https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/")
+                    sourceLink {
+                        localDirectory.set(file("src/main/java"))
+                        remoteUrl.set(
+                            URL(
+                                "https://github.com/Xlopec/Tea-bag/tree/dev_plugin/${project.name}/src/main/java"
+                            )
+                        )
+                    }
+                    externalDocumentationLink(
+                        URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+                    )
+                    externalDocumentationLink(
+                        URL("https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/")
+                    )
                 }
-
-                jdkVersion = JavaVersion.VERSION_1_8.majorVersionInt
             }
-
         }
 
         val sourcesJar by tasks.creating(Jar::class) {
@@ -108,7 +116,7 @@ libraryProjects()
         }
 
         val javadocJar by tasks.creating(Jar::class) {
-            dependsOn(dokka)
+            dependsOn(tasks.named("dokkaJavadoc"))
             archiveClassifier.set("javadoc")
             from("$buildDir/javadoc")
         }
@@ -261,6 +269,7 @@ allprojects {
                 "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
                 "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
                 "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
+                "-Xuse-experimental=kotlin.ExperimentalStdlibApi",
                 "-XXLanguage:+NewInference",
                 "-XXLanguage:+InlineClasses"
             )

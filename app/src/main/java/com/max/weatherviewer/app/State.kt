@@ -1,11 +1,7 @@
 package com.max.weatherviewer.app
 
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
+import com.oliynick.max.tea.core.component.*
+import kotlinx.collections.immutable.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -16,7 +12,6 @@ abstract class Screen {
 }
 
 data class State(
-    //  @JsonSerialize(using = PersistentListSerializer::class)
     val screens: PersistentList<Screen>
 ) {
 

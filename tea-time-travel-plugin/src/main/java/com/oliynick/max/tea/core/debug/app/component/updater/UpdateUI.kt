@@ -17,9 +17,7 @@
 package com.oliynick.max.tea.core.debug.app.component.updater
 
 import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.component.cms.UIMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.*
 
 interface UiUpdater {
 

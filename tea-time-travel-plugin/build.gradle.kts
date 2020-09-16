@@ -7,9 +7,9 @@ import Libraries.ktorServerCore
 import Libraries.ktorServerNetty
 import Libraries.ktorServerWebsockets
 import TestLibraries.ktorServerTests
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.intellij.tasks.PublishTask
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
+import org.jetbrains.intellij.tasks.PublishTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 /*
  * Copyright (C) 2019 Maksym Oliinyk.

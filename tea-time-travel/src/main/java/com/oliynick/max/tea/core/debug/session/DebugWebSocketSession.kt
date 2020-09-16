@@ -1,22 +1,12 @@
 package com.oliynick.max.tea.core.debug.session
 
 import com.oliynick.max.tea.core.debug.component.ServerSettings
+import com.oliynick.max.tea.core.debug.protocol.*
 import io.ktor.client.features.websocket.ClientWebSocketSession
 import io.ktor.client.features.websocket.DefaultClientWebSocketSession
-import io.ktor.http.cio.websocket.Frame
-import io.ktor.http.cio.websocket.readText
-import io.ktor.http.cio.websocket.send
+import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.channels.broadcast
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.map
-import protocol.ApplyMessage
-import protocol.ApplyState
-import protocol.JsonConverter
-import protocol.NotifyClient
-import protocol.NotifyServer
+import kotlinx.coroutines.flow.*
 
 @PublishedApi
 internal class DebugWebSocketSession<M, S, J>(

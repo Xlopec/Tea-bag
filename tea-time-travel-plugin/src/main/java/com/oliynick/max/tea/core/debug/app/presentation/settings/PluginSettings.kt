@@ -2,10 +2,7 @@ package com.oliynick.max.tea.core.debug.app.presentation.settings
 
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
-import com.oliynick.max.tea.core.debug.app.storage.PLUGIN_ID
-import com.oliynick.max.tea.core.debug.app.storage.isDetailedToStringEnabled
-import com.oliynick.max.tea.core.debug.app.storage.pluginSettings
-import com.oliynick.max.tea.core.debug.app.storage.properties
+import com.oliynick.max.tea.core.debug.app.storage.*
 import javax.swing.JCheckBox
 import javax.swing.JComponent
 
@@ -21,9 +18,9 @@ class PluginSettings(
     }
 
     override fun isModified(): Boolean =
-        project.properties.pluginSettings.isDetailedOutput != detailedToStringCheckBox.isSelected
+        project.properties.settings.isDetailedOutput != detailedToStringCheckBox.isSelected
 
-    override fun getId(): String = PLUGIN_ID
+    override fun getId(): String = PluginId
 
     override fun getDisplayName(): String = "Time Travel"
 

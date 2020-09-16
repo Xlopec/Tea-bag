@@ -1,41 +1,10 @@
 package com.oliynick.max.tea.core.debug.app.component.updater
 
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.AppendSnapshot
-import com.oliynick.max.tea.core.debug.app.component.cms.ComponentAttached
-import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyComponentAttached
-import com.oliynick.max.tea.core.debug.app.component.cms.DoNotifyOperationException
-import com.oliynick.max.tea.core.debug.app.component.cms.DoStopServer
-import com.oliynick.max.tea.core.debug.app.component.cms.DoStoreSettings
-import com.oliynick.max.tea.core.debug.app.component.cms.DoWarnUnacceptableMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.InternalException
-import com.oliynick.max.tea.core.debug.app.component.cms.NotificationMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.NotifyOperationException
-import com.oliynick.max.tea.core.debug.app.component.cms.NotifyStarted
-import com.oliynick.max.tea.core.debug.app.component.cms.NotifyStopped
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginException
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.component.cms.Started
-import com.oliynick.max.tea.core.debug.app.component.cms.StateReApplied
-import com.oliynick.max.tea.core.debug.app.component.cms.Stopped
-import com.oliynick.max.tea.core.debug.app.component.cms.appendSnapshot
-import com.oliynick.max.tea.core.debug.app.component.cms.updateComponents
-import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
-import com.oliynick.max.tea.core.debug.app.domain.DebugState
-import com.oliynick.max.tea.core.debug.app.domain.OriginalSnapshot
-import com.oliynick.max.tea.core.debug.app.domain.Settings
-import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
-import com.oliynick.max.tea.core.debug.app.domain.SnapshotMeta
-import com.oliynick.max.tea.core.debug.app.domain.Value
-import com.oliynick.max.tea.core.debug.app.transport.StartedServer
-import com.oliynick.max.tea.core.debug.app.transport.StoppedServer
-import protocol.ComponentId
-import java.time.LocalDateTime
-import java.util.*
+import com.oliynick.max.tea.core.component.*
+import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.domain.*
+import com.oliynick.max.tea.core.debug.app.transport.Server
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 // privacy is for pussies
 @Suppress("MemberVisibilityCanBePrivate")
@@ -47,16 +16,16 @@ object LiveNotificationUpdater : NotificationUpdater {
     ): UpdateWith<PluginState, PluginCommand> =
         when {
             message is NotifyStarted -> toStartedState(message.server, state.settings)
-            message is NotifyStopped -> toStoppedState(message.server, state.settings)
+            message is NotifyStopped -> toStoppedState(state.settings)
             message is AppendSnapshot && state is Started -> appendSnapshot(message, state)
-            message is StateReApplied && state is Started -> reApplyState(message, state)
+            message is StateApplied && state is Started -> applyState(message, state)
             message is ComponentAttached && state is Started -> attachComponent(message, state)
             message is NotifyOperationException -> recoverFromException(message.exception, message.operation, state)
             else -> warnUnacceptableMessage(message, state)
         }
 
     fun toStartedState(
-        server: StartedServer,
+        server: Server,
         settings: Settings
     ): UpdateWith<Started, PluginCommand> =
         Started(
@@ -66,10 +35,9 @@ object LiveNotificationUpdater : NotificationUpdater {
         ).noCommand()
 
     fun toStoppedState(
-        server: StoppedServer,
         settings: Settings
     ): UpdateWith<Stopped, PluginCommand> =
-        Stopped(settings, server).noCommand()
+        Stopped(settings).noCommand()
 
     fun appendSnapshot(
         message: AppendSnapshot,
@@ -97,8 +65,8 @@ object LiveNotificationUpdater : NotificationUpdater {
         return state.updateComponents { mapping -> mapping.put(componentState.id, componentState) } command DoNotifyComponentAttached(id)
     }
 
-    fun reApplyState(
-        message: StateReApplied,
+    fun applyState(
+        message: StateApplied,
         state: Started
     ): UpdateWith<PluginState, PluginCommand> {
 
@@ -114,8 +82,11 @@ object LiveNotificationUpdater : NotificationUpdater {
         op: PluginCommand?,
         state: PluginState
     ): UpdateWith<PluginState, PluginCommand> =
-        if (isFatalProblem(th, op)) notifyDeveloperException(th)
-        else state command DoNotifyOperationException(th, op)
+        when {
+            isFatalProblem(th, op) -> notifyDeveloperException(th)
+            op is DoStartServer && state is Starting -> Stopped(state.settings) command DoNotifyOperationException(th, op)
+            else -> state command DoNotifyOperationException(th, op)
+        }
 
     fun warnUnacceptableMessage(
         message: PluginMessage,
@@ -129,15 +100,7 @@ object LiveNotificationUpdater : NotificationUpdater {
     ): Boolean =
         op is DoStopServer || op is DoStoreSettings || th is InternalException
 
-    fun AppendSnapshot.toSnapshot(): OriginalSnapshot =
-        OriginalSnapshot(
-            SnapshotMeta(
-                SnapshotId(UUID.randomUUID()),
-                LocalDateTime.now()
-            ),
-            message,
-            newState
-        )
+    fun AppendSnapshot.toSnapshot() = OriginalSnapshot(meta, message, newState)
 
     fun DebugState.componentOrNew(
         id: ComponentId,

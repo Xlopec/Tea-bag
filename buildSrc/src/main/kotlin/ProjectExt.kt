@@ -24,6 +24,9 @@ fun pluginReleaseChannels(): Array<String> {
     }
 }
 
+fun branchName(): String =
+    System.getenv("TRAVIS_BRANCH").takeUnless { s -> s.isNullOrEmpty() } ?: "master"
+
 fun versionName(): String =
     System.getenv("TRAVIS_TAG").takeUnless { s -> s.isNullOrEmpty() } ?:
     System.getenv("TRAVIS_COMMIT").takeUnless { s -> s.isNullOrEmpty() }?.let { commit -> "DEV-${commit.take(COMMIT_HASH_LEN)}" } ?:

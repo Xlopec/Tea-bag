@@ -2,10 +2,17 @@
 
 package com.oliynick.max.tea.core.debug.gson
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import protocol.*
+import com.google.gson.*
+import com.oliynick.max.tea.core.debug.protocol.*
 import java.util.*
+
+typealias GsonClientMessage = ClientMessage<JsonElement>
+typealias GsonApplyMessage = ApplyMessage<JsonElement>
+typealias GsonApplyState = ApplyState<JsonElement>
+typealias GsonServerMessage = ServerMessage<JsonElement>
+typealias GsonNotifyComponentSnapshot = NotifyComponentSnapshot<JsonElement>
+typealias GsonNotifyServer = NotifyServer<JsonElement>
+typealias GsonNotifyComponentAttached = NotifyComponentAttached<JsonElement>
 
 /**
  * Configures and creates a new [Gson] instance using supplied lambda with

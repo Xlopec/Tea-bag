@@ -9,10 +9,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.security.cert.X509Certificate
-import java.util.concurrent.TimeUnit
-import javax.net.ssl.HostnameVerifier
-import javax.net.ssl.SSLContext
-import javax.net.ssl.X509TrustManager
+import java.util.concurrent.*
+import javax.net.ssl.*
 
 fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
     GsonBuilder().serializeNulls().setPrettyPrinting().apply(config).create()

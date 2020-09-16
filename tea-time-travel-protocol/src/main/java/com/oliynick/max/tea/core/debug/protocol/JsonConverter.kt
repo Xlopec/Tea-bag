@@ -1,4 +1,4 @@
-package protocol
+package com.oliynick.max.tea.core.debug.protocol
 
 /**
  * Object to json converter

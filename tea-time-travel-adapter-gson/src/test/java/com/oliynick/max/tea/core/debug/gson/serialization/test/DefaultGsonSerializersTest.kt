@@ -3,27 +3,16 @@ package com.oliynick.max.tea.core.debug.gson.serialization.test
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
 import com.oliynick.max.tea.core.debug.gson.Gson
+import com.oliynick.max.tea.core.debug.gson.GsonClientMessage
 import com.oliynick.max.tea.core.debug.gson.serialization.data.Singleton
-import core.data.Id
-import core.data.Name
-import core.data.Photo
-import core.data.User
+import com.oliynick.max.tea.core.debug.protocol.*
+import core.data.*
 import io.kotlintest.matchers.beInstanceOf
 import io.kotlintest.should
 import io.kotlintest.shouldBe
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import protocol.ActionApplied
-import protocol.ApplyMessage
-import protocol.ApplyState
-import protocol.ClientMessage
-import protocol.ComponentId
-import protocol.NotifyClient
-import protocol.NotifyComponentAttached
-import protocol.NotifyComponentSnapshot
-import protocol.NotifyServer
-import protocol.ServerMessage
 import java.util.*
 
 @RunWith(JUnit4::class)
@@ -48,17 +37,8 @@ class DefaultGsonSerializersTest {
     @Test
     fun `test NotifyComponentAttached gets serialized correctly`() {
 
-        val message = NotifyComponentAttached(gsonSerializer.toJsonTree(testUser))
-        val json = gsonSerializer.toJson(message)
-        val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
-
-        fromJson shouldBe message
-    }
-
-    @Test
-    fun `test ActionApplied gets serialized correctly`() {
-
-        val message = ActionApplied(UUID.randomUUID())
+        val message =
+            NotifyComponentAttached(gsonSerializer.toJsonTree(testUser))
         val json = gsonSerializer.toJson(message)
         val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
 
@@ -69,15 +49,15 @@ class DefaultGsonSerializersTest {
     fun `test NotifyComponentSnapshot gets serialized correctly`() {
 
         val message = NotifyComponentSnapshot(
-            gsonSerializer.toJsonTree("Message"),
-            gsonSerializer.toJsonTree(testUser),
-            gsonSerializer.toJsonTree(
-                listOf(
-                    Photo("https://www.google.com"),
-                    Photo("https://www.google.com1"),
-                    Photo("https://www.google.com2")
+                gsonSerializer.toJsonTree("Message"),
+                gsonSerializer.toJsonTree(testUser),
+                gsonSerializer.toJsonTree(
+                        listOf(
+                                Photo("https://www.google.com"),
+                                Photo("https://www.google.com1"),
+                                Photo("https://www.google.com2")
+                        )
                 )
-            )
         )
 
         val json = gsonSerializer.toJson(message)
@@ -91,7 +71,7 @@ class DefaultGsonSerializersTest {
 
         val applyMessage =
             NotifyClient(
-                ApplyMessage(toJsonTree(testUser))
+                    ApplyMessage(toJsonTree(testUser))
             )
 
         val json = gsonSerializer.toJson(applyMessage)
@@ -104,17 +84,17 @@ class DefaultGsonSerializersTest {
     fun `test ApplyMessage with NullableListWrapper gets serialized properly`() = with(gsonSerializer) {
 
         val applyMessage = ApplyMessage(
-            toJsonTree(
-                NullableListWrapper(
-                    listOf(
-                        Photo("https://www.google.com"),
-                        null,
-                        Photo("https://www.google.com1"),
-                        Photo("https://www.google.com2"),
-                        null
-                    )
+                toJsonTree(
+                        NullableListWrapper(
+                                listOf(
+                                        Photo("https://www.google.com"),
+                                        null,
+                                        Photo("https://www.google.com1"),
+                                        Photo("https://www.google.com2"),
+                                        null
+                                )
+                        )
                 )
-            )
         )
 
         val json = toJson(applyMessage)
@@ -173,7 +153,10 @@ class DefaultGsonSerializersTest {
     fun `test NotifyServer gets serialized correctly`() = with(gsonSerializer) {
 
         val message = NotifyServer(
-            UUID.randomUUID(), ComponentId("some"), NotifyComponentAttached(toJsonTree(testUser)))
+                UUID.randomUUID(),
+                ComponentId("some"),
+                NotifyComponentAttached(toJsonTree(testUser))
+        )
         val json = toJson(message)
         val fromJson = fromJson(json, NotifyServer::class.java)
 
@@ -184,6 +167,10 @@ class DefaultGsonSerializersTest {
 
 @Suppress("TestFunctionName")
 private fun NotifyClient(
-    message: ClientMessage<JsonElement>
-) = NotifyClient(UUID.randomUUID(), ComponentId("test"), message)
+    message: GsonClientMessage
+) = NotifyClient(
+        UUID.randomUUID(),
+        ComponentId("test"),
+        message
+)
 

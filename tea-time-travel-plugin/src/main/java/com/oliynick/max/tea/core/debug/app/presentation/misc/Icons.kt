@@ -8,29 +8,29 @@ import com.intellij.openapi.util.IconLoader
 import javax.swing.Icon
 
 object ValueIcon {
-    val VARIABLE_ICON by unsafeLazy { getIcon("variable") }
-    val CLASS_ICON by unsafeLazy { getIcon("class") }
-    val PROPERTY_ICON by unsafeLazy { getIcon("property") }
-    val WATCH_ICON by unsafeLazy { getIcon("watch") }
+    val VariableIcon by unsafeLazy { getIcon("variable") }
+    val ClassIcon by unsafeLazy { getIcon("class") }
+    val PropertyIcon by unsafeLazy { getIcon("property") }
+    val WatchIcon by unsafeLazy { getIcon("watch") }
 }
 
 object ActionIcons {
 
-    val UPDATE_RUNNING_APP_ICON by unsafeLazy { getIcon("updateRunningApplication") }
-    val REMOVE_ICON by unsafeLazy { getIcon("remove") }
+    val UpdateRunningAppIcon by unsafeLazy { getIcon("updateRunningApplication") }
+    val RemoveIcon by unsafeLazy { getIcon("remove") }
 
-    val RUN_DEFAULT_ICON by unsafeLazy { getIcon("run") }
-    val RUN_DISABLED_ICON by unsafeLazy { getIcon("run_disabled") }
+    val RunDefaultIcon by unsafeLazy { getIcon("run") }
+    val RunDisabledIcon by unsafeLazy { getIcon("run_disabled") }
 
-    val RESUME_ICON by unsafeLazy { getIcon("resume") }
+    val ResumeIcon by unsafeLazy { getIcon("resume") }
 
-    val CLOSE_DEFAULT_ICON by unsafeLazy { getIcon("close") }
-    val CLOSE_DARK_ICON by unsafeLazy { getIcon("close_dark") }
+    val CloseDefaultIcon by unsafeLazy { getIcon("close") }
+    val CloseDarkIcon by unsafeLazy { getIcon("close_dark") }
 
-    val SUSPEND_DEFAULT_ICON by unsafeLazy { getIcon("suspend") }
-    val SUSPEND_DISABLED_ICON by unsafeLazy { getIcon("suspend_disabled") }
+    val SuspendDefaultIcon by unsafeLazy { getIcon("suspend") }
+    val SuspendDisabledIcon by unsafeLazy { getIcon("suspend_disabled") }
 
-    val STOPPING_ICON by unsafeLazy { getIcon("killProcess") }
+    val StoppingIcon by unsafeLazy { getIcon("killProcess") }
 }
 
 private fun getIcon(

@@ -1,9 +1,8 @@
 package com.oliynick.max.tea.core.debug.app.component.cms
 
 import kotlinx.coroutines.TimeoutCancellationException
-import java.net.ProtocolException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
+import java.net.*
+import java.nio.channels.UnresolvedAddressException
 import java.util.concurrent.*
 import javax.net.ssl.SSLException
 
@@ -49,11 +48,8 @@ fun Throwable.toPluginException(): PluginException {
     }
 
     return when {
-        isMissingDependenciesException -> MissingDependenciesException(
-            message!!,
-            this)
-        isNetworkException -> NetworkException(message ?: "Network exception occurred",
-                                               this)
+        isMissingDependenciesException -> MissingDependenciesException(message!!, this)
+        isNetworkException -> NetworkException(message ?: "Network exception occurred", this)
         else -> InternalException(message ?: "Internal exception occurred", this)
     }
 }
@@ -79,9 +75,10 @@ private val Throwable.isNetworkException
     // some of IO exceptions
     get() = findCause {
         it is TimeoutException
-            || it is TimeoutCancellationException
-            || it is UnknownHostException
-            || it is SSLException
-            || it is SocketTimeoutException
-            || it is ProtocolException
+                || it is TimeoutCancellationException
+                || it is UnknownHostException
+                || it is SSLException
+                || it is SocketTimeoutException
+                || it is ProtocolException
+                || it is UnresolvedAddressException
     } != null

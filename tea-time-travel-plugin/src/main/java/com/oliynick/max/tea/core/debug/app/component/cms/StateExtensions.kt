@@ -1,25 +1,11 @@
 package com.oliynick.max.tea.core.debug.app.component.cms
 
-import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
-import com.oliynick.max.tea.core.debug.app.domain.ComponentMapping
-import com.oliynick.max.tea.core.debug.app.domain.DebugState
-import com.oliynick.max.tea.core.debug.app.domain.Filter
-import com.oliynick.max.tea.core.debug.app.domain.FilterOption
-import com.oliynick.max.tea.core.debug.app.domain.FilteredSnapshot
-import com.oliynick.max.tea.core.debug.app.domain.Invalid
-import com.oliynick.max.tea.core.debug.app.domain.OriginalSnapshot
-import com.oliynick.max.tea.core.debug.app.domain.Predicate
-import com.oliynick.max.tea.core.debug.app.domain.ServerSettings
-import com.oliynick.max.tea.core.debug.app.domain.Settings
-import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
-import com.oliynick.max.tea.core.debug.app.domain.Valid
-import com.oliynick.max.tea.core.debug.app.domain.Value
-import com.oliynick.max.tea.core.debug.app.domain.applyTo
+import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.map
 import com.oliynick.max.tea.core.debug.app.misc.mapNotNull
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import protocol.ComponentId
 
 fun Started.update(
     debugState: DebugState
@@ -44,13 +30,23 @@ fun PluginState.updateSettings(
 }
 
 fun Stopped.update(
-    serverSettings: ServerSettings
-) = copy(settings = settings.copy(serverSettings = serverSettings))
+    settings: Settings
+) = copy(settings = settings)
+
+fun PluginState.updateServerSettings(
+    settings: Settings
+) =
+    when (this) {
+        is Stopped -> copy(settings = settings)
+        is Starting -> copy(settings = settings)
+        is Started -> copy(settings = settings)
+        is Stopping -> copy(settings = settings)
+    }
 
 inline fun Stopped.updateServerSettings(
-    how: ServerSettings.() -> ServerSettings
-): ServerSettings =
-    settings.serverSettings.run(how)
+    how: Settings.() -> Settings
+): Settings =
+    settings.run(how)
 
 inline fun Started.updateComponents(
     how: (mapping: ComponentMapping) -> ComponentMapping
@@ -86,9 +82,9 @@ fun ComponentDebugState.appendSnapshot(
     }
 
     return copy(
-        snapshots = snapshots.add(snapshot),
-        filteredSnapshots = filtered?.let(filteredSnapshots::add) ?: filteredSnapshots,
-        state = state
+            snapshots = snapshots.add(snapshot),
+            filteredSnapshots = filtered?.let(filteredSnapshots::add) ?: filteredSnapshots,
+            state = state
     )
 }
 
@@ -96,19 +92,29 @@ fun ComponentDebugState.removeSnapshots(
     ids: Set<SnapshotId>
 ): ComponentDebugState =
     copy(
-        snapshots = snapshots.removeAll { s -> s.meta.id in ids },
-        filteredSnapshots = filteredSnapshots.removeAll { s -> s.meta.id in ids }
+            snapshots = snapshots.removeAll { s -> s.meta.id in ids },
+            filteredSnapshots = filteredSnapshots.removeAll { s -> s.meta.id in ids }
     )
 
 fun ComponentDebugState.removeSnapshots(): ComponentDebugState =
     copy(
-        snapshots = persistentListOf(),
-        filteredSnapshots = persistentListOf()
+            snapshots = persistentListOf(),
+            filteredSnapshots = persistentListOf()
     )
 
 fun DebugState.component(
     id: ComponentId
 ) = components[id] ?: notifyUnknownComponent(id)
+
+fun Started.state(
+    componentId: ComponentId,
+    snapshotId: SnapshotId
+) = snapshot(componentId, snapshotId).state
+
+fun Started.message(
+    componentId: ComponentId,
+    snapshotId: SnapshotId
+) = snapshot(componentId, snapshotId).message
 
 fun Started.updateFilter(
     id: ComponentId,
@@ -137,9 +143,9 @@ private fun PersistentList<OriginalSnapshot>.toFiltered(): PersistentList<Filter
 
 private fun OriginalSnapshot.toFiltered() =
     FilteredSnapshot.ofBoth(
-        meta,
-        message,
-        state
+            meta,
+            message,
+            state
     )
 
 private fun OriginalSnapshot.filteredBy(
