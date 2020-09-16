@@ -86,15 +86,25 @@ libraryProjects()
 
             dokkaSourceSets {
                 named("main") {
-                    moduleDisplayName.set(name)
+                    reportUndocumented.set(true)
+                    moduleDisplayName.set(project.name)
+                    includeNonPublic.set(false)
+                    skipEmptyPackages.set(true)
+
                     sourceLink {
                         localDirectory.set(file("src/main/java"))
                         remoteUrl.set(
                             URL(
-                                "https://github.com/Xlopec/Tea-bag/tree/${branchName()}/tea-core/src/main/java"
+                                "https://github.com/Xlopec/Tea-bag/tree/dev_plugin/${project.name}/src/main/java"
                             )
                         )
                     }
+                    externalDocumentationLink(
+                        URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+                    )
+                    externalDocumentationLink(
+                        URL("https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/")
+                    )
                 }
             }
         }

@@ -126,14 +126,7 @@ fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
 
 @UnstableApi
 fun <S, C> Env<*, S, C>.init(): Flow<Initial<S, C>> =
-    flow {
-        // FIXME: do not inline variable, Back-end (JVM) KtCallExpression will be thrown
-        val initial = withContext(io) {
-            initializer()
-        }
-
-        emit(initial)
-    }
+    flow { emit(withContext(io) { initializer() }) }
 
 @UnstableApi
 fun <M, S, C> Env<M, S, C>.compute(
