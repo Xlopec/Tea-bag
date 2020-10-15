@@ -216,7 +216,7 @@ class ToolWindowView private constructor(
         fun addTab(
             id: ComponentId
         ) {
-            val componentView = ComponentView.new(childScope(), id, component.startedStates(), state)
+            val componentView = ComponentView.new(childScope(), id, project, component.startedStates(), state)
 
             this@ToolWindowView[id] = componentView
             addCloseableTab(id, componentView.root, ::closeHandler)

@@ -2,7 +2,10 @@ package com.oliynick.max.tea.core.debug.app.presentation.settings
 
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
-import com.oliynick.max.tea.core.debug.app.storage.*
+import com.oliynick.max.tea.core.debug.app.misc.PluginId
+import com.oliynick.max.tea.core.debug.app.misc.isDetailedToStringEnabled
+import com.oliynick.max.tea.core.debug.app.misc.properties
+import com.oliynick.max.tea.core.debug.app.misc.settings
 import javax.swing.JCheckBox
 import javax.swing.JComponent
 

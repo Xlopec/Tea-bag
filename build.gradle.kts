@@ -184,6 +184,7 @@ libraryProjects()
 pluginProject().forEachApplying {
 
     apply(plugin = "org.jetbrains.intellij")
+    apply(plugin = "java")
 
     val copyArtifacts by tasks.creating(Copy::class) {
         from("$buildDir/libs/")

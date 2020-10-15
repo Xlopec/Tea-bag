@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.tea.core.debug.app.presentation.misc
 
 import com.oliynick.max.tea.core.debug.app.domain.*
@@ -21,10 +23,13 @@ import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.ClassIcon
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.PropertyIcon
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.VariableIcon
 import com.oliynick.max.tea.core.debug.app.presentation.misc.ValueIcon.WatchIcon
+import org.codehaus.groovy.runtime.wrappers.FloatWrapper
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import javax.swing.Icon
-import javax.swing.tree.*
+import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.MutableTreeNode
+import javax.swing.tree.TreeModel
 
 typealias ValueFormatter = Value.() -> String
 
@@ -39,17 +44,12 @@ fun Value.toJTree(): DefaultMutableTreeNode =
         is Null -> toJTree()
         is CollectionWrapper -> toJTree()
         is Ref -> toJTree()
-        is IntWrapper -> primitive(this)
-        is ByteWrapper -> primitive(this)
-        is ShortWrapper -> primitive(this)
-        is CharWrapper -> primitive(this)
-        is LongWrapper -> primitive(this)
-        is DoubleWrapper -> primitive(this)
-        is FloatWrapper -> primitive(this)
-        is StringWrapper -> primitive(this)
-        is BooleanWrapper -> primitive(this)
+        is NumberWrapper -> Primitive(this)
+        is CharWrapper -> Primitive(this)
+        is FloatWrapper -> Primitive(this)
+        is StringWrapper -> Primitive(this)
+        is BooleanWrapper -> Primitive(this)
     }
-
 
 fun FilteredSnapshot.toReadableString(formatter: DateTimeFormatter = DATE_TIME_FORMATTER): String =
     "${meta.timestamp.format(formatter)}: ${meta.id.value}"
@@ -93,8 +93,8 @@ val RenderTree.icon: Icon?
 fun RenderTree.toReadableString(
     model: TreeModel,
     formatter: ValueFormatter
-): String {
-    return when (this) {
+): String =
+    when (this) {
         RootNode -> "Snapshots (${model.getChildCount(model.root)})"
         is SnapshotNode -> snapshot.toReadableString()
         is MessageNode -> "Message"
@@ -105,7 +105,6 @@ fun RenderTree.toReadableString(
         is EntryKeyNode -> toReadableString(formatter)
         is EntryValueNode -> toReadableString(formatter)
     }
-}
 
 fun toReadableStringDetailed(
     value: Value
@@ -115,14 +114,9 @@ fun toReadableStringDetailed(
         is Null -> value.toReadableString()
         is Ref -> value.toReadableString()
         is CollectionWrapper -> value.toReadableString()
-        is IntWrapper -> value.value.toString()
-        is ByteWrapper -> value.value.toString()
-        is ShortWrapper -> value.value.toString()
-        is CharWrapper -> value.value.toString()
-        is LongWrapper -> value.value.toString()
-        is DoubleWrapper -> value.value.toString()
-        is FloatWrapper -> value.value.toString()
-        is BooleanWrapper -> value.value.toString()
+        is NumberWrapper -> value.toReadableString()
+        is CharWrapper -> value.toReadableString()
+        is BooleanWrapper -> value.toReadableString()
     }
 
 fun toReadableStringShort(
@@ -133,17 +127,12 @@ fun toReadableStringShort(
         is Null -> value.toReadableString()
         is Ref -> value.toReadableStringShort()
         is CollectionWrapper -> value.toReadableStringShort()
-        is IntWrapper -> value.value.toString()
-        is ByteWrapper -> value.value.toString()
-        is ShortWrapper -> value.value.toString()
-        is CharWrapper -> value.value.toString()
-        is LongWrapper -> value.value.toString()
-        is DoubleWrapper -> value.value.toString()
-        is FloatWrapper -> value.value.toString()
-        is BooleanWrapper -> value.value.toString()
+        is NumberWrapper -> value.toReadableString()
+        is CharWrapper -> value.toReadableString()
+        is BooleanWrapper -> value.toReadableString()
     }
 
-private fun primitive(
+private fun Primitive(
     value: Value
 ): DefaultMutableTreeNode =
     DefaultMutableTreeNode(ValueNode(value))
@@ -181,13 +170,8 @@ private fun Value.tryAppendSubTree(parent: DefaultMutableTreeNode): DefaultMutab
     when (this) {
         is CollectionWrapper -> toJTree(parent)
         is Ref -> toJTree(parent)
-        is IntWrapper,
-        is ByteWrapper,
-        is ShortWrapper,
         is CharWrapper,
-        is LongWrapper,
-        is DoubleWrapper,
-        is FloatWrapper,
+        is NumberWrapper,
         is StringWrapper,
         is BooleanWrapper,
         is Null
@@ -202,7 +186,7 @@ private operator fun DefaultMutableTreeNode.plusAssign(child: MutableTreeNode) =
 @Suppress("unused")
 private fun Null.toReadableString(): String = "null"
 
-private fun StringWrapper.toReadableString(): String = "\"$value\""
+private fun StringWrapper.toReadableString(): String = "\"$value\":$primitiveTypeName"
 
 private fun Ref.toReadableString(): String =
     "${type.name}(${properties.joinToString(transform = ::toReadableString, limit = 120)})"
@@ -216,11 +200,18 @@ private fun CollectionWrapper.toReadableString(): String =
     value.joinToString(
         prefix = "[",
         postfix = "]",
-        transform = { toReadableStringDetailed(it) }
+        transform = ::toReadableStringDetailed
     )
 
 private fun CollectionWrapper.toReadableStringShort(): String =
-    "[${value.size} element${if(value.size == 1) "" else "s"}]"
+    "[${value.size} element${if (value.size == 1) "" else "s"}]"
+
+private fun NumberWrapper.toReadableString(): String =
+    "$value:$primitiveTypeName"
+
+private fun CharWrapper.toReadableString(): String = "$value:$primitiveTypeName"
+
+private fun BooleanWrapper.toReadableString(): String = "$value:$primitiveTypeName"
 
 private val Value.icon: Icon?
     inline get() = when {

@@ -2,6 +2,7 @@
 
 package com.oliynick.max.tea.core.debug.app.domain.cms
 
+import com.google.gson.internal.LazilyParsedNumber
 import com.oliynick.max.tea.core.debug.app.domain.*
 import io.kotlintest.shouldBe
 import org.junit.Test
@@ -74,16 +75,34 @@ class FiltersTest {
     }
 
     @Test
-    fun `test if Primitive property type matches expression, whole Ref remains remains unchanged`() {
+    fun `test if number property contains some custom Number implementation, given regex is 'number' only this property remains in the Ref`() {
 
-        val promitiveProperty = Property("primitive", IntWrapper(10))
+        val promitiveProperty = Property("primitive", NumberWrapper(LazilyParsedNumber(10.toString())))
 
         val ref = Ref(
             Type.of("com.example.Test"),
             testProperties + promitiveProperty
         )
 
-        val filtered = applyTo(ref, UnsafeRegexPredicate("int"))
+        val filtered = applyTo(ref, UnsafeRegexPredicate("number"))
+
+        filtered shouldBe Ref(
+            Type.of("com.example.Test"),
+            setOf(promitiveProperty)
+        )
+    }
+
+    @Test
+    fun `test if number property contains Int, given regex is 'int' only this property remains in the Ref`() {
+
+        val promitiveProperty = Property("primitive", NumberWrapper(10))
+
+        val ref = Ref(
+            Type.of("com.example.Test"),
+            testProperties + promitiveProperty
+        )
+
+        val filtered = applyTo(ref, UnsafeRegexPredicate("java.lang.Integer"))
 
         filtered shouldBe Ref(
             Type.of("com.example.Test"),

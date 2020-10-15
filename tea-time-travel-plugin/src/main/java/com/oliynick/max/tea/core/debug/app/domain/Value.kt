@@ -13,7 +13,7 @@ inline class Type(
 
         fun of(
             any: Any
-        ) = of(any::class.java.name!!)
+        ) = of(any::class.java.name)
     }
 }
 
@@ -28,32 +28,12 @@ object Null : Value()
 
 //todo replace by overloaded factory function
 
-data class IntWrapper(
-    val value: Int
-) : Value()
-
-data class ByteWrapper(
-    val value: Byte
-) : Value()
-
-data class ShortWrapper(
-    val value: Short
+data class NumberWrapper(
+    val value: Number
 ) : Value()
 
 data class CharWrapper(
     val value: Char
-) : Value()
-
-data class LongWrapper(
-    val value: Long
-) : Value()
-
-data class DoubleWrapper(
-    val value: Double
-) : Value()
-
-data class FloatWrapper(
-    val value: Float
 ) : Value()
 
 data class StringWrapper(
@@ -113,13 +93,8 @@ data class Ref(
 
 inline val Value.isPrimitive: Boolean
     get() = when (this) {
-        is IntWrapper,
-        is ByteWrapper,
-        is ShortWrapper,
         is CharWrapper,
-        is LongWrapper,
-        is DoubleWrapper,
-        is FloatWrapper,
+        is NumberWrapper,
         is StringWrapper,
         is BooleanWrapper
         -> true

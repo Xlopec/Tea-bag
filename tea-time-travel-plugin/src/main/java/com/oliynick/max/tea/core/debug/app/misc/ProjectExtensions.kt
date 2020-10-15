@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.storage
+package com.oliynick.max.tea.core.debug.app.misc
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
+import com.intellij.psi.JavaPsiFacade
 import com.oliynick.max.tea.core.debug.app.domain.Settings
 
 const val PluginId = "com.oliynick.max.tea.core.plugin"
 
-val Project.properties: PropertiesComponent
+inline val Project.properties: PropertiesComponent
     get() = PropertiesComponent.getInstance(this)
 
 var PropertiesComponent.settings: Settings
@@ -34,9 +35,12 @@ var PropertiesComponent.settings: Settings
     get() = Settings.of(host, port, isDetailedToStringEnabled)
 
 // todo reduce visibility
-var PropertiesComponent.isDetailedToStringEnabled: Boolean
+inline var PropertiesComponent.isDetailedToStringEnabled: Boolean
     set(value) = setValue("$PluginId.isDetailedToStringEnabled", value)
     get() = getBoolean("$PluginId.isDetailedToStringEnabled", false)
+
+inline val Project.javaPsiFacade: JavaPsiFacade
+    get() = JavaPsiFacade.getInstance(this)
 
 private var PropertiesComponent.host: String?
     set(value) = setValue("$PluginId.host", value)

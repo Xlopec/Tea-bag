@@ -17,8 +17,12 @@
 package com.oliynick.max.tea.core.debug.app.presentation.component
 
 import com.oliynick.max.tea.core.debug.app.domain.Value
+import com.oliynick.max.tea.core.debug.app.presentation.misc.RootNode
 import com.oliynick.max.tea.core.debug.app.presentation.misc.toJTree
-import javax.swing.tree.*
+import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.DefaultTreeModel
+import javax.swing.tree.MutableTreeNode
+import javax.swing.tree.TreeModel
 
 class StateTreeModel private constructor(
     private val delegate: DefaultTreeModel,
@@ -26,23 +30,28 @@ class StateTreeModel private constructor(
 ) : TreeModel by delegate {
 
     companion object {
-        fun newInstance(state: Value): StateTreeModel {
-            return StateTreeModel(DefaultTreeModel(DefaultMutableTreeNode("State", true)), state)
-        }
+        fun newInstance(state: Value): StateTreeModel =
+            StateTreeModel(DefaultTreeModel(DefaultMutableTreeNode(RootNode, true))
+                .apply { swap(state) }, state)
     }
 
     var state: Value = initial
         set(value) {
             if (value != field) {
                 field = value
-
-                val root = delegate.root as MutableTreeNode
-
-                if (root.childCount > 0) {
-                    delegate.removeNodeFromParent(root.getChildAt(0) as MutableTreeNode)
-                }
-                delegate.insertNodeInto(value.toJTree(), root, 0)
+                delegate.swap(value)
             }
         }
 
+}
+
+private fun DefaultTreeModel.swap(
+    value: Value
+) {
+    val root = root as MutableTreeNode
+
+    if (root.childCount > 0) {
+        removeNodeFromParent(root.getChildAt(0) as MutableTreeNode)
+    }
+    insertNodeInto(value.toJTree(), root, 0)
 }

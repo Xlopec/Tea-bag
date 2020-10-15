@@ -22,6 +22,7 @@ import javax.swing.JLabel
 import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeCellRenderer
+import javax.swing.tree.TreeModel
 
 class StateTreeRenderer(
     var formatter: ValueFormatter
@@ -35,9 +36,15 @@ class StateTreeRenderer(
         leaf: Boolean,
         row: Int,
         hasFocus: Boolean
-    ): Component {
+    ): Component =
+        JLabel().apply {
+            val payload = (value as DefaultMutableTreeNode).userObject as RenderTree
 
-        val label = JLabel()
+            text = payload.toReadableString(tree.model, formatter)
+            icon = payload.icon
+        }
+
+        /*val label = JLabel()
         val node = value as DefaultMutableTreeNode
 
         if (node === tree.model.root) {
@@ -57,9 +64,23 @@ class StateTreeRenderer(
             is EntryValueNode -> payload.toReadableString(formatter)
         }
 
-        label.icon = payload.icon
+        label.icon = payload.icon*/
 
-        return label
-    }
+    //return label
+    //}
 
 }
+
+private fun RenderTree.toReadableString(
+    model: TreeModel,
+    formatter: ValueFormatter
+): String =
+    when (this) {
+        RootNode -> "Snapshots (${model.getChildCount(model.root)})"
+        is SnapshotNode, is MessageNode, is StateNode -> error("Can't render $this")
+        is PropertyNode -> toReadableString(formatter)
+        is ValueNode -> toReadableString(formatter)
+        is IndexedNode -> toReadableString(formatter)
+        is EntryKeyNode -> toReadableString(formatter)
+        is EntryValueNode -> toReadableString(formatter)
+    }

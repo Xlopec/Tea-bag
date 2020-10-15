@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 intellij {
     version = "2020.1"
+    setPlugins("com.intellij.java")
 }
 
 tasks.named<PatchPluginXmlTask>("patchPluginXml") {

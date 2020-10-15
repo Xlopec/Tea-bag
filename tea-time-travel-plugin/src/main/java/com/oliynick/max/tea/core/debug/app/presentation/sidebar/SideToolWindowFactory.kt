@@ -29,7 +29,7 @@ import com.oliynick.max.tea.core.debug.app.env.Environment
 import com.oliynick.max.tea.core.debug.app.env.PluginComponent
 import com.oliynick.max.tea.core.debug.app.presentation.misc.mergeWith
 import com.oliynick.max.tea.core.debug.app.presentation.settings.PluginSettingsNotifier
-import com.oliynick.max.tea.core.debug.app.storage.properties
+import com.oliynick.max.tea.core.debug.app.misc.properties
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

@@ -8,8 +8,8 @@ import com.intellij.openapi.diagnostic.trace
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.debug.app.component.cms.*
-import com.oliynick.max.tea.core.debug.app.storage.PluginId
-import com.oliynick.max.tea.core.debug.app.storage.settings
+import com.oliynick.max.tea.core.debug.app.misc.PluginId
+import com.oliynick.max.tea.core.debug.app.misc.settings
 
 fun PluginComponent(
     environment: Environment
