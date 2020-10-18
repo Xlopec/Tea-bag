@@ -77,11 +77,11 @@ class ComponentView private constructor(
     private lateinit var regexCheckBox: JCheckBox
     private lateinit var wordsCheckBox: JCheckBox
 
-    private val snapshotRenderer = SnapshotTreeRenderer(initial.formatter)
+    private val snapshotRenderer = RenderTreeRenderer.SnapshotsRenderer(initial.formatter)
     private val snapshotsModel = SnapshotTreeModel.newInstance(initial.component.filteredSnapshots)
 
     private val stateTreeModel = StateTreeModel.newInstance(initial.component.state)
-    private val stateRenderer = StateTreeRenderer(initial.formatter)
+    private val stateRenderer = RenderTreeRenderer.StateRenderer(initial.formatter)
     private val transferHandler = TreeRowValueTransferHandler(initial.formatter)
 
     init {

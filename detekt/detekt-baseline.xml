@@ -123,7 +123,6 @@
     <ID>NewLineAtEndOfFile:SideToolWindowFactory.kt$com.oliynick.max.tea.core.debug.app.presentation.sidebar.SideToolWindowFactory.kt</ID>
     <ID>NewLineAtEndOfFile:SnapshotTreeModel.kt$com.oliynick.max.tea.core.debug.app.presentation.component.SnapshotTreeModel.kt</ID>
     <ID>NewLineAtEndOfFile:StateTreeModel.kt$com.oliynick.max.tea.core.debug.app.presentation.component.StateTreeModel.kt</ID>
-    <ID>NewLineAtEndOfFile:StateTreeRenderer.kt$com.oliynick.max.tea.core.debug.app.presentation.component.StateTreeRenderer.kt</ID>
     <ID>NewLineAtEndOfFile:Storage.kt$com.max.weatherviewer.app.env.storage.Storage.kt</ID>
     <ID>NewLineAtEndOfFile:TestDebugSession.kt$com.oliynick.max.tea.core.debug.TestDebugSession.kt</ID>
     <ID>NewLineAtEndOfFile:Url.kt$com.oliynick.max.tea.core.debug.component.Url.kt</ID>
