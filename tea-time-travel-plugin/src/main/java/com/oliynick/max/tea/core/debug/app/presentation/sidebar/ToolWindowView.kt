@@ -21,7 +21,8 @@ import com.intellij.ui.components.JBTabbedPane
 import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.Validated
 import com.oliynick.max.tea.core.debug.app.domain.isValid
-import com.oliynick.max.tea.core.debug.app.misc.*
+import com.oliynick.max.tea.core.debug.app.misc.childScope
+import com.oliynick.max.tea.core.debug.app.misc.onStart
 import com.oliynick.max.tea.core.debug.app.presentation.component.ComponentView
 import com.oliynick.max.tea.core.debug.app.presentation.info.InfoView
 import com.oliynick.max.tea.core.debug.app.presentation.misc.*
@@ -36,9 +37,11 @@ import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.Suspend
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ErrorColor
 import com.oliynick.max.tea.core.debug.app.presentation.ui.InputTimeoutMillis
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import java.awt.Container
 import java.awt.FlowLayout
 import java.awt.event.MouseEvent
@@ -69,14 +72,14 @@ class ToolWindowView private constructor(
 
     val root: JPanel get() = panel
 
-    private val idToScope = mutableMapOf<Any, CoroutineScope>()
-
     init {
 
         launch {
             val uiEvents = Channel<PluginMessage>()
 
-            component(uiEvents.consumeAsFlow().mergeWith(updateServerSettings(component.firstState())))
+            component(
+                uiEvents.consumeAsFlow().mergeWith(updateServerSettings(component.firstState()))
+            )
                 .collect { state -> render(state, uiEvents::offer) }
         }
     }
@@ -84,7 +87,12 @@ class ToolWindowView private constructor(
     private fun updateServerSettings(
         initial: PluginState
     ) =
-        hostInputChanges(initial).combine(portInputChanges(initial)) { host, port -> UpdateServerSettings(host, port) }
+        hostInputChanges(initial).combine(portInputChanges(initial)) { host, port ->
+            UpdateServerSettings(
+                host,
+                port
+            )
+        }
             .distinctUntilChanged()
             .debounce(InputTimeoutMillis)
 
@@ -134,7 +142,8 @@ class ToolWindowView private constructor(
             startButton.removeMouseListenersDisabling()
         }
 
-        val shouldRemoveOrEmpty = componentsPanel.isEmpty || (componentsPanel.isNotEmpty && componentsPanel.first().name != InfoView.NAME)
+        val shouldRemoveOrEmpty =
+            componentsPanel.isEmpty || (componentsPanel.isNotEmpty && componentsPanel.first().name != InfoView.NAME)
 
         if (shouldRemoveOrEmpty) {
             showEmptyComponentsView()
@@ -161,7 +170,9 @@ class ToolWindowView private constructor(
 
         startButton.setOnClickListenerEnabling { messages(StopServer) }
 
-        require(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children}" }
+        require(componentsPanel.componentCount == 1) {
+            "Invalid components count, children ${componentsPanel.children}"
+        }
 
         if (state.debugState.components.isEmpty()) {
             // show empty view
@@ -179,10 +190,14 @@ class ToolWindowView private constructor(
             (componentsPanel.first() as JTabbedPane).update(state, messages)
         }
 
-        check(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children}" }
+        check(componentsPanel.componentCount == 1) {
+            "Invalid components count, children ${componentsPanel.children}"
+        }
     }
 
-    private fun render(@Suppress("UNUSED_PARAMETER") state: Stopping) {
+    private fun render(
+        @Suppress("UNUSED_PARAMETER") state: Stopping
+    ) {
         startButton.icon = SuspendDefaultIcon
         startButton.disabledIcon = StoppingIcon
 
@@ -192,14 +207,15 @@ class ToolWindowView private constructor(
     private fun showEmptyComponentsView() {
         componentsPanel.removeAll()
 
-        val infoView = InfoView.new(childScope(), component)
+        val infoViewScope = childScope()
+        val infoView = InfoView.new(infoViewScope, component.infoViewStates(infoViewScope))
 
-        this[InfoView.NAME] = infoView
         componentsPanel += infoView.panel
     }
 
-    private fun tabbedComponentsView() = JBTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT)
-        .also { tabPane -> tabPane.model = DefaultSingleSelectionModel() }
+    private fun tabbedComponentsView() =
+        JBTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT)
+            .also { tabPane -> tabPane.model = DefaultSingleSelectionModel() }
 
     private fun JTabbedPane.update(
         state: Started,
@@ -208,17 +224,20 @@ class ToolWindowView private constructor(
 
         fun closeHandler(
             id: ComponentId
-        ) {
-            this@ToolWindowView -= id
-            messages(RemoveComponent(id))
-        }
+        ) = messages(RemoveComponent(id))
 
         fun addTab(
             id: ComponentId
         ) {
-            val componentView = ComponentView.new(childScope(), id, project, component.startedStates(), state)
+            val componentScope = childScope()
+            val componentView = ComponentView.new(
+                componentScope,
+                id,
+                project,
+                component.startedStates(id, componentScope),
+                state
+            )
 
-            this@ToolWindowView[id] = componentView
             addCloseableTab(id, componentView.root, ::closeHandler)
         }
 
@@ -227,21 +246,27 @@ class ToolWindowView private constructor(
             .forEach { (id, _) -> addTab(id) }
     }
 
-    private operator fun set(
-        key: Any,
-        scope: CoroutineScope
-    ) = idToScope.compute(key) { _, old -> old?.cancel(); scope }
-
-    private operator fun minusAssign(
-        key: Any
-    ) {
-        idToScope.remove(key)?.cancel()
-    }
-
 }
 
-private fun ((Flow<PluginMessage>) -> Flow<PluginState>).startedStates() =
-    mapNullableS { pluginState -> pluginState as? Started }
+private fun ((Flow<PluginMessage>) -> Flow<PluginState>).infoViewStates(
+    scope: CoroutineScope
+): ((Flow<PluginMessage>) -> Flow<PluginState>) =
+    { input ->
+    this(input)
+        .takeWhile { s -> s !is Started || s.debugState.components.isEmpty() }
+        .onCompletion { scope.cancel() }
+}
+
+private fun ((Flow<PluginMessage>) -> Flow<PluginState>).startedStates(
+    id: ComponentId,
+    scope: CoroutineScope
+): ((Flow<PluginMessage>) -> Flow<Started>) = { input ->
+    this(input)
+        .map { s -> s as? Started }
+        .takeWhile { s -> s?.debugState?.components?.containsKey(id) == true }
+        .filterNotNull()
+        .onCompletion { scope.cancel() }
+}
 
 private fun AwtComponent.setOnClickListenerEnabling(l: (MouseEvent) -> Unit) {
     setOnClickListener(l)
@@ -287,4 +312,5 @@ private fun JTextField.updateErrorMessage(
 
 private fun Container.first() = this[0]
 
-private suspend fun ((Flow<PluginMessage>) -> Flow<PluginState>).firstState() = this(emptyFlow()).first()
+private suspend fun ((Flow<PluginMessage>) -> Flow<PluginState>).firstState() =
+    this(emptyFlow()).first()
