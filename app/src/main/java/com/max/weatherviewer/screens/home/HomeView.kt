@@ -2,23 +2,87 @@
 
 package com.max.weatherviewer.screens.home
 
+import androidx.compose.foundation.Text
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.vectorResource
+import com.max.weatherviewer.R
+import com.max.weatherviewer.app.*
+import com.max.weatherviewer.screens.feed.Feed
+import com.max.weatherviewer.screens.feed.LoadCriteria
+import com.max.weatherviewer.screens.feed.ui.FeedScreen
+import com.max.weatherviewer.screens.home.BottomMenuItem.*
+
+@Composable
+fun HomeScreen(
+    screen: Feed,
+    onMessage: (Message) -> Unit
+) {
+
+    Scaffold(topBar = {
+        TopAppBar(title = {
+            Text(text = screen.toScreenTitle())
+        })
+    }, bottomBar = {
+        BottomBar(item = screen.criteria.toMenuItem(), onMessage = onMessage)
+    }) {
+        FeedScreen(screen, onMessage)
+    }
+}
+
+enum class BottomMenuItem {
+    FEED,
+    FAVORITE,
+    TRENDING
+}
+
+private fun LoadCriteria.toMenuItem() = when (this) {
+    is LoadCriteria.Query -> FEED
+    LoadCriteria.Favorite -> FAVORITE
+    LoadCriteria.Trending -> TRENDING
+}
+
+@Composable
+private fun BottomBar(
+    item: BottomMenuItem,
+    onMessage: (Navigation) -> Unit
+) {
+    BottomNavigation {
+
+        BottomNavigationItem(icon = {
+            Icon(asset = vectorResource(id = R.drawable.ic_language_white_24dp))
+        },
+            selected = item === FEED,
+            onClick = { onMessage(NavigateToFeed) }
+        )
+
+        BottomNavigationItem(icon = {
+            Icon(asset = vectorResource(id = R.drawable.ic_favorite_border_white_24dp))
+        },
+            selected = item === FAVORITE,
+            onClick = { onMessage(NavigateToFavorite) }
+        )
+
+        BottomNavigationItem(icon = {
+            Icon(asset = vectorResource(id = R.drawable.ic_trending_up_white_24dp))
+        },
+            selected = item === TRENDING,
+            onClick = { onMessage(NavigateToTrending) }
+        )
+    }
+}
+
+private fun Feed.toScreenTitle(): String =
+    when (criteria) {
+        is LoadCriteria.Query -> "Feed"
+        is LoadCriteria.Favorite -> "Favorite"
+        is LoadCriteria.Trending -> "Trending"
+    }
+/*
+
+
 import androidx.annotation.DrawableRes
-import androidx.compose.*
-import androidx.ui.animation.Crossfade
-import androidx.ui.core.Modifier
-import androidx.ui.core.Text
-import androidx.ui.core.dp
-import androidx.ui.foundation.Clickable
-import androidx.ui.foundation.selection.Toggleable
-import androidx.ui.foundation.shape.corner.RoundedCornerShape
-import androidx.ui.graphics.Color
-import androidx.ui.graphics.vector.DrawVector
-import androidx.ui.layout.*
-import androidx.ui.layout.Size
-import androidx.ui.material.*
-import androidx.ui.material.ripple.Ripple
-import androidx.ui.material.surface.Surface
-import androidx.ui.res.vectorResource
+import androidx.compose.runtime.Composable
 import com.max.weatherviewer.R
 import com.max.weatherviewer.app.*
 import com.max.weatherviewer.screens.feed.Feed
@@ -118,10 +182,12 @@ private fun AppDrawer(
         HeightSpacer(24.dp)
         Padding(16.dp) {
             Row {
-                /*VectorImage(
+                */
+/*VectorImage(
                     id = R.drawable.ic_jetnews_logo,
                     tint = +themeColor { primary }
-                )*/
+                )*//*
+
                 WidthSpacer(8.dp)
                 // VectorImage(R.drawable.ic_jetnews_wordmark)
             }
@@ -279,9 +345,5 @@ fun BookmarkButton(
     }
 }
 
-private fun Feed.toScreenTitle(): String =
-    when (criteria) {
-        is LoadCriteria.Query -> "Feed"
-        is LoadCriteria.Favorite -> "Favorite"
-        is LoadCriteria.Trending -> "Trending"
-    }
+
+*/

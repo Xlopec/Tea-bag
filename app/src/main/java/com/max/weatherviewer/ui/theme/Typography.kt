@@ -16,6 +16,7 @@
 
 package com.max.weatherviewer.ui.theme
 
+/*
 import androidx.ui.core.sp
 import androidx.ui.material.Typography
 import androidx.ui.text.TextStyle
@@ -89,3 +90,4 @@ val themeTypography = Typography(
         fontSize = 12.sp
     )
 )
+*/

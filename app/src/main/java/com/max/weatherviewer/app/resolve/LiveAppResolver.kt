@@ -7,9 +7,20 @@ import com.max.weatherviewer.screens.feed.resolve.FeedResolver
 import com.oliynick.max.tea.core.component.sideEffect
 import kotlinx.coroutines.channels.BroadcastChannel
 
+@Deprecated("wait until it'll be fixed")
 fun <Env> AppResolver(): AppResolver<Env> where Env : HasCommandTransport,
                                                 Env : FeedResolver<Env> = object :
-        LiveAppResolver<Env> {}
+    AppResolver<Env> {
+    override suspend fun Env.resolve(command: Command): Set<Message> =
+        when (command) {
+            is CloseApp -> close(command)
+            is FeedCommand -> resolve(command)
+        }
+
+    suspend fun Env.close(
+        command: CloseApp
+    ): Set<Message> = command.sideEffect { closeCommands.offer(command) }
+}
 
 interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasCommandTransport,
                                                         Env : FeedResolver<Env> {

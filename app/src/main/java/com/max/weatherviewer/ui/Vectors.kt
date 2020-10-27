@@ -1,6 +1,6 @@
 package com.max.weatherviewer.ui
 
-import androidx.annotation.DrawableRes
+/*import androidx.annotation.DrawableRes
 import androidx.compose.Composable
 import androidx.compose.unaryPlus
 import androidx.ui.core.Modifier
@@ -39,4 +39,4 @@ fun VectorImage(
             DrawVector(vector, tint)
         }
     }
-}
+}*/

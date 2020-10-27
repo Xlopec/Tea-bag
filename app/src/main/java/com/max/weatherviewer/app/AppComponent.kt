@@ -27,7 +27,7 @@ fun Environment.appComponent(): (Flow<Message>) -> Flow<State> {
 
     // todo state persistence
 
-    if (isDebug) {
+    if (false && isDebug) {
 
         return Component(
                 ComponentId("News Reader App"),
