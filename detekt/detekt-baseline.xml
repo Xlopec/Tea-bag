@@ -72,8 +72,8 @@
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
     <ID>MaxLineLength:LiveFeedUpdater.kt$LiveFeedUpdater$message is OnQueryUpdated &amp;&amp; feed.criteria is LoadCriteria.Query -&gt; updateQuery(message.query, feed.criteria as LoadCriteria.Query, feed)</ID>
     <ID>NestedBlockDepth:MulticastFlow.kt$MulticastFlow$onOriginalFlowData</ID>
-    <ID>NewLineAtEndOfFile:AppResolver.kt$com.max.weatherviewer.app.resolve.AppResolver.kt</ID>
-    <ID>NewLineAtEndOfFile:AppUpdater.kt$com.max.weatherviewer.app.update.AppUpdater.kt</ID>
+    <ID>NewLineAtEndOfFile:AppResolver.kt$com.max.reader.app.resolve.AppResolver.kt</ID>
+    <ID>NewLineAtEndOfFile:AppUpdater.kt$com.max.reader.app.update.AppUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:Baloon.kt$com.oliynick.max.tea.core.debug.app.component.resolver.Baloon.kt</ID>
     <ID>NewLineAtEndOfFile:ChooserUtils.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.ChooserUtils.kt</ID>
     <ID>NewLineAtEndOfFile:ClientMessageSerializationTest.kt$com.oliynick.max.tea.core.debug.app.domain.serialization.ClientMessageSerializationTest.kt</ID>
@@ -86,13 +86,13 @@
     <ID>NewLineAtEndOfFile:DebugSession.kt$com.oliynick.max.tea.core.debug.session.DebugSession.kt</ID>
     <ID>NewLineAtEndOfFile:DebugWebSocketSession.kt$com.oliynick.max.tea.core.debug.session.DebugWebSocketSession.kt</ID>
     <ID>NewLineAtEndOfFile:DiffingListModel.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.DiffingListModel.kt</ID>
-    <ID>NewLineAtEndOfFile:Environment.kt$com.max.weatherviewer.app.env.Environment.kt</ID>
-    <ID>NewLineAtEndOfFile:FeedResolver.kt$com.max.weatherviewer.screens.feed.resolve.FeedResolver.kt</ID>
-    <ID>NewLineAtEndOfFile:FeedScreen.kt$com.max.weatherviewer.screens.feed.ui.FeedScreen.kt</ID>
-    <ID>NewLineAtEndOfFile:FeedUpdater.kt$com.max.weatherviewer.screens.feed.update.FeedUpdater.kt</ID>
+    <ID>NewLineAtEndOfFile:Environment.kt$com.max.reader.app.env.Environment.kt</ID>
+    <ID>NewLineAtEndOfFile:FeedResolver.kt$com.max.reader.screens.feed.resolve.FeedResolver.kt</ID>
+    <ID>NewLineAtEndOfFile:FeedScreen.kt$com.max.reader.screens.feed.ui.FeedScreen.kt</ID>
+    <ID>NewLineAtEndOfFile:FeedUpdater.kt$com.max.reader.screens.feed.update.FeedUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:FiltersTest.kt$com.oliynick.max.tea.core.debug.app.domain.cms.FiltersTest.kt</ID>
     <ID>NewLineAtEndOfFile:FlowExtension.kt$com.oliynick.max.tea.core.debug.component.internal.FlowExtension.kt</ID>
-    <ID>NewLineAtEndOfFile:FlowExtensions.kt$com.max.weatherviewer.misc.FlowExtensions.kt</ID>
+    <ID>NewLineAtEndOfFile:FlowExtensions.kt$com.max.reader.misc.FlowExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:Generator.kt$com.oliynick.max.tea.core.debug.app.misc.Generator.kt</ID>
     <ID>NewLineAtEndOfFile:GsonAdapters.kt$com.oliynick.max.tea.core.debug.gson.GsonAdapters.kt</ID>
     <ID>NewLineAtEndOfFile:GsonConverter.kt$com.oliynick.max.tea.core.debug.gson.GsonConverter.kt</ID>
@@ -102,15 +102,15 @@
     <ID>NewLineAtEndOfFile:JavaVersionExt.kt$.JavaVersionExt.kt</ID>
     <ID>NewLineAtEndOfFile:JsonConverter.kt$com.oliynick.max.tea.core.debug.protocol.JsonConverter.kt</ID>
     <ID>NewLineAtEndOfFile:LRUCacheTest.kt$com.oliynick.max.tea.core.debug.app.domain.LRUCacheTest.kt</ID>
-    <ID>NewLineAtEndOfFile:LiveFeedUpdater.kt$com.max.weatherviewer.screens.feed.update.LiveFeedUpdater.kt</ID>
+    <ID>NewLineAtEndOfFile:LiveFeedUpdater.kt$com.max.reader.screens.feed.update.LiveFeedUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:LiveNotificationUpdaterTest.kt$com.oliynick.max.tea.core.debug.app.component.updater.LiveNotificationUpdaterTest.kt</ID>
     <ID>NewLineAtEndOfFile:LiveUpdater.kt$com.oliynick.max.tea.core.debug.app.component.updater.LiveUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:LruCache.kt$com.oliynick.max.tea.core.debug.app.misc.LruCache.kt</ID>
-    <ID>NewLineAtEndOfFile:MainActivity.kt$com.max.weatherviewer.screens.main.MainActivity.kt</ID>
-    <ID>NewLineAtEndOfFile:MongoDb.kt$com.max.weatherviewer.app.env.storage.local.MongoDb.kt</ID>
-    <ID>NewLineAtEndOfFile:MyImage.kt$com.max.weatherviewer.ui.MyImage.kt</ID>
-    <ID>NewLineAtEndOfFile:Networking.kt$com.max.weatherviewer.app.env.Networking.kt</ID>
-    <ID>NewLineAtEndOfFile:NewsApi.kt$com.max.weatherviewer.app.env.storage.network.NewsApi.kt</ID>
+    <ID>NewLineAtEndOfFile:MainActivity.kt$com.max.reader.screens.main.MainActivity.kt</ID>
+    <ID>NewLineAtEndOfFile:MongoDb.kt$com.max.reader.app.env.storage.local.MongoDb.kt</ID>
+    <ID>NewLineAtEndOfFile:MyImage.kt$com.max.reader.ui.MyImage.kt</ID>
+    <ID>NewLineAtEndOfFile:Networking.kt$com.max.reader.app.env.Networking.kt</ID>
+    <ID>NewLineAtEndOfFile:NewsApi.kt$com.max.reader.app.env.storage.network.NewsApi.kt</ID>
     <ID>NewLineAtEndOfFile:NumberExtensions.kt$com.oliynick.max.tea.core.debug.app.misc.NumberExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:PluginDependenciesSpecExt.kt$.PluginDependenciesSpecExt.kt</ID>
     <ID>NewLineAtEndOfFile:PluginException.kt$com.oliynick.max.tea.core.debug.app.component.cms.PluginException.kt</ID>
@@ -123,7 +123,7 @@
     <ID>NewLineAtEndOfFile:SideToolWindowFactory.kt$com.oliynick.max.tea.core.debug.app.presentation.sidebar.SideToolWindowFactory.kt</ID>
     <ID>NewLineAtEndOfFile:SnapshotTreeModel.kt$com.oliynick.max.tea.core.debug.app.presentation.component.SnapshotTreeModel.kt</ID>
     <ID>NewLineAtEndOfFile:StateTreeModel.kt$com.oliynick.max.tea.core.debug.app.presentation.component.StateTreeModel.kt</ID>
-    <ID>NewLineAtEndOfFile:Storage.kt$com.max.weatherviewer.app.env.storage.Storage.kt</ID>
+    <ID>NewLineAtEndOfFile:Storage.kt$com.max.reader.app.env.storage.Storage.kt</ID>
     <ID>NewLineAtEndOfFile:TestDebugSession.kt$com.oliynick.max.tea.core.debug.TestDebugSession.kt</ID>
     <ID>NewLineAtEndOfFile:Url.kt$com.oliynick.max.tea.core.debug.component.Url.kt</ID>
     <ID>NewLineAtEndOfFile:build.gradle.kts$.build.gradle.kts</ID>

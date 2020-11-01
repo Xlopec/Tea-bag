@@ -2,15 +2,15 @@
 
     <!-- Base application theme. -->
     <style name="Theme.NewsReader" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">#263238</item>
+        <item name="colorPrimaryDark">#000a12</item>
+        <item name="colorAccent">#455a64</item>
     </style>
 
     <style name="Theme.Splash" parent="Theme.NewsReader">
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowDisablePreview">false</item>
-        <item name="android:colorBackground">#FFF</item>
+        <item name="android:colorBackground">@color/colorPrimary</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:windowBackground">@drawable/bg_splash</item>
     </style>

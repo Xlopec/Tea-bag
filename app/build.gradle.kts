@@ -68,6 +68,29 @@ android {
         exclude("META-INF/kotlin*")
         exclude("META-INF/atomicfu*")
     }
+
+    flavorDimensions += "remoteDebug"
+    productFlavors {
+
+        create("remoteDebuggable") {
+            dimension = "remoteDebug"
+            applicationIdSuffix = ".remoteDebuggable"
+            versionNameSuffix = "(remote debuggable)"
+        }
+
+        create("default") {
+            dimension = "remoteDebug"
+        }
+    }
+
+    sourceSets {
+
+        maybeCreate("remoteDebuggable")
+            .java.srcDirs("remoteDebuggable/java", "main/java")
+
+        maybeCreate("default")
+            .java.srcDirs("default/java", "main/java")
+    }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
@@ -103,16 +126,14 @@ dependencies {
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.material:material-icons-core:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
-    implementation("androidx.ui:ui-tooling:1.0.0-alpha05")
+    implementation("androidx.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.runtime:runtime:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.compiler:compiler:$composeVersion")
 
-    implementation("com.github.bumptech.glide:glide:4.10.0")
+    implementation("dev.chrisbanes.accompanist:accompanist-coil:0.3.2")
 
-    implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("androidx.activity:activity-ktx:1.1.0")
-    implementation("androidx.core:core-ktx:1.2.0")
+    implementation("androidx.appcompat:appcompat:1.2.0")
 
     implementation("org.mongodb:stitch-android-sdk:4.1.0")
 
@@ -125,7 +146,7 @@ dependencies {
     testImplementation(project(path = ":tea-test", configuration = "default"))
     testImplementation(coroutinesAndroid)
 
-    androidTestImplementation("androidx.test:runner:1.2.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
+    androidTestImplementation("androidx.test:runner:1.3.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
 
 }

@@ -102,7 +102,7 @@ fun <M, S, C> Component(
 
     val input = Channel<M>(Channel.RENDEZVOUS)
     // todo consider implementing option to configure behavior of the component
-    val upstream = env.upstream(input.consumeAsFlow(), env.init()).shareConflated()
+    val upstream = env.upstream(input.receiveAsFlow(), env.init()).shareConflated()
 
     return { messages -> upstream.downstream(messages, input) }
 }
