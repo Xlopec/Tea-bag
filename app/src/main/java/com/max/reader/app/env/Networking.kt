@@ -9,13 +9,18 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.security.cert.X509Certificate
-import java.util.concurrent.*
-import javax.net.ssl.*
+import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.X509TrustManager
 
-fun gson(config: GsonBuilder.() -> Unit = {}): Gson =
+fun AppGson(
+    config: GsonBuilder.() -> Unit = {}
+): Gson =
     GsonBuilder().serializeNulls().setPrettyPrinting().apply(config).create()
 
-fun buildRetrofit(gson: Gson = gson()): Retrofit {
+fun Retrofit(
+    gson: Gson
+): Retrofit {
     val client = OkHttpClient.Builder()
         .readTimeout(3, TimeUnit.SECONDS)
         .connectTimeout(3, TimeUnit.SECONDS)
@@ -44,11 +49,10 @@ fun buildRetrofit(gson: Gson = gson()): Retrofit {
             }
 
             sslSocketFactory(sslContext.socketFactory, trustManager)
-                .hostnameVerifier(HostnameVerifier { _, _ -> true })
+                .hostnameVerifier { _, _ -> true }
 
         }
         .build()
-
 
     return Retrofit.Builder()
         .baseUrl("https://newsapi.org/v2/")

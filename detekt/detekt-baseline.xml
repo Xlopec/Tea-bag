@@ -23,40 +23,53 @@
   <Whitelist>
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
     <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$update</ID>
-    <ID>ComplexMethod:MyImage.kt$toComposeColorSpace</ID>
-    <ID>FunctionNaming:Vectors.kt$@Composable fun VectorImage( modifier: Modifier = Modifier.None, @DrawableRes id: Int, tint: Color = Color.Transparent )</ID>
-    <ID>FunctionNaming:Vectors.kt$@Composable fun VectorImageButton( @DrawableRes id: Int, onClick: () -&gt; Unit )</ID>
+    <ID>FunctionNaming:AppTheme.kt$@Composable fun AppTheme( content: @Composable () -&gt; Unit )</ID>
+    <ID>FunctionNaming:AppTheme.kt$@Composable fun ThemedPreview( children: @Composable () -&gt; Unit )</ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") private fun Null.toReadableString(): String</ID>
     <ID>MagicNumber:Balloon.kt$15</ID>
     <ID>MagicNumber:Balloon.kt$15_000L</ID>
     <ID>MagicNumber:Balloon.kt$30</ID>
     <ID>MagicNumber:Colors.kt$0x33412E</ID>
     <ID>MagicNumber:Colors.kt$0x704745</ID>
+    <ID>MagicNumber:Colors.kt$0xFF000a12</ID>
+    <ID>MagicNumber:Colors.kt$0xFF1c313a</ID>
+    <ID>MagicNumber:Colors.kt$0xFF263238</ID>
+    <ID>MagicNumber:Colors.kt$0xFF455a64</ID>
+    <ID>MagicNumber:Colors.kt$0xFFD00036</ID>
+    <ID>MagicNumber:Colors.kt$0xFFffffff</ID>
     <ID>MagicNumber:Colors.kt$0xbaeeba</ID>
     <ID>MagicNumber:Colors.kt$0xffcccc</ID>
     <ID>MagicNumber:Colors.kt$182</ID>
-    <ID>MagicNumber:FeedScreen.kt$0.6f</ID>
-    <ID>MagicNumber:FeedScreen.kt$0.87f</ID>
-    <ID>MagicNumber:FeedScreen.kt$100</ID>
+    <ID>MagicNumber:FeedScreen.kt$12</ID>
     <ID>MagicNumber:FeedScreen.kt$16</ID>
-    <ID>MagicNumber:FeedScreen.kt$180</ID>
-    <ID>MagicNumber:FeedScreen.kt$3</ID>
+    <ID>MagicNumber:FeedScreen.kt$200</ID>
     <ID>MagicNumber:FeedScreen.kt$4</ID>
     <ID>MagicNumber:FeedScreen.kt$8</ID>
-    <ID>MagicNumber:HomeView.kt$0x14333333</ID>
-    <ID>MagicNumber:HomeView.kt$12</ID>
-    <ID>MagicNumber:HomeView.kt$16</ID>
-    <ID>MagicNumber:HomeView.kt$24</ID>
-    <ID>MagicNumber:HomeView.kt$4</ID>
-    <ID>MagicNumber:HomeView.kt$48</ID>
-    <ID>MagicNumber:HomeView.kt$56</ID>
-    <ID>MagicNumber:HomeView.kt$8</ID>
     <ID>MagicNumber:Networking.kt$3</ID>
     <ID>MagicNumber:ServerImpl.kt$10</ID>
     <ID>MagicNumber:ServerImpl.kt$5</ID>
-    <ID>MagicNumber:Themes.kt$0xFFC20029</ID>
-    <ID>MagicNumber:Themes.kt$0xFFD00036</ID>
-    <ID>MagicNumber:Themes.kt$0xFFDD0D3C</ID>
+    <ID>MagicNumber:Type.kt$0.1</ID>
+    <ID>MagicNumber:Type.kt$0.15</ID>
+    <ID>MagicNumber:Type.kt$0.25</ID>
+    <ID>MagicNumber:Type.kt$0.4</ID>
+    <ID>MagicNumber:Type.kt$0.5</ID>
+    <ID>MagicNumber:Type.kt$1.25</ID>
+    <ID>MagicNumber:Type.kt$1.5</ID>
+    <ID>MagicNumber:Type.kt$117</ID>
+    <ID>MagicNumber:Type.kt$12</ID>
+    <ID>MagicNumber:Type.kt$14</ID>
+    <ID>MagicNumber:Type.kt$16</ID>
+    <ID>MagicNumber:Type.kt$20</ID>
+    <ID>MagicNumber:Type.kt$24</ID>
+    <ID>MagicNumber:Type.kt$28</ID>
+    <ID>MagicNumber:Type.kt$29</ID>
+    <ID>MagicNumber:Type.kt$30</ID>
+    <ID>MagicNumber:Type.kt$37</ID>
+    <ID>MagicNumber:Type.kt$48</ID>
+    <ID>MagicNumber:Type.kt$59</ID>
+    <ID>MagicNumber:Type.kt$60</ID>
+    <ID>MagicNumber:Type.kt$73</ID>
+    <ID>MagicNumber:Type.kt$96</ID>
     <ID>MagicNumber:Typography.kt$12</ID>
     <ID>MagicNumber:Typography.kt$14</ID>
     <ID>MagicNumber:Typography.kt$16</ID>
@@ -64,12 +77,14 @@
     <ID>MagicNumber:Typography.kt$24</ID>
     <ID>MagicNumber:Typography.kt$30</ID>
     <ID>MatchingDeclarationName:Component.kt$ComponentId</ID>
+    <ID>MatchingDeclarationName:HomeView.kt$BottomMenuItem</ID>
     <ID>MatchingDeclarationName:MapSerializer.kt$MapDeserializer : JsonDeserializer</ID>
     <ID>MatchingDeclarationName:Memoization.kt$Key7</ID>
     <ID>MatchingDeclarationName:MongoDb.kt$HasMongoCollection</ID>
     <ID>MatchingDeclarationName:PersistentSerializer.kt$PersistentListSerializer : JsonSerializerJsonDeserializer</ID>
     <ID>MatchingDeclarationName:UpdateUI.kt$UiUpdater</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
+    <ID>MaxLineLength:FiltersTest.kt$FiltersTest$@Test fun `test if number property contains some custom Number implementation, given regex is 'number' only this property remains in the Ref`()</ID>
     <ID>MaxLineLength:LiveFeedUpdater.kt$LiveFeedUpdater$message is OnQueryUpdated &amp;&amp; feed.criteria is LoadCriteria.Query -&gt; updateQuery(message.query, feed.criteria as LoadCriteria.Query, feed)</ID>
     <ID>NestedBlockDepth:MulticastFlow.kt$MulticastFlow$onOriginalFlowData</ID>
     <ID>NewLineAtEndOfFile:AppResolver.kt$com.max.reader.app.resolve.AppResolver.kt</ID>
@@ -83,12 +98,12 @@
     <ID>NewLineAtEndOfFile:ComponentLogic.kt$core.component.ComponentLogic.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentTest.kt$com.oliynick.max.tea.core.debug.app.domain.component.ComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentTestSuite.kt$com.oliynick.max.tea.core.component.ComponentTestSuite.kt</ID>
+    <ID>NewLineAtEndOfFile:Data.kt$com.oliynick.max.tea.core.debug.app.misc.Data.kt</ID>
     <ID>NewLineAtEndOfFile:DebugSession.kt$com.oliynick.max.tea.core.debug.session.DebugSession.kt</ID>
     <ID>NewLineAtEndOfFile:DebugWebSocketSession.kt$com.oliynick.max.tea.core.debug.session.DebugWebSocketSession.kt</ID>
     <ID>NewLineAtEndOfFile:DiffingListModel.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.DiffingListModel.kt</ID>
     <ID>NewLineAtEndOfFile:Environment.kt$com.max.reader.app.env.Environment.kt</ID>
     <ID>NewLineAtEndOfFile:FeedResolver.kt$com.max.reader.screens.feed.resolve.FeedResolver.kt</ID>
-    <ID>NewLineAtEndOfFile:FeedScreen.kt$com.max.reader.screens.feed.ui.FeedScreen.kt</ID>
     <ID>NewLineAtEndOfFile:FeedUpdater.kt$com.max.reader.screens.feed.update.FeedUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:FiltersTest.kt$com.oliynick.max.tea.core.debug.app.domain.cms.FiltersTest.kt</ID>
     <ID>NewLineAtEndOfFile:FlowExtension.kt$com.oliynick.max.tea.core.debug.component.internal.FlowExtension.kt</ID>
@@ -108,7 +123,6 @@
     <ID>NewLineAtEndOfFile:LruCache.kt$com.oliynick.max.tea.core.debug.app.misc.LruCache.kt</ID>
     <ID>NewLineAtEndOfFile:MainActivity.kt$com.max.reader.screens.main.MainActivity.kt</ID>
     <ID>NewLineAtEndOfFile:MongoDb.kt$com.max.reader.app.env.storage.local.MongoDb.kt</ID>
-    <ID>NewLineAtEndOfFile:MyImage.kt$com.max.reader.ui.MyImage.kt</ID>
     <ID>NewLineAtEndOfFile:Networking.kt$com.max.reader.app.env.Networking.kt</ID>
     <ID>NewLineAtEndOfFile:NewsApi.kt$com.max.reader.app.env.storage.network.NewsApi.kt</ID>
     <ID>NewLineAtEndOfFile:NumberExtensions.kt$com.oliynick.max.tea.core.debug.app.misc.NumberExtensions.kt</ID>
@@ -122,9 +136,9 @@
     <ID>NewLineAtEndOfFile:Settings.kt$com.oliynick.max.tea.core.debug.app.domain.Settings.kt</ID>
     <ID>NewLineAtEndOfFile:SideToolWindowFactory.kt$com.oliynick.max.tea.core.debug.app.presentation.sidebar.SideToolWindowFactory.kt</ID>
     <ID>NewLineAtEndOfFile:SnapshotTreeModel.kt$com.oliynick.max.tea.core.debug.app.presentation.component.SnapshotTreeModel.kt</ID>
-    <ID>NewLineAtEndOfFile:StateTreeModel.kt$com.oliynick.max.tea.core.debug.app.presentation.component.StateTreeModel.kt</ID>
     <ID>NewLineAtEndOfFile:Storage.kt$com.max.reader.app.env.storage.Storage.kt</ID>
     <ID>NewLineAtEndOfFile:TestDebugSession.kt$com.oliynick.max.tea.core.debug.TestDebugSession.kt</ID>
+    <ID>NewLineAtEndOfFile:Typography.kt$com.max.reader.ui.theme.Typography.kt</ID>
     <ID>NewLineAtEndOfFile:Url.kt$com.oliynick.max.tea.core.debug.component.Url.kt</ID>
     <ID>NewLineAtEndOfFile:build.gradle.kts$.build.gradle.kts</ID>
     <ID>ReturnCount:State.kt$inline fun &lt;reified T : Screen&gt; State.updateScreen( id: ScreenId?, how: (T) -&gt; UpdateWith&lt;T, Command&gt; ): UpdateWith&lt;State, Command&gt;</ID>
@@ -152,12 +166,12 @@
     <ID>UndocumentedPublicClass:ServerMessage.kt$NotifyComponentAttached&lt;out J&gt; : ServerMessage</ID>
     <ID>UndocumentedPublicClass:ServerMessage.kt$NotifyComponentSnapshot&lt;out J&gt; : ServerMessage</ID>
     <ID>UndocumentedPublicClass:ServerMessage.kt$ServerMessage&lt;out J&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.compute( startFrom: Initial&lt;S, C&gt;, messages: Flow&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.upstream( messages: Flow&lt;M&gt;, snapshots: Flow&lt;Initial&lt;S, C&gt;&gt; )</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Flow&lt;Snapshot&lt;M, S, C&gt;&gt;.downstream( input: Flow&lt;M&gt;, upstreamInput: SendChannel&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.compute( input: Flow&lt;M&gt;, startFrom: Initial&lt;S, C&gt;, sink: Sink&lt;M&gt;, ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.upstream( snapshots: Flow&lt;Initial&lt;S, C&gt;&gt;, sink: Sink&lt;M&gt;, input: (Initial&lt;S, C&gt;) -&gt; Flow&lt;M&gt;, ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Flow&lt;Snapshot&lt;M, S, C&gt;&gt;.downstream( input: Flow&lt;M&gt;, upstreamInput: SendChannel&lt;M&gt;, ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;S, C&gt; Env&lt;*, S, C&gt;.init(): Flow&lt;Initial&lt;S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi suspend fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.computeNextSnapshot( state: S, message: M ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi suspend fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.computeNextSnapshotsRecursively( state: S, messages: Iterator&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.resolveAsFlow( commands: Collection&lt;C&gt;, ): Flow&lt;M&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;T&gt; Flow&lt;T&gt;.mergeWith(other: Flow&lt;T&gt;): Flow&lt;T&gt;</ID>
     <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun environment( config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit )</ID>
     <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun serverSettings( config: ServerSettingsBuilder&lt;M, S, J&gt;.() -&gt; Unit )</ID>
     <ID>UndocumentedPublicFunction:Environment.kt$@UnstableApi fun &lt;M, S, C&gt; EnvBuilder&lt;M, S, C&gt;.toEnv(): Env&lt;M, S, C&gt;</ID>

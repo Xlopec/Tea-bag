@@ -20,9 +20,11 @@ import io.kotlintest.matchers.numerics.shouldBeExactly
 import io.kotlintest.matchers.numerics.shouldNotBeExactly
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrowExactlyUnit
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.junit.Ignore
 import org.junit.Test
@@ -89,7 +91,7 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
 
         testSession.packets.forEachIndexed { index, elem ->
 
-            elem.componentId shouldBe testComponentId
+            elem.componentId shouldBe TestComponentId
 
             when (val payload = elem.payload) {
                 is GsonNotifyComponentSnapshot -> {
@@ -165,7 +167,7 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
 
 private fun fromJson(
     tree: JsonElement
-) = testSerializer.fromJsonTree(tree, String::class.java)
+) = TestSerializer.fromJsonTree(tree, String::class.java)
 
 private suspend fun <E> Channel<E>.send(
     vararg e: E

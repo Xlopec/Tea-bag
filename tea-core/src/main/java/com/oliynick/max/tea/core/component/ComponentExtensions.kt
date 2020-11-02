@@ -117,10 +117,9 @@ infix fun <S, C> S.command(
  *
  * @receiver state to combine with commands
  * @param S state to combine with command
- * @param C command
  * @return [UpdateWith] instance with given state and empty set of commands
  */
-fun <S, C> S.noCommand(): UpdateWith<S, C> = this to emptySet()
+fun <S> S.noCommand(): UpdateWith<S, Nothing> = this to emptySet()
 
 /**
  * Wrapper to perform **only** side effect using command as receiver. This function always returns

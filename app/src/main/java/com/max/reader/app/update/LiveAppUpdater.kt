@@ -6,7 +6,9 @@ import com.max.reader.app.*
 import com.max.reader.screens.feed.*
 import com.max.reader.screens.feed.update.FeedUpdater
 import com.max.reader.screens.feed.update.LiveFeedUpdater.update
-import com.oliynick.max.tea.core.component.*
+import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.component.noCommand
 import java.util.*
 
 fun <Env> AppUpdater(): AppUpdater<Env> where Env : FeedUpdater = object :
@@ -35,19 +37,14 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : FeedUpdater {
     fun navigate(
         nav: Navigation,
         state: State
-    ): UpdateWith<State, Command> {
-
-        val screens = state.screens.size
-
-        return when {
-            nav is NavigateToFeed -> state.pushScreen(nav, LoadCriteria.Query("android"))
-            nav is NavigateToFavorite -> state.pushScreen(nav, LoadCriteria.Favorite)
-            nav is NavigateToTrending -> state.pushScreen(nav, LoadCriteria.Trending)
-            nav is Pop && screens > 1 -> state.popScreen().noCommand()
-            nav is Pop && screens == 1 -> state command CloseApp
-            else -> error("Unexpected state")
+    ): UpdateWith<State, Command> =
+        when (nav) {
+            is NavigateToFeed -> state.pushScreen(nav, LoadCriteria.Query("android"))
+            is NavigateToFavorite -> state.pushScreen(nav, LoadCriteria.Favorite)
+            is NavigateToTrending -> state.pushScreen(nav, LoadCriteria.Trending)
+            // simply close the app
+            is Pop -> state command CloseApp
         }
-    }
 
     fun State.findExistingScreen(
         nav: Navigation
@@ -70,7 +67,9 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : FeedUpdater {
         val i = findExistingScreen(nav)
 
         return if (i >= 0) {
-            pushScreen(screens[i]).noCommand()
+            // move current screen to the end of screens stack,
+            // so that it'll be popped out first
+            swapScreens(i, screens.lastIndex).noCommand()
         } else {
             val id = UUID.randomUUID()
             pushScreen(
@@ -84,22 +83,6 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : FeedUpdater {
             )
         }
 
-    }
-
-    fun State.pushFeedScreen(
-        criteria: LoadCriteria
-    ): UpdateWith<State, LoadByCriteria> {
-        val id = UUID.randomUUID()
-
-        return pushScreen(
-            FeedLoading(
-                id,
-                criteria
-            )
-        ) command LoadByCriteria(
-            id,
-            criteria
-        )
     }
 
     val FeedMessage.id: ScreenId?

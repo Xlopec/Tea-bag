@@ -6,31 +6,170 @@ import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import core.misc.messageAsCommand
 import core.misc.throwingResolver
+import core.scope.coroutineDispatcher
 import core.scope.runBlockingInTestScope
 import io.kotlintest.matchers.asClue
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.boolean.shouldBeTrue
 import io.kotlintest.matchers.collections.shouldContainExactly
+import io.kotlintest.matchers.throwable.shouldHaveMessage
 import io.kotlintest.matchers.types.shouldBeSameInstanceAs
+import io.kotlintest.matchers.withClue
 import io.kotlintest.shouldBe
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import org.junit.Ignore
 import org.junit.Test
+import org.junit.jupiter.api.assertThrows
+import java.util.concurrent.Executors
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.coroutineContext
 
 abstract class BasicComponentTest(
-    protected val factory: CoroutineScope.(Env<Char, String, Char>) -> Component<Char, String, Char>
+    protected val factory: CoroutineScope.(Env<Char, String, Char>) -> Component<Char, String, Char>,
 ) {
+
+    private companion object {
+        const val TestTimeoutMillis = 5_000L
+        const val ThreadName = "test thread"
+
+        val CoroutineDispatcher =
+            Executors.newSingleThreadExecutor { r -> Thread(r, ThreadName) }
+                .asCoroutineDispatcher()
+    }
+
+    @Test(timeout = TestTimeoutMillis/*might get stuck in case of regression*/)
+    @Ignore
+    fun `test when component's scope is canceled, then delayed resolvers are canceled as well`() =
+        runBlockingInTestScope {
+
+            fun testInput(
+                input: Initial<String, Char>,
+            ) = input.commands.asFlow().delayEach(10L)
+
+            val env = Env<Char, String, Char>(
+                Initializer(""),
+                ::foreverWaitingResolver,
+                ::messageAsCommand,
+                coroutineDispatcher,
+                coroutineDispatcher,
+           //     CoroutineScope(coroutineDispatcher)
+            )
+
+          //  try {
+                val l = env.upstream(
+                    flowOf(Initial("", setOf('a', 'b', 'c', 'd', 'e', 'f'))),
+                    ::noOpSink,
+                    ::testInput
+                )
+                    .collect { snapshot ->
+
+                    println("each $snapshot")
+
+                    if ('a' in snapshot.commands && snapshot is Regular) {
+                        // 'b' is the last snapshot in current emission
+                        // because it's the last element in the input flow
+                        // and because after this input flow stops, so no new
+                        // regular snapshots will be computed
+                        println("canceling $snapshot")
+                        //env.scope.cancel()//coroutineContext[Job.Key]!!.cancelChildren()
+                    }
+                }
+           /* } catch (th: Throwable) {
+                println("catch $th")
+            }*/
+
+          //  env.scope.isActive.shouldBeFalse()
+        }
+
+    @Test//(timeout = 100L)
+    fun `test shit`() = runBlockingInTestScope {
+
+        val env = Env<Char, String, Char>(
+            Initializer(""),
+            ::foreverWaitingResolver,
+            { m, str -> (str + m).command(m) },
+            coroutineDispatcher,
+            coroutineDispatcher
+        )
+
+        val c = factory(env)
+
+        val j1 = launch(env.io) {
+            c('a'..'f')
+                .take(1 + ('g' - 'a'))
+                .collect {
+                //println("some1 $it")
+            }
+        }
+
+        //delay(100L)
+        //delay(100L)
+        j1.join()
+        //delay(100L)
+        yield()
+        //j1.cancel()
+
+        println("start")
+
+       // launch(env.io) {
+            c.invoke('g'..'k')
+                .take(1 + ('k' - 'g'))
+                .collect {
+                   // println("some2 $it")
+                }
+        //}.join()
+    }
+
+    @Test(timeout = TestTimeoutMillis/*might get stuck in case of regression*/)
+    fun `test when receiving new Initial snapshot previous computations get canceled`() =
+        runBlockingInTestScope {
+
+            val env = Env<Char, String, Char>(
+                Initializer(""),
+                ::noOpResolver,
+                ::messageAsCommand,
+                coroutineDispatcher,
+                coroutineDispatcher
+            )
+
+            val initialStates = listOf(
+                Initial("", setOf('c')),
+                Initial("a", setOf('d')),
+                Initial("b", setOf('e'))
+            )
+
+            fun testInput(
+                input: Initial<String, Char>,
+            ) = input.commands.asFlow()
+                .onStart {
+                    if (input !== initialStates.last()) {
+                        delay(Long.MAX_VALUE)
+                    }
+                }
+
+            val l = env.upstream(
+                initialStates.asFlow(),
+                ::noOpSink,
+                ::testInput
+            ).toCollection(ArrayList())
+            /* } catch (th: Throwable) {
+                 println("catch $th")
+             }*/
+
+            println(l.joinToString(separator = "\n"))
+
+            
+        }
 
     @Test
     fun `test component emits a correct sequence of snapshots`() = runBlocking {
 
         val env = Env<Char, String, Char>(
             "",
-            { c -> setOf(c) },
+            ::throwingResolver,
             { m, _ -> m.toString().noCommand() }
         )
 
@@ -45,34 +184,9 @@ abstract class BasicComponentTest(
             Regular("b", emptySet(), "a", 'b'),
             Regular("c", emptySet(), "b", 'c')
         )
+
+        
     }
-
-    @Test
-    fun `test component emits a correct sequence of snapshots if initial commands were present`() =
-        runBlocking {
-
-            val env = Env<Char, String, Char>(
-                Initializer("", 'a', 'b', 'c'),
-                { c -> setOf(c) },
-                { m, _ -> m.toString().noCommand() }
-            )
-
-            val component = factory(env)
-            val messages = arrayOf('d', 'e', 'f')
-            val snapshots =
-                component(*messages).take(3 + messages.size + 1)
-                    .toList(ArrayList(3 + messages.size + 1))
-
-            snapshots.shouldContainExactly(
-                Initial("", setOf('a', 'b', 'c')),
-                Regular("a", emptySet(), "", 'a'),
-                Regular("b", emptySet(), "a", 'b'),
-                Regular("c", emptySet(), "b", 'c'),
-                Regular("d", emptySet(), "c", 'd'),
-                Regular("e", emptySet(), "d", 'e'),
-                Regular("f", emptySet(), "e", 'f')
-            )
-        }
 
     @Test
     fun `test component emits a correct sequence of snapshots if we have recursive calculations`() =
@@ -81,50 +195,19 @@ abstract class BasicComponentTest(
             val env = Env<Char, String, Char>(
                 "",
                 { ch ->
-                    if (ch == 'a') setOf(
-                        ch + 1,// only this message should be consumed
-                        ch + 2,
-                        ch + 3
-                    ) else emptySet()
+                    // only message 'b' should be consumed
+                    if (ch == 'a') ('b'..'d').toSet() else emptySet()
                 },
                 { m, str -> (str + m).command(m) }
             )
 
-            val component = factory(env)
-            val snapshots = component('a').take(3).toCollection(ArrayList())
+            val snapshots = factory(env)('a').take(3).toCollection(ArrayList())
 
             @Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
             snapshots shouldBe listOf<Snapshot<Char, String, Char>>(
                 Initial("", emptySet()),
                 Regular("a", setOf('a'), "", 'a'),
                 Regular("ab", setOf('b'), "a", 'b')
-            )
-        }
-
-    @Test
-    fun `test component emits a correct sequence of snapshots if update returns set of messages`() =
-        runBlocking {
-
-            val env = Env<Char, String, Char>(
-                "",
-                { ch -> setOf(ch) },
-                { m, str ->
-                    (str + m).command(
-                        if (str.isEmpty()) setOf(
-                            'b',
-                            'c'
-                        ) else emptySet()
-                    )
-                }
-            )
-
-            val component = factory(env)
-            val snapshots = component('a').take(3).toCollection(ArrayList())
-
-            snapshots.shouldContainExactly(
-                Initial("", emptySet()),
-                Regular("a", setOf('b', 'c'), "", 'a'),
-                Regular("ab", emptySet(), "a", 'b')
             )
         }
 
@@ -144,6 +227,7 @@ abstract class BasicComponentTest(
             component(*messages).take(messages.size + 1).toList(ArrayList(messages.size + 1))
 
         sink shouldContainExactly snapshots
+        
     }
 
     @Test
@@ -223,7 +307,7 @@ abstract class BasicComponentTest(
         val env = Env<Char, String, Char>(
             "",
             ::foreverWaitingResolver,
-            { m, _ -> m.toString().command(m) }
+            ::messageAsCommand
         )
 
         val component = factory(env)
@@ -234,6 +318,7 @@ abstract class BasicComponentTest(
 
         job.isActive.shouldBeFalse()
         isActive.shouldBeTrue()
+        
     }
 
     @Test
@@ -290,85 +375,129 @@ abstract class BasicComponentTest(
 
             snapshots1Deferred.await().asClue { it shouldContainExactly expected }
             snapshots2Deferred.await().asClue { it shouldContainExactly expected }
+            
         }
 
     @Test
     fun `test resolver runs on a given dispatcher`() = runBlockingInTestScope {
 
-        val testDispatcher = Dispatchers.Unconfined
-
         val env = Env<Char, String, Char>(
             Initializer(""),
-            CheckingResolver(testDispatcher),
+            CheckingResolver(coroutineDispatcher),
             ::messageAsCommand,
-            testDispatcher
+            coroutineDispatcher
         )
 
-        factory(env)('a'..'d').take('d' - 'a').collect()
+        factory(env)('a'..'d')
+            .take('d' - 'a').collect()
+
+        
     }
+
+    @Test
+    // fixme later
+    fun `test component throws exception given resolver throws exception`() =
+        runBlockingInTestScope {
+
+            val errorMessage = "error from resolver"
+
+            val env = Env<Char, String, Char>(
+                Initializer(""),
+                ThrowingResolver(errorMessage),
+                ::messageAsCommand,
+                coroutineDispatcher
+            )
+
+            assertThrows<Throwable> {
+                runBlocking {
+                    factory(env)('a'..'d').collect()
+                }
+            }.shouldHaveMessage(errorMessage)
+        }
 
     @Test
     fun `test initializer runs on a given dispatcher`() = runBlockingInTestScope {
 
-        val testDispatcher = Dispatchers.Unconfined
-
         val env = Env<Char, String, Char>(
-            CheckingInitializer(testDispatcher),
+            CheckingInitializer(CoroutineDispatcher),
             ::throwingResolver,
             { m, _ -> m.toString().noCommand() },
-            testDispatcher
+            CoroutineDispatcher
         )
 
         factory(env)('a'..'d').take('d' - 'a').collect()
+
+        
     }
 
     @Test
     fun `test updater runs on a given dispatcher`() = runBlockingInTestScope {
 
-        val testDispatcher = Dispatchers.Unconfined
-        val expectedDispatcherName = withContext(testDispatcher) { currentThreadGroupName() }
-
         val env = Env<Char, String, Char>(
             Initializer(""),
             ::throwingResolver,
-            CheckingUpdater(expectedDispatcherName),
-            computation = testDispatcher
+            CheckingUpdater(Regex("$ThreadName @coroutine#\\d+")),
+            computation = CoroutineDispatcher
         )
 
         factory(env)('a'..'d').take('d' - 'a').collect()
+
+        
     }
 
 }
 
+@Suppress("UNUSED_PARAMETER")
+private fun <T> noOpSink(t: T) = Unit
+
 private fun CheckingInitializer(
-    expectedDispatcher: CoroutineDispatcher
+    expectedDispatcher: CoroutineDispatcher,
 ): Initializer<String, Nothing> = {
     coroutineContext[ContinuationInterceptor] shouldBeSameInstanceAs expectedDispatcher
     Initial("", emptySet())
 }
 
 private fun CheckingResolver(
-    expectedDispatcher: CoroutineDispatcher
+    expectedDispatcher: CoroutineDispatcher,
 ): Resolver<Any?, Nothing> = {
-    coroutineContext[ContinuationInterceptor] shouldBeSameInstanceAs expectedDispatcher
+    coroutineContext[CoroutineDispatcher.Key] shouldBeSameInstanceAs expectedDispatcher
     emptySet()
 }
 
-private fun currentThreadGroupName(): String =
-    Thread.currentThread().threadGroup.name
+private fun ThrowingResolver(
+    message: String,
+): Resolver<Any?, Nothing> =
+    { error(message) }
+
+private fun currentThreadName(): String =
+    Thread.currentThread().name
 
 private fun <M, S> CheckingUpdater(
-    expectedThreadGroup: String
+    expectedThreadGroup: Regex,
 ): Updater<M, S, Nothing> = { _, s ->
-    currentThreadGroupName() shouldBe expectedThreadGroup
+
+    val threadName = currentThreadName()
+
+    withClue("Thread name should match '${expectedThreadGroup.pattern}' but was '$threadName'") {
+        threadName.matches(expectedThreadGroup).shouldBeTrue()
+    }
     s.noCommand()
 }
 
+private suspend fun <T> noOpResolver(
+    m: T,
+): Set<Nothing> = emptySet()
+
 private suspend fun <T> foreverWaitingResolver(
-    m: T
+    m: T,
 ): Nothing {
 
-    delay(Long.MAX_VALUE)
+    try {
+        delay(Long.MAX_VALUE)
+    } finally {
+        println("cancelling for message $m")
+        check(!coroutineContext.isActive) { "wrong state $coroutineContext" }
+    }
 
     error("Improper cancellation, message=$m")
 }

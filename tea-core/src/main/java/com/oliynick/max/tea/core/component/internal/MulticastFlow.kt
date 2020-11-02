@@ -2,17 +2,18 @@ package com.oliynick.max.tea.core.component.internal
 
 import com.oliynick.max.tea.core.UnstableApi
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.ValueOrClosed
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 @UnstableApi
-fun <T> Flow<T>.shareConflated(
-    debounceMs: Int = 0
-): Flow<T> =
-    MulticastFlow(this, true, debounceMs).multicastedFlow
+fun <T> Flow<T>.shareConflated(): Flow<T> =
+    MulticastFlow(this, true).multicastedFlow
 
 /**
  * Allow multiple collectors to collect same instance of this flow
@@ -21,13 +22,7 @@ fun <T> Flow<T>.shareConflated(
  * before closing original flow. Set to 0 to disable.
  */
 @UnstableApi
-fun <T> Flow<T>.share(
-    debounceMs: Int = 0
-): Flow<T> = MulticastFlow(
-    this,
-    false,
-    debounceMs
-).multicastedFlow
+fun <T> Flow<T>.share(): Flow<T> = MulticastFlow(this, false).multicastedFlow
 
 /**
  * https://gist.github.com/matejdro/a9c838bf0066595fb52b4b8816f49252
@@ -37,13 +32,11 @@ fun <T> Flow<T>.share(
 private class MulticastFlow<T>(
     private val original: Flow<T>,
     private val conflate: Boolean,
-    private val debounceMs: Int
 ) {
     private val mutex = Mutex()
     private val collectors = ArrayList<SendChannel<T>>()
 
     private var lastValue: Result<T>? = null
-    private var nextDebounceTarget: Long = -1L
 
     private var actor = Channel<MulticastActorAction<T>>(Channel.BUFFERED)
     private var flowChannel: ReceiveChannel<T>? = null
@@ -51,11 +44,9 @@ private class MulticastFlow<T>(
     private var multicastActorJob: Job? = null
 
     private suspend fun ensureActorActive() {
-        if (multicastActorJob?.isActive != true) {
-            mutex.withLock {
-                if (multicastActorJob?.isActive != true) {
-                    startFlowActor()
-                }
+        mutex.withLock {
+            if (multicastActorJob?.isActive != true) {
+                startFlowActor()
             }
         }
     }
@@ -78,46 +69,36 @@ private class MulticastFlow<T>(
                             onOriginalFlowData(valueOrClosed)
                         }
                     }
-
-                    if (nextDebounceTarget >= 0) {
-                        onTimeout(nextDebounceTarget - System.currentTimeMillis()) {
-                            closeOriginalFlow()
-                            nextDebounceTarget = -1
-                        }
-                    }
                 }
             }
         }
     }
 
     private suspend fun onActorAction(action: MulticastActorAction<T>) {
-        when (action) {
-            is MulticastActorAction.AddCollector -> {
-                collectors.add(action.channel)
+        mutex.withLock {
+            when (action) {
+                is MulticastActorAction.AddCollector -> {
+                    collectors.add(action.channel)
 
-                if (flowChannel == null) {
-                    flowChannel = original.produceIn(GlobalScope)
+                    if (flowChannel == null) {
+                        flowChannel = original.produceIn(GlobalScope)
+                    }
+
+                    val lastValue = lastValue
+                    if (lastValue != null) {
+                        action.channel.send(lastValue.getOrThrow())
+                    }
                 }
+                is MulticastActorAction.RemoveCollector -> {
 
-                val lastValue = lastValue
-                if (lastValue != null) {
-                    action.channel.send(lastValue.getOrThrow())
-                }
+                    val collectorIndex = collectors.indexOf(action.channel)
 
-                nextDebounceTarget = -1
-            }
-            is MulticastActorAction.RemoveCollector -> {
-                val collectorIndex = collectors.indexOf(action.channel)
+                    if (collectorIndex >= 0) {
+                        val removedCollector = collectors.removeAt(collectorIndex)
+                        removedCollector.close()
+                    }
 
-                if (collectorIndex >= 0) {
-                    val removedCollector = collectors.removeAt(collectorIndex)
-                    removedCollector.close()
-                }
-
-                if (collectors.isEmpty()) {
-                    if (debounceMs > 0) {
-                        nextDebounceTarget = System.currentTimeMillis() + debounceMs
-                    } else {
+                    if (collectors.isEmpty()) {
                         closeOriginalFlow()
                     }
                 }
@@ -125,18 +106,20 @@ private class MulticastFlow<T>(
         }
     }
 
-    private fun closeOriginalFlow() {
+    private suspend fun closeOriginalFlow() {
         lastValue = null
         flowChannel?.cancel()
         flowChannel = null
-        multicastActorJob?.cancel()
+        multicastActorJob?.cancelAndJoin()
     }
 
     private suspend fun onOriginalFlowData(valueOrClosed: ValueOrClosed<T>) {
         if (valueOrClosed.isClosed) {
-            collectors.forEach { it.close(valueOrClosed.closeCause) }
-            collectors.clear()
-            closeOriginalFlow()
+            mutex.withLock {
+                collectors.forEach { it.close(valueOrClosed.closeCause) }
+                collectors.clear()
+                closeOriginalFlow()
+            }
         } else {
             collectors.forEach {
                 try {
@@ -153,6 +136,7 @@ private class MulticastFlow<T>(
 
     val multicastedFlow = flow {
         val channel = Channel<T>()
+
         try {
             ensureActorActive()
             actor.send(

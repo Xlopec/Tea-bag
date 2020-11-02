@@ -5,7 +5,9 @@ package com.oliynick.max.tea.core.component
 import com.oliynick.max.tea.core.Env
 import com.oliynick.max.tea.core.Initializer
 import core.component.BasicComponentTest
-import core.misc.*
+import core.misc.messageAsCommand
+import core.misc.throwingResolver
+import core.misc.throwingUpdater
 import core.scope.runBlockingInNewScope
 import io.kotlintest.matchers.throwable.shouldHaveMessage
 import io.kotlintest.shouldThrowAnyUnit
@@ -24,7 +26,7 @@ class ComponentTest : BasicComponentTest(::ComponentFactory) {
 
         fun ComponentFactory(
             @Suppress("UNUSED_PARAMETER") scope: CoroutineScope,
-            env: Env<Char, String, Char>
+            env: Env<Char, String, Char>,
         ): Component<Char, String, Char> = Component(env)
     }
 
@@ -32,9 +34,9 @@ class ComponentTest : BasicComponentTest(::ComponentFactory) {
     fun `test if initializer fails with exception it gets propagated`() = runBlocking {
 
         val component = Component<String, String, String>(
-                { throw RuntimeException("hello") },
-                ::throwingResolver,
-                ::throwingUpdater
+            { throw RuntimeException("hello") },
+            ::throwingResolver,
+            ::throwingUpdater
         )
 
         shouldThrowExactly<RuntimeException> { component("").collect() }
@@ -45,9 +47,9 @@ class ComponentTest : BasicComponentTest(::ComponentFactory) {
     fun `test if resolver fails with exception it gets propagated`() = runBlockingInNewScope {
 
         val component = Component(
-                Initializer("", "a"),
-                ::throwingResolver,
-                ::messageAsCommand
+            Initializer("", "a"),
+            ::throwingResolver,
+            ::messageAsCommand
         )
 
         shouldThrowAnyUnit { component("").collect() }

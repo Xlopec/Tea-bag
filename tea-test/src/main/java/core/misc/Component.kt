@@ -16,30 +16,36 @@
 
 package core.misc
 
-import com.oliynick.max.tea.core.component.*
+import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.component.noCommand
 
 @Suppress("RedundantSuspendModifier")
-suspend fun <C> throwingResolver(c: C): Nothing {
+suspend fun <C> throwingResolver(
+    c: C
+): Nothing =
     throw IllegalStateException("Unexpected command $c")
-}
 
 fun <M, S> throwingUpdater(
     m: M,
     s: S
-): Nothing {
+): Nothing =
     throw IllegalStateException("message=$m, state=$s")
-}
 
 fun <S> messageAsStateUpdate(
     message: S,
     @Suppress("UNUSED_PARAMETER") state: S
-): UpdateWith<S, S> {
-    return message.noCommand()
-}
+): UpdateWith<S, S> =
+    message.noCommand()
 
 fun <M, S> messageAsCommand(
     message: M,
     @Suppress("UNUSED_PARAMETER") state: S
-): UpdateWith<S, M> {
-    return state.command(message)
-}
+): UpdateWith<S, M> =
+    state command message
+
+fun <M, S> ignoringMessageAsStateUpdate(
+    message: M,
+    @Suppress("UNUSED_PARAMETER") state: S
+): UpdateWith<M, S> =
+    message.noCommand()

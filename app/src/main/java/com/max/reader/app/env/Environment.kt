@@ -1,11 +1,17 @@
 package com.max.reader.app.env
 
 import android.app.Application
-import com.max.reader.app.env.storage.*
+import com.max.reader.app.env.storage.Gson
+import com.max.reader.app.env.storage.HasGson
+import com.max.reader.app.env.storage.Storage
 import com.max.reader.app.env.storage.local.HasMongoCollection
 import com.max.reader.app.env.storage.local.MongoCollection
-import com.max.reader.app.env.storage.network.*
-import com.max.reader.app.resolve.*
+import com.max.reader.app.env.storage.network.HasNewsApi
+import com.max.reader.app.env.storage.network.NewsApi
+import com.max.reader.app.env.storage.network.articleAdapters
+import com.max.reader.app.resolve.AppResolver
+import com.max.reader.app.resolve.CommandTransport
+import com.max.reader.app.resolve.HasCommandTransport
 import com.max.reader.app.update.AppUpdater
 import com.max.reader.screens.feed.resolve.FeedResolver
 import com.max.reader.screens.feed.resolve.LiveFeedResolver
@@ -13,7 +19,7 @@ import com.max.reader.screens.feed.update.FeedUpdater
 import com.max.reader.screens.feed.update.LiveFeedUpdater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
-import java.util.concurrent.*
+import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
 interface Environment :
@@ -38,7 +44,7 @@ fun Environment(
 ): Environment {
 
     val gson = buildGson()
-    val retrofit = buildRetrofit(gson)
+    val retrofit = Retrofit(gson)
 
     return object : Environment,
                     AppUpdater<Environment> by AppUpdater(),
@@ -57,7 +63,7 @@ fun Environment(
 }
 
 private fun buildGson() =
-    gson {
+    AppGson {
         setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 
         articleAdapters.forEach { (cl, adapter) ->

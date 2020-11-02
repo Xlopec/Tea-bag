@@ -20,16 +20,19 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlin.coroutines.CoroutineContext
 
+inline val TestCoroutineScope.coroutineDispatcher
+    get() = coroutineContext[CoroutineDispatcher.Key]!!
+
 fun runBlockingInTestScope(
     context: CoroutineContext = Job(),
-    block: suspend TestCoroutineScope.() -> Unit
+    block: suspend TestCoroutineScope.() -> Unit,
 ) {
     runBlocking { with(TestCoroutineScope(context)) { block() } }
 }
 
 fun runBlockingInNewScope(
     context: CoroutineContext = Dispatchers.Main + Job(),
-    block: suspend CoroutineScope.() -> Unit
+    block: suspend CoroutineScope.() -> Unit,
 ) {
     runBlocking {
 
