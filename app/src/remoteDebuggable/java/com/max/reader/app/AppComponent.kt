@@ -39,7 +39,7 @@ fun Environment.appComponent(
         serverSettings {
             url = URL(host = "10.0.2.2")
         }
-    }.states()
+    }.shareIn(this).states()
 }
 
 private fun AppGsonSerializer() = GsonSerializer {

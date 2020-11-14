@@ -24,7 +24,6 @@ import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.component.internal.into
 import com.oliynick.max.tea.core.component.internal.shareConflated
 import com.oliynick.max.tea.core.debug.component.internal.mergeWith
-import com.oliynick.max.tea.core.debug.exception.ConnectException
 import com.oliynick.max.tea.core.debug.protocol.*
 import com.oliynick.max.tea.core.debug.session.DebugSession
 import kotlinx.coroutines.channels.Channel
@@ -95,13 +94,7 @@ private fun <M, S, C, J> DebugEnv<M, S, C, J>.upstream(
 private fun <M, S, C, J> DebugEnv<M, S, C, J>.session(
     block: suspend DebugSession<M, S, J>.(input: SendChannel<Snapshot<M, S, C>>) -> Unit,
 ): Flow<Snapshot<M, S, C>> =
-    channelFlow<Snapshot<M, S, C>> {
-        try {
-            serverSettings.sessionBuilder(serverSettings) { block(channel) }
-        } catch (th: Throwable) {
-            throw notifyConnectException(serverSettings, th)
-        }
-    }
+    channelFlow { serverSettings.sessionBuilder(serverSettings) { block(channel) } }
 
 private fun <S> Flow<S>.asSnapshots(): Flow<Initial<S, Nothing>> =
     // TODO what if we want to start from Regular snapshot?
@@ -133,16 +126,5 @@ private fun <M, S, C, J> JsonConverter<J>.toServerMessage(
         toJsonTree(snapshot.currentState)
     )
 }
-
-private fun notifyConnectException(
-    serverSettings: ServerSettings<*, *, *>,
-    th: Throwable,
-): Nothing =
-    throw ConnectException(connectionFailureMessage(serverSettings), th)
-
-private fun connectionFailureMessage(
-    serverSettings: ServerSettings<*, *, *>,
-) = "Component '${serverSettings.id.value}' " +
-        "couldn't connect to the endpoint ${serverSettings.url.toExternalForm()}"
 
 private fun <S, C> DebugEnv<*, S, C, *>.init(): Flow<Initial<S, C>> = componentEnv.init()

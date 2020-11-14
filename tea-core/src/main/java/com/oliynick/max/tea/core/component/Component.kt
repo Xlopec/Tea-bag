@@ -148,76 +148,26 @@ fun <M, S, C> Env<M, S, C>.compute(
     sink: Sink<M>,
 ): Flow<Snapshot<M, S, C>> {
 
+    suspend fun newState(
+        current: Snapshot<M, S, C>,
+        message: M,
+    ): Regular<M, S, C> {
+        val (newState, commands) = update(message, current.currentState)
+
+        return Regular(newState, commands, current.currentState, message)
+    }
+
     return channelFlow {
 
-        println("start from $startFrom")
-
-        var current: Snapshot<M, S, C> = startFrom
-
-        try {
-            input
-                .map { message ->
-                    val (newState, commands) = update(message, current.currentState)
-
-                    Regular(newState, commands, current.currentState, message)
-                }
-                .onEach { regular -> current = regular }
-                .onEach { regular -> resolveAll(this@channelFlow, sink, regular.commands) }
-                .collect {
-                    send(it)
-                }
-        } finally {
-            println("well, shit $current")
-        }
-
-
-    }.startFrom(startFrom)
-
-
-    /*return scope.produce<Snapshot<M, S, C>>*//*(scope.newCoroutineContext(io + Job(parent = scope.coroutineContext[Job])))*//* {
-
-        // todo refactor and test
-        // val resolverScope = CoroutineScope(this@channelFlow.coroutineContext + io + Job(parent = scope.coroutineContext[Job]))
-        var current: Snapshot<M, S, C> = startFrom
-
-        println("initial $startFrom")
-
-        input.collect { message ->
-
-            val (newState, commands) = update(message, current.currentState)
-
-            current = Regular(newState, commands, current.currentState, message)
-            println("current $current $coroutineContext")
-
-            send(current)
-
-            resolveAll(scope, sink, commands)
-        }
-
-        //println("done $current $coroutineContext")
-
-    }.receiveAsFlow()
-        .startFrom(startFrom)*/
-
-    /*fun loopFlow(): Flow<Snapshot<M, S, C>> = channelFlow {
-        // todo refactor and test
-       // val resolverScope = CoroutineScope(this@channelFlow.coroutineContext + io + Job(parent = scope.coroutineContext[Job]))
         var current: Snapshot<M, S, C> = startFrom
 
         input
-            .collect { message ->
+            .map { message -> newState(current, message) }
+            .onEach { regular -> current = regular }
+            .onEach { regular -> resolveAll(this@channelFlow, sink, regular.commands) }
+            .collect(::send)
 
-                val (newState, commands) = update(message, current.currentState)
-
-                current = Regular(newState, commands, current.currentState, message)
-                send(current)
-
-                resolveAll(this@channelFlow, sink, commands)
-            }
-    }*/
-
-    //   return loopFlow()
-    //       .startFrom(startFrom)
+    }.startFrom(startFrom)
 }
 
 private fun <M, S, C> Env<M, S, C>.resolveAll(
@@ -227,9 +177,9 @@ private fun <M, S, C> Env<M, S, C>.resolveAll(
 ) =
 // launches each suspending function
 // in 'launch and forget' fashion so that
-    // updater can process a new portion of messages
+// updater can process a new portion of messages
     commands.forEach { command ->
-        coroutineScope.launch(io + CoroutineName("Resolver coroutine ${command}")) {
+        coroutineScope.launch(io + CoroutineName("Resolver coroutine: $command")) {
             sink(resolver(command))
         }
     }

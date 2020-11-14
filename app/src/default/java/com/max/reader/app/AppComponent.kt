@@ -5,10 +5,11 @@ package com.max.reader.app
 import com.max.reader.app.env.Environment
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.component.Component
+import com.oliynick.max.tea.core.component.shareIn
 import com.oliynick.max.tea.core.component.states
 import kotlinx.coroutines.flow.Flow
 
-fun Environment.appComponent(
+fun Environment.AppComponent(
     initializer: Initializer<State, Command>
 ): (Flow<Message>) -> Flow<State> {
 
@@ -25,6 +26,6 @@ fun Environment.appComponent(
         initializer,
         ::resolve,
         ::update
-    ).states()
+    ).shareIn(this).states()
 
 }

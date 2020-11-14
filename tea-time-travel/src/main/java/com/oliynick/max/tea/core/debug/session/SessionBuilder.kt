@@ -18,7 +18,7 @@ import io.ktor.http.*
  */
 typealias SessionBuilder<M, S, J> = suspend (
     settings: ServerSettings<M, S, J>,
-    session: suspend DebugSession<M, S, J>.() -> Unit
+    session: suspend DebugSession<M, S, J>.() -> Unit,
 ) -> Unit
 
 /**

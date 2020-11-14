@@ -5,6 +5,7 @@ package com.oliynick.max.tea.core.component
 import com.oliynick.max.tea.core.Env
 import com.oliynick.max.tea.core.Initializer
 import core.component.BasicComponentTest
+import core.component.ThrowingInitializer
 import core.misc.messageAsCommand
 import core.misc.throwingResolver
 import core.misc.throwingUpdater
@@ -33,14 +34,15 @@ class ComponentTest : BasicComponentTest(::ComponentFactory) {
     @Test
     fun `test if initializer fails with exception it gets propagated`() = runBlocking {
 
+        val exception = RuntimeException("hello")
         val component = Component<String, String, String>(
-            { throw RuntimeException("hello") },
+            ThrowingInitializer(exception),
             ::throwingResolver,
-            ::throwingUpdater
+            ::throwingUpdater,
         )
 
         shouldThrowExactly<RuntimeException> { component("").collect() }
-            .shouldHaveMessage("hello")
+            .shouldHaveMessage(exception.message!!)
     }
 
     @Test

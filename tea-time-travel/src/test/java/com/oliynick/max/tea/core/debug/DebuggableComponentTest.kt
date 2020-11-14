@@ -7,7 +7,6 @@ import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.invoke
 import com.oliynick.max.tea.core.debug.component.Component
-import com.oliynick.max.tea.core.debug.exception.ConnectException
 import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentAttached
 import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentSnapshot
 import com.oliynick.max.tea.core.debug.session.WebSocketSession
@@ -30,6 +29,7 @@ import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import java.net.ConnectException
 
 typealias StringSnapshot = Snapshot<String, String, String>
 
@@ -83,7 +83,7 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
         val actual = component(*messages).take(messages.size + 1).toCollection(ArrayList(messages.size + 1))
 
         actual shouldBe listOf(
-                Initial("", emptySet<String>()),
+                Initial("", emptySet()),
                 Regular("a", emptySet(), "", "a"),
                 Regular("b", emptySet(), "a", "b"),
                 Regular("c", emptySet(), "b", "c")

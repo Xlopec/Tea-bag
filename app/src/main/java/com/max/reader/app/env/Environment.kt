@@ -18,9 +18,6 @@ import com.max.reader.screens.feed.resolve.LiveFeedResolver
 import com.max.reader.screens.feed.update.FeedUpdater
 import com.max.reader.screens.feed.update.LiveFeedUpdater
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.asCoroutineDispatcher
-import java.util.concurrent.Executors
-import kotlin.coroutines.CoroutineContext
 
 interface Environment :
         AppUpdater<Environment>,
@@ -40,7 +37,8 @@ interface Environment :
 @Suppress("FunctionName")
 fun Environment(
     application: Application,
-    isDebug: Boolean
+    isDebug: Boolean,
+    scope: CoroutineScope
 ): Environment {
 
     val gson = buildGson()
@@ -57,7 +55,7 @@ fun Environment(
                     HasGson by Gson(gson),
                     HasAppContext by AppContext(application),
                     Storage<Environment> by Storage(),
-                    CoroutineScope by AppComponentScope {
+                    CoroutineScope by scope {
         override val isDebug: Boolean = isDebug
     }
 }
@@ -70,9 +68,3 @@ private fun buildGson() =
             registerTypeAdapter(cl.java, adapter)
         }
     }
-
-private object AppComponentScope : CoroutineScope {
-    override val coroutineContext: CoroutineContext =
-        Executors.newSingleThreadExecutor { r -> Thread(r, "App Scheduler") }
-            .asCoroutineDispatcher()
-}

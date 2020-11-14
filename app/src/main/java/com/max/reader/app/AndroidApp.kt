@@ -8,19 +8,31 @@ import android.app.Application
 import com.max.reader.BuildConfig
 import com.max.reader.app.env.Environment
 import com.max.reader.misc.unsafeLazy
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
+import java.util.concurrent.Executors
+import kotlin.coroutines.CoroutineContext
 
-class AndroidApp : Application() {
+class AndroidApp : Application(), CoroutineScope by AppComponentScope {
 
     val environment by unsafeLazy {
-        Environment(this, BuildConfig.DEBUG)
+        Environment(this, BuildConfig.DEBUG, this)
     }
 
-    val component by unsafeLazy { environment.appComponent(AppInitializer()) }
+    val component by unsafeLazy { environment.AppComponent(AppInitializer()) }
 
     val messages = BroadcastChannel<Message>(1)
+
+}
+
+private object AppComponentScope : CoroutineScope {
+    override val coroutineContext: CoroutineContext =
+        Job() + Executors.newSingleThreadExecutor { r -> Thread(r, "App Scheduler") }
+            .asCoroutineDispatcher()
 }
 
 inline val Activity.androidApp: AndroidApp

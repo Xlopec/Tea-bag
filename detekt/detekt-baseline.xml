@@ -23,6 +23,7 @@
   <Whitelist>
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
     <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$update</ID>
+    <ID>EmptyCatchBlock:MulticastFlowTest.kt$MulticastFlowTest${ }</ID>
     <ID>FunctionNaming:AppTheme.kt$@Composable fun AppTheme( content: @Composable () -&gt; Unit )</ID>
     <ID>FunctionNaming:AppTheme.kt$@Composable fun ThemedPreview( children: @Composable () -&gt; Unit )</ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") private fun Null.toReadableString(): String</ID>
@@ -123,6 +124,7 @@
     <ID>NewLineAtEndOfFile:LruCache.kt$com.oliynick.max.tea.core.debug.app.misc.LruCache.kt</ID>
     <ID>NewLineAtEndOfFile:MainActivity.kt$com.max.reader.screens.main.MainActivity.kt</ID>
     <ID>NewLineAtEndOfFile:MongoDb.kt$com.max.reader.app.env.storage.local.MongoDb.kt</ID>
+    <ID>NewLineAtEndOfFile:MulticastFlowTest.kt$com.oliynick.max.tea.core.component.internal.MulticastFlowTest.kt</ID>
     <ID>NewLineAtEndOfFile:Networking.kt$com.max.reader.app.env.Networking.kt</ID>
     <ID>NewLineAtEndOfFile:NewsApi.kt$com.max.reader.app.env.storage.network.NewsApi.kt</ID>
     <ID>NewLineAtEndOfFile:NumberExtensions.kt$com.oliynick.max.tea.core.debug.app.misc.NumberExtensions.kt</ID>
@@ -151,8 +153,6 @@
     <ID>TooGenericExceptionCaught:MulticastFlow.kt$MulticastFlow$e: Exception</ID>
     <ID>TooGenericExceptionCaught:MulticastFlow.kt$MulticastFlow$th: Throwable</ID>
     <ID>TooGenericExceptionCaught:ServerImpl.kt$e: Throwable</ID>
-    <ID>TooGenericExceptionThrown:ComponentTest.kt$ComponentTest$throw RuntimeException("hello")</ID>
-    <ID>TooManyFunctions:StateExtensions.kt$com.oliynick.max.tea.core.debug.app.component.cms.StateExtensions.kt</ID>
     <ID>UndocumentedPublicClass:ClientMessage.kt$ApplyMessage&lt;out J&gt; : ClientMessage</ID>
     <ID>UndocumentedPublicClass:ClientMessage.kt$ApplyState&lt;J&gt; : ClientMessage</ID>
     <ID>UndocumentedPublicClass:ClientMessage.kt$ClientMessage&lt;out J&gt;</ID>
@@ -171,12 +171,12 @@
     <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Flow&lt;Snapshot&lt;M, S, C&gt;&gt;.downstream( input: Flow&lt;M&gt;, upstreamInput: SendChannel&lt;M&gt;, ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;S, C&gt; Env&lt;*, S, C&gt;.init(): Flow&lt;Initial&lt;S, C&gt;&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.resolveAsFlow( commands: Collection&lt;C&gt;, ): Flow&lt;M&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;T&gt; Flow&lt;T&gt;.mergeWith(other: Flow&lt;T&gt;): Flow&lt;T&gt;</ID>
     <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun environment( config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit )</ID>
     <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun serverSettings( config: ServerSettingsBuilder&lt;M, S, J&gt;.() -&gt; Unit )</ID>
     <ID>UndocumentedPublicFunction:Environment.kt$@UnstableApi fun &lt;M, S, C&gt; EnvBuilder&lt;M, S, C&gt;.toEnv(): Env&lt;M, S, C&gt;</ID>
     <ID>UndocumentedPublicFunction:FlowExtensions.kt$@UnstableApi suspend fun &lt;T&gt; Flow&lt;T&gt;.into( sendChannel: SendChannel&lt;T&gt; )</ID>
-    <ID>UndocumentedPublicFunction:MulticastFlow.kt$@UnstableApi fun &lt;T&gt; Flow&lt;T&gt;.shareConflated( debounceMs: Int = 0 ): Flow&lt;T&gt;</ID>
+    <ID>UndocumentedPublicFunction:FlowExtensions.kt$fun &lt;T&gt; Flow&lt;T&gt;.mergeWith(other: Flow&lt;T&gt;): Flow&lt;T&gt;</ID>
+    <ID>UndocumentedPublicFunction:MulticastFlow.kt$@UnstableApi fun &lt;T&gt; Flow&lt;T&gt;.shareConflated( scope: CoroutineScope = GlobalScope, ): Flow&lt;T&gt;</ID>
     <ID>UnnecessaryAbstractClass:BasicComponentTest.kt$BasicComponentTest</ID>
     <ID>UnnecessaryAbstractClass:State.kt$Screen</ID>
   </Whitelist>

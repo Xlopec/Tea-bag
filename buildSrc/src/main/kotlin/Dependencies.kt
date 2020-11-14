@@ -23,7 +23,7 @@ object BuildPlugins {
 object Libraries {
     private object Versions {
         const val coroutines = "1.4.1"
-        const val ktor = "1.4.1"
+        const val ktor = "1.4.2"
     }
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
@@ -44,7 +44,7 @@ object Libraries {
 
 object TestLibraries {
     private object Versions {
-        const val ktor = "1.4.1"
+        const val ktor = "1.4.2"
     }
 
     const val ktorMockJvm = "io.ktor:ktor-client-mock-jvm:${Versions.ktor}"
