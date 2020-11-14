@@ -17,7 +17,9 @@
 package com.oliynick.max.tea.core.component
 
 import com.oliynick.max.tea.core.Snapshot
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 /**
  * **Impure** function that performs some actions on snapshots
@@ -117,10 +119,9 @@ infix fun <S, C> S.command(
  *
  * @receiver state to combine with commands
  * @param S state to combine with command
- * @param C command
  * @return [UpdateWith] instance with given state and empty set of commands
  */
-fun <S, C> S.noCommand(): UpdateWith<S, C> = this to emptySet()
+fun <S> S.noCommand(): UpdateWith<S, Nothing> = this to emptySet()
 
 /**
  * Wrapper to perform **only** side effect using command as receiver. This function always returns
@@ -235,3 +236,20 @@ infix fun <M, S, C> Component<M, S, C>.with(
     interceptor: Interceptor<M, S, C>
 ): Component<M, S, C> =
     { input -> this(input).onEach(interceptor) }
+
+/**
+ * Launches sharing coroutine in a given scope effectively
+ * making component hot
+ *
+ * @receiver component to transform
+ * @param scope scope in which sharing coroutine will be started
+ * @param C command
+ * @param M message
+ * @param S state
+ */
+fun <M, S, C> Component<M, S, C>.shareIn(
+    scope: CoroutineScope
+): Component<M, S, C> {
+    scope.launch { this@shareIn(emptyFlow()).collect() }
+    return this
+}

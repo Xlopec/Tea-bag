@@ -4,22 +4,26 @@ package com.oliynick.max.tea.core.debug
 
 import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.Env
-import com.oliynick.max.tea.core.debug.component.*
+import com.oliynick.max.tea.core.debug.component.DebugEnv
+import com.oliynick.max.tea.core.debug.component.ServerSettings
+import com.oliynick.max.tea.core.debug.component.URL
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.JsonConverter
 import com.oliynick.max.tea.core.debug.session.SessionBuilder
 import java.net.URL
 
-val testComponentId = ComponentId("test")
+val TestComponentId = ComponentId("test")
 
-val testSerializer = GsonSerializer()
+val TestSerializer = GsonSerializer()
 
 fun <M, S> TestServerSettings(
-    componentId: ComponentId = testComponentId,
+    componentId: ComponentId = TestComponentId,
     converter: JsonConverter<JsonElement> = GsonSerializer(),
     url: URL = URL(),
-    sessionBuilder: SessionBuilder<M, S, JsonElement> = { _, block -> TestDebugSession<M, S>().apply { block() } }
+    sessionBuilder: SessionBuilder<M, S, JsonElement> = { _, block ->
+        TestDebugSession<M, S>().apply { block() }
+    }
 ) = ServerSettings(
         componentId,
         converter,

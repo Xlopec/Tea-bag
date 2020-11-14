@@ -25,7 +25,7 @@ data class Env<M, S, C>(
     val resolver: Resolver<C, M>,
     val updater: Updater<M, S, C>,
     val io: CoroutineDispatcher = Dispatchers.IO,
-    val computation: CoroutineDispatcher = Dispatchers.Unconfined
+    val computation: CoroutineDispatcher = Dispatchers.Unconfined,
 )
 
 /**

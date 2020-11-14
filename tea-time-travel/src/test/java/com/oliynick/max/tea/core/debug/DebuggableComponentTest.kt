@@ -7,7 +7,6 @@ import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.invoke
 import com.oliynick.max.tea.core.debug.component.Component
-import com.oliynick.max.tea.core.debug.exception.ConnectException
 import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentAttached
 import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentSnapshot
 import com.oliynick.max.tea.core.debug.session.WebSocketSession
@@ -20,14 +19,17 @@ import io.kotlintest.matchers.numerics.shouldBeExactly
 import io.kotlintest.matchers.numerics.shouldNotBeExactly
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrowExactlyUnit
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import java.net.ConnectException
 
 typealias StringSnapshot = Snapshot<String, String, String>
 
@@ -81,7 +83,7 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
         val actual = component(*messages).take(messages.size + 1).toCollection(ArrayList(messages.size + 1))
 
         actual shouldBe listOf(
-                Initial("", emptySet<String>()),
+                Initial("", emptySet()),
                 Regular("a", emptySet(), "", "a"),
                 Regular("b", emptySet(), "a", "b"),
                 Regular("c", emptySet(), "b", "c")
@@ -89,7 +91,7 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
 
         testSession.packets.forEachIndexed { index, elem ->
 
-            elem.componentId shouldBe testComponentId
+            elem.componentId shouldBe TestComponentId
 
             when (val payload = elem.payload) {
                 is GsonNotifyComponentSnapshot -> {
@@ -165,7 +167,7 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
 
 private fun fromJson(
     tree: JsonElement
-) = testSerializer.fromJsonTree(tree, String::class.java)
+) = TestSerializer.fromJsonTree(tree, String::class.java)
 
 private suspend fun <E> Channel<E>.send(
     vararg e: E

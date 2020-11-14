@@ -3,6 +3,7 @@ package com.oliynick.max.tea.core.component.internal
 import com.oliynick.max.tea.core.UnstableApi
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 @UnstableApi
 suspend fun <T> Flow<T>.into(
@@ -12,6 +13,22 @@ suspend fun <T> Flow<T>.into(
 internal fun <T> Flow<T>.finishWith(
     flow: Flow<T>
 ) = onCompletion { th -> if (th != null) throw th else emitAll(flow) }
+
+fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
+    channelFlow {
+
+        launch {
+            other.collect {
+                send(it)
+            }
+        }
+
+        launch {
+            collect {
+                send(it)
+            }
+        }
+    }
 
 internal inline fun <T, R> Flow<T>.foldFlatten(
     acc: R,

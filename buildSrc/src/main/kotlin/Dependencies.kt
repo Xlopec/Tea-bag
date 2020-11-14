@@ -8,7 +8,7 @@ const val kotlinVersion = "1.4.10"
 object BuildPlugins {
 
     object Versions {
-        const val buildToolsVersion = "4.0.1"
+        const val buildToolsVersion = "4.2.0-alpha16"
         const val detektVersion = "1.5.1"
         const val dokkaVersion = "1.4.0"
         const val bintrayVersion = "1.8.4"
@@ -22,8 +22,8 @@ object BuildPlugins {
 
 object Libraries {
     private object Versions {
-        const val coroutines = "1.3.9"
-        const val ktor = "1.4.1"
+        const val coroutines = "1.4.1"
+        const val ktor = "1.4.2"
     }
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
@@ -44,7 +44,7 @@ object Libraries {
 
 object TestLibraries {
     private object Versions {
-        const val ktor = "1.4.1"
+        const val ktor = "1.4.2"
     }
 
     const val ktorMockJvm = "io.ktor:ktor-client-mock-jvm:${Versions.ktor}"

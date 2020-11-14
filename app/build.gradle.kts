@@ -25,11 +25,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion(29)
+    compileSdkVersion(30)
     defaultConfig {
         applicationId = "com.max.weatherviewer"
         minSdkVersion(21)
-        targetSdkVersion(29)
+        targetSdkVersion(30)
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -44,10 +44,9 @@ android {
         }
     }
 
-    /*buildFeatures {
-        // Enables Jetpack Compose for this module
-        compose true
-    }*/
+    buildFeatures {
+        compose = true
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -56,12 +55,51 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+        useIR = true
+    }
+
+    composeOptions {
+        kotlinCompilerVersion = "1.4.10"
+        kotlinCompilerExtensionVersion = "1.0.0-alpha05"
     }
 
     packagingOptions {
         exclude("META-INF/ktor*")
         exclude("META-INF/kotlin*")
         exclude("META-INF/atomicfu*")
+    }
+
+    flavorDimensions += "remoteDebug"
+    productFlavors {
+
+        create("remoteDebuggable") {
+            dimension = "remoteDebug"
+            applicationIdSuffix = ".remoteDebuggable"
+            versionNameSuffix = "(remote debuggable)"
+        }
+
+        create("default") {
+            dimension = "remoteDebug"
+        }
+    }
+
+    sourceSets {
+
+        maybeCreate("remoteDebuggable")
+            .java.srcDirs("remoteDebuggable/java", "main/java")
+
+        maybeCreate("default")
+            .java.srcDirs("default/java", "main/java")
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += listOf(
+            "-Xallow-jvm-ir-dependencies",
+            "-Xskip-prerelease-check"
+        )
     }
 }
 
@@ -80,21 +118,22 @@ dependencies {
     implementation(immutableCollections)
     implementation(coroutinesAndroid)
 
-    val composeVersion = "0.1.0-dev03"
+    val composeVersion = "1.0.0-alpha06"
 
-    implementation("androidx.compose:compose-runtime:$composeVersion")
-    implementation("androidx.ui:ui-framework:$composeVersion")
-    implementation("androidx.ui:ui-layout:$composeVersion")
-    implementation("androidx.ui:ui-material:$composeVersion")
-    implementation("androidx.ui:ui-foundation:$composeVersion")
-    implementation("androidx.ui:ui-animation:$composeVersion")
+    implementation("androidx.compose.ui:ui:$composeVersion")
+    implementation("androidx.compose.foundation:foundation:$composeVersion")
+    implementation("androidx.compose.foundation:foundation-layout:$composeVersion")
+    implementation("androidx.compose.material:material:$composeVersion")
+    implementation("androidx.compose.material:material-icons-core:$composeVersion")
+    implementation("androidx.compose.material:material-icons-extended:$composeVersion")
     implementation("androidx.ui:ui-tooling:$composeVersion")
+    implementation("androidx.compose.runtime:runtime:$composeVersion")
+    implementation("androidx.compose.animation:animation:$composeVersion")
+    implementation("androidx.compose.compiler:compiler:$composeVersion")
 
-    implementation("com.github.bumptech.glide:glide:4.10.0")
+    implementation("dev.chrisbanes.accompanist:accompanist-coil:0.3.2")
 
-    implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("androidx.activity:activity-ktx:1.1.0")
-    implementation("androidx.core:core-ktx:1.2.0")
+    implementation("androidx.appcompat:appcompat:1.2.0")
 
     implementation("org.mongodb:stitch-android-sdk:4.1.0")
 
@@ -107,7 +146,7 @@ dependencies {
     testImplementation(project(path = ":tea-test", configuration = "default"))
     testImplementation(coroutinesAndroid)
 
-    androidTestImplementation("androidx.test:runner:1.2.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
+    androidTestImplementation("androidx.test:runner:1.3.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
 
 }

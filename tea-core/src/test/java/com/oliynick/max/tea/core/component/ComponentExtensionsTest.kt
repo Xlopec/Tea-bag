@@ -78,7 +78,7 @@ class ComponentExtensionsTest {
 
     @Test
     fun `test no commands extension`() {
-        val (state, commands) = initialState.noCommand<TodoState, DoAddItem>()
+        val (state, commands) = initialState.noCommand()
 
         initialState shouldBe state
         commands.shouldBeEmpty()
