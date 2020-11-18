@@ -177,7 +177,7 @@ fun ArticleSearchHeader(
 @Composable
 fun ArticleContentItemNew(
     id: ScreenId,
-    item: Either2<LoadCriteria.Query, Article>,
+    item: ArticleContentItem,
     onMessage: (Message) -> Unit,
 ) {
     when (item) {
