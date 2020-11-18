@@ -1,5 +1,6 @@
 package com.max.reader.misc
 
+// TODO remove unused
 typealias Either2<T, U> = Either3<T, U, Nothing>
 typealias Either3<T, U, R> = Either4<T, U, R, Nothing>
 typealias Either4<T, U, R, V> = Either5<T, U, R, V, Nothing>

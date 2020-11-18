@@ -7,7 +7,6 @@ import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumnFor
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.colors
@@ -31,7 +30,10 @@ import com.max.reader.domain.Article
 import com.max.reader.domain.Author
 import com.max.reader.domain.Description
 import com.max.reader.domain.Title
-import com.max.reader.misc.*
+import com.max.reader.misc.E0
+import com.max.reader.misc.E1
+import com.max.reader.misc.Either2
+import com.max.reader.misc.safe
 import com.max.reader.screens.article.list.*
 import com.max.reader.ui.theme.AppDarkThemeColors
 import com.max.reader.ui.theme.ThemedPreview
@@ -39,8 +41,9 @@ import dev.chrisbanes.accompanist.coil.CoilImage
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
-typealias ArticleContentItem = Either5<LoadCriteria.Query, Article, Unit, ArticlesLoadingState, ArticlesLoadingError>
+typealias ArticleContentItem = Either2<LoadCriteria.Query, Article>
 
 @Composable
 fun ArticlesScreen(
@@ -53,14 +56,18 @@ fun ArticlesScreen(
         alignment = Alignment.Center
     ) {
         Crossfade(current = state.id) {
-            ArticlesContent(state, onMessage)
+            when (state) {
+                is ArticlesLoadingState -> ArticlesContent(state = state, onMessage = onMessage)
+                is ArticlesPreviewState -> ArticlesContent(state = state, onMessage = onMessage)
+                is ArticlesErrorState -> ArticlesContent(state = state, onMessage = onMessage)
+            }.safe
         }
     }
 }
 
 @Composable
 fun ArticlesProgress(
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     Box(
         modifier = modifier,
@@ -72,7 +79,68 @@ fun ArticlesProgress(
 
 @Composable
 fun ArticlesContent(
-    state: ArticlesState,
+    state: ArticlesLoadingState,
+    onMessage: (Message) -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        ArticleSearchHeader(
+            modifier = Modifier.padding(16.dp),
+            state = state,
+            onMessage = onMessage
+        )
+
+        ArticlesProgress(
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
+
+@Composable
+fun ArticlesContent(
+    state: ArticlesErrorState,
+    onMessage: (Message) -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        ArticleSearchHeader(
+            modifier = Modifier.padding(16.dp),
+            state = state,
+            onMessage = onMessage
+        )
+
+        ArticlesError(
+            modifier = Modifier.fillMaxSize(),
+            id = state.id,
+            message = state.toReadableMessage(),
+            onMessage = onMessage
+        )
+    }
+}
+
+@Composable
+fun ArticlesContent(
+    state: ArticlesPreviewState,
+    onMessage: (Message) -> Unit,
+) {
+    if (state.articles.isEmpty()) {
+        ArticlesContentEmpty(
+            state = state,
+            onMessage = onMessage
+        )
+    } else {
+        ArticlesContentNonEmpty(
+            state = state,
+            onMessage = onMessage
+        )
+    }
+}
+
+@Composable
+fun ArticlesContentNonEmpty(
+    state: ArticlesPreviewState,
     onMessage: (Message) -> Unit,
 ) {
     LazyColumnFor(
@@ -82,7 +150,7 @@ fun ArticlesContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) { either ->
 
-        ArticleContentItem(
+        ArticleContentItemNew(
             id = state.id,
             item = either,
             onMessage = onMessage
@@ -93,10 +161,24 @@ fun ArticlesContent(
 }
 
 @Composable
-fun LazyItemScope.ArticleContentItem(
+fun ArticleSearchHeader(
+    modifier: Modifier,
+    state: ArticlesState,
+    onMessage: (Message) -> Unit,
+) {
+    ArticleSearchHeader(
+        modifier = modifier,
+        id = state.id,
+        criteria = state.criteria as? LoadCriteria.Query ?: return,
+        onMessage = onMessage
+    )
+}
+
+@Composable
+fun ArticleContentItemNew(
     id: ScreenId,
-    item: ArticleContentItem,
-    onMessage: (Message) -> Unit
+    item: Either2<LoadCriteria.Query, Article>,
+    onMessage: (Message) -> Unit,
 ) {
     when (item) {
         is E0 ->
@@ -110,21 +192,7 @@ fun LazyItemScope.ArticleContentItem(
             article = item.r,
             onMessage = onMessage
         )
-        is E2 -> ArticlesEmpty(
-            modifier = Modifier.fillParentMaxSize(),
-            id = id,
-            onMessage = onMessage
-        )
-        is E3 -> ArticlesProgress(
-            modifier = Modifier.fillParentMaxSize()
-        )
-        is E4 -> ArticlesError(
-            modifier = Modifier.fillParentMaxSize(),
-            id = item.r.id,
-            message = item.r.toReadableMessage(),
-            onMessage = onMessage
-        )
-    }.safe
+    }
 }
 
 @Composable
@@ -240,19 +308,27 @@ private fun ArticleActions(
 }
 
 @Composable
-fun ArticlesEmpty(
-    modifier: Modifier,
-    id: ScreenId,
+fun ArticlesContentEmpty(
+    state: ArticlesState,
     onMessage: (Message) -> Unit,
 ) {
-    Message(
-        modifier = modifier,
-        message = "Couldn't find articles",
-        actionText = "Reload",
-        onClick = {
-            onMessage(LoadArticles(id))
-        }
-    )
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        ArticleSearchHeader(
+            modifier = Modifier.padding(16.dp),
+            state = state,
+            onMessage = onMessage)
+
+        Message(
+            modifier = Modifier.fillMaxSize(),
+            message = "Couldn't find articles",
+            actionText = "Reload",
+            onClick = {
+                onMessage(LoadArticles(state.id))
+            }
+        )
+    }
 }
 
 @Composable
@@ -300,12 +376,13 @@ fun Message(
 
 @Composable
 fun ArticleSearchHeader(
+    modifier: Modifier = Modifier,
     id: ScreenId,
     criteria: LoadCriteria.Query,
     onMessage: (Message) -> Unit,
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(all = 4.dp),
         shape = RoundedCornerShape(4.dp)
@@ -388,30 +465,18 @@ private val DateFormatter: SimpleDateFormat by lazy {
     SimpleDateFormat("dd MMM' at 'hh:mm", Locale.getDefault())
 }
 
-private fun ArticlesLoadingError.toReadableMessage() =
+private fun ArticlesErrorState.toReadableMessage() =
     cause.message?.decapitalize(Locale.getDefault()) ?: "unknown exception"
 
-private fun ArticlesState.toContentData(): MutableList<ArticleContentItem> {
-
-    val m = mutableListOf<ArticleContentItem>()
+private fun ArticlesPreviewState.toContentData(): List<ArticleContentItem> {
+    val size = articles.size + if (criteria is LoadCriteria.Query) 1 else 0
+    val m = ArrayList<ArticleContentItem>(size)
 
     if (criteria is LoadCriteria.Query) {
-        m += E0(criteria as LoadCriteria.Query)
+        m += E0(criteria)
     }
 
-    when (this) {
-        is ArticlesLoadingState -> m += E3(this)
-        is ArticlesPreviewState -> {
-            if (articles.isEmpty()) {
-                m += E2(Unit)
-            } else {
-                m.addAll(articles.map(::E1))
-            }
-        }
-        is ArticlesLoadingError -> m += E4(this)
-    }
-
-    return m
+    return articles.mapTo(m, ::E1)
 }
 
 private val ArticleSamplePreview = Article(

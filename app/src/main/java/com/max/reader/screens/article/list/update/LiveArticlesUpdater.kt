@@ -19,7 +19,7 @@ object LiveArticlesUpdater : ArticlesUpdater {
         when {
             message is ArticlesLoaded -> ArticlesPreviewState(articles.id, articles.criteria, message.articles).noCommand()
             message is LoadArticles -> ArticlesLoadingState(articles.id, articles.criteria) command LoadByCriteria(articles.id, articles.criteria)
-            message is ArticlesOperationException -> ArticlesLoadingError(articles.id, articles.criteria, message.cause).noCommand()
+            message is ArticlesOperationException -> ArticlesErrorState(articles.id, articles.criteria, message.cause).noCommand()
             message is ToggleArticleIsFavorite && articles is ArticlesPreviewState -> toggleFavorite(message.article, articles)
             message is ArticleUpdated && articles is ArticlesPreviewState -> updateArticle(message.article, articles)
             message is ShareArticle -> shareArticle(message.article, articles)
@@ -64,7 +64,7 @@ object LiveArticlesUpdater : ArticlesUpdater {
     ): UpdateWith<ArticlesState, ArticlesCommand> = when (state) {
         is ArticlesLoadingState -> state.copy(criteria = criteria.copy(query = query))
         is ArticlesPreviewState -> state.copy(criteria = criteria.copy(query = query))
-        is ArticlesLoadingError -> state.copy(criteria = criteria.copy(query = query))
+        is ArticlesErrorState -> state.copy(criteria = criteria.copy(query = query))
     }.noCommand()
 
     fun Article.storeCommand() = if (isFavorite) SaveArticle(this) else RemoveArticle(this)
