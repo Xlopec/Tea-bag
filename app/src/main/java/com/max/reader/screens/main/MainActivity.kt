@@ -7,7 +7,10 @@ import androidx.compose.ui.platform.setContent
 import com.max.reader.R
 import com.max.reader.app.*
 import com.max.reader.misc.collect
-import com.max.reader.screens.feed.Feed
+import com.max.reader.misc.safe
+import com.max.reader.screens.article.details.ArticleDetailsState
+import com.max.reader.screens.article.details.ui.ArticleDetailsScreen
+import com.max.reader.screens.article.list.ArticlesState
 import com.max.reader.screens.home.HomeScreen
 import com.max.reader.ui.theme.AppTheme
 import kotlinx.coroutines.*
@@ -45,13 +48,15 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 }
 
 private fun ComponentActivity.render(
-    screen: Screen,
+    screen: ScreenState,
     onMessage: (Message) -> Unit,
 ) =
     setContent {
         AppTheme {
             when (screen) {
-                is Feed -> HomeScreen(screen = screen, onMessage = onMessage)
-            }
+                is ArticlesState -> HomeScreen(screen, onMessage)
+                is ArticleDetailsState -> ArticleDetailsScreen(screen, onMessage)
+                else -> error("unhandled branch $screen")
+            }.safe
         }
     }

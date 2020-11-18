@@ -1,44 +1,40 @@
-package com.max.reader.screens.feed
+package com.max.reader.screens.article.list
 
 import com.max.reader.app.ScreenId
 import com.max.reader.app.ScreenMessage
 import com.max.reader.app.exception.AppException
 import com.max.reader.domain.Article
 
-sealed class FeedMessage : ScreenMessage()
+sealed class ArticlesMessage : ScreenMessage()
 
 data class LoadArticles(
     val id: ScreenId
-) : FeedMessage()
+) : ArticlesMessage()
 
 data class ToggleArticleIsFavorite(
     val id: ScreenId,
     val article: Article
-) : FeedMessage()
+) : ArticlesMessage()
 
 data class ArticlesLoaded(
     val id: ScreenId,
     val articles: List<Article>
-) : FeedMessage()
+) : ArticlesMessage()
 
-data class FeedOperationException(
+data class ArticlesOperationException(
     val id: ScreenId?,
     val cause: AppException
-) : FeedMessage()
+) : ArticlesMessage()
 
 data class ArticleUpdated(
     val article: Article
-) : FeedMessage()
-
-data class OpenArticle(
-    val article: Article
-) : FeedMessage()
+) : ArticlesMessage()
 
 data class ShareArticle(
     val article: Article
-) : FeedMessage()
+) : ArticlesMessage()
 
 data class OnQueryUpdated(
     val id: ScreenId,
     val query: String
-) : FeedMessage()
+) : ArticlesMessage()

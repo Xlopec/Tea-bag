@@ -7,7 +7,7 @@ interface AppUpdater<Env> {
 
     fun Env.update(
         message: Message,
-        state: State
-    ): UpdateWith<State, Command>
+        state: AppState
+    ): UpdateWith<AppState, Command>
 
 }

@@ -5,6 +5,7 @@ typealias Either3<T, U, R> = Either4<T, U, R, Nothing>
 typealias Either4<T, U, R, V> = Either5<T, U, R, V, Nothing>
 
 sealed class Either5<out T, out U, out K, out R, out F>
+
 data class E0<T>(
     val l: T,
 ) : Either5<T, Nothing, Nothing, Nothing, Nothing>()

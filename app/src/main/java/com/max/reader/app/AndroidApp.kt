@@ -38,7 +38,7 @@ private object AppComponentScope : CoroutineScope {
 inline val Activity.androidApp: AndroidApp
     get() = application as AndroidApp
 
-inline val Activity.appComponent: (Flow<Message>) -> Flow<State>
+inline val Activity.appComponent: (Flow<Message>) -> Flow<AppState>
     get() = androidApp.component
 
 inline val Activity.appMessages: BroadcastChannel<Message>

@@ -2,20 +2,20 @@
 
 package com.max.reader.app
 
-import com.max.reader.screens.feed.FeedLoading
-import com.max.reader.screens.feed.LoadCriteria
+import com.max.reader.screens.article.list.ArticlesLoadingState
+import com.max.reader.screens.article.list.LoadCriteria
 import com.oliynick.max.tea.core.Initializer
 import java.util.*
 
-fun AppInitializer(): Initializer<State, Command> {
+fun AppInitializer(): Initializer<AppState, Command> {
 
-    val initScreen = FeedLoading(
+    val initScreen = ArticlesLoadingState(
         UUID.randomUUID(),
         LoadCriteria.Query("android")
     )
 
     return Initializer(
-        State(initScreen),
+        AppState(initScreen),
         LoadByCriteria(
             initScreen.id,
             initScreen.criteria

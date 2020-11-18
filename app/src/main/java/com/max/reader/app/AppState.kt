@@ -11,28 +11,28 @@ import kotlin.collections.ArrayList
 
 typealias ScreenId = UUID
 
-abstract class Screen {
+abstract class ScreenState {
     abstract val id: ScreenId
 }
 
-data class State(
-    val screens: PersistentList<Screen>
+data class AppState(
+    val screens: PersistentList<ScreenState>
 ) {
 
-    constructor(screen: Screen) : this(persistentListOf(screen))
+    constructor(screen: ScreenState) : this(persistentListOf(screen))
 
     init {
         require(screens.isNotEmpty())
     }
 }
 
-inline val State.screen: Screen
+inline val AppState.screen: ScreenState
     get() = screens.last()
 
-inline fun <reified T : Screen> State.updateScreen(
+inline fun <reified T : ScreenState> AppState.updateScreen(
     id: ScreenId?,
     how: (T) -> UpdateWith<T, Command>
-): UpdateWith<State, Command> {
+): UpdateWith<AppState, Command> {
 
     if (id == null) {
         return updateScreen(how)
@@ -49,12 +49,12 @@ inline fun <reified T : Screen> State.updateScreen(
     return copy(screens = screens.set(index, screen)) command commands
 }
 
-inline fun <reified T : Screen> State.updateScreen(
+inline fun <reified T : ScreenState> AppState.updateScreen(
     how: (T) -> UpdateWith<T, Command>
-): UpdateWith<State, Command> {
+): UpdateWith<AppState, Command> {
 
     val cmds = mutableSetOf<Command>()
-    val scrs = screens.fold(ArrayList<Screen>(screens.size)) { acc, screen ->
+    val scrs = screens.fold(ArrayList<ScreenState>(screens.size)) { acc, screen ->
 
         if (screen is T) {
             val (updatedScreen, commands) = how(screen)
@@ -71,10 +71,10 @@ inline fun <reified T : Screen> State.updateScreen(
     return copy(screens = scrs) command cmds
 }
 
-fun State.swapScreens(
+fun AppState.swapScreens(
     i: Int,
     j: Int = screens.lastIndex
-): State {
+): AppState {
 
     if (i == j) return this
 
@@ -83,10 +83,10 @@ fun State.swapScreens(
     return copy(screens = screens.set(j, screens[i]).set(i, tmp))
 }
 
-fun State.pushScreen(
-    screen: Screen
-): State = copy(screens = screens.add(screen))
+fun AppState.pushScreen(
+    screen: ScreenState
+): AppState = copy(screens = screens.add(screen))
 
-fun State.popScreen(): State = copy(screens = screens.pop())
+fun AppState.popScreen(): AppState = copy(screens = screens.pop())
 
 private fun <T> PersistentList<T>.pop() = if (lastIndex >= 0) removeAt(lastIndex) else this

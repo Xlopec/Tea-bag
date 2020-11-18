@@ -39,4 +39,4 @@ inline fun Project.chooseClassFiles(crossinline callback: (List<File>) -> Unit) 
 }
 
 /** forces compiler to check `when` clause is exhaustive */
-val Unit?.safe get() = this
+val <T> T.safe get() = this

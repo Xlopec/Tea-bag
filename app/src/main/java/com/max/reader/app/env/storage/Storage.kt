@@ -1,7 +1,7 @@
 package com.max.reader.app.env.storage
 
 import com.max.reader.domain.Article
-import com.max.reader.screens.feed.LoadCriteria
+import com.max.reader.screens.article.list.LoadCriteria
 import java.net.URL
 
 interface Storage<Env> {

@@ -1,0 +1,102 @@
+@file:Suppress("FunctionName")
+
+package com.max.reader.screens.article.details.ui
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.OpenInBrowser
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.ExperimentalKeyInput
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.keyInputFilter
+import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.viewinterop.AndroidView
+import com.max.reader.app.Message
+import com.max.reader.app.Pop
+import com.max.reader.domain.Article
+import com.max.reader.screens.article.details.ArticleDetailsState
+import com.max.reader.screens.article.details.OpenInBrowser
+
+@OptIn(ExperimentalKeyInput::class)
+@Composable
+fun ArticleDetailsScreen(
+    screen: ArticleDetailsState,
+    onMessage: (Message) -> Unit
+) {
+
+    val context = ContextAmbient.current
+
+    val view = remember {
+        AppWebView(context)
+    }
+    // Fixme crashes when user taps hardware back button
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = { onMessage(Pop) }) {
+                        Icon(
+                            asset = /*if (view.canGoBack()) Icons.Default.ArrowBack else*/ Icons.Default.Close,
+                        )
+                    }
+
+                },
+                title = {
+                    Text(
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        text = screen.article.title.value
+                    )
+                },
+                actions = {
+                    IconButton(onClick = { onMessage(OpenInBrowser(screen.id)) }) {
+                        Icon(Icons.Default.OpenInBrowser)
+                    }
+                }
+            )
+        }, bodyContent = { innerPadding ->
+            ArticleDetailsContent(Modifier.padding(innerPadding), screen.article, view)
+        })
+}
+
+@OptIn(ExperimentalKeyInput::class)
+@Composable
+private fun ArticleDetailsContent(
+    modifier: Modifier,
+    article: Article,
+    view: WebView
+) {
+    AndroidView(
+        viewBlock = { view },
+        modifier = modifier.fillMaxSize().keyInputFilter { event ->
+            event.key == Key.Back && view.canGoBack().also { if (it) view.goBack() }
+        }
+    ) { webView ->
+        webView.loadUrl(article.url.toExternalForm())
+    }
+}
+
+@SuppressLint("SetJavaScriptEnabled")
+private fun AppWebView(
+    context: Context,
+) = WebView(context).apply {
+    settings.javaScriptEnabled = true
+    settings.setSupportZoom(true)
+    webChromeClient = WebChromeClient()
+    webViewClient = WebViewClient()
+}

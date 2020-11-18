@@ -7,10 +7,10 @@ import kotlinx.coroutines.withContext
 
 suspend inline fun <T> Flow<T>.collect(
     dispatcher: CoroutineDispatcher,
-    crossinline collector: (T) -> Unit
+    crossinline collector: (T) -> Unit,
 ) {
-    collect { t ->
-        withContext(dispatcher) {
+    withContext(dispatcher) {
+        collect { t ->
             collector(t)
         }
     }

@@ -104,8 +104,8 @@
     <ID>NewLineAtEndOfFile:DebugWebSocketSession.kt$com.oliynick.max.tea.core.debug.session.DebugWebSocketSession.kt</ID>
     <ID>NewLineAtEndOfFile:DiffingListModel.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.DiffingListModel.kt</ID>
     <ID>NewLineAtEndOfFile:Environment.kt$com.max.reader.app.env.Environment.kt</ID>
-    <ID>NewLineAtEndOfFile:FeedResolver.kt$com.max.reader.screens.feed.resolve.FeedResolver.kt</ID>
-    <ID>NewLineAtEndOfFile:FeedUpdater.kt$com.max.reader.screens.feed.update.FeedUpdater.kt</ID>
+    <ID>NewLineAtEndOfFile:FeedResolver.kt$com.max.reader.screens.article.list.resolve.FeedResolver.kt</ID>
+    <ID>NewLineAtEndOfFile:FeedUpdater.kt$com.max.reader.screens.article.list.update.FeedUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:FiltersTest.kt$com.oliynick.max.tea.core.debug.app.domain.cms.FiltersTest.kt</ID>
     <ID>NewLineAtEndOfFile:FlowExtension.kt$com.oliynick.max.tea.core.debug.component.internal.FlowExtension.kt</ID>
     <ID>NewLineAtEndOfFile:FlowExtensions.kt$com.max.reader.misc.FlowExtensions.kt</ID>
@@ -118,7 +118,7 @@
     <ID>NewLineAtEndOfFile:JavaVersionExt.kt$.JavaVersionExt.kt</ID>
     <ID>NewLineAtEndOfFile:JsonConverter.kt$com.oliynick.max.tea.core.debug.protocol.JsonConverter.kt</ID>
     <ID>NewLineAtEndOfFile:LRUCacheTest.kt$com.oliynick.max.tea.core.debug.app.domain.LRUCacheTest.kt</ID>
-    <ID>NewLineAtEndOfFile:LiveFeedUpdater.kt$com.max.reader.screens.feed.update.LiveFeedUpdater.kt</ID>
+    <ID>NewLineAtEndOfFile:LiveFeedUpdater.kt$com.max.reader.screens.article.list.update.LiveFeedUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:LiveNotificationUpdaterTest.kt$com.oliynick.max.tea.core.debug.app.component.updater.LiveNotificationUpdaterTest.kt</ID>
     <ID>NewLineAtEndOfFile:LiveUpdater.kt$com.oliynick.max.tea.core.debug.app.component.updater.LiveUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:LruCache.kt$com.oliynick.max.tea.core.debug.app.misc.LruCache.kt</ID>

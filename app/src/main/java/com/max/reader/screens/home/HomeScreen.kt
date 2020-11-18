@@ -10,9 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.vectorResource
 import com.max.reader.R
 import com.max.reader.app.*
-import com.max.reader.screens.feed.Feed
-import com.max.reader.screens.feed.LoadCriteria
-import com.max.reader.screens.feed.ui.FeedScreen
+import com.max.reader.screens.article.list.ArticlesState
+import com.max.reader.screens.article.list.LoadCriteria
+import com.max.reader.screens.article.list.ui.ArticlesScreen
 import com.max.reader.screens.home.BottomMenuItem.*
 
 enum class BottomMenuItem {
@@ -23,19 +23,19 @@ enum class BottomMenuItem {
 
 @Composable
 fun HomeScreen(
-    screen: Feed,
+    state: ArticlesState,
     onMessage: (Message) -> Unit,
 ) {
 
     Scaffold(
         topBar = {
             TopAppBar(title = {
-                Text(text = screen.toScreenTitle())
+                Text(text = state.toScreenTitle())
             })
         }, bottomBar = {
-            BottomBar(item = screen.criteria.toMenuItem(), onMessage = onMessage)
+            BottomBar(item = state.criteria.toMenuItem(), onMessage = onMessage)
         }, bodyContent = { innerPadding ->
-            FeedScreen(Modifier.padding(innerPadding), screen, onMessage)
+            ArticlesScreen(Modifier.padding(innerPadding), state, onMessage)
         })
 }
 
@@ -75,7 +75,7 @@ fun BottomBar(
     }
 }
 
-private fun Feed.toScreenTitle(): String =
+private fun ArticlesState.toScreenTitle(): String =
     when (criteria) {
         is LoadCriteria.Query -> "Feed"
         is LoadCriteria.Favorite -> "Favorite"

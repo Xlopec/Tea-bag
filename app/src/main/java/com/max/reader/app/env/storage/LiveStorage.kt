@@ -9,7 +9,7 @@ import com.max.reader.app.env.storage.network.ArticleElement
 import com.max.reader.app.env.storage.network.ArticleResponse
 import com.max.reader.app.env.storage.network.HasNewsApi
 import com.max.reader.domain.Article
-import com.max.reader.screens.feed.LoadCriteria
+import com.max.reader.screens.article.list.LoadCriteria
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.UpdateOptions

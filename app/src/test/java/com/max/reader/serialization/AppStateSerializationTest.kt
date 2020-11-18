@@ -1,15 +1,15 @@
 package com.max.reader.serialization
 
 import com.max.reader.app.ScreenMessage
-import com.max.reader.app.State
+import com.max.reader.app.AppState
 import com.max.reader.app.serialization.PersistentListSerializer
 import com.max.reader.domain.Article
 import com.max.reader.domain.Description
 import com.max.reader.domain.Title
-import com.max.reader.screens.feed.FeedLoading
-import com.max.reader.screens.feed.LoadArticles
-import com.max.reader.screens.feed.LoadCriteria
-import com.max.reader.screens.feed.Preview
+import com.max.reader.screens.article.list.ArticlesLoadingState
+import com.max.reader.screens.article.list.LoadArticles
+import com.max.reader.screens.article.list.LoadCriteria
+import com.max.reader.screens.article.list.ArticlesPreviewState
 import com.oliynick.max.tea.core.debug.gson.Gson
 import com.oliynick.max.tea.core.debug.protocol.NotifyComponentAttached
 import com.oliynick.max.tea.core.debug.protocol.NotifyComponentSnapshot
@@ -31,7 +31,7 @@ class AppStateSerializationTest {
         registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
     }
 
-    private val previewScreenState = Preview(
+    private val previewScreenState = ArticlesPreviewState(
         UUID.randomUUID(),
         LoadCriteria.Query("android"),
         listOf(
@@ -47,12 +47,12 @@ class AppStateSerializationTest {
         )
     )
 
-    private val loadingScreenState = FeedLoading(
+    private val loadingScreenState = ArticlesLoadingState(
         UUID.randomUUID(),
         LoadCriteria.Query("test")
     )
 
-    private val testState = State(
+    private val testState = AppState(
         persistentListOf(
             previewScreenState,
             loadingScreenState

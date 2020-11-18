@@ -1,7 +1,7 @@
 package com.max.reader.app
 
 import com.max.reader.domain.Article
-import com.max.reader.screens.feed.LoadCriteria
+import com.max.reader.screens.article.list.LoadCriteria
 
 sealed class Command
 
@@ -9,27 +9,31 @@ sealed class Command
 
 object CloseApp : Command()
 
+// Article details commands
+
+sealed class ArticleDetailsCommand : Command()
+
+data class DoOpenArticle(
+    val article: Article
+) : ArticleDetailsCommand()
+
 // Feed screen commands
 
-sealed class FeedCommand : Command()
+sealed class ArticlesCommand : Command()
 
 data class LoadByCriteria(
     val id: ScreenId,
     val criteria: LoadCriteria
-) : FeedCommand()
+) : ArticlesCommand()
 
 data class SaveArticle(
     val article: Article
-) : FeedCommand()
+) : ArticlesCommand()
 
 data class RemoveArticle(
     val article: Article
-) : FeedCommand()
-
-data class DoOpenArticle(
-    val article: Article
-) : FeedCommand()
+) : ArticlesCommand()
 
 data class DoShareArticle(
     val article: Article
-) : FeedCommand()
+) : ArticlesCommand()

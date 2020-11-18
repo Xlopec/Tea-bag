@@ -1,10 +1,10 @@
-package com.max.reader.screens.feed
+package com.max.reader.screens.article.list
 
-import com.max.reader.app.Screen
+import com.max.reader.app.ScreenState
 import com.max.reader.app.ScreenId
 import com.max.reader.domain.Article
 
-sealed class Feed : Screen() {
+sealed class ArticlesState : ScreenState() {
     abstract val criteria: LoadCriteria
 }
 
@@ -19,32 +19,32 @@ sealed class LoadCriteria {
     object Trending : LoadCriteria()
 }
 
-data class FeedLoading(
+data class ArticlesLoadingState(
     override val id: ScreenId,
     override val criteria: LoadCriteria
-) : Feed()
+) : ArticlesState()
 
-data class Preview(
+data class ArticlesPreviewState(
     override val id: ScreenId,
     override val criteria: LoadCriteria,
     val articles: List<Article>
-) : Feed()
+) : ArticlesState()
 
-data class Error(
+data class ArticlesLoadingError(
     override val id: ScreenId,
     override val criteria: LoadCriteria,
     val cause: Throwable
-) : Feed()
+) : ArticlesState()
 
 // todo replace with immutable collection
-fun Preview.updateArticle(
+fun ArticlesPreviewState.updateArticle(
     new: Article
-): Preview = copy(articles = articles.map { if (it.url == new.url) new else it })
+): ArticlesPreviewState = copy(articles = articles.map { if (it.url == new.url) new else it })
 
-fun Preview.prependArticle(
+fun ArticlesPreviewState.prependArticle(
     new: Article
-): Preview = copy(articles = listOf(new) + articles)
+): ArticlesPreviewState = copy(articles = listOf(new) + articles)
 
-fun Preview.removeArticle(
+fun ArticlesPreviewState.removeArticle(
     victim: Article
-): Preview = copy(articles = articles.filter { it.url != victim.url })
+): ArticlesPreviewState = copy(articles = articles.filter { it.url != victim.url })

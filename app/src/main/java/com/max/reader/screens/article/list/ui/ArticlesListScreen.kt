@@ -1,6 +1,6 @@
 @file:Suppress("FunctionName")
 
-package com.max.reader.screens.feed.ui
+package com.max.reader.screens.article.list.ui
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Text
@@ -25,13 +25,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.max.reader.app.Message
+import com.max.reader.app.NavigateToArticleDetails
 import com.max.reader.app.ScreenId
 import com.max.reader.domain.Article
 import com.max.reader.domain.Author
 import com.max.reader.domain.Description
 import com.max.reader.domain.Title
 import com.max.reader.misc.*
-import com.max.reader.screens.feed.*
+import com.max.reader.screens.article.list.*
 import com.max.reader.ui.theme.AppDarkThemeColors
 import com.max.reader.ui.theme.ThemedPreview
 import dev.chrisbanes.accompanist.coil.CoilImage
@@ -39,26 +40,26 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
-typealias FeedContentItem = Either5<LoadCriteria.Query, Article, Unit, FeedLoading, Error>
+typealias ArticleContentItem = Either5<LoadCriteria.Query, Article, Unit, ArticlesLoadingState, ArticlesLoadingError>
 
 @Composable
-fun FeedScreen(
+fun ArticlesScreen(
     modifier: Modifier,
-    screen: Feed,
+    state: ArticlesState,
     onMessage: (Message) -> Unit,
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
         alignment = Alignment.Center
     ) {
-        Crossfade(current = screen.id) {
-            FeedArticles(screen, onMessage)
+        Crossfade(current = state.id) {
+            ArticlesContent(state, onMessage)
         }
     }
 }
 
 @Composable
-fun FeedArticlesProgress(
+fun ArticlesProgress(
     modifier: Modifier
 ) {
     Box(
@@ -70,19 +71,19 @@ fun FeedArticlesProgress(
 }
 
 @Composable
-fun FeedArticles(
-    screen: Feed,
+fun ArticlesContent(
+    state: ArticlesState,
     onMessage: (Message) -> Unit,
 ) {
     LazyColumnFor(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        items = screen.toContentData(),
+        items = state.toContentData(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) { either ->
 
-        FeedContentItem(
-            id = screen.id,
+        ArticleContentItem(
+            id = state.id,
             item = either,
             onMessage = onMessage
         )
@@ -92,14 +93,14 @@ fun FeedArticles(
 }
 
 @Composable
-fun LazyItemScope.FeedContentItem(
+fun LazyItemScope.ArticleContentItem(
     id: ScreenId,
-    item: FeedContentItem,
+    item: ArticleContentItem,
     onMessage: (Message) -> Unit
 ) {
     when (item) {
         is E0 ->
-            FeedSearchHeader(
+            ArticleSearchHeader(
                 id = id,
                 criteria = item.l,
                 onMessage = onMessage
@@ -109,15 +110,15 @@ fun LazyItemScope.FeedContentItem(
             article = item.r,
             onMessage = onMessage
         )
-        is E2 -> FeedEmpty(
+        is E2 -> ArticlesEmpty(
             modifier = Modifier.fillParentMaxSize(),
             id = id,
             onMessage = onMessage
         )
-        is E3 -> FeedArticlesProgress(
+        is E3 -> ArticlesProgress(
             modifier = Modifier.fillParentMaxSize()
         )
-        is E4 -> FeedError(
+        is E4 -> ArticlesError(
             modifier = Modifier.fillParentMaxSize(),
             id = item.r.id,
             message = item.r.toReadableMessage(),
@@ -162,7 +163,7 @@ fun ArticleItem(
     ) {
         Column(
             modifier = Modifier
-                .clickable(onClick = { onMessage(OpenArticle(article)) })
+                .clickable(onClick = { onMessage(NavigateToArticleDetails(article)) })
         ) {
 
             ArticleImage(imageUrl = article.urlToImage)
@@ -239,7 +240,7 @@ private fun ArticleActions(
 }
 
 @Composable
-fun FeedEmpty(
+fun ArticlesEmpty(
     modifier: Modifier,
     id: ScreenId,
     onMessage: (Message) -> Unit,
@@ -255,7 +256,7 @@ fun FeedEmpty(
 }
 
 @Composable
-fun FeedError(
+fun ArticlesError(
     modifier: Modifier,
     id: ScreenId,
     message: String,
@@ -298,7 +299,7 @@ fun Message(
 }
 
 @Composable
-fun FeedSearchHeader(
+fun ArticleSearchHeader(
     id: ScreenId,
     criteria: LoadCriteria.Query,
     onMessage: (Message) -> Unit,
@@ -328,11 +329,11 @@ fun FeedSearchHeader(
 
 @Composable
 @androidx.ui.tooling.preview.Preview(
-    "Feed search input field"
+    "Articles search input field"
 )
-fun FeedSearchHeaderPreview() {
+fun ArticleSearchHeaderPreview() {
     ThemedPreview {
-        FeedSearchHeader(
+        ArticleSearchHeader(
             id = UUID.randomUUID(),
             criteria = LoadCriteria.Query("some input text"),
             onMessage = {}
@@ -387,27 +388,27 @@ private val DateFormatter: SimpleDateFormat by lazy {
     SimpleDateFormat("dd MMM' at 'hh:mm", Locale.getDefault())
 }
 
-private fun Error.toReadableMessage() =
+private fun ArticlesLoadingError.toReadableMessage() =
     cause.message?.decapitalize(Locale.getDefault()) ?: "unknown exception"
 
-private fun Feed.toContentData(): MutableList<FeedContentItem> {
+private fun ArticlesState.toContentData(): MutableList<ArticleContentItem> {
 
-    val m = mutableListOf<FeedContentItem>()
+    val m = mutableListOf<ArticleContentItem>()
 
     if (criteria is LoadCriteria.Query) {
         m += E0(criteria as LoadCriteria.Query)
     }
 
     when (this) {
-        is FeedLoading -> m += E3(this)
-        is Preview -> {
+        is ArticlesLoadingState -> m += E3(this)
+        is ArticlesPreviewState -> {
             if (articles.isEmpty()) {
                 m += E2(Unit)
             } else {
                 m.addAll(articles.map(::E1))
             }
         }
-        is Error -> m += E4(this)
+        is ArticlesLoadingError -> m += E4(this)
     }
 
     return m

@@ -10,14 +10,14 @@ import com.oliynick.max.tea.core.component.states
 import kotlinx.coroutines.flow.Flow
 
 fun Environment.AppComponent(
-    initializer: Initializer<State, Command>
-): (Flow<Message>) -> Flow<State> {
+    initializer: Initializer<AppState, Command>
+): (Flow<Message>) -> Flow<AppState> {
 
     suspend fun resolve(command: Command) = this.resolve(command)
 
     fun update(
         message: Message,
-        state: State
+        state: AppState
     ) = this.update(message, state)
 
     // todo state persistence
