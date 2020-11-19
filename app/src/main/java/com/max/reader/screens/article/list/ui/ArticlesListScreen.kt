@@ -2,12 +2,11 @@
 
 package com.max.reader.screens.article.list.ui
 
-import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumnFor
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.typography
@@ -30,9 +29,6 @@ import com.max.reader.domain.Article
 import com.max.reader.domain.Author
 import com.max.reader.domain.Description
 import com.max.reader.domain.Title
-import com.max.reader.misc.E0
-import com.max.reader.misc.E1
-import com.max.reader.misc.Either2
 import com.max.reader.misc.safe
 import com.max.reader.screens.article.list.*
 import com.max.reader.ui.theme.AppDarkThemeColors
@@ -41,9 +37,6 @@ import dev.chrisbanes.accompanist.coil.CoilImage
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
-
-typealias ArticleContentItem = Either2<LoadCriteria.Query, Article>
 
 @Composable
 fun ArticlesScreen(
@@ -55,13 +48,11 @@ fun ArticlesScreen(
         modifier = modifier.fillMaxSize(),
         alignment = Alignment.Center
     ) {
-        Crossfade(current = state.id) {
-            when (state) {
-                is ArticlesLoadingState -> ArticlesContent(state = state, onMessage = onMessage)
-                is ArticlesPreviewState -> ArticlesContent(state = state, onMessage = onMessage)
-                is ArticlesErrorState -> ArticlesContent(state = state, onMessage = onMessage)
-            }.safe
-        }
+        when (state) {
+            is ArticlesLoadingState -> ArticlesContent(state = state, onMessage = onMessage)
+            is ArticlesPreviewState -> ArticlesContent(state = state, onMessage = onMessage)
+            is ArticlesErrorState -> ArticlesContent(state = state, onMessage = onMessage)
+        }.safe
     }
 }
 
@@ -143,20 +134,37 @@ fun ArticlesContentNonEmpty(
     state: ArticlesPreviewState,
     onMessage: (Message) -> Unit,
 ) {
-    LazyColumnFor(
+    LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        items = state.toContentData(),
         horizontalAlignment = Alignment.CenterHorizontally
-    ) { either ->
+    ) {
 
-        ArticleContentItemNew(
-            id = state.id,
-            item = either,
-            onMessage = onMessage
-        )
+        if (state.criteria is LoadCriteria.Query) {
+            item {
+                ArticleSearchHeader(
+                    id = state.id,
+                    criteria = state.criteria,
+                    onMessage = onMessage
+                )
 
-        Spacer(modifier = Modifier.preferredHeight(12.dp))
+                Spacer(modifier = Modifier.preferredHeight(16.dp))
+            }
+        }
+
+        itemsIndexed(state.articles) { index, article ->
+            Column {
+                ArticleItem(
+                    screenId = state.id,
+                    article = article,
+                    onMessage = onMessage
+                )
+
+                if (index != state.articles.lastIndex) {
+                    Spacer(modifier = Modifier.preferredHeight(16.dp))
+                }
+            }
+        }
     }
 }
 
@@ -172,27 +180,6 @@ fun ArticleSearchHeader(
         criteria = state.criteria as? LoadCriteria.Query ?: return,
         onMessage = onMessage
     )
-}
-
-@Composable
-fun ArticleContentItemNew(
-    id: ScreenId,
-    item: ArticleContentItem,
-    onMessage: (Message) -> Unit,
-) {
-    when (item) {
-        is E0 ->
-            ArticleSearchHeader(
-                id = id,
-                criteria = item.l,
-                onMessage = onMessage
-            )
-        is E1 -> ArticleItem(
-            screenId = id,
-            article = item.r,
-            onMessage = onMessage
-        )
-    }
 }
 
 @Composable
@@ -387,9 +374,18 @@ fun ArticleSearchHeader(
             .padding(all = 4.dp),
         shape = RoundedCornerShape(4.dp)
     ) {
+
+        val caption =
+            typography.subtitle2.copy(color = typography.subtitle2.color.copy(alpha = 0.4f))
+
         TextField(
+            placeholder = { Text(text = "Search articles", style = caption) },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             value = criteria.query,
-            imeAction = ImeAction.Search,
+            maxLines = 1,
+            onImeActionPerformed = { _, ctrl ->
+                onMessage(LoadArticles(id)); ctrl?.hideSoftwareKeyboard()
+            },
             backgroundColor = colors.surface,
             textStyle = typography.subtitle2,
             trailingIcon = {
@@ -467,17 +463,6 @@ private val DateFormatter: SimpleDateFormat by lazy {
 
 private fun ArticlesErrorState.toReadableMessage() =
     cause.message?.decapitalize(Locale.getDefault()) ?: "unknown exception"
-
-private fun ArticlesPreviewState.toContentData(): List<ArticleContentItem> {
-    val size = articles.size + if (criteria is LoadCriteria.Query) 1 else 0
-    val m = ArrayList<ArticleContentItem>(size)
-
-    if (criteria is LoadCriteria.Query) {
-        m += E0(criteria)
-    }
-
-    return articles.mapTo(m, ::E1)
-}
 
 private val ArticleSamplePreview = Article(
     url = URL("https://www.google.com"),

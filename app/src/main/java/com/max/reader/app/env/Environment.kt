@@ -27,13 +27,11 @@ interface Environment :
     HasGson,
     Storage<Environment>,
     CoroutineScope {
-    val isDebug: Boolean
 }
 
 @Suppress("FunctionName")
 fun Environment(
     application: Application,
-    isDebug: Boolean,
     scope: CoroutineScope,
 ): Environment {
 
@@ -51,7 +49,6 @@ fun Environment(
         HasAppContext by AppContext(application),
         Storage<Environment> by Storage(),
         CoroutineScope by scope {
-        override val isDebug: Boolean = isDebug
     }
 }
 

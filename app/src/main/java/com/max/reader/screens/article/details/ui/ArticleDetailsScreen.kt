@@ -7,13 +7,13 @@ import android.content.Context
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.OpenInBrowser
@@ -31,6 +31,7 @@ import com.max.reader.app.Pop
 import com.max.reader.domain.Article
 import com.max.reader.screens.article.details.ArticleDetailsState
 import com.max.reader.screens.article.details.OpenInBrowser
+import com.max.reader.ui.InsetAwareTopAppBar
 
 @OptIn(ExperimentalKeyInput::class)
 @Composable
@@ -47,7 +48,9 @@ fun ArticleDetailsScreen(
     // Fixme crashes when user taps hardware back button
     Scaffold(
         topBar = {
-            TopAppBar(
+
+            InsetAwareTopAppBar(
+                modifier = Modifier.fillMaxWidth(),
                 navigationIcon = {
                     IconButton(onClick = { onMessage(Pop) }) {
                         Icon(

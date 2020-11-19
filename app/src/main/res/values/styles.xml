@@ -1,11 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="Theme.NewsReader" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#263238</item>
-        <item name="colorPrimaryDark">#000a12</item>
-        <item name="colorAccent">#455a64</item>
-    </style>
+    <style name="Theme.NewsReader" parent="Theme.AppCompat.Light.NoActionBar" />
 
     <style name="Theme.Splash" parent="Theme.NewsReader">
         <item name="android:windowTranslucentStatus">true</item>

@@ -59,8 +59,8 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerVersion = "1.4.10"
-        kotlinCompilerExtensionVersion = "1.0.0-alpha05"
+        kotlinCompilerVersion = kotlinVersion
+        kotlinCompilerExtensionVersion = "1.0.0-alpha07"
     }
 
     packagingOptions {
@@ -118,7 +118,7 @@ dependencies {
     implementation(immutableCollections)
     implementation(coroutinesAndroid)
 
-    val composeVersion = "1.0.0-alpha06"
+    val composeVersion = "1.0.0-alpha07"
 
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.foundation:foundation:$composeVersion")
@@ -131,7 +131,10 @@ dependencies {
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.compiler:compiler:$composeVersion")
 
-    implementation("dev.chrisbanes.accompanist:accompanist-coil:0.3.2")
+    val accompaniesVersion = "0.3.3.1"
+
+    implementation("dev.chrisbanes.accompanist:accompanist-insets:$accompaniesVersion")
+    implementation("dev.chrisbanes.accompanist:accompanist-coil:$accompaniesVersion")
 
     implementation("androidx.appcompat:appcompat:1.2.0")
 

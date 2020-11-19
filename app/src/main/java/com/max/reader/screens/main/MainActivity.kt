@@ -1,9 +1,11 @@
 package com.max.reader.screens.main
 
 import android.os.Bundle
+import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.setContent
+import androidx.core.view.WindowCompat
 import com.max.reader.R
 import com.max.reader.app.*
 import com.max.reader.misc.collect
@@ -22,6 +24,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_NewsReader)
         super.onCreate(savedInstanceState)
+
+        window.setFlags(FLAG_TRANSLUCENT_STATUS, FLAG_TRANSLUCENT_STATUS);
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         launch {
             appComponent(appMessages.asFlow()).collect(Dispatchers.Main) { state ->

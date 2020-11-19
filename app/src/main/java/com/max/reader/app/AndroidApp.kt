@@ -5,7 +5,6 @@ package com.max.reader.app
 
 import android.app.Activity
 import android.app.Application
-import com.max.reader.BuildConfig
 import com.max.reader.app.env.Environment
 import com.max.reader.misc.unsafeLazy
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +19,7 @@ import kotlin.coroutines.CoroutineContext
 class AndroidApp : Application(), CoroutineScope by AppComponentScope {
 
     val environment by unsafeLazy {
-        Environment(this, BuildConfig.DEBUG, this)
+        Environment(this, this)
     }
 
     val component by unsafeLazy { environment.AppComponent(AppInitializer()) }

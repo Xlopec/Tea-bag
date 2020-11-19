@@ -2,7 +2,8 @@
 
 package com.max.reader.screens.home
 
-import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -14,6 +15,8 @@ import com.max.reader.screens.article.list.ArticlesState
 import com.max.reader.screens.article.list.LoadCriteria
 import com.max.reader.screens.article.list.ui.ArticlesScreen
 import com.max.reader.screens.home.BottomMenuItem.*
+import com.max.reader.ui.InsetAwareTopAppBar
+import dev.chrisbanes.accompanist.insets.navigationBarsPadding
 
 enum class BottomMenuItem {
     FEED,
@@ -26,14 +29,21 @@ fun HomeScreen(
     state: ArticlesState,
     onMessage: (Message) -> Unit,
 ) {
-
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(title = {
-                Text(text = state.toScreenTitle())
-            })
+            InsetAwareTopAppBar(
+                modifier = Modifier.fillMaxWidth(),
+                title = {
+                    Text(text = state.toScreenTitle())
+                },
+            )
         }, bottomBar = {
-            BottomBar(item = state.criteria.toMenuItem(), onMessage = onMessage)
+            BottomBar(
+                modifier = Modifier.navigationBarsPadding(),
+                item = state.criteria.toMenuItem(),
+                onMessage = onMessage
+            )
         }, bodyContent = { innerPadding ->
             ArticlesScreen(Modifier.padding(innerPadding), state, onMessage)
         })
@@ -47,10 +57,11 @@ private fun LoadCriteria.toMenuItem() = when (this) {
 
 @Composable
 fun BottomBar(
+    modifier: Modifier,
     item: BottomMenuItem,
     onMessage: (Navigation) -> Unit,
 ) {
-    BottomNavigation {
+    BottomNavigation(modifier = modifier) {
 
         BottomNavigationItem(icon = {
             Icon(asset = vectorResource(id = R.drawable.ic_language_white_24dp))
