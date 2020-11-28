@@ -5,34 +5,32 @@ import com.max.reader.app.ScreenState
 import com.max.reader.domain.Article
 
 sealed class ArticlesState : ScreenState() {
-    abstract val criteria: LoadCriteria
+    abstract val query: Query
 }
 
-sealed class LoadCriteria {
-
-    data class Query(
-        val query: String
-    ) : LoadCriteria()
-
-    object Favorite : LoadCriteria()
-
-    object Trending : LoadCriteria()
+enum class QueryType {
+    Regular, Favorite, Trending
 }
+
+data class Query(
+    val input: String,
+    val type: QueryType
+)
 
 data class ArticlesLoadingState(
     override val id: ScreenId,
-    override val criteria: LoadCriteria
+    override val query: Query
 ) : ArticlesState()
 
 data class ArticlesPreviewState(
     override val id: ScreenId,
-    override val criteria: LoadCriteria,
+    override val query: Query,
     val articles: List<Article>
 ) : ArticlesState()
 
 data class ArticlesErrorState(
     override val id: ScreenId,
-    override val criteria: LoadCriteria,
+    override val query: Query,
     val cause: Throwable
 ) : ArticlesState()
 

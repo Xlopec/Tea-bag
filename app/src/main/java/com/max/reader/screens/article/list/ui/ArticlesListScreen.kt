@@ -5,6 +5,7 @@ package com.max.reader.screens.article.list.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.ExperimentalFocus
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -31,9 +33,11 @@ import com.max.reader.domain.Description
 import com.max.reader.domain.Title
 import com.max.reader.misc.safe
 import com.max.reader.screens.article.list.*
+import com.max.reader.screens.article.list.QueryType.*
 import com.max.reader.ui.theme.AppDarkThemeColors
 import com.max.reader.ui.theme.ThemedPreview
 import dev.chrisbanes.accompanist.coil.CoilImage
+import dev.chrisbanes.accompanist.insets.statusBarsPadding
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
@@ -57,7 +61,7 @@ fun ArticlesScreen(
 }
 
 @Composable
-fun ArticlesProgress(
+private fun ArticlesProgress(
     modifier: Modifier,
 ) {
     Box(
@@ -69,50 +73,43 @@ fun ArticlesProgress(
 }
 
 @Composable
-fun ArticlesContent(
+private fun ArticlesContent(
     state: ArticlesLoadingState,
     onMessage: (Message) -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        ArticleSearchHeader(
-            modifier = Modifier.padding(16.dp),
-            state = state,
-            onMessage = onMessage
-        )
+    ArticlesContent(state = state, onMessage = onMessage) {
 
-        ArticlesProgress(
-            modifier = Modifier.fillMaxSize()
-        )
+        item {
+            ArticlesProgress(
+                modifier = Modifier.fillParentMaxSize()
+            )
+        }
+
     }
 }
 
 @Composable
-fun ArticlesContent(
+private fun ArticlesContent(
     state: ArticlesErrorState,
     onMessage: (Message) -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        ArticleSearchHeader(
-            modifier = Modifier.padding(16.dp),
-            state = state,
-            onMessage = onMessage
-        )
+    state.cause.printStackTrace()
+    ArticlesContent(state = state, onMessage = onMessage) {
 
-        ArticlesError(
-            modifier = Modifier.fillMaxSize(),
-            id = state.id,
-            message = state.toReadableMessage(),
-            onMessage = onMessage
-        )
+        item {
+            ArticlesError(
+                modifier = Modifier.fillParentMaxSize(),
+                id = state.id,
+                message = state.toReadableMessage(),
+                onMessage = onMessage
+            )
+        }
+
     }
 }
 
 @Composable
-fun ArticlesContent(
+private fun ArticlesContent(
     state: ArticlesPreviewState,
     onMessage: (Message) -> Unit,
 ) {
@@ -130,9 +127,10 @@ fun ArticlesContent(
 }
 
 @Composable
-fun ArticlesContentNonEmpty(
-    state: ArticlesPreviewState,
+private fun ArticlesContent(
+    state: ArticlesState,
     onMessage: (Message) -> Unit,
+    children: LazyListScope.(state: ArticlesState) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -140,16 +138,58 @@ fun ArticlesContentNonEmpty(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        if (state.criteria is LoadCriteria.Query) {
-            item {
-                ArticleSearchHeader(
-                    id = state.id,
-                    criteria = state.criteria,
-                    onMessage = onMessage
-                )
+        item {
+            ArticleSearchHeader(
+                id = state.id,
+                query = state.query,
+                onMessage = onMessage
+            )
 
-                Spacer(modifier = Modifier.preferredHeight(16.dp))
-            }
+            Spacer(modifier = Modifier.preferredHeight(16.dp))
+        }
+
+        children(state)
+    }
+}
+
+@Composable
+private fun ArticlesContentEmpty(
+    state: ArticlesState,
+    onMessage: (Message) -> Unit,
+) {
+    ArticlesContent(state = state, onMessage = onMessage) {
+
+        item {
+            Message(
+                modifier = Modifier.fillParentMaxSize(),
+                message = "Couldn't find articles",
+                actionText = "Reload",
+                onClick = {
+                    onMessage(LoadArticles(state.id))
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ArticlesContentNonEmpty(
+    state: ArticlesPreviewState,
+    onMessage: (Message) -> Unit,
+) {
+    require(state.articles.isNotEmpty())
+
+    ArticlesContent(state = state, onMessage = onMessage) {
+
+        item {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start,
+                text = state.toScreenTitle(),
+                style = typography.subtitle1
+            )
+
+            Spacer(modifier = Modifier.preferredHeight(16.dp))
         }
 
         itemsIndexed(state.articles) { index, article ->
@@ -169,21 +209,7 @@ fun ArticlesContentNonEmpty(
 }
 
 @Composable
-fun ArticleSearchHeader(
-    modifier: Modifier,
-    state: ArticlesState,
-    onMessage: (Message) -> Unit,
-) {
-    ArticleSearchHeader(
-        modifier = modifier,
-        id = state.id,
-        criteria = state.criteria as? LoadCriteria.Query ?: return,
-        onMessage = onMessage
-    )
-}
-
-@Composable
-fun ArticleImage(
+private fun ArticleImage(
     imageUrl: URL?,
 ) {
     Surface(
@@ -207,7 +233,7 @@ fun ArticleImage(
 }
 
 @Composable
-fun ArticleItem(
+private fun ArticleItem(
     screenId: ScreenId,
     article: Article,
     onMessage: (Message) -> Unit,
@@ -295,31 +321,7 @@ private fun ArticleActions(
 }
 
 @Composable
-fun ArticlesContentEmpty(
-    state: ArticlesState,
-    onMessage: (Message) -> Unit,
-) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        ArticleSearchHeader(
-            modifier = Modifier.padding(16.dp),
-            state = state,
-            onMessage = onMessage)
-
-        Message(
-            modifier = Modifier.fillMaxSize(),
-            message = "Couldn't find articles",
-            actionText = "Reload",
-            onClick = {
-                onMessage(LoadArticles(state.id))
-            }
-        )
-    }
-}
-
-@Composable
-fun ArticlesError(
+private fun ArticlesError(
     modifier: Modifier,
     id: ScreenId,
     message: String,
@@ -335,7 +337,7 @@ fun ArticlesError(
 }
 
 @Composable
-fun Message(
+private fun Message(
     modifier: Modifier,
     message: String,
     actionText: String,
@@ -361,27 +363,29 @@ fun Message(
     }
 }
 
+@OptIn(ExperimentalFocus::class)
 @Composable
-fun ArticleSearchHeader(
+private fun ArticleSearchHeader(
     modifier: Modifier = Modifier,
     id: ScreenId,
-    criteria: LoadCriteria.Query,
+    query: Query,
     onMessage: (Message) -> Unit,
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(all = 4.dp),
-        shape = RoundedCornerShape(4.dp)
+            .statusBarsPadding()
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp)
     ) {
 
         val caption =
             typography.subtitle2.copy(color = typography.subtitle2.color.copy(alpha = 0.4f))
 
         TextField(
-            placeholder = { Text(text = "Search articles", style = caption) },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text(text = query.type.toSearchHint(), style = caption) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            value = criteria.query,
+            value = query.input,
             maxLines = 1,
             onImeActionPerformed = { _, ctrl ->
                 onMessage(LoadArticles(id)); ctrl?.hideSoftwareKeyboard()
@@ -404,11 +408,11 @@ fun ArticleSearchHeader(
 @androidx.ui.tooling.preview.Preview(
     "Articles search input field"
 )
-fun ArticleSearchHeaderPreview() {
+private fun ArticleSearchHeaderPreview() {
     ThemedPreview {
         ArticleSearchHeader(
             id = UUID.randomUUID(),
-            criteria = LoadCriteria.Query("some input text"),
+            query = Query("some input text", Trending),
             onMessage = {}
         )
     }
@@ -418,7 +422,7 @@ fun ArticleSearchHeaderPreview() {
 @androidx.ui.tooling.preview.Preview(
     "Article item"
 )
-fun ArticleItemPreview() {
+private fun ArticleItemPreview() {
     ThemedPreview {
         ArticleItem(
             screenId = UUID.randomUUID(),
@@ -432,7 +436,7 @@ fun ArticleItemPreview() {
 @androidx.ui.tooling.preview.Preview(
     "Articles bottom action menu"
 )
-fun ArticleActionsPreview() {
+private fun ArticleActionsPreview() {
     ThemedPreview {
         ArticleActions(
             onMessage = {},
@@ -446,7 +450,7 @@ fun ArticleActionsPreview() {
 @androidx.ui.tooling.preview.Preview(
     "Messages preview"
 )
-fun MessagePreview() {
+private fun MessagePreview() {
     ThemedPreview {
         Message(
             modifier = Modifier,
@@ -463,6 +467,20 @@ private val DateFormatter: SimpleDateFormat by lazy {
 
 private fun ArticlesErrorState.toReadableMessage() =
     cause.message?.decapitalize(Locale.getDefault()) ?: "unknown exception"
+
+private fun ArticlesState.toScreenTitle(): String =
+    when (query.type) {
+        Regular -> "Feed"
+        Favorite -> "Favorite"
+        Trending -> "Trending"
+    }
+
+private fun QueryType.toSearchHint(): String =
+    when (this) {
+        Regular -> "Search in articles"
+        Favorite -> "Search in favorite"
+        Trending -> "Search in trending"
+    }
 
 private val ArticleSamplePreview = Article(
     url = URL("https://www.google.com"),

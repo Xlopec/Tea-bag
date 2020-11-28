@@ -1,7 +1,7 @@
 package com.max.reader.app
 
 import com.max.reader.domain.Article
-import com.max.reader.screens.article.list.LoadCriteria
+import com.max.reader.screens.article.list.Query
 
 sealed class Command
 
@@ -23,7 +23,7 @@ sealed class ArticlesCommand : Command()
 
 data class LoadByCriteria(
     val id: ScreenId,
-    val criteria: LoadCriteria
+    val query: Query
 ) : ArticlesCommand()
 
 data class SaveArticle(

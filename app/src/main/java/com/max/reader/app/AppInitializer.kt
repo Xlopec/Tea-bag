@@ -3,7 +3,8 @@
 package com.max.reader.app
 
 import com.max.reader.screens.article.list.ArticlesLoadingState
-import com.max.reader.screens.article.list.LoadCriteria
+import com.max.reader.screens.article.list.Query
+import com.max.reader.screens.article.list.QueryType
 import com.oliynick.max.tea.core.Initializer
 import java.util.*
 
@@ -11,14 +12,14 @@ fun AppInitializer(): Initializer<AppState, Command> {
 
     val initScreen = ArticlesLoadingState(
         UUID.randomUUID(),
-        LoadCriteria.Query("android")
+        Query("android", QueryType.Regular)
     )
 
     return Initializer(
         AppState(initScreen),
         LoadByCriteria(
             initScreen.id,
-            initScreen.criteria
+            initScreen.query
         )
     )
 }

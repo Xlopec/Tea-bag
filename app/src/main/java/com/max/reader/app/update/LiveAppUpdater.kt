@@ -8,6 +8,7 @@ import com.max.reader.screens.article.details.ArticleDetailsState
 import com.max.reader.screens.article.details.OpenInBrowser
 import com.max.reader.screens.article.details.update.ArticleDetailsUpdater
 import com.max.reader.screens.article.list.*
+import com.max.reader.screens.article.list.QueryType.*
 import com.max.reader.screens.article.list.update.ArticlesUpdater
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
@@ -45,9 +46,9 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : ArticlesUpdater,
         state: AppState,
     ): UpdateWith<AppState, Command> =
         when (nav) {
-            is NavigateToFeed -> state.pushBottomNavigationScreen(nav, LoadCriteria.Query("android"))
-            is NavigateToFavorite -> state.pushBottomNavigationScreen(nav, LoadCriteria.Favorite)
-            is NavigateToTrending -> state.pushBottomNavigationScreen(nav, LoadCriteria.Trending)
+            is NavigateToFeed -> state.pushBottomNavigationScreen(nav, Query("android", Regular))
+            is NavigateToFavorite -> state.pushBottomNavigationScreen(nav, Query("", Favorite))
+            is NavigateToTrending -> state.pushBottomNavigationScreen(nav, Query("", Trending))
             is NavigateToArticleDetails -> state.pushArticleDetailsScreen(nav)
             // simply close the app
             is Pop -> state.pop()
@@ -63,7 +64,7 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : ArticlesUpdater,
 
     fun AppState.pushBottomNavigationScreen(
         nav: Navigation,
-        loadCriteria: LoadCriteria,
+        query: Query,
     ): UpdateWith<AppState, Command> {
 
         val i = findExistingArticlesScreenForNavigation(nav)
@@ -77,11 +78,11 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : ArticlesUpdater,
             pushScreen(
                 ArticlesLoadingState(
                     id,
-                    loadCriteria
+                    query
                 )
             ) command LoadByCriteria(
                 id,
-                loadCriteria
+                query
             )
         }
     }
@@ -89,15 +90,15 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : ArticlesUpdater,
     fun AppState.findExistingArticlesScreenForNavigation(
         nav: Navigation,
     ): Int = screens.indexOfFirst { s ->
-        s is ArticlesState && isCriteriaMatches(s.criteria, nav)
+        s is ArticlesState && isCriteriaMatches(s.query.type, nav)
     }
 
     fun isCriteriaMatches(
-        criteria: LoadCriteria,
+        criteria: QueryType,
         nav: Navigation,
-    ) = (criteria is LoadCriteria.Query && nav === NavigateToFeed)
-            || (criteria == LoadCriteria.Trending && nav === NavigateToTrending)
-            || (criteria == LoadCriteria.Favorite && nav === NavigateToFavorite)
+    ) = (criteria === Regular && nav === NavigateToFeed)
+            || (criteria === Trending && nav === NavigateToTrending)
+            || (criteria === Favorite && nav === NavigateToFavorite)
 
     val ArticlesMessage.id: ScreenId?
         get() = when (this) {

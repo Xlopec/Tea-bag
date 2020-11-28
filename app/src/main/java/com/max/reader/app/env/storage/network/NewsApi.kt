@@ -2,13 +2,21 @@
 
 package com.max.reader.app.env.storage.network
 
-import com.google.gson.*
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
 import com.google.gson.annotations.SerializedName
 import com.max.reader.app.env.storage.TypeAdapter
-import com.max.reader.domain.*
+import com.max.reader.domain.Author
+import com.max.reader.domain.Description
+import com.max.reader.domain.Title
+import com.max.reader.domain.tryCreate
 import retrofit2.Retrofit
 import retrofit2.create
-import retrofit2.http.*
+import retrofit2.http.GET
+import retrofit2.http.Query
+import retrofit2.http.QueryMap
 import java.lang.reflect.Type
 import java.net.URL
 import java.util.*
@@ -40,7 +48,8 @@ interface RetrofitNewsApi {
     @GET("/v2/top-headlines")
     suspend fun fetchTopHeadlines(
         @Query("apiKey") apiKey: String,
-        @Query("country") countryCode: String
+        @Query("country") countryCode: String,
+        @QueryMap query: Map<String, String>
     ): ArticleResponse
 
 }

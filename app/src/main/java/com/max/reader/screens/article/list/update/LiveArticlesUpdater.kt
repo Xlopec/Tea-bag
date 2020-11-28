@@ -4,6 +4,7 @@ import com.max.reader.app.*
 import com.max.reader.domain.Article
 import com.max.reader.domain.toggleFavorite
 import com.max.reader.screens.article.list.*
+import com.max.reader.screens.article.list.QueryType.*
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -14,19 +15,19 @@ object LiveArticlesUpdater : ArticlesUpdater {
 
     override fun update(
         message: ArticlesMessage,
-        articles: ArticlesState
+        state: ArticlesState
     ): UpdateWith<ArticlesState, Command> =
         when {
-            message is ArticlesLoaded -> ArticlesPreviewState(articles.id, articles.criteria, message.articles).noCommand()
-            message is LoadArticles -> ArticlesLoadingState(articles.id, articles.criteria) command LoadByCriteria(articles.id, articles.criteria)
-            message is ArticlesOperationException -> ArticlesErrorState(articles.id, articles.criteria, message.cause).noCommand()
-            message is ToggleArticleIsFavorite && articles is ArticlesPreviewState -> toggleFavorite(message.article, articles)
-            message is ArticleUpdated && articles is ArticlesPreviewState -> updateArticle(message.article, articles)
-            message is ShareArticle -> shareArticle(message.article, articles)
+            message is ArticlesLoaded -> ArticlesPreviewState(state.id, state.query, message.articles).noCommand()
+            message is LoadArticles -> ArticlesLoadingState(state.id, state.query) command LoadByCriteria(state.id, state.query)
+            message is ArticlesOperationException -> ArticlesErrorState(state.id, state.query, message.cause).noCommand()
+            message is ToggleArticleIsFavorite && state is ArticlesPreviewState -> toggleFavorite(message.article, state)
+            message is ArticleUpdated && state is ArticlesPreviewState -> updateArticle(message.article, state)
+            message is ShareArticle -> shareArticle(message.article, state)
             // fixme redesign FeedState
-            message is OnQueryUpdated && articles.criteria is LoadCriteria.Query -> updateQuery(message.query, articles.criteria as LoadCriteria.Query, articles)
-            message is ArticleUpdated -> articles.noCommand()// ignore
-            else -> error("Can't handle message $message when state is $articles")
+            message is OnQueryUpdated -> updateQuery(message.query, state)
+            message is ArticleUpdated -> state.noCommand()// ignore
+            else -> error("Can't handle message $message when state is $state")
         }
 
     fun updateArticle(
@@ -34,9 +35,9 @@ object LiveArticlesUpdater : ArticlesUpdater {
         state: ArticlesPreviewState
     ): UpdateWith<ArticlesState, Command> {
 
-        val updated = when (state.criteria) {
-            is LoadCriteria.Query, LoadCriteria.Trending -> state.updateArticle(article)
-            LoadCriteria.Favorite -> if (article.isFavorite) state.prependArticle(article) else state.removeArticle(article)
+        val updated = when (state.query.type) {
+            Regular, Trending -> state.updateArticle(article)
+            Favorite -> if (article.isFavorite) state.prependArticle(article) else state.removeArticle(article)
         }
 
         return updated.noCommand()
@@ -58,15 +59,18 @@ object LiveArticlesUpdater : ArticlesUpdater {
     ): UpdateWith<ArticlesState, DoShareArticle> = state command DoShareArticle(article)
 
     fun updateQuery(
-        query: String,
-        criteria: LoadCriteria.Query,
+        input: String,
         state: ArticlesState
-    ): UpdateWith<ArticlesState, ArticlesCommand> = when (state) {
-        is ArticlesLoadingState -> state.copy(criteria = criteria.copy(query = query))
-        is ArticlesPreviewState -> state.copy(criteria = criteria.copy(query = query))
-        is ArticlesErrorState -> state.copy(criteria = criteria.copy(query = query))
-    }.noCommand()
+    ): UpdateWith<ArticlesState, ArticlesCommand> = state.updateQuery(input).noCommand()
 
     fun Article.storeCommand() = if (isFavorite) SaveArticle(this) else RemoveArticle(this)
+
+    fun ArticlesState.updateQuery(
+        input: String
+    ) = when (this) {
+        is ArticlesLoadingState -> copy(query = query.copy(input = input))
+        is ArticlesPreviewState -> copy(query = query.copy(input = input))
+        is ArticlesErrorState -> copy(query = query.copy(input = input))
+    }
 
 }
