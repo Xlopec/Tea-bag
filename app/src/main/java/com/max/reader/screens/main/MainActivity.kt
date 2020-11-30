@@ -14,6 +14,7 @@ import com.max.reader.screens.article.details.ArticleDetailsState
 import com.max.reader.screens.article.details.ui.ArticleDetailsScreen
 import com.max.reader.screens.article.list.ArticlesState
 import com.max.reader.screens.home.HomeScreen
+import com.max.reader.screens.settings.SettingsState
 import com.max.reader.ui.theme.AppTheme
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.asFlow
@@ -60,6 +61,7 @@ private fun ComponentActivity.render(
         AppTheme {
             when (screen) {
                 is ArticlesState -> HomeScreen(screen, onMessage)
+                is SettingsState -> HomeScreen(screen, onMessage)
                 is ArticleDetailsState -> ArticleDetailsScreen(screen, onMessage)
                 else -> error("unhandled branch $screen")
             }.safe

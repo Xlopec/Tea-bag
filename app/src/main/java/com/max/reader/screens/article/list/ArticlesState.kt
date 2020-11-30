@@ -5,6 +5,7 @@ import com.max.reader.app.ScreenState
 import com.max.reader.domain.Article
 
 sealed class ArticlesState : ScreenState() {
+    abstract override val id: ScreenId
     abstract val query: Query
 }
 

@@ -93,7 +93,6 @@ private fun ArticlesContent(
     state: ArticlesErrorState,
     onMessage: (Message) -> Unit,
 ) {
-    state.cause.printStackTrace()
     ArticlesContent(state = state, onMessage = onMessage) {
 
         item {

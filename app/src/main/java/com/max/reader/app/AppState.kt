@@ -12,11 +12,11 @@ import kotlin.collections.ArrayList
 typealias ScreenId = UUID
 
 abstract class ScreenState {
-    abstract val id: ScreenId
+    abstract val id: ScreenId?
 }
 
 data class AppState(
-    val screens: PersistentList<ScreenState>
+    val screens: PersistentList<ScreenState>,
 ) {
 
     constructor(screen: ScreenState) : this(persistentListOf(screen))
@@ -31,7 +31,7 @@ inline val AppState.screen: ScreenState
 
 inline fun <reified T : ScreenState> AppState.updateScreen(
     id: ScreenId?,
-    how: (T) -> UpdateWith<T, Command>
+    how: (T) -> UpdateWith<T, Command>,
 ): UpdateWith<AppState, Command> {
 
     if (id == null) {
@@ -50,7 +50,7 @@ inline fun <reified T : ScreenState> AppState.updateScreen(
 }
 
 inline fun <reified T : ScreenState> AppState.updateScreen(
-    how: (T) -> UpdateWith<T, Command>
+    how: (T) -> UpdateWith<T, Command>,
 ): UpdateWith<AppState, Command> {
 
     val cmds = mutableSetOf<Command>()
@@ -71,9 +71,13 @@ inline fun <reified T : ScreenState> AppState.updateScreen(
     return copy(screens = scrs) command cmds
 }
 
+fun AppState.swapWithLast(
+    i: Int,
+) = swapScreens(i, screens.lastIndex)
+
 fun AppState.swapScreens(
     i: Int,
-    j: Int = screens.lastIndex
+    j: Int,
 ): AppState {
 
     if (i == j) return this
@@ -84,7 +88,7 @@ fun AppState.swapScreens(
 }
 
 fun AppState.pushScreen(
-    screen: ScreenState
+    screen: ScreenState,
 ): AppState = copy(screens = screens.add(screen))
 
 fun AppState.popScreen(): AppState = copy(screens = screens.pop())

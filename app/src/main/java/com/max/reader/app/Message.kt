@@ -12,6 +12,8 @@ object NavigateToFavorite : Navigation()
 
 object NavigateToTrending : Navigation()
 
+object NavigateToSettings : Navigation()
+
 object Pop : Navigation()
 
 data class NavigateToArticleDetails(

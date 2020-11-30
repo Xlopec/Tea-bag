@@ -2,16 +2,15 @@
 
 package com.max.reader.screens.home
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.vectorResource
 import com.max.reader.R
@@ -21,6 +20,7 @@ import com.max.reader.screens.article.list.Query
 import com.max.reader.screens.article.list.QueryType
 import com.max.reader.screens.article.list.ui.ArticlesScreen
 import com.max.reader.screens.home.BottomMenuItem.*
+import com.max.reader.screens.settings.SettingsState
 import dev.chrisbanes.accompanist.insets.navigationBarsPadding
 
 enum class BottomMenuItem {
@@ -48,10 +48,24 @@ fun HomeScreen(
         })
 }
 
-private fun Query.toMenuItem() = when (type) {
-    QueryType.Regular -> Feed
-    QueryType.Favorite -> Favorite
-    QueryType.Trending -> Trending
+@Composable
+fun HomeScreen(
+    state: SettingsState,
+    onMessage: (Message) -> Unit,
+) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            BottomBar(
+                modifier = Modifier.navigationBarsPadding(),
+                item = Settings,
+                onMessage = onMessage
+            )
+        }, bodyContent = { innerPadding ->
+            Box(modifier = Modifier.fillMaxSize(), alignment = Alignment.Center) {
+                Text(text = "App Settings $state")
+            }
+        })
 }
 
 @Composable
@@ -87,7 +101,13 @@ fun BottomBar(
             Icon(asset = Icons.Filled.Settings)
         },
             selected = item === Settings,
-            onClick = { }
+            onClick = { onMessage(NavigateToSettings) }
         )
     }
+}
+
+private fun Query.toMenuItem() = when (type) {
+    QueryType.Regular -> Feed
+    QueryType.Favorite -> Favorite
+    QueryType.Trending -> Trending
 }
