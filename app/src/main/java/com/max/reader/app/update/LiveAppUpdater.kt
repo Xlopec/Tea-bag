@@ -11,7 +11,9 @@ import com.max.reader.screens.article.details.update.ArticleDetailsUpdater
 import com.max.reader.screens.article.list.*
 import com.max.reader.screens.article.list.QueryType.*
 import com.max.reader.screens.article.list.update.ArticlesUpdater
+import com.max.reader.screens.settings.SettingsMessage
 import com.max.reader.screens.settings.SettingsState
+import com.max.reader.screens.settings.ToggleDarkMode
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -38,9 +40,22 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : ArticlesUpdater,
         state: AppState,
     ): UpdateWith<AppState, Command> =
         when (message) {
-            is ArticlesMessage -> state.updateScreen<ArticlesState>(message.id) { screen -> update(message, screen) }
-            is ArticleDetailsMessage -> state.updateScreen<ArticleDetailsState>(message.id) { screen -> update(message, screen) }
+            is ArticlesMessage -> state.updateScreen<ArticlesState>(message.id) { screen ->
+                updateArticles(message, screen)
+            }
+            is ArticleDetailsMessage -> state.updateScreen<ArticleDetailsState>(message.id) { screen ->
+                updateArticleDetails(message, screen)
+            }
+            is SettingsMessage -> updateSettings(message, state)
             else -> error("Unknown screen message, was $message")
+        }
+
+    fun updateSettings(
+        message: SettingsMessage,
+        state: AppState
+    ): UpdateWith<AppState, Command> =
+        when(message) {
+            ToggleDarkMode -> state.copy(isDarkModeEnabled = !state.isDarkModeEnabled).noCommand()
         }
 
     fun navigate(
@@ -73,7 +88,7 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : ArticlesUpdater,
             // so that it'll be popped out first
             swapWithLast(i)
         } else {
-            pushScreen(SettingsState())
+            pushScreen(SettingsState)
         }
 
         if (BuildConfig.DEBUG) {

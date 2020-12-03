@@ -16,10 +16,12 @@ abstract class ScreenState {
 }
 
 data class AppState(
+    val isDarkModeEnabled: Boolean,
     val screens: PersistentList<ScreenState>,
 ) {
 
-    constructor(screen: ScreenState) : this(persistentListOf(screen))
+    constructor(screen: ScreenState, isNightModeEnabled: Boolean) :
+            this(isNightModeEnabled, persistentListOf(screen))
 
     init {
         require(screens.isNotEmpty())

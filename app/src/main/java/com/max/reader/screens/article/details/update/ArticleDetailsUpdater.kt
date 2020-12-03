@@ -7,7 +7,7 @@ import com.oliynick.max.tea.core.component.UpdateWith
 
 interface ArticleDetailsUpdater {
 
-    fun update(
+    fun updateArticleDetails(
         message: ArticleDetailsMessage,
         screen: ArticleDetailsState
     ): UpdateWith<ArticleDetailsState, ArticleDetailsCommand>

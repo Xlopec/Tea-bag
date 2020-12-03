@@ -10,7 +10,7 @@ import com.oliynick.max.tea.core.component.command
 
 object LiveArticleDetailsUpdater : ArticleDetailsUpdater {
 
-    override fun update(
+    override fun updateArticleDetails(
         message: ArticleDetailsMessage,
         screen: ArticleDetailsState,
     ): UpdateWith<ArticleDetailsState, ArticleDetailsCommand> =

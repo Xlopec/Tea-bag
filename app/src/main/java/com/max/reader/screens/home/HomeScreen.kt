@@ -2,17 +2,21 @@
 
 package com.max.reader.screens.home
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Default
+import androidx.compose.material.icons.filled.Brightness3
+import androidx.compose.material.icons.filled.Brightness5
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
 import com.max.reader.R
 import com.max.reader.app.*
 import com.max.reader.screens.article.list.ArticlesState
@@ -20,7 +24,8 @@ import com.max.reader.screens.article.list.Query
 import com.max.reader.screens.article.list.QueryType
 import com.max.reader.screens.article.list.ui.ArticlesScreen
 import com.max.reader.screens.home.BottomMenuItem.*
-import com.max.reader.screens.settings.SettingsState
+import com.max.reader.screens.settings.ToggleDarkMode
+import com.max.reader.ui.InsetAwareTopAppBar
 import dev.chrisbanes.accompanist.insets.navigationBarsPadding
 
 enum class BottomMenuItem {
@@ -50,11 +55,19 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreen(
-    state: SettingsState,
+    state: AppState,
     onMessage: (Message) -> Unit,
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        topBar = {
+            InsetAwareTopAppBar(
+                backgroundColor = MaterialTheme.colors.surface,
+                title = {
+                    Text(text = "Settings")
+                }
+            )
+        },
         bottomBar = {
             BottomBar(
                 modifier = Modifier.navigationBarsPadding(),
@@ -62,8 +75,48 @@ fun HomeScreen(
                 onMessage = onMessage
             )
         }, bodyContent = { innerPadding ->
-            Box(modifier = Modifier.fillMaxSize(), alignment = Alignment.Center) {
-                Text(text = "App Settings $state")
+
+            ScrollableColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Icon(asset = if (state.isDarkModeEnabled) Default.Brightness3 else Default.Brightness5)
+
+                        Column {
+                            Text(
+                                text = "Dark mode",
+                                style = typography.subtitle1
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "${if (state.isDarkModeEnabled) "Dis" else "En"}ables dark mode in the app",
+                                style = typography.body1
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.weight(weight = 1f, fill = false))
+
+                        Switch(
+                            checked = state.isDarkModeEnabled,
+                            onCheckedChange = { onMessage(ToggleDarkMode) }
+                        )
+                    }
+                    Divider()
+                }
             }
         })
 }

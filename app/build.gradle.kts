@@ -63,12 +63,6 @@ android {
         kotlinCompilerExtensionVersion = "1.0.0-alpha07"
     }
 
-    packagingOptions {
-        exclude("META-INF/ktor*")
-        exclude("META-INF/kotlin*")
-        exclude("META-INF/atomicfu*")
-    }
-
     flavorDimensions += "remoteDebug"
     productFlavors {
 

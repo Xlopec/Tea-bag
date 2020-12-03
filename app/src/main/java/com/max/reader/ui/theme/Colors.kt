@@ -9,6 +9,21 @@ val AppDarkThemeColors = lightColors(
     secondaryVariant = Color(0xFF1c313a),
     onPrimary = Color.White,
     secondary = Color(0xFF455a64),
+    onSecondary = Color.White,
+    background = Color(0xFF263238),
+    onBackground = Color.White,
+    surface = Color(0xFF263238),
+    onSurface = Color.White,
+    error = Color(0xFFD00036),
+    onError = Color.White
+)
+
+val AppLightThemeColors = lightColors(
+    primary = Color(0xFF263238),
+    primaryVariant = Color(0xFF000a12),
+    secondaryVariant = Color(0xFF1c313a),
+    onPrimary = Color.White,
+    secondary = Color(0xFF455a64),
     onSecondary = Color.Black,
     background = Color.White,
     onBackground = Color.Black,

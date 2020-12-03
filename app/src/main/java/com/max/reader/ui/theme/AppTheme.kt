@@ -7,10 +7,11 @@ import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
 
 @Composable
 fun AppTheme(
+    isDarkModeEnabled: Boolean,
     content: @Composable () -> Unit,
 ) {
     MaterialTheme(
-        colors = AppDarkThemeColors,
+        colors = if (isDarkModeEnabled) AppDarkThemeColors else AppLightThemeColors,
         typography = AppTypography,
     ) {
         ProvideWindowInsets {
@@ -23,7 +24,7 @@ fun AppTheme(
 fun ThemedPreview(
     children: @Composable () -> Unit,
 ) {
-    AppTheme {
+    AppTheme(isDarkModeEnabled = true) {
         Surface {
             children()
         }

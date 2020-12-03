@@ -6,7 +6,7 @@ import com.max.reader.screens.article.list.ArticlesState
 import com.oliynick.max.tea.core.component.UpdateWith
 
 interface ArticlesUpdater {
-    fun update(
+    fun updateArticles(
         message: ArticlesMessage,
         state: ArticlesState
     ): UpdateWith<ArticlesState, Command>

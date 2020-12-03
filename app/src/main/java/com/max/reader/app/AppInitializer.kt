@@ -8,7 +8,9 @@ import com.max.reader.screens.article.list.QueryType
 import com.oliynick.max.tea.core.Initializer
 import java.util.*
 
-fun AppInitializer(): Initializer<AppState, Command> {
+fun AppInitializer(
+    isDarkModeEnabled: Boolean,
+): Initializer<AppState, Command> {
 
     val initScreen = ArticlesLoadingState(
         UUID.randomUUID(),
@@ -16,7 +18,7 @@ fun AppInitializer(): Initializer<AppState, Command> {
     )
 
     return Initializer(
-        AppState(initScreen),
+        AppState(initScreen, isDarkModeEnabled),
         LoadByCriteria(
             initScreen.id,
             initScreen.query

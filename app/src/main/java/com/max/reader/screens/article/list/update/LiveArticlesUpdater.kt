@@ -13,7 +13,7 @@ import com.oliynick.max.tea.core.component.noCommand
 @Suppress("MemberVisibilityCanBePrivate")
 object LiveArticlesUpdater : ArticlesUpdater {
 
-    override fun update(
+    override fun updateArticles(
         message: ArticlesMessage,
         state: ArticlesState
     ): UpdateWith<ArticlesState, Command> =

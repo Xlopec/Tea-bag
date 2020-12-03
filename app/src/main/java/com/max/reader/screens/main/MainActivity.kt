@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
         launch {
             appComponent(appMessages.asFlow()).collect(Dispatchers.Main) { state ->
-                render(state.screen, appMessages::offer)
+                render(state, appMessages::offer)
             }
         }
 
@@ -54,14 +54,16 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 }
 
 private fun ComponentActivity.render(
-    screen: ScreenState,
+    state: AppState,
     onMessage: (Message) -> Unit,
 ) =
     setContent {
-        AppTheme {
-            when (screen) {
+        AppTheme(
+            isDarkModeEnabled = state.isDarkModeEnabled
+        ) {
+            when (val screen = state.screen) {
                 is ArticlesState -> HomeScreen(screen, onMessage)
-                is SettingsState -> HomeScreen(screen, onMessage)
+                SettingsState -> HomeScreen(state, onMessage)
                 is ArticleDetailsState -> ArticleDetailsScreen(screen, onMessage)
                 else -> error("unhandled branch $screen")
             }.safe
