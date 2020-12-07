@@ -92,7 +92,7 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
 
-                        Icon(asset = if (state.isDarkModeEnabled) Default.Brightness3 else Default.Brightness5)
+                        Icon(imageVector = if (state.isDarkModeEnabled) Default.Brightness3 else Default.Brightness5)
 
                         Column {
                             Text(
@@ -130,28 +130,28 @@ fun BottomBar(
     BottomNavigation(modifier = modifier) {
 
         BottomNavigationItem(icon = {
-            Icon(asset = vectorResource(id = R.drawable.ic_language_white_24dp))
+            Icon(imageVector = vectorResource(id = R.drawable.ic_language_white_24dp))
         },
             selected = item === Feed,
             onClick = { onMessage(NavigateToFeed) }
         )
 
         BottomNavigationItem(icon = {
-            Icon(asset = vectorResource(id = R.drawable.ic_favorite_border_white_24dp))
+            Icon(imageVector = vectorResource(id = R.drawable.ic_favorite_border_white_24dp))
         },
             selected = item === Favorite,
             onClick = { onMessage(NavigateToFavorite) }
         )
 
         BottomNavigationItem(icon = {
-            Icon(asset = Icons.Filled.TrendingUp)
+            Icon(imageVector = Icons.Filled.TrendingUp)
         },
             selected = item === Trending,
             onClick = { onMessage(NavigateToTrending) }
         )
 
         BottomNavigationItem(icon = {
-            Icon(asset = Icons.Filled.Settings)
+            Icon(imageVector = Icons.Filled.Settings)
         },
             selected = item === Settings,
             onClick = { onMessage(NavigateToSettings) }

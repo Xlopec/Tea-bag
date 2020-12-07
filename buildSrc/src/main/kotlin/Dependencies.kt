@@ -3,7 +3,7 @@ import BuildPlugins.Versions.intellijVersion
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 
-const val kotlinVersion = "1.4.10"
+const val kotlinVersion = "1.4.20"
 
 object BuildPlugins {
 

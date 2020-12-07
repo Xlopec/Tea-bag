@@ -23,6 +23,7 @@ import androidx.compose.ui.focus.ExperimentalFocus
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.max.reader.app.Message
 import com.max.reader.app.NavigateToArticleDetails
@@ -50,7 +51,7 @@ fun ArticlesScreen(
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
-        alignment = Alignment.Center
+        contentAlignment = Alignment.Center
     ) {
         when (state) {
             is ArticlesLoadingState -> ArticlesContent(state = state, onMessage = onMessage)
@@ -66,7 +67,7 @@ private fun ArticlesProgress(
 ) {
     Box(
         modifier = modifier,
-        alignment = Alignment.Center
+        contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
     }
@@ -305,7 +306,7 @@ private fun ArticleActions(
         IconButton(
             onClick = { onMessage(ShareArticle(article)) }
         ) {
-            Icon(asset = Icons.Default.Share)
+            Icon(imageVector = Icons.Default.Share)
         }
 
         IconButton(
@@ -313,7 +314,7 @@ private fun ArticleActions(
         ) {
             Icon(
                 tint = if (article.isFavorite) AppDarkThemeColors.primary else AppDarkThemeColors.onSecondary,
-                asset = if (article.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                imageVector = if (article.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
             )
         }
     }
@@ -395,7 +396,7 @@ private fun ArticleSearchHeader(
                 IconButton(
                     onClick = { onMessage(LoadArticles(id)) }
                 ) {
-                    Icon(asset = Icons.Default.Search)
+                    Icon(imageVector = Icons.Default.Search)
                 }
             },
             onValueChange = { query -> onMessage(OnQueryUpdated(id, query)) }
@@ -404,9 +405,7 @@ private fun ArticleSearchHeader(
 }
 
 @Composable
-@androidx.ui.tooling.preview.Preview(
-    "Articles search input field"
-)
+@Preview("Articles search input field")
 private fun ArticleSearchHeaderPreview() {
     ThemedPreview {
         ArticleSearchHeader(
@@ -418,9 +417,7 @@ private fun ArticleSearchHeaderPreview() {
 }
 
 @Composable
-@androidx.ui.tooling.preview.Preview(
-    "Article item"
-)
+@Preview("Article item")
 private fun ArticleItemPreview() {
     ThemedPreview {
         ArticleItem(
@@ -432,9 +429,7 @@ private fun ArticleItemPreview() {
 }
 
 @Composable
-@androidx.ui.tooling.preview.Preview(
-    "Articles bottom action menu"
-)
+@Preview("Articles bottom action menu")
 private fun ArticleActionsPreview() {
     ThemedPreview {
         ArticleActions(
@@ -446,9 +441,7 @@ private fun ArticleActionsPreview() {
 }
 
 @Composable
-@androidx.ui.tooling.preview.Preview(
-    "Messages preview"
-)
+@Preview("Messages preview")
 private fun MessagePreview() {
     ThemedPreview {
         Message(

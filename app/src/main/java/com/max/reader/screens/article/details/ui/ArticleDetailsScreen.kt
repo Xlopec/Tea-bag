@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.ExperimentalKeyInput
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.keyInputFilter
-import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import com.max.reader.app.Message
@@ -40,12 +40,12 @@ fun ArticleDetailsScreen(
     onMessage: (Message) -> Unit
 ) {
 
-    val context = ContextAmbient.current
+    val context = AmbientContext.current
 
     val view = remember {
         AppWebView(context)
     }
-    // Fixme crashes when user taps hardware back button
+    // TODO implement back navigation inside web view
     Scaffold(
         topBar = {
 
@@ -54,7 +54,7 @@ fun ArticleDetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = { onMessage(Pop) }) {
                         Icon(
-                            asset = /*if (view.canGoBack()) Icons.Default.ArrowBack else*/ Icons.Default.Close,
+                            imageVector = /*if (view.canGoBack()) Icons.Default.ArrowBack else*/ Icons.Default.Close,
                         )
                     }
 

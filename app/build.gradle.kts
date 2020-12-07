@@ -21,13 +21,12 @@ import Libraries.kotlinStdLib
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-android-extensions")
 }
 
 android {
     compileSdkVersion(30)
     defaultConfig {
-        applicationId = "com.max.weatherviewer"
+        applicationId = "com.oliinyk.max.news.reader"
         minSdkVersion(21)
         targetSdkVersion(30)
         versionCode = 1
@@ -60,7 +59,7 @@ android {
 
     composeOptions {
         kotlinCompilerVersion = kotlinVersion
-        kotlinCompilerExtensionVersion = "1.0.0-alpha07"
+        kotlinCompilerExtensionVersion = "1.0.0-alpha08"
     }
 
     flavorDimensions += "remoteDebug"
@@ -90,15 +89,12 @@ android {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     kotlinOptions {
         jvmTarget = "1.8"
+        useIR = true
         freeCompilerArgs += listOf(
             "-Xallow-jvm-ir-dependencies",
             "-Xskip-prerelease-check"
         )
     }
-}
-
-androidExtensions {
-    isExperimental = true
 }
 
 dependencies {
@@ -112,7 +108,7 @@ dependencies {
     implementation(immutableCollections)
     implementation(coroutinesAndroid)
 
-    val composeVersion = "1.0.0-alpha07"
+    val composeVersion = "1.0.0-alpha08"
 
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.foundation:foundation:$composeVersion")
@@ -120,12 +116,12 @@ dependencies {
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.material:material-icons-core:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
-    implementation("androidx.ui:ui-tooling:$composeVersion")
+    implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.runtime:runtime:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.compiler:compiler:$composeVersion")
 
-    val accompaniesVersion = "0.3.3.1"
+    val accompaniesVersion = "0.4.0"
 
     implementation("dev.chrisbanes.accompanist:accompanist-insets:$accompaniesVersion")
     implementation("dev.chrisbanes.accompanist:accompanist-coil:$accompaniesVersion")
