@@ -22,11 +22,11 @@ fun AppTheme(
 
 @Composable
 fun ThemedPreview(
-    children: @Composable () -> Unit,
+    content: @Composable () -> Unit,
 ) {
     AppTheme(isDarkModeEnabled = true) {
         Surface {
-            children()
+            content()
         }
     }
 }

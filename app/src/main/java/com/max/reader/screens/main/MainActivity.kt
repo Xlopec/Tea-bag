@@ -63,7 +63,7 @@ private fun ComponentActivity.render(
         ) {
             when (val screen = state.screen) {
                 is ArticlesState -> HomeScreen(screen, onMessage)
-                SettingsState -> HomeScreen(state, onMessage)
+                is SettingsState -> HomeScreen(state, onMessage)
                 is ArticleDetailsState -> ArticleDetailsScreen(screen, onMessage)
                 else -> error("unhandled branch $screen")
             }.safe

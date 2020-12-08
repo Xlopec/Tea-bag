@@ -53,6 +53,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+        useIR = true
+    }
+
     composeOptions {
         kotlinCompilerVersion = kotlinVersion
         kotlinCompilerExtensionVersion = Versions.compose

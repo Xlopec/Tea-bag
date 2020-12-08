@@ -55,7 +55,7 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : ArticlesUpdater,
         state: AppState
     ): UpdateWith<AppState, Command> =
         when(message) {
-            ToggleDarkMode -> state.copy(isDarkModeEnabled = !state.isDarkModeEnabled).noCommand()
+            is ToggleDarkMode -> state.copy(isDarkModeEnabled = !state.isDarkModeEnabled).noCommand()
         }
 
     fun navigate(

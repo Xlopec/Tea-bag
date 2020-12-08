@@ -12,38 +12,17 @@ object PersistentListSerializer : Serializer<PersistentList<*>> {
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext
-    ): PersistentList<*> = context.deserialize<Collection<Any?>>(json, Collection::class.java).toPersistentList()
-
-    /*
-    json.asJsonArray.map {
-
-            it.asJsonObject.run {
-                context.deserialize<Any?>(this["value"], Class.forName(this["type"].asString))
-            }
-
-
-        }.toPersistentList()
-    }
-     */
+        context: JsonDeserializationContext,
+    ): PersistentList<*> = json.asJsonArray.map { element ->
+        // For our app we know that we always deal with objects,
+        // so it's safe to access "@type" property without additional checks
+        context.deserialize<Any?>(element, Class.forName(element.asJsonObject["@type"].asString))
+    }.toPersistentList()
 
     override fun serialize(
         src: PersistentList<*>,
         typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ): JsonElement = //context.serialize(src, Collection::class.java)
-
-
-        JsonArray().apply {
-            for (v in src) {
-                add(context.serialize(v))
-                /*add(JsonObject().also {
-                    it.addProperty("type", v!!::class.java.name)
-                    it.add("value", context.serialize(v))
-                }
-                )*/
-            }
-        }
-
-
+        context: JsonSerializationContext,
+    ): JsonElement = JsonArray()
+        .apply { src.map(context::serialize).forEach(::add) }
 }
