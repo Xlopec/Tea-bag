@@ -1,3 +1,4 @@
+import Libraries.Versions
 import Libraries.coroutinesAndroid
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
@@ -54,7 +55,7 @@ android {
 
     composeOptions {
         kotlinCompilerVersion = kotlinVersion
-        kotlinCompilerExtensionVersion = "1.0.0-alpha08"
+        kotlinCompilerExtensionVersion = Versions.compose
     }
 
     flavorDimensions += "remoteDebug"
@@ -92,23 +93,19 @@ dependencies {
     implementation(immutableCollections)
     implementation(coroutinesAndroid)
 
-    val composeVersion = "1.0.0-alpha08"
+    implementation("androidx.compose.ui:ui:${Versions.compose}")
+    implementation("androidx.compose.foundation:foundation:${Versions.compose}")
+    implementation("androidx.compose.foundation:foundation-layout:${Versions.compose}")
+    implementation("androidx.compose.material:material:${Versions.compose}")
+    implementation("androidx.compose.material:material-icons-core:${Versions.compose}")
+    implementation("androidx.compose.material:material-icons-extended:${Versions.compose}")
+    implementation("androidx.compose.ui:ui-tooling:${Versions.compose}")
+    implementation("androidx.compose.runtime:runtime:${Versions.compose}")
+    implementation("androidx.compose.animation:animation:${Versions.compose}")
+    implementation("androidx.compose.compiler:compiler:${Versions.compose}")
 
-    implementation("androidx.compose.ui:ui:$composeVersion")
-    implementation("androidx.compose.foundation:foundation:$composeVersion")
-    implementation("androidx.compose.foundation:foundation-layout:$composeVersion")
-    implementation("androidx.compose.material:material:$composeVersion")
-    implementation("androidx.compose.material:material-icons-core:$composeVersion")
-    implementation("androidx.compose.material:material-icons-extended:$composeVersion")
-    implementation("androidx.compose.ui:ui-tooling:$composeVersion")
-    implementation("androidx.compose.runtime:runtime:$composeVersion")
-    implementation("androidx.compose.animation:animation:$composeVersion")
-    implementation("androidx.compose.compiler:compiler:$composeVersion")
-
-    val accompaniesVersion = "0.4.0"
-
-    implementation("dev.chrisbanes.accompanist:accompanist-insets:$accompaniesVersion")
-    implementation("dev.chrisbanes.accompanist:accompanist-coil:$accompaniesVersion")
+    implementation("dev.chrisbanes.accompanist:accompanist-insets:${Versions.accompanies}")
+    implementation("dev.chrisbanes.accompanist:accompanist-coil:${Versions.accompanies}")
 
     implementation("androidx.appcompat:appcompat:1.2.0")
 

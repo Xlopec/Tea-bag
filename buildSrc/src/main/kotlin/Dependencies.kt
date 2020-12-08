@@ -21,9 +21,11 @@ object BuildPlugins {
 }
 
 object Libraries {
-    private object Versions {
+    object Versions {
         const val coroutines = "1.4.1"
         const val ktor = "1.4.2"
+        const val compose = "1.0.0-alpha08"
+        const val accompanies = "0.4.0"
     }
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"

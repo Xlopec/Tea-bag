@@ -1,15 +1,12 @@
 package com.max.reader.serialization
 
-import com.max.reader.app.ScreenMessage
 import com.max.reader.app.AppState
+import com.max.reader.app.ScreenMessage
 import com.max.reader.app.serialization.PersistentListSerializer
 import com.max.reader.domain.Article
 import com.max.reader.domain.Description
 import com.max.reader.domain.Title
-import com.max.reader.screens.article.list.ArticlesLoadingState
-import com.max.reader.screens.article.list.LoadArticles
-import com.max.reader.screens.article.list.LoadCriteria
-import com.max.reader.screens.article.list.ArticlesPreviewState
+import com.max.reader.screens.article.list.*
 import com.oliynick.max.tea.core.debug.gson.Gson
 import com.oliynick.max.tea.core.debug.protocol.NotifyComponentAttached
 import com.oliynick.max.tea.core.debug.protocol.NotifyComponentSnapshot
@@ -33,7 +30,7 @@ class AppStateSerializationTest {
 
     private val previewScreenState = ArticlesPreviewState(
         UUID.randomUUID(),
-        LoadCriteria.Query("android"),
+        Query("android", QueryType.Regular),
         listOf(
             Article(
                 URL("http://www.google.com"),
@@ -49,11 +46,12 @@ class AppStateSerializationTest {
 
     private val loadingScreenState = ArticlesLoadingState(
         UUID.randomUUID(),
-        LoadCriteria.Query("test")
+        Query("test", QueryType.Regular)
     )
 
     private val testState = AppState(
-        persistentListOf(
+        isDarkModeEnabled = false,
+        screens = persistentListOf(
             previewScreenState,
             loadingScreenState
         )
@@ -74,9 +72,9 @@ class AppStateSerializationTest {
     fun `test NotifyComponentSnapshot is serializing correctly`() = with(gsonSerializer) {
 
         val message = NotifyComponentSnapshot(
-                toJsonTree("Message"),
-                toJsonTree(testState),
-                toJsonTree(loadingScreenState)
+            toJsonTree("Message"),
+            toJsonTree(testState),
+            toJsonTree(loadingScreenState)
         )
 
         val json = toJson(message)

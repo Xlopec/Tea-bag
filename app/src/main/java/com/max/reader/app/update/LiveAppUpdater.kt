@@ -189,6 +189,6 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : ArticlesUpdater,
         query: Query,
         newState: AppState,
         oldState: AppState
-    ) = "Wrong number of bottom navigation screens after update, for navigation: " +
+    ) = "Wrong number of bottom navigation screens after navigation update: " +
             "$nav,\nquery: $query,\nnew state: $newState,\nold state: $oldState"
 }
