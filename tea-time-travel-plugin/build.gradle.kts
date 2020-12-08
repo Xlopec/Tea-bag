@@ -9,7 +9,6 @@ import Libraries.ktorServerWebsockets
 import TestLibraries.ktorServerTests
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PublishTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 /*
  * Copyright (C) 2019 Maksym Oliinyk.
@@ -46,12 +45,6 @@ sourceSets {
         resources {
             srcDir("resources")
         }
-    }
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 }
 

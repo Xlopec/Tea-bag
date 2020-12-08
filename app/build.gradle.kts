@@ -52,11 +52,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    kotlinOptions {
-        jvmTarget = "1.8"
-        useIR = true
-    }
-
     composeOptions {
         kotlinCompilerVersion = kotlinVersion
         kotlinCompilerExtensionVersion = "1.0.0-alpha08"
@@ -83,17 +78,6 @@ android {
 
         maybeCreate("default")
             .java.srcDirs("default/java", "main/java")
-    }
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
-    kotlinOptions {
-        jvmTarget = "1.8"
-        useIR = true
-        freeCompilerArgs += listOf(
-            "-Xallow-jvm-ir-dependencies",
-            "-Xskip-prerelease-check"
-        )
     }
 }
 
