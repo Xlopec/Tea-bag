@@ -63,24 +63,24 @@ android {
         kotlinCompilerExtensionVersion = Versions.compose
     }
 
-    flavorDimensions += "remoteDebug"
+    flavorDimensions += "remote"
     productFlavors {
 
-        create("remoteDebuggable") {
-            dimension = "remoteDebug"
-            applicationIdSuffix = ".remoteDebuggable"
+        create("remote") {
+            dimension = "remote"
+            applicationIdSuffix = ".remote"
             versionNameSuffix = "(remote debuggable)"
         }
 
         create("default") {
-            dimension = "remoteDebug"
+            dimension = "remote"
         }
     }
 
     sourceSets {
 
-        maybeCreate("remoteDebuggable")
-            .java.srcDirs("remoteDebuggable/java", "main/java")
+        maybeCreate("remote")
+            .java.srcDirs("remote/java", "main/java")
 
         maybeCreate("default")
             .java.srcDirs("default/java", "main/java")
