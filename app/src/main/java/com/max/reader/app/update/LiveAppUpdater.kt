@@ -112,7 +112,7 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : ArticlesUpdater,
             // so that it'll be popped out first
             swapWithLast(i)
         } else {
-            pushScreen(ArticlesLoadingState(id, query))
+            pushScreen(ArticlesState.loading(id, query))
         }
 
         if (BuildConfig.DEBUG) {

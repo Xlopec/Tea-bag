@@ -1,13 +1,13 @@
+@file:Suppress("FunctionName")
+
 package com.max.reader.screens.article.list
 
 import com.max.reader.app.ScreenId
 import com.max.reader.app.ScreenState
 import com.max.reader.domain.Article
-
-sealed class ArticlesState : ScreenState() {
-    abstract override val id: ScreenId
-    abstract val query: Query
-}
+import com.max.reader.misc.E0
+import com.max.reader.misc.E1
+import com.max.reader.misc.Either2
 
 enum class QueryType {
     Regular, Favorite, Trending
@@ -18,32 +18,50 @@ data class Query(
     val type: QueryType
 )
 
-data class ArticlesLoadingState(
+data class ArticlesState(
     override val id: ScreenId,
-    override val query: Query
-) : ArticlesState()
+    val query: Query,
+    val articles: List<Article>,
+    val transientState: Either2<Throwable, Boolean>
+) : ScreenState() {
 
-data class ArticlesPreviewState(
-    override val id: ScreenId,
-    override val query: Query,
-    val articles: List<Article>
-) : ArticlesState()
+    val isLoading = (transientState as? E1)?.r == true
 
-data class ArticlesErrorState(
-    override val id: ScreenId,
-    override val query: Query,
-    val cause: Throwable
-) : ArticlesState()
+    val isPreview = !isLoading
+
+    companion object {
+
+        fun loading(
+            id: ScreenId,
+            query: Query,
+            articles: List<Article> = emptyList()
+        ) = ArticlesState(id, query, articles, E1(true))
+
+        fun preview(
+            id: ScreenId,
+            query: Query,
+            articles: List<Article> = emptyList()
+        ) = ArticlesState(id, query, articles, E1(false))
+
+        fun exception(
+            id: ScreenId,
+            query: Query,
+            cause: Throwable,
+            articles: List<Article> = emptyList()
+        ) = ArticlesState(id, query, articles, E0(cause))
+    }
+
+}
 
 // todo replace with immutable collection
-fun ArticlesPreviewState.updateArticle(
+fun ArticlesState.updateArticle(
     new: Article
-): ArticlesPreviewState = copy(articles = articles.map { if (it.url == new.url) new else it })
+): ArticlesState = copy(articles = articles.map { if (it.url == new.url) new else it })
 
-fun ArticlesPreviewState.prependArticle(
+fun ArticlesState.prependArticle(
     new: Article
-): ArticlesPreviewState = copy(articles = listOf(new) + articles)
+): ArticlesState = copy(articles = listOf(new) + articles)
 
-fun ArticlesPreviewState.removeArticle(
+fun ArticlesState.removeArticle(
     victim: Article
-): ArticlesPreviewState = copy(articles = articles.filter { it.url != victim.url })
+): ArticlesState = copy(articles = articles.filter { it.url != victim.url })

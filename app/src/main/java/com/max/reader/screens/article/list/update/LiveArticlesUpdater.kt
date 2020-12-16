@@ -18,11 +18,12 @@ object LiveArticlesUpdater : ArticlesUpdater {
         state: ArticlesState
     ): UpdateWith<ArticlesState, Command> =
         when {
-            message is ArticlesLoaded -> ArticlesPreviewState(state.id, state.query, message.articles).noCommand()
-            message is LoadArticles -> ArticlesLoadingState(state.id, state.query) command LoadByCriteria(state.id, state.query)
-            message is ArticlesOperationException -> ArticlesErrorState(state.id, state.query, message.cause).noCommand()
-            message is ToggleArticleIsFavorite && state is ArticlesPreviewState -> toggleFavorite(message.article, state)
-            message is ArticleUpdated && state is ArticlesPreviewState -> updateArticle(message.article, state)
+            // fixme add pagination
+            message is ArticlesLoaded -> ArticlesState.preview(state.id, state.query, message.articles).noCommand()
+            message is LoadArticles -> ArticlesState.loading(state.id, state.query) command LoadByCriteria(state.id, state.query)
+            message is ArticlesOperationException -> ArticlesState.exception(state.id, state.query, message.cause).noCommand()
+            message is ToggleArticleIsFavorite && state.isPreview -> toggleFavorite(message.article, state)
+            message is ArticleUpdated && state.isPreview -> updateArticle(message.article, state)
             message is ShareArticle -> shareArticle(message.article, state)
             // fixme redesign FeedState
             message is OnQueryUpdated -> updateQuery(message.query, state)
@@ -32,7 +33,7 @@ object LiveArticlesUpdater : ArticlesUpdater {
 
     fun updateArticle(
         article: Article,
-        state: ArticlesPreviewState
+        state: ArticlesState
     ): UpdateWith<ArticlesState, Command> {
 
         val updated = when (state.query.type) {
@@ -45,7 +46,7 @@ object LiveArticlesUpdater : ArticlesUpdater {
 
     fun toggleFavorite(
         article: Article,
-        state: ArticlesPreviewState
+        state: ArticlesState
     ): UpdateWith<ArticlesState, Command> {
 
         val toggled = article.toggleFavorite()
@@ -65,12 +66,9 @@ object LiveArticlesUpdater : ArticlesUpdater {
 
     fun Article.storeCommand() = if (isFavorite) SaveArticle(this) else RemoveArticle(this)
 
+    // fixme inline
     fun ArticlesState.updateQuery(
         input: String
-    ) = when (this) {
-        is ArticlesLoadingState -> copy(query = query.copy(input = input))
-        is ArticlesPreviewState -> copy(query = query.copy(input = input))
-        is ArticlesErrorState -> copy(query = query.copy(input = input))
-    }
+    ) = copy(query = query.copy(input = input))
 
 }

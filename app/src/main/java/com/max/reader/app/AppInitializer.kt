@@ -2,7 +2,7 @@
 
 package com.max.reader.app
 
-import com.max.reader.screens.article.list.ArticlesLoadingState
+import com.max.reader.screens.article.list.ArticlesState
 import com.max.reader.screens.article.list.Query
 import com.max.reader.screens.article.list.QueryType
 import com.oliynick.max.tea.core.Initializer
@@ -12,9 +12,9 @@ fun AppInitializer(
     isDarkModeEnabled: Boolean,
 ): Initializer<AppState, Command> {
 
-    val initScreen = ArticlesLoadingState(
+    val initScreen = ArticlesState.loading(
         UUID.randomUUID(),
-        Query("android", QueryType.Regular)
+        Query("android", QueryType.Regular),
     )
 
     return Initializer(

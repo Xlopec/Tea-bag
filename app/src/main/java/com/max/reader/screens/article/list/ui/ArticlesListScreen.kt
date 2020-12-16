@@ -32,6 +32,8 @@ import com.max.reader.domain.Article
 import com.max.reader.domain.Author
 import com.max.reader.domain.Description
 import com.max.reader.domain.Title
+import com.max.reader.misc.E0
+import com.max.reader.misc.E1
 import com.max.reader.misc.safe
 import com.max.reader.screens.article.list.*
 import com.max.reader.screens.article.list.QueryType.*
@@ -52,10 +54,25 @@ fun ArticlesScreen(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        when (state) {
-            is ArticlesLoadingState -> ArticlesContent(state = state, onMessage = onMessage)
-            is ArticlesPreviewState -> ArticlesContent(state = state, onMessage = onMessage)
-            is ArticlesErrorState -> ArticlesContent(state = state, onMessage = onMessage)
+
+        when (val either = state.transientState) {
+            is E0 ->
+                ArticlesExceptionContent(
+                    id = state.id,
+                    query = state.query,
+                    articles = state.articles,
+                    cause = either.l,
+                    onMessage = onMessage
+                )
+            is E1 -> {
+                if (either.r) {
+                    ArticlesLoadingContent(state.id, state.query, state.articles, onMessage)
+                } else {
+                    ArticlesPreviewContent(state.id, state.query, state.articles, onMessage)
+                }
+            }
+            // fixme remove
+            else -> error("(")
         }.safe
     }
 }
@@ -73,12 +90,17 @@ private fun ArticlesProgress(
 }
 
 @Composable
-private fun ArticlesContent(
-    state: ArticlesLoadingState,
+private fun ArticlesLoadingContent(
+    id: ScreenId,
+    query: Query,
+    articles: List<Article>,
     onMessage: (Message) -> Unit,
 ) {
-    ArticlesContent(state = state, onMessage = onMessage) {
-
+    ArticlesContent(
+        id = id,
+        query = query, onMessage = onMessage
+    ) {
+        // todo implement pagination
         item {
             ArticlesProgress(
                 modifier = Modifier.fillParentMaxSize()
@@ -89,17 +111,20 @@ private fun ArticlesContent(
 }
 
 @Composable
-private fun ArticlesContent(
-    state: ArticlesErrorState,
+private fun ArticlesExceptionContent(
+    id: ScreenId,
+    query: Query,
+    articles: List<Article>,
+    cause: Throwable,
     onMessage: (Message) -> Unit,
 ) {
-    ArticlesContent(state = state, onMessage = onMessage) {
+    ArticlesContent(id, query, onMessage) {
 
         item {
             ArticlesError(
                 modifier = Modifier.fillParentMaxSize(),
-                id = state.id,
-                message = state.toReadableMessage(),
+                id = id,
+                message = cause.toReadableMessage(),
                 onMessage = onMessage
             )
         }
@@ -108,28 +133,25 @@ private fun ArticlesContent(
 }
 
 @Composable
-private fun ArticlesContent(
-    state: ArticlesPreviewState,
+private fun ArticlesPreviewContent(
+    id: ScreenId,
+    query: Query,
+    articles: List<Article>,
     onMessage: (Message) -> Unit,
 ) {
-    if (state.articles.isEmpty()) {
-        ArticlesContentEmpty(
-            state = state,
-            onMessage = onMessage
-        )
+    if (articles.isEmpty()) {
+        ArticlesContentEmpty(id, query, onMessage)
     } else {
-        ArticlesContentNonEmpty(
-            state = state,
-            onMessage = onMessage
-        )
+        ArticlesContentNonEmpty(id, query, articles, onMessage)
     }
 }
 
 @Composable
 private fun ArticlesContent(
-    state: ArticlesState,
+    id: ScreenId,
+    query: Query,
     onMessage: (Message) -> Unit,
-    children: LazyListScope.(state: ArticlesState) -> Unit,
+    children: LazyListScope.() -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -139,24 +161,25 @@ private fun ArticlesContent(
 
         item {
             ArticleSearchHeader(
-                id = state.id,
-                query = state.query,
+                id = id,
+                query = query,
                 onMessage = onMessage
             )
 
             Spacer(modifier = Modifier.preferredHeight(16.dp))
         }
 
-        children(state)
+        children()
     }
 }
 
 @Composable
 private fun ArticlesContentEmpty(
-    state: ArticlesState,
+    id: ScreenId,
+    query: Query,
     onMessage: (Message) -> Unit,
 ) {
-    ArticlesContent(state = state, onMessage = onMessage) {
+    ArticlesContent(id, query, onMessage) {
 
         item {
             Message(
@@ -164,7 +187,7 @@ private fun ArticlesContentEmpty(
                 message = "Couldn't find articles",
                 actionText = "Reload",
                 onClick = {
-                    onMessage(LoadArticles(state.id))
+                    onMessage(LoadArticles(id))
                 }
             )
         }
@@ -173,33 +196,35 @@ private fun ArticlesContentEmpty(
 
 @Composable
 private fun ArticlesContentNonEmpty(
-    state: ArticlesPreviewState,
+    id: ScreenId,
+    query: Query,
+    articles: List<Article>,
     onMessage: (Message) -> Unit,
 ) {
-    require(state.articles.isNotEmpty())
+    require(articles.isNotEmpty())
 
-    ArticlesContent(state = state, onMessage = onMessage) {
+    ArticlesContent(id, query, onMessage) {
 
         item {
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start,
-                text = state.toScreenTitle(),
+                text = query.toScreenTitle(),
                 style = typography.subtitle1
             )
 
             Spacer(modifier = Modifier.preferredHeight(16.dp))
         }
 
-        itemsIndexed(state.articles) { index, article ->
+        itemsIndexed(articles) { index, article ->
             Column {
                 ArticleItem(
-                    screenId = state.id,
+                    screenId = id,
                     article = article,
                     onMessage = onMessage
                 )
 
-                if (index != state.articles.lastIndex) {
+                if (index != articles.lastIndex) {
                     Spacer(modifier = Modifier.preferredHeight(16.dp))
                 }
             }
@@ -452,11 +477,11 @@ private val DateFormatter: SimpleDateFormat by lazy {
     SimpleDateFormat("dd MMM' at 'hh:mm", Locale.getDefault())
 }
 
-private fun ArticlesErrorState.toReadableMessage() =
-    cause.message?.decapitalize(Locale.getDefault()) ?: "unknown exception"
+private fun Throwable.toReadableMessage() =
+    message?.decapitalize(Locale.getDefault()) ?: "unknown exception"
 
-private fun ArticlesState.toScreenTitle(): String =
-    when (query.type) {
+private fun Query.toScreenTitle(): String =
+    when (type) {
         Regular -> "Feed"
         Favorite -> "Favorite"
         Trending -> "Trending"

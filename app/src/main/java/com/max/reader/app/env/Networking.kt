@@ -7,7 +7,6 @@ import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
@@ -18,10 +17,9 @@ fun AppGson(
 ): Gson =
     GsonBuilder().serializeNulls().setPrettyPrinting().apply(config).create()
 
-fun Retrofit(
-    gson: Gson
-): Retrofit {
+fun Retrofit(): Retrofit {
     val client = OkHttpClient.Builder()
+        .callTimeout(3, TimeUnit.SECONDS)
         .readTimeout(3, TimeUnit.SECONDS)
         .connectTimeout(3, TimeUnit.SECONDS)
         .apply {

@@ -20,12 +20,14 @@ import androidx.compose.ui.unit.dp
 import com.max.reader.R
 import com.max.reader.app.*
 import com.max.reader.screens.article.list.ArticlesState
+import com.max.reader.screens.article.list.LoadArticles
 import com.max.reader.screens.article.list.Query
 import com.max.reader.screens.article.list.QueryType
 import com.max.reader.screens.article.list.ui.ArticlesScreen
 import com.max.reader.screens.home.BottomMenuItem.*
 import com.max.reader.screens.settings.ToggleDarkMode
 import com.max.reader.ui.InsetAwareTopAppBar
+import com.max.reader.ui.SwipeToRefreshLayout
 import dev.chrisbanes.accompanist.insets.navigationBarsPadding
 
 enum class BottomMenuItem {
@@ -40,17 +42,23 @@ fun HomeScreen(
     state: ArticlesState,
     onMessage: (Message) -> Unit,
 ) {
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        bottomBar = {
-            BottomBar(
-                modifier = Modifier.navigationBarsPadding(),
-                item = state.query.toMenuItem(),
-                onMessage = onMessage
-            )
-        }, bodyContent = { innerPadding ->
-            ArticlesScreen(Modifier.padding(innerPadding), state, onMessage)
-        })
+    SwipeToRefreshLayout(
+        enabled = !state.isLoading && state.articles.isNotEmpty(),
+        refreshingState = state.isLoading && state.articles.isNotEmpty(),
+        onRefresh = { onMessage(LoadArticles(state.id)) },
+    ) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            bottomBar = {
+                BottomBar(
+                    modifier = Modifier.navigationBarsPadding(),
+                    item = state.query.toMenuItem(),
+                    onMessage = onMessage
+                )
+            }, bodyContent = { innerPadding ->
+                ArticlesScreen(Modifier.padding(innerPadding), state, onMessage)
+            })
+    }
 }
 
 @Composable

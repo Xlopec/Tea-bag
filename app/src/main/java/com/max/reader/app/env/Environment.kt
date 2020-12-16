@@ -33,24 +33,19 @@ interface Environment :
 fun Environment(
     application: Application,
     scope: CoroutineScope,
-): Environment {
-
-    val gson = buildGson()
-    val retrofit = Retrofit(gson)
-
-    return object : Environment,
+): Environment =
+    object : Environment,
         AppModule<Environment> by AppModule(),
         ArticlesModule<Environment> by ArticlesModule(),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(),
         HasCommandTransport by CommandTransport(),
-        HasNewsApi by NewsApi(retrofit),
+        HasNewsApi by NewsApi(Retrofit()),
         HasMongoCollection by MongoCollection(application),
-        HasGson by Gson(gson),
+        HasGson by Gson(buildGson()),
         HasAppContext by AppContext(application),
         Storage<Environment> by Storage(),
         CoroutineScope by scope {
     }
-}
 
 private fun buildGson() =
     AppGson {
