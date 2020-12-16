@@ -35,7 +35,6 @@ import com.max.reader.domain.Title
 import com.max.reader.misc.safe
 import com.max.reader.screens.article.list.*
 import com.max.reader.screens.article.list.QueryType.*
-import com.max.reader.ui.theme.AppDarkThemeColors
 import com.max.reader.ui.theme.ThemedPreview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import dev.chrisbanes.accompanist.insets.statusBarsPadding
@@ -313,7 +312,6 @@ private fun ArticleActions(
             onClick = { onMessage(ToggleArticleIsFavorite(screenId, article)) }
         ) {
             Icon(
-                tint = if (article.isFavorite) AppDarkThemeColors.primary else AppDarkThemeColors.onSecondary,
                 imageVector = if (article.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
             )
         }
@@ -378,12 +376,9 @@ private fun ArticleSearchHeader(
         shape = RoundedCornerShape(8.dp)
     ) {
 
-        val caption =
-            typography.subtitle2.copy(color = typography.subtitle2.color.copy(alpha = 0.4f))
-
         TextField(
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(text = query.type.toSearchHint(), style = caption) },
+            placeholder = { Text(text = query.type.toSearchHint(), style = typography.subtitle2) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             value = query.input,
             maxLines = 1,

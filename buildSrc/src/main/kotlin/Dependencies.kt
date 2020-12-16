@@ -8,7 +8,7 @@ const val kotlinVersion = "1.4.20"
 object BuildPlugins {
 
     object Versions {
-        const val buildToolsVersion = "7.0.0-alpha02"
+        const val buildToolsVersion = "7.0.0-alpha03"
         const val detektVersion = "1.5.1"
         const val dokkaVersion = "1.4.0"
         const val bintrayVersion = "1.8.4"
