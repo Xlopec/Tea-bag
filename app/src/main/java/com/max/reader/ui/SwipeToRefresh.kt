@@ -22,21 +22,25 @@ fun RefreshIndicator(
     isRefreshing: Boolean,
     @FloatRange(from = .0, to = 1.0) progress: Float,
 ) {
-    require(progress in .0..1.0) { "fok $progress" }
+    require(progress in .0..1.0) { "Value was out of range ${.0..1.0}, value: $progress" }
     Surface(elevation = 10.dp, shape = CircleShape) {
 
         val modifier = Modifier
             .preferredSize(36.dp)
             .padding(8.dp)
 
+        val color = MaterialTheme.colors.onSurface
+
         if (isRefreshing) {
             CircularProgressIndicator(
-                modifier = modifier
+                modifier = modifier,
+                color = color
             )
         } else {
             CircularProgressIndicator(
                 progress = progress,
-                modifier = modifier
+                modifier = modifier,
+                color = color
             )
         }
     }
@@ -45,9 +49,9 @@ fun RefreshIndicator(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SwipeToRefreshLayout(
-    enabled: Boolean,
     refreshingState: Boolean,
     onRefresh: () -> Unit,
+    enabled: Boolean = true,
     refreshIndicator: @Composable (Boolean, Float) -> Unit = { isRefreshing, progress ->
         RefreshIndicator(isRefreshing, progress)
     },

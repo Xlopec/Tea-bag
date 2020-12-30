@@ -14,26 +14,28 @@ object CloseApp : Command()
 sealed class ArticleDetailsCommand : Command()
 
 data class DoOpenArticle(
-    val article: Article
+    val article: Article,
 ) : ArticleDetailsCommand()
 
 // Feed screen commands
 
 sealed class ArticlesCommand : Command()
 
-data class LoadByCriteria(
+data class LoadArticlesByQuery(
     val id: ScreenId,
-    val query: Query
+    val query: Query,
+    val currentSize: Int,
+    val resultsPerPage: Int,
 ) : ArticlesCommand()
 
 data class SaveArticle(
-    val article: Article
+    val article: Article,
 ) : ArticlesCommand()
 
 data class RemoveArticle(
-    val article: Article
+    val article: Article,
 ) : ArticlesCommand()
 
 data class DoShareArticle(
-    val article: Article
+    val article: Article,
 ) : ArticlesCommand()

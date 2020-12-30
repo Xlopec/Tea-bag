@@ -36,7 +36,7 @@ fun <Env> Storage(): Storage<Env> where Env : HasMongoCollection,
         coroutineScope {
             withContext(Dispatchers.IO) {
                 collection.replaceOne(
-                    eq("url", article.url.toExternalForm()),
+                    eqUrl(article.url),
                     Document.parse(gson.toJson(article)),
                     ReplaceOptions.createReplaceOptions(UpdateOptions().upsert(true))
                 )
@@ -47,48 +47,90 @@ fun <Env> Storage(): Storage<Env> where Env : HasMongoCollection,
     override suspend fun Env.removeFromFavorite(url: URL) {
         coroutineScope {
             withContext(Dispatchers.IO) {
-                collection.findOneAndDelete(
-                    eq("url", url.toExternalForm())
-                )
+                collection.findOneAndDelete(eqUrl(url))
             }
         }
     }
 
 
     override suspend fun Env.fetch(
-        query: Query
-    ): List<Article> = when (query.type) {
-        Regular -> fetchFromEverything(query.input)
+        query: Query,
+        currentSize: Int,
+        resultsPerPage: Int,
+    ): Storage.Page = when (query.type) {
+        Regular -> fetchFromEverything(query.input, currentSize, resultsPerPage)
         Favorite -> fetchFavorite(query.input)
-        Trending -> fetchTrending(query.input)
+        Trending -> fetchTrending(query.input, currentSize, resultsPerPage)
     }
 
     private suspend fun Env.fetchFromEverything(
         input: String,
-    ) = toArticles(api.fetchFromEverything(API_KEY, input.toInputQueryMap()))
+        currentSize: Int,
+        resultsPerPage: Int,
+    ): Storage.Page =
+        toPage(
+            api.fetchFromEverything(
+                API_KEY,
+                (currentSize / resultsPerPage) + 1,
+                resultsPerPage,
+                input.toInputQueryMap()
+            ),
+            currentSize,
+            resultsPerPage
+        )
+
+    private suspend fun Env.toPage(
+        response: ArticleResponse,
+        currentSize: Int,
+        resultsPerPage: Int,
+    ): Storage.Page {
+        val (total, results) = response
+        val skip = currentSize % resultsPerPage
+
+        val tail = if (skip == 0 || results.isEmpty()) results
+        else results.subList(skip, results.size)
+
+        return Storage.Page(toArticles(tail), currentSize + tail.size < total)
+    }
 
     private suspend fun Env.fetchTrending(
         input: String,
-    ): List<Article> =
-        toArticles(api.fetchTopHeadlines(API_KEY, application.countryCode, input.toInputQueryMap()))
+        currentSize: Int,
+        resultsPerPage: Int,
+    ): Storage.Page =
+        toPage(
+            api.fetchTopHeadlines(
+                API_KEY,
+                application.countryCode,
+                (currentSize / resultsPerPage) + 1,
+                resultsPerPage,
+                input.toInputQueryMap()
+            ),
+            currentSize,
+            resultsPerPage
+        )
 
     private suspend fun Env.fetchFavorite(
         input: String,
-    ): List<Article> = coroutineScope {
-        withContext(Dispatchers.IO) {
-            collection
-                .find(input.toTextSearchFilter())
-                .map { gson.fromJson(it.toJson(), Article::class.java) }
-                .into(ArrayList())
+    ): Storage.Page =
+        coroutineScope {
+            withContext(Dispatchers.IO) {
+                Storage.Page(
+                    articles = collection
+                        .find(input.toTextSearchFilter())
+                        .map { document -> gson.fromJson(document.toJson(), Article::class.java) }
+                        .into(ArrayList()),
+                    hasMore = false
+                )
+            }
         }
-    }
 
     private suspend fun Env.toArticles(
-        response: ArticleResponse
-    ) = response.articles.map { elem -> toArticle(elem) }
+        articles: Iterable<ArticleElement>,
+    ) = articles.map { elem -> toArticle(elem) }
 
     private suspend fun Env.toArticle(
-        element: ArticleElement
+        element: ArticleElement,
     ) =
         Article(
             url = element.url,
@@ -100,10 +142,12 @@ fun <Env> Storage(): Storage<Env> where Env : HasMongoCollection,
             published = element.publishedAt
         )
 
-    private suspend fun Env.isFavorite(url: URL): Boolean =
+    private suspend fun Env.isFavorite(
+        url: URL
+    ): Boolean =
         coroutineScope {
             withContext(Dispatchers.IO) {
-                collection.countDocuments(eq("url", url.toExternalForm())) > 0
+                collection.countDocuments(eqUrl(url)) > 0
             }
         }
 
@@ -119,3 +163,7 @@ private fun String.toInputQueryMap(): Map<String, String> =
 
 private val TextSearchOptions = TextSearchOptions()
     .apply { caseSensitive(false) }
+
+private fun eqUrl(
+    url: URL
+) = eq("url", url.toExternalForm())

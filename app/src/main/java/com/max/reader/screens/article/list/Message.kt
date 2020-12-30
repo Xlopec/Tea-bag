@@ -7,34 +7,43 @@ import com.max.reader.domain.Article
 
 sealed class ArticlesMessage : ScreenMessage()
 
-data class LoadArticles(
-    val id: ScreenId
+data class LoadNextArticles(
+    val id: ScreenId,
+) : ArticlesMessage()
+
+data class LoadArticlesFromScratch(
+    val id: ScreenId,
+) : ArticlesMessage()
+
+data class RefreshArticles(
+    val id: ScreenId,
 ) : ArticlesMessage()
 
 data class ToggleArticleIsFavorite(
     val id: ScreenId,
-    val article: Article
+    val article: Article,
 ) : ArticlesMessage()
 
 data class ArticlesLoaded(
     val id: ScreenId,
-    val articles: List<Article>
+    val articles: List<Article>,
+    val hasMore: Boolean,
 ) : ArticlesMessage()
 
 data class ArticlesOperationException(
     val id: ScreenId?,
-    val cause: AppException
+    val cause: AppException,
 ) : ArticlesMessage()
 
 data class ArticleUpdated(
-    val article: Article
+    val article: Article,
 ) : ArticlesMessage()
 
 data class ShareArticle(
-    val article: Article
+    val article: Article,
 ) : ArticlesMessage()
 
 data class OnQueryUpdated(
     val id: ScreenId,
-    val query: String
+    val query: String,
 ) : ArticlesMessage()

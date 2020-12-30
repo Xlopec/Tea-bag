@@ -6,12 +6,19 @@ import java.net.URL
 
 interface Storage<Env> {
 
+    data class Page(
+        val articles: List<Article>,
+        val hasMore: Boolean
+    )
+
     suspend fun Env.addToFavorite(article: Article)
 
     suspend fun Env.removeFromFavorite(url: URL)
 
     suspend fun Env.fetch(
-        query: Query
-    ): List<Article>
+        query: Query,
+        currentSize: Int,
+        resultsPerPage: Int
+    ): Page
 
 }

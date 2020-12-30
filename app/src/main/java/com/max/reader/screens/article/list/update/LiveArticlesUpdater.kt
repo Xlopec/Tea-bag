@@ -17,18 +17,30 @@ object LiveArticlesUpdater : ArticlesUpdater {
         message: ArticlesMessage,
         state: ArticlesState
     ): UpdateWith<ArticlesState, Command> =
-        when {
-            // fixme add pagination
-            message is ArticlesLoaded -> ArticlesState.preview(state.id, state.query, message.articles).noCommand()
-            message is LoadArticles -> ArticlesState.loading(state.id, state.query) command LoadByCriteria(state.id, state.query)
-            message is ArticlesOperationException -> ArticlesState.exception(state.id, state.query, message.cause).noCommand()
-            message is ToggleArticleIsFavorite && state.isPreview -> toggleFavorite(message.article, state)
-            message is ArticleUpdated && state.isPreview -> updateArticle(message.article, state)
-            message is ShareArticle -> shareArticle(message.article, state)
+        when (message) {
+            is ArticlesLoaded -> state.toPreview(message.articles, message.hasMore).noCommand()
+            is LoadNextArticles -> loadNextArticles(state)
+            is LoadArticlesFromScratch, is RefreshArticles -> state.toRefreshing() command LoadArticlesByQuery(state.id, state.query, state.articles.size, ArticlesState.ArticlesPerPage)
+            is ArticlesOperationException -> state.toException(message.cause).noCommand()
+            is ToggleArticleIsFavorite -> toggleFavorite(message.article, state)
+            is ArticleUpdated -> updateArticle(message.article, state)
+            is ShareArticle -> shareArticle(message.article, state)
             // fixme redesign FeedState
-            message is OnQueryUpdated -> updateQuery(message.query, state)
-            message is ArticleUpdated -> state.noCommand()// ignore
-            else -> error("Can't handle message $message when state is $state")
+            is OnQueryUpdated -> updateQuery(message.query, state)
+        }
+
+    fun loadNextArticles(
+        state: ArticlesState
+    ) =
+        if (state.isPreview && state.hasMoreArticles) {
+            state.toLoadingNext() command LoadArticlesByQuery(
+                state.id,
+                state.query,
+                state.articles.size,
+                ArticlesState.ArticlesPerPage
+            )
+        } else {
+            state.noCommand()
         }
 
     fun updateArticle(

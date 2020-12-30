@@ -36,19 +36,17 @@ inline fun <reified T : ScreenState> AppState.updateScreen(
     how: (T) -> UpdateWith<T, Command>,
 ): UpdateWith<AppState, Command> {
 
-    if (id == null) {
-        return updateScreen(how)
+    val index by lazy { screens.indexOfFirst { screen -> screen.id == id && screen is T } }
+
+    return when {
+        id == null -> updateScreen(how)
+        index < 0 -> noCommand()
+        else -> {
+            val (screen, commands) = how(screens[index] as T)
+
+            copy(screens = screens.set(index, screen)) command commands
+        }
     }
-
-    val index = screens.indexOfFirst { screen -> screen.id == id && screen is T }
-
-    if (index < 0) {
-        return noCommand()
-    }
-
-    val (screen, commands) = how(screens[index] as T)
-
-    return copy(screens = screens.set(index, screen)) command commands
 }
 
 inline fun <reified T : ScreenState> AppState.updateScreen(

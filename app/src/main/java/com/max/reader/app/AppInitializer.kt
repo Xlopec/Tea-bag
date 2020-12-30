@@ -12,16 +12,18 @@ fun AppInitializer(
     isDarkModeEnabled: Boolean,
 ): Initializer<AppState, Command> {
 
-    val initScreen = ArticlesState.loading(
+    val initScreen = ArticlesState.newLoading(
         UUID.randomUUID(),
         Query("android", QueryType.Regular),
     )
 
     return Initializer(
         AppState(initScreen, isDarkModeEnabled),
-        LoadByCriteria(
+        LoadArticlesByQuery(
             initScreen.id,
-            initScreen.query
+            initScreen.query,
+            initScreen.articles.size,
+            ArticlesState.ArticlesPerPage
         )
     )
 }

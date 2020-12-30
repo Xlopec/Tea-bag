@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.dp
 import com.max.reader.R
 import com.max.reader.app.*
 import com.max.reader.screens.article.list.ArticlesState
-import com.max.reader.screens.article.list.LoadArticles
 import com.max.reader.screens.article.list.Query
 import com.max.reader.screens.article.list.QueryType
+import com.max.reader.screens.article.list.RefreshArticles
 import com.max.reader.screens.article.list.ui.ArticlesScreen
 import com.max.reader.screens.home.BottomMenuItem.*
 import com.max.reader.screens.settings.ToggleDarkMode
@@ -43,9 +43,8 @@ fun HomeScreen(
     onMessage: (Message) -> Unit,
 ) {
     SwipeToRefreshLayout(
-        enabled = !state.isLoading && state.articles.isNotEmpty(),
-        refreshingState = state.isLoading && state.articles.isNotEmpty(),
-        onRefresh = { onMessage(LoadArticles(state.id)) },
+        refreshingState = state.isRefreshing,
+        onRefresh = { onMessage(RefreshArticles(state.id)) },
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),

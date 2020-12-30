@@ -2,13 +2,14 @@ package com.max.reader.screens.main
 
 import android.os.Bundle
 import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.setContent
 import androidx.core.view.WindowCompat
 import com.max.reader.R
 import com.max.reader.app.*
-import com.max.reader.misc.collect
 import com.max.reader.misc.safe
 import com.max.reader.screens.article.details.ArticleDetailsState
 import com.max.reader.screens.article.details.ui.ArticleDetailsScreen
@@ -26,13 +27,15 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         setTheme(R.style.Theme_NewsReader)
         super.onCreate(savedInstanceState)
 
-        window.setFlags(FLAG_TRANSLUCENT_STATUS, FLAG_TRANSLUCENT_STATUS);
+        window.setFlags(FLAG_TRANSLUCENT_STATUS, FLAG_TRANSLUCENT_STATUS)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        launch {
-            appComponent(appMessages.asFlow()).collect(Dispatchers.Main) { state ->
-                render(state, appMessages::offer)
-            }
+        setContent {
+
+            val stateFlow = remember { appComponent(appMessages.asFlow()) }
+            val state = stateFlow.collectAsState(context = Dispatchers.Main, initial = null)
+
+            state.value?.render(appMessages::offer)
         }
 
         launch {
@@ -53,19 +56,18 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
 }
 
-private fun ComponentActivity.render(
-    state: AppState,
+@Composable
+private fun AppState.render(
     onMessage: (Message) -> Unit,
-) =
-    setContent {
-        AppTheme(
-            isDarkModeEnabled = state.isDarkModeEnabled
-        ) {
-            when (val screen = state.screen) {
-                is ArticlesState -> HomeScreen(screen, onMessage)
-                is SettingsState -> HomeScreen(state, onMessage)
-                is ArticleDetailsState -> ArticleDetailsScreen(screen, onMessage)
-                else -> error("unhandled branch $screen")
-            }.safe
-        }
+) {
+    AppTheme(
+        isDarkModeEnabled = isDarkModeEnabled
+    ) {
+        when (val screen = screen) {
+            is ArticlesState -> HomeScreen(screen, onMessage)
+            is SettingsState -> HomeScreen(this, onMessage)
+            is ArticleDetailsState -> ArticleDetailsScreen(screen, onMessage)
+            else -> error("unhandled branch $screen")
+        }.safe
     }
+}

@@ -26,26 +26,30 @@ interface Environment :
     HasMongoCollection,
     HasGson,
     Storage<Environment>,
-    CoroutineScope {
-}
+    CoroutineScope
 
 @Suppress("FunctionName")
 fun Environment(
     application: Application,
     scope: CoroutineScope,
-): Environment =
-    object : Environment,
+): Environment {
+
+    val gson = buildGson()
+    val retrofit = Retrofit(gson)
+
+    return object : Environment,
         AppModule<Environment> by AppModule(),
         ArticlesModule<Environment> by ArticlesModule(),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(),
         HasCommandTransport by CommandTransport(),
-        HasNewsApi by NewsApi(Retrofit()),
+        HasNewsApi by NewsApi(retrofit),
         HasMongoCollection by MongoCollection(application),
-        HasGson by Gson(buildGson()),
+        HasGson by Gson(gson),
         HasAppContext by AppContext(application),
         Storage<Environment> by Storage(),
         CoroutineScope by scope {
     }
+}
 
 private fun buildGson() =
     AppGson {

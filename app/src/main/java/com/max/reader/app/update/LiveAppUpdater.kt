@@ -112,7 +112,7 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : ArticlesUpdater,
             // so that it'll be popped out first
             swapWithLast(i)
         } else {
-            pushScreen(ArticlesState.loading(id, query))
+            pushScreen(ArticlesState.newLoading(id, query))
         }
 
         if (BuildConfig.DEBUG) {
@@ -120,7 +120,7 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : ArticlesUpdater,
         }
 
         return if (swap) newState.noCommand()
-        else newState command LoadByCriteria(id, query)
+        else newState command LoadArticlesByQuery(id, query, 0, ArticlesState.ArticlesPerPage)
     }
 
     fun AppState.findExistingArticlesScreenForNavigation(
@@ -141,11 +141,14 @@ interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : ArticlesUpdater,
 
     val ArticlesMessage.id: ScreenId?
         get() = when (this) {
-            is LoadArticles -> id
+            // todo extract interface
+            is LoadNextArticles -> id
             is ToggleArticleIsFavorite -> id
             is ArticlesLoaded -> id
             is ArticlesOperationException -> id
             is OnQueryUpdated -> id
+            is RefreshArticles -> id
+            is LoadArticlesFromScratch -> id
             is ArticleUpdated, is ShareArticle -> null
         }
 

@@ -28,7 +28,7 @@ fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : HasAppContex
 
             suspend fun resolve() =
                 when (command) {
-                    is LoadByCriteria -> fetch(command.id, command.query)
+                    is LoadArticlesByQuery -> fetch(command.id, command.query, command.currentSize, command.resultsPerPage)
                     is SaveArticle -> store(command.article)
                     is RemoveArticle -> remove(command.article)
                     is DoShareArticle -> shareArticle(command)
@@ -59,11 +59,13 @@ fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : HasAppContex
         suspend fun Env.fetch(
             id: ScreenId,
             query: Query,
+            currentSize: Int,
+            resultsPerPage: Int
         ): Set<ScreenMessage> = query.effect {
-            ArticlesLoaded(
-                id,
-                fetch(this)
-            )
+
+            val (articles, hasMore) = fetch(this, currentSize, resultsPerPage)
+
+            ArticlesLoaded(id, articles, hasMore)
         }
 
         suspend fun Env.shareArticle(
@@ -97,6 +99,6 @@ fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : HasAppContex
 
 private fun ArticlesCommand.screenId(): ScreenId? =
     when (this) {
-        is LoadByCriteria -> id
+        is LoadArticlesByQuery -> id
         is SaveArticle, is RemoveArticle, is DoShareArticle -> null
     }

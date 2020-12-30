@@ -42,6 +42,8 @@ interface RetrofitNewsApi {
     @GET("/v2/everything")
     suspend fun fetchFromEverything(
         @Query("apiKey") apiKey: String,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int,
         @QueryMap query: Map<String, String>
     ): ArticleResponse
 
@@ -49,6 +51,8 @@ interface RetrofitNewsApi {
     suspend fun fetchTopHeadlines(
         @Query("apiKey") apiKey: String,
         @Query("country") countryCode: String,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int,
         @QueryMap query: Map<String, String>
     ): ArticleResponse
 
@@ -70,8 +74,10 @@ data class ArticleElement(
 )
 
 data class ArticleResponse(
+    @SerializedName("totalResults")
+    val totalResults: Int,
     @SerializedName("articles")
-    val articles: List<ArticleElement> = listOf()
+    val articles: List<ArticleElement>
 )
 
 private object StringAdapter : TypeAdapter<String> {

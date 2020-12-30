@@ -6,7 +6,10 @@ import com.max.reader.app.serialization.PersistentListSerializer
 import com.max.reader.domain.Article
 import com.max.reader.domain.Description
 import com.max.reader.domain.Title
-import com.max.reader.screens.article.list.*
+import com.max.reader.screens.article.list.ArticlesState
+import com.max.reader.screens.article.list.LoadArticlesFromScratch
+import com.max.reader.screens.article.list.Query
+import com.max.reader.screens.article.list.QueryType
 import com.oliynick.max.tea.core.debug.gson.Gson
 import com.oliynick.max.tea.core.debug.protocol.NotifyComponentAttached
 import com.oliynick.max.tea.core.debug.protocol.NotifyComponentSnapshot
@@ -28,7 +31,7 @@ class AppStateSerializationTest {
         registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
     }
 
-    private val previewScreenState = ArticlesPreviewState(
+    private val previewScreenState = ArticlesState(
         UUID.randomUUID(),
         Query("android", QueryType.Regular),
         listOf(
@@ -41,10 +44,12 @@ class AppStateSerializationTest {
                 Date(),
                 false
             )
-        )
+        ),
+        false,
+        ArticlesState.TransientState.Preview
     )
 
-    private val loadingScreenState = ArticlesLoadingState(
+    private val loadingScreenState = ArticlesState.newLoading(
         UUID.randomUUID(),
         Query("test", QueryType.Regular)
     )
@@ -86,7 +91,7 @@ class AppStateSerializationTest {
     @Test
     fun `test ScreenMessage is serializing correctly`() = with(gsonSerializer) {
 
-        val message = LoadArticles(UUID.randomUUID())
+        val message = LoadArticlesFromScratch(UUID.randomUUID())
 
         val json = toJson(message)
         val fromJson = fromJson(json, ScreenMessage::class.java)
