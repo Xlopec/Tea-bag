@@ -26,6 +26,7 @@ plugins {
 
 android {
     compileSdkVersion(30)
+
     defaultConfig {
         applicationId = "com.oliinyk.max.news.reader"
         minSdkVersion(21)
@@ -122,7 +123,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.8.1")
 
-    testImplementation(project(path = ":tea-test", configuration = "default"))
+    testImplementation(project(":tea-test"))
     testImplementation(coroutinesAndroid)
 
     androidTestImplementation("androidx.test:runner:1.3.0")

@@ -3,6 +3,24 @@ import java.io.File
 import java.nio.file.Paths
 
 private const val COMMIT_HASH_LEN = 6
+private val AlphaRegexp = Regex("v\\d+\\.\\d+\\.\\d+-alpha[1-9]\\d*")
+private val ReleaseCandidateRegexp = Regex("v\\d+\\.\\d+\\.\\d+-rc[1-9]\\d*")
+private val ReleaseRegexp = Regex("v\\d+\\.\\d+\\.\\d+")
+
+private sealed class Tag {
+    object Develop : Tag()
+    data class Alpha(
+        val value: String
+    ) : Tag()
+
+    data class ReleaseCandidate(
+        val value: String
+    ) : Tag()
+
+    data class Release(
+        val value: String
+    ) : Tag()
+}
 
 fun isLocalEnv(): Boolean = !isCIEnv()
 
@@ -12,25 +30,24 @@ fun isCIEnv(): Boolean =
 fun bintrayApiKey(): String? =
     if (isCIEnv()) System.getenv("BINTRAY_API_KEY") else null
 
-fun pluginReleaseChannels(): Array<String> {
-
-    val tag: String? = System.getenv("TRAVIS_TAG")
-
-    return when {
-        tag.isNullOrEmpty() -> arrayOf("dev")
-        tag.contains("alpha") -> arrayOf("eap")
-        tag.contains("beta") -> arrayOf("rc")
-        else -> emptyArray()
+fun pluginReleaseChannels(): Array<String> =
+    when (tag()) {
+        Tag.Develop -> arrayOf("dev")
+        is Tag.Alpha -> arrayOf("eap")
+        is Tag.ReleaseCandidate -> arrayOf("rc")
+        is Tag.Release -> emptyArray()
     }
-}
 
-fun branchName(): String =
-    System.getenv("TRAVIS_BRANCH").takeUnless { s -> s.isNullOrEmpty() } ?: "master"
+fun commitSha(): String? =
+    System.getenv("GITHUB_SHA").takeUnless { s -> s.isNullOrEmpty() }
 
 fun versionName(): String =
-    System.getenv("TRAVIS_TAG").takeUnless { s -> s.isNullOrEmpty() } ?:
-    System.getenv("TRAVIS_COMMIT").takeUnless { s -> s.isNullOrEmpty() }?.let { commit -> "DEV-${commit.take(COMMIT_HASH_LEN)}" } ?:
-    "DEV"
+    when (val tag = tag()) {
+        Tag.Develop -> commitSha()?.let { sha -> "DEV-${sha.take(COMMIT_HASH_LEN)}" } ?: "DEV"
+        is Tag.Alpha -> tag.value
+        is Tag.ReleaseCandidate -> tag.value
+        is Tag.Release -> tag.value
+    }
 
 fun Project.installGitHooks() = afterEvaluate {
     (projectHooksDir.listFiles { f -> f.extension == "sh" } ?: emptyArray())
@@ -53,3 +70,22 @@ val Project.detektConfig: File
 
 val Project.detektBaseline: File
     get() = Paths.get(rootDir.path, "detekt", "detekt-baseline.xml").toFile()
+
+private fun tag(): Tag {
+    val rawTag = System.getenv("GITHUB_TAG").takeUnless { s -> s.isNullOrEmpty() }
+
+    return when {
+        rawTag.isNullOrEmpty() -> Tag.Develop
+        rawTag.matches(AlphaRegexp) -> Tag.Alpha(rawTag)
+        rawTag.matches(ReleaseCandidateRegexp) -> Tag.ReleaseCandidate(rawTag)
+        rawTag.matches(ReleaseRegexp) -> Tag.Release(rawTag)
+        else -> error(
+            "Invalid tag: $rawTag, release tag should be absent or match any of the following regular " +
+                    "expressions: ${
+                        listOf(AlphaRegexp,
+                            ReleaseCandidateRegexp,
+                            ReleaseRegexp).joinToString { rgx -> rgx.pattern }
+                    }"
+        )
+    }
+}

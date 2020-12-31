@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.jfrog.bintray.gradle.BintrayExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
@@ -109,26 +110,29 @@ libraryProjects()
             }
         }
 
-        val sourcesJar by tasks.creating(Jar::class) {
+        val sourcesJar by tasks.registering(Jar::class) {
             dependsOn(tasks.classes)
             archiveClassifier.set("sources")
             from(sourceSets.main.get().allSource)
         }
 
-        val javadocJar by tasks.creating(Jar::class) {
+        val javadocJar by tasks.registering(Jar::class) {
             dependsOn(tasks.named("dokkaJavadoc"))
             archiveClassifier.set("javadoc")
             from("$buildDir/javadoc")
         }
 
-        val copyArtifacts by tasks.creating(Copy::class) {
+        val copyArtifacts by tasks.registering(Copy::class) {
             from("$buildDir/libs/")
             into("${rootProject.buildDir}/artifacts/${this@forEachApplying.name}")
-            dependsOn("publishToMavenLocal")
         }
 
-        tasks.create("rolloutLibrary") {
-            dependsOn("bintrayUpload", copyArtifacts)
+        tasks
+            .named("bintrayUpload")
+            .dependsOn("publishAllPublicationsToMavenLocalRepository")
+
+        val releaseLibrary by tasks.creating {
+             dependsOn("bintrayUpload", copyArtifacts)
         }
 
         publishing {
@@ -168,13 +172,21 @@ libraryProjects()
                 name = this@forEachApplying.name
                 userOrg = "xlopec"
                 vcsUrl = "https://github.com/Xlopec/Tea-bag.git"
+                websiteUrl = "https://github.com/Xlopec/Tea-bag"
+                issueTrackerUrl = "https://github.com/Xlopec/Tea-bag/issues"
+                publicDownloadNumbers = true
+                githubReleaseNotesFile = "README.md"
 
                 with(version) {
 
                     val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ", Locale.ENGLISH)
 
-                    name = versionName()
                     released = format.format(Date())
+
+                    val versionName = versionName()
+
+                    name = versionName
+                    vcsTag = versionName
                     desc = "debug"
                 }
             }
@@ -186,20 +198,19 @@ pluginProject().forEachApplying {
     apply(plugin = "org.jetbrains.intellij")
     apply(plugin = "java")
 
-    val copyArtifacts by tasks.creating(Copy::class) {
+    val copyArtifacts by tasks.registering(Copy::class) {
         from("$buildDir/libs/")
-        into("${rootProject.buildDir}/artifacts/$name")
-        dependsOn("buildPlugin")
+        into("${rootProject.buildDir}/artifacts/${this@forEachApplying.name}")
     }
 
-    tasks.create("rolloutPlugin") {
+    val releasePlugin by tasks.registering {
         dependsOn("publishPlugin", copyArtifacts)
     }
 
 }
 
 val detektAll by tasks.registering(Detekt::class) {
-    description = "Runs analysis task over whole code"
+    description = "Runs analysis task over whole codebase"
     debug = false
     parallel = true
     ignoreFailures = false
@@ -232,7 +243,7 @@ val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) 
     exclude("**/build/**")
 }
 
-val detektFormat by tasks.creating(Detekt::class) {
+val detektFormat by tasks.registering(Detekt::class) {
     parallel = true
     autoCorrect = true
     buildUponDefaultConfig = true
@@ -248,8 +259,8 @@ val detektFormat by tasks.creating(Detekt::class) {
     config.setFrom(files("$rootDir/detekt/detekt-config.yml"))
 }
 
-tasks.create("fullRollout") {
-    setDependsOn((libraryProjects().map { p -> p.rolloutTask } + pluginProject().map { p -> p.rolloutTask }).toList())
+val releaseAll by tasks.registering(DefaultTask::class) {
+    setDependsOn((libraryProjects().map { p -> p.releaseTask } + pluginProject().map { p -> p.releaseTask }))
 }
 
 allprojects {
@@ -277,18 +288,47 @@ allprojects {
             )
         }
     }
+
+    if (isCIEnv()) {
+
+        logger.info("Modifying tests output")
+
+        tasks.withType<Test>().all {
+            reports {
+                html.destination =
+                    file("${rootProject.buildDir}/junit-reports/${project.name}/html")
+                junitXml.destination =
+                    file("${rootProject.buildDir}/junit-reports/${project.name}/xml")
+            }
+        }
+    } else {
+        logger.info("Default tests output")
+    }
 }
 
-val Project.rolloutTask: Task
-    get() = tasks.findByName("rolloutLibrary")
-        ?: tasks.findByName("rolloutPlugin")
-        ?: error("Couldn't find rollout task for project $name")
+val ciTests by tasks.registering(Test::class) {
+    group = "verification"
+    description = "Prepares and runs tests relevant for CI build"
+
+    val testTasks = (libraryProjects().map { p -> p.tasks.test.get() }
+            + pluginProject().map { p -> p.tasks.test.get() })
+
+    setDependsOn(testTasks)
+}
+
+val Project.releaseTask: Task
+    get() = tasks.findByName("releaseLibrary")
+        ?: tasks.findByName("releasePlugin")
+        ?: error("Couldn't find release task for project $name")
+
+fun androidAppProject() =
+    subprojects.find { project -> project.name == "app" }!!
 
 fun nonAndroidAppProjects() =
-    subprojects.asSequence().filterNot { project -> project.name == "app" }
+    subprojects.filterNot { project -> project.name == "app" }
 
 fun libraryProjects() =
     nonAndroidAppProjects().filterNot { project -> project.name == "tea-time-travel-plugin" || project.name == "tea-test" }
 
 fun pluginProject() =
-    subprojects.asSequence().filter { project -> project.name == "tea-time-travel-plugin" }
+    subprojects.filter { project -> project.name == "tea-time-travel-plugin" }

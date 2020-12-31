@@ -50,9 +50,9 @@ sourceSets {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation(project(path = ":tea-core", configuration = "default"))
-    implementation(project(path = ":tea-time-travel-protocol", configuration = "default"))
-    implementation(project(path = ":tea-time-travel-adapter-gson", configuration = "default"))
+    implementation(project(":tea-core"))
+    implementation(project(":tea-time-travel-protocol"))
+    implementation(project(":tea-time-travel-adapter-gson"))
 
     implementation(kotlinStdLib)
 
@@ -65,5 +65,5 @@ dependencies {
     implementation(immutableCollections)
 
     testImplementation(ktorServerTests)
-    testImplementation(project(path = ":tea-test", configuration = "default"))
+    testImplementation(project(":tea-test"))
 }

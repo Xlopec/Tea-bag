@@ -12,10 +12,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 @UnstableApi
-fun <T> Flow<T>.shareConflated(
-    scope: CoroutineScope = GlobalScope,
-): Flow<T> =
-    MulticastFlow(this, true, scope).multicastedFlow
+fun <T> Flow<T>.shareConflated(): Flow<T> =
+    MulticastFlow(this, true).multicastedFlow
 
 /**
  * Allow multiple collectors to collect same instance of this flow
@@ -23,9 +21,8 @@ fun <T> Flow<T>.shareConflated(
  * before closing original flow. Set to 0 to disable.
  */
 @UnstableApi
-fun <T> Flow<T>.share(
-    scope: CoroutineScope = GlobalScope,
-): Flow<T> = MulticastFlow(this, false, scope).multicastedFlow
+fun <T> Flow<T>.share(): Flow<T> =
+    MulticastFlow(this, false).multicastedFlow
 
 /**
  * https://gist.github.com/matejdro/a9c838bf0066595fb52b4b8816f49252
@@ -35,7 +32,6 @@ fun <T> Flow<T>.share(
 private class MulticastFlow<T>(
     private val original: Flow<T>,
     private val conflate: Boolean,
-    private val scope: CoroutineScope,
 ) {
     private val mutex = Mutex()
     private val collectors = ArrayList<SendChannel<T>>()
@@ -58,7 +54,7 @@ private class MulticastFlow<T>(
     private fun startFlowActor() {
         // Create new channel to clear buffer of the previous channel
         actor = Channel(Channel.BUFFERED)
-        multicastActorJob = scope.launch {
+        multicastActorJob = GlobalScope.launch {
             while (isActive) {
                 val currentFlowChannel = flowChannel
 
@@ -85,7 +81,7 @@ private class MulticastFlow<T>(
                     collectors.add(action.channel)
 
                     if (flowChannel == null) {
-                        flowChannel = original.produceIn(scope)
+                        flowChannel = original.produceIn(GlobalScope)
                     }
 
                     val lastValue = lastValue

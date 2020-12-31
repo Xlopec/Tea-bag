@@ -137,7 +137,7 @@
     <ID>UndocumentedPublicFunction:Environment.kt$@UnstableApi fun &lt;M, S, C&gt; EnvBuilder&lt;M, S, C&gt;.toEnv(): Env&lt;M, S, C&gt;</ID>
     <ID>UndocumentedPublicFunction:FlowExtensions.kt$@UnstableApi suspend fun &lt;T&gt; Flow&lt;T&gt;.into( sendChannel: SendChannel&lt;T&gt; )</ID>
     <ID>UndocumentedPublicFunction:FlowExtensions.kt$fun &lt;T&gt; Flow&lt;T&gt;.mergeWith(other: Flow&lt;T&gt;): Flow&lt;T&gt;</ID>
-    <ID>UndocumentedPublicFunction:MulticastFlow.kt$@UnstableApi fun &lt;T&gt; Flow&lt;T&gt;.shareConflated( scope: CoroutineScope = GlobalScope, ): Flow&lt;T&gt;</ID>
+    <ID>UndocumentedPublicFunction:MulticastFlow.kt$@UnstableApi fun &lt;T&gt; Flow&lt;T&gt;.shareConflated(): Flow&lt;T&gt;</ID>
     <ID>UnnecessaryAbstractClass:AppState.kt$ScreenState</ID>
     <ID>UnnecessaryAbstractClass:BasicComponentTest.kt$BasicComponentTest</ID>
   </Whitelist>
