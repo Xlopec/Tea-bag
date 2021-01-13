@@ -6,7 +6,9 @@ package com.oliynick.max.tea.core
 import com.oliynick.max.tea.core.component.Resolver
 import com.oliynick.max.tea.core.component.Updater
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 
 /**
  * Environment is an application component responsible for holding application dependencies
@@ -26,6 +28,8 @@ data class Env<M, S, C>(
     val updater: Updater<M, S, C>,
     val io: CoroutineDispatcher = Dispatchers.IO,
     val computation: CoroutineDispatcher = Dispatchers.Unconfined,
+    // fixme refactor
+    val scope: CoroutineScope = GlobalScope
 )
 
 /**
@@ -45,7 +49,9 @@ class EnvBuilder<M, S, C>(
     var resolver: Resolver<C, M>,
     var updater: Updater<M, S, C>,
     var io: CoroutineDispatcher = Dispatchers.IO,
-    var computation: CoroutineDispatcher = Dispatchers.Unconfined
+    var computation: CoroutineDispatcher = Dispatchers.Unconfined,
+    // fixme refactor
+    var scope: CoroutineScope = GlobalScope
 )
 
 /**
@@ -120,4 +126,4 @@ fun <M, S, C> Env(
 
 @UnstableApi
 fun <M, S, C> EnvBuilder<M, S, C>.toEnv(): Env<M, S, C> =
-    Env(initializer, resolver, updater, io, computation)
+    Env(initializer, resolver, updater, io, computation, scope)

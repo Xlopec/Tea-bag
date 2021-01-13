@@ -6,13 +6,17 @@ import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import core.misc.messageAsCommand
 import core.misc.throwingResolver
+import core.misc.throwingUpdater
 import core.scope.coroutineDispatcher
 import core.scope.runBlockingInTestScope
+import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.boolean.shouldBeTrue
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotlintest.matchers.throwable.shouldHaveMessage
 import io.kotlintest.matchers.types.shouldBeSameInstanceAs
+import io.kotlintest.matchers.types.shouldBeTypeOf
+import io.kotlintest.matchers.types.shouldNotBeNull
 import io.kotlintest.matchers.withClue
 import io.kotlintest.shouldBe
 import kotlinx.atomicfu.atomic
@@ -20,20 +24,21 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.*
+import org.junit.Rule
 import org.junit.Test
-import org.junit.jupiter.api.assertThrows
+import org.junit.rules.Timeout
 import java.util.concurrent.Executors
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.coroutineContext
 import kotlin.math.abs
 
-@OptIn(UnstableApi::class)
+@OptIn(UnstableApi::class, InternalCoroutinesApi::class)
 abstract class BasicComponentTest(
     protected val factory: CoroutineScope.(Env<Char, String, Char>) -> Component<Char, String, Char>,
 ) {
 
     private companion object {
-        const val TestTimeoutMillis = 5_000L
+        val TestTimeout: Timeout = Timeout.seconds(10L)
         const val ThreadName = "test thread"
 
         val CoroutineDispatcher =
@@ -41,7 +46,10 @@ abstract class BasicComponentTest(
                 .asCoroutineDispatcher()
     }
 
-    @Test(timeout = TestTimeoutMillis)
+    @get:Rule
+    var globalTimeout: Timeout = TestTimeout
+
+    @Test
     fun `test initializer is invoked each time for component with no active subscribers`() =
         runBlockingInTestScope {
 
@@ -53,6 +61,7 @@ abstract class BasicComponentTest(
                 { m, str -> (str + m).command(m) },
                 coroutineDispatcher,
                 coroutineDispatcher,
+                this
             )
 
             val component = factory(env)
@@ -68,7 +77,7 @@ abstract class BasicComponentTest(
             counter shouldBe 2
         }
 
-    @Test(timeout = TestTimeoutMillis)
+    @Test
     fun `test when receiving new input previous downstream gets canceled`() =
         runBlockingInTestScope {
 
@@ -112,7 +121,7 @@ abstract class BasicComponentTest(
             )
         }
 
-    @Test(timeout = TestTimeoutMillis)
+    @Test
     fun `test component emits a correct sequence of snapshots`() = runBlocking {
 
         val env = Env<Char, String, Char>(
@@ -134,7 +143,7 @@ abstract class BasicComponentTest(
         )
     }
 
-    @Test(timeout = TestTimeoutMillis)
+    @Test
     fun `test component emits a correct sequence of snapshots if we have recursive calculations`() =
         runBlocking {
 
@@ -157,7 +166,7 @@ abstract class BasicComponentTest(
             )
         }
 
-    @Test(timeout = TestTimeoutMillis)
+    @Test
     fun `test interceptor sees an original sequence of snapshots`() = runBlocking {
 
         val env = Env<Char, String, Char>(
@@ -175,7 +184,7 @@ abstract class BasicComponentTest(
         sink shouldContainExactly snapshots
     }
 
-    @Test(timeout = TestTimeoutMillis)
+    @Test
     fun `test component's snapshots shared among consumers`() = runBlocking {
 
         val env = Env<Char, String, Char>(
@@ -223,7 +232,7 @@ abstract class BasicComponentTest(
         }
     }
 
-    @Test(timeout = TestTimeoutMillis)
+    @Test
     fun `test component gets initialized only once if we have multiple consumers`() =
         runBlocking {
 
@@ -257,7 +266,7 @@ abstract class BasicComponentTest(
             countingInitializer.invocations.value shouldBe 1
         }
 
-    @Test(timeout = TestTimeoutMillis)
+    @Test
     fun `test component's job gets canceled properly`() = runBlockingInTestScope {
 
         val resolver = ForeverWaitingResolver<Char>()
@@ -281,7 +290,7 @@ abstract class BasicComponentTest(
         canceled shouldContainExactlyInAnyOrder messages.toList()
     }
 
-    @Test(timeout = TestTimeoutMillis)
+    @Test
     fun `test component doesn't block if serves multiple message sources`() =
         runBlockingInTestScope {
 
@@ -348,7 +357,7 @@ abstract class BasicComponentTest(
             }
         }
 
-    @Test(timeout = TestTimeoutMillis)
+    @Test
     fun `test resolver runs on a given dispatcher`() = runBlockingInTestScope {
 
         val env = Env<Char, String, Char>(
@@ -362,27 +371,60 @@ abstract class BasicComponentTest(
             .take('d' - 'a').collect()
     }
 
-    @Test(timeout = TestTimeoutMillis)
-    fun `test component throws exception given resolver throws exception`() =
-        runBlockingInTestScope {
-
-            val exception = RuntimeException("test exception")
-
-            val env = Env<Char, String, Char>(
-                Initializer(""),
-                ThrowingResolver(exception),
-                ::messageAsCommand,
-                coroutineDispatcher
-            )
-
-            assertThrows<Throwable> {
-                runBlocking {
-                    factory(env)('a'..'d').collect()
-                }
-            }.shouldHaveMessage(exception.message!!)
+    @Test
+    fun `test if resolver fails with exception it gets handled by coroutine scope`() = runBlockingInTestScope {
+        val component = Component<String, String, String>(
+            Initializer("", "a"),
+            ::throwingResolver,
+            ::throwingUpdater,
+        ) {
+            scope = this@runBlockingInTestScope
         }
 
-    @Test(timeout = TestTimeoutMillis)
+        val job = launch { component("").collect() }
+
+        job.join()
+        job.isCancelled.shouldBeTrue()
+
+        val th = job.getCancellationException().cause
+
+        withClue("Cancellation cause $th") {
+            th.shouldNotBeNull()
+            // todo maybe IllegalStateException should be replaced with custom exception
+            th.shouldBeTypeOf<IllegalStateException>()
+        }
+
+        isActive.shouldBeFalse()
+    }
+
+    @Test
+    fun `test if initializer fails with exception it gets handled by coroutine scope`() = runBlockingInTestScope {
+        val expectedException = RuntimeException("hello")
+        val component = Component<String, String, String>(
+            ThrowingInitializer(expectedException),
+            ::throwingResolver,
+            ::throwingUpdater,
+        ) {
+            scope = this@runBlockingInTestScope
+        }
+
+        val job = launch { component("").collect() }
+
+        job.join()
+        job.isCancelled.shouldBeTrue()
+
+        val th = job.getCancellationException().cause
+
+        withClue("Cancellation cause $th") {
+            th.shouldNotBeNull()
+            th.shouldBeTypeOf<RuntimeException>()
+            th.shouldHaveMessage(expectedException.message!!)
+        }
+
+        isActive.shouldBeFalse()
+    }
+
+    @Test
     fun `test initializer runs on a given dispatcher`() = runBlockingInTestScope {
 
         val env = Env<Char, String, Char>(
@@ -395,7 +437,7 @@ abstract class BasicComponentTest(
         factory(env)('a'..'d').take('d' - 'a').collect()
     }
 
-    @Test(timeout = TestTimeoutMillis)
+    @Test
     fun `test updater runs on a given dispatcher`() = runBlockingInTestScope {
 
         val env = Env<Char, String, Char>(

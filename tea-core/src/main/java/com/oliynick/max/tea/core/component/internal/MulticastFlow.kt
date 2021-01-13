@@ -11,16 +11,34 @@ import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
+/**
+ * Allow multiple collectors to collect same instance of this flow. The resulting flow
+ * will emmit the last value to all subscribers
+ */
 @UnstableApi
+@Deprecated(
+    message = "will be removed in future releases",
+    level = DeprecationLevel.WARNING,
+    replaceWith = ReplaceWith(
+        expression = "shareIn(scope, SharingStarted.WhileSubscribed(), 1)",
+        imports = arrayOf("kotlinx.coroutines.flow")
+    )
+)
 fun <T> Flow<T>.shareConflated(): Flow<T> =
     MulticastFlow(this, true).multicastedFlow
 
 /**
  * Allow multiple collectors to collect same instance of this flow
- *
- * before closing original flow. Set to 0 to disable.
  */
 @UnstableApi
+@Deprecated(
+    message = "will be removed in future releases",
+    level = DeprecationLevel.WARNING,
+    replaceWith = ReplaceWith(
+        expression = "shareIn(scope, SharingStarted.WhileSubscribed(), 0)",
+        imports = arrayOf("kotlinx.coroutines.flow")
+    )
+)
 fun <T> Flow<T>.share(): Flow<T> =
     MulticastFlow(this, false).multicastedFlow
 

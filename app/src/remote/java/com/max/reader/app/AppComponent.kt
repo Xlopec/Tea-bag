@@ -5,7 +5,6 @@ package com.max.reader.app
 import com.max.reader.app.env.Environment
 import com.max.reader.app.serialization.PersistentListSerializer
 import com.oliynick.max.tea.core.Initializer
-import com.oliynick.max.tea.core.component.shareIn
 import com.oliynick.max.tea.core.component.states
 import com.oliynick.max.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.component.URL
@@ -37,7 +36,7 @@ fun Environment.AppComponent(
         serverSettings {
             url = URL(host = "10.0.2.2")
         }
-    }.shareIn(this).states()
+    }.states()
 }
 
 private fun AppGsonSerializer() = GsonSerializer {

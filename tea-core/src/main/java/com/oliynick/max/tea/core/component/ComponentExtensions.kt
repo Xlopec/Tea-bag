@@ -39,7 +39,7 @@ typealias Interceptor<M, S, C> = suspend (snapshot: Snapshot<M, S, C>) -> Unit
  * @return [UpdateWith] instance with given state and set that consists from a single command
  */
 infix fun <S, C> S.command(
-    command: C
+    command: C,
 ): UpdateWith<S, C> = this to setOf(command)
 
 /**
@@ -52,7 +52,7 @@ infix fun <S, C> S.command(
  * @return [UpdateWith] instance with given state and set that consists from a single command
  */
 inline infix fun <S, C> S.command(
-    command: S.() -> C
+    command: S.() -> C,
 ): UpdateWith<S, C> = this to setOf(run(command))
 
 /**
@@ -67,7 +67,7 @@ inline infix fun <S, C> S.command(
  */
 fun <S, C> S.command(
     first: C,
-    second: C
+    second: C,
 ): UpdateWith<S, C> = this to setOf(first, second)
 
 /**
@@ -84,7 +84,7 @@ fun <S, C> S.command(
 fun <S, C> S.command(
     first: C,
     second: C,
-    third: C
+    third: C,
 ): UpdateWith<S, C> =
     this to setOf(first, second, third)
 
@@ -98,7 +98,7 @@ fun <S, C> S.command(
  * @return [UpdateWith] instance with given state and set of commands
  */
 fun <S, C> S.command(
-    vararg commands: C
+    vararg commands: C,
 ): UpdateWith<S, C> = this command setOf(*commands)
 
 /**
@@ -111,7 +111,7 @@ fun <S, C> S.command(
  * @return [UpdateWith] instance with given state and set of commands
  */
 infix fun <S, C> S.command(
-    commands: Set<C>
+    commands: Set<C>,
 ): UpdateWith<S, C> = this to commands
 
 /**
@@ -132,7 +132,7 @@ fun <S> S.noCommand(): UpdateWith<S, Nothing> = this to emptySet()
  * @return set of messages to be consumed by a component, always empty
  */
 suspend inline infix fun <C, M> C.sideEffect(
-    crossinline action: suspend C.() -> Unit
+    crossinline action: suspend C.() -> Unit,
 ): Set<M> {
     action()
     return emptySet()
@@ -148,7 +148,7 @@ suspend inline infix fun <C, M> C.sideEffect(
  * @return set of messages to be consumed a component
  */
 suspend inline infix fun <C, M> C.effect(
-    crossinline action: suspend C.() -> M?
+    crossinline action: suspend C.() -> M?,
 ): Set<M> = action(this@effect)?.let(::setOf) ?: emptySet()
 
 /**
@@ -195,7 +195,7 @@ fun <M, S, C> Component<M, S, C>.states(): ((Flow<M>) -> Flow<S>) =
  * @param S state
  */
 operator fun <M, S, C> Component<M, S, C>.invoke(
-    vararg messages: M
+    vararg messages: M,
 ): Flow<Snapshot<M, S, C>> = this(flowOf(*messages))
 
 /**
@@ -208,7 +208,7 @@ operator fun <M, S, C> Component<M, S, C>.invoke(
  * @param S state
  */
 operator fun <M, S, C> Component<M, S, C>.invoke(
-    messages: Iterable<M>
+    messages: Iterable<M>,
 ): Flow<Snapshot<M, S, C>> = this(messages.asFlow())
 
 /**
@@ -221,7 +221,7 @@ operator fun <M, S, C> Component<M, S, C>.invoke(
  * @param S state
  */
 operator fun <M, S, C> Component<M, S, C>.invoke(
-    message: M
+    message: M,
 ): Flow<Snapshot<M, S, C>> = this(flowOf(message))
 
 /**
@@ -233,7 +233,7 @@ operator fun <M, S, C> Component<M, S, C>.invoke(
  * @param S state
  */
 infix fun <M, S, C> Component<M, S, C>.with(
-    interceptor: Interceptor<M, S, C>
+    interceptor: Interceptor<M, S, C>,
 ): Component<M, S, C> =
     { input -> this(input).onEach(interceptor) }
 
@@ -247,8 +247,9 @@ infix fun <M, S, C> Component<M, S, C>.with(
  * @param M message
  * @param S state
  */
+@Deprecated(message = "will be removed", level = DeprecationLevel.ERROR)
 fun <M, S, C> Component<M, S, C>.shareIn(
-    scope: CoroutineScope
+    scope: CoroutineScope,
 ): Component<M, S, C> {
     scope.launch { this@shareIn(emptyFlow()).collect() }
     return this

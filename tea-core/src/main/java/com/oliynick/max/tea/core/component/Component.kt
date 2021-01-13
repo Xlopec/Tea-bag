@@ -113,7 +113,8 @@ fun <M, S, C> Component(
     ) = env.resolveAsFlow(startFrom.commands)
         .mergeWith(input.receiveAsFlow())
 
-    val upstream = env.upstream(env.init(), input::send, ::input).shareConflated()
+    val upstream = env.upstream(env.init(), input::send, ::input)
+        .shareIn(env.scope, SharingStarted.WhileSubscribed(), 1)
 
     return { messages -> upstream.downstream(messages, input) }
 }

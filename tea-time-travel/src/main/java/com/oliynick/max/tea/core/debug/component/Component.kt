@@ -22,7 +22,6 @@ package com.oliynick.max.tea.core.debug.component
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.component.internal.into
-import com.oliynick.max.tea.core.component.internal.shareConflated
 import com.oliynick.max.tea.core.debug.component.internal.mergeWith
 import com.oliynick.max.tea.core.debug.protocol.*
 import com.oliynick.max.tea.core.debug.session.DebugSession
@@ -68,6 +67,7 @@ fun <M, S, C, J> Component(
 
     val input = Channel<M>(Channel.RENDEZVOUS)
     val upstream = env.upstream(input)
+        .shareIn(env.componentEnv.scope, SharingStarted.WhileSubscribed(), 1)
 
     return { messages -> upstream.downstream(messages, input) }
 }
@@ -87,7 +87,6 @@ private fun <M, S, C, J> DebugEnv<M, S, C, J>.upstream(
             .onEach { snapshot -> notifyServer(this, snapshot) }
 
     return session { inputChan -> debugUpstream().into(inputChan) }
-        .shareConflated()
 }
 
 @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
