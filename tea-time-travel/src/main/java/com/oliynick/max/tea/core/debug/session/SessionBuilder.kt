@@ -33,7 +33,7 @@ typealias SessionBuilder<M, S, J> = suspend (
 suspend inline fun <reified M, reified S, J> WebSocketSession(
     settings: ServerSettings<M, S, J>,
     crossinline block: suspend DebugSession<M, S, J>.() -> Unit,
-) = httpClient.ws(
+) = HttpClient.ws(
     method = HttpMethod.Get,
     host = settings.url.host,
     port = settings.url.port,
@@ -48,7 +48,7 @@ suspend inline fun <reified M, reified S, J> WebSocketSession(
 )
 
 @PublishedApi
-internal val httpClient by lazy { HttpClient { install(WebSockets) } }
+internal val HttpClient by lazy { HttpClient { install(WebSockets) } }
 
 @PublishedApi
-internal val localhost by lazy(::URL)
+internal val Localhost by lazy(::URL)

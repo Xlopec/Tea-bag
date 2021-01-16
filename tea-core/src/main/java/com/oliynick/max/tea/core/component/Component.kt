@@ -21,13 +21,10 @@ package com.oliynick.max.tea.core.component
 
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.internal.*
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * Component is a builder that accepts [flow][Flow] of messages as input and returns
@@ -80,7 +77,6 @@ typealias Sink<T> = suspend (T) -> Unit
  * @param initializer initializer to be used to provide initial values for application
  * @param resolver resolver to be used to resolve messages from commands
  * @param updater updater to be used to compute a new state with set of commands to execute
- * @param config block to configure component
  * @param M incoming messages
  * @param S state of the application
  * @param C commands to be executed
@@ -89,9 +85,13 @@ fun <M, C, S> Component(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     updater: Updater<M, S, C>,
-    config: EnvBuilder<M, S, C>.() -> Unit = {},
+    // todo: group to reduce number of arguments
+    io: CoroutineDispatcher = Dispatchers.IO,
+    computation: CoroutineDispatcher = Dispatchers.Unconfined,
+    scope: CoroutineScope = GlobalScope,
+    shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ): Component<M, S, C> =
-    Component(Env(initializer, resolver, updater, config))
+    Component(Env(initializer, resolver, updater, io, computation, scope, shareOptions))
 
 /**
  * Creates new component using preconfigured environment
@@ -114,7 +114,7 @@ fun <M, S, C> Component(
         .mergeWith(input.receiveAsFlow())
 
     val upstream = env.upstream(env.init(), input::send, ::input)
-        .shareIn(env.scope, SharingStarted.WhileSubscribed(), 1)
+        .shareIn(env.scope, env.shareOptions)
 
     return { messages -> upstream.downstream(messages, input) }
 }
@@ -171,6 +171,18 @@ fun <M, S, C> Env<M, S, C>.compute(
     }.startFrom(startFrom)
 }
 
+@UnstableApi
+fun <T> Flow<T>.shareIn(
+    scope: CoroutineScope,
+    shareOptions: ShareOptions,
+) = shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
+
+@UnstableApi
+fun <M, S, C> Env<M, S, C>.resolveAsFlow(
+    commands: Collection<C>,
+): Flow<M> =
+    flow { emitAll(resolve(commands)) }
+
 private fun <M, S, C> Env<M, S, C>.resolveAll(
     coroutineScope: CoroutineScope,
     sink: Sink<M>,
@@ -188,11 +200,6 @@ private fun <M, S, C> Env<M, S, C>.resolveAll(
 private suspend operator fun <E> Sink<E>.invoke(
     elements: Iterable<E>,
 ) = elements.forEach { e -> invoke(e) }
-
-fun <M, S, C> Env<M, S, C>.resolveAsFlow(
-    commands: Collection<C>,
-): Flow<M> =
-    flow { emitAll(resolve(commands)) }
 
 private suspend fun <M, S, C> Env<M, S, C>.update(
     message: M,

@@ -14,29 +14,26 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.flow.Flow
 
 fun Environment.AppComponent(
-    initializer: Initializer<AppState, Command>
+    initializer: Initializer<AppState, Command>,
 ): (Flow<Message>) -> Flow<AppState> {
 
     suspend fun resolve(command: Command) = this.resolve(command)
 
     fun update(
         message: Message,
-        state: AppState
+        state: AppState,
     ) = this.update(message, state)
 
     // todo state persistence
 
     return Component(
-        ComponentId("News Reader App"),
-        initializer,
-        ::resolve,
-        ::update,
-        AppGsonSerializer()
-    ) {
-        serverSettings {
-            url = URL(host = "10.0.2.2")
-        }
-    }.states()
+        id = ComponentId("News Reader App"),
+        initializer = initializer,
+        resolver = ::resolve,
+        updater = ::update,
+        jsonConverter = AppGsonSerializer(),
+        url = URL(host = "10.0.2.2")
+    ).states()
 }
 
 private fun AppGsonSerializer() = GsonSerializer {

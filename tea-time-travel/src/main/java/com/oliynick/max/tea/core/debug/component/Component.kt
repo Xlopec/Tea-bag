@@ -25,9 +25,17 @@ import com.oliynick.max.tea.core.component.internal.into
 import com.oliynick.max.tea.core.debug.component.internal.mergeWith
 import com.oliynick.max.tea.core.debug.protocol.*
 import com.oliynick.max.tea.core.debug.session.DebugSession
+import com.oliynick.max.tea.core.debug.session.Localhost
+import com.oliynick.max.tea.core.debug.session.SessionBuilder
+import com.oliynick.max.tea.core.debug.session.WebSocketSession
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
+import java.net.URL
 import java.util.*
 
 /**
@@ -38,7 +46,6 @@ import java.util.*
  * @param resolver resolver to be used to resolve messages from commands
  * @param updater updater to be used to compute a new state with set of commands to execute
  * @param jsonConverter json converter
- * @param config block to configure component
  * @param M incoming messages
  * @param S state of the application
  * @param C commands to be executed
@@ -49,9 +56,19 @@ inline fun <reified M, reified C, reified S, J> Component(
     noinline resolver: Resolver<C, M>,
     noinline updater: Updater<M, S, C>,
     jsonConverter: JsonConverter<J>,
-    noinline config: DebugEnvBuilder<M, S, C, J>.() -> Unit = {},
+    // todo: group to reduce number of arguments
+    url: URL = Localhost,
+    io: CoroutineDispatcher = Dispatchers.IO,
+    computation: CoroutineDispatcher = Dispatchers.Unconfined,
+    scope: CoroutineScope = GlobalScope,
+    shareOptions: ShareOptions = ShareStateWhileSubscribed,
+    noinline sessionBuilder: SessionBuilder<M, S, J> = ::WebSocketSession
 ): Component<M, S, C> =
-    Component(Dependencies(id, EnvBuilder(initializer, resolver, updater), jsonConverter, config))
+    Component(
+        DebugEnv(
+            Env(initializer, resolver, updater, io, computation, scope, shareOptions),
+            ServerSettings(id, jsonConverter, url, sessionBuilder))
+    )
 
 /**
  * Creates new component using preconfigured debug environment
@@ -67,7 +84,7 @@ fun <M, S, C, J> Component(
 
     val input = Channel<M>(Channel.RENDEZVOUS)
     val upstream = env.upstream(input)
-        .shareIn(env.componentEnv.scope, SharingStarted.WhileSubscribed(), 1)
+        .shareIn(env.componentEnv.scope, env.componentEnv.shareOptions)
 
     return { messages -> upstream.downstream(messages, input) }
 }

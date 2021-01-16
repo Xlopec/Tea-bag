@@ -125,7 +125,7 @@ abstract class BasicComponentTest(
     fun `test component emits a correct sequence of snapshots`() = runBlocking {
 
         val env = Env<Char, String, Char>(
-            "",
+            Initializer(""),
             ::throwingResolver,
             { m, _ -> m.toString().noCommand() }
         )
@@ -148,7 +148,7 @@ abstract class BasicComponentTest(
         runBlocking {
 
             val env = Env<Char, String, Char>(
-                "",
+                Initializer(""),
                 { ch ->
                     // only message 'b' should be consumed
                     if (ch == 'a') ('b'..'d').toSet() else emptySet()
@@ -170,7 +170,7 @@ abstract class BasicComponentTest(
     fun `test interceptor sees an original sequence of snapshots`() = runBlocking {
 
         val env = Env<Char, String, Char>(
-            "",
+            Initializer(""),
             { c -> setOf(c) },
             { m, _ -> m.toString().noCommand() }
         )
@@ -188,7 +188,7 @@ abstract class BasicComponentTest(
     fun `test component's snapshots shared among consumers`() = runBlocking {
 
         val env = Env<Char, String, Char>(
-            "",
+            Initializer(""),
             { ch ->
                 if (ch == 'a') setOf(
                     ch + 1,// only this message should be consumed
@@ -295,7 +295,7 @@ abstract class BasicComponentTest(
         runBlockingInTestScope {
 
             val env = Env<Char, String, Char>(
-                "",
+                Initializer(""),
                 ::throwingResolver,
                 { m, _ -> m.toString().noCommand() }
             )
@@ -377,9 +377,8 @@ abstract class BasicComponentTest(
             Initializer("", "a"),
             ::throwingResolver,
             ::throwingUpdater,
-        ) {
             scope = this@runBlockingInTestScope
-        }
+        )
 
         val job = launch { component("").collect() }
 
@@ -404,9 +403,8 @@ abstract class BasicComponentTest(
             ThrowingInitializer(expectedException),
             ::throwingResolver,
             ::throwingUpdater,
-        ) {
             scope = this@runBlockingInTestScope
-        }
+        )
 
         val job = launch { component("").collect() }
 

@@ -48,15 +48,6 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
         ): Component<Char, String, Char> = Component(TestDebugEnv(env = env))
     }
 
-    private fun TestEnv() = Env<String, String, String>(
-        Initializer(""),
-        ::throwingResolver,
-        ::messageAsStateUpdate,
-        TestCoroutineDispatcher(),
-        TestCoroutineDispatcher(),
-        TestCoroutineScope(Job())
-    )
-
     @Test
     fun `test debuggable component throws expected exception when it can't connect to a server`() =
         runBlockingInTestScope {
@@ -134,7 +125,9 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
         val testSession = TestDebugSession<String, String>(states = flowOf("a"))
         val component = Component(
             TestDebugEnv(
-                env = TestEnv().copy(initializer = { delay(Long.MAX_VALUE); error("shouldn't get here") }),
+                env = TestEnv(
+                    initializer = { delay(Long.MAX_VALUE); error("shouldn't get here") }
+                ),
                 serverSettings = TestServerSettings(
                     sessionBuilder = { _, block -> testSession.apply { block() } }
                 )
@@ -193,3 +186,14 @@ private fun fromJson(
 private suspend fun <E> Channel<E>.send(
     vararg e: E,
 ) = e.forEach { elem -> send(elem) }
+
+private fun TestEnv(
+    initializer: Initializer<String, String> = Initializer("")
+) = Env<String, String, String>(
+    initializer,
+    ::throwingResolver,
+    ::messageAsStateUpdate,
+    TestCoroutineDispatcher(),
+    TestCoroutineDispatcher(),
+    TestCoroutineScope(Job())
+)

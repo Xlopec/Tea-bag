@@ -23,7 +23,6 @@
   <Whitelist>
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
     <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$update</ID>
-    <ID>EmptyCatchBlock:MulticastFlowTest.kt$MulticastFlowTest${ }</ID>
     <ID>FunctionNaming:AppTheme.kt$@Composable fun AppTheme( isDarkModeEnabled: Boolean, content: @Composable () -&gt; Unit, )</ID>
     <ID>FunctionNaming:AppTheme.kt$@Composable fun ThemedPreview( content: @Composable () -&gt; Unit, )</ID>
     <ID>FunctionNaming:InsetAwareTopAppBar.kt$@Composable fun InsetAwareTopAppBar( title: @Composable () -&gt; Unit, modifier: Modifier = Modifier, navigationIcon: @Composable (() -&gt; Unit)? = null, actions: @Composable RowScope.() -&gt; Unit = {}, backgroundColor: Color = MaterialTheme.colors.primarySurface, contentColor: Color = contentColorFor(backgroundColor), elevation: Dp = 4.dp )</ID>
@@ -53,7 +52,6 @@
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
     <ID>MaxLineLength:FiltersTest.kt$FiltersTest$@Test fun `test if number property contains some custom Number implementation, given regex is 'number' only this property remains in the Ref`()</ID>
     <ID>MaxLineLength:LiveArticlesUpdater.kt$LiveArticlesUpdater$is LoadArticlesFromScratch, is RefreshArticles -&gt; state.toRefreshing() command LoadArticlesByQuery(state.id, state.query, state.articles.size, ArticlesState.ArticlesPerPage)</ID>
-    <ID>NestedBlockDepth:MulticastFlow.kt$MulticastFlow$onOriginalFlowData</ID>
     <ID>NewLineAtEndOfFile:AppResolver.kt$com.max.reader.app.resolve.AppResolver.kt</ID>
     <ID>NewLineAtEndOfFile:AppUpdater.kt$com.max.reader.app.update.AppUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:Baloon.kt$com.oliynick.max.tea.core.debug.app.component.resolver.Baloon.kt</ID>
@@ -86,7 +84,6 @@
     <ID>NewLineAtEndOfFile:LruCache.kt$com.oliynick.max.tea.core.debug.app.misc.LruCache.kt</ID>
     <ID>NewLineAtEndOfFile:MainActivity.kt$com.max.reader.screens.main.MainActivity.kt</ID>
     <ID>NewLineAtEndOfFile:MongoDb.kt$com.max.reader.app.env.storage.local.MongoDb.kt</ID>
-    <ID>NewLineAtEndOfFile:MulticastFlowTest.kt$com.oliynick.max.tea.core.component.internal.MulticastFlowTest.kt</ID>
     <ID>NewLineAtEndOfFile:Networking.kt$com.max.reader.app.env.Networking.kt</ID>
     <ID>NewLineAtEndOfFile:NewsApi.kt$com.max.reader.app.env.storage.network.NewsApi.kt</ID>
     <ID>NewLineAtEndOfFile:NumberExtensions.kt$com.oliynick.max.tea.core.debug.app.misc.NumberExtensions.kt</ID>
@@ -109,35 +106,27 @@
     <ID>SpreadOperator:ComponentExtensions.kt$(*commands)</ID>
     <ID>SpreadOperator:ComponentExtensions.kt$(*messages)</ID>
     <ID>SpreadOperator:ComponentLogic.kt$TodoState$(*items)</ID>
-    <ID>SpreadOperator:Environment.kt$(*initialCommands)</ID>
     <ID>SpreadOperator:Initializer.kt$(*commands)</ID>
-    <ID>TooGenericExceptionCaught:MulticastFlow.kt$MulticastFlow$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:MulticastFlow.kt$MulticastFlow$th: Throwable</ID>
     <ID>TooGenericExceptionCaught:ServerImpl.kt$e: Throwable</ID>
     <ID>UndocumentedPublicClass:ClientMessage.kt$ApplyMessage&lt;out J&gt; : ClientMessage</ID>
     <ID>UndocumentedPublicClass:ClientMessage.kt$ApplyState&lt;J&gt; : ClientMessage</ID>
     <ID>UndocumentedPublicClass:ClientMessage.kt$ClientMessage&lt;out J&gt;</ID>
     <ID>UndocumentedPublicClass:Component.kt$ComponentId</ID>
-    <ID>UndocumentedPublicClass:DebugEnvironment.kt$DebugEnvBuilder&lt;M, S, C, J&gt;</ID>
-    <ID>UndocumentedPublicClass:DebugEnvironment.kt$ServerSettingsBuilder&lt;M, S, J&gt;</ID>
-    <ID>UndocumentedPublicClass:MulticastFlow.kt$MulticastFlow.MulticastActorAction$AddCollector&lt;T&gt; : MulticastActorAction</ID>
-    <ID>UndocumentedPublicClass:MulticastFlow.kt$MulticastFlow.MulticastActorAction$RemoveCollector&lt;T&gt; : MulticastActorAction</ID>
+    <ID>UndocumentedPublicClass:Environment.kt$ShareOptions</ID>
     <ID>UndocumentedPublicClass:Packets.kt$NotifyClient&lt;out J&gt;</ID>
     <ID>UndocumentedPublicClass:Packets.kt$NotifyServer&lt;out J&gt;</ID>
     <ID>UndocumentedPublicClass:ServerMessage.kt$NotifyComponentAttached&lt;out J&gt; : ServerMessage</ID>
     <ID>UndocumentedPublicClass:ServerMessage.kt$NotifyComponentSnapshot&lt;out J&gt; : ServerMessage</ID>
     <ID>UndocumentedPublicClass:ServerMessage.kt$ServerMessage&lt;out J&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.compute( input: Flow&lt;M&gt;, startFrom: Initial&lt;S, C&gt;, sink: Sink&lt;M&gt;, ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.resolveAsFlow( commands: Collection&lt;C&gt;, ): Flow&lt;M&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.upstream( snapshots: Flow&lt;Initial&lt;S, C&gt;&gt;, sink: Sink&lt;M&gt;, input: (Initial&lt;S, C&gt;) -&gt; Flow&lt;M&gt;, ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Flow&lt;Snapshot&lt;M, S, C&gt;&gt;.downstream( input: Flow&lt;M&gt;, upstreamInput: SendChannel&lt;M&gt;, ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
     <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;S, C&gt; Env&lt;*, S, C&gt;.init(): Flow&lt;Initial&lt;S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.resolveAsFlow( commands: Collection&lt;C&gt;, ): Flow&lt;M&gt;</ID>
-    <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun environment( config: EnvBuilder&lt;M, S, C&gt;.() -&gt; Unit )</ID>
-    <ID>UndocumentedPublicFunction:DebugEnvironment.kt$DebugEnvBuilder$fun serverSettings( config: ServerSettingsBuilder&lt;M, S, J&gt;.() -&gt; Unit )</ID>
-    <ID>UndocumentedPublicFunction:Environment.kt$@UnstableApi fun &lt;M, S, C&gt; EnvBuilder&lt;M, S, C&gt;.toEnv(): Env&lt;M, S, C&gt;</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;T&gt; Flow&lt;T&gt;.shareIn( scope: CoroutineScope, shareOptions: ShareOptions, )</ID>
     <ID>UndocumentedPublicFunction:FlowExtensions.kt$@UnstableApi suspend fun &lt;T&gt; Flow&lt;T&gt;.into( sendChannel: SendChannel&lt;T&gt; )</ID>
     <ID>UndocumentedPublicFunction:FlowExtensions.kt$fun &lt;T&gt; Flow&lt;T&gt;.mergeWith(other: Flow&lt;T&gt;): Flow&lt;T&gt;</ID>
-    <ID>UndocumentedPublicFunction:MulticastFlow.kt$@UnstableApi fun &lt;T&gt; Flow&lt;T&gt;.shareConflated(): Flow&lt;T&gt;</ID>
+    <ID>UndocumentedPublicProperty:Environment.kt$@UnstableApi val ShareStateWhileSubscribed = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
     <ID>UnnecessaryAbstractClass:AppState.kt$ScreenState</ID>
     <ID>UnnecessaryAbstractClass:BasicComponentTest.kt$BasicComponentTest</ID>
   </Whitelist>
