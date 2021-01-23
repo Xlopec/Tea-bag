@@ -3,7 +3,10 @@
 package com.oliynick.max.tea.core.debug.component
 
 import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.*
+import com.oliynick.max.tea.core.Env
+import com.oliynick.max.tea.core.Initial
+import com.oliynick.max.tea.core.Regular
+import com.oliynick.max.tea.core.Snapshot
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.invoke
 import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentAttached
@@ -11,8 +14,6 @@ import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentSnapshot
 import com.oliynick.max.tea.core.debug.misc.*
 import com.oliynick.max.tea.core.debug.session.WebSocketSession
 import core.component.BasicComponentTest
-import core.misc.messageAsStateUpdate
-import core.misc.throwingResolver
 import core.scope.runBlockingInTestScope
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.boolean.shouldBeTrue
@@ -26,8 +27,6 @@ import io.kotlintest.shouldBe
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -78,7 +77,7 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
 
     @Test
     fun `test debuggable component sends the same sequence of events as the original component`() =
-        runBlocking {
+        runBlockingInTestScope {
 
             val testSession = TestDebugSession<String, String>()
             val component = Component(
@@ -120,7 +119,7 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
         }
 
     @Test
-    fun `test debuggable component processes server snapshots properly`() = runBlocking {
+    fun `test debuggable component processes server snapshots properly`() = runBlockingInTestScope {
 
         val testSession = TestDebugSession<String, String>(states = flowOf("a"))
         val component = Component(
@@ -148,7 +147,7 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
 
     @Test
     @Ignore("race, can't make any assumptions regarding processing order")
-    fun `test debuggable component processes server messages properly`() = runBlocking {
+    fun `test debuggable component processes server messages properly`() = runBlockingInTestScope {
 
         val serverMessages = Channel<String>()
         val testSession =
@@ -186,14 +185,3 @@ private fun fromJson(
 private suspend fun <E> Channel<E>.send(
     vararg e: E,
 ) = e.forEach { elem -> send(elem) }
-
-private fun TestEnv(
-    initializer: Initializer<String, String> = Initializer("")
-) = Env(
-    initializer,
-    ::throwingResolver,
-    ::messageAsStateUpdate,
-    TestCoroutineScope(Job()),
-    TestCoroutineDispatcher(),
-    TestCoroutineDispatcher()
-)

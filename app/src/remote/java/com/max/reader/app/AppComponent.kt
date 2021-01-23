@@ -27,12 +27,13 @@ fun Environment.AppComponent(
     // todo state persistence
 
     return Component(
-        id = ComponentId("News Reader App"),
-        initializer = initializer,
-        resolver = ::resolve,
-        updater = ::update,
-        jsonConverter = AppGsonSerializer(),
-        url = URL(host = "10.0.2.2")
+        ComponentId("News Reader App"),
+        initializer,
+        ::resolve,
+        ::update,
+        AppGsonSerializer(),
+        scope = this,
+        URL(host = "10.0.2.2")
     ).states()
 }
 

@@ -31,7 +31,6 @@ import com.oliynick.max.tea.core.debug.session.WebSocketSession
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
@@ -57,10 +56,10 @@ inline fun <reified M, reified C, reified S, J> Component(
     noinline updater: Updater<M, S, C>,
     jsonConverter: JsonConverter<J>,
     // todo: group to reduce number of arguments
+    scope: CoroutineScope,
     url: URL = Localhost,
     io: CoroutineDispatcher = Dispatchers.IO,
     computation: CoroutineDispatcher = Dispatchers.Unconfined,
-    scope: CoroutineScope = GlobalScope,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
     noinline sessionBuilder: SessionBuilder<M, S, J> = ::WebSocketSession
 ): Component<M, S, C> =

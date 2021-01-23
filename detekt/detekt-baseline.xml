@@ -30,6 +30,7 @@
     <ID>FunctionNaming:SwipeToRefresh.kt$@OptIn(ExperimentalMaterialApi::class) @Composable fun SwipeToRefreshLayout( refreshingState: Boolean, onRefresh: () -&gt; Unit, enabled: Boolean = true, refreshIndicator: @Composable (Boolean, Float) -&gt; Unit = { isRefreshing, progress -&gt; RefreshIndicator(isRefreshing, progress) }, content: @Composable () -&gt; Unit, )</ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") private fun Null.toReadableString(): String</ID>
     <ID>LongParameterList:ArticlesListScreen.kt$( state: LazyListState, id: ScreenId, query: Query, articles: List&lt;Article&gt;, cause: Throwable, onMessage: (Message) -&gt; Unit, )</ID>
+    <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C&gt;, noinline resolver: Resolver&lt;C, M&gt;, noinline updater: Updater&lt;M, S, C&gt;, jsonConverter: JsonConverter&lt;J&gt;, // todo: group to reduce number of arguments scope: CoroutineScope, url: URL = Localhost, io: CoroutineDispatcher = Dispatchers.IO, computation: CoroutineDispatcher = Dispatchers.Unconfined, shareOptions: ShareOptions = ShareStateWhileSubscribed, noinline sessionBuilder: SessionBuilder&lt;M, S, J&gt; = ::WebSocketSession )</ID>
     <ID>MagicNumber:Balloon.kt$15</ID>
     <ID>MagicNumber:Balloon.kt$15_000L</ID>
     <ID>MagicNumber:Balloon.kt$30</ID>
