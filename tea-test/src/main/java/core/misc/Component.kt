@@ -14,38 +14,60 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package core.misc
 
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
+import com.oliynick.max.tea.core.*
+import com.oliynick.max.tea.core.component.*
+import core.scope.coroutineDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.test.TestCoroutineScope
+
+@OptIn(UnstableApi::class)
+fun <M, S, C> TestCoroutineScope.TestEnv(
+    initializer: Initializer<S, C>,
+    resolver: Resolver<C, M>,
+    updater: Updater<M, S, C>,
+    io: CoroutineDispatcher = coroutineDispatcher,
+    computation: CoroutineDispatcher = coroutineDispatcher,
+    shareOptions: ShareOptions = ShareStateWhileSubscribed,
+) = Env(
+    initializer,
+    resolver,
+    updater,
+    this,
+    io,
+    computation,
+    shareOptions
+)
 
 @Suppress("RedundantSuspendModifier")
 suspend fun <C> throwingResolver(
-    c: C
+    c: C,
 ): Nothing =
     throw IllegalStateException("Unexpected command $c")
 
 fun <M, S> throwingUpdater(
     m: M,
-    s: S
+    s: S,
 ): Nothing =
     throw IllegalStateException("message=$m, state=$s")
 
 fun <S> messageAsStateUpdate(
     message: S,
-    @Suppress("UNUSED_PARAMETER") state: S
+    @Suppress("UNUSED_PARAMETER") state: S,
 ): UpdateWith<S, S> =
     message.noCommand()
 
 fun <M, S> messageAsCommand(
     message: M,
-    @Suppress("UNUSED_PARAMETER") state: S
+    @Suppress("UNUSED_PARAMETER") state: S,
 ): UpdateWith<S, M> =
     state command message
 
 fun <M, S> ignoringMessageAsStateUpdate(
     message: M,
-    @Suppress("UNUSED_PARAMETER") state: S
+    @Suppress("UNUSED_PARAMETER") state: S,
 ): UpdateWith<M, S> =
     message.noCommand()

@@ -1,6 +1,6 @@
 @file:Suppress("TestFunctionName")
 
-package com.oliynick.max.tea.core.debug
+package com.oliynick.max.tea.core.debug.misc
 
 import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.Env

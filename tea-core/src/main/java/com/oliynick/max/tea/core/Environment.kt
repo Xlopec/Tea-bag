@@ -8,7 +8,6 @@ import com.oliynick.max.tea.core.component.Updater
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.SharingStarted
 
 /**
@@ -28,9 +27,9 @@ data class Env<M, S, C>(
     val resolver: Resolver<C, M>,
     val updater: Updater<M, S, C>,
     // todo: group to reduce number of arguments
+    val scope: CoroutineScope,
     val io: CoroutineDispatcher = Dispatchers.IO,
     val computation: CoroutineDispatcher = Dispatchers.Unconfined,
-    val scope: CoroutineScope = GlobalScope,
     val shareOptions: ShareOptions = ShareStateWhileSubscribed,
 )
 

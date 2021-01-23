@@ -33,7 +33,7 @@ typealias SessionBuilder<M, S, J> = suspend (
 suspend inline fun <reified M, reified S, J> WebSocketSession(
     settings: ServerSettings<M, S, J>,
     crossinline block: suspend DebugSession<M, S, J>.() -> Unit,
-) = HttpClient.ws(
+) = HttpClient.ws(// todo add timeout
     method = HttpMethod.Get,
     host = settings.url.host,
     port = settings.url.port,

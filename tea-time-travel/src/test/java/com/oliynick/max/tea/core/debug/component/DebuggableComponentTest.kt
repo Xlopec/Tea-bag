@@ -1,14 +1,14 @@
 @file:Suppress("TestFunctionName")
 
-package com.oliynick.max.tea.core.debug
+package com.oliynick.max.tea.core.debug.component
 
 import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.invoke
-import com.oliynick.max.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentAttached
 import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentSnapshot
+import com.oliynick.max.tea.core.debug.misc.*
 import com.oliynick.max.tea.core.debug.session.WebSocketSession
 import core.component.BasicComponentTest
 import core.misc.messageAsStateUpdate
@@ -189,11 +189,11 @@ private suspend fun <E> Channel<E>.send(
 
 private fun TestEnv(
     initializer: Initializer<String, String> = Initializer("")
-) = Env<String, String, String>(
+) = Env(
     initializer,
     ::throwingResolver,
     ::messageAsStateUpdate,
+    TestCoroutineScope(Job()),
     TestCoroutineDispatcher(),
-    TestCoroutineDispatcher(),
-    TestCoroutineScope(Job())
+    TestCoroutineDispatcher()
 )

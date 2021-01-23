@@ -66,7 +66,7 @@ inline fun <reified M, reified C, reified S, J> Component(
 ): Component<M, S, C> =
     Component(
         DebugEnv(
-            Env(initializer, resolver, updater, io, computation, scope, shareOptions),
+            Env(initializer, resolver, updater, scope, io, computation, shareOptions),
             ServerSettings(id, jsonConverter, url, sessionBuilder))
     )
 

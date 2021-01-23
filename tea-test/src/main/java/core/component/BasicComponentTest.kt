@@ -4,6 +4,7 @@ package core.component
 
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
+import core.misc.TestEnv
 import core.misc.messageAsCommand
 import core.misc.throwingResolver
 import core.misc.throwingUpdater
@@ -41,7 +42,7 @@ abstract class BasicComponentTest(
         val TestTimeout: Timeout = Timeout.seconds(10L)
         const val ThreadName = "test thread"
 
-        val CoroutineDispatcher =
+        val SingleThreadDispatcher =
             Executors.newSingleThreadExecutor { r -> Thread(r, ThreadName) }
                 .asCoroutineDispatcher()
     }
@@ -55,13 +56,10 @@ abstract class BasicComponentTest(
 
             var counter = 0
             val initial = Initial<String, Char>("", emptySet())
-            val env = Env<Char, String, Char>(
+            val env = TestEnv<Char, String, Char>(
                 { counter++; initial },
                 ::noOpResolver,
                 { m, str -> (str + m).command(m) },
-                coroutineDispatcher,
-                coroutineDispatcher,
-                this
             )
 
             val component = factory(env)
@@ -81,12 +79,10 @@ abstract class BasicComponentTest(
     fun `test when receiving new input previous downstream gets canceled`() =
         runBlockingInTestScope {
 
-            val env = Env<Char, String, Char>(
+            val env = TestEnv<Char, String, Char>(
                 Initializer(""),
                 ::noOpResolver,
-                ::messageAsCommand,
-                coroutineDispatcher,
-                coroutineDispatcher
+                ::messageAsCommand
             )
 
             val lastInitial = Initial("b", setOf('e'))
@@ -111,29 +107,23 @@ abstract class BasicComponentTest(
 
             val (state, commands) = lastInitial
 
-            resultingStates shouldContainExactly(initialStates +
-                    Regular(
-                        state,
-                        commands,
-                        state,
-                        commands.first()
-                    )
-            )
+            resultingStates shouldContainExactly (initialStates + Regular(state,
+                commands,
+                state,
+                commands.first()))
         }
 
     @Test
-    fun `test component emits a correct sequence of snapshots`() = runBlocking {
+    fun `test component emits a correct sequence of snapshots`() = runBlockingInTestScope {
 
-        val env = Env<Char, String, Char>(
+        val env = TestEnv<Char, String, Char>(
             Initializer(""),
             ::throwingResolver,
             { m, _ -> m.toString().noCommand() }
         )
 
-        val component = factory(env)
         val messages = arrayOf('a', 'b', 'c')
-        val snapshots =
-            component(*messages).take(messages.size + 1).toList()
+        val snapshots = factory(env)(*messages).take(messages.size + 1).toList()
 
         snapshots.shouldContainExactly(
             Initial("", emptySet()),
@@ -145,9 +135,9 @@ abstract class BasicComponentTest(
 
     @Test
     fun `test component emits a correct sequence of snapshots if we have recursive calculations`() =
-        runBlocking {
+        runBlockingInTestScope {
 
-            val env = Env<Char, String, Char>(
+            val env = TestEnv<Char, String, Char>(
                 Initializer(""),
                 { ch ->
                     // only message 'b' should be consumed
@@ -167,12 +157,12 @@ abstract class BasicComponentTest(
         }
 
     @Test
-    fun `test interceptor sees an original sequence of snapshots`() = runBlocking {
+    fun `test interceptor sees an original sequence of snapshots`() = runBlockingInTestScope {
 
-        val env = Env<Char, String, Char>(
+        val env = TestEnv<Char, String, Char>(
             Initializer(""),
             { c -> setOf(c) },
-            { m, _ -> m.toString().noCommand() }
+            { m, _ -> m.toString().noCommand() },
         )
 
         val sink = mutableListOf<Snapshot<Char, String, Char>>()
@@ -185,9 +175,9 @@ abstract class BasicComponentTest(
     }
 
     @Test
-    fun `test component's snapshots shared among consumers`() = runBlocking {
+    fun `test component's snapshots shared among consumers`() = runBlockingInTestScope {
 
-        val env = Env<Char, String, Char>(
+        val env = TestEnv<Char, String, Char>(
             Initializer(""),
             { ch ->
                 if (ch == 'a') setOf(
@@ -202,11 +192,11 @@ abstract class BasicComponentTest(
         val take = 3
         val component = factory(env)
         val snapshots2Deferred =
-            async {
+            GlobalScope.async {
                 component(emptyFlow()).take(take)
                     .toList()
             }
-        val snapshots1Deferred = async {
+        val snapshots1Deferred = GlobalScope.async {
             component('a').take(take).toList()
         }
 
@@ -234,7 +224,7 @@ abstract class BasicComponentTest(
 
     @Test
     fun `test component gets initialized only once if we have multiple consumers`() =
-        runBlocking {
+        runBlockingInTestScope {
 
             val countingInitializer = object {
 
@@ -247,17 +237,21 @@ abstract class BasicComponentTest(
                 }
             }
 
-            val env = Env<Char, String, Char>(
+            val env = TestEnv<Char, String, Char>(
                 countingInitializer.initializer(),
                 ::throwingResolver,
-                { _, s -> s.noCommand() }
+                { _, s -> s.noCommand() },
+                io = Dispatchers.IO,
+                // SharingStarted.Lazily since in case of default option the replay
+                // cache will be disposed immediately causing test to fail
+                shareOptions = ShareOptions(SharingStarted.Lazily, 1U)
             )
 
             val component = factory(env)
 
             countingInitializer.invocations.value shouldBe 0
 
-            val coroutines = 100
+            val coroutines = 1_000
             val jobs = (0 until coroutines).map { launch { component('a').first() } }
                 .toCollection(ArrayList(coroutines))
 
@@ -270,12 +264,10 @@ abstract class BasicComponentTest(
     fun `test component's job gets canceled properly`() = runBlockingInTestScope {
 
         val resolver = ForeverWaitingResolver<Char>()
-        val env = Env(
+        val env = TestEnv(
             Initializer(""),
             resolver::resolveForever,
-            ::messageAsCommand,
-            coroutineDispatcher,
-            coroutineDispatcher
+            ::messageAsCommand
         )
 
         val messages = 'a'..'z'
@@ -294,7 +286,7 @@ abstract class BasicComponentTest(
     fun `test component doesn't block if serves multiple message sources`() =
         runBlockingInTestScope {
 
-            val env = Env<Char, String, Char>(
+            val env = TestEnv<Char, String, Char>(
                 Initializer(""),
                 ::throwingResolver,
                 { m, _ -> m.toString().noCommand() }
@@ -360,11 +352,10 @@ abstract class BasicComponentTest(
     @Test
     fun `test resolver runs on a given dispatcher`() = runBlockingInTestScope {
 
-        val env = Env<Char, String, Char>(
+        val env = TestEnv<Char, String, Char>(
             Initializer(""),
             CheckingResolver(coroutineDispatcher),
-            ::messageAsCommand,
-            coroutineDispatcher
+            ::messageAsCommand
         )
 
         factory(env)('a'..'d')
@@ -372,64 +363,66 @@ abstract class BasicComponentTest(
     }
 
     @Test
-    fun `test if resolver fails with exception it gets handled by coroutine scope`() = runBlockingInTestScope {
-        val component = Component<String, String, String>(
-            Initializer("", "a"),
-            ::throwingResolver,
-            ::throwingUpdater,
-            scope = this@runBlockingInTestScope
-        )
+    fun `test if resolver fails with exception it gets handled by coroutine scope`() =
+        runBlockingInTestScope {
+            val component = Component<String, String, String>(
+                Initializer("", "a"),
+                ::throwingResolver,
+                ::throwingUpdater,
+                this@runBlockingInTestScope
+            )
 
-        val job = launch { component("").collect() }
+            val job = launch { component("").collect() }
 
-        job.join()
-        job.isCancelled.shouldBeTrue()
+            job.join()
+            job.isCancelled.shouldBeTrue()
 
-        val th = job.getCancellationException().cause
+            val th = job.getCancellationException().cause
 
-        withClue("Cancellation cause $th") {
-            th.shouldNotBeNull()
-            // todo maybe IllegalStateException should be replaced with custom exception
-            th.shouldBeTypeOf<IllegalStateException>()
+            withClue("Cancellation cause $th") {
+                th.shouldNotBeNull()
+                // todo maybe IllegalStateException should be replaced with custom exception
+                th.shouldBeTypeOf<IllegalStateException>()
+            }
+
+            isActive.shouldBeFalse()
         }
-
-        isActive.shouldBeFalse()
-    }
 
     @Test
-    fun `test if initializer fails with exception it gets handled by coroutine scope`() = runBlockingInTestScope {
-        val expectedException = RuntimeException("hello")
-        val component = Component<String, String, String>(
-            ThrowingInitializer(expectedException),
-            ::throwingResolver,
-            ::throwingUpdater,
-            scope = this@runBlockingInTestScope
-        )
+    fun `test if initializer fails with exception it gets handled by coroutine scope`() =
+        runBlockingInTestScope {
+            val expectedException = RuntimeException("hello")
+            val component = Component<String, String, String>(
+                ThrowingInitializer(expectedException),
+                ::throwingResolver,
+                ::throwingUpdater,
+                this@runBlockingInTestScope
+            )
 
-        val job = launch { component("").collect() }
+            val job = launch { component("").collect() }
 
-        job.join()
-        job.isCancelled.shouldBeTrue()
+            job.join()
+            job.isCancelled.shouldBeTrue()
 
-        val th = job.getCancellationException().cause
+            val th = job.getCancellationException().cause
 
-        withClue("Cancellation cause $th") {
-            th.shouldNotBeNull()
-            th.shouldBeTypeOf<RuntimeException>()
-            th.shouldHaveMessage(expectedException.message!!)
+            withClue("Cancellation cause $th") {
+                th.shouldNotBeNull()
+                th.shouldBeTypeOf<RuntimeException>()
+                th.shouldHaveMessage(expectedException.message!!)
+            }
+
+            isActive.shouldBeFalse()
         }
-
-        isActive.shouldBeFalse()
-    }
 
     @Test
     fun `test initializer runs on a given dispatcher`() = runBlockingInTestScope {
 
-        val env = Env<Char, String, Char>(
-            CheckingInitializer(CoroutineDispatcher),
+        val env = TestEnv<Char, String, Char>(
+            CheckingInitializer(SingleThreadDispatcher),
             ::throwingResolver,
             { m, _ -> m.toString().noCommand() },
-            CoroutineDispatcher
+            io = SingleThreadDispatcher
         )
 
         factory(env)('a'..'d').take('d' - 'a').collect()
@@ -438,11 +431,11 @@ abstract class BasicComponentTest(
     @Test
     fun `test updater runs on a given dispatcher`() = runBlockingInTestScope {
 
-        val env = Env<Char, String, Char>(
+        val env = TestEnv<Char, String, Char>(
             Initializer(""),
             ::throwingResolver,
             CheckingUpdater(Regex("$ThreadName @coroutine#\\d+")),
-            computation = CoroutineDispatcher
+            computation = SingleThreadDispatcher
         )
 
         factory(env)('a'..'d').take('d' - 'a').collect()
@@ -466,10 +459,6 @@ private fun CheckingResolver(
     coroutineContext[CoroutineDispatcher.Key] shouldBeSameInstanceAs expectedDispatcher
     emptySet()
 }
-
-fun <C> ThrowingResolver(
-    th: Throwable,
-): Resolver<C, Nothing> = { throw th }
 
 fun ThrowingInitializer(
     th: Throwable,

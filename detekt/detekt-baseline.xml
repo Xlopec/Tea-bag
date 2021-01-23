@@ -98,7 +98,7 @@
     <ID>NewLineAtEndOfFile:SideToolWindowFactory.kt$com.oliynick.max.tea.core.debug.app.presentation.sidebar.SideToolWindowFactory.kt</ID>
     <ID>NewLineAtEndOfFile:SnapshotTreeModel.kt$com.oliynick.max.tea.core.debug.app.presentation.component.SnapshotTreeModel.kt</ID>
     <ID>NewLineAtEndOfFile:Storage.kt$com.max.reader.app.env.storage.Storage.kt</ID>
-    <ID>NewLineAtEndOfFile:TestDebugSession.kt$com.oliynick.max.tea.core.debug.TestDebugSession.kt</ID>
+    <ID>NewLineAtEndOfFile:TestDebugSession.kt$com.oliynick.max.tea.core.debug.misc.TestDebugSession.kt</ID>
     <ID>NewLineAtEndOfFile:Typography.kt$com.max.reader.ui.theme.Typography.kt</ID>
     <ID>NewLineAtEndOfFile:Url.kt$com.oliynick.max.tea.core.debug.component.Url.kt</ID>
     <ID>NewLineAtEndOfFile:build.gradle.kts$.build.gradle.kts</ID>

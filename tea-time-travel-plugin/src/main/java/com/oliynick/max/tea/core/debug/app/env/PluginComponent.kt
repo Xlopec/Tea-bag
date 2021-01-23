@@ -5,9 +5,17 @@ package com.oliynick.max.tea.core.debug.app.env
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.debug
 import com.intellij.openapi.diagnostic.trace
-import com.oliynick.max.tea.core.*
-import com.oliynick.max.tea.core.component.*
-import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.Initial
+import com.oliynick.max.tea.core.Initializer
+import com.oliynick.max.tea.core.Regular
+import com.oliynick.max.tea.core.Snapshot
+import com.oliynick.max.tea.core.component.Component
+import com.oliynick.max.tea.core.component.Interceptor
+import com.oliynick.max.tea.core.component.with
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
+import com.oliynick.max.tea.core.debug.app.component.cms.Stopped
 import com.oliynick.max.tea.core.debug.app.misc.PluginId
 import com.oliynick.max.tea.core.debug.app.misc.settings
 
@@ -24,7 +32,7 @@ fun PluginComponent(
         state: PluginState
     ) = with(environment) { update(message, state) }
 
-    return Component(AppInitializer(environment), ::doResolve, ::doUpdate)
+    return Component(AppInitializer(environment), ::doResolve, ::doUpdate, environment)
         .with(com.oliynick.max.tea.core.debug.app.env.Logger())
 }
 

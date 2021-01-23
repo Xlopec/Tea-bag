@@ -24,7 +24,8 @@ fun Environment.AppComponent(
     return Component(
         initializer,
         ::resolve,
-        ::update
+        ::update,
+        this
     ).states()
 
 }

@@ -86,12 +86,12 @@ fun <M, C, S> Component(
     resolver: Resolver<C, M>,
     updater: Updater<M, S, C>,
     // todo: group to reduce number of arguments
+    scope: CoroutineScope,
     io: CoroutineDispatcher = Dispatchers.IO,
     computation: CoroutineDispatcher = Dispatchers.Unconfined,
-    scope: CoroutineScope = GlobalScope,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ): Component<M, S, C> =
-    Component(Env(initializer, resolver, updater, io, computation, scope, shareOptions))
+    Component(Env(initializer, resolver, updater, scope, io, computation, shareOptions))
 
 /**
  * Creates new component using preconfigured environment
@@ -140,7 +140,7 @@ fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
 
 @UnstableApi
 fun <S, C> Env<*, S, C>.init(): Flow<Initial<S, C>> =
-    flow { emit(withContext(io) { initializer() }) }
+    channelFlow { withContext(io) { send(initializer()) } }
 
 @UnstableApi
 fun <M, S, C> Env<M, S, C>.compute(
