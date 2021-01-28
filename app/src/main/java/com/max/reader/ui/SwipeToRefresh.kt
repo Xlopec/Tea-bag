@@ -80,10 +80,13 @@ fun SwipeToRefreshLayout(
         Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .offset(y = { state.offset.value })
+                .offset(y = state.offset.value
+                    .takeUnless(Float::isNaN)
+                    ?.let { with(AmbientDensity.current) { it.toDp() } } ?: 0.dp)
         ) {
             if (!state.offset.value.isNaN() && state.offset.value != -refreshDistance) {
-                refreshIndicator(refreshingState, (state.offset.value / refreshDistance).coerceIn(0f, 1f))
+                refreshIndicator(refreshingState,
+                    (state.offset.value / refreshDistance).coerceIn(0f, 1f))
             }
         }
 

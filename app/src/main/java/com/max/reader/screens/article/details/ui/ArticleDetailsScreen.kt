@@ -20,9 +20,9 @@ import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.ExperimentalKeyInput
 import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.keyInputFilter
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
@@ -33,7 +33,6 @@ import com.max.reader.screens.article.details.ArticleDetailsState
 import com.max.reader.screens.article.details.OpenInBrowser
 import com.max.reader.ui.InsetAwareTopAppBar
 
-@OptIn(ExperimentalKeyInput::class)
 @Composable
 fun ArticleDetailsScreen(
     screen: ArticleDetailsState,
@@ -77,7 +76,6 @@ fun ArticleDetailsScreen(
         })
 }
 
-@OptIn(ExperimentalKeyInput::class)
 @Composable
 private fun ArticleDetailsContent(
     modifier: Modifier,
@@ -86,7 +84,7 @@ private fun ArticleDetailsContent(
 ) {
     AndroidView(
         viewBlock = { view },
-        modifier = modifier.fillMaxSize().keyInputFilter { event ->
+        modifier = modifier.fillMaxSize().onKeyEvent { event ->
             event.key == Key.Back && view.canGoBack().also { if (it) view.goBack() }
         }
     ) { webView ->

@@ -27,7 +27,6 @@ import androidx.compose.runtime.onActive
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.ExperimentalFocus
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.AmbientAnimationClock
 import androidx.compose.ui.text.input.ImeAction
@@ -452,7 +451,6 @@ private fun Message(
     }
 }
 
-@OptIn(ExperimentalFocus::class)
 @Composable
 private fun ArticleSearchHeader(
     modifier: Modifier = Modifier,
