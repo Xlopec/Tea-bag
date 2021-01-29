@@ -3,12 +3,12 @@ import BuildPlugins.Versions.intellijVersion
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 
-const val kotlinVersion = "1.4.21"
+const val kotlinVersion = "1.4.21-2"
 
 object BuildPlugins {
 
     object Versions {
-        const val buildToolsVersion = "7.0.0-alpha04"
+        const val buildToolsVersion = "7.0.0-alpha05"
         const val detektVersion = "1.5.1"
         const val dokkaVersion = "1.4.0"
         const val bintrayVersion = "1.8.4"
@@ -24,8 +24,8 @@ object Libraries {
     object Versions {
         const val coroutines = "1.4.1"
         const val ktor = "1.4.2"
-        const val compose = "1.0.0-alpha10"
-        const val accompanies = "0.4.2"
+        const val compose = "1.0.0-alpha11"
+        const val accompanies = "0.5.0"
     }
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"

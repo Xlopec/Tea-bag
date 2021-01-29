@@ -26,6 +26,7 @@
     <ID>FunctionNaming:AppTheme.kt$@Composable fun AppTheme( isDarkModeEnabled: Boolean, content: @Composable () -&gt; Unit, )</ID>
     <ID>FunctionNaming:AppTheme.kt$@Composable fun ThemedPreview( content: @Composable () -&gt; Unit, )</ID>
     <ID>FunctionNaming:InsetAwareTopAppBar.kt$@Composable fun InsetAwareTopAppBar( title: @Composable () -&gt; Unit, modifier: Modifier = Modifier, navigationIcon: @Composable (() -&gt; Unit)? = null, actions: @Composable RowScope.() -&gt; Unit = {}, backgroundColor: Color = MaterialTheme.colors.primarySurface, contentColor: Color = contentColorFor(backgroundColor), elevation: Dp = 4.dp )</ID>
+    <ID>FunctionNaming:SettingsScreen.kt$@Composable fun SettingsScreen( innerPadding: PaddingValues, state: AppState, onMessage: (Message) -&gt; Unit, )</ID>
     <ID>FunctionNaming:SwipeToRefresh.kt$@Composable fun RefreshIndicator( isRefreshing: Boolean, @FloatRange(from = .0, to = 1.0) progress: Float, )</ID>
     <ID>FunctionNaming:SwipeToRefresh.kt$@OptIn(ExperimentalMaterialApi::class) @Composable fun SwipeToRefreshLayout( refreshingState: Boolean, onRefresh: () -&gt; Unit, enabled: Boolean = true, refreshIndicator: @Composable (Boolean, Float) -&gt; Unit = { isRefreshing, progress -&gt; RefreshIndicator(isRefreshing, progress) }, content: @Composable () -&gt; Unit, )</ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") private fun Null.toReadableString(): String</ID>

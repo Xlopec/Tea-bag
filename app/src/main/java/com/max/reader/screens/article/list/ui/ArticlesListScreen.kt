@@ -7,14 +7,11 @@ import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.animation.defaultFlingConfig
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.ButtonConstants.defaultTextButtonColors
+import androidx.compose.material.ButtonDefaults.textButtonColors
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.icons.Icons
@@ -314,7 +311,8 @@ private fun ArticleImage(
                 modifier = Modifier.fillMaxWidth(),
                 data = imageUrl.toExternalForm(),
                 fadeIn = true,
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                contentDescription = "Article's Image"
             )
         }
     }
@@ -394,7 +392,10 @@ private fun ArticleActions(
         IconButton(
             onClick = { onMessage(ShareArticle(article)) }
         ) {
-            Icon(imageVector = Icons.Default.Share)
+            Icon(
+                imageVector = Icons.Default.Share,
+                contentDescription = "Share"
+            )
         }
 
         IconButton(
@@ -402,6 +403,7 @@ private fun ArticleActions(
         ) {
             Icon(
                 imageVector = if (article.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                contentDescription = if (article.isFavorite) "Remove from favorite" else "Add to favorite"
             )
         }
     }
@@ -443,7 +445,7 @@ private fun Message(
         )
 
         TextButton(
-            colors = defaultTextButtonColors(contentColor = colors.onSurface),
+            colors = textButtonColors(contentColor = colors.onSurface),
             onClick = onClick
         ) {
             Text(text = actionText)
@@ -480,7 +482,10 @@ private fun ArticleSearchHeader(
                 IconButton(
                     onClick = { onMessage(LoadArticlesFromScratch(id)) }
                 ) {
-                    Icon(imageVector = Icons.Default.Search)
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search"
+                    )
                 }
             },
             onValueChange = { query -> onMessage(OnQueryUpdated(id, query)) }

@@ -36,7 +36,7 @@ import com.max.reader.ui.InsetAwareTopAppBar
 @Composable
 fun ArticleDetailsScreen(
     screen: ArticleDetailsState,
-    onMessage: (Message) -> Unit
+    onMessage: (Message) -> Unit,
 ) {
 
     val context = AmbientContext.current
@@ -53,6 +53,7 @@ fun ArticleDetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = { onMessage(Pop) }) {
                         Icon(
+                            contentDescription = "Close",
                             imageVector = /*if (view.canGoBack()) Icons.Default.ArrowBack else*/ Icons.Default.Close,
                         )
                     }
@@ -67,7 +68,10 @@ fun ArticleDetailsScreen(
                 },
                 actions = {
                     IconButton(onClick = { onMessage(OpenInBrowser(screen.id)) }) {
-                        Icon(Icons.Default.OpenInBrowser)
+                        Icon(
+                            contentDescription = "Open in Browser",
+                            imageVector = Icons.Default.OpenInBrowser
+                        )
                     }
                 }
             )
@@ -80,13 +84,17 @@ fun ArticleDetailsScreen(
 private fun ArticleDetailsContent(
     modifier: Modifier,
     article: Article,
-    view: WebView
+    view: WebView,
 ) {
     AndroidView(
         viewBlock = { view },
-        modifier = modifier.fillMaxSize().onKeyEvent { event ->
-            event.key == Key.Back && view.canGoBack().also { if (it) view.goBack() }
-        }
+        modifier = modifier
+            .fillMaxSize()
+            .onKeyEvent { event ->
+                event.key == Key.Back && view
+                    .canGoBack()
+                    .also { if (it) view.goBack() }
+            }
     ) { webView ->
         webView.loadUrl(article.url.toExternalForm())
     }

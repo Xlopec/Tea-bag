@@ -2,21 +2,15 @@
 
 package com.max.reader.screens.home
 
-import androidx.compose.foundation.ScrollableColumn
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
-import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.Icons.Default
-import androidx.compose.material.icons.filled.Brightness3
-import androidx.compose.material.icons.filled.Brightness5
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.dp
 import com.max.reader.R
 import com.max.reader.app.*
 import com.max.reader.screens.article.list.ArticlesState
@@ -25,7 +19,7 @@ import com.max.reader.screens.article.list.QueryType
 import com.max.reader.screens.article.list.RefreshArticles
 import com.max.reader.screens.article.list.ui.ArticlesScreen
 import com.max.reader.screens.home.BottomMenuItem.*
-import com.max.reader.screens.settings.ToggleDarkMode
+import com.max.reader.screens.settings.SettingsScreen
 import com.max.reader.ui.InsetAwareTopAppBar
 import com.max.reader.ui.SwipeToRefreshLayout
 import dev.chrisbanes.accompanist.insets.navigationBarsPadding
@@ -83,8 +77,15 @@ fun HomeScreen(
             )
         }, bodyContent = { innerPadding ->
 
-            ScrollableColumn(
+            SettingsScreen(
+                innerPadding = innerPadding,
+                state = state,
+                onMessage = onMessage
+            )
+
+            /*Column(
                 modifier = Modifier
+                    .verticalScroll(rememberScrollState())
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
@@ -93,13 +94,17 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
 
-                        Icon(imageVector = if (state.isDarkModeEnabled) Default.Brightness3 else Default.Brightness5)
+                        Icon(
+                            contentDescription = "Dark Mode",
+                            imageVector = if (state.isDarkModeEnabled) Default.Brightness3 else Default.Brightness5
+                        )
 
                         Column {
                             Text(
@@ -124,7 +129,7 @@ fun HomeScreen(
                     }
                     Divider()
                 }
-            }
+            }*/
         })
 }
 
@@ -137,28 +142,40 @@ fun BottomBar(
     BottomNavigation(modifier = modifier) {
 
         BottomNavigationItem(icon = {
-            Icon(imageVector = vectorResource(id = R.drawable.ic_language_white_24dp))
+            Icon(
+                imageVector = vectorResource(id = R.drawable.ic_language_white_24dp),
+                contentDescription = "Feed"
+            )
         },
             selected = item === Feed,
             onClick = { onMessage(NavigateToFeed) }
         )
 
         BottomNavigationItem(icon = {
-            Icon(imageVector = vectorResource(id = R.drawable.ic_favorite_border_white_24dp))
+            Icon(
+                imageVector = vectorResource(id = R.drawable.ic_favorite_border_white_24dp),
+                contentDescription = "Favorite"
+            )
         },
             selected = item === Favorite,
             onClick = { onMessage(NavigateToFavorite) }
         )
 
         BottomNavigationItem(icon = {
-            Icon(imageVector = Icons.Filled.TrendingUp)
+            Icon(
+                imageVector = Icons.Filled.TrendingUp,
+                contentDescription = "Trending"
+            )
         },
             selected = item === Trending,
             onClick = { onMessage(NavigateToTrending) }
         )
 
         BottomNavigationItem(icon = {
-            Icon(imageVector = Icons.Filled.Settings)
+            Icon(
+                imageVector = Icons.Filled.Settings,
+                contentDescription = "Settings"
+            )
         },
             selected = item === Settings,
             onClick = { onMessage(NavigateToSettings) }
