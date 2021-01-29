@@ -20,7 +20,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.onActive
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -272,8 +272,9 @@ private fun LazyListScope.ArticlesContentNonEmptyImpl(
             }
 
             if (index == articles.lastIndex) {
-                onActive {
+                DisposableEffect(Unit) {
                     onLastElement()
+                    onDispose {  }
                 }
             }
         }
