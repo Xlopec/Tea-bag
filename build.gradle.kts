@@ -88,7 +88,7 @@ libraryProjects()
             dokkaSourceSets {
                 named("main") {
                     reportUndocumented.set(true)
-                    moduleDisplayName.set(project.name)
+                    displayName.set(project.name)
                     includeNonPublic.set(false)
                     skipEmptyPackages.set(true)
 

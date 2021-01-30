@@ -27,7 +27,7 @@ import org.jetbrains.intellij.tasks.PublishTask
  */
 
 intellij {
-    version = "2020.2"
+    version = "2020.3"
     setPlugins("com.intellij.java")
 }
 
