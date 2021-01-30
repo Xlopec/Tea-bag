@@ -1,37 +1,12 @@
-<?xml version="1.0" ?>
+<?xml version='1.0' encoding='UTF-8'?>
 <SmellBaseline>
-  <Blacklist>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.upstream( messages: Flow&lt;M&gt;, snapshots: Flow&lt;Initial&lt;S, C&gt;&gt; )</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.compute( startFrom: Initial&lt;S, C&gt;, messages: Flow&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Flow&lt;Snapshot&lt;M, S, C&gt;&gt;.downstream( input: Flow&lt;M&gt;, upstreamInput: SendChannel&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;S, C&gt; Env&lt;*, S, C&gt;.init(): Flow&lt;Initial&lt;S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi suspend fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.computeNextSnapshot( state: S, message: M ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi suspend fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.computeNextSnapshotsRecursively( state: S, messages: Iterator&lt;M&gt; ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Environment.kt$@UnstableApi fun &lt;M, S, C&gt; EnvBuilder&lt;M, S, C&gt;.toEnv(): Env&lt;M, S, C&gt;</ID>
-    <ID>UndocumentedPublicFunction:FlowExtensions.kt$@UnstableApi suspend fun &lt;T&gt; Flow&lt;T&gt;.into( sendChannel: SendChannel&lt;T&gt; )</ID>
-    <ID>UndocumentedPublicFunction:MulticastFlow.kt$@UnstableApi fun &lt;T&gt; Flow&lt;T&gt;.shareConflated( debounceMs: Int = 0 ): Flow&lt;T&gt;</ID>
-    <ID>NestedBlockDepth:MulticastFlow.kt$MulticastFlow$onOriginalFlowData</ID>
-    <ID>SpreadOperator:ComponentExtensions.kt$(*commands)</ID>
-    <ID>SpreadOperator:ComponentExtensions.kt$(*messages)</ID>
-    <ID>SpreadOperator:Environment.kt$(*initialCommands)</ID>
-    <ID>SpreadOperator:Initializer.kt$(*commands)</ID>
-    <ID>TooGenericExceptionCaught:MulticastFlow.kt$MulticastFlow$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:MulticastFlow.kt$MulticastFlow$th: Throwable</ID>
-    <ID>UndocumentedPublicClass:MulticastFlow.kt$MulticastFlow.MulticastActorAction$AddCollector&lt;T&gt; : MulticastActorAction</ID>
-    <ID>UndocumentedPublicClass:MulticastFlow.kt$MulticastFlow.MulticastActorAction$RemoveCollector&lt;T&gt; : MulticastActorAction</ID>
-  </Blacklist>
-  <Whitelist>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
-    <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$update</ID>
-    <ID>FunctionNaming:AppTheme.kt$@Composable fun AppTheme( isDarkModeEnabled: Boolean, content: @Composable () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:AppTheme.kt$@Composable fun ThemedPreview( content: @Composable () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:InsetAwareTopAppBar.kt$@Composable fun InsetAwareTopAppBar( title: @Composable () -&gt; Unit, modifier: Modifier = Modifier, navigationIcon: @Composable (() -&gt; Unit)? = null, actions: @Composable RowScope.() -&gt; Unit = {}, backgroundColor: Color = MaterialTheme.colors.primarySurface, contentColor: Color = contentColorFor(backgroundColor), elevation: Dp = 4.dp )</ID>
-    <ID>FunctionNaming:SettingsScreen.kt$@Composable fun SettingsScreen( innerPadding: PaddingValues, state: AppState, onMessage: (Message) -&gt; Unit, )</ID>
-    <ID>FunctionNaming:SwipeToRefresh.kt$@Composable fun RefreshIndicator( isRefreshing: Boolean, @FloatRange(from = .0, to = 1.0) progress: Float, )</ID>
-    <ID>FunctionNaming:SwipeToRefresh.kt$@OptIn(ExperimentalMaterialApi::class) @Composable fun SwipeToRefreshLayout( refreshingState: Boolean, onRefresh: () -&gt; Unit, enabled: Boolean = true, refreshIndicator: @Composable (Boolean, Float) -&gt; Unit = { isRefreshing, progress -&gt; RefreshIndicator(isRefreshing, progress) }, content: @Composable () -&gt; Unit, )</ID>
+    <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$override fun update( message: UIMessage, state: PluginState ): UpdateWith&lt;PluginState, PluginCommand></ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") private fun Null.toReadableString(): String</ID>
-    <ID>LongParameterList:ArticlesListScreen.kt$( state: LazyListState, id: ScreenId, query: Query, articles: List&lt;Article&gt;, cause: Throwable, onMessage: (Message) -&gt; Unit, )</ID>
-    <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C&gt;, noinline resolver: Resolver&lt;C, M&gt;, noinline updater: Updater&lt;M, S, C&gt;, jsonConverter: JsonConverter&lt;J&gt;, // todo: group to reduce number of arguments scope: CoroutineScope, url: URL = Localhost, io: CoroutineDispatcher = Dispatchers.IO, computation: CoroutineDispatcher = Dispatchers.Unconfined, shareOptions: ShareOptions = ShareStateWhileSubscribed, noinline sessionBuilder: SessionBuilder&lt;M, S, J&gt; = ::WebSocketSession )</ID>
+    <ID>LongParameterList:ArticlesListScreen.kt$( state: LazyListState, id: ScreenId, query: Query, articles: List&lt;Article>, cause: Throwable, onMessage: (Message) -> Unit, )</ID>
+    <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C>, noinline resolver: Resolver&lt;C, M>, noinline updater: Updater&lt;M, S, C>, jsonConverter: JsonConverter&lt;J>, // todo: group to reduce number of arguments scope: CoroutineScope, url: URL = Localhost, io: CoroutineDispatcher = Dispatchers.IO, computation: CoroutineDispatcher = Dispatchers.Unconfined, shareOptions: ShareOptions = ShareStateWhileSubscribed, noinline sessionBuilder: SessionBuilder&lt;M, S, J> = ::WebSocketSession )</ID>
     <ID>MagicNumber:Balloon.kt$15</ID>
     <ID>MagicNumber:Balloon.kt$15_000L</ID>
     <ID>MagicNumber:Balloon.kt$30</ID>
@@ -45,15 +20,14 @@
     <ID>MagicNumber:ServerImpl.kt$5</ID>
     <ID>MatchingDeclarationName:Component.kt$ComponentId</ID>
     <ID>MatchingDeclarationName:HomeScreen.kt$BottomMenuItem</ID>
-    <ID>MatchingDeclarationName:LiveAppResolver.kt$HasCommandTransport</ID>
     <ID>MatchingDeclarationName:MapSerializer.kt$MapDeserializer : JsonDeserializer</ID>
     <ID>MatchingDeclarationName:Memoization.kt$Key7</ID>
     <ID>MatchingDeclarationName:MongoDb.kt$HasMongoCollection</ID>
     <ID>MatchingDeclarationName:PersistentSerializer.kt$PersistentListSerializer : JsonSerializerJsonDeserializer</ID>
     <ID>MatchingDeclarationName:UpdateUI.kt$UiUpdater</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
-    <ID>MaxLineLength:FiltersTest.kt$FiltersTest$@Test fun `test if number property contains some custom Number implementation, given regex is 'number' only this property remains in the Ref`()</ID>
-    <ID>MaxLineLength:LiveArticlesUpdater.kt$LiveArticlesUpdater$is LoadArticlesFromScratch, is RefreshArticles -&gt; state.toRefreshing() command LoadArticlesByQuery(state.id, state.query, state.articles.size, ArticlesState.ArticlesPerPage)</ID>
+    <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>
+    <ID>MaxLineLength:LiveArticlesUpdater.kt$LiveArticlesUpdater$is LoadArticlesFromScratch, is RefreshArticles -> state.toRefreshing() command LoadArticlesByQuery(state.id, state.query, state.articles.size, ArticlesState.ArticlesPerPage)</ID>
     <ID>NewLineAtEndOfFile:AppResolver.kt$com.max.reader.app.resolve.AppResolver.kt</ID>
     <ID>NewLineAtEndOfFile:AppUpdater.kt$com.max.reader.app.update.AppUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:Baloon.kt$com.oliynick.max.tea.core.debug.app.component.resolver.Baloon.kt</ID>
@@ -105,31 +79,47 @@
     <ID>NewLineAtEndOfFile:Url.kt$com.oliynick.max.tea.core.debug.component.Url.kt</ID>
     <ID>NewLineAtEndOfFile:build.gradle.kts$.build.gradle.kts</ID>
     <ID>SpreadOperator:BasicComponentTest.kt$BasicComponentTest$(*messages)</ID>
-    <ID>SpreadOperator:ComponentExtensions.kt$(*commands)</ID>
-    <ID>SpreadOperator:ComponentExtensions.kt$(*messages)</ID>
     <ID>SpreadOperator:ComponentLogic.kt$TodoState$(*items)</ID>
-    <ID>SpreadOperator:Initializer.kt$(*commands)</ID>
     <ID>TooGenericExceptionCaught:ServerImpl.kt$e: Throwable</ID>
-    <ID>UndocumentedPublicClass:ClientMessage.kt$ApplyMessage&lt;out J&gt; : ClientMessage</ID>
-    <ID>UndocumentedPublicClass:ClientMessage.kt$ApplyState&lt;J&gt; : ClientMessage</ID>
-    <ID>UndocumentedPublicClass:ClientMessage.kt$ClientMessage&lt;out J&gt;</ID>
+    <ID>UndocumentedPublicClass:ClientMessage.kt$ApplyMessage&lt;out J> : ClientMessage</ID>
+    <ID>UndocumentedPublicClass:ClientMessage.kt$ApplyState&lt;J> : ClientMessage</ID>
+    <ID>UndocumentedPublicClass:ClientMessage.kt$ClientMessage&lt;out J></ID>
     <ID>UndocumentedPublicClass:Component.kt$ComponentId</ID>
     <ID>UndocumentedPublicClass:Environment.kt$ShareOptions</ID>
-    <ID>UndocumentedPublicClass:Packets.kt$NotifyClient&lt;out J&gt;</ID>
-    <ID>UndocumentedPublicClass:Packets.kt$NotifyServer&lt;out J&gt;</ID>
-    <ID>UndocumentedPublicClass:ServerMessage.kt$NotifyComponentAttached&lt;out J&gt; : ServerMessage</ID>
-    <ID>UndocumentedPublicClass:ServerMessage.kt$NotifyComponentSnapshot&lt;out J&gt; : ServerMessage</ID>
-    <ID>UndocumentedPublicClass:ServerMessage.kt$ServerMessage&lt;out J&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.compute( input: Flow&lt;M&gt;, startFrom: Initial&lt;S, C&gt;, sink: Sink&lt;M&gt;, ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.resolveAsFlow( commands: Collection&lt;C&gt;, ): Flow&lt;M&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Env&lt;M, S, C&gt;.upstream( snapshots: Flow&lt;Initial&lt;S, C&gt;&gt;, sink: Sink&lt;M&gt;, input: (Initial&lt;S, C&gt;) -&gt; Flow&lt;M&gt;, ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C&gt; Flow&lt;Snapshot&lt;M, S, C&gt;&gt;.downstream( input: Flow&lt;M&gt;, upstreamInput: SendChannel&lt;M&gt;, ): Flow&lt;Snapshot&lt;M, S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;S, C&gt; Env&lt;*, S, C&gt;.init(): Flow&lt;Initial&lt;S, C&gt;&gt;</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;T&gt; Flow&lt;T&gt;.shareIn( scope: CoroutineScope, shareOptions: ShareOptions, )</ID>
-    <ID>UndocumentedPublicFunction:FlowExtensions.kt$@UnstableApi suspend fun &lt;T&gt; Flow&lt;T&gt;.into( sendChannel: SendChannel&lt;T&gt; )</ID>
-    <ID>UndocumentedPublicFunction:FlowExtensions.kt$fun &lt;T&gt; Flow&lt;T&gt;.mergeWith(other: Flow&lt;T&gt;): Flow&lt;T&gt;</ID>
+    <ID>UndocumentedPublicClass:Packets.kt$NotifyClient&lt;out J></ID>
+    <ID>UndocumentedPublicClass:Packets.kt$NotifyServer&lt;out J></ID>
+    <ID>UndocumentedPublicClass:ServerMessage.kt$NotifyComponentAttached&lt;out J> : ServerMessage</ID>
+    <ID>UndocumentedPublicClass:ServerMessage.kt$NotifyComponentSnapshot&lt;out J> : ServerMessage</ID>
+    <ID>UndocumentedPublicClass:ServerMessage.kt$ServerMessage&lt;out J></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C> Env&lt;M, S, C>.compute( input: Flow&lt;M>, startFrom: Initial&lt;S, C>, sink: Sink&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C> Env&lt;M, S, C>.resolveAsFlow( commands: Collection&lt;C>, ): Flow&lt;M></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C> Env&lt;M, S, C>.upstream( snapshots: Flow&lt;Initial&lt;S, C>>, sink: Sink&lt;M>, input: (Initial&lt;S, C>) -> Flow&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C> Flow&lt;Snapshot&lt;M, S, C>>.downstream( input: Flow&lt;M>, upstreamInput: SendChannel&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;S, C> Env&lt;*, S, C>.init(): Flow&lt;Initial&lt;S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;T> Flow&lt;T>.shareIn( scope: CoroutineScope, shareOptions: ShareOptions, )</ID>
+    <ID>UndocumentedPublicFunction:FlowExtensions.kt$@UnstableApi suspend fun &lt;T> Flow&lt;T>.into( sendChannel: SendChannel&lt;T> )</ID>
+    <ID>UndocumentedPublicFunction:FlowExtensions.kt$fun &lt;T> Flow&lt;T>.mergeWith(other: Flow&lt;T>): Flow&lt;T></ID>
+    <ID>UndocumentedPublicProperty:ClientMessage.kt$ApplyMessage$val message: J</ID>
+    <ID>UndocumentedPublicProperty:ClientMessage.kt$ApplyState$val state: J</ID>
+    <ID>UndocumentedPublicProperty:Component.kt$ComponentId$val value: String</ID>
     <ID>UndocumentedPublicProperty:Environment.kt$@UnstableApi val ShareStateWhileSubscribed = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
+    <ID>UndocumentedPublicProperty:Environment.kt$Env$val scope: CoroutineScope</ID>
+    <ID>UndocumentedPublicProperty:Environment.kt$Env$val shareOptions: ShareOptions = ShareStateWhileSubscribed</ID>
+    <ID>UndocumentedPublicProperty:Environment.kt$ShareOptions$val replay: UInt</ID>
+    <ID>UndocumentedPublicProperty:Environment.kt$ShareOptions$val started: SharingStarted</ID>
+    <ID>UndocumentedPublicProperty:Packets.kt$NotifyClient$val component: ComponentId</ID>
+    <ID>UndocumentedPublicProperty:Packets.kt$NotifyClient$val id: UUID</ID>
+    <ID>UndocumentedPublicProperty:Packets.kt$NotifyClient$val message: ClientMessage&lt;J></ID>
+    <ID>UndocumentedPublicProperty:Packets.kt$NotifyServer$val componentId: ComponentId</ID>
+    <ID>UndocumentedPublicProperty:Packets.kt$NotifyServer$val messageId: UUID</ID>
+    <ID>UndocumentedPublicProperty:Packets.kt$NotifyServer$val payload: ServerMessage&lt;J></ID>
+    <ID>UndocumentedPublicProperty:ServerMessage.kt$NotifyComponentAttached$val state: J</ID>
+    <ID>UndocumentedPublicProperty:ServerMessage.kt$NotifyComponentSnapshot$val message: J</ID>
+    <ID>UndocumentedPublicProperty:ServerMessage.kt$NotifyComponentSnapshot$val newState: J</ID>
+    <ID>UndocumentedPublicProperty:ServerMessage.kt$NotifyComponentSnapshot$val oldState: J</ID>
+    <ID>UndocumentedPublicProperty:Snapshot.kt$Regular$/** * Message that triggered state update */ val message: M</ID>
+    <ID>UndocumentedPublicProperty:Snapshot.kt$Regular$/** * Previous state of a component */ val previousState: S</ID>
     <ID>UnnecessaryAbstractClass:AppState.kt$ScreenState</ID>
     <ID>UnnecessaryAbstractClass:BasicComponentTest.kt$BasicComponentTest</ID>
-  </Whitelist>
+  </CurrentIssues>
 </SmellBaseline>

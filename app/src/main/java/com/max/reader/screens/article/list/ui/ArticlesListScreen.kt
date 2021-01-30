@@ -70,15 +70,15 @@ fun ArticlesScreen(
                 cause = transientState.th,
                 onMessage = onMessage
             )
-            Loading -> ArticlesLoadingContent(
+            is Loading -> ArticlesLoadingContent(
                 state = listState,
                 id = state.id,
                 query = state.query,
                 articles = state.articles,
                 onMessage = onMessage
             )
-            Refreshing,
-            Preview,
+            is Refreshing,
+            is Preview,
             -> ArticlesPreviewContent(
                 state = listState,
                 id = state.id,

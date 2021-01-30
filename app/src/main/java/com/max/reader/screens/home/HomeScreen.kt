@@ -76,60 +76,11 @@ fun HomeScreen(
                 onMessage = onMessage
             )
         }, bodyContent = { innerPadding ->
-
             SettingsScreen(
                 innerPadding = innerPadding,
                 state = state,
                 onMessage = onMessage
             )
-
-            /*Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-
-                        Icon(
-                            contentDescription = "Dark Mode",
-                            imageVector = if (state.isDarkModeEnabled) Default.Brightness3 else Default.Brightness5
-                        )
-
-                        Column {
-                            Text(
-                                text = "Dark mode",
-                                style = typography.subtitle1
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = "${if (state.isDarkModeEnabled) "Dis" else "En"}ables dark mode in the app",
-                                style = typography.body1
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.weight(weight = 1f, fill = false))
-
-                        Switch(
-                            checked = state.isDarkModeEnabled,
-                            onCheckedChange = { onMessage(ToggleDarkMode) }
-                        )
-                    }
-                    Divider()
-                }
-            }*/
         })
 }
 
