@@ -4,6 +4,6 @@
     <item>
         <bitmap
                 android:gravity="center"
-                android:src="@drawable/img_jetpack_compose" />
+                android:src="@drawable/app_logo" />
     </item>
 </layer-list>

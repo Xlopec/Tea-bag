@@ -21,11 +21,10 @@ package com.oliynick.max.tea.core.component
 
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.internal.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * Component is a builder that accepts [flow][Flow] of messages as input and returns
@@ -69,13 +68,15 @@ typealias UpdateWith<S, C> = Pair<S, Set<C>>
  */
 typealias Resolver<C, M> = suspend (command: C) -> Set<M>
 
+@UnstableApi
+typealias Sink<T> = suspend (T) -> Unit
+
 /**
  * Creates new component using supplied values
  *
  * @param initializer initializer to be used to provide initial values for application
  * @param resolver resolver to be used to resolve messages from commands
  * @param updater updater to be used to compute a new state with set of commands to execute
- * @param config block to configure component
  * @param M incoming messages
  * @param S state of the application
  * @param C commands to be executed
@@ -84,9 +85,13 @@ fun <M, C, S> Component(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     updater: Updater<M, S, C>,
-    config: EnvBuilder<M, S, C>.() -> Unit = {}
+    // todo: group to reduce number of arguments
+    scope: CoroutineScope,
+    io: CoroutineDispatcher = Dispatchers.IO,
+    computation: CoroutineDispatcher = Dispatchers.Unconfined,
+    shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ): Component<M, S, C> =
-    Component(Env(initializer, resolver, updater, config))
+    Component(Env(initializer, resolver, updater, scope, io, computation, shareOptions))
 
 /**
  * Creates new component using preconfigured environment
@@ -96,27 +101,36 @@ fun <M, C, S> Component(
  * @param S state of the application
  * @param C commands to be executed
  */
+@OptIn(UnstableApi::class)
 fun <M, S, C> Component(
-    env: Env<M, S, C>
+    env: Env<M, S, C>,
 ): Component<M, S, C> {
 
     val input = Channel<M>(Channel.RENDEZVOUS)
-    // todo consider implementing option to configure behavior of the component
-    val upstream = env.upstream(input.consumeAsFlow(), env.init()).shareConflated()
+
+    fun input(
+        startFrom: Initial<S, C>,
+    ) = env.resolveAsFlow(startFrom.commands)
+        .mergeWith(input.receiveAsFlow())
+
+    val upstream = env.upstream(env.init(), input::send, ::input)
+        .shareIn(env.scope, env.shareOptions)
 
     return { messages -> upstream.downstream(messages, input) }
 }
 
 @UnstableApi
 fun <M, S, C> Env<M, S, C>.upstream(
-    messages: Flow<M>,
-    snapshots: Flow<Initial<S, C>>
-) = snapshots.flatMapConcat { startFrom -> compute(startFrom, messages) }
+    snapshots: Flow<Initial<S, C>>,
+    sink: Sink<M>,
+    input: (Initial<S, C>) -> Flow<M>,
+): Flow<Snapshot<M, S, C>> =
+    snapshots.flatMapLatest { startFrom -> compute(input(startFrom), startFrom, sink) }
 
 @UnstableApi
 fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
     input: Flow<M>,
-    upstreamInput: SendChannel<M>
+    upstreamInput: SendChannel<M>,
 ): Flow<Snapshot<M, S, C>> =
     channelFlow {
         @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
@@ -126,61 +140,76 @@ fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
 
 @UnstableApi
 fun <S, C> Env<*, S, C>.init(): Flow<Initial<S, C>> =
-    flow { emit(withContext(io) { initializer() }) }
+    channelFlow { withContext(io) { send(initializer()) } }
 
 @UnstableApi
 fun <M, S, C> Env<M, S, C>.compute(
+    input: Flow<M>,
     startFrom: Initial<S, C>,
-    messages: Flow<M>
-): Flow<Snapshot<M, S, C>> =
-    resolveAsFlow(startFrom.commands).finishWith(messages)
-        .foldFlatten<M, Snapshot<M, S, C>>(startFrom) { s, m -> computeNextSnapshot(s.currentState, m) }
-        .startFrom(startFrom)
-
-@UnstableApi
-suspend fun <M, S, C> Env<M, S, C>.computeNextSnapshotsRecursively(
-    state: S,
-    messages: Iterator<M>
+    sink: Sink<M>,
 ): Flow<Snapshot<M, S, C>> {
 
-    val message = messages.nextOrNull() ?: return emptyFlow()
+    suspend fun newState(
+        current: Snapshot<M, S, C>,
+        message: M,
+    ): Regular<M, S, C> {
+        val (newState, commands) = update(message, current.currentState)
 
-    val (nextState, commands) = update(message, state)
+        return Regular(newState, commands, current.currentState, message)
+    }
 
-    return computeNextSnapshotsRecursively(nextState, resolve(commands).iterator())
-        .startFrom(Regular(nextState, commands, state, message))
+    return channelFlow {
+
+        var current: Snapshot<M, S, C> = startFrom
+
+        input
+            .map { message -> newState(current, message) }
+            .onEach { regular -> current = regular }
+            .onEach { regular -> resolveAll(this@channelFlow, sink, regular.commands) }
+            .collect(::send)
+
+    }.startFrom(startFrom)
 }
 
 @UnstableApi
-suspend fun <M, S, C> Env<M, S, C>.computeNextSnapshot(
-    state: S,
-    message: M
-): Flow<Snapshot<M, S, C>> {
-    // todo: we need to add possibility to return own versions
-    //  of snapshots, e.g. user might be interested only in current
-    //  version of state
-    val (nextState, commands) = update(message, state)
+fun <T> Flow<T>.shareIn(
+    scope: CoroutineScope,
+    shareOptions: ShareOptions,
+) = shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
 
-    return computeNextSnapshotsRecursively(nextState, resolve(commands).iterator())
-        .startFrom(Regular(nextState, commands, state, message))
-}
-
-private fun <M, S, C> Env<M, S, C>.resolveAsFlow(
-    commands: Collection<C>
+@UnstableApi
+fun <M, S, C> Env<M, S, C>.resolveAsFlow(
+    commands: Collection<C>,
 ): Flow<M> =
     flow { emitAll(resolve(commands)) }
 
+private fun <M, S, C> Env<M, S, C>.resolveAll(
+    coroutineScope: CoroutineScope,
+    sink: Sink<M>,
+    commands: Iterable<C>,
+) =
+// launches each suspending function
+// in 'launch and forget' fashion so that
+// updater can process a new portion of messages
+    commands.forEach { command ->
+        coroutineScope.launch(io + CoroutineName("Resolver coroutine: $command")) {
+            sink(resolver(command))
+        }
+    }
+
+private suspend operator fun <E> Sink<E>.invoke(
+    elements: Iterable<E>,
+) = elements.forEach { e -> invoke(e) }
+
 private suspend fun <M, S, C> Env<M, S, C>.update(
     message: M,
-    state: S
+    state: S,
 ): UpdateWith<S, C> =
     withContext(computation) { updater(message, state) }
 
 private suspend fun <M, C> Env<M, *, C>.resolve(
-    commands: Collection<C>
+    commands: Collection<C>,
 ): Iterable<M> =
     commands
         .parMapTo(io, resolver::invoke)
         .flatten()
-
-private fun <E> Iterator<E>.nextOrNull() = if (hasNext()) next() else null

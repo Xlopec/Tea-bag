@@ -4,8 +4,8 @@ package com.oliynick.max.tea.core.debug.app.component.resolver
 
 import com.intellij.openapi.ui.popup.Balloon
 import com.oliynick.max.tea.core.debug.app.component.cms.*
-import com.oliynick.max.tea.core.debug.app.presentation.sidebar.createErrorBalloon
-import com.oliynick.max.tea.core.debug.app.presentation.sidebar.createNotificationBalloon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.balloon.createErrorBalloon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.balloon.createNotificationBalloon
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import java.util.*
 

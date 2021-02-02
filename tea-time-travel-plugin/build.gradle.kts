@@ -9,7 +9,6 @@ import Libraries.ktorServerWebsockets
 import TestLibraries.ktorServerTests
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PublishTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 /*
  * Copyright (C) 2019 Maksym Oliinyk.
@@ -28,7 +27,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  */
 
 intellij {
-    version = "2020.1"
+    version = "2020.3"
+    setPlugins("com.intellij.java")
 }
 
 tasks.named<PatchPluginXmlTask>("patchPluginXml") {
@@ -48,17 +48,11 @@ sourceSets {
     }
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
-    }
-}
-
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation(project(path = ":tea-core", configuration = "default"))
-    implementation(project(path = ":tea-time-travel-protocol", configuration = "default"))
-    implementation(project(path = ":tea-time-travel-adapter-gson", configuration = "default"))
+    implementation(project(":tea-core"))
+    implementation(project(":tea-time-travel-protocol"))
+    implementation(project(":tea-time-travel-adapter-gson"))
 
     implementation(kotlinStdLib)
 
@@ -71,5 +65,5 @@ dependencies {
     implementation(immutableCollections)
 
     testImplementation(ktorServerTests)
-    testImplementation(project(path = ":tea-test", configuration = "default"))
+    testImplementation(project(":tea-test"))
 }

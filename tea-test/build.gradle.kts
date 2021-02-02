@@ -21,10 +21,10 @@ import Libraries.kotlinStdLib
 dependencies {
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation(project(configuration = "default", path = ":tea-core"))
+    implementation(project(":tea-core"))
 
     api(kotlinStdLib)
-    api("org.jetbrains.kotlinx:atomicfu:0.14.1")
+    api("org.jetbrains.kotlinx:atomicfu:0.14.4")
 
     api(coroutinesCore)
     api("junit:junit:4.12")

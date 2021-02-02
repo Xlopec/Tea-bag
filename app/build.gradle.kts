@@ -1,3 +1,4 @@
+import Libraries.Versions
 import Libraries.coroutinesAndroid
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
@@ -21,15 +22,15 @@ import Libraries.kotlinStdLib
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-android-extensions")
 }
 
 android {
-    compileSdkVersion(29)
+    compileSdkVersion(30)
+
     defaultConfig {
-        applicationId = "com.max.weatherviewer"
+        applicationId = "com.oliinyk.max.news.reader"
         minSdkVersion(21)
-        targetSdkVersion(29)
+        targetSdkVersion(30)
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -44,10 +45,9 @@ android {
         }
     }
 
-    /*buildFeatures {
-        // Enables Jetpack Compose for this module
-        compose true
-    }*/
+    buildFeatures {
+        compose = true
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -56,17 +56,35 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+        useIR = true
     }
 
-    packagingOptions {
-        exclude("META-INF/ktor*")
-        exclude("META-INF/kotlin*")
-        exclude("META-INF/atomicfu*")
+    composeOptions {
+        kotlinCompilerExtensionVersion = Versions.compose
     }
-}
 
-androidExtensions {
-    isExperimental = true
+    flavorDimensions += "remote"
+    productFlavors {
+
+        create("remote") {
+            dimension = "remote"
+            applicationIdSuffix = ".remote"
+            versionNameSuffix = "(remote debuggable)"
+        }
+
+        create("default") {
+            dimension = "remote"
+        }
+    }
+
+    sourceSets {
+
+        maybeCreate("remote")
+            .java.srcDirs("remote/java", "main/java")
+
+        maybeCreate("default")
+            .java.srcDirs("default/java", "main/java")
+    }
 }
 
 dependencies {
@@ -80,21 +98,21 @@ dependencies {
     implementation(immutableCollections)
     implementation(coroutinesAndroid)
 
-    val composeVersion = "0.1.0-dev03"
+    implementation("androidx.compose.ui:ui:${Versions.compose}")
+    implementation("androidx.compose.foundation:foundation:${Versions.compose}")
+    implementation("androidx.compose.foundation:foundation-layout:${Versions.compose}")
+    implementation("androidx.compose.material:material:${Versions.compose}")
+    implementation("androidx.compose.material:material-icons-core:${Versions.compose}")
+    implementation("androidx.compose.material:material-icons-extended:${Versions.compose}")
+    implementation("androidx.compose.ui:ui-tooling:${Versions.compose}")
+    implementation("androidx.compose.runtime:runtime:${Versions.compose}")
+    implementation("androidx.compose.animation:animation:${Versions.compose}")
+    implementation("androidx.compose.compiler:compiler:${Versions.compose}")
 
-    implementation("androidx.compose:compose-runtime:$composeVersion")
-    implementation("androidx.ui:ui-framework:$composeVersion")
-    implementation("androidx.ui:ui-layout:$composeVersion")
-    implementation("androidx.ui:ui-material:$composeVersion")
-    implementation("androidx.ui:ui-foundation:$composeVersion")
-    implementation("androidx.ui:ui-animation:$composeVersion")
-    implementation("androidx.ui:ui-tooling:$composeVersion")
+    implementation("dev.chrisbanes.accompanist:accompanist-insets:${Versions.accompanies}")
+    implementation("dev.chrisbanes.accompanist:accompanist-coil:${Versions.accompanies}")
 
-    implementation("com.github.bumptech.glide:glide:4.10.0")
-
-    implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("androidx.activity:activity-ktx:1.1.0")
-    implementation("androidx.core:core-ktx:1.2.0")
+    implementation("androidx.appcompat:appcompat:1.2.0")
 
     implementation("org.mongodb:stitch-android-sdk:4.1.0")
 
@@ -104,10 +122,10 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.8.1")
 
-    testImplementation(project(path = ":tea-test", configuration = "default"))
+    testImplementation(project(":tea-test"))
     testImplementation(coroutinesAndroid)
 
-    androidTestImplementation("androidx.test:runner:1.2.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
+    androidTestImplementation("androidx.test:runner:1.3.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
 
 }

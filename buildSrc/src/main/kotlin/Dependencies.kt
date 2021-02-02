@@ -3,27 +3,29 @@ import BuildPlugins.Versions.intellijVersion
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 
-const val kotlinVersion = "1.4.10"
+const val kotlinVersion = "1.4.21-2"
 
 object BuildPlugins {
 
     object Versions {
-        const val buildToolsVersion = "4.0.1"
-        const val detektVersion = "1.5.1"
-        const val dokkaVersion = "1.4.0"
+        const val buildToolsVersion = "7.0.0-alpha05"
+        const val detektVersion = "1.15.0"
+        const val dokkaVersion = "1.4.20"
         const val bintrayVersion = "1.8.4"
-        const val intellijVersion = "0.4.22"
+        const val intellijVersion = "0.6.5"
     }
 
     const val androidGradlePlugin = "com.android.tools.build:gradle:$buildToolsVersion"
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    const val intellijPlugin = "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:$intellijVersion"
+    const val intellijPlugin = "org.jetbrains.intellij.plugins:gradle-intellij-plugin:$intellijVersion"
 }
 
 object Libraries {
-    private object Versions {
-        const val coroutines = "1.3.9"
-        const val ktor = "1.4.0"
+    object Versions {
+        const val coroutines = "1.4.2"
+        const val ktor = "1.5.1"
+        const val compose = "1.0.0-alpha11"
+        const val accompanies = "0.5.0"
     }
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
@@ -44,7 +46,7 @@ object Libraries {
 
 object TestLibraries {
     private object Versions {
-        const val ktor = "1.4.0"
+        const val ktor = "1.5.1"
     }
 
     const val ktorMockJvm = "io.ktor:ktor-client-mock-jvm:${Versions.ktor}"

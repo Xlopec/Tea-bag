@@ -37,9 +37,17 @@ class Filter private constructor(
             }
 
             return when (option) {
-                SUBSTRING -> Filter(SUBSTRING, ignoreCase, Valid(filter, SubstringPredicate(filter, ignoreCase)))
+                SUBSTRING -> Filter(
+                    SUBSTRING,
+                    ignoreCase,
+                    Valid(filter, SubstringPredicate(filter, ignoreCase))
+                )
                 REGEX -> Filter(REGEX, ignoreCase, RegexPredicate(filter, ignoreCase))
-                WORDS -> Filter(WORDS, ignoreCase, Valid(filter, WordsPredicate(filter, ignoreCase)))
+                WORDS -> Filter(
+                    WORDS,
+                    ignoreCase,
+                    Valid(filter, WordsPredicate(filter, ignoreCase))
+                )
             }
         }
     }
@@ -101,20 +109,6 @@ fun applyTo(
         value is CollectionWrapper -> applyToWrapper(value, predicate)
         value is Ref -> applyToRef(value, predicate)
         else -> null
-    }
-
-private inline val Value.primitiveTypeName: String?
-    get() = when (this) {
-        is IntWrapper -> value.javaClass.name
-        is ByteWrapper -> value.javaClass.name
-        is ShortWrapper -> value.javaClass.name
-        is CharWrapper -> value.javaClass.name
-        is LongWrapper -> value.javaClass.name
-        is DoubleWrapper -> value.javaClass.name
-        is FloatWrapper -> value.javaClass.name
-        is StringWrapper -> value.javaClass.name
-        is BooleanWrapper -> value.javaClass.name
-        Null, is CollectionWrapper, is Ref -> null
     }
 
 private fun applyToRef(

@@ -16,39 +16,46 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.sidebar
 
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.Constraints.LAST
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
-import com.intellij.ui.components.JBTabbedPane
+import com.intellij.ui.tabs.TabInfo
+import com.intellij.ui.tabs.impl.JBEditorTabs
 import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.Validated
 import com.oliynick.max.tea.core.debug.app.domain.isValid
-import com.oliynick.max.tea.core.debug.app.misc.*
+import com.oliynick.max.tea.core.debug.app.misc.childScope
+import com.oliynick.max.tea.core.debug.app.misc.onStart
 import com.oliynick.max.tea.core.debug.app.presentation.component.ComponentView
 import com.oliynick.max.tea.core.debug.app.presentation.info.InfoView
-import com.oliynick.max.tea.core.debug.app.presentation.misc.*
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.CloseDarkIcon
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.CloseDefaultIcon
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.ResumeIcon
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RunDefaultIcon
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RunDisabledIcon
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.StoppingIcon
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.SuspendDefaultIcon
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.SuspendDisabledIcon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ErrorColor
 import com.oliynick.max.tea.core.debug.app.presentation.ui.InputTimeoutMillis
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.ResumeIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.RunDefaultIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.RunDisabledIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.StoppingIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.SuspendDefaultIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.SuspendDisabledIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.tabs.CloseableTab
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import java.awt.Container
-import java.awt.FlowLayout
 import java.awt.event.MouseEvent
 import javax.swing.*
 import java.awt.Component as AwtComponent
 
+
 class ToolWindowView private constructor(
     private val project: Project,
     scope: CoroutineScope,
-    private val component: (Flow<PluginMessage>) -> Flow<PluginState>
+    private val component: (Flow<PluginMessage>) -> Flow<PluginState>,
 ) : CoroutineScope by scope {
 
     companion object {
@@ -56,7 +63,7 @@ class ToolWindowView private constructor(
         fun new(
             project: Project,
             scope: CoroutineScope,
-            component: (Flow<PluginMessage>) -> Flow<PluginState>
+            component: (Flow<PluginMessage>) -> Flow<PluginState>,
         ) = ToolWindowView(project, scope, component).panel
 
     }
@@ -69,36 +76,41 @@ class ToolWindowView private constructor(
 
     val root: JPanel get() = panel
 
-    private val idToScope = mutableMapOf<Any, CoroutineScope>()
-
     init {
 
         launch {
             val uiEvents = Channel<PluginMessage>()
 
-            component(uiEvents.consumeAsFlow().mergeWith(updateServerSettings(component.firstState())))
+            component(
+                uiEvents.consumeAsFlow().mergeWith(updateServerSettings(component.firstState()))
+            )
                 .collect { state -> render(state, uiEvents::offer) }
         }
     }
 
     private fun updateServerSettings(
-        initial: PluginState
+        initial: PluginState,
     ) =
-        hostInputChanges(initial).combine(portInputChanges(initial)) { host, port -> UpdateServerSettings(host, port) }
+        hostInputChanges(initial).combine(portInputChanges(initial)) { host, port ->
+            UpdateServerSettings(
+                host,
+                port
+            )
+        }
             .distinctUntilChanged()
             .debounce(InputTimeoutMillis)
 
     private fun hostInputChanges(
-        initial: PluginState
+        initial: PluginState,
     ) = hostTextField.textChanges().onStart(initial.settings.host.input)
 
     private fun portInputChanges(
-        initial: PluginState
+        initial: PluginState,
     ) = portTextField.textChanges().onStart(initial.settings.port.input)
 
     private fun render(
         state: PluginState,
-        messages: (PluginMessage) -> Unit
+        messages: (PluginMessage) -> Unit,
     ) {
 
         portTextField.isEnabled = state is Stopped
@@ -122,7 +134,7 @@ class ToolWindowView private constructor(
 
     private fun render(
         state: Stopped,
-        messages: (PluginMessage) -> Unit
+        messages: (PluginMessage) -> Unit,
     ) {
 
         startButton.icon = RunDefaultIcon
@@ -134,7 +146,8 @@ class ToolWindowView private constructor(
             startButton.removeMouseListenersDisabling()
         }
 
-        val shouldRemoveOrEmpty = componentsPanel.isEmpty || (componentsPanel.isNotEmpty && componentsPanel.first().name != InfoView.NAME)
+        val shouldRemoveOrEmpty =
+            componentsPanel.isEmpty || (componentsPanel.isNotEmpty && componentsPanel.first().name != InfoView.NAME)
 
         if (shouldRemoveOrEmpty) {
             showEmptyComponentsView()
@@ -144,7 +157,7 @@ class ToolWindowView private constructor(
     }
 
     private fun render(
-        @Suppress("UNUSED_PARAMETER") state: Starting
+        @Suppress("UNUSED_PARAMETER") state: Starting,
     ) {
         startButton.icon = RunDisabledIcon
         startButton.disabledIcon = ResumeIcon
@@ -154,14 +167,16 @@ class ToolWindowView private constructor(
 
     private fun render(
         state: Started,
-        messages: (PluginMessage) -> Unit
+        messages: (PluginMessage) -> Unit,
     ) {
         startButton.icon = SuspendDefaultIcon
         startButton.disabledIcon = SuspendDisabledIcon
 
         startButton.setOnClickListenerEnabling { messages(StopServer) }
 
-        require(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children}" }
+        require(componentsPanel.componentCount == 1) {
+            "Invalid components count, children ${componentsPanel.children}"
+        }
 
         if (state.debugState.components.isEmpty()) {
             // show empty view
@@ -173,16 +188,20 @@ class ToolWindowView private constructor(
             if (componentsPanel.first().name == InfoView.NAME) {
                 // swap panels
                 componentsPanel.removeAll()
-                componentsPanel += tabbedComponentsView()
+                componentsPanel += JBEditorTabs(project)
             }
 
-            (componentsPanel.first() as JTabbedPane).update(state, messages)
+            (componentsPanel.first() as JBEditorTabs).update(state, messages)
         }
 
-        check(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children}" }
+        check(componentsPanel.componentCount == 1) {
+            "Invalid components count, children ${componentsPanel.children}"
+        }
     }
 
-    private fun render(@Suppress("UNUSED_PARAMETER") state: Stopping) {
+    private fun render(
+        @Suppress("UNUSED_PARAMETER") state: Stopping,
+    ) {
         startButton.icon = SuspendDefaultIcon
         startButton.disabledIcon = StoppingIcon
 
@@ -192,56 +211,69 @@ class ToolWindowView private constructor(
     private fun showEmptyComponentsView() {
         componentsPanel.removeAll()
 
-        val infoView = InfoView.new(childScope(), component)
+        val infoViewScope = childScope()
+        val infoView = InfoView.new(infoViewScope, component.infoViewStates(infoViewScope))
 
-        this[InfoView.NAME] = infoView
         componentsPanel += infoView.panel
     }
 
-    private fun tabbedComponentsView() = JBTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT)
-        .also { tabPane -> tabPane.model = DefaultSingleSelectionModel() }
-
-    private fun JTabbedPane.update(
+    private fun JBEditorTabs.update(
         state: Started,
-        messages: (PluginMessage) -> Unit
+        messages: (PluginMessage) -> Unit,
     ) {
 
-        fun closeHandler(
-            id: ComponentId
-        ) {
-            this@ToolWindowView -= id
-            messages(RemoveComponent(id))
-        }
-
         fun addTab(
-            id: ComponentId
+            id: ComponentId,
         ) {
-            val componentView = ComponentView.new(childScope(), id, component.startedStates(), state)
+            val componentScope = childScope()
+            val componentView = ComponentView.new(
+                componentScope,
+                id,
+                project,
+                this@ToolWindowView.component.startedStates(id, componentScope),
+                state
+            )
 
-            this@ToolWindowView[id] = componentView
-            addCloseableTab(id, componentView.root, ::closeHandler)
+            addCloseableTab(id, componentView.root, fun(id) = messages(RemoveComponent(id)))
         }
 
         state.debugState.components
-            .filter { e -> indexOfTab(e.key.value) == -1 }
+            .filter { (id, _) -> tabs.find { info -> info.`object` == id } == null }
             .forEach { (id, _) -> addTab(id) }
     }
 
-    private operator fun set(
-        key: Any,
-        scope: CoroutineScope
-    ) = idToScope.compute(key) { _, old -> old?.cancel(); scope }
-
-    private operator fun minusAssign(
-        key: Any
+    private fun JBEditorTabs.addCloseableTab(
+        id: ComponentId,
+        content: JComponent,
+        onClose: (ComponentId) -> Unit,
     ) {
-        idToScope.remove(key)?.cancel()
-    }
+        val group = DefaultActionGroup()
+        val info = TabInfo(id, content, group)
 
+        group.addAction(CloseableTab(content, fun() { onClose(id); removeTab(info) }), LAST)
+        addTabSilently(info, 0)
+    }
 }
 
-private fun ((Flow<PluginMessage>) -> Flow<PluginState>).startedStates() =
-    mapNullableS { pluginState -> pluginState as? Started }
+private fun ((Flow<PluginMessage>) -> Flow<PluginState>).infoViewStates(
+    scope: CoroutineScope,
+): ((Flow<PluginMessage>) -> Flow<PluginState>) =
+    { input ->
+        this(input)
+            .takeWhile { s -> s !is Started || s.debugState.components.isEmpty() }
+            .onCompletion { scope.cancel() }
+    }
+
+private fun ((Flow<PluginMessage>) -> Flow<PluginState>).startedStates(
+    id: ComponentId,
+    scope: CoroutineScope,
+): ((Flow<PluginMessage>) -> Flow<Started>) = { input ->
+    this(input)
+        .map { s -> s as? Started }
+        .takeWhile { s -> s?.debugState?.components?.containsKey(id) == true }
+        .filterNotNull()
+        .onCompletion { scope.cancel() }
+}
 
 private fun AwtComponent.setOnClickListenerEnabling(l: (MouseEvent) -> Unit) {
     setOnClickListener(l)
@@ -253,28 +285,8 @@ private fun AwtComponent.removeMouseListenersDisabling() {
     isEnabled = false
 }
 
-private inline fun JTabbedPane.addCloseableTab(
-    component: ComponentId,
-    content: AwtComponent,
-    crossinline onClose: (ComponentId) -> Unit
-) {
-    addTab(component.value, content)
-
-    val panel = JPanel(FlowLayout()).apply {
-        isOpaque = false
-
-        add(JLabel(component.value, SwingConstants.LEADING))
-        add(JLabel(CloseDefaultIcon).apply {
-            setHover(CloseDarkIcon)
-            setOnClickListener { onClose(component) }
-        })
-    }
-
-    setTabComponentAt(indexOfComponent(content), panel)
-}
-
 private fun JTextField.updateErrorMessage(
-    validated: Validated<*>
+    validated: Validated<*>,
 ) {
     if (validated.isValid()) {
         background = null
@@ -287,4 +299,21 @@ private fun JTextField.updateErrorMessage(
 
 private fun Container.first() = this[0]
 
-private suspend fun ((Flow<PluginMessage>) -> Flow<PluginState>).firstState() = this(emptyFlow()).first()
+private fun TabInfo(
+    id: ComponentId,
+    content: JComponent,
+    group: ActionGroup,
+) = TabInfo(content)
+    .apply {
+        text = id.value
+        `object` = id
+        setTabLabelActions(group, ActionPlaces.EDITOR_TAB)
+    }
+
+private fun JBEditorTabs(
+    project: Project,
+) = JBEditorTabs(project, null, NoOpDisposable)
+    .apply { isTabDraggingEnabled = true }
+
+private suspend fun ((Flow<PluginMessage>) -> Flow<PluginState>).firstState() =
+    this(emptyFlow()).first()

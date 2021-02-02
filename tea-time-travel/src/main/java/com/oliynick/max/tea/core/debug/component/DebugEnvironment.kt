@@ -3,10 +3,12 @@
 
 package com.oliynick.max.tea.core.debug.component
 
-import com.oliynick.max.tea.core.*
+import com.oliynick.max.tea.core.Env
+import com.oliynick.max.tea.core.UnstableApi
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.JsonConverter
-import com.oliynick.max.tea.core.debug.session.*
+import com.oliynick.max.tea.core.debug.session.DebugSession
+import com.oliynick.max.tea.core.debug.session.SessionBuilder
 import java.net.URL
 
 /**
@@ -42,72 +44,3 @@ data class ServerSettings<M, S, J>(
     val url: URL,
     val sessionBuilder: SessionBuilder<M, S, J>
 )
-
-/**
- * Configures and returns debug dependencies
- *
- * @param id component identifier
- * @param env debug environment
- * @param jsonConverter json serializer
- * @param config configuration block
- * @param M message type
- * @param S state type
- * @param C command type
- * @param J json tree type
- */
-inline fun <reified M, reified C, reified S, J> Dependencies(
-    id: ComponentId,
-    env: EnvBuilder<M, S, C>,
-    jsonConverter: JsonConverter<J>,
-    config: DebugEnvBuilder<M, S, C, J>.() -> Unit = {}
-) = DebugEnvBuilder(
-    env,
-    ServerSettingsBuilder(id, jsonConverter, ::WebSocketSession)
-).apply(config).toDebugDependencies()
-
-@DslBuilder
-class ServerSettingsBuilder<M, S, J> @PublishedApi internal constructor(
-    val id: ComponentId,
-    var jsonSerializer: JsonConverter<J>,
-    var sessionBuilder: SessionBuilder<M, S, J>,
-    var url: URL = localhost
-)
-
-@DslBuilder
-class DebugEnvBuilder<M, S, C, J> @PublishedApi internal constructor(
-    var envBuilder: EnvBuilder<M, S, C>,
-    var serverSettingsBuilder: ServerSettingsBuilder<M, S, J>
-) {
-
-    fun environment(
-        config: EnvBuilder<M, S, C>.() -> Unit
-    ) {
-        envBuilder.apply(config)
-    }
-
-    fun serverSettings(
-        config: ServerSettingsBuilder<M, S, J>.() -> Unit
-    ) {
-        serverSettingsBuilder.apply(config)
-    }
-
-}
-
-@PublishedApi
-internal inline fun <reified M, reified C, reified S, J> DebugEnvBuilder<M, S, C, J>.toDebugDependencies() =
-    DebugEnv(
-        envBuilder.toEnv(),
-        serverSettingsBuilder.toServerSettings()
-    )
-
-@PublishedApi
-internal inline fun <reified M, reified S, J> ServerSettingsBuilder<M, S, J>.toServerSettings() =
-    ServerSettings(
-        id,
-        jsonSerializer,
-        url,
-        sessionBuilder
-    )
-
-@DslMarker
-private annotation class DslBuilder

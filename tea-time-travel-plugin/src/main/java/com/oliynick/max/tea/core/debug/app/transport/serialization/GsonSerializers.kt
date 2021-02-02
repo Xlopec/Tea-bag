@@ -11,13 +11,8 @@ fun Value.toJsonElement(): JsonElement =
         is Null -> JsonNull.INSTANCE
         is CollectionWrapper -> toJsonElement()
         is Ref -> toJsonElement()
-        is IntWrapper -> JsonPrimitive(value)
-        is ByteWrapper -> JsonPrimitive(value)
-        is ShortWrapper -> JsonPrimitive(value)
+        is NumberWrapper -> JsonPrimitive(value)
         is CharWrapper -> JsonPrimitive(value)
-        is LongWrapper -> JsonPrimitive(value)
-        is DoubleWrapper -> JsonPrimitive(value)
-        is FloatWrapper -> JsonPrimitive(value)
         is StringWrapper -> JsonPrimitive(value)
         is BooleanWrapper -> JsonPrimitive(value)
     }
@@ -49,7 +44,7 @@ private fun JsonObject.toValue(): Ref {
 
     val entrySet = entrySet().filter { e -> e.key != "@type" }
 
-    val props = entrySet.mapTo(HashSet<Property>(entrySet.size)) { entry ->
+    val props = entrySet.mapTo(HashSet(entrySet.size)) { entry ->
         Property(
             entry.key,
             entry.value.toValue()
@@ -66,16 +61,7 @@ private fun JsonPrimitive.toValue(): Value = when {
     else -> error("Don't know how to wrap $this")
 }
 
-private fun JsonPrimitive.toNumberValue(): Value =
-    when (asNumber) {
-        is Float -> FloatWrapper(asFloat)
-        is Double -> DoubleWrapper(asDouble)
-        is Int -> IntWrapper(asInt)
-        is Long -> LongWrapper(asLong)
-        is Short -> ShortWrapper(asShort)
-        is Byte -> ByteWrapper(asByte)
-        else -> error("Don't know how to wrap $this")
-    }
+private fun JsonPrimitive.toNumberValue(): Value = NumberWrapper(asNumber)
 
 private fun JsonArray.toValue(): Value =
     CollectionWrapper(map { it.asJsonObject.toValue() })

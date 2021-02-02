@@ -5,13 +5,12 @@ import Libraries.kotlinStdLib
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
-    api(project(path = ":tea-time-travel-protocol", configuration = "default"))
+    api(project(":tea-time-travel-protocol"))
+    api("com.google.code.gson:gson:2.8.6")
 
     implementation(kotlinStdLib)
 
-    api("com.google.code.gson:gson:2.8.6")
-
-    testImplementation(project(path = ":tea-test", configuration = "default"))
+    testImplementation(project(":tea-test"))
     testImplementation(immutableCollections)
 
 }

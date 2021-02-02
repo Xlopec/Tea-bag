@@ -3,11 +3,13 @@ package com.oliynick.max.tea.core.debug.app.domain.component
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.with
 import com.oliynick.max.tea.core.debug.app.component.cms.*
-import com.oliynick.max.tea.core.debug.app.component.resolver.*
+import com.oliynick.max.tea.core.debug.app.component.resolver.AppResolver
+import com.oliynick.max.tea.core.debug.app.component.resolver.HasMessageChannel
+import com.oliynick.max.tea.core.debug.app.component.resolver.HasMessagesChannel
 import com.oliynick.max.tea.core.debug.app.component.updater.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Ignore
@@ -44,7 +46,7 @@ class ComponentTest {
         val messages = Channel<PluginMessage>()
 
         launch {
-            component.invoke(messages.consumeAsFlow()).collect()
+            component.invoke(messages.receiveAsFlow()).collect()
         }
 
         messages.send(StartServer)

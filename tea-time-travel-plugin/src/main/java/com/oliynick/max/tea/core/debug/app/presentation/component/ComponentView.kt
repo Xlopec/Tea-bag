@@ -18,15 +18,21 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.component
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.util.PsiNavigateUtil
 import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.*
-import com.oliynick.max.tea.core.debug.app.presentation.misc.*
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.RemoveIcon
-import com.oliynick.max.tea.core.debug.app.presentation.misc.ActionIcons.UpdateRunningAppIcon
+import com.oliynick.max.tea.core.debug.app.misc.javaPsiFacade
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.RemoveIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.UpdateRunningAppIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ValueIcon.ClassIcon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ErrorColor
 import com.oliynick.max.tea.core.debug.app.presentation.ui.InputTimeoutMillis
+import com.oliynick.max.tea.core.debug.app.presentation.ui.action.DefaultMouseListener
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
@@ -39,6 +45,7 @@ import javax.swing.tree.TreeSelectionModel
 class ComponentView private constructor(
     private val initial: ComponentViewState,
     private val id: ComponentId,
+    private val project: Project,
     private val component: (Flow<PluginMessage>) -> Flow<Started>,
     scope: CoroutineScope
 ) : CoroutineScope by scope {
@@ -48,13 +55,14 @@ class ComponentView private constructor(
         fun new(
             scope: CoroutineScope,
             id: ComponentId,
+            project: Project,
             component: (Flow<PluginMessage>) -> Flow<Started>,
             state: Started
         ): ComponentView {
 
             val initial = state.toViewState(id)
 
-            return ComponentView(initial, id, component, scope)
+            return ComponentView(initial, id, project, component, scope)
                 .apply { scope.launch { render(id, component) } }
         }
 
@@ -70,11 +78,11 @@ class ComponentView private constructor(
     private lateinit var regexCheckBox: JCheckBox
     private lateinit var wordsCheckBox: JCheckBox
 
-    private val snapshotRenderer = SnapshotTreeRenderer(initial.formatter)
+    private val snapshotRenderer = RenderTreeRenderer.SnapshotsRenderer(initial.formatter)
     private val snapshotsModel = SnapshotTreeModel.newInstance(initial.component.filteredSnapshots)
 
     private val stateTreeModel = StateTreeModel.newInstance(initial.component.state)
-    private val stateRenderer = StateTreeRenderer(initial.formatter)
+    private val stateRenderer = RenderTreeRenderer.StateRenderer(initial.formatter)
     private val transferHandler = TreeRowValueTransferHandler(initial.formatter)
 
     init {
@@ -104,7 +112,7 @@ class ComponentView private constructor(
 
     private fun messages() =
         filterUpdates(initial.component.id, initial.component.filter)
-            .mergeWith(snapshotsTree.asOptionMenuUpdates(initial.component.id))
+            .mergeWith(snapshotsTree.asOptionMenuUpdates(initial.component.id, project))
 
     private fun filterUpdates(
         id: ComponentId,
@@ -118,7 +126,12 @@ class ComponentView private constructor(
             .distinctUntilChanged()
             .filterNotNull()
 
-        return filterUpdates(id, searchField.textFlow(), matchCaseCheckBox.asMatchCaseFlow(filter), optionsChanges)
+        return filterUpdates(
+            id,
+            searchField.textFlow(),
+            matchCaseCheckBox.asMatchCaseFlow(filter),
+            optionsChanges
+        )
     }
 
     private fun render(
@@ -184,22 +197,28 @@ private fun filterUpdates(
     textChanges: Flow<String>,
     ignoreCaseChanges: Flow<Boolean>,
     optionsChanges: Flow<FilterOption>
-) = combine(textChanges, ignoreCaseChanges, optionsChanges) { text, ignoreCase, option -> UpdateFilter(id, text, ignoreCase, option) }
+) = combine(
+    textChanges,
+    ignoreCaseChanges,
+    optionsChanges
+) { text, ignoreCase, option -> UpdateFilter(id, text, ignoreCase, option) }
 
 private fun substringFlow(
     regexFlow: Flow<FilterOption?>,
     wordsFlow: Flow<FilterOption?>
-) = regexFlow.combine(wordsFlow) { reg, word -> if (reg === word && reg == null) FilterOption.SUBSTRING else null }
+) =
+    regexFlow.combine(wordsFlow) { reg, word -> if (reg === word && reg == null) FilterOption.SUBSTRING else null }
 
 private fun JTree.asOptionMenuUpdates(
-    id: ComponentId
+    id: ComponentId,
+    project: Project
 ): Flow<PluginMessage> =
     callbackFlow {
 
         val l = object : DefaultMouseListener {
             override fun mouseClicked(e: MouseEvent) {
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    showActionPopup(e, id) { offer(it) }
+                    showActionPopup(e, id, project) { offer(it) }
                 }
             }
         }
@@ -238,26 +257,45 @@ private fun JCheckBox.asMatchCaseFlow(
 private fun JTree.showActionPopup(
     e: MouseEvent,
     id: ComponentId,
+    project: Project,
     onAction: (PluginMessage) -> Unit
 ) {
     val row = getClosestRowForLocation(e.x, e.y)
 
     setSelectionRow(row)
 
-    val menu: JPopupMenu = when (val treeNode = getSubTreeForRow(row)) {
+    val menu: JPopupMenu? = when (val treeNode = getSubTreeForRow(row)) {
         is SnapshotNode -> SnapshotPopup(id, treeNode.snapshot, onAction)
         is MessageNode -> MessagePopup(id, treeNode.id, onAction)
         is StateNode -> StatePopup(id, treeNode.id, onAction)
         RootNode -> SnapshotsPopup(id, onAction)
+        is ValueNode -> ValuePopup(project, treeNode.value)
         is PropertyNode,
-        is ValueNode,
         is IndexedNode,
         is EntryKeyNode,
-        is EntryValueNode
-        -> return // todo modify value at this point
+        is EntryValueNode -> null // todo modify value at this point
     }
 
-    menu.show(e.component, e.x, e.y)
+    menu?.show(e.component, e.x, e.y)
+}
+
+private fun ValuePopup(
+    project: Project,
+    value: Value
+): JPopupMenu? {
+    val facade = project.javaPsiFacade
+
+    val psiClass = (value as? Ref)
+        ?.let { ref -> facade.findClass(ref.type.name, GlobalSearchScope.projectScope(project)) }
+        ?: return null
+
+    return JBPopupMenu("Actions").apply {
+        add(JBMenuItem("Jump to sources", ClassIcon).apply {
+            addActionListener {
+                PsiNavigateUtil.navigate(psiClass)
+            }
+        })
+    }
 }
 
 private fun SnapshotsPopup(
@@ -278,8 +316,8 @@ private fun SnapshotPopup(
 ): JPopupMenu =
     JBPopupMenu("Snapshot ${snapshot.meta.id.value}").apply {
         add(JBMenuItem(
-                "Reset to this",
-                UpdateRunningAppIcon
+            "Reset to this",
+            UpdateRunningAppIcon
         ).apply {
             addActionListener {
                 onAction(ApplyState(component, snapshot.meta.id))
@@ -299,9 +337,7 @@ private fun MessagePopup(
     onAction: (PluginMessage) -> Unit
 ): JPopupMenu =
     JBPopupMenu().apply {
-        add(JBMenuItem(
-                "Apply this message", UpdateRunningAppIcon
-        ).apply {
+        add(JBMenuItem("Apply this message", UpdateRunningAppIcon).apply {
             addActionListener {
                 onAction(ApplyMessage(componentId, snapshotId))
             }

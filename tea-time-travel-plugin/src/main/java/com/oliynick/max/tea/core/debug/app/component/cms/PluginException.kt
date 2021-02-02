@@ -1,9 +1,12 @@
 package com.oliynick.max.tea.core.debug.app.component.cms
 
 import kotlinx.coroutines.TimeoutCancellationException
-import java.net.*
+import java.net.ProtocolException
+import java.net.SocketException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException
-import java.util.concurrent.*
+import java.util.concurrent.TimeoutException
 import javax.net.ssl.SSLException
 
 sealed class PluginException : Throwable {
@@ -73,12 +76,13 @@ private val Throwable.isMissingDependenciesException
 
 private val Throwable.isNetworkException
     // some of IO exceptions
-    get() = findCause {
-        it is TimeoutException
-                || it is TimeoutCancellationException
-                || it is UnknownHostException
-                || it is SSLException
-                || it is SocketTimeoutException
-                || it is ProtocolException
-                || it is UnresolvedAddressException
+    get() = findCause { th ->
+        th is TimeoutException
+                || th is TimeoutCancellationException
+                || th is UnknownHostException
+                || th is SSLException
+                || th is SocketTimeoutException
+                || th is ProtocolException
+                || th is UnresolvedAddressException
+                || th is SocketException
     } != null

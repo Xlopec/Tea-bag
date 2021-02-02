@@ -17,7 +17,7 @@
 package com.oliynick.max.tea.core.debug.app.presentation.info
 
 import com.oliynick.max.tea.core.debug.app.component.cms.*
-import com.oliynick.max.tea.core.debug.app.presentation.misc.*
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*

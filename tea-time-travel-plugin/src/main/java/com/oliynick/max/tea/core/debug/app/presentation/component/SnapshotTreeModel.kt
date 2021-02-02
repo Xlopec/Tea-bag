@@ -19,7 +19,7 @@ package com.oliynick.max.tea.core.debug.app.presentation.component
 import com.oliynick.max.tea.core.debug.app.domain.FilteredSnapshot
 import com.oliynick.max.tea.core.debug.app.misc.UpdateCallback
 import com.oliynick.max.tea.core.debug.app.misc.replaceAll
-import com.oliynick.max.tea.core.debug.app.presentation.misc.*
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
 import javax.swing.tree.*
 
 class SnapshotTreeModel private constructor(
