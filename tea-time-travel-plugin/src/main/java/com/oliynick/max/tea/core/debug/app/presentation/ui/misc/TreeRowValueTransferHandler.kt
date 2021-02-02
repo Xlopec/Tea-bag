@@ -1,8 +1,10 @@
-package com.oliynick.max.tea.core.debug.app.presentation.misc
+package com.oliynick.max.tea.core.debug.app.presentation.ui.misc
 
 import java.awt.datatransfer.StringSelection
 import java.awt.datatransfer.Transferable
-import javax.swing.*
+import javax.swing.JComponent
+import javax.swing.JTree
+import javax.swing.TransferHandler
 
 class TreeRowValueTransferHandler (
     var formatter: ValueFormatter

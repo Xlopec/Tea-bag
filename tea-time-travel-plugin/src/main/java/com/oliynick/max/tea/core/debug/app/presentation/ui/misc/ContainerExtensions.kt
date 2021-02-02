@@ -1,4 +1,4 @@
-package com.oliynick.max.tea.core.debug.app.presentation.misc
+package com.oliynick.max.tea.core.debug.app.presentation.ui.misc
 
 import java.awt.Component
 import java.awt.Container

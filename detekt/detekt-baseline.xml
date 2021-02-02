@@ -4,6 +4,8 @@
   <CurrentIssues>
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
     <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$override fun update( message: UIMessage, state: PluginState ): UpdateWith&lt;PluginState, PluginCommand></ID>
+    <ID>FunctionNaming:ToolWindowView.kt$private fun JBEditorTabs( project: Project, )</ID>
+    <ID>FunctionNaming:ToolWindowView.kt$private fun TabInfo( id: ComponentId, content: JComponent, group: ActionGroup, )</ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") private fun Null.toReadableString(): String</ID>
     <ID>LongParameterList:ArticlesListScreen.kt$( state: LazyListState, id: ScreenId, query: Query, articles: List&lt;Article>, cause: Throwable, onMessage: (Message) -> Unit, )</ID>
     <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C>, noinline resolver: Resolver&lt;C, M>, noinline updater: Updater&lt;M, S, C>, jsonConverter: JsonConverter&lt;J>, // todo: group to reduce number of arguments scope: CoroutineScope, url: URL = Localhost, io: CoroutineDispatcher = Dispatchers.IO, computation: CoroutineDispatcher = Dispatchers.Unconfined, shareOptions: ShareOptions = ShareStateWhileSubscribed, noinline sessionBuilder: SessionBuilder&lt;M, S, J> = ::WebSocketSession )</ID>
@@ -31,18 +33,18 @@
     <ID>NewLineAtEndOfFile:AppResolver.kt$com.max.reader.app.resolve.AppResolver.kt</ID>
     <ID>NewLineAtEndOfFile:AppUpdater.kt$com.max.reader.app.update.AppUpdater.kt</ID>
     <ID>NewLineAtEndOfFile:Baloon.kt$com.oliynick.max.tea.core.debug.app.component.resolver.Baloon.kt</ID>
-    <ID>NewLineAtEndOfFile:ChooserUtils.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.ChooserUtils.kt</ID>
+    <ID>NewLineAtEndOfFile:ChooserUtils.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ChooserUtils.kt</ID>
     <ID>NewLineAtEndOfFile:ClientMessageSerializationTest.kt$com.oliynick.max.tea.core.debug.app.domain.serialization.ClientMessageSerializationTest.kt</ID>
     <ID>NewLineAtEndOfFile:CollectionExt.kt$.CollectionExt.kt</ID>
     <ID>NewLineAtEndOfFile:CollectionExtensionsTest.kt$com.oliynick.max.tea.core.debug.app.misc.CollectionExtensionsTest.kt</ID>
-    <ID>NewLineAtEndOfFile:ComponentExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.ComponentExtensions.kt</ID>
+    <ID>NewLineAtEndOfFile:ComponentExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ComponentExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentLogic.kt$core.component.ComponentLogic.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentTest.kt$com.oliynick.max.tea.core.debug.app.domain.component.ComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentTestSuite.kt$com.oliynick.max.tea.core.component.ComponentTestSuite.kt</ID>
     <ID>NewLineAtEndOfFile:Data.kt$com.oliynick.max.tea.core.debug.app.misc.Data.kt</ID>
     <ID>NewLineAtEndOfFile:DebugSession.kt$com.oliynick.max.tea.core.debug.session.DebugSession.kt</ID>
     <ID>NewLineAtEndOfFile:DebugWebSocketSession.kt$com.oliynick.max.tea.core.debug.session.DebugWebSocketSession.kt</ID>
-    <ID>NewLineAtEndOfFile:DiffingListModel.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.DiffingListModel.kt</ID>
+    <ID>NewLineAtEndOfFile:DiffingListModel.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.DiffingListModel.kt</ID>
     <ID>NewLineAtEndOfFile:Environment.kt$com.max.reader.app.env.Environment.kt</ID>
     <ID>NewLineAtEndOfFile:FiltersTest.kt$com.oliynick.max.tea.core.debug.app.domain.cms.FiltersTest.kt</ID>
     <ID>NewLineAtEndOfFile:FlowExtension.kt$com.oliynick.max.tea.core.debug.component.internal.FlowExtension.kt</ID>
@@ -52,7 +54,7 @@
     <ID>NewLineAtEndOfFile:GsonConverter.kt$com.oliynick.max.tea.core.debug.gson.GsonConverter.kt</ID>
     <ID>NewLineAtEndOfFile:HasMessageChannel.kt$com.oliynick.max.tea.core.debug.app.component.resolver.HasMessageChannel.kt</ID>
     <ID>NewLineAtEndOfFile:HasSystemProperties.kt$com.oliynick.max.tea.core.debug.app.component.resolver.HasSystemProperties.kt</ID>
-    <ID>NewLineAtEndOfFile:JLabelExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.JLabelExtensions.kt</ID>
+    <ID>NewLineAtEndOfFile:JLabelExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.JLabelExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:JavaVersionExt.kt$.JavaVersionExt.kt</ID>
     <ID>NewLineAtEndOfFile:LRUCacheTest.kt$com.oliynick.max.tea.core.debug.app.domain.LRUCacheTest.kt</ID>
     <ID>NewLineAtEndOfFile:LiveNotificationUpdaterTest.kt$com.oliynick.max.tea.core.debug.app.component.updater.LiveNotificationUpdaterTest.kt</ID>
@@ -69,7 +71,7 @@
     <ID>NewLineAtEndOfFile:PluginState.kt$com.oliynick.max.tea.core.debug.app.component.cms.PluginState.kt</ID>
     <ID>NewLineAtEndOfFile:PluginState.kt$com.oliynick.max.tea.core.debug.app.domain.PluginState.kt</ID>
     <ID>NewLineAtEndOfFile:Poly.kt$com.oliynick.max.tea.core.debug.gson.serialization.data.Poly.kt</ID>
-    <ID>NewLineAtEndOfFile:RefDiffer.kt$com.oliynick.max.tea.core.debug.app.presentation.misc.RefDiffer.kt</ID>
+    <ID>NewLineAtEndOfFile:RefDiffer.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.RefDiffer.kt</ID>
     <ID>NewLineAtEndOfFile:Settings.kt$com.oliynick.max.tea.core.debug.app.domain.Settings.kt</ID>
     <ID>NewLineAtEndOfFile:SideToolWindowFactory.kt$com.oliynick.max.tea.core.debug.app.presentation.sidebar.SideToolWindowFactory.kt</ID>
     <ID>NewLineAtEndOfFile:SnapshotTreeModel.kt$com.oliynick.max.tea.core.debug.app.presentation.component.SnapshotTreeModel.kt</ID>

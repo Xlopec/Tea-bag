@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.presentation.misc
+package com.oliynick.max.tea.core.debug.app.presentation.ui.misc
 
+import com.oliynick.max.tea.core.debug.app.presentation.ui.action.DefaultMouseListener
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*

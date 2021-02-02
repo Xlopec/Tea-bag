@@ -14,32 +14,26 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.presentation.misc
+package com.oliynick.max.tea.core.debug.app.presentation.ui.action
 
-import java.awt.Color
 import java.awt.event.MouseEvent
-import javax.swing.Icon
-import javax.swing.JLabel
+import java.awt.event.MouseListener
 
-fun JLabel.setHover(hover: Icon) {
+interface DefaultMouseListener : MouseListener {
 
-    val original = icon
-
-    val l = object : DefaultMouseListener {
-        override fun mouseEntered(e: MouseEvent) {
-            if (isEnabled) {
-                foreground = Color.WHITE
-                background = Color.YELLOW
-                icon = hover
-            }
-        }
-
-        override fun mouseExited(e: MouseEvent) {
-            if (isEnabled) {
-                icon = original
-            }
-        }
+    override fun mouseReleased(e: MouseEvent) {
     }
 
-    addMouseListener(l)
+    override fun mouseEntered(e: MouseEvent) {
+    }
+
+    override fun mouseExited(e: MouseEvent) {
+    }
+
+    override fun mousePressed(e: MouseEvent) {
+    }
+
+    override fun mouseClicked(e: MouseEvent) {
+    }
 }
+

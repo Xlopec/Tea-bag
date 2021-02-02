@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.presentation.misc
+package com.oliynick.max.tea.core.debug.app.presentation.ui.misc
 
 import com.oliynick.max.tea.core.debug.app.misc.DiffCallback
 import com.oliynick.max.tea.core.debug.app.misc.replaceAll

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.presentation.misc
+package com.oliynick.max.tea.core.debug.app.presentation.ui.misc
 
 import com.oliynick.max.tea.core.debug.app.misc.DiffCallback
 
-object RefDiffer : DiffCallback<Any?, Any?> {
+object EqDiffer : DiffCallback<Any?, Any?> {
     override fun areItemsTheSame(
         oldItem: Any?,
         newItem: Any?
-    ): Boolean = oldItem === newItem
+    ): Boolean = oldItem == newItem
 
     override fun areContentsTheSame(
         oldItem: Any?,
         newItem: Any?
-    ): Boolean = oldItem === newItem
+    ): Boolean = oldItem == newItem
 }

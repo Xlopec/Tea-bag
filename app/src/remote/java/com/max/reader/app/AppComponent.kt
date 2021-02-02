@@ -2,6 +2,7 @@
 
 package com.max.reader.app
 
+import android.os.Build
 import com.max.reader.app.env.Environment
 import com.max.reader.app.serialization.PersistentListSerializer
 import com.oliynick.max.tea.core.Initializer
@@ -27,7 +28,7 @@ fun Environment.AppComponent(
     // todo state persistence
 
     return Component(
-        ComponentId("News Reader App"),
+        ComponentId("News Reader App: ${Build.MANUFACTURER} ${Build.MODEL}"),
         initializer,
         ::resolve,
         ::update,

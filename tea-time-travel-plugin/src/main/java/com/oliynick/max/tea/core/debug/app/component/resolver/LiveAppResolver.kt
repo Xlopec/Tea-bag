@@ -5,7 +5,7 @@ package com.oliynick.max.tea.core.debug.app.component.resolver
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
 import com.oliynick.max.tea.core.debug.app.component.cms.*
-import com.oliynick.max.tea.core.debug.app.presentation.sidebar.showBalloon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.balloon.showBalloon
 import com.oliynick.max.tea.core.debug.app.misc.settings
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
 import com.oliynick.max.tea.core.debug.protocol.ApplyMessage

@@ -16,7 +16,7 @@
 
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.app.presentation.misc
+package com.oliynick.max.tea.core.debug.app.presentation.ui.misc
 
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener

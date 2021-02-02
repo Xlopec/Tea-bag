@@ -1,4 +1,4 @@
-package com.oliynick.max.tea.core.debug.app.presentation.misc
+package com.oliynick.max.tea.core.debug.app.presentation.ui.misc
 
 /**
  * Plugin wide icon set

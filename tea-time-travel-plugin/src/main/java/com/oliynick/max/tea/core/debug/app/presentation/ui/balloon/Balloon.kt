@@ -1,4 +1,4 @@
-package com.oliynick.max.tea.core.debug.app.presentation.sidebar
+package com.oliynick.max.tea.core.debug.app.presentation.ui.balloon
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.Balloon

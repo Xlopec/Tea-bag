@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.presentation.misc
+package com.oliynick.max.tea.core.debug.app.presentation.ui.misc
 
-import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
+import com.oliynick.max.tea.core.debug.app.misc.DiffCallback
 
-interface DefaultMouseListener : MouseListener {
+object RefDiffer : DiffCallback<Any?, Any?> {
+    override fun areItemsTheSame(
+        oldItem: Any?,
+        newItem: Any?
+    ): Boolean = oldItem === newItem
 
-    override fun mouseReleased(e: MouseEvent) {
-    }
-
-    override fun mouseEntered(e: MouseEvent) {
-    }
-
-    override fun mouseExited(e: MouseEvent) {
-    }
-
-    override fun mousePressed(e: MouseEvent) {
-    }
-
-    override fun mouseClicked(e: MouseEvent) {
-    }
+    override fun areContentsTheSame(
+        oldItem: Any?,
+        newItem: Any?
+    ): Boolean = oldItem === newItem
 }
-

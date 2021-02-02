@@ -2,7 +2,7 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.component
 
-import com.oliynick.max.tea.core.debug.app.presentation.misc.*
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
 import java.awt.Component
 import javax.swing.JLabel
 import javax.swing.JTree
