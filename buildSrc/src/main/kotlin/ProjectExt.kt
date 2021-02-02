@@ -22,13 +22,13 @@ private sealed class Tag {
     ) : Tag()
 }
 
-fun isLocalEnv(): Boolean = !isCIEnv()
+fun isLocalEnv(): Boolean = !isCiEnv()
 
-fun isCIEnv(): Boolean =
+fun isCiEnv(): Boolean =
     System.getenv("CI")?.toBoolean() == true
 
 fun bintrayApiKey(): String? =
-    if (isCIEnv()) System.getenv("BINTRAY_API_KEY") else null
+    if (isCiEnv()) System.getenv("BINTRAY_API_KEY") else null
 
 fun pluginReleaseChannels(): Array<String> =
     when (tag()) {

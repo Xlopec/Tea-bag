@@ -132,8 +132,10 @@ libraryProjects()
             .dependsOn("publishAllPublicationsToMavenLocalRepository")
 
         val releaseLibrary by tasks.creating {
-             dependsOn("bintrayUpload", copyArtifacts)
+            dependsOn("bintrayUpload", copyArtifacts)
         }
+
+        copyArtifacts.dependsOn("bintrayUpload")
 
         publishing {
 
@@ -199,13 +201,15 @@ pluginProject().forEachApplying {
     apply(plugin = "java")
 
     val copyArtifacts by tasks.registering(Copy::class) {
-        from("$buildDir/libs/")
+        from("$buildDir/libs/", "$buildDir/distributions/")
         into("${rootProject.buildDir}/artifacts/${this@forEachApplying.name}")
     }
 
-    val releasePlugin by tasks.registering {
+    val releasePlugin by tasks.creating {
         dependsOn("publishPlugin", copyArtifacts)
     }
+
+    copyArtifacts.dependsOn("publishPlugin")
 
 }
 
@@ -289,7 +293,7 @@ allprojects {
         }
     }
 
-    if (isCIEnv()) {
+    if (isCiEnv()) {
 
         logger.info("Modifying tests output")
 
