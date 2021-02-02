@@ -2,9 +2,9 @@ import org.gradle.api.Project
 import java.io.File
 import java.nio.file.Paths
 
-private const val COMMIT_HASH_LEN = 6
+private const val CommitHashLength = 6
 private val AlphaRegexp = Regex("v\\d+\\.\\d+\\.\\d+-alpha[1-9]\\d*")
-private val ReleaseCandidateRegexp = Regex("v\\d+\\.\\d+\\.\\d+-rc[1-9]\\d*")
+private val ReleaseCandidateRegexp = Regex("v\\d+\\.\\d+\\.\\d+(-alpha[1-9]\\d*)?-rc[1-9]\\d*")
 private val ReleaseRegexp = Regex("v\\d+\\.\\d+\\.\\d+")
 
 private sealed class Tag {
@@ -39,11 +39,12 @@ fun pluginReleaseChannels(): Array<String> =
     }
 
 fun commitSha(): String? =
-    System.getenv("GITHUB_SHA").takeUnless { s -> s.isNullOrEmpty() }
+    System.getenv("GITHUB_SHA")
+        .takeUnless(CharSequence?::isNullOrEmpty)
 
 fun versionName(): String =
     when (val tag = tag()) {
-        Tag.Develop -> commitSha()?.let { sha -> "DEV-${sha.take(COMMIT_HASH_LEN)}" } ?: "DEV"
+        Tag.Develop -> commitSha()?.let { sha -> "DEV-${sha.take(CommitHashLength)}" } ?: "DEV"
         is Tag.Alpha -> tag.value
         is Tag.ReleaseCandidate -> tag.value
         is Tag.Release -> tag.value
@@ -72,7 +73,10 @@ val Project.detektBaseline: File
     get() = Paths.get(rootDir.path, "detekt", "detekt-baseline.xml").toFile()
 
 private fun tag(): Tag {
-    val rawTag = System.getenv("GITHUB_TAG").takeUnless { s -> s.isNullOrEmpty() }
+    val rawTag = System.getenv("GITHUB_TAG")
+        .takeUnless(CharSequence?::isNullOrEmpty)
+        ?.takeUnless { tag -> tag.startsWith("refs/heads/") }
+        ?.removePrefix("refs/tags/")
 
     return when {
         rawTag.isNullOrEmpty() -> Tag.Develop
@@ -84,7 +88,7 @@ private fun tag(): Tag {
                     "expressions: ${
                         listOf(AlphaRegexp,
                             ReleaseCandidateRegexp,
-                            ReleaseRegexp).joinToString { rgx -> rgx.pattern }
+                            ReleaseRegexp).joinToString(transform = Regex::pattern)
                     }"
         )
     }
