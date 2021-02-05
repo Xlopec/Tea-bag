@@ -9,8 +9,8 @@ import io.ktor.client.features.websocket.*
 import io.ktor.http.*
 
 /**
- * Function that for a given server settings opens connection
- * to a debug server and then passes debug session to a consumer
+ * Function that for a given server settings creates a new connection
+ * to a debug server
  *
  * @param M message type
  * @param S state type

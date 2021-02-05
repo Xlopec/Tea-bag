@@ -16,8 +16,10 @@ import kotlinx.coroutines.flow.SharingStarted
  * @param initializer initializer to be used to provide initial values for application
  * @param resolver resolver to be used to resolve messages from commands
  * @param updater updater to be used to compute a new state with set of commands to execute
- * @param io coroutine dispatcher to be used in [resolver]
- * @param computation coroutine dispatcher to be used in [updater]
+ * @param scope scope in which the sharing coroutine is started
+ * @param io coroutine dispatcher which is used to execute side effects by [resolver]
+ * @param computation coroutine dispatcher which is used to wrap [updater]'s computations
+ * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
  * @param M message type
  * @param S state type
  * @param C command type
@@ -33,6 +35,13 @@ data class Env<M, S, C>(
     val shareOptions: ShareOptions = ShareStateWhileSubscribed,
 )
 
+/**
+ * Share options used to configure the sharing coroutine
+ *
+ * @param started sharing strategy
+ * @param replay number of states to be replayed to the downstream subscribers
+ * @see [SharingStarted]
+ */
 data class ShareOptions(
     val started: SharingStarted,
     val replay: UInt,

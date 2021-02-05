@@ -27,13 +27,25 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
 
 /**
- * Component is a builder that accepts [flow][Flow] of messages as input and returns
- * [flow][Flow] of [snapshots][Snapshot] as result.
+ * Conceptually, component is a function that accepts [flow][Flow] of messages and returns [flow][Flow]
+ * of [snapshots][Snapshot] as result.
  *
- * Some behavior notes:
- * * the resulting flow of snapshots always provides observer with the latest available snapshot
- * * the whole component is a lazy function which means that incoming messages won't be consumed
- * unless there is an active collector because of the [Flow] semantic
+ * ### Concept
+ * For each incoming message component computes a pair that contain new computed state and set of
+ * commands to be executed using [Updater]. Such pair or computation result is represented by the
+ * [UpdateWith].
+ *
+ * After result if obtained it's fed to [Resolver] which in turn resolves commands to messages and
+ * executes side effects, if needed.
+ *
+ * ### Behavior notes
+ * Snapshot flow sharing is controlled by the [ShareOptions], which is just a shorthand for:
+ * ```
+ * flow { emit(1) }.shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
+ * ```
+ * This makes the resulting flow a hot one.
+ * For more information regarding behavior and error handling see documentation for
+ * [shareIn][kotlinx.coroutines.flow.shareIn] operator
  *
  * @param M incoming messages
  * @param S state of the application
@@ -42,8 +54,8 @@ import kotlinx.coroutines.flow.*
 typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
 
 /**
- * Updater is a **pure** function that accepts message and current state of the application and then returns
- * a new state and possible empty set of commands to be resolved
+ * Updater is just a regular **pure** function that accepts incoming message, state and calculates
+ * a [pair][UpdateWith] that contains a new state and, possibly, empty set of commands to be resolved
  *
  * @param M incoming messages
  * @param S state of the application
@@ -52,31 +64,50 @@ typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
 typealias Updater<M, S, C> = (message: M, state: S) -> UpdateWith<S, C>
 
 /**
- * Alias for result of the [updater][Updater] function
+ * Alias for kotlin's [Pair]. It can be created using the following [extensions][command]
  *
  * @param S state of the component
+ * @param C commands to be executed. There's **NO GUARANTEE** of commands ordering, they can be
+ * executed in any order. That implies calculation correctness mustn't depend on the ordering
+ *
+ * @param S state of the application
  * @param C commands to be executed
  */
 typealias UpdateWith<S, C> = Pair<S, Set<C>>
 
 /**
- * Alias for an **impure** function that resolves commands and returns possibly empty set of messages to feed the
- * [updater][Updater]
+ * Alias for a possibly **impure** function that resolves commands to messages and performs side
+ * effects.
+ *
+ * ### Exceptions
+ *
+ * Any exception that happens inside this function will redelivered to a [Component]'s scope and handled
+ * by it. For more information regarding error handling see [shareIn][kotlinx.coroutines.flow.shareIn]
  *
  * @param M incoming messages
  * @param C commands to be executed
  */
 typealias Resolver<C, M> = suspend (command: C) -> Set<M>
 
+/**
+ * Type alias for suspending function that accepts incoming values a puts it to a queue for later
+ * processing
+ *
+ * @param T incoming values
+ */
 @UnstableApi
 typealias Sink<T> = suspend (T) -> Unit
 
 /**
  * Creates new component using supplied values
  *
- * @param initializer initializer to be used to provide initial values for application
- * @param resolver resolver to be used to resolve messages from commands
- * @param updater updater to be used to compute a new state with set of commands to execute
+ * @param initializer initializer that provides initial values
+ * @param resolver resolver that resolves messages to commands and performs side effects
+ * @param updater updater that computes new states and commands to be executed
+ * @param scope scope in which the sharing coroutine is started
+ * @param io coroutine dispatcher which is used to execute side effects
+ * @param computation coroutine dispatcher which is used to wrap [updater]'s computations
+ * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
  * @param M incoming messages
  * @param S state of the application
  * @param C commands to be executed
@@ -96,7 +127,7 @@ fun <M, C, S> Component(
 /**
  * Creates new component using preconfigured environment
  *
- * @param env environment to be used
+ * @param env preconfigured program environment
  * @param M incoming messages
  * @param S state of the application
  * @param C commands to be executed
@@ -190,7 +221,7 @@ private fun <M, S, C> Env<M, S, C>.resolveAll(
 ) =
 // launches each suspending function
 // in 'launch and forget' fashion so that
-// updater can process a new portion of messages
+// updater can process new portion of messages
     commands.forEach { command ->
         coroutineScope.launch(io + CoroutineName("Resolver coroutine: $command")) {
             sink(resolver(command))

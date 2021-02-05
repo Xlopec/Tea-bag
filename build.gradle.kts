@@ -33,7 +33,6 @@ buildscript {
         mavenLocal()
         google()
         jcenter()
-        maven { setUrl("https://jitpack.io") }
         maven { setUrl("https://plugins.gradle.org/m2/") }
     }
 
@@ -189,7 +188,6 @@ libraryProjects()
 
                     name = versionName
                     vcsTag = versionName
-                    desc = "debug"
                 }
             }
         }

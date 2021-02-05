@@ -20,15 +20,31 @@ package com.oliynick.max.tea.core.debug.protocol
 
 import java.util.*
 
+/**
+ * Message that notifies a debug server about component's state changes
+ *
+ * @param messageId message identifier
+ * @param componentId component identifier
+ * @param payload payload that tells a debug server how to process this message
+ * @param J json specific implementation
+ */
 data class NotifyServer<out J>(
     val messageId: UUID,
     val componentId: ComponentId,
-    val payload: ServerMessage<J>
+    val payload: ServerMessage<J>,
 )
 
+/**
+ * Message that tells a client to apply changes
+ *
+ * @param id message identifier
+ * @param component component identifier
+ * @param message payload that tells client how to process this message
+ * @param J json specific implementation
+ */
 data class NotifyClient<out J>(
     val id: UUID,
     val component: ComponentId,
-    val message: ClientMessage<J>
+    val message: ClientMessage<J>,
 )
 

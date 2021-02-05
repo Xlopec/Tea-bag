@@ -17,9 +17,7 @@
 package com.oliynick.max.tea.core.component
 
 import com.oliynick.max.tea.core.Snapshot
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 /**
  * **Impure** function that performs some actions on snapshots
@@ -236,21 +234,3 @@ infix fun <M, S, C> Component<M, S, C>.with(
     interceptor: Interceptor<M, S, C>,
 ): Component<M, S, C> =
     { input -> this(input).onEach(interceptor) }
-
-/**
- * Launches sharing coroutine in a given scope effectively
- * making component hot
- *
- * @receiver component to transform
- * @param scope scope in which sharing coroutine will be started
- * @param C command
- * @param M message
- * @param S state
- */
-@Deprecated(message = "will be removed", level = DeprecationLevel.ERROR)
-fun <M, S, C> Component<M, S, C>.shareIn(
-    scope: CoroutineScope,
-): Component<M, S, C> {
-    scope.launch { this@shareIn(emptyFlow()).collect() }
-    return this
-}

@@ -3,8 +3,7 @@
 package com.oliynick.max.tea.core
 
 /**
- * Initializer is an **impure** function that returns [initial][Initial] snapshot to be consumed
- * by component
+ * Initializer is an **impure** function that computes [initial][Initial] snapshot
  *
  * @param S initial state of the application
  * @param C initial set of commands to be executed

@@ -41,10 +41,17 @@ import java.util.*
  * Creates new debuggable [component][Component]
  *
  * @param id component identifier
- * @param initializer initializer to be used to provide initial values for application
- * @param resolver resolver to be used to resolve messages from commands
- * @param updater updater to be used to compute a new state with set of commands to execute
+ * @param initializer initializer that provides initial values
+ * @param resolver resolver that resolves messages to commands and performs side effects
+ * @param updater updater that computes new states and commands to be executed
  * @param jsonConverter json converter
+ * @param scope scope in which the sharing coroutine is started
+ * @param url url used to connect to debug server
+ * @param io coroutine dispatcher which is used to execute side effects
+ * @param computation coroutine dispatcher which is used to wrap [updater]'s computations
+ * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
+ * @param sessionBuilder function that for a given server settings creates a new connection
+ * to a debug server
  * @param M incoming messages
  * @param S state of the application
  * @param C commands to be executed
@@ -61,7 +68,7 @@ inline fun <reified M, reified C, reified S, J> Component(
     io: CoroutineDispatcher = Dispatchers.IO,
     computation: CoroutineDispatcher = Dispatchers.Unconfined,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
-    noinline sessionBuilder: SessionBuilder<M, S, J> = ::WebSocketSession
+    noinline sessionBuilder: SessionBuilder<M, S, J> = ::WebSocketSession,
 ): Component<M, S, C> =
     Component(
         DebugEnv(

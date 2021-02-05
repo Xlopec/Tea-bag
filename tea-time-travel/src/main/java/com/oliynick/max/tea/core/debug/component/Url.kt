@@ -7,7 +7,7 @@ import java.net.URL
 /**
  * Url builder
  *
- * This is just a shortcut for
+ * This is just a shorthand for
  * ```kotlin
  * URL(protocol, host, port.toInt(), "")
  * ```

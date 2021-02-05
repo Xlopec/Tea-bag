@@ -16,7 +16,15 @@
 
 package com.oliynick.max.tea.core.debug.protocol
 
-data class ComponentId(val value: String) {
+/**
+ * Component identifier, it can be any non blank and non empty string
+ *
+ * @param value raw identifier value
+ */
+// todo: make it a value class after migration to kotlin 1.4.30
+data class ComponentId(
+    val value: String,
+) {
     init {
         require(value.isNotBlank() && value.isNotEmpty())
     }
