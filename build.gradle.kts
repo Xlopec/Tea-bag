@@ -95,7 +95,8 @@ libraryProjects()
                         localDirectory.set(file("src/main/java"))
                         remoteUrl.set(
                             URL(
-                                "https://github.com/Xlopec/Tea-bag/tree/dev_plugin/${project.name}/src/main/java"
+                                // fixme make it work for other branches as well
+                                "https://github.com/Xlopec/Tea-bag/tree/master/${project.name}/src/main/java"
                             )
                         )
                     }
