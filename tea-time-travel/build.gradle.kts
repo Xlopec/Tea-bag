@@ -1,10 +1,5 @@
-import Libraries.kotlinStdLib
-import Libraries.ktorClientOkHttp
-import Libraries.ktorClientWebsockets
-import TestLibraries.ktorMockJvm
-
 /*
- * Copyright (C) 2019 Maksym Oliinyk.
+ * Copyright (C) 2021. Maksym Oliinyk.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +13,11 @@ import TestLibraries.ktorMockJvm
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import Libraries.kotlinStdLib
+import Libraries.ktorClientOkHttp
+import Libraries.ktorClientWebsockets
+import TestLibraries.ktorMockJvm
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))

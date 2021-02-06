@@ -1,18 +1,5 @@
-
-import Libraries.coroutinesCore
-import Libraries.coroutinesSwing
-import Libraries.immutableCollections
-import Libraries.kotlinStdLib
-import Libraries.ktorServerCore
-import Libraries.ktorServerNetty
-import Libraries.ktorServerWebsockets
-import Libraries.logback
-import TestLibraries.ktorServerTests
-import org.jetbrains.intellij.tasks.PatchPluginXmlTask
-import org.jetbrains.intellij.tasks.PublishTask
-
 /*
- * Copyright (C) 2019 Maksym Oliinyk.
+ * Copyright (C) 2021. Maksym Oliinyk.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +13,19 @@ import org.jetbrains.intellij.tasks.PublishTask
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
+import Libraries.coroutinesCore
+import Libraries.coroutinesSwing
+import Libraries.immutableCollections
+import Libraries.kotlinStdLib
+import Libraries.ktorServerCore
+import Libraries.ktorServerNetty
+import Libraries.ktorServerWebsockets
+import Libraries.logback
+import TestLibraries.ktorServerTests
+import org.jetbrains.intellij.tasks.PatchPluginXmlTask
+import org.jetbrains.intellij.tasks.PublishTask
 
 intellij {
     version = "2020.3"
