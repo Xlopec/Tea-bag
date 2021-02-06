@@ -10,7 +10,7 @@ This library isn't production ready yet and was originally intended as pet proje
 it'd be nice to make it more simple and lightweight than analogs, add debugging capabilities...
 
 ## Main Features
-- **Scaleability** it is build on the top of a simple idea of having pure functions that operate on plain data separated from impure one.
+- **Scalability** it is build on the top of a simple idea of having pure functions that operate on plain data separated from impure one.
 Those functions are building blocks and form testable components that can be combined to build complex applications
 - **Simplicity** component implementation resides in a single file
 - **Extensibility** additional functionality and API is implemented as component extensions which means you can 
@@ -70,3 +70,4 @@ To run Intellij Idea with installed plugin use ```./gradlew tea-time-travel-plug
 - Rework component builders and possibly replace it with some kind of DSL
 - Add keyboard shortcuts for plugin, consider improving UX
 - Release v1.0.0
+- Migrate project to KMP
