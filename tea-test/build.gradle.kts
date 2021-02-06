@@ -1,6 +1,10 @@
+
+import Libraries.atomicfu
 import Libraries.coroutinesCore
 import Libraries.coroutinesTest
 import Libraries.kotlinStdLib
+import TestLibraries.junit
+import TestLibraries.junitRunner
 
 /*
  * Copyright (C) 2019 Maksym Oliinyk.
@@ -24,11 +28,11 @@ dependencies {
     implementation(project(":tea-core"))
 
     api(kotlinStdLib)
-    api("org.jetbrains.kotlinx:atomicfu:0.14.4")
+    api("org.jetbrains.kotlinx:atomicfu:$atomicfu")
 
     api(coroutinesCore)
-    api("junit:junit:4.12")
+    api("junit:junit:$junit")
     api(coroutinesTest)
-    api("io.kotlintest:kotlintest-runner-junit4:3.4.2")
+    api("io.kotlintest:kotlintest-runner-junit4:$junitRunner")
 
 }

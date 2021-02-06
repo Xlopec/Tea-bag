@@ -6,6 +6,7 @@ import Libraries.kotlinStdLib
 import Libraries.ktorServerCore
 import Libraries.ktorServerNetty
 import Libraries.ktorServerWebsockets
+import Libraries.logback
 import TestLibraries.ktorServerTests
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PublishTask
@@ -56,7 +57,7 @@ dependencies {
 
     implementation(kotlinStdLib)
 
-    implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("ch.qos.logback:logback-classic:$logback")
     implementation(ktorServerCore)
     implementation(ktorServerNetty)
     implementation(ktorServerWebsockets)

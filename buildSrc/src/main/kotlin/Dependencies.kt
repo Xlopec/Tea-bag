@@ -40,7 +40,10 @@ object Libraries {
 
     const val ktorClientWebsockets = "io.ktor:ktor-client-websockets:$ktor"
     const val ktorClientOkHttp = "io.ktor:ktor-client-okhttp:$ktor"
+    const val gson = "2.8.6"
 
+    const val logback = "1.2.3"
+    const val atomicfu = "0.15.1"
     const val immutableCollections = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.3"
 }
 
@@ -49,6 +52,8 @@ object TestLibraries {
         const val ktor = "1.5.1"
     }
 
+    const val junit = "4.13.1"
+    const val junitRunner = "3.4.2"
     const val ktorMockJvm = "io.ktor:ktor-client-mock-jvm:${Versions.ktor}"
     const val ktorServerTests = "io.ktor:ktor-server-tests:${Versions.ktor}"
 
