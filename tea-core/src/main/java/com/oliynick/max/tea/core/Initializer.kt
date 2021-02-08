@@ -24,7 +24,7 @@ package com.oliynick.max.tea.core
  * @param S initial state of the application
  * @param C initial set of commands to be executed
  */
-typealias Initializer<S, C> = suspend () -> Initial<S, C>
+public typealias Initializer<S, C> = suspend () -> Initial<S, C>
 
 /**
  * Constructs initializer using initial [state] and set of [commands]
@@ -32,7 +32,7 @@ typealias Initializer<S, C> = suspend () -> Initial<S, C>
  * @param state initial state
  * @param commands initial set of commands
  */
-fun <S, C> Initializer(
+public fun <S, C> Initializer(
     state: S,
     commands: Set<C> = emptySet()
 ): Initializer<S, C> = { Initial(state, commands) }
@@ -45,7 +45,7 @@ fun <S, C> Initializer(
  * @param state initial state
  * @param commands initial set of commands
  */
-fun <S, C> Initializer(
+public fun <S, C> Initializer(
     state: S,
     vararg commands: C
 ): Initializer<S, C> = Initializer(state, setOf(*commands))

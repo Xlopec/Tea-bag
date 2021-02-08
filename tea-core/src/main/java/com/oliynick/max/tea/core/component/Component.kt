@@ -51,7 +51,7 @@ import kotlinx.coroutines.flow.*
  * @param S state of the application
  * @param C commands to be executed
  */
-typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
+public typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
 
 /**
  * Updater is just a regular **pure** function that accepts incoming message, state and calculates
@@ -61,7 +61,7 @@ typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
  * @param S state of the application
  * @param C commands to be executed
  */
-typealias Updater<M, S, C> = (message: M, state: S) -> UpdateWith<S, C>
+public typealias Updater<M, S, C> = (message: M, state: S) -> UpdateWith<S, C>
 
 /**
  * Alias for kotlin's [Pair]. It can be created using the following [extensions][command]
@@ -73,7 +73,7 @@ typealias Updater<M, S, C> = (message: M, state: S) -> UpdateWith<S, C>
  * @param S state of the application
  * @param C commands to be executed
  */
-typealias UpdateWith<S, C> = Pair<S, Set<C>>
+public typealias UpdateWith<S, C> = Pair<S, Set<C>>
 
 /**
  * Alias for a possibly **impure** function that resolves commands to messages and performs side
@@ -87,7 +87,7 @@ typealias UpdateWith<S, C> = Pair<S, Set<C>>
  * @param M incoming messages
  * @param C commands to be executed
  */
-typealias Resolver<C, M> = suspend (command: C) -> Set<M>
+public typealias Resolver<C, M> = suspend (command: C) -> Set<M>
 
 /**
  * Type alias for suspending function that accepts incoming values a puts it to a queue for later
@@ -96,7 +96,7 @@ typealias Resolver<C, M> = suspend (command: C) -> Set<M>
  * @param T incoming values
  */
 @UnstableApi
-typealias Sink<T> = suspend (T) -> Unit
+public typealias Sink<T> = suspend (T) -> Unit
 
 /**
  * Creates new component using supplied values
@@ -112,7 +112,7 @@ typealias Sink<T> = suspend (T) -> Unit
  * @param S state of the application
  * @param C commands to be executed
  */
-fun <M, C, S> Component(
+public fun <M, C, S> Component(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     updater: Updater<M, S, C>,
@@ -133,7 +133,7 @@ fun <M, C, S> Component(
  * @param C commands to be executed
  */
 @OptIn(UnstableApi::class)
-fun <M, S, C> Component(
+public fun <M, S, C> Component(
     env: Env<M, S, C>,
 ): Component<M, S, C> {
 
@@ -151,7 +151,7 @@ fun <M, S, C> Component(
 }
 
 @UnstableApi
-fun <M, S, C> Env<M, S, C>.upstream(
+public fun <M, S, C> Env<M, S, C>.upstream(
     snapshots: Flow<Initial<S, C>>,
     sink: Sink<M>,
     input: (Initial<S, C>) -> Flow<M>,
@@ -159,7 +159,7 @@ fun <M, S, C> Env<M, S, C>.upstream(
     snapshots.flatMapLatest { startFrom -> compute(input(startFrom), startFrom, sink) }
 
 @UnstableApi
-fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
+public fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
     input: Flow<M>,
     upstreamInput: SendChannel<M>,
 ): Flow<Snapshot<M, S, C>> =
@@ -170,11 +170,11 @@ fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
     }
 
 @UnstableApi
-fun <S, C> Env<*, S, C>.init(): Flow<Initial<S, C>> =
+public fun <S, C> Env<*, S, C>.init(): Flow<Initial<S, C>> =
     channelFlow { withContext(io) { send(initializer()) } }
 
 @UnstableApi
-fun <M, S, C> Env<M, S, C>.compute(
+public fun <M, S, C> Env<M, S, C>.compute(
     input: Flow<M>,
     startFrom: Initial<S, C>,
     sink: Sink<M>,
@@ -203,13 +203,13 @@ fun <M, S, C> Env<M, S, C>.compute(
 }
 
 @UnstableApi
-fun <T> Flow<T>.shareIn(
+public fun <T> Flow<T>.shareIn(
     scope: CoroutineScope,
     shareOptions: ShareOptions,
-) = shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
+): SharedFlow<T> = shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
 
 @UnstableApi
-fun <M, S, C> Env<M, S, C>.resolveAsFlow(
+public fun <M, S, C> Env<M, S, C>.resolveAsFlow(
     commands: Collection<C>,
 ): Flow<M> =
     flow { emitAll(resolve(commands)) }

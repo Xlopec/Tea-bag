@@ -21,7 +21,7 @@ package com.oliynick.max.tea.core.debug.protocol
  *
  * @param J json tree
  */
-interface JsonConverter<J> {
+public interface JsonConverter<J> {
 
     /**
      * Converts object instance to a json tree representation.
@@ -32,7 +32,7 @@ interface JsonConverter<J> {
      * @param T object type
      * @return json tree
      */
-    fun <T> toJsonTree(
+    public fun <T> toJsonTree(
         any: T
     ): J
 
@@ -44,7 +44,7 @@ interface JsonConverter<J> {
      * @param T object type
      * @return parsed object instance
      */
-    fun <T> fromJsonTree(
+    public fun <T> fromJsonTree(
         json: J,
         cl: Class<T>
     ): T
@@ -56,7 +56,7 @@ interface JsonConverter<J> {
      * @param T object type
      * @return parsed object instance
      */
-    fun <T> toJson(
+    public fun <T> toJson(
         any: T
     ): String
 
@@ -68,7 +68,7 @@ interface JsonConverter<J> {
      * @param T object type
      * @return parsed object instance
      */
-    fun <T> fromJson(
+    public fun <T> fromJson(
         json: String,
         cl: Class<T>
     ): T

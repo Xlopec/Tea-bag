@@ -40,7 +40,7 @@ import kotlinx.coroutines.flow.SharingStarted
  * @param S state type
  * @param C command type
  */
-data class Env<M, S, C>(
+public data class Env<M, S, C>(
     val initializer: Initializer<S, C>,
     val resolver: Resolver<C, M>,
     val updater: Updater<M, S, C>,
@@ -58,10 +58,11 @@ data class Env<M, S, C>(
  * @param replay number of states to be replayed to the downstream subscribers
  * @see [SharingStarted]
  */
-data class ShareOptions(
+public data class ShareOptions(
     val started: SharingStarted,
     val replay: UInt,
 )
 
 @UnstableApi
-val ShareStateWhileSubscribed = ShareOptions(SharingStarted.WhileSubscribed(), 1U)
+public val ShareStateWhileSubscribed: ShareOptions =
+    ShareOptions(SharingStarted.WhileSubscribed(), 1U)

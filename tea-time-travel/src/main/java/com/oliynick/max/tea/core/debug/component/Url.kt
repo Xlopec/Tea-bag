@@ -28,7 +28,7 @@ import java.net.URL
  * URL(protocol, host, port.toInt(), "")
  * ```
  */
-fun URL(
+public fun URL(
     protocol: String = "http",
     host: String = "localhost",
     port: UInt = 8080U

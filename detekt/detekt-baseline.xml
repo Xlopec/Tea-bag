@@ -4,6 +4,7 @@
   <CurrentIssues>
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
     <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$override fun update( message: UIMessage, state: PluginState ): UpdateWith&lt;PluginState, PluginCommand></ID>
+    <ID>EmptyClassBlock:ComponentTest.kt$ComponentTest${ }</ID>
     <ID>FunctionNaming:ToolWindowView.kt$private fun JBEditorTabs( project: Project, )</ID>
     <ID>FunctionNaming:ToolWindowView.kt$private fun TabInfo( id: ComponentId, content: JComponent, group: ActionGroup, )</ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") private fun Null.toReadableString(): String</ID>
@@ -83,15 +84,14 @@
     <ID>SpreadOperator:BasicComponentTest.kt$BasicComponentTest$(*messages)</ID>
     <ID>SpreadOperator:ComponentLogic.kt$TodoState$(*items)</ID>
     <ID>TooGenericExceptionCaught:ServerImpl.kt$e: Throwable</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C> Env&lt;M, S, C>.compute( input: Flow&lt;M>, startFrom: Initial&lt;S, C>, sink: Sink&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C> Env&lt;M, S, C>.resolveAsFlow( commands: Collection&lt;C>, ): Flow&lt;M></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C> Env&lt;M, S, C>.upstream( snapshots: Flow&lt;Initial&lt;S, C>>, sink: Sink&lt;M>, input: (Initial&lt;S, C>) -> Flow&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;M, S, C> Flow&lt;Snapshot&lt;M, S, C>>.downstream( input: Flow&lt;M>, upstreamInput: SendChannel&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;S, C> Env&lt;*, S, C>.init(): Flow&lt;Initial&lt;S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi fun &lt;T> Flow&lt;T>.shareIn( scope: CoroutineScope, shareOptions: ShareOptions, )</ID>
-    <ID>UndocumentedPublicFunction:FlowExtensions.kt$@UnstableApi suspend fun &lt;T> Flow&lt;T>.into( sendChannel: SendChannel&lt;T> )</ID>
-    <ID>UndocumentedPublicFunction:FlowExtensions.kt$fun &lt;T> Flow&lt;T>.mergeWith(other: Flow&lt;T>): Flow&lt;T></ID>
-    <ID>UndocumentedPublicProperty:Environment.kt$@UnstableApi val ShareStateWhileSubscribed = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;M, S, C> Env&lt;M, S, C>.compute( input: Flow&lt;M>, startFrom: Initial&lt;S, C>, sink: Sink&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;M, S, C> Env&lt;M, S, C>.resolveAsFlow( commands: Collection&lt;C>, ): Flow&lt;M></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;M, S, C> Env&lt;M, S, C>.upstream( snapshots: Flow&lt;Initial&lt;S, C>>, sink: Sink&lt;M>, input: (Initial&lt;S, C>) -> Flow&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;M, S, C> Flow&lt;Snapshot&lt;M, S, C>>.downstream( input: Flow&lt;M>, upstreamInput: SendChannel&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;S, C> Env&lt;*, S, C>.init(): Flow&lt;Initial&lt;S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;T> Flow&lt;T>.shareIn( scope: CoroutineScope, shareOptions: ShareOptions, ): SharedFlow&lt;T></ID>
+    <ID>UndocumentedPublicFunction:FlowExtensions.kt$@UnstableApi public suspend fun &lt;T> Flow&lt;T>.into( sendChannel: SendChannel&lt;T> )</ID>
+    <ID>UndocumentedPublicProperty:Environment.kt$@UnstableApi public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
     <ID>UndocumentedPublicProperty:Snapshot.kt$Regular$/** * Message that triggered state update */ val message: M</ID>
     <ID>UndocumentedPublicProperty:Snapshot.kt$Regular$/** * Previous state of a component */ val previousState: S</ID>
     <ID>UnnecessaryAbstractClass:AppState.kt$ScreenState</ID>

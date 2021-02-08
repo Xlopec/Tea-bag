@@ -80,6 +80,10 @@ libraryProjects()
         apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.jfrog.bintray")
 
+        kotlin {
+            explicitApi()
+        }
+
         tasks.withType<DokkaTask>().configureEach {
 
             outputDirectory.set(buildDir.resolve("javadoc"))

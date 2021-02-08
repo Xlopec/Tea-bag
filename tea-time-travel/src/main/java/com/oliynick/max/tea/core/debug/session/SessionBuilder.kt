@@ -23,6 +23,7 @@ import com.oliynick.max.tea.core.debug.component.URL
 import io.ktor.client.*
 import io.ktor.client.features.websocket.*
 import io.ktor.http.*
+import java.net.URL
 
 /**
  * Function that for a given server settings creates a new connection
@@ -32,7 +33,7 @@ import io.ktor.http.*
  * @param S state type
  * @param J json type
  */
-typealias SessionBuilder<M, S, J> = suspend (
+public typealias SessionBuilder<M, S, J> = suspend (
     settings: ServerSettings<M, S, J>,
     session: suspend DebugSession<M, S, J>.() -> Unit,
 ) -> Unit
@@ -46,25 +47,27 @@ typealias SessionBuilder<M, S, J> = suspend (
  * @param S state type
  * @param J json type
  */
-suspend inline fun <reified M, reified S, J> WebSocketSession(
+public suspend inline fun <reified M, reified S, J> WebSocketSession(
     settings: ServerSettings<M, S, J>,
     crossinline block: suspend DebugSession<M, S, J>.() -> Unit,
-) = HttpClient.ws(// todo add timeout
-    method = HttpMethod.Get,
-    host = settings.url.host,
-    port = settings.url.port,
-    block = {
-        DebugWebSocketSession(
-            M::class.java,
-            S::class.java,
-            settings,
-            this
-        ).apply { block() }
-    }
-)
+) {
+    HttpClient.ws(// todo add timeout
+        method = HttpMethod.Get,
+        host = settings.url.host,
+        port = settings.url.port,
+        block = {
+            DebugWebSocketSession(
+                M::class.java,
+                S::class.java,
+                settings,
+                this
+            ).apply { block() }
+        }
+    )
+}
 
 @PublishedApi
-internal val HttpClient by lazy { HttpClient { install(WebSockets) } }
+internal val HttpClient: HttpClient by lazy { HttpClient { install(WebSockets) } }
 
 @PublishedApi
-internal val Localhost by lazy(::URL)
+internal val Localhost: URL by lazy(::URL)

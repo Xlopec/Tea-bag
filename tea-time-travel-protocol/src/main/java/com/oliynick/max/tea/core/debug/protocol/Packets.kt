@@ -28,7 +28,7 @@ import java.util.*
  * @param payload payload that tells a debug server how to process this message
  * @param J json specific implementation
  */
-data class NotifyServer<out J>(
+public data class NotifyServer<out J>(
     val messageId: UUID,
     val componentId: ComponentId,
     val payload: ServerMessage<J>,
@@ -42,7 +42,7 @@ data class NotifyServer<out J>(
  * @param message payload that tells client how to process this message
  * @param J json specific implementation
  */
-data class NotifyClient<out J>(
+public data class NotifyClient<out J>(
     val id: UUID,
     val component: ComponentId,
     val message: ClientMessage<J>,

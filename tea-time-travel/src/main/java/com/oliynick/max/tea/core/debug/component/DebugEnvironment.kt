@@ -37,7 +37,7 @@ import java.net.URL
  * @param C command type
  * @param J json tree type
  */
-data class DebugEnv<M, S, C, J>(
+public data class DebugEnv<M, S, C, J>(
     inline val componentEnv: Env<M, S, C>,
     inline val serverSettings: ServerSettings<M, S, J>
 )
@@ -54,7 +54,7 @@ data class DebugEnv<M, S, C, J>(
  * @param S state type
  * @param J json tree type
  */
-data class ServerSettings<M, S, J>(
+public data class ServerSettings<M, S, J>(
     val id: ComponentId,
     val serializer: JsonConverter<J>,
     val url: URL,

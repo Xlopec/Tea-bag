@@ -27,23 +27,23 @@ import kotlinx.coroutines.flow.Flow
  * @param S state type
  * @param J json tree type
  */
-interface DebugSession<M, S, J> {
+public interface DebugSession<M, S, J> {
 
     /**
      * Messages to be consumed by debuggable component
      */
-    val messages: Flow<M>
+    public val messages: Flow<M>
 
     /**
      * States that must replace any current state of
      * debuggable component
      */
-    val states: Flow<S>
+    public val states: Flow<S>
 
     /**
      * Sends packet to debug server
      */
-    suspend operator fun invoke(
+    public suspend operator fun invoke(
         packet: NotifyServer<J>
     )
 

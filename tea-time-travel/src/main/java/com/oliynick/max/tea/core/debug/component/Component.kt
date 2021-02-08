@@ -56,7 +56,7 @@ import java.util.*
  * @param S state of the application
  * @param C commands to be executed
  */
-inline fun <reified M, reified C, reified S, J> Component(
+public inline fun <reified M, reified C, reified S, J> Component(
     id: ComponentId,
     noinline initializer: Initializer<S, C>,
     noinline resolver: Resolver<C, M>,
@@ -84,7 +84,7 @@ inline fun <reified M, reified C, reified S, J> Component(
  * @param S state of the application
  * @param C commands to be executed
  */
-fun <M, S, C, J> Component(
+public fun <M, S, C, J> Component(
     env: DebugEnv<M, S, C, J>,
 ): Component<M, S, C> {
 

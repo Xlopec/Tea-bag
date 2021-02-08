@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.*
  * @param S state
  * @param C command
  */
-typealias Interceptor<M, S, C> = suspend (snapshot: Snapshot<M, S, C>) -> Unit
+public typealias Interceptor<M, S, C> = suspend (snapshot: Snapshot<M, S, C>) -> Unit
 
 /**
  * Extension to combine state with command
@@ -36,7 +36,7 @@ typealias Interceptor<M, S, C> = suspend (snapshot: Snapshot<M, S, C>) -> Unit
  * @param command command to combine with state
  * @return [UpdateWith] instance with given state and set that consists from a single command
  */
-infix fun <S, C> S.command(
+public infix fun <S, C> S.command(
     command: C,
 ): UpdateWith<S, C> = this to setOf(command)
 
@@ -49,7 +49,7 @@ infix fun <S, C> S.command(
  * @param command command to combine with state
  * @return [UpdateWith] instance with given state and set that consists from a single command
  */
-inline infix fun <S, C> S.command(
+public inline infix fun <S, C> S.command(
     command: S.() -> C,
 ): UpdateWith<S, C> = this to setOf(run(command))
 
@@ -63,7 +63,7 @@ inline infix fun <S, C> S.command(
  * @param second the second command to combine with state
  * @return [UpdateWith] instance with given state and set of commands
  */
-fun <S, C> S.command(
+public fun <S, C> S.command(
     first: C,
     second: C,
 ): UpdateWith<S, C> = this to setOf(first, second)
@@ -79,7 +79,7 @@ fun <S, C> S.command(
  * @param third the third command to combine with state
  * @return [UpdateWith] instance with given state and set of commands
  */
-fun <S, C> S.command(
+public fun <S, C> S.command(
     first: C,
     second: C,
     third: C,
@@ -95,7 +95,7 @@ fun <S, C> S.command(
  * @param commands commands to combine with state
  * @return [UpdateWith] instance with given state and set of commands
  */
-fun <S, C> S.command(
+public fun <S, C> S.command(
     vararg commands: C,
 ): UpdateWith<S, C> = this command setOf(*commands)
 
@@ -108,7 +108,7 @@ fun <S, C> S.command(
  * @param commands commands to combine with state
  * @return [UpdateWith] instance with given state and set of commands
  */
-infix fun <S, C> S.command(
+public infix fun <S, C> S.command(
     commands: Set<C>,
 ): UpdateWith<S, C> = this to commands
 
@@ -119,7 +119,7 @@ infix fun <S, C> S.command(
  * @param S state to combine with command
  * @return [UpdateWith] instance with given state and empty set of commands
  */
-fun <S> S.noCommand(): UpdateWith<S, Nothing> = this to emptySet()
+public fun <S> S.noCommand(): UpdateWith<S, Nothing> = this to emptySet()
 
 /**
  * Wrapper to perform **only** side effect using command as receiver. This function always returns
@@ -129,7 +129,7 @@ fun <S> S.noCommand(): UpdateWith<S, Nothing> = this to emptySet()
  * @param M message
  * @return set of messages to be consumed by a component, always empty
  */
-suspend inline infix fun <C, M> C.sideEffect(
+public suspend inline infix fun <C, M> C.sideEffect(
     crossinline action: suspend C.() -> Unit,
 ): Set<M> {
     action()
@@ -145,7 +145,7 @@ suspend inline infix fun <C, M> C.sideEffect(
  * @param action action to perform that might produce message to be consumed by a component
  * @return set of messages to be consumed a component
  */
-suspend inline infix fun <C, M> C.effect(
+public suspend inline infix fun <C, M> C.effect(
     crossinline action: suspend C.() -> M?,
 ): Set<M> = action(this@effect)?.let(::setOf) ?: emptySet()
 
@@ -157,7 +157,7 @@ suspend inline infix fun <C, M> C.effect(
  * @param M message
  * @param S state
  */
-fun <M, S, C> Component<M, S, C>.observeSnapshots(): Flow<Snapshot<M, S, C>> =
+public fun <M, S, C> Component<M, S, C>.observeSnapshots(): Flow<Snapshot<M, S, C>> =
     this(emptyFlow())
 
 /**
@@ -168,7 +168,7 @@ fun <M, S, C> Component<M, S, C>.observeSnapshots(): Flow<Snapshot<M, S, C>> =
  * @param M message
  * @param S state
  */
-fun <M, S, C> Component<M, S, C>.observeStates(): Flow<S> =
+public fun <M, S, C> Component<M, S, C>.observeStates(): Flow<S> =
     observeSnapshots().map { snapshot -> snapshot.currentState }
 
 /**
@@ -180,7 +180,7 @@ fun <M, S, C> Component<M, S, C>.observeStates(): Flow<S> =
  * @param M message
  * @param S state
  */
-fun <M, S, C> Component<M, S, C>.states(): ((Flow<M>) -> Flow<S>) =
+public fun <M, S, C> Component<M, S, C>.states(): ((Flow<M>) -> Flow<S>) =
     { input -> this(input).map { snapshot -> snapshot.currentState } }
 
 /**
@@ -192,7 +192,7 @@ fun <M, S, C> Component<M, S, C>.states(): ((Flow<M>) -> Flow<S>) =
  * @param M message
  * @param S state
  */
-operator fun <M, S, C> Component<M, S, C>.invoke(
+public operator fun <M, S, C> Component<M, S, C>.invoke(
     vararg messages: M,
 ): Flow<Snapshot<M, S, C>> = this(flowOf(*messages))
 
@@ -205,7 +205,7 @@ operator fun <M, S, C> Component<M, S, C>.invoke(
  * @param M message
  * @param S state
  */
-operator fun <M, S, C> Component<M, S, C>.invoke(
+public operator fun <M, S, C> Component<M, S, C>.invoke(
     messages: Iterable<M>,
 ): Flow<Snapshot<M, S, C>> = this(messages.asFlow())
 
@@ -218,7 +218,7 @@ operator fun <M, S, C> Component<M, S, C>.invoke(
  * @param M message
  * @param S state
  */
-operator fun <M, S, C> Component<M, S, C>.invoke(
+public operator fun <M, S, C> Component<M, S, C>.invoke(
     message: M,
 ): Flow<Snapshot<M, S, C>> = this(flowOf(message))
 
@@ -230,7 +230,7 @@ operator fun <M, S, C> Component<M, S, C>.invoke(
  * @param M message
  * @param S state
  */
-infix fun <M, S, C> Component<M, S, C>.with(
+public infix fun <M, S, C> Component<M, S, C>.with(
     interceptor: Interceptor<M, S, C>,
 ): Component<M, S, C> =
     { input -> this(input).onEach(interceptor) }

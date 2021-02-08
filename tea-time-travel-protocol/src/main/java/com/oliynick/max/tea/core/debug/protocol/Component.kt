@@ -22,7 +22,7 @@ package com.oliynick.max.tea.core.debug.protocol
  * @param value raw identifier value
  */
 // todo: make it a value class after migration to kotlin 1.4.30
-data class ComponentId(
+public data class ComponentId(
     val value: String,
 ) {
     init {

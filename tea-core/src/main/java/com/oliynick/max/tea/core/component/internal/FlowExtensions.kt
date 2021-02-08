@@ -22,15 +22,17 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 @UnstableApi
-suspend fun <T> Flow<T>.into(
+public suspend fun <T> Flow<T>.into(
     sendChannel: SendChannel<T>
-) = collect(sendChannel::send)
+) {
+    collect(sendChannel::send)
+}
 
 internal fun <T> Flow<T>.finishWith(
     flow: Flow<T>
 ) = onCompletion { th -> if (th != null) throw th else emitAll(flow) }
 
-fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
+internal fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
     channelFlow {
 
         launch {

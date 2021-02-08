@@ -25,7 +25,7 @@ package com.oliynick.max.tea.core
 @MustBeDocumented
 @Retention(value = AnnotationRetention.BINARY)
 @RequiresOptIn(level = RequiresOptIn.Level.WARNING)
-annotation class ObsoleteComponentApi
+public annotation class ObsoleteComponentApi
 
 /**
  * Marks declarations that are **unstable** in Component API, which means that the design of the corresponding
@@ -35,4 +35,4 @@ annotation class ObsoleteComponentApi
 @Retention(value = AnnotationRetention.BINARY)
 @RequiresOptIn(level = RequiresOptIn.Level.WARNING)
 @Target(AnnotationTarget.TYPEALIAS, AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION)
-annotation class UnstableApi
+public annotation class UnstableApi

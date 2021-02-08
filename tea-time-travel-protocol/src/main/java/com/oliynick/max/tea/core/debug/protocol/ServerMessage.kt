@@ -21,7 +21,7 @@ package com.oliynick.max.tea.core.debug.protocol
  *
  * @param J implementation specific json type
  */
-sealed class ServerMessage<out J>
+public sealed class ServerMessage<out J>
 
 /**
  * Represents message that informs server about state changes
@@ -31,7 +31,7 @@ sealed class ServerMessage<out J>
  * @param newState new component's state
  * @param J implementation specific json type
  */
-data class NotifyComponentSnapshot<out J>(
+public data class NotifyComponentSnapshot<out J>(
     val message: J,
     val oldState: J,
     val newState: J,
@@ -43,6 +43,6 @@ data class NotifyComponentSnapshot<out J>(
  * @param state current component's state
  * @param J implementation specific json type
  */
-data class NotifyComponentAttached<out J>(
+public data class NotifyComponentAttached<out J>(
     val state: J,
 ) : ServerMessage<J>()

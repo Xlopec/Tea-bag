@@ -27,31 +27,31 @@ import java.util.*
 /**
  * Type alias a for Gson specific [ClientMessage]
  */
-typealias GsonClientMessage = ClientMessage<JsonElement>
+public typealias GsonClientMessage = ClientMessage<JsonElement>
 /**
  * Type alias a for Gson specific [ApplyMessage]
  */
-typealias GsonApplyMessage = ApplyMessage<JsonElement>
+public typealias GsonApplyMessage = ApplyMessage<JsonElement>
 /**
  * Type alias a for Gson specific [ApplyState]
  */
-typealias GsonApplyState = ApplyState<JsonElement>
+public typealias GsonApplyState = ApplyState<JsonElement>
 /**
  * Type alias a for Gson specific [ServerMessage]
  */
-typealias GsonServerMessage = ServerMessage<JsonElement>
+public typealias GsonServerMessage = ServerMessage<JsonElement>
 /**
  * Type alias a for Gson specific [NotifyComponentSnapshot]
  */
-typealias GsonNotifyComponentSnapshot = NotifyComponentSnapshot<JsonElement>
+public typealias GsonNotifyComponentSnapshot = NotifyComponentSnapshot<JsonElement>
 /**
  * Type alias a for Gson specific [NotifyServer]
  */
-typealias GsonNotifyServer = NotifyServer<JsonElement>
+public typealias GsonNotifyServer = NotifyServer<JsonElement>
 /**
  * Type alias a for Gson specific [NotifyComponentAttached]
  */
-typealias GsonNotifyComponentAttached = NotifyComponentAttached<JsonElement>
+public typealias GsonNotifyComponentAttached = NotifyComponentAttached<JsonElement>
 
 /**
  * Configures and creates a new [Gson] instance using supplied lambda with
@@ -64,7 +64,7 @@ typealias GsonNotifyComponentAttached = NotifyComponentAttached<JsonElement>
  * @see TypeAppenderAdapterFactory
  * @param config configuration block
  */
-fun Gson(
+public fun Gson(
     config: GsonBuilder.() -> Unit = {},
 ): Gson =
     GsonBuilder()
