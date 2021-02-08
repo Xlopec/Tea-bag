@@ -26,24 +26,26 @@
 
 package com.max.reader.app.env.storage.network
 
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonElement
-import com.google.gson.JsonPrimitive
-import com.google.gson.JsonSerializationContext
+import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import com.max.reader.app.env.storage.TypeAdapter
 import com.max.reader.domain.Author
 import com.max.reader.domain.Description
 import com.max.reader.domain.Title
 import com.max.reader.domain.tryCreate
-import retrofit2.Retrofit
-import retrofit2.create
-import retrofit2.http.GET
-import retrofit2.http.Query
-import retrofit2.http.QueryMap
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.JsonSerializer
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.http.content.*
+import io.ktor.utils.io.core.*
 import java.lang.reflect.Type
 import java.net.URL
 import java.util.*
+
+private const val API_KEY = "08a7e13902bf4cffab115365071e3850"
 
 val articleAdapters = mapOf(
     String::class to StringAdapter,
@@ -53,33 +55,84 @@ val articleAdapters = mapOf(
     Description::class to DescriptionAdapter
 )
 
-fun NewsApi(retrofit: Retrofit): HasNewsApi = object : HasNewsApi {
-    override val api = retrofit.create<RetrofitNewsApi>()
+private val EverythingUrl = URLBuilder(
+    protocol = URLProtocol.HTTPS,
+    host = "newsapi.org",
+    encodedPath = "/v2/everything"
+).build()
+
+private val TopHeadlinesUrl = URLBuilder(
+    protocol = URLProtocol.HTTPS,
+    host = "newsapi.org",
+    encodedPath = "/v2/top-headlines"
+).build()
+
+fun NewsApi(
+    gson: Gson,
+): NewsApi = object : NewsApi {
+
+    private val httpClient = HttpClient {
+        install(JsonFeature) {
+            serializer = GsonSerializer(gson)
+        }
+    }
+
+    override suspend fun fetchFromEverything(
+        page: Int,
+        pageSize: Int,
+        query: Map<String, String>,
+    ): ArticleResponse =
+        httpClient.get(EverythingUrl) {
+            parameter("apiKey", API_KEY)
+            parameter("page", page)
+            parameter("pageSize", pageSize)
+            query.forEach { (k, v) ->
+                parameter(k, v)
+            }
+        }
+
+    override suspend fun fetchTopHeadlines(
+        countryCode: String,
+        page: Int,
+        pageSize: Int,
+        query: Map<String, String>,
+    ): ArticleResponse =
+        httpClient.get(TopHeadlinesUrl) {
+            parameter("apiKey", API_KEY)
+            parameter("country", countryCode)
+            parameter("page", page)
+            parameter("pageSize", pageSize)
+            query.forEach { (k, v) ->
+                parameter(k, v)
+            }
+        }
 }
 
-interface HasNewsApi {
-    val api: RetrofitNewsApi
+private class GsonSerializer(
+    private val gson: Gson,
+) : JsonSerializer {
+
+    override fun write(data: Any, contentType: ContentType): OutgoingContent =
+        TextContent(gson.toJson(data), contentType)
+
+    override fun read(type: TypeInfo, body: Input): Any =
+        gson.fromJson(body.readText(), type.reifiedType)
 }
 
-interface RetrofitNewsApi {
+interface NewsApi {
 
-    @GET("/v2/everything")
     suspend fun fetchFromEverything(
-        @Query("apiKey") apiKey: String,
-        @Query("page") page: Int,
-        @Query("pageSize") pageSize: Int,
-        @QueryMap query: Map<String, String>
+        page: Int,
+        pageSize: Int,
+        query: Map<String, String>,
     ): ArticleResponse
 
-    @GET("/v2/top-headlines")
     suspend fun fetchTopHeadlines(
-        @Query("apiKey") apiKey: String,
-        @Query("country") countryCode: String,
-        @Query("page") page: Int,
-        @Query("pageSize") pageSize: Int,
-        @QueryMap query: Map<String, String>
+        countryCode: String,
+        page: Int,
+        pageSize: Int,
+        query: Map<String, String>,
     ): ArticleResponse
-
 }
 
 data class ArticleElement(
@@ -94,28 +147,28 @@ data class ArticleElement(
     @SerializedName("url")
     val url: URL,
     @SerializedName("urlToImage")
-    val urlToImage: URL?
+    val urlToImage: URL?,
 )
 
 data class ArticleResponse(
     @SerializedName("totalResults")
     val totalResults: Int,
     @SerializedName("articles")
-    val articles: List<ArticleElement>
+    val articles: List<ArticleElement>,
 )
 
 private object StringAdapter : TypeAdapter<String> {
     override fun serialize(
         src: String,
         typeOfSrc: Type?,
-        context: JsonSerializationContext?
+        context: JsonSerializationContext?,
     ) =
         JsonPrimitive(src)
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext?
+        context: JsonDeserializationContext?,
     ) = json.asString.takeUnless { string -> string.isBlank() || string.isEmpty() }
 }
 
@@ -123,14 +176,14 @@ private object URLAdapter : TypeAdapter<URL> {
     override fun serialize(
         src: URL,
         typeOfSrc: Type?,
-        context: JsonSerializationContext?
+        context: JsonSerializationContext?,
     ) =
         JsonPrimitive(src.toExternalForm())
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext?
+        context: JsonDeserializationContext?,
     ) = URL(json.asString)
 }
 
@@ -138,14 +191,14 @@ private object TitleAdapter : TypeAdapter<Title> {
     override fun serialize(
         src: Title,
         typeOfSrc: Type?,
-        context: JsonSerializationContext?
+        context: JsonSerializationContext?,
     ) =
         JsonPrimitive(src.value)
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext?
+        context: JsonDeserializationContext?,
     ) = Title.tryCreate(json.asString)
 }
 
@@ -153,14 +206,14 @@ private object AuthorAdapter : TypeAdapter<Author> {
     override fun serialize(
         src: Author,
         typeOfSrc: Type?,
-        context: JsonSerializationContext?
+        context: JsonSerializationContext?,
     ) =
         JsonPrimitive(src.value)
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext?
+        context: JsonDeserializationContext?,
     ) = Author.tryCreate(json.asString)
 }
 
@@ -168,13 +221,13 @@ private object DescriptionAdapter : TypeAdapter<Description> {
     override fun serialize(
         src: Description,
         typeOfSrc: Type?,
-        context: JsonSerializationContext?
+        context: JsonSerializationContext?,
     ) =
         JsonPrimitive(src.value)
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext?
+        context: JsonDeserializationContext?,
     ) = Description.tryCreate(json.asString)
 }

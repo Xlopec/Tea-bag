@@ -31,7 +31,6 @@ import com.max.reader.app.env.storage.HasGson
 import com.max.reader.app.env.storage.Storage
 import com.max.reader.app.env.storage.local.HasMongoCollection
 import com.max.reader.app.env.storage.local.MongoCollection
-import com.max.reader.app.env.storage.network.HasNewsApi
 import com.max.reader.app.env.storage.network.NewsApi
 import com.max.reader.app.env.storage.network.articleAdapters
 import com.max.reader.app.resolve.CommandTransport
@@ -46,7 +45,7 @@ interface Environment :
     ArticleDetailsModule<Environment>,
     HasCommandTransport,
     HasAppContext,
-    HasNewsApi,
+    NewsApi,
     HasMongoCollection,
     HasGson,
     Storage<Environment>,
@@ -59,14 +58,13 @@ fun Environment(
 ): Environment {
 
     val gson = buildGson()
-    val retrofit = Retrofit(gson)
 
     return object : Environment,
         AppModule<Environment> by AppModule(),
         ArticlesModule<Environment> by ArticlesModule(),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(),
         HasCommandTransport by CommandTransport(),
-        HasNewsApi by NewsApi(retrofit),
+        NewsApi by NewsApi(gson),
         HasMongoCollection by MongoCollection(application),
         HasGson by Gson(gson),
         HasAppContext by AppContext(application),

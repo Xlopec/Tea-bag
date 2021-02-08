@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import Libraries.Versions
+import Libraries.Versions.ktor
 import Libraries.Versions.compose
 import Libraries.accompaniestCoil
 import Libraries.accompaniestInsets
@@ -147,12 +149,8 @@ dependencies {
 
     implementation(mongoDb)
 
-    implementation(gson)
-    // todo remove
-    implementation(okHttp)
-    implementation(retrofit)
-    implementation(converterGson)
-    implementation(loggingInterceptor)
+    implementation("io.ktor:ktor-client-android:$ktor")
+    implementation("io.ktor:ktor-client-gson:$ktor")
 
     testImplementation(project(":tea-test"))
     testImplementation(coroutinesAndroid)
