@@ -26,9 +26,7 @@ package com.max.reader.app.exception
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.google.gson.JsonObject
 import com.max.reader.app.env.storage.HasGson
-import retrofit2.HttpException
 import java.io.IOException
 
 sealed class AppException : RuntimeException {
@@ -69,7 +67,7 @@ fun <Env> Env.toAppException(th: Throwable): AppException where Env : HasGson =
     th.wrap { raw ->
         when (raw) {
             is IOException -> NetworkException("Network exception occurred, check connectivity", raw)
-            is HttpException -> toAppException(raw)
+          //  is HttpException -> toAppException(raw)
             else -> null
         }
     } ?: InternalException("An internal exception occurred", th)
@@ -78,7 +76,7 @@ private inline fun Throwable.wrap(
     crossinline transform: (Throwable) -> AppException?
 ): AppException? = if (this is AppException) this else transform(this) ?: cause?.let(transform)
 
-private fun <Env> Env.toAppException(
+/*private fun <Env> Env.toAppException(
     httpException: HttpException
 ): AppException where Env : HasGson {
 
@@ -91,4 +89,4 @@ private fun <Env> Env.toAppException(
         ?.asString
 
     return NetworkException(message ?: "Server returned: ${httpException.message()}", httpException)
-}
+}*/
