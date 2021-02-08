@@ -21,13 +21,14 @@ package com.max.reader.screens.home
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.vectorResource
-import com.max.reader.R
 import com.max.reader.app.*
 import com.max.reader.screens.article.list.ArticlesState
 import com.max.reader.screens.article.list.Query
@@ -110,7 +111,7 @@ fun BottomBar(
 
         BottomNavigationItem(icon = {
             Icon(
-                imageVector = vectorResource(id = R.drawable.ic_language_white_24dp),
+                imageVector = Outlined.Language,
                 contentDescription = "Feed"
             )
         },
@@ -120,7 +121,7 @@ fun BottomBar(
 
         BottomNavigationItem(icon = {
             Icon(
-                imageVector = vectorResource(id = R.drawable.ic_favorite_border_white_24dp),
+                imageVector = Outlined.FavoriteBorder,
                 contentDescription = "Favorite"
             )
         },
@@ -130,7 +131,7 @@ fun BottomBar(
 
         BottomNavigationItem(icon = {
             Icon(
-                imageVector = Icons.Filled.TrendingUp,
+                imageVector = Filled.TrendingUp,
                 contentDescription = "Trending"
             )
         },
@@ -140,7 +141,7 @@ fun BottomBar(
 
         BottomNavigationItem(icon = {
             Icon(
-                imageVector = Icons.Filled.Settings,
+                imageVector = Filled.Settings,
                 contentDescription = "Settings"
             )
         },
