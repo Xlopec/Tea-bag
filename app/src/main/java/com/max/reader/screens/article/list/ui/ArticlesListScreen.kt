@@ -25,6 +25,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.ButtonDefaults.textButtonColors
@@ -41,7 +42,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.AmbientAnimationClock
+import androidx.compose.ui.node.Ref
+import androidx.compose.ui.platform.LocalAnimationClock
+import androidx.compose.ui.text.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -318,7 +321,7 @@ private fun ArticleImage(
         modifier = Modifier
             .preferredHeight(200.dp)
             .fillMaxWidth(),
-        shape = RoundedCornerShape(topLeft = 8.dp, topRight = 8.dp),
+        shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
         color = colors.onSurface.copy(alpha = 0.2f)
     ) {
 
@@ -484,15 +487,23 @@ private fun ArticleSearchHeader(
         shape = RoundedCornerShape(8.dp)
     ) {
 
+        val controllerRef = remember<Ref<SoftwareKeyboardController>> { Ref() }
+
         TextField(
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text(text = query.type.toSearchHint(), style = typography.subtitle2) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             value = query.input,
             maxLines = 1,
-            onImeActionPerformed = { _, ctrl ->
-                onMessage(LoadArticlesFromScratch(id)); ctrl?.hideSoftwareKeyboard()
+            onTextInputStarted = { controller ->
+                controllerRef.value = controller
             },
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    onMessage(LoadArticlesFromScratch(id))
+                    controllerRef.value?.hideSoftwareKeyboard()
+                }
+            ),
             backgroundColor = colors.surface,
             textStyle = typography.subtitle2,
             trailingIcon = {
@@ -517,7 +528,7 @@ private fun listState(
     initialFirstVisibleItemScrollOffset: Int = 0,
     interactionState: InteractionState? = null,
 ): LazyListState {
-    val clock = AmbientAnimationClock.current.asDisposableClock()
+    val clock = LocalAnimationClock.current.asDisposableClock()
     val config = defaultFlingConfig()
     val idToListState = remember { mutableMapOf<ScreenId, LazyListState>() }
 

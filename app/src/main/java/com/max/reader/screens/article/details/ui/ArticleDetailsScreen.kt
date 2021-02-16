@@ -39,7 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import com.max.reader.app.Message
@@ -55,7 +55,7 @@ fun ArticleDetailsScreen(
     onMessage: (Message) -> Unit,
 ) {
 
-    val context = AmbientContext.current
+    val context = LocalContext.current
 
     val view = remember {
         AppWebView(context)
