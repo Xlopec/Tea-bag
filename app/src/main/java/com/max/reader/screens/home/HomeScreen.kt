@@ -65,7 +65,7 @@ fun HomeScreen(
                     item = state.query.toMenuItem(),
                     onMessage = onMessage
                 )
-            }, bodyContent = { innerPadding ->
+            }, content = { innerPadding ->
                 ArticlesScreen(Modifier.padding(innerPadding), state, onMessage)
             })
     }
@@ -92,7 +92,7 @@ fun HomeScreen(
                 item = Settings,
                 onMessage = onMessage
             )
-        }, bodyContent = { innerPadding ->
+        }, content = { innerPadding ->
             SettingsScreen(
                 innerPadding = innerPadding,
                 state = state,

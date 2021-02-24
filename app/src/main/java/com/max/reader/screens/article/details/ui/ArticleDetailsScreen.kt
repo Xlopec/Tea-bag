@@ -73,7 +73,7 @@ fun ArticleDetailsScreen(
                         onMessage(Pop)
                     }
                 })
-        }, bodyContent = { innerPadding ->
+        }, content = { innerPadding ->
 
             if (canGoBack) {
                 BackHandler {
@@ -82,7 +82,7 @@ fun ArticleDetailsScreen(
             }
             
             AndroidView(
-                viewBlock = { view },
+                factory = { view },
                 modifier = Modifier.padding(innerPadding).fillMaxSize()
             )
         })

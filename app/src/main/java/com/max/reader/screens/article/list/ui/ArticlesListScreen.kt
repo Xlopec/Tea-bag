@@ -18,9 +18,6 @@
 
 package com.max.reader.screens.article.list.ui
 
-import androidx.compose.animation.asDisposableClock
-import androidx.compose.foundation.InteractionState
-import androidx.compose.foundation.animation.defaultFlingConfig
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -40,11 +37,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.node.Ref
-import androidx.compose.ui.platform.LocalAnimationClock
-import androidx.compose.ui.text.SoftwareKeyboardController
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -89,7 +85,9 @@ fun ArticlesScreen(
                 cause = transientState.th,
                 onMessage = onMessage
             )
-            is Loading -> ArticlesLoadingContent(
+            is LoadingNext,
+            is Loading,
+            -> ArticlesLoadingContent(
                 state = listState,
                 id = state.id,
                 query = state.query,
@@ -149,7 +147,7 @@ private fun ArticlesLoadingContent(
             )
 
             item {
-                Spacer(modifier = Modifier.preferredHeight(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 ArticlesProgress(modifier = Modifier.fillMaxWidth())
             }
         }
@@ -229,7 +227,7 @@ private fun ArticlesContent(
                 onMessage = onMessage
             )
 
-            Spacer(modifier = Modifier.preferredHeight(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         children()
@@ -275,7 +273,7 @@ private fun LazyListScope.ArticlesContentNonEmptyImpl(
             style = typography.subtitle1
         )
 
-        Spacer(modifier = Modifier.preferredHeight(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
     }
 
     itemsIndexed(articles) { index, article ->
@@ -287,13 +285,13 @@ private fun LazyListScope.ArticlesContentNonEmptyImpl(
             )
 
             if (index != articles.lastIndex) {
-                Spacer(modifier = Modifier.preferredHeight(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             if (index == articles.lastIndex) {
                 DisposableEffect(Unit) {
                     onLastElement()
-                    onDispose {  }
+                    onDispose { }
                 }
             }
         }
@@ -319,7 +317,7 @@ private fun ArticleImage(
 ) {
     Surface(
         modifier = Modifier
-            .preferredHeight(200.dp)
+            .height(200.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
         color = colors.onSurface.copy(alpha = 0.2f)
@@ -474,6 +472,7 @@ private fun Message(
 }
 
 @Composable
+@OptIn(ExperimentalComposeUiApi::class)
 private fun ArticleSearchHeader(
     modifier: Modifier = Modifier,
     id: ScreenId,
@@ -487,28 +486,28 @@ private fun ArticleSearchHeader(
         shape = RoundedCornerShape(8.dp)
     ) {
 
-        val controllerRef = remember<Ref<SoftwareKeyboardController>> { Ref() }
+        val keyboardController = LocalSoftwareKeyboardController.current
 
         TextField(
+            value = query.input,
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text(text = query.type.toSearchHint(), style = typography.subtitle2) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            value = query.input,
             maxLines = 1,
-            onTextInputStarted = { controller ->
-                controllerRef.value = controller
-            },
             keyboardActions = KeyboardActions(
                 onSearch = {
+                    keyboardController?.hideSoftwareKeyboard()
                     onMessage(LoadArticlesFromScratch(id))
-                    controllerRef.value?.hideSoftwareKeyboard()
                 }
             ),
-            backgroundColor = colors.surface,
+            colors = TextFieldDefaults.textFieldColors(backgroundColor = colors.surface),
             textStyle = typography.subtitle2,
             trailingIcon = {
                 IconButton(
-                    onClick = { onMessage(LoadArticlesFromScratch(id)) }
+                    onClick = {
+                        keyboardController?.hideSoftwareKeyboard()
+                        onMessage(LoadArticlesFromScratch(id))
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Search,
@@ -526,10 +525,8 @@ private fun listState(
     id: ScreenId,
     initialFirstVisibleItemIndex: Int = 0,
     initialFirstVisibleItemScrollOffset: Int = 0,
-    interactionState: InteractionState? = null,
 ): LazyListState {
-    val clock = LocalAnimationClock.current.asDisposableClock()
-    val config = defaultFlingConfig()
+
     val idToListState = remember { mutableMapOf<ScreenId, LazyListState>() }
 
     return remember(id) {
@@ -537,9 +534,6 @@ private fun listState(
             LazyListState(
                 initialFirstVisibleItemIndex,
                 initialFirstVisibleItemScrollOffset,
-                interactionState,
-                config,
-                clock
             )
         }
     }

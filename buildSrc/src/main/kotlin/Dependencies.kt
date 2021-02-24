@@ -40,8 +40,8 @@ object Libraries {
     object Versions {
         const val coroutines = "1.4.2"
         const val ktor = "1.5.1"
-        const val compose = "1.0.0-alpha12"
-        const val accompanies = "0.5.1"
+        const val compose = "1.0.0-beta01"
+        const val accompanies = "0.6.0"
     }
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
