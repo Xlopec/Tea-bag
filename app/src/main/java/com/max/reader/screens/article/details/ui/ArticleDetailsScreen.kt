@@ -23,6 +23,7 @@ import android.content.Context
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,21 +31,19 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Default
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import com.max.reader.app.Message
 import com.max.reader.app.Pop
-import com.max.reader.domain.Article
 import com.max.reader.screens.article.details.ArticleDetailsState
 import com.max.reader.screens.article.details.OpenInBrowser
 import com.max.reader.ui.InsetAwareTopAppBar
@@ -54,74 +53,89 @@ fun ArticleDetailsScreen(
     screen: ArticleDetailsState,
     onMessage: (Message) -> Unit,
 ) {
-
+    val (canGoBack, updater) = remember(screen.id) { mutableStateOf(false) }
     val context = LocalContext.current
-
-    val view = remember {
-        AppWebView(context)
+    val view = remember(screen.id) {
+        AppWebView(context, updater)
+            .apply { loadUrl(screen.article.url.toExternalForm()) }
     }
-    // TODO implement back navigation inside web view
+
     Scaffold(
         topBar = {
-
-            InsetAwareTopAppBar(
-                modifier = Modifier.fillMaxWidth(),
-                navigationIcon = {
-                    IconButton(onClick = { onMessage(Pop) }) {
-                        Icon(
-                            contentDescription = "Close",
-                            imageVector = /*if (view.canGoBack()) Icons.Default.ArrowBack else*/ Icons.Default.Close,
-                        )
+            ArticleDetailsToolbar(
+                canGoBack = canGoBack,
+                screen = screen,
+                onOpenInBrowser = { onMessage(OpenInBrowser(screen.id)) },
+                onGoBack = {
+                    if (canGoBack) {
+                        view.goBack()
+                    } else {
+                        onMessage(Pop)
                     }
-
-                },
-                title = {
-                    Text(
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        text = screen.article.title.value
-                    )
-                },
-                actions = {
-                    IconButton(onClick = { onMessage(OpenInBrowser(screen.id)) }) {
-                        Icon(
-                            contentDescription = "Open in Browser",
-                            imageVector = Icons.Default.OpenInBrowser
-                        )
-                    }
-                }
-            )
+                })
         }, bodyContent = { innerPadding ->
-            ArticleDetailsContent(Modifier.padding(innerPadding), screen.article, view)
+
+            if (canGoBack) {
+                BackHandler {
+                    view.goBack()
+                }
+            }
+            
+            AndroidView(
+                viewBlock = { view },
+                modifier = Modifier.padding(innerPadding).fillMaxSize()
+            )
         })
 }
 
 @Composable
-private fun ArticleDetailsContent(
-    modifier: Modifier,
-    article: Article,
-    view: WebView,
+private fun ArticleDetailsToolbar(
+    canGoBack: Boolean,
+    screen: ArticleDetailsState,
+    onOpenInBrowser: () -> Unit,
+    onGoBack: () -> Unit,
 ) {
-    AndroidView(
-        viewBlock = { view },
-        modifier = modifier
-            .fillMaxSize()
-            .onKeyEvent { event ->
-                event.key == Key.Back && view
-                    .canGoBack()
-                    .also { if (it) view.goBack() }
+    InsetAwareTopAppBar(
+        modifier = Modifier.fillMaxWidth(),
+        navigationIcon = {
+            IconButton(onClick = onGoBack) {
+                Icon(
+                    contentDescription = if (canGoBack) "Back" else "Close",
+                    imageVector = if (canGoBack) Default.ArrowBack else Default.Close,
+                )
             }
-    ) { webView ->
-        webView.loadUrl(article.url.toExternalForm())
-    }
+        },
+        title = {
+            Text(
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                text = screen.article.title.value
+            )
+        },
+        actions = {
+            IconButton(onClick = onOpenInBrowser) {
+                Icon(
+                    contentDescription = "Open in Browser",
+                    imageVector = Default.OpenInBrowser
+                )
+            }
+        }
+    )
 }
 
 @SuppressLint("SetJavaScriptEnabled")
 private fun AppWebView(
     context: Context,
+    updater: (Boolean) -> Unit,
 ) = WebView(context).apply {
     settings.javaScriptEnabled = true
     settings.setSupportZoom(true)
     webChromeClient = WebChromeClient()
-    webViewClient = WebViewClient()
+    webViewClient = object : WebViewClient() {
+        override fun doUpdateVisitedHistory(view: WebView, url: String?, isReload: Boolean) {
+            if (!isReload) {
+                updater(view.canGoBack())
+            }
+        }
+    }
 }

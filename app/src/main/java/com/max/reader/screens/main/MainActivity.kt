@@ -18,6 +18,7 @@ package com.max.reader.screens.main
 
 import android.os.Bundle
 import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
@@ -66,10 +67,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         super.onDestroy()
     }
 
-    override fun onBackPressed() {
-        appMessages.offer(Pop)
-    }
-
 }
 
 @Composable
@@ -79,6 +76,11 @@ private fun AppState.render(
     AppTheme(
         isDarkModeEnabled = isDarkModeEnabled
     ) {
+
+        BackHandler {
+            onMessage(Pop)
+        }
+
         when (val screen = screen) {
             is ArticlesState -> HomeScreen(screen, onMessage)
             is SettingsState -> HomeScreen(this, onMessage)
