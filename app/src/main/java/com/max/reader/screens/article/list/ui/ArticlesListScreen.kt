@@ -127,18 +127,21 @@ private fun ArticlesLoadingContent(
     articles: List<Article>,
     onMessage: (Message) -> Unit,
 ) {
-    ArticlesContent(
-        state = state,
-        id = id,
-        query = query,
-        onMessage = onMessage
-    ) {
-
-        if (articles.isEmpty()) {
-            item {
-                ArticlesProgress(modifier = Modifier.fillParentMaxSize())
-            }
-        } else {
+    if (articles.isEmpty()) {
+        ArticlesContent(
+            id = id,
+            query = query,
+            onMessage = onMessage
+        ) {
+            ArticlesProgress(modifier = Modifier.fillMaxSize())
+        }
+    } else {
+        ArticlesContent(
+            state = state,
+            id = id,
+            query = query,
+            onMessage = onMessage
+        ) {
             ArticlesContentNonEmptyImpl(
                 id = id,
                 query = query,
@@ -151,7 +154,6 @@ private fun ArticlesLoadingContent(
                 ArticlesProgress(modifier = Modifier.fillMaxWidth())
             }
         }
-
     }
 }
 
@@ -164,19 +166,18 @@ private fun ArticlesExceptionContent(
     cause: Throwable,
     onMessage: (Message) -> Unit,
 ) {
-    ArticlesContent(state, id, query, onMessage) {
-
-        if (articles.isEmpty()) {
-            item {
-                ArticlesError(
-                    modifier = Modifier.fillParentMaxSize(),
-                    id = id,
-                    message = cause.toReadableMessage(),
-                    onMessage = onMessage
-                )
-            }
-        } else {
-            ArticlesContentNonEmptyImpl(id, query, articles, onMessage) {}
+    if (articles.isEmpty()) {
+        ArticlesContent(id, query, onMessage) {
+            ArticlesError(
+                modifier = Modifier.fillMaxSize(),
+                id = id,
+                message = cause.toReadableMessage(),
+                onMessage = onMessage
+            )
+        }
+    } else {
+        ArticlesContent(state, id, query, onMessage) {
+            ArticlesContentNonEmptyImpl(id, query, articles, onMessage)
 
             item {
                 ArticlesError(
@@ -187,6 +188,7 @@ private fun ArticlesExceptionContent(
                 )
             }
         }
+
     }
 }
 
@@ -199,9 +201,43 @@ private fun ArticlesPreviewContent(
     onMessage: (Message) -> Unit,
 ) {
     if (articles.isEmpty()) {
-        ArticlesContentEmpty(state, id, query, onMessage)
+        ArticlesContent(id, query, onMessage) {
+            Message(
+                modifier = Modifier.fillMaxSize(),
+                message = "No articles",
+                actionText = "Reload",
+                onClick = {
+                    onMessage(LoadArticlesFromScratch(id))
+                }
+            )
+        }
     } else {
-        ArticlesContentNonEmpty(state, id, query, articles, onMessage)
+        ArticlesContent(state, id, query, onMessage) {
+            ArticlesContentNonEmptyImpl(id, query, articles, onMessage)
+        }
+    }
+}
+
+@Composable
+private fun ArticlesContent(
+    id: ScreenId,
+    query: Query,
+    onMessage: (Message) -> Unit,
+    children: @Composable () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ArticleSearchHeader(
+            id = id,
+            query = query,
+            onMessage = onMessage
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        children()
     }
 }
 
@@ -231,28 +267,6 @@ private fun ArticlesContent(
         }
 
         children()
-    }
-}
-
-@Composable
-private fun ArticlesContentEmpty(
-    state: LazyListState,
-    id: ScreenId,
-    query: Query,
-    onMessage: (Message) -> Unit,
-) {
-    ArticlesContent(state, id, query, onMessage) {
-
-        item {
-            Message(
-                modifier = Modifier.fillParentMaxSize(),
-                message = "No articles",
-                actionText = "Reload",
-                onClick = {
-                    onMessage(LoadArticlesFromScratch(id))
-                }
-            )
-        }
     }
 }
 
@@ -295,19 +309,6 @@ private fun LazyListScope.ArticlesContentNonEmptyImpl(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun ArticlesContentNonEmpty(
-    state: LazyListState,
-    id: ScreenId,
-    query: Query,
-    articles: List<Article>,
-    onMessage: (Message) -> Unit,
-) {
-    ArticlesContent(state, id, query, onMessage) {
-        ArticlesContentNonEmptyImpl(id, query, articles, onMessage)
     }
 }
 
