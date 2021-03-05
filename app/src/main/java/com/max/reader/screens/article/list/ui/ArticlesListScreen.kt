@@ -276,7 +276,7 @@ private fun LazyListScope.ArticlesContentNonEmptyImpl(
         Spacer(modifier = Modifier.height(16.dp))
     }
 
-    itemsIndexed(articles) { index, article ->
+    itemsIndexed(articles, { _, item -> item.url }) { index, article ->
         Column {
             ArticleItem(
                 screenId = id,
