@@ -115,7 +115,9 @@ private fun ArticlesProgress(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(
+            color = colors.secondaryVariant
+        )
     }
 }
 

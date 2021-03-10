@@ -46,17 +46,19 @@ import com.max.reader.app.Message
 import com.max.reader.app.Pop
 import com.max.reader.screens.article.details.ArticleDetailsState
 import com.max.reader.screens.article.details.OpenInBrowser
-import com.max.reader.ui.InsetAwareTopAppBar
+import com.max.reader.ui.ProgressInsetAwareTopAppBar
 
 @Composable
 fun ArticleDetailsScreen(
     screen: ArticleDetailsState,
     onMessage: (Message) -> Unit,
 ) {
-    val (canGoBack, updater) = remember(screen.id) { mutableStateOf(false) }
+    val (canGoBack, backStackUpdater) = remember(screen.id) { mutableStateOf(false) }
+    val (progress, loadProgressUpdater) = remember(screen.id) { mutableStateOf(0) }
+    val (title, titleUpdater) = remember(screen.id) { mutableStateOf(screen.article.title.value) }
     val context = LocalContext.current
     val view = remember(screen.id) {
-        AppWebView(context, updater)
+        AppWebView(context, titleUpdater, loadProgressUpdater, backStackUpdater)
             .apply { loadUrl(screen.article.url.toExternalForm()) }
     }
 
@@ -64,7 +66,8 @@ fun ArticleDetailsScreen(
         topBar = {
             ArticleDetailsToolbar(
                 canGoBack = canGoBack,
-                screen = screen,
+                loadProgress = progress,
+                title = title,
                 onOpenInBrowser = { onMessage(OpenInBrowser(screen.id)) },
                 onGoBack = {
                     if (canGoBack) {
@@ -80,10 +83,12 @@ fun ArticleDetailsScreen(
                     view.goBack()
                 }
             }
-            
+
             AndroidView(
                 factory = { view },
-                modifier = Modifier.padding(innerPadding).fillMaxSize()
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
             )
         })
 }
@@ -91,11 +96,13 @@ fun ArticleDetailsScreen(
 @Composable
 private fun ArticleDetailsToolbar(
     canGoBack: Boolean,
-    screen: ArticleDetailsState,
+    title: String,
+    loadProgress: Int,
     onOpenInBrowser: () -> Unit,
     onGoBack: () -> Unit,
 ) {
-    InsetAwareTopAppBar(
+    ProgressInsetAwareTopAppBar(
+        progress = loadProgress,
         modifier = Modifier.fillMaxWidth(),
         navigationIcon = {
             IconButton(onClick = onGoBack) {
@@ -109,7 +116,7 @@ private fun ArticleDetailsToolbar(
             Text(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                text = screen.article.title.value
+                text = title
             )
         },
         actions = {
@@ -126,15 +133,23 @@ private fun ArticleDetailsToolbar(
 @SuppressLint("SetJavaScriptEnabled")
 private fun AppWebView(
     context: Context,
-    updater: (Boolean) -> Unit,
+    titleUpdater: (String) -> Unit,
+    progressUpdater: (Int) -> Unit,
+    backStackUpdater: (Boolean) -> Unit,
 ) = WebView(context).apply {
     settings.javaScriptEnabled = true
     settings.setSupportZoom(true)
-    webChromeClient = WebChromeClient()
+    webChromeClient = object : WebChromeClient() {
+        override fun onReceivedTitle(view: WebView, title: String) =
+            titleUpdater(title)
+
+        override fun onProgressChanged(view: WebView, newProgress: Int) =
+            progressUpdater(newProgress)
+    }
     webViewClient = object : WebViewClient() {
         override fun doUpdateVisitedHistory(view: WebView, url: String?, isReload: Boolean) {
             if (!isReload) {
-                updater(view.canGoBack())
+                backStackUpdater(view.canGoBack())
             }
         }
     }

@@ -16,7 +16,9 @@
 
 package com.max.reader.ui
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -33,7 +35,7 @@ fun InsetAwareTopAppBar(
     actions: @Composable RowScope.() -> Unit = {},
     backgroundColor: Color = MaterialTheme.colors.primarySurface,
     contentColor: Color = contentColorFor(backgroundColor),
-    elevation: Dp = 4.dp
+    elevation: Dp = 4.dp,
 ) {
     Surface(
         color = backgroundColor,
@@ -49,5 +51,50 @@ fun InsetAwareTopAppBar(
             elevation = 0.dp,
             modifier = Modifier.statusBarsPadding()
         )
+    }
+}
+
+@Composable
+fun ProgressInsetAwareTopAppBar(
+    progress: Int,
+    title: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    navigationIcon: @Composable (() -> Unit)? = null,
+    actions: @Composable RowScope.() -> Unit = {},
+    backgroundColor: Color = MaterialTheme.colors.primarySurface,
+    contentColor: Color = contentColorFor(backgroundColor),
+    elevation: Dp = 4.dp,
+) {
+    require(progress in 0..100) { "Progress is out of range 0-100" }
+
+    Surface(
+        color = backgroundColor,
+        elevation = elevation,
+        modifier = modifier
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            TopAppBar(
+                title = title,
+                navigationIcon = navigationIcon,
+                actions = actions,
+                backgroundColor = Color.Transparent,
+                contentColor = contentColor,
+                elevation = 0.dp,
+                modifier = Modifier.statusBarsPadding()
+            )
+
+            if (progress == 0) {
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colors.onPrimary
+                )
+            } else if (progress < 100) {
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(),
+                    progress = progress.toFloat() / 100f,
+                    color = MaterialTheme.colors.onPrimary
+                )
+            }
+        }
     }
 }
