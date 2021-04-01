@@ -17,18 +17,23 @@
 package com.max.reader.ui
 
 import androidx.annotation.FloatRange
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.preferredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.onCommit
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
-import androidx.compose.ui.platform.AmbientDensity
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 
 private val RefreshDistance = 80.dp
@@ -42,7 +47,7 @@ fun RefreshIndicator(
     Surface(elevation = 10.dp, shape = CircleShape) {
 
         val modifier = Modifier
-            .preferredSize(36.dp)
+            .size(36.dp)
             .padding(8.dp)
 
         val color = MaterialTheme.colors.onSurface
@@ -73,7 +78,7 @@ fun SwipeToRefreshLayout(
     },
     content: @Composable () -> Unit,
 ) {
-    val refreshDistance = with(AmbientDensity.current) { RefreshDistance.toPx() }
+    val refreshDistance = with(LocalDensity.current) { RefreshDistance.toPx() }
     val state = rememberSwipeableState(refreshingState) { newValue ->
         // compare both copies of the swipe state before calling onRefresh(). This is a workaround.
         if (newValue && !refreshingState) onRefresh()
@@ -81,7 +86,9 @@ fun SwipeToRefreshLayout(
     }
 
     Box(
-        modifier = Modifier.swipeable(
+        modifier = Modifier
+            .nestedScroll(state.PreUpPostDownNestedScrollConnection)
+            .swipeable(
             enabled = enabled,
             state = state,
             anchors = mapOf(
@@ -98,7 +105,7 @@ fun SwipeToRefreshLayout(
                 .align(Alignment.TopCenter)
                 .offset(y = state.offset.value
                     .takeUnless(Float::isNaN)
-                    ?.let { with(AmbientDensity.current) { it.toDp() } } ?: 0.dp)
+                    ?.let { with(LocalDensity.current) { it.toDp() } } ?: 0.dp)
         ) {
             if (!state.offset.value.isNaN() && state.offset.value != -refreshDistance) {
                 refreshIndicator(refreshingState,
@@ -109,8 +116,58 @@ fun SwipeToRefreshLayout(
         // TODO (https://issuetracker.google.com/issues/164113834): This state->event trampoline is a
         //  workaround for a bug in the SwipableState API. Currently, state.value is a duplicated
         //  source of truth of refreshingState.
-        onCommit(refreshingState) {
-            state.animateTo(refreshingState)
-        }
+        LaunchedEffect(refreshingState) { state.animateTo(refreshingState) }
     }
 }
+
+/**
+ * Temporary workaround for nested scrolling behavior. There is no default implementation for
+ * pull to refresh yet, this nested scroll connection mimics the behavior.
+ */
+@ExperimentalMaterialApi
+private val <T> SwipeableState<T>.PreUpPostDownNestedScrollConnection: NestedScrollConnection
+    get() = object : NestedScrollConnection {
+        override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+            val delta = available.toFloat()
+            return if (delta < 0 && source == NestedScrollSource.Drag) {
+                performDrag(delta).toOffset()
+            } else {
+                Offset.Zero
+            }
+        }
+
+        override fun onPostScroll(
+            consumed: Offset,
+            available: Offset,
+            source: NestedScrollSource
+        ): Offset {
+            return if (source == NestedScrollSource.Drag) {
+                performDrag(available.toFloat()).toOffset()
+            } else {
+                Offset.Zero
+            }
+        }
+
+        override suspend fun onPreFling(available: Velocity): Velocity {
+            val toFling = Offset(available.x, available.y).toFloat()
+            return if (toFling < 0) {
+                performFling(velocity = toFling)
+                // since we go to the anchor with tween settling, consume all for the best UX
+                available
+            } else {
+                Velocity.Zero
+            }
+        }
+
+        override suspend fun onPostFling(
+            consumed: Velocity,
+            available: Velocity
+        ): Velocity {
+            performFling(velocity = Offset(available.x, available.y).toFloat())
+            return Velocity.Zero
+        }
+
+        private fun Float.toOffset(): Offset = Offset(0f, this)
+
+        private fun Offset.toFloat(): Float = this.y
+    }

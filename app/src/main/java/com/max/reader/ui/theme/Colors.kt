@@ -18,7 +18,7 @@ package com.max.reader.ui.theme
 
 import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
-
+// todo fix colors, should be [darkColors]
 val AppDarkThemeColors = lightColors(
     primary = Color(0xFF263238),
     primaryVariant = Color(0xFF1B272C),

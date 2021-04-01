@@ -41,13 +41,20 @@ data class ArticlesState(
 ) : ScreenState() {
 
     sealed class TransientState {
-        data class Exception(val th: Throwable) : TransientState()
+        data class Exception(
+            val th: Throwable,
+        ) : TransientState()
+
+
         object Loading : TransientState()
+        object LoadingNext : TransientState()
         object Refreshing : TransientState()
         object Preview : TransientState()
     }
 
     val isLoading = transientState === Loading
+
+    val isLoadingNext = transientState === LoadingNext
 
     val isRefreshing = transientState === Refreshing
 
@@ -61,13 +68,16 @@ data class ArticlesState(
             id: ScreenId,
             query: Query,
             articles: List<Article> = emptyList(),
-        ) = ArticlesState(id, query, articles, false, Loading)
+        ) = ArticlesState(id, query, articles, false, LoadingNext)
     }
 
 }
 
 // todo replace with immutable collection
 fun ArticlesState.toLoadingNext() =
+    copy(transientState = LoadingNext)
+
+fun ArticlesState.toLoading() =
     copy(transientState = Loading)
 
 fun ArticlesState.toRefreshing() =
@@ -78,14 +88,14 @@ fun ArticlesState.toPreview(
     hasMore: Boolean,
 ): ArticlesState =
     when (transientState) {
-        Loading, is Exception -> {
+        LoadingNext, is Exception -> {
             copy(
                 articles = articles + append,
                 transientState = Preview,
                 hasMoreArticles = hasMore
             )
         }
-        Refreshing -> copy(
+        Loading, Refreshing -> copy(
             articles = append,
             transientState = Preview,
             hasMoreArticles = hasMore

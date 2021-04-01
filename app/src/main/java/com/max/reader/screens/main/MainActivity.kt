@@ -18,11 +18,12 @@ package com.max.reader.screens.main
 
 import android.os.Bundle
 import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.setContent
 import androidx.core.view.WindowCompat
 import com.max.reader.R
 import com.max.reader.app.*
@@ -42,12 +43,12 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_NewsReader)
         super.onCreate(savedInstanceState)
-
+        // todo migrate at some point in the future
+        @Suppress("DEPRECATION")
         window.setFlags(FLAG_TRANSLUCENT_STATUS, FLAG_TRANSLUCENT_STATUS)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-
             val stateFlow = remember { appComponent(appMessages.asFlow()) }
             val state = stateFlow.collectAsState(context = Dispatchers.Main, initial = null)
 
@@ -66,10 +67,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         super.onDestroy()
     }
 
-    override fun onBackPressed() {
-        appMessages.offer(Pop)
-    }
-
 }
 
 @Composable
@@ -79,6 +76,11 @@ private fun AppState.render(
     AppTheme(
         isDarkModeEnabled = isDarkModeEnabled
     ) {
+
+        BackHandler {
+            onMessage(Pop)
+        }
+
         when (val screen = screen) {
             is ArticlesState -> HomeScreen(screen, onMessage)
             is SettingsState -> HomeScreen(this, onMessage)
