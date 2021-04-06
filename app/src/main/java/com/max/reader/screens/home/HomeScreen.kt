@@ -39,7 +39,7 @@ import com.max.reader.screens.home.BottomMenuItem.*
 import com.max.reader.screens.settings.SettingsScreen
 import com.max.reader.ui.InsetAwareTopAppBar
 import com.max.reader.ui.SwipeToRefreshLayout
-import dev.chrisbanes.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.navigationBarsPadding
 
 enum class BottomMenuItem {
     Feed,

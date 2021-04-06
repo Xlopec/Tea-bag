@@ -56,8 +56,8 @@ import com.max.reader.screens.article.list.*
 import com.max.reader.screens.article.list.ArticlesState.TransientState.*
 import com.max.reader.screens.article.list.QueryType.*
 import com.max.reader.ui.theme.ThemedPreview
-import dev.chrisbanes.accompanist.coil.CoilImage
-import dev.chrisbanes.accompanist.insets.statusBarsPadding
+import com.google.accompanist.coil.CoilImage
+import com.google.accompanist.insets.statusBarsPadding
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
