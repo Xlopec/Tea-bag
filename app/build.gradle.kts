@@ -114,7 +114,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime:$compose")
     implementation("androidx.compose.animation:animation:$compose")
     implementation("androidx.compose.compiler:compiler:$compose")
-    implementation("androidx.activity:activity-compose:1.3.0-alpha05")
+    implementation("androidx.activity:activity-compose:1.3.0-alpha07")
 
     implementation("com.google.accompanist:accompanist-insets:$accompanies")
     implementation("com.google.accompanist:accompanist-coil:$accompanies")

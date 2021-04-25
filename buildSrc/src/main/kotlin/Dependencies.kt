@@ -24,7 +24,7 @@ const val kotlinVersion = "1.4.32"
 object BuildPlugins {
 
     object Versions {
-        const val buildToolsVersion = "7.0.0-alpha13"
+        const val buildToolsVersion = "7.0.0-alpha14"
         const val detektVersion = "1.15.0"
         const val dokkaVersion = "1.4.20"
         const val bintrayVersion = "1.8.4"
@@ -40,8 +40,8 @@ object Libraries {
     object Versions {
         const val coroutines = "1.4.2"
         const val ktor = "1.5.1"
-        const val compose = "1.0.0-beta03"
-        const val accompanies = "0.7.0"
+        const val compose = "1.0.0-beta05"
+        const val accompanies = "0.8.1"
     }
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"

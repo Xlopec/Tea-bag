@@ -18,6 +18,7 @@
 
 package com.max.reader.screens.article.list.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -44,6 +45,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.insets.statusBarsPadding
 import com.max.reader.app.Message
 import com.max.reader.app.NavigateToArticleDetails
 import com.max.reader.app.ScreenId
@@ -56,8 +59,6 @@ import com.max.reader.screens.article.list.*
 import com.max.reader.screens.article.list.ArticlesState.TransientState.*
 import com.max.reader.screens.article.list.QueryType.*
 import com.max.reader.ui.theme.ThemedPreview
-import com.google.accompanist.coil.CoilImage
-import com.google.accompanist.insets.statusBarsPadding
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
@@ -327,13 +328,14 @@ private fun ArticleImage(
     ) {
 
         if (imageUrl != null) {
-
-            CoilImage(
+            Image(
+                painter = rememberCoilPainter(
+                    request = imageUrl.toExternalForm(),
+                    fadeIn = true,
+                ),
+                contentDescription = "Article's Image",
                 modifier = Modifier.fillMaxWidth(),
-                data = imageUrl.toExternalForm(),
-                fadeIn = true,
                 contentScale = ContentScale.Crop,
-                contentDescription = "Article's Image"
             )
         }
     }
@@ -499,7 +501,7 @@ private fun ArticleSearchHeader(
             maxLines = 1,
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    keyboardController?.hideSoftwareKeyboard()
+                    keyboardController?.hide()
                     onMessage(LoadArticlesFromScratch(id))
                 }
             ),
@@ -508,7 +510,7 @@ private fun ArticleSearchHeader(
             trailingIcon = {
                 IconButton(
                     onClick = {
-                        keyboardController?.hideSoftwareKeyboard()
+                        keyboardController?.hide()
                         onMessage(LoadArticlesFromScratch(id))
                     }
                 ) {
