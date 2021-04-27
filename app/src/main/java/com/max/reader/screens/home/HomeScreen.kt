@@ -29,6 +29,9 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.google.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.max.reader.app.*
 import com.max.reader.screens.article.list.ArticlesState
 import com.max.reader.screens.article.list.Query
@@ -38,8 +41,6 @@ import com.max.reader.screens.article.list.ui.ArticlesScreen
 import com.max.reader.screens.home.BottomMenuItem.*
 import com.max.reader.screens.settings.SettingsScreen
 import com.max.reader.ui.InsetAwareTopAppBar
-import com.max.reader.ui.SwipeToRefreshLayout
-import com.google.accompanist.insets.navigationBarsPadding
 
 enum class BottomMenuItem {
     Feed,
@@ -53,8 +54,9 @@ fun HomeScreen(
     state: ArticlesState,
     onMessage: (Message) -> Unit,
 ) {
-    SwipeToRefreshLayout(
-        refreshingState = state.isRefreshing,
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(state.isRefreshing),
+        swipeEnabled = state.isPreview,
         onRefresh = { onMessage(RefreshArticles(state.id)) },
     ) {
         Scaffold(

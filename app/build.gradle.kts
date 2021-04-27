@@ -118,6 +118,7 @@ dependencies {
 
     implementation("com.google.accompanist:accompanist-insets:$accompanies")
     implementation("com.google.accompanist:accompanist-coil:$accompanies")
+    implementation("com.google.accompanist:accompanist-swiperefresh:$accompanies")
 
     implementation("androidx.appcompat:appcompat:$appcompat")
 
