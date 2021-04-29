@@ -22,17 +22,21 @@ import Libraries.kotlinStdLib
 import TestLibraries.junit
 import TestLibraries.junitRunner
 
+plugins {
+    `java-library`
+    kotlin("jvm")
+}
+
 dependencies {
 
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":tea-core"))
 
     api(kotlinStdLib)
-    api("org.jetbrains.kotlinx:atomicfu:$atomicfu")
+    api(atomicfu)
 
     api(coroutinesCore)
-    api("junit:junit:$junit")
+    api(junit)
     api(coroutinesTest)
-    api("io.kotlintest:kotlintest-runner-junit4:$junitRunner")
+    api(junitRunner)
 
 }

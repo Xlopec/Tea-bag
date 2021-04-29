@@ -15,13 +15,22 @@
  */
 
 repositories {
+    mavenCentral()
+    maven { setUrl("https://plugins.gradle.org/m2/") }
+    google()
+    mavenLocal()
     jcenter()
 }
 
 plugins {
     `kotlin-dsl`
+    `kotlin-dsl-precompiled-script-plugins`
 }
 
-kotlinDslPluginOptions {
-    experimentalWarning.set(false)
+dependencies {
+    implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32")
+    implementation("com.android.tools.build:gradle:7.0.0-alpha15")
+    implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.6.5")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
 }

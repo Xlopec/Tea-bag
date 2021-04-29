@@ -27,19 +27,37 @@ import TestLibraries.ktorServerTests
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PublishTask
 
+plugins {
+    `maven-publish`
+    `java-library`
+    kotlin("jvm")
+    intellij()
+}
+
 intellij {
     version = "2020.3"
     setPlugins("com.intellij.java")
 }
 
 tasks.named<PatchPluginXmlTask>("patchPluginXml") {
-    setVersion(versionName())
+    setVersion(versionName)
 }
 
 tasks.named<PublishTask>("publishPlugin") {
     token(System.getenv("PUBLISH_PLUGIN_TOKEN"))
-    channels(*pluginReleaseChannels())
+    channels(*pluginReleaseChannels)
 }
+
+val copyArtifacts by tasks.registering(Copy::class) {
+    from("$buildDir/libs/", "$buildDir/distributions/")
+    into("${rootProject.buildDir}/artifacts/${project.name}")
+}
+
+val releasePlugin by tasks.creating {
+    dependsOn("publishPlugin", copyArtifacts)
+}
+
+copyArtifacts.dependsOn("publishPlugin")
 
 sourceSets {
     main {
@@ -50,14 +68,14 @@ sourceSets {
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+
     implementation(project(":tea-core"))
     implementation(project(":tea-time-travel-protocol"))
     implementation(project(":tea-time-travel-adapter-gson"))
 
     implementation(kotlinStdLib)
 
-    implementation("ch.qos.logback:logback-classic:$logback")
+    implementation(logback)
     implementation(ktorServerCore)
     implementation(ktorServerNetty)
     implementation(ktorServerWebsockets)

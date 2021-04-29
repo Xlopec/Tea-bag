@@ -17,11 +17,14 @@
 import Libraries.coroutinesCore
 import Libraries.kotlinStdLib
 
+plugins {
+    publishedLibrary()
+}
+
 dependencies {
 
     api(coroutinesCore)
 
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(kotlinStdLib)
 
     testImplementation(project(":tea-test"))

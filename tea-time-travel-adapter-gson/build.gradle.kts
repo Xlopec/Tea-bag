@@ -19,11 +19,14 @@ import Libraries.gson
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
 
+plugins {
+    publishedLibrary()
+}
+
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     api(project(":tea-time-travel-protocol"))
-    api("com.google.code.gson:gson:$gson")
+    api(gson)
 
     implementation(kotlinStdLib)
 

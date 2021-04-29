@@ -1,3 +1,6 @@
+import org.gradle.api.Task
+import org.gradle.api.provider.Provider
+
 /*
  * Copyright (C) 2021. Maksym Oliinyk.
  *
@@ -14,27 +17,4 @@
  * limitations under the License.
  */
 
-import Libraries.kotlinStdLib
-import Libraries.ktorClientOkHttp
-import Libraries.ktorClientWebsockets
-import TestLibraries.ktorMockJvm
-
-plugins {
-    publishedLibrary()
-}
-
-dependencies {
-
-    implementation(project(":tea-core"))
-    api(project(":tea-time-travel-protocol"))
-
-    implementation(kotlinStdLib)
-
-    implementation(ktorClientWebsockets)
-    implementation(ktorClientOkHttp)
-
-    testImplementation(project(":tea-test"))
-    testImplementation(project(":tea-time-travel-adapter-gson"))
-    testImplementation(ktorMockJvm)
-
-}
+fun Provider<out Task>.dependsOn(vararg other: String): Task = get().dependsOn(*other)

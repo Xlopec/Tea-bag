@@ -24,51 +24,51 @@ private val ReleaseCandidateRegexp = Regex("v\\d+\\.\\d+\\.\\d+(-alpha[1-9]\\d*)
 private val ReleaseRegexp = Regex("v\\d+\\.\\d+\\.\\d+")
 
 private sealed class Tag {
+
     object Develop : Tag()
+
     data class Alpha(
-        val value: String
+        val value: String,
     ) : Tag()
 
     data class ReleaseCandidate(
-        val value: String
+        val value: String,
     ) : Tag()
 
     data class Release(
-        val value: String
+        val value: String,
     ) : Tag()
 }
 
-fun isLocalEnv(): Boolean = !isCiEnv()
+val isCiEnv: Boolean
+    get() = System.getenv("CI")?.toBoolean() == true
 
-fun isCiEnv(): Boolean =
-    System.getenv("CI")?.toBoolean() == true
+val bintrayApiKey: String?
+    get() = if (isCiEnv) System.getenv("BINTRAY_API_KEY") else null
 
-fun bintrayApiKey(): String? =
-    if (isCiEnv()) System.getenv("BINTRAY_API_KEY") else null
-
-fun pluginReleaseChannels(): Array<String> =
-    when (tag()) {
+val pluginReleaseChannels: Array<String>
+    get() = when (tag()) {
         Tag.Develop -> arrayOf("dev")
         is Tag.Alpha -> arrayOf("eap")
         is Tag.ReleaseCandidate -> arrayOf("rc")
         is Tag.Release -> emptyArray()
     }
 
-fun commitSha(): String? =
-    System.getenv("GITHUB_SHA")
+val commitSha: String?
+    get() = System.getenv("GITHUB_SHA")
         .takeUnless(CharSequence?::isNullOrEmpty)
 
-fun versionName(): String =
-    when (val tag = tag()) {
-        Tag.Develop -> commitSha()?.let { sha -> "DEV-${sha.take(CommitHashLength)}" } ?: "DEV"
+val versionName: String
+    get() = when (val tag = tag()) {
+        Tag.Develop -> commitSha?.let { sha -> "DEV-${sha.take(CommitHashLength)}" } ?: "DEV"
         is Tag.Alpha -> tag.value
         is Tag.ReleaseCandidate -> tag.value
         is Tag.Release -> tag.value
     }
 
 fun Project.installGitHooks() = afterEvaluate {
-    (projectHooksDir.listFiles { f -> f.extension == "sh" } ?: emptyArray())
-        .forEach { f ->
+    projectHooksDir.listFiles { f -> f.extension == "sh" }
+        ?.forEach { f ->
             val target = File(gitHooksDir, f.nameWithoutExtension)
 
             f.copyTo(target, overwrite = true)

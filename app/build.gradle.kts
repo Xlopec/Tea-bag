@@ -14,14 +14,30 @@
  * limitations under the License.
  */
 
-import Libraries.Versions.accompanies
 import Libraries.Versions.compose
-import Libraries.appcompat
+import Libraries.accompaniestCoil
+import Libraries.accompaniestInsets
+import Libraries.accompaniestSwipeRefresh
+import Libraries.appCompat
+import Libraries.composeActivity
+import Libraries.composeAnimation
+import Libraries.composeCompiler
+import Libraries.composeFoundation
+import Libraries.composeFoundationLayout
+import Libraries.composeMaterial
+import Libraries.composeMaterialIconsExtended
+import Libraries.composeRuntime
+import Libraries.composeUi
+import Libraries.composeUiTooling
+import Libraries.converterGson
 import Libraries.coroutinesAndroid
 import Libraries.gson
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
-import Libraries.stitch
+import Libraries.loggingInterceptor
+import Libraries.mongoDb
+import Libraries.okHttp
+import Libraries.retrofit
 import TestLibraries.espressoCore
 import TestLibraries.espressoRunner
 
@@ -31,12 +47,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 30
 
     defaultConfig {
         applicationId = "com.oliinyk.max.news.reader"
-        minSdkVersion(21)
-        targetSdkVersion(30)
+        minSdk = 21
+        targetSdk = 30
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -94,47 +110,45 @@ android {
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     implementation(project(":tea-core"))
-    implementation(project(":tea-time-travel"))
-    implementation(project(":tea-time-travel-adapter-gson"))
+
+    remoteImplementation(project(":tea-time-travel"))
+    remoteImplementation(project(":tea-time-travel-adapter-gson"))
 
     implementation(kotlinStdLib)
     implementation(immutableCollections)
     implementation(coroutinesAndroid)
 
-    implementation("androidx.compose.ui:ui:$compose")
-    implementation("androidx.compose.foundation:foundation:$compose")
-    implementation("androidx.compose.foundation:foundation-layout:$compose")
-    implementation("androidx.compose.material:material:$compose")
-    implementation("androidx.compose.material:material-icons-core:$compose")
-    implementation("androidx.compose.material:material-icons-extended:$compose")
-    implementation("androidx.compose.ui:ui-tooling:$compose")
-    implementation("androidx.compose.runtime:runtime:$compose")
-    implementation("androidx.compose.animation:animation:$compose")
-    implementation("androidx.compose.compiler:compiler:$compose")
-    implementation("androidx.activity:activity-compose:1.3.0-alpha07")
+    implementation(composeUi)
+    implementation(composeFoundation)
+    implementation(composeFoundationLayout)
+    implementation(composeMaterial)
+    implementation(composeMaterialIconsExtended)
+    implementation(composeUiTooling)
+    implementation(composeRuntime)
+    implementation(composeAnimation)
+    implementation(composeCompiler)
+    implementation(composeActivity)
 
-    implementation("com.google.accompanist:accompanist-insets:$accompanies")
-    implementation("com.google.accompanist:accompanist-coil:$accompanies")
-    implementation("com.google.accompanist:accompanist-swiperefresh:$accompanies")
+    implementation(accompaniestInsets)
+    implementation(accompaniestCoil)
+    implementation(accompaniestSwipeRefresh)
 
-    implementation("androidx.appcompat:appcompat:$appcompat")
+    implementation(appCompat)
 
-    implementation("org.mongodb:stitch-android-sdk:$stitch")
+    implementation(mongoDb)
 
-    implementation("com.google.code.gson:gson:$gson")
+    implementation(gson)
     // todo remove
-    implementation("com.squareup.okhttp3:okhttp:4.8.1")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.8.1")
+    implementation(okHttp)
+    implementation(retrofit)
+    implementation(converterGson)
+    implementation(loggingInterceptor)
 
     testImplementation(project(":tea-test"))
     testImplementation(coroutinesAndroid)
 
-    androidTestImplementation("androidx.test:runner:$espressoRunner")
-    androidTestImplementation("androidx.test.espresso:espresso-core:$espressoCore")
-
+    androidTestImplementation(espressoRunner)
+    androidTestImplementation(espressoCore)
 }

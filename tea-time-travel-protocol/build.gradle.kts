@@ -16,11 +16,13 @@
 
 import Libraries.kotlinStdLib
 
+plugins {
+    publishedLibrary()
+}
+
 dependencies {
 
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(kotlinStdLib)
 
     testImplementation(project(":tea-test"))
 }
-

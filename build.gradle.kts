@@ -14,267 +14,28 @@
  * limitations under the License.
  */
 
-import com.android.build.gradle.internal.tasks.factory.dependsOn
-import com.jfrog.bintray.gradle.BintrayExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.net.URL
-import java.text.SimpleDateFormat
-import java.util.*
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 installGitHooks()
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-buildscript {
+plugins {
+    kotlin("jvm")
+    id("io.gitlab.arturbosch.detekt") version "1.15.0"
+}
 
+allprojects {
     repositories {
         mavenLocal()
         google()
         jcenter()
-        maven { setUrl("https://plugins.gradle.org/m2/") }
     }
 
-    dependencies {
-        classpath(BuildPlugins.kotlinGradlePlugin)
-        classpath(BuildPlugins.androidGradlePlugin)
-        classpath(BuildPlugins.intellijPlugin)
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
-
-plugins {
-    kotlin()
-    detekt()
-    dokka() apply false
-    `maven-publish`
-    bintray() apply false
-}
-
-allprojects {
     apply {
         plugin("io.gitlab.arturbosch.detekt")
-    }
-}
-
-nonAndroidAppProjects()
-    .forEachApplying {
-
-        apply(plugin = "org.jetbrains.kotlin.jvm")
-
-        detekt {
-            toolVersion = BuildPlugins.Versions.detektVersion
-            input = files("src/main/kotlin", "src/main/java")
-            config.setFrom(detektConfig)
-            baseline = detektBaseline
-            autoCorrect = true
-        }
-    }
-
-libraryProjects()
-    .forEachApplying {
-
-        apply(plugin = "maven-publish")
-        apply(plugin = "org.jetbrains.dokka")
-        apply(plugin = "com.jfrog.bintray")
-
-        kotlin {
-            explicitApi()
-        }
-
-        tasks.withType<DokkaTask>().configureEach {
-
-            outputDirectory.set(buildDir.resolve("javadoc"))
-
-            dokkaSourceSets {
-                named("main") {
-                    reportUndocumented.set(true)
-                    displayName.set(project.name)
-                    includeNonPublic.set(false)
-                    skipEmptyPackages.set(true)
-
-                    sourceLink {
-                        localDirectory.set(file("src/main/java"))
-                        remoteUrl.set(
-                            URL(
-                                // fixme make it work for other branches as well
-                                "https://github.com/Xlopec/Tea-bag/tree/master/${project.name}/src/main/java"
-                            )
-                        )
-                    }
-                    externalDocumentationLink(
-                        URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-                    )
-                    externalDocumentationLink(
-                        URL("https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/")
-                    )
-                }
-            }
-        }
-
-        val sourcesJar by tasks.registering(Jar::class) {
-            dependsOn(tasks.classes)
-            archiveClassifier.set("sources")
-            from(sourceSets.main.get().allSource)
-        }
-
-        val javadocJar by tasks.registering(Jar::class) {
-            dependsOn(tasks.named("dokkaJavadoc"))
-            archiveClassifier.set("javadoc")
-            from("$buildDir/javadoc")
-        }
-
-        val copyArtifacts by tasks.registering(Copy::class) {
-            from("$buildDir/libs/")
-            into("${rootProject.buildDir}/artifacts/${this@forEachApplying.name}")
-        }
-
-        tasks
-            .named("bintrayUpload")
-            .dependsOn("publishAllPublicationsToMavenLocalRepository")
-
-        val releaseLibrary by tasks.creating {
-            dependsOn("bintrayUpload", copyArtifacts)
-        }
-
-        copyArtifacts.dependsOn("bintrayUpload")
-
-        publishing {
-
-            publications {
-                create<MavenPublication>(name) {
-                    from(components["java"])
-                    artifact(sourcesJar)
-                    artifact(javadocJar)
-
-                    groupId = "com.github.Xlopec"
-                    artifactId = name
-                    version = versionName()
-                }
-            }
-
-            repositories {
-                mavenLocal()
-            }
-        }
-
-        artifacts {
-            archives(sourcesJar)
-            archives(javadocJar)
-        }
-
-        the<BintrayExtension>().apply {
-
-            user = "xlopec"
-            key = bintrayApiKey()
-            setPublications(name)
-
-            with(pkg) {
-
-                setLicenses("Apache-2.0")
-                repo = "tea-bag"
-                name = this@forEachApplying.name
-                userOrg = "xlopec"
-                vcsUrl = "https://github.com/Xlopec/Tea-bag.git"
-                websiteUrl = "https://github.com/Xlopec/Tea-bag"
-                issueTrackerUrl = "https://github.com/Xlopec/Tea-bag/issues"
-                publicDownloadNumbers = true
-                githubReleaseNotesFile = "README.md"
-
-                with(version) {
-
-                    val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ", Locale.ENGLISH)
-
-                    released = format.format(Date())
-
-                    val versionName = versionName()
-
-                    name = versionName
-                    vcsTag = versionName
-                }
-            }
-        }
-    }
-
-pluginProject().forEachApplying {
-
-    apply(plugin = "org.jetbrains.intellij")
-    apply(plugin = "java")
-
-    val copyArtifacts by tasks.registering(Copy::class) {
-        from("$buildDir/libs/", "$buildDir/distributions/")
-        into("${rootProject.buildDir}/artifacts/${this@forEachApplying.name}")
-    }
-
-    val releasePlugin by tasks.creating {
-        dependsOn("publishPlugin", copyArtifacts)
-    }
-
-    copyArtifacts.dependsOn("publishPlugin")
-
-}
-
-val detektAll by tasks.registering(Detekt::class) {
-    description = "Runs analysis task over whole codebase"
-    debug = false
-    parallel = true
-    ignoreFailures = false
-    disableDefaultRuleSets = false
-    buildUponDefaultConfig = true
-    setSource(files(projectDir))
-    config.setFrom(detektConfig)
-    baseline.set(detektBaseline)
-
-    include("**/*.kt", "**/*.kts")
-    exclude("resources/", "build/", "**/test/java/**")
-
-    reports {
-        xml.enabled = false
-        txt.enabled = false
-        html.enabled = true
-    }
-}
-
-val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) {
-    buildUponDefaultConfig.set(true)
-    ignoreFailures.set(true)
-    parallel.set(true)
-    setSource(files(rootDir))
-    config.setFrom(detektConfig)
-    baseline.set(detektBaseline)
-    include("**/*.kt")
-    include("**/*.kts")
-    exclude("**/resources/**")
-    exclude("**/build/**")
-}
-
-val detektFormat by tasks.registering(Detekt::class) {
-    parallel = true
-    autoCorrect = true
-    buildUponDefaultConfig = true
-    failFast = false
-    ignoreFailures = false
-    setSource(files(projectDir))
-
-    include("**/*.kt")
-    include("**/*.kts")
-    exclude("**/resources/**")
-    exclude("**/build/**")
-
-    config.setFrom(files("$rootDir/detekt/detekt-config.yml"))
-}
-
-val releaseAll by tasks.registering(DefaultTask::class) {
-    setDependsOn((libraryProjects().map { p -> p.releaseTask } + pluginProject().map { p -> p.releaseTask }))
-}
-
-allprojects {
-    repositories {
-        mavenLocal()
-        google()
-        jcenter()
     }
 
     tasks.withType<KotlinCompile>().all {
@@ -283,6 +44,7 @@ allprojects {
             // disables warning about usage of experimental Kotlin features
             @Suppress("SuspiciousCollectionReassignment")
             freeCompilerArgs += listOf(
+                // todo: cleanup after migration to kotlin 1.5
                 "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
                 "-Xuse-experimental=kotlin.Experimental",
                 "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
@@ -296,7 +58,7 @@ allprojects {
         }
     }
 
-    if (isCiEnv()) {
+    if (isCiEnv) {
 
         logger.info("Modifying tests output")
 
@@ -313,14 +75,64 @@ allprojects {
     }
 }
 
+val detektAll by tasks.registering(Detekt::class) {
+    description = "Runs analysis task over whole codebase"
+    debug = false
+    parallel = true
+    ignoreFailures = false
+    disableDefaultRuleSets = false
+    buildUponDefaultConfig = true
+    setSource(files(projectDir))
+    config.setFrom(detektConfig)
+    baseline.set(detektBaseline)
+
+    include("**/*.kt", "**/*.kts")
+    exclude("resources/", "**/build/**", "**/test/java/**")
+
+    reports {
+        xml.enabled = false
+        txt.enabled = false
+        html.enabled = true
+    }
+}
+
+val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) {
+    buildUponDefaultConfig.set(true)
+    ignoreFailures.set(true)
+    parallel.set(true)
+    setSource(files(rootDir))
+    config.setFrom(detektConfig)
+    baseline.set(detektBaseline)
+    include("**/*.kt", "**/*.kts")
+    exclude("**/resources/**", "**/build/**")
+}
+
+val detektFormat by tasks.registering(Detekt::class) {
+    parallel = true
+    autoCorrect = true
+    buildUponDefaultConfig = true
+    failFast = false
+    ignoreFailures = false
+    setSource(files(projectDir))
+
+    include("**/*.kt", "**/*.kts")
+    exclude("**/resources/**", "**/build/**")
+
+    config.setFrom(detektConfig)
+}
+
+val releaseAll by tasks.registering(DefaultTask::class) {
+    group = "release"
+    description = "Runs release tasks for each project"
+
+    setDependsOn(libraryProjects.releaseTasks + pluginProject.releaseTask)
+}
+
 val ciTests by tasks.registering(Test::class) {
     group = "verification"
     description = "Prepares and runs tests relevant for CI build"
 
-    val testTasks = (libraryProjects().map { p -> p.tasks.test.get() }
-            + pluginProject().map { p -> p.tasks.test.get() })
-
-    setDependsOn(testTasks)
+    setDependsOn(libraryProjects.tests + pluginProject.test)
 }
 
 val Project.releaseTask: Task
@@ -328,14 +140,18 @@ val Project.releaseTask: Task
         ?: tasks.findByName("releasePlugin")
         ?: error("Couldn't find release task for project $name")
 
-fun androidAppProject() =
-    subprojects.find { project -> project.name == "app" }!!
+val libraryProjects: Collection<Project>
+    get() = subprojects.filter { project -> project.plugins.hasPlugin("published-library") }
 
-fun nonAndroidAppProjects() =
-    subprojects.filterNot { project -> project.name == "app" }
+val pluginProject: Project
+    get() = subprojects.find { project -> project.plugins.hasPlugin("org.jetbrains.intellij") }
+        ?: error("No plugin project found")
 
-fun libraryProjects() =
-    nonAndroidAppProjects().filterNot { project -> project.name == "tea-time-travel-plugin" || project.name == "tea-test" }
+val Iterable<Project>.releaseTasks: Collection<Task>
+    get() = mapNotNull { project -> project.releaseTask }
 
-fun pluginProject() =
-    subprojects.filter { project -> project.name == "tea-time-travel-plugin" }
+val Iterable<Project>.tests: Collection<Test>
+    get() = mapNotNull { project -> project.test }
+
+val Project.test: Test
+    get() = tasks.test.get() ?: error("No test task found in project $name")
