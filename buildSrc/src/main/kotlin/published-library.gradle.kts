@@ -7,8 +7,6 @@ plugins {
     `maven-publish`
     `java-library`
     kotlin("jvm")
-    // fixme: get rid of bintray
-    id("com.jfrog.bintray")
     id("org.jetbrains.dokka")
 }
 
@@ -35,19 +33,19 @@ val copyArtifacts by tasks.registering(Copy::class) {
     into("${rootProject.buildDir}/artifacts/${project.name}")
 }
 
-val releaseLibrary by tasks.creating {
+val releaseLibrary by tasks.registering {
     group = "release"
     description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
     dependsOn("bintrayUpload", copyArtifacts)
 }
 
-tasks
+//tasks
     // bintray picks artifacts located from maven local repository, so there is a dependency
     // on publishAllPublicationsToMavenLocalRepository task
-    .named("bintrayUpload")
-    .dependsOn("publishAllPublicationsToMavenLocalRepository")
+  //  .named("bintrayUpload")
+  //  .dependsOn("publishAllPublicationsToMavenLocalRepository")
 
-copyArtifacts.dependsOn("bintrayUpload")
+//copyArtifacts.dependsOn("bintrayUpload")
 
 tasks.withType<DokkaTask>().configureEach {
 
@@ -81,55 +79,61 @@ tasks.withType<DokkaTask>().configureEach {
 
 publishing {
     publications {
-        create<MavenPublication>(name) {
+
+        val projectName = name
+
+        create<MavenPublication>(projectName) {
             from(components["java"])
             artifact(sourcesJar)
             artifact(javadocJar)
 
-            groupId = "com.github.Xlopec"
-            artifactId = name
+            groupId = "com.github.xlopec"
+            artifactId = projectName
             version = versionName
+
+            pom {
+                name.set(projectName)
+                description.set("TEA Bag is simple implementation of TEA written in Kotlin. " +
+                        "${projectName.capitalize()} is part of this project")
+                url.set("https://github.com/Xlopec/Tea-bag.git")
+
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("xlopec")
+                        name.set("Maksym Oliinyk")
+                        url.set("https://github.com/Xlopec")
+                    }
+                }
+
+                scm {
+                    connection.set("scm:git:git@github.com:Xlopec/Tea-bag.git")
+                    url.set("https://github.com/Xlopec/Tea-bag/tree/master")
+                }
+            }
         }
     }
 
     repositories {
         mavenLocal()
+        maven {
+            name = "OSSRH"
+            setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = ossrhUser
+                password = ossrhPassword
+            }
+        }
     }
 }
 
 artifacts {
     archives(sourcesJar)
     archives(javadocJar)
-}
-
-bintray {
-
-    user = "xlopec"
-    key = bintrayApiKey
-    setPublications(name)
-
-    with(pkg) {
-
-        setLicenses("Apache-2.0")
-        repo = "tea-bag"
-        name = project.name
-        userOrg = "xlopec"
-        vcsUrl = "https://github.com/Xlopec/Tea-bag.git"
-        websiteUrl = "https://github.com/Xlopec/Tea-bag"
-        issueTrackerUrl = "https://github.com/Xlopec/Tea-bag/issues"
-        publicDownloadNumbers = true
-        githubReleaseNotesFile = "README.md"
-
-        with(version) {
-
-            val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ", Locale.ENGLISH)
-
-            released = format.format(Date())
-
-            val versionName = versionName
-
-            name = versionName
-            vcsTag = versionName
-        }
-    }
 }
