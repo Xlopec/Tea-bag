@@ -52,20 +52,23 @@ tasks.named<PatchPluginXmlTask>("patchPluginXml") {
 }
 
 tasks.named<PublishTask>("publishPlugin") {
-    token(System.getenv("PUBLISH_PLUGIN_TOKEN"))
+    token(ciVariable("PUBLISH_PLUGIN_TOKEN"))
     channels(*pluginReleaseChannels)
 }
 
 val copyArtifacts by tasks.registering(Copy::class) {
+    group = "release"
+    description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
     from("$buildDir/libs/", "$buildDir/distributions/")
     into("${rootProject.buildDir}/artifacts/${project.name}")
 }
 
-val releasePlugin by tasks.creating {
-    dependsOn("publishPlugin", copyArtifacts)
+val releasePlugin by tasks.creating(Task::class) {
+    group = "release"
+    description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
+    dependsOn("publishPlugin")
+    finalizedBy(copyArtifacts)
 }
-
-copyArtifacts.dependsOn("publishPlugin")
 
 sourceSets {
     main {

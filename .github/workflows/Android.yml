@@ -71,7 +71,10 @@ jobs:
         run: ./gradlew releaseAll
         env:
           GITHUB_TAG: ${{ steps.get_version.outputs.GITHUB_TAG }}
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+          OSSRH_USER: ${{ secrets.OSSRH_PASSWORD }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           PUBLISH_PLUGIN_TOKEN: ${{ secrets.PUBLISH_PLUGIN_TOKEN }}
       - name: Publish artifacts
         uses: actions/upload-artifact@v2

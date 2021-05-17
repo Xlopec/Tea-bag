@@ -1,10 +1,10 @@
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URL
-import java.text.SimpleDateFormat
 import java.util.*
 
 plugins {
     `maven-publish`
+    signing
     `java-library`
     kotlin("jvm")
     id("org.jetbrains.dokka")
@@ -17,7 +17,7 @@ kotlin {
 val sourcesJar by tasks.registering(Jar::class) {
     dependsOn(tasks.classes)
     archiveClassifier.set("sources")
-    from(sourceSets.main.get().allSource)
+    from(projectSourceSets["main"].allSource)
 }
 
 val javadocJar by tasks.registering(Jar::class) {
@@ -28,7 +28,7 @@ val javadocJar by tasks.registering(Jar::class) {
 
 val copyArtifacts by tasks.registering(Copy::class) {
     group = "release"
-    description = "Copies artifacts to the 'artifacts' dir for CI"
+    description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
     from("$buildDir/libs/")
     into("${rootProject.buildDir}/artifacts/${project.name}")
 }
@@ -36,16 +36,9 @@ val copyArtifacts by tasks.registering(Copy::class) {
 val releaseLibrary by tasks.registering {
     group = "release"
     description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
-    dependsOn("bintrayUpload", copyArtifacts)
+    dependsOn(tasks[if (isCiEnv) "publish" else "publishToMavenLocal"])
+    finalizedBy(copyArtifacts)
 }
-
-//tasks
-    // bintray picks artifacts located from maven local repository, so there is a dependency
-    // on publishAllPublicationsToMavenLocalRepository task
-  //  .named("bintrayUpload")
-  //  .dependsOn("publishAllPublicationsToMavenLocalRepository")
-
-//copyArtifacts.dependsOn("bintrayUpload")
 
 tasks.withType<DokkaTask>().configureEach {
 
@@ -131,6 +124,14 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    useInMemoryPgpKeys(signingKey, signingPassword)
+
+    val publishing: PublishingExtension by project
+
+    sign(publishing.publications)
 }
 
 artifacts {

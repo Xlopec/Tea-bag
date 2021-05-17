@@ -23,6 +23,8 @@
  */
 
 import org.gradle.api.Project
+import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.kotlin.dsl.get
 import java.io.File
 import java.nio.file.Paths
 
@@ -49,7 +51,7 @@ private sealed class Tag {
 }
 
 val isCiEnv: Boolean
-    get() = getEnvSafe("CI")?.toBoolean() == true
+    get() = getenvSafe("CI")?.toBoolean() == true
 
 val pluginReleaseChannels: Array<String>
     get() = when (tag()) {
@@ -60,7 +62,7 @@ val pluginReleaseChannels: Array<String>
     }
 
 val commitSha: String?
-    get() = getEnvSafe("GITHUB_SHA")
+    get() = getenvSafe("GITHUB_SHA")
 
 val versionName: String
     get() = when (val tag = tag()) {
@@ -70,13 +72,20 @@ val versionName: String
         is Tag.Release -> tag.value
     }
 
-val ossrhUser: String?
-    get() = getEnvSafe("OSSRH_USER")
-        .also { s -> checkCiPropertyValid("OSSRH_USER", s) }
+val Project.ossrhUser: String?
+    get() = ciVariable("OSSRH_USER")
 
-val ossrhPassword: String?
-    get() = getEnvSafe("OSSRH_PASSWORD")
-        .also { s -> checkCiPropertyValid("OSSRH_PASSWORD", s) }
+val Project.ossrhPassword: String?
+    get() = ciVariable("OSSRH_PASSWORD")
+
+val Project.signingKey: String?
+    get() = ciVariable("SIGNING_KEY")
+
+val Project.signingPassword: String?
+    get() = ciVariable("SIGNING_PASSWORD")
+
+val Project.projectSourceSets: SourceSetContainer
+    get() = extensions["sourceSets"] as SourceSetContainer
 
 fun Project.installGitHooks() = afterEvaluate {
     projectHooksDir.listFiles { f -> f.extension == "sh" }
@@ -100,6 +109,11 @@ val Project.detektConfig: File
 val Project.detektBaseline: File
     get() = Paths.get(rootDir.path, "detekt", "detekt-baseline.xml").toFile()
 
+fun Project.ciVariable(
+    name: String,
+): String? = (getenvSafe(name) ?: getPropertySafe(name))
+    .also { s -> checkCiPropertyValid(name, s) }
+
 private fun tag(): Tag {
     val rawTag = System.getenv("GITHUB_TAG")
         .takeUnless(CharSequence?::isNullOrEmpty)
@@ -122,10 +136,15 @@ private fun tag(): Tag {
     }
 }
 
-private fun getEnvSafe(
+private fun checkCiPropertyValid(name: String, value: String?) =
+    check((isCiEnv && !value.isNullOrEmpty()) || !isCiEnv) { "\"$name\" is null" }
+
+private fun Project.getPropertySafe(
+    name: String,
+): String? =
+    properties[name]?.toString().takeUnless(CharSequence?::isNullOrEmpty)
+
+private fun getenvSafe(
     name: String,
 ): String? =
     System.getenv(name).takeUnless(CharSequence?::isNullOrEmpty)
-
-private fun checkCiPropertyValid(name: String, value: String?) =
-    check(isCiEnv && !value.isNullOrEmpty()) { "\"$name\" is null" }
