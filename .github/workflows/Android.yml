@@ -37,7 +37,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Runs tests
-        run: ./gradlew test
+        run: ./gradlew ciTests
       - name: Archive test reports
         if: success() || failure()
         uses: actions/upload-artifact@v2
@@ -55,7 +55,7 @@ jobs:
     # v1.2.3-alpha1
     # v1.2.3-rc1
     # v1.2.3
-    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/develop'
+    #if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/develop'
     steps:
       - name: Get the version
         id: get_version
@@ -68,7 +68,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Publishes artifacts
-        run: ./gradlew releaseAll
+        run: ./gradlew releaseLibrary releasePlugin
         env:
           GITHUB_TAG: ${{ steps.get_version.outputs.GITHUB_TAG }}
           OSSRH_USER: ${{ secrets.OSSRH_PASSWORD }}

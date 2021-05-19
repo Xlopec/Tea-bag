@@ -33,6 +33,13 @@ val copyArtifacts by tasks.registering(Copy::class) {
     into("${rootProject.buildDir}/artifacts/${project.name}")
 }
 
+val ciTests by tasks.registering(Test::class) {
+    group = "verification"
+    description = "Prepares and runs tests relevant for CI build"
+
+    dependsOn(tasks.test.get() ?: error("No test task found in project $name"))
+}
+
 val releaseLibrary by tasks.registering {
     group = "release"
     description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
@@ -80,7 +87,7 @@ publishing {
             artifact(sourcesJar)
             artifact(javadocJar)
 
-            groupId = "com.github.xlopec"
+            groupId = "io.github.xlopec"
             artifactId = projectName
             version = versionName
 
@@ -99,14 +106,16 @@ publishing {
 
                 developers {
                     developer {
-                        id.set("xlopec")
+                        id.set("Maxxx")
                         name.set("Maksym Oliinyk")
                         url.set("https://github.com/Xlopec")
+                        organizationUrl.set("https://github.com/Xlopec")
                     }
                 }
 
                 scm {
-                    connection.set("scm:git:git@github.com:Xlopec/Tea-bag.git")
+                    connection.set("scm:git:git://github.com/Xlopec/Tea-bag.git")
+                    developerConnection.set("scm:git:ssh://github.com:Xlopec/Tea-bag.git")
                     url.set("https://github.com/Xlopec/Tea-bag/tree/master")
                 }
             }
@@ -117,7 +126,7 @@ publishing {
         mavenLocal()
         maven {
             name = "OSSRH"
-            setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+            url = ossrhDeploymentUrl(tag)
             credentials {
                 username = ossrhUser
                 password = ossrhPassword

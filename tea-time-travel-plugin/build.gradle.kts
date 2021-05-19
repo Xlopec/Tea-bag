@@ -70,6 +70,13 @@ val releasePlugin by tasks.creating(Task::class) {
     finalizedBy(copyArtifacts)
 }
 
+val ciTests by tasks.registering(Test::class) {
+    group = "verification"
+    description = "Prepares and runs tests relevant for CI build"
+
+    dependsOn(tasks.test.get() ?: error("No test task found in project $name"))
+}
+
 sourceSets {
     main {
         resources {

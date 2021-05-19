@@ -128,38 +128,3 @@ val detektFormat by tasks.registering(Detekt::class) {
 
     config.setFrom(detektConfig)
 }
-
-val releaseAll by tasks.registering(DefaultTask::class) {
-    group = "release"
-    description = "Runs release tasks for each project"
-
-    setDependsOn(libraryProjects.releaseTasks + pluginProject.releaseTask)
-}
-
-val ciTests by tasks.registering(Test::class) {
-    group = "verification"
-    description = "Prepares and runs tests relevant for CI build"
-
-    setDependsOn(libraryProjects.tests + pluginProject.test)
-}
-
-val Project.releaseTask: Task
-    get() = tasks.findByName("releaseLibrary")
-        ?: tasks.findByName("releasePlugin")
-        ?: error("Couldn't find release task for project $name")
-
-val libraryProjects: Collection<Project>
-    get() = subprojects.filter { project -> project.plugins.hasPlugin("published-library") }
-
-val pluginProject: Project
-    get() = subprojects.find { project -> project.plugins.hasPlugin("org.jetbrains.intellij") }
-        ?: error("No plugin project found")
-
-val Iterable<Project>.releaseTasks: Collection<Task>
-    get() = mapNotNull { project -> project.releaseTask }
-
-val Iterable<Project>.tests: Collection<Test>
-    get() = mapNotNull { project -> project.test }
-
-val Project.test: Test
-    get() = tasks.test.get() ?: error("No test task found in project $name")
