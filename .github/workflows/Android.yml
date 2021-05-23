@@ -71,7 +71,7 @@ jobs:
         run: ./gradlew releaseLibrary releasePlugin
         env:
           GITHUB_TAG: ${{ steps.get_version.outputs.GITHUB_TAG }}
-          OSSRH_USER: ${{ secrets.OSSRH_PASSWORD }}
+          OSSRH_USER: ${{ secrets.OSSRH_USER }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
