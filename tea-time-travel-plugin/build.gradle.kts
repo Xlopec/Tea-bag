@@ -74,7 +74,7 @@ val ciTests by tasks.registering(Test::class) {
     group = "verification"
     description = "Prepares and runs tests relevant for CI build"
 
-    dependsOn(tasks.test.get() ?: error("No test task found in project $name"))
+    dependsOn(tasks.test.get())
 }
 
 sourceSets {
