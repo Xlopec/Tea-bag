@@ -71,7 +71,7 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
         ): Component<Char, String, Char> = Component(TestDebugEnv(env = env))
     }
 
-    /*@Test
+    @Test
     fun `test debuggable component throws expected exception when it can't connect to a server`() =
         runBlockingInTestScope {
 
@@ -198,7 +198,7 @@ class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
             .toCollection(ArrayList(expected.size))
 
         actual shouldContainExactly expected
-    }*/
+    }
 
 }
 

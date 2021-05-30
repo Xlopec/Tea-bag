@@ -20,13 +20,11 @@ import com.oliynick.max.tea.core.debug.app.component.resolver.AppResolver
 import com.oliynick.max.tea.core.debug.app.component.resolver.HasMessageChannel
 import com.oliynick.max.tea.core.debug.app.component.resolver.HasMessagesChannel
 import com.oliynick.max.tea.core.debug.app.component.updater.*
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
-/*
 @RunWith(JUnit4::class)
-class ComponentTest {
-
-}
-*/
+class ComponentTest
 
 interface TestEnvironment :
     Updater<TestEnvironment>,
