@@ -27,6 +27,9 @@
 package com.max.reader.app.env.storage
 
 import android.app.Application
+import android.content.res.Configuration
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import com.max.reader.app.env.HasAppContext
 import com.max.reader.app.env.storage.local.HasMongoCollection
 import com.max.reader.app.env.storage.network.ArticleElement
@@ -41,12 +44,13 @@ import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.TextSearchOptions
 import com.mongodb.client.model.UpdateOptions
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.bson.BsonDocument
 import org.bson.Document
 import org.bson.conversions.Bson
 import java.net.URL
+import java.util.*
+import kotlin.collections.ArrayList
 
 private const val API_KEY = "08a7e13902bf4cffab115365071e3850"
 
@@ -57,25 +61,20 @@ fun <Env> Storage(): Storage<Env> where Env : HasMongoCollection,
                                         Env : HasGson = object : Storage<Env> {
 
     override suspend fun Env.addToFavorite(article: Article) {
-        coroutineScope {
-            withContext(Dispatchers.IO) {
-                collection.replaceOne(
-                    eqUrl(article.url),
-                    Document.parse(gson.toJson(article)),
-                    ReplaceOptions.createReplaceOptions(UpdateOptions().upsert(true))
-                )
-            }
+        withContext(Dispatchers.IO) {
+            collection.replaceOne(
+                article.url.toEqPredicate(),
+                Document.parse(gson.toJson(article)),
+                ReplaceOptions.createReplaceOptions(UpdateOptions().upsert(true))
+            )
         }
     }
 
     override suspend fun Env.removeFromFavorite(url: URL) {
-        coroutineScope {
-            withContext(Dispatchers.IO) {
-                collection.findOneAndDelete(eqUrl(url))
-            }
+        withContext(Dispatchers.IO) {
+            collection.findOneAndDelete(url.toEqPredicate())
         }
     }
-
 
     override suspend fun Env.fetch(
         query: Query,
@@ -137,16 +136,14 @@ fun <Env> Storage(): Storage<Env> where Env : HasMongoCollection,
     private suspend fun Env.fetchFavorite(
         input: String,
     ): Storage.Page =
-        coroutineScope {
-            withContext(Dispatchers.IO) {
-                Storage.Page(
-                    articles = collection
-                        .find(input.toTextSearchFilter())
-                        .map { document -> gson.fromJson(document.toJson(), Article::class.java) }
-                        .into(ArrayList()),
-                    hasMore = false
-                )
-            }
+        withContext(Dispatchers.IO) {
+            Storage.Page(
+                articles = collection
+                    .find(input.toTextSearchFilter())
+                    .map { document -> gson.fromJson(document.toJson(), Article::class.java) }
+                    .into(ArrayList()),
+                hasMore = false
+            )
         }
 
     private suspend fun Env.toArticles(
@@ -167,17 +164,24 @@ fun <Env> Storage(): Storage<Env> where Env : HasMongoCollection,
         )
 
     private suspend fun Env.isFavorite(
-        url: URL
+        url: URL,
     ): Boolean =
-        coroutineScope {
-            withContext(Dispatchers.IO) {
-                collection.countDocuments(eqUrl(url)) > 0
-            }
+        withContext(Dispatchers.IO) {
+            collection.countDocuments(url.toEqPredicate()) > 0
         }
-
-    private inline val Application.countryCode: String
-        get() = resources.configuration.locale.country
 }
+
+private inline val Application.countryCode: String
+    get() = resources.configuration.countryCode
+
+@Suppress("DEPRECATION")
+private inline val Configuration.countryCode: String
+    get() =
+        if (VERSION.SDK_INT >= VERSION_CODES.N) {
+            locales.get(0)?.country ?: Locale.ENGLISH.country
+        } else {
+            locale.country
+        }
 
 private fun String.toTextSearchFilter(): Bson =
     if (isEmpty()) BsonDocument() else text(this, TextSearchOptions)
@@ -188,6 +192,5 @@ private fun String.toInputQueryMap(): Map<String, String> =
 private val TextSearchOptions = TextSearchOptions()
     .apply { caseSensitive(false) }
 
-private fun eqUrl(
-    url: URL
-) = eq("url", url.toExternalForm())
+private fun URL.toEqPredicate(): Bson =
+    eq("url", toExternalForm())
