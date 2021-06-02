@@ -4,7 +4,7 @@
   <CurrentIssues>
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
     <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$override fun update( message: UIMessage, state: PluginState ): UpdateWith&lt;PluginState, PluginCommand></ID>
-    <ID>EmptyClassBlock:ComponentTest.kt$ComponentTest${ }</ID>
+    <ID>FunctionNaming:AppException.kt$private fun NetworkException( cause: IOException, )</ID>
     <ID>FunctionNaming:ToolWindowView.kt$private fun JBEditorTabs( project: Project, )</ID>
     <ID>FunctionNaming:ToolWindowView.kt$private fun TabInfo( id: ComponentId, content: JComponent, group: ActionGroup, )</ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") private fun Null.toReadableString(): String</ID>
@@ -18,7 +18,6 @@
     <ID>MagicNumber:Colors.kt$0xbaeeba</ID>
     <ID>MagicNumber:Colors.kt$0xffcccc</ID>
     <ID>MagicNumber:Colors.kt$182</ID>
-    <ID>MagicNumber:Networking.kt$3</ID>
     <ID>MagicNumber:ServerImpl.kt$10</ID>
     <ID>MagicNumber:ServerImpl.kt$5</ID>
     <ID>MatchingDeclarationName:Component.kt$ComponentId</ID>
@@ -30,57 +29,9 @@
     <ID>MatchingDeclarationName:UpdateUI.kt$UiUpdater</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
     <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>
-    <ID>MaxLineLength:LiveArticlesUpdater.kt$LiveArticlesUpdater$is LoadArticlesFromScratch, is RefreshArticles -> state.toRefreshing() command LoadArticlesByQuery(state.id, state.query, state.articles.size, ArticlesState.ArticlesPerPage)</ID>
-    <ID>NewLineAtEndOfFile:AppResolver.kt$com.max.reader.app.resolve.AppResolver.kt</ID>
-    <ID>NewLineAtEndOfFile:AppUpdater.kt$com.max.reader.app.update.AppUpdater.kt</ID>
-    <ID>NewLineAtEndOfFile:Baloon.kt$com.oliynick.max.tea.core.debug.app.component.resolver.Baloon.kt</ID>
-    <ID>NewLineAtEndOfFile:ChooserUtils.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ChooserUtils.kt</ID>
-    <ID>NewLineAtEndOfFile:ClientMessageSerializationTest.kt$com.oliynick.max.tea.core.debug.app.domain.serialization.ClientMessageSerializationTest.kt</ID>
-    <ID>NewLineAtEndOfFile:CollectionExt.kt$.CollectionExt.kt</ID>
-    <ID>NewLineAtEndOfFile:CollectionExtensionsTest.kt$com.oliynick.max.tea.core.debug.app.misc.CollectionExtensionsTest.kt</ID>
-    <ID>NewLineAtEndOfFile:ComponentExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ComponentExtensions.kt</ID>
-    <ID>NewLineAtEndOfFile:ComponentLogic.kt$core.component.ComponentLogic.kt</ID>
-    <ID>NewLineAtEndOfFile:ComponentTest.kt$com.oliynick.max.tea.core.debug.app.domain.component.ComponentTest.kt</ID>
-    <ID>NewLineAtEndOfFile:ComponentTestSuite.kt$com.oliynick.max.tea.core.component.ComponentTestSuite.kt</ID>
-    <ID>NewLineAtEndOfFile:Data.kt$com.oliynick.max.tea.core.debug.app.misc.Data.kt</ID>
-    <ID>NewLineAtEndOfFile:DebugSession.kt$com.oliynick.max.tea.core.debug.session.DebugSession.kt</ID>
-    <ID>NewLineAtEndOfFile:DebugWebSocketSession.kt$com.oliynick.max.tea.core.debug.session.DebugWebSocketSession.kt</ID>
-    <ID>NewLineAtEndOfFile:DiffingListModel.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.DiffingListModel.kt</ID>
-    <ID>NewLineAtEndOfFile:Environment.kt$com.max.reader.app.env.Environment.kt</ID>
-    <ID>NewLineAtEndOfFile:FiltersTest.kt$com.oliynick.max.tea.core.debug.app.domain.cms.FiltersTest.kt</ID>
-    <ID>NewLineAtEndOfFile:FlowExtension.kt$com.oliynick.max.tea.core.debug.component.internal.FlowExtension.kt</ID>
-    <ID>NewLineAtEndOfFile:FlowExtensions.kt$com.max.reader.misc.FlowExtensions.kt</ID>
-    <ID>NewLineAtEndOfFile:Generator.kt$com.oliynick.max.tea.core.debug.app.misc.Generator.kt</ID>
-    <ID>NewLineAtEndOfFile:GsonAdapters.kt$com.oliynick.max.tea.core.debug.gson.GsonAdapters.kt</ID>
-    <ID>NewLineAtEndOfFile:GsonConverter.kt$com.oliynick.max.tea.core.debug.gson.GsonConverter.kt</ID>
-    <ID>NewLineAtEndOfFile:HasMessageChannel.kt$com.oliynick.max.tea.core.debug.app.component.resolver.HasMessageChannel.kt</ID>
-    <ID>NewLineAtEndOfFile:HasSystemProperties.kt$com.oliynick.max.tea.core.debug.app.component.resolver.HasSystemProperties.kt</ID>
-    <ID>NewLineAtEndOfFile:JLabelExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.JLabelExtensions.kt</ID>
-    <ID>NewLineAtEndOfFile:JavaVersionExt.kt$.JavaVersionExt.kt</ID>
-    <ID>NewLineAtEndOfFile:LRUCacheTest.kt$com.oliynick.max.tea.core.debug.app.domain.LRUCacheTest.kt</ID>
-    <ID>NewLineAtEndOfFile:LiveNotificationUpdaterTest.kt$com.oliynick.max.tea.core.debug.app.component.updater.LiveNotificationUpdaterTest.kt</ID>
-    <ID>NewLineAtEndOfFile:LiveUpdater.kt$com.oliynick.max.tea.core.debug.app.component.updater.LiveUpdater.kt</ID>
-    <ID>NewLineAtEndOfFile:LruCache.kt$com.oliynick.max.tea.core.debug.app.misc.LruCache.kt</ID>
-    <ID>NewLineAtEndOfFile:MainActivity.kt$com.max.reader.screens.main.MainActivity.kt</ID>
-    <ID>NewLineAtEndOfFile:MongoDb.kt$com.max.reader.app.env.storage.local.MongoDb.kt</ID>
     <ID>NewLineAtEndOfFile:Networking.kt$com.max.reader.app.env.Networking.kt</ID>
     <ID>NewLineAtEndOfFile:NewsApi.kt$com.max.reader.app.env.storage.network.NewsApi.kt</ID>
-    <ID>NewLineAtEndOfFile:NumberExtensions.kt$com.oliynick.max.tea.core.debug.app.misc.NumberExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:PluginDependenciesSpecExt.kt$.PluginDependenciesSpecExt.kt</ID>
-    <ID>NewLineAtEndOfFile:PluginException.kt$com.oliynick.max.tea.core.debug.app.component.cms.PluginException.kt</ID>
-    <ID>NewLineAtEndOfFile:PluginMessage.kt$com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage.kt</ID>
-    <ID>NewLineAtEndOfFile:PluginState.kt$com.oliynick.max.tea.core.debug.app.component.cms.PluginState.kt</ID>
-    <ID>NewLineAtEndOfFile:PluginState.kt$com.oliynick.max.tea.core.debug.app.domain.PluginState.kt</ID>
-    <ID>NewLineAtEndOfFile:Poly.kt$com.oliynick.max.tea.core.debug.gson.serialization.data.Poly.kt</ID>
-    <ID>NewLineAtEndOfFile:RefDiffer.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.RefDiffer.kt</ID>
-    <ID>NewLineAtEndOfFile:Settings.kt$com.oliynick.max.tea.core.debug.app.domain.Settings.kt</ID>
-    <ID>NewLineAtEndOfFile:SideToolWindowFactory.kt$com.oliynick.max.tea.core.debug.app.presentation.sidebar.SideToolWindowFactory.kt</ID>
-    <ID>NewLineAtEndOfFile:SnapshotTreeModel.kt$com.oliynick.max.tea.core.debug.app.presentation.component.SnapshotTreeModel.kt</ID>
-    <ID>NewLineAtEndOfFile:Storage.kt$com.max.reader.app.env.storage.Storage.kt</ID>
-    <ID>NewLineAtEndOfFile:TestDebugSession.kt$com.oliynick.max.tea.core.debug.misc.TestDebugSession.kt</ID>
-    <ID>NewLineAtEndOfFile:Typography.kt$com.max.reader.ui.theme.Typography.kt</ID>
-    <ID>NewLineAtEndOfFile:Url.kt$com.oliynick.max.tea.core.debug.component.Url.kt</ID>
-    <ID>NewLineAtEndOfFile:build.gradle.kts$.build.gradle.kts</ID>
     <ID>SpreadOperator:BasicComponentTest.kt$BasicComponentTest$(*messages)</ID>
     <ID>SpreadOperator:ComponentLogic.kt$TodoState$(*items)</ID>
     <ID>TooGenericExceptionCaught:ServerImpl.kt$e: Throwable</ID>

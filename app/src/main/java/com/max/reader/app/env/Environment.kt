@@ -25,14 +25,15 @@
 package com.max.reader.app.env
 
 import android.app.Application
+import com.max.reader.BuildConfig.DEBUG
 import com.max.reader.app.AppModule
 import com.max.reader.app.env.storage.Gson
 import com.max.reader.app.env.storage.HasGson
 import com.max.reader.app.env.storage.Storage
 import com.max.reader.app.env.storage.local.HasMongoCollection
 import com.max.reader.app.env.storage.local.MongoCollection
+import com.max.reader.app.env.storage.network.ArticleAdapters
 import com.max.reader.app.env.storage.network.NewsApi
-import com.max.reader.app.env.storage.network.articleAdapters
 import com.max.reader.app.resolve.CommandTransport
 import com.max.reader.app.resolve.HasCommandTransport
 import com.max.reader.screens.article.details.ArticleDetailsModule
@@ -64,7 +65,7 @@ fun Environment(
         ArticlesModule<Environment> by ArticlesModule(),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(),
         HasCommandTransport by CommandTransport(),
-        NewsApi by NewsApi(gson),
+        NewsApi by NewsApi(gson, DEBUG),
         HasMongoCollection by MongoCollection(application),
         HasGson by Gson(gson),
         HasAppContext by AppContext(application),
@@ -77,7 +78,7 @@ private fun buildGson() =
     AppGson {
         setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 
-        articleAdapters.forEach { (cl, adapter) ->
+        ArticleAdapters.forEach { (cl, adapter) ->
             registerTypeAdapter(cl.java, adapter)
         }
     }

@@ -37,17 +37,19 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.JsonSerializer
+import io.ktor.client.features.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.http.URLProtocol.Companion.HTTPS
 import io.ktor.http.content.*
 import io.ktor.utils.io.core.*
 import java.lang.reflect.Type
 import java.net.URL
 import java.util.*
 
-private const val API_KEY = "08a7e13902bf4cffab115365071e3850"
+private const val ApiKey = "08a7e13902bf4cffab115365071e3850"
 
-val articleAdapters = mapOf(
+val ArticleAdapters = mapOf(
     String::class to StringAdapter,
     URL::class to URLAdapter,
     Title::class to TitleAdapter,
@@ -55,25 +57,20 @@ val articleAdapters = mapOf(
     Description::class to DescriptionAdapter
 )
 
-private val EverythingUrl = URLBuilder(
-    protocol = URLProtocol.HTTPS,
-    host = "newsapi.org",
-    encodedPath = "/v2/everything"
-).build()
-
-private val TopHeadlinesUrl = URLBuilder(
-    protocol = URLProtocol.HTTPS,
-    host = "newsapi.org",
-    encodedPath = "/v2/top-headlines"
-).build()
-
 fun NewsApi(
     gson: Gson,
+    debug: Boolean,
 ): NewsApi = object : NewsApi {
 
     private val httpClient = HttpClient {
         install(JsonFeature) {
             serializer = GsonSerializer(gson)
+        }
+
+        if (debug) {
+            Logging {
+                level = LogLevel.ALL
+            }
         }
     }
 
@@ -82,14 +79,7 @@ fun NewsApi(
         pageSize: Int,
         query: Map<String, String>,
     ): ArticleResponse =
-        httpClient.get(EverythingUrl) {
-            parameter("apiKey", API_KEY)
-            parameter("page", page)
-            parameter("pageSize", pageSize)
-            query.forEach { (k, v) ->
-                parameter(k, v)
-            }
-        }
+        httpClient.get(EverythingRequest(page, pageSize, query))
 
     override suspend fun fetchTopHeadlines(
         countryCode: String,
@@ -97,15 +87,7 @@ fun NewsApi(
         pageSize: Int,
         query: Map<String, String>,
     ): ArticleResponse =
-        httpClient.get(TopHeadlinesUrl) {
-            parameter("apiKey", API_KEY)
-            parameter("country", countryCode)
-            parameter("page", page)
-            parameter("pageSize", pageSize)
-            query.forEach { (k, v) ->
-                parameter(k, v)
-            }
-        }
+        httpClient.get(TopHeadlinesRequest(page, pageSize, countryCode, query))
 }
 
 private class GsonSerializer(
@@ -169,7 +151,7 @@ private object StringAdapter : TypeAdapter<String> {
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext?,
-    ) = json.asString.takeUnless { string -> string.isBlank() || string.isEmpty() }
+    ) = json.asString?.takeUnless(CharSequence::isNullOrEmpty)
 }
 
 private object URLAdapter : TypeAdapter<URL> {
@@ -230,4 +212,46 @@ private object DescriptionAdapter : TypeAdapter<Description> {
         typeOfT: Type?,
         context: JsonDeserializationContext?,
     ) = Description.tryCreate(json.asString)
+}
+
+private fun EverythingRequest(
+    page: Int,
+    pageSize: Int,
+    query: Map<String, String>,
+) = HttpRequestBuilder(
+    scheme = HTTPS.name,
+    host = "newsapi.org",
+    path = "/v2/everything"
+) {
+    with(parameters) {
+        append("apiKey", ApiKey)
+        append("page", page.toString())
+        append("pageSize", pageSize.toString())
+
+        query.forEach { (k, v) ->
+            append(k, v)
+        }
+    }
+}
+
+private fun TopHeadlinesRequest(
+    page: Int,
+    pageSize: Int,
+    countryCode: String,
+    query: Map<String, String>,
+) = HttpRequestBuilder(
+    scheme = HTTPS.name,
+    host = "newsapi.org",
+    path = "/v2/top-headlines"
+) {
+    with(parameters) {
+        append("apiKey", ApiKey)
+        append("page", page.toString())
+        append("pageSize", pageSize.toString())
+        append("country", countryCode)
+
+        query.forEach { (k, v) ->
+            append(k, v)
+        }
+    }
 }

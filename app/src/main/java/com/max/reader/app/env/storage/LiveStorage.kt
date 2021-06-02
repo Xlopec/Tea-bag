@@ -34,7 +34,7 @@ import com.max.reader.app.env.HasAppContext
 import com.max.reader.app.env.storage.local.HasMongoCollection
 import com.max.reader.app.env.storage.network.ArticleElement
 import com.max.reader.app.env.storage.network.ArticleResponse
-import com.max.reader.app.env.storage.network.HasNewsApi
+import com.max.reader.app.env.storage.network.NewsApi
 import com.max.reader.domain.Article
 import com.max.reader.screens.article.list.Query
 import com.max.reader.screens.article.list.QueryType.*
@@ -52,11 +52,9 @@ import java.net.URL
 import java.util.*
 import kotlin.collections.ArrayList
 
-private const val API_KEY = "08a7e13902bf4cffab115365071e3850"
-
 @Deprecated("wait until it'll be fixed")
 fun <Env> Storage(): Storage<Env> where Env : HasMongoCollection,
-                                        Env : HasNewsApi,
+                                        Env : NewsApi,
                                         Env : HasAppContext,
                                         Env : HasGson = object : Storage<Env> {
 
@@ -92,8 +90,7 @@ fun <Env> Storage(): Storage<Env> where Env : HasMongoCollection,
         resultsPerPage: Int,
     ): Storage.Page =
         toPage(
-            api.fetchFromEverything(
-                API_KEY,
+            fetchFromEverything(
                 (currentSize / resultsPerPage) + 1,
                 resultsPerPage,
                 input.toInputQueryMap()
@@ -122,8 +119,7 @@ fun <Env> Storage(): Storage<Env> where Env : HasMongoCollection,
         resultsPerPage: Int,
     ): Storage.Page =
         toPage(
-            api.fetchTopHeadlines(
-                API_KEY,
+            fetchTopHeadlines(
                 application.countryCode,
                 (currentSize / resultsPerPage) + 1,
                 resultsPerPage,

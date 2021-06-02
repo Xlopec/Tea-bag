@@ -22,8 +22,6 @@
  * SOFTWARE.
  */
 
-import Libraries.Versions
-import Libraries.Versions.ktor
 import Libraries.Versions.compose
 import Libraries.accompaniestCoil
 import Libraries.accompaniestInsets
@@ -39,15 +37,14 @@ import Libraries.composeMaterialIconsExtended
 import Libraries.composeRuntime
 import Libraries.composeUi
 import Libraries.composeUiTooling
-import Libraries.converterGson
 import Libraries.coroutinesAndroid
-import Libraries.gson
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
-import Libraries.loggingInterceptor
+import Libraries.ktorClientAndroid
+import Libraries.ktorClientGson
+import Libraries.ktorClientLogging
+import Libraries.logback
 import Libraries.mongoDb
-import Libraries.okHttp
-import Libraries.retrofit
 import TestLibraries.espressoCore
 import TestLibraries.espressoRunner
 
@@ -149,8 +146,10 @@ dependencies {
 
     implementation(mongoDb)
 
-    implementation("io.ktor:ktor-client-android:$ktor")
-    implementation("io.ktor:ktor-client-gson:$ktor")
+    implementation(ktorClientAndroid)
+    implementation(ktorClientGson)
+    implementation(ktorClientLogging)
+    implementation(logback)
 
     testImplementation(project(":tea-test"))
     testImplementation(coroutinesAndroid)

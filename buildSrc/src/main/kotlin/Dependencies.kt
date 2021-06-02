@@ -49,6 +49,7 @@ object Libraries {
 
     const val ktorClientWebsockets = "io.ktor:ktor-client-websockets:$ktor"
     const val ktorClientOkHttp = "io.ktor:ktor-client-okhttp:$ktor"
+    const val ktorClientLogging = "io.ktor:ktor-client-logging:$ktor"
     const val gson = "com.google.code.gson:gson:2.8.6"
 
     const val logback = "ch.qos.logback:logback-classic:1.2.3"
@@ -76,7 +77,8 @@ object Libraries {
 
     const val appCompat = "androidx.appcompat:appcompat:1.2.0"
 
-    const val okHttp = "com.squareup.okhttp3:okhttp:4.8.1"
+    const val ktorClientAndroid = "io.ktor:ktor-client-android:$ktor"
+    const val ktorClientGson = "io.ktor:ktor-client-gson:$ktor"
     const val retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
     const val converterGson = "com.squareup.retrofit2:converter-gson:2.9.0"
     const val loggingInterceptor = "com.squareup.okhttp3:logging-interceptor:4.8.1"
