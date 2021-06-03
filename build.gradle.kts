@@ -53,15 +53,12 @@ allprojects {
             @Suppress("SuspiciousCollectionReassignment")
             freeCompilerArgs += listOf(
                 // todo: cleanup after migration to kotlin 1.5
-                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
                 "-Xuse-experimental=kotlin.Experimental",
                 "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
                 "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
                 "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
                 "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
-                "-Xuse-experimental=kotlin.ExperimentalStdlibApi",
-                "-XXLanguage:+NewInference",
-                "-XXLanguage:+InlineClasses"
+                "-Xuse-experimental=kotlin.ExperimentalStdlibApi"
             )
         }
     }
