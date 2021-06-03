@@ -35,10 +35,13 @@ data class Article(
     val description: Description?,
     val urlToImage: URL?,
     val published: Date,
-    val isFavorite: Boolean
+    val isFavorite: Boolean,
 )
 
-data class Title(val value: String) {
+@JvmInline
+value class Title(
+    val value: String,
+) {
 
     companion object;
 
@@ -47,7 +50,10 @@ data class Title(val value: String) {
     }
 }
 
-data class Author(val value: String) {
+@JvmInline
+value class Author(
+    val value: String,
+) {
 
     companion object;
 
@@ -56,7 +62,10 @@ data class Author(val value: String) {
     }
 }
 
-data class Description(val value: String) {
+@JvmInline
+value class Description(
+    val value: String,
+) {
 
     companion object;
 
@@ -66,7 +75,7 @@ data class Description(val value: String) {
 }
 
 fun Title.Companion.isValid(
-    s: String?
+    s: String?,
 ): Boolean {
     contract {
         returns(true) implies (s is String)
@@ -76,11 +85,11 @@ fun Title.Companion.isValid(
 }
 
 fun Title.Companion.tryCreate(
-    s: String?
+    s: String?,
 ) = if (isValid(s)) Title(s) else null
 
 fun Author.Companion.isValid(
-    s: String?
+    s: String?,
 ): Boolean {
     contract {
         returns(true) implies (s is String)
@@ -90,11 +99,11 @@ fun Author.Companion.isValid(
 }
 
 fun Author.Companion.tryCreate(
-    s: String?
+    s: String?,
 ) = if (isValid(s)) Author(s) else null
 
 fun Description.Companion.isValid(
-    s: String?
+    s: String?,
 ): Boolean {
     contract {
         returns(true) implies (s is String)
@@ -104,7 +113,7 @@ fun Description.Companion.isValid(
 }
 
 fun Description.Companion.tryCreate(
-    s: String?
+    s: String?,
 ) = if (isValid(s)) Description(s) else null
 
 fun Article.toggleFavorite(): Article = copy(isFavorite = !isFavorite)
