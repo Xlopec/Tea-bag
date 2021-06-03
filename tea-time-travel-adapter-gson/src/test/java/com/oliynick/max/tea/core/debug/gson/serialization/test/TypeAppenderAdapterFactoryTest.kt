@@ -36,7 +36,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 @RunWith(JUnit4::class)
-class TypeAppenderAdapterFactoryTest {
+internal class TypeAppenderAdapterFactoryTest {
 
     private val serializer = Gson {
         setPrettyPrinting()

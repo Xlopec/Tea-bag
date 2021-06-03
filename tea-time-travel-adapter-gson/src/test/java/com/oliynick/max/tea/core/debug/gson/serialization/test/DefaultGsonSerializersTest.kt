@@ -24,13 +24,15 @@
 
 package com.oliynick.max.tea.core.debug.gson.serialization.test
 
-import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
 import com.oliynick.max.tea.core.debug.gson.Gson
 import com.oliynick.max.tea.core.debug.gson.GsonClientMessage
 import com.oliynick.max.tea.core.debug.gson.serialization.data.Singleton
 import com.oliynick.max.tea.core.debug.protocol.*
-import core.data.*
+import core.data.Id
+import core.data.Name
+import core.data.Photo
+import core.data.User
 import io.kotlintest.matchers.beInstanceOf
 import io.kotlintest.should
 import io.kotlintest.shouldBe
@@ -40,7 +42,7 @@ import org.junit.runners.JUnit4
 import java.util.*
 
 @RunWith(JUnit4::class)
-class DefaultGsonSerializersTest {
+internal class DefaultGsonSerializersTest {
 
     private val gsonSerializer = Gson()
 

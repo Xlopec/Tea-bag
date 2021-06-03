@@ -57,11 +57,11 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.net.ConnectException
 
-typealias StringSnapshot = Snapshot<String, String, String>
+public typealias StringSnapshot = Snapshot<String, String, String>
 
 @RunWith(JUnit4::class)
 @OptIn(InternalCoroutinesApi::class)
-class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
+internal class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
 
     private companion object {
 

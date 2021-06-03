@@ -29,4 +29,4 @@ import org.junit.runners.Suite
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(DefaultGsonSerializersTest::class, TypeAppenderAdapterFactoryTest::class)
-object GsonTestSuite
+internal object GsonTestSuite

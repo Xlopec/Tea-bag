@@ -22,7 +22,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 @RunWith(JUnit4::class)
-class CollectionExtensionsTest {
+internal class CollectionExtensionsTest {
 
     private object DiffCallbackImp : DiffCallback<Int, Int> {
         override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {

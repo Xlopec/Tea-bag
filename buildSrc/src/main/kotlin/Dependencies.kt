@@ -50,7 +50,7 @@ object Libraries {
     const val ktorClientWebsockets = "io.ktor:ktor-client-websockets:$ktor"
     const val ktorClientOkHttp = "io.ktor:ktor-client-okhttp:$ktor"
     const val ktorClientLogging = "io.ktor:ktor-client-logging:$ktor"
-    const val gson = "com.google.code.gson:gson:2.8.6"
+    const val gson = "com.google.code.gson:gson:2.8.7"
 
     const val logback = "ch.qos.logback:logback-classic:1.2.3"
     const val atomicfu = "org.jetbrains.kotlinx:atomicfu:0.15.1"

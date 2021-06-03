@@ -30,7 +30,7 @@ import com.oliynick.max.tea.core.debug.session.DebugSession
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
-class TestDebugSession<M, S>(
+internal class TestDebugSession<M, S>(
     override val messages: Flow<M> = emptyFlow(),
     override val states: Flow<S> = emptyFlow()
 ) : DebugSession<M, S, JsonElement> {

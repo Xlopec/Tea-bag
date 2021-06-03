@@ -48,7 +48,7 @@ import java.net.URL
 import java.util.*
 
 @RunWith(JUnit4::class)
-class AppStateSerializationTest {
+internal class AppStateSerializationTest {
 
     private val gsonSerializer = Gson {
         setPrettyPrinting()

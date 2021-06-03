@@ -152,6 +152,8 @@ dependencies {
 
     testImplementation(project(":tea-test"))
     testImplementation(coroutinesAndroid)
+    testImplementation(project(":tea-time-travel"))
+    testImplementation(project(":tea-time-travel-adapter-gson"))
 
     androidTestImplementation(espressoRunner)
     androidTestImplementation(espressoCore)

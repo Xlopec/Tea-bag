@@ -36,7 +36,7 @@ import java.io.FileReader
 import java.util.*
 
 @RunWith(JUnit4::class)
-class ClientMessageSerializationTest {
+internal class ClientMessageSerializationTest {
 
     private val gson = Gson()
 

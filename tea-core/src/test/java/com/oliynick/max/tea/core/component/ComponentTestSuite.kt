@@ -29,4 +29,4 @@ import org.junit.runners.Suite
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(ComponentTest::class, ComponentExtensionsTest::class)
-object ComponentTestSuite
+internal object ComponentTestSuite

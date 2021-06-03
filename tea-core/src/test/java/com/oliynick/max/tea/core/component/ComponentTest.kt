@@ -33,7 +33,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 @RunWith(JUnit4::class)
-class ComponentTest : BasicComponentTest(::ComponentFactory) {
+internal class ComponentTest : BasicComponentTest(::ComponentFactory) {
 
     private companion object {
 

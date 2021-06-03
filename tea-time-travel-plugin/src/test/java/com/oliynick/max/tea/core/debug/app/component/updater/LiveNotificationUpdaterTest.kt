@@ -33,7 +33,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 @RunWith(JUnit4::class)
-class LiveNotificationUpdaterTest {
+internal class LiveNotificationUpdaterTest {
 
     private val updater: Updater<NotificationMessage, PluginState, PluginCommand> = LiveNotificationUpdater::update
 
