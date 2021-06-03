@@ -27,7 +27,6 @@
 package com.max.reader.screens.article.list.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -350,6 +349,7 @@ private fun ArticleImage(
 }
 
 @Composable
+@OptIn(ExperimentalMaterialApi::class)
 private fun ArticleItem(
     screenId: ScreenId,
     article: Article,
@@ -358,11 +358,9 @@ private fun ArticleItem(
     Card(
         elevation = 4.dp,
         shape = RoundedCornerShape(8.dp),
+        onClick = { onMessage(NavigateToArticleDetails(article)) }
     ) {
-        Column(
-            modifier = Modifier
-                .clickable(onClick = { onMessage(NavigateToArticleDetails(article)) })
-        ) {
+        Column {
 
             ArticleImage(imageUrl = article.urlToImage)
 

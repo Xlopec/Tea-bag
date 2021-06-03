@@ -21,7 +21,10 @@ import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
 import com.oliynick.max.tea.core.debug.gson.Gson
-import com.oliynick.max.tea.core.debug.protocol.*
+import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
+import com.oliynick.max.tea.core.debug.protocol.ClientMessage
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import com.oliynick.max.tea.core.debug.protocol.NotifyClient
 import core.data.*
 import io.kotlintest.shouldBe
 import org.junit.Ignore
@@ -90,14 +93,14 @@ class ClientMessageSerializationTest {
         val tree = gson.fromJson(FileReader(jsonFile), JsonElement::class.java)
 
         tree.asJsonObject.toValue() shouldBe Ref(
-            Type("com.max.weatherviewer.app.State"),
+            Type.of("com.max.weatherviewer.app.State"),
             setOf(
                 Property(
                     "screens",
                     CollectionWrapper(
                         listOf(
                             Ref(
-                                Type("com.max.weatherviewer.screens.feed.FeedLoading"),
+                                Type.of("com.max.weatherviewer.screens.feed.FeedLoading"),
                                 setOf(
                                     Property(
                                         "id",
@@ -105,7 +108,7 @@ class ClientMessageSerializationTest {
                                     ),
                                     Property(
                                         "criteria", Ref(
-                                            Type("com.max.weatherviewer.screens.feed.LoadCriteria\$Query"),
+                                            Type.of("com.max.weatherviewer.screens.feed.LoadCriteria\$Query"),
                                             setOf(Property("query", StringWrapper("android")))
                                         )
                                     )

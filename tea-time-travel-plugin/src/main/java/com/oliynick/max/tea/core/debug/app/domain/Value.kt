@@ -16,7 +16,8 @@
 
 package com.oliynick.max.tea.core.debug.app.domain
 
-inline class Type(
+@JvmInline
+value class Type private constructor(
     val name: String
 ) {
     companion object {

@@ -27,7 +27,6 @@ repositories {
     maven { setUrl("https://plugins.gradle.org/m2/") }
     google()
     mavenLocal()
-    jcenter()
 }
 
 plugins {
@@ -37,7 +36,7 @@ plugins {
 
 dependencies {
     implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10")
     implementation("com.android.tools.build:gradle:7.0.0-beta03")
     implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.6.5")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")

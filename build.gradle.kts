@@ -32,14 +32,14 @@ installGitHooks()
 
 plugins {
     kotlin("jvm")
-    id("io.gitlab.arturbosch.detekt") version "1.15.0"
+    id("io.gitlab.arturbosch.detekt") version "1.17.1"
 }
 
 allprojects {
     repositories {
-        mavenLocal()
+        mavenCentral()
         google()
-        jcenter()
+        mavenLocal()
     }
 
     apply {

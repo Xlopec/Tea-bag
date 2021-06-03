@@ -24,9 +24,13 @@
 
 package core.component
 
-import com.oliynick.max.tea.core.component.*
+import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.component.effect
+import com.oliynick.max.tea.core.component.noCommand
 
-inline class TodoState(val items: List<Item> = emptyList()) {
+@JvmInline
+value class TodoState(val items: List<Item> = emptyList()) {
     constructor(vararg items: Item) : this(listOf(*items))
 }
 

@@ -27,14 +27,14 @@ import Libraries.Versions.compose
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 
-const val kotlinVersion = "1.4.32"
+const val kotlinVersion = "1.5.10"
 
 object Libraries {
     object Versions {
-        const val coroutines = "1.4.2"
-        const val ktor = "1.5.1"
-        const val compose = "1.0.0-beta05"
-        const val accompanies = "0.8.1"
+        const val coroutines = "1.5.0"
+        const val ktor = "1.6.0"
+        const val compose = "1.0.0-beta08"
+        const val accompanies = "0.11.0"
     }
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
@@ -66,7 +66,7 @@ object Libraries {
     const val composeRuntime = "androidx.compose.runtime:runtime:$compose"
     const val composeAnimation = "androidx.compose.animation:animation:$compose"
     const val composeCompiler = "androidx.compose.compiler:compiler:$compose"
-    const val composeActivity = "androidx.activity:activity-compose:1.3.0-alpha07"
+    const val composeActivity = "androidx.activity:activity-compose:1.3.0-alpha08"
 
     const val accompaniestInsets = "com.google.accompanist:accompanist-insets:$accompanies"
     const val accompaniestCoil = "com.google.accompanist:accompanist-coil:$accompanies"
@@ -81,12 +81,11 @@ object Libraries {
     const val ktorClientGson = "io.ktor:ktor-client-gson:$ktor"
     const val retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
     const val converterGson = "com.squareup.retrofit2:converter-gson:2.9.0"
-    const val loggingInterceptor = "com.squareup.okhttp3:logging-interceptor:4.8.1"
 }
 
 object TestLibraries {
     private object Versions {
-        const val ktor = "1.5.1"
+        const val ktor = "1.6.0"
     }
 
     const val junit = "junit:junit:4.13.1"

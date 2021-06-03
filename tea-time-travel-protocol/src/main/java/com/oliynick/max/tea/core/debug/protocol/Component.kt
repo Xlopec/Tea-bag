@@ -29,9 +29,10 @@ package com.oliynick.max.tea.core.debug.protocol
  *
  * @param value raw identifier value
  */
-// todo: make it a value class after migration to kotlin 1.4.30
-public data class ComponentId(
-    val value: String,
+@Suppress("ModifierOrder") // TODO remove once it'll be fixed in ktlint
+@JvmInline
+public value class ComponentId(
+    public val value: String,
 ) {
     init {
         require(value.isNotBlank() && value.isNotEmpty())

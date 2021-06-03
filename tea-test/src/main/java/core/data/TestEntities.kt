@@ -36,7 +36,8 @@ data class User(
     val avatar: URL? = null
 )
 
-inline class Id(val uuid: UUID)
+@JvmInline
+value class Id(val uuid: UUID)
 
 data class Name(val value: String) {
     init {
@@ -44,7 +45,8 @@ data class Name(val value: String) {
     }
 }
 
-inline class Photo(val url: URL)
+@JvmInline
+value class Photo(val url: URL)
 
 fun RandomId() = Id(UUID.randomUUID())
 
