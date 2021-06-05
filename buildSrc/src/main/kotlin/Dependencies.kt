@@ -42,6 +42,7 @@ object Libraries {
     const val coroutinesSwing = "org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutines"
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines"
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    const val kotlinStdLibReflect = "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
     const val ktorServerCore = "io.ktor:ktor-server-core:$ktor"
     const val ktorServerNetty = "io.ktor:ktor-server-netty:$ktor"
@@ -73,14 +74,10 @@ object Libraries {
     const val accompaniestSwipeRefresh =
         "com.google.accompanist:accompanist-swiperefresh:$accompanies"
 
-    const val mongoDb = "org.mongodb:stitch-android-sdk:4.1.0"
-
     const val appCompat = "androidx.appcompat:appcompat:1.2.0"
 
     const val ktorClientAndroid = "io.ktor:ktor-client-android:$ktor"
     const val ktorClientGson = "io.ktor:ktor-client-gson:$ktor"
-    const val retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
-    const val converterGson = "com.squareup.retrofit2:converter-gson:2.9.0"
 }
 
 object TestLibraries {

@@ -30,7 +30,7 @@ import kotlinx.collections.immutable.toPersistentList
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-object PersistentListSerializer : JsonSerializer<PersistentList<*>>,
+internal object PersistentListSerializer : JsonSerializer<PersistentList<*>>,
     JsonDeserializer<PersistentList<*>> {
 
     override fun deserialize(
@@ -67,5 +67,5 @@ object PersistentListSerializer : JsonSerializer<PersistentList<*>>,
 private inline val Class<*>.isJsonPrimitive: Boolean
     get() = kotlin.javaPrimitiveType != null || this == String::class.java
 
-inline val JsonObject.type: Class<*>
+private inline val JsonObject.type: Class<*>
     get() = Class.forName(this["@type"].asString)

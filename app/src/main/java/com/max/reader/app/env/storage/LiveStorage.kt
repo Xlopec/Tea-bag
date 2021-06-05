@@ -31,48 +31,27 @@ import android.content.res.Configuration
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import com.max.reader.app.env.HasAppContext
-import com.max.reader.app.env.storage.local.HasMongoCollection
+import com.max.reader.app.env.storage.local.LocalStorage
 import com.max.reader.app.env.storage.network.ArticleElement
 import com.max.reader.app.env.storage.network.ArticleResponse
 import com.max.reader.app.env.storage.network.NewsApi
 import com.max.reader.domain.Article
 import com.max.reader.screens.article.list.Query
 import com.max.reader.screens.article.list.QueryType.*
-import com.mongodb.client.model.Filters.eq
-import com.mongodb.client.model.Filters.text
-import com.mongodb.client.model.ReplaceOptions
-import com.mongodb.client.model.TextSearchOptions
-import com.mongodb.client.model.UpdateOptions
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.bson.BsonDocument
-import org.bson.Document
-import org.bson.conversions.Bson
 import java.net.URL
 import java.util.*
-import kotlin.collections.ArrayList
 
-@Deprecated("wait until it'll be fixed")
-fun <Env> Storage(): Storage<Env> where Env : HasMongoCollection,
+@Deprecated("remove this")
+fun <Env> Storage(): Storage<Env> where Env : LocalStorage,
                                         Env : NewsApi,
                                         Env : HasAppContext,
                                         Env : HasGson = object : Storage<Env> {
 
-    override suspend fun Env.addToFavorite(article: Article) {
-        withContext(Dispatchers.IO) {
-            collection.replaceOne(
-                article.url.toEqPredicate(),
-                Document.parse(gson.toJson(article)),
-                ReplaceOptions.createReplaceOptions(UpdateOptions().upsert(true))
-            )
-        }
-    }
+    override suspend fun Env.addToFavorite(article: Article) =
+        insertArticle(article)
 
-    override suspend fun Env.removeFromFavorite(url: URL) {
-        withContext(Dispatchers.IO) {
-            collection.findOneAndDelete(url.toEqPredicate())
-        }
-    }
+    override suspend fun Env.removeFromFavorite(url: URL) =
+        deleteArticle(url)
 
     override suspend fun Env.fetch(
         query: Query,
@@ -132,15 +111,10 @@ fun <Env> Storage(): Storage<Env> where Env : HasMongoCollection,
     private suspend fun Env.fetchFavorite(
         input: String,
     ): Storage.Page =
-        withContext(Dispatchers.IO) {
-            Storage.Page(
-                articles = collection
-                    .find(input.toTextSearchFilter())
-                    .map { document -> gson.fromJson(document.toJson(), Article::class.java) }
-                    .into(ArrayList()),
-                hasMore = false
-            )
-        }
+        Storage.Page(
+            articles = findAllArticles(input),
+            hasMore = false
+        )
 
     private suspend fun Env.toArticles(
         articles: Iterable<ArticleElement>,
@@ -161,10 +135,7 @@ fun <Env> Storage(): Storage<Env> where Env : HasMongoCollection,
 
     private suspend fun Env.isFavorite(
         url: URL,
-    ): Boolean =
-        withContext(Dispatchers.IO) {
-            collection.countDocuments(url.toEqPredicate()) > 0
-        }
+    ): Boolean = isFavoriteArticle(url)
 }
 
 private inline val Application.countryCode: String
@@ -179,14 +150,5 @@ private inline val Configuration.countryCode: String
             locale.country
         }
 
-private fun String.toTextSearchFilter(): Bson =
-    if (isEmpty()) BsonDocument() else text(this, TextSearchOptions)
-
 private fun String.toInputQueryMap(): Map<String, String> =
     if (isEmpty()) emptyMap() else mapOf("q" to this)
-
-private val TextSearchOptions = TextSearchOptions()
-    .apply { caseSensitive(false) }
-
-private fun URL.toEqPredicate(): Bson =
-    eq("url", toExternalForm())

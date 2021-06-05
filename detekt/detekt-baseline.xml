@@ -24,7 +24,7 @@
     <ID>MatchingDeclarationName:HomeScreen.kt$BottomMenuItem</ID>
     <ID>MatchingDeclarationName:MapSerializer.kt$MapDeserializer : JsonDeserializer</ID>
     <ID>MatchingDeclarationName:Memoization.kt$Key7</ID>
-    <ID>MatchingDeclarationName:MongoDb.kt$HasMongoCollection</ID>
+    <ID>MatchingDeclarationName:LocalStorage.kt$HasMongoCollection</ID>
     <ID>MatchingDeclarationName:PersistentSerializer.kt$PersistentListSerializer : JsonSerializerJsonDeserializer</ID>
     <ID>MatchingDeclarationName:UpdateUI.kt$UiUpdater</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
