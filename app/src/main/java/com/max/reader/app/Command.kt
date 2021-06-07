@@ -27,43 +27,43 @@ package com.max.reader.app
 import com.max.reader.domain.Article
 import com.max.reader.screens.article.list.Query
 
-sealed class Command
+sealed interface Command
 
 // App wide commands
 
-object CloseApp : Command()
+object CloseApp : Command
 
 data class StoreDarkMode(
     val isEnabled: Boolean
-) : Command()
+) : Command
 
 // Article details commands
 
-sealed class ArticleDetailsCommand : Command()
+sealed interface ArticleDetailsCommand : Command
 
 data class DoOpenArticle(
     val article: Article,
-) : ArticleDetailsCommand()
+) : ArticleDetailsCommand
 
 // Feed screen commands
 
-sealed class ArticlesCommand : Command()
+sealed interface ArticlesCommand : Command
 
 data class LoadArticlesByQuery(
     val id: ScreenId,
     val query: Query,
     val currentSize: Int,
     val resultsPerPage: Int,
-) : ArticlesCommand()
+) : ArticlesCommand
 
 data class SaveArticle(
     val article: Article,
-) : ArticlesCommand()
+) : ArticlesCommand
 
 data class RemoveArticle(
     val article: Article,
-) : ArticlesCommand()
+) : ArticlesCommand
 
 data class DoShareArticle(
     val article: Article,
-) : ArticlesCommand()
+) : ArticlesCommand

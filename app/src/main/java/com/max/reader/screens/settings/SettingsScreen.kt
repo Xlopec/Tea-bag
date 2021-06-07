@@ -36,7 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.max.reader.app.AppState
-import com.max.reader.app.Message
+import com.max.reader.app.message.Message
 
 @Composable
 fun SettingsScreen(

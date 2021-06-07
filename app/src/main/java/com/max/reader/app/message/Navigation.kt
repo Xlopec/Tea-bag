@@ -22,52 +22,38 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app
+package com.max.reader.app.message
 
-import com.max.reader.app.NavigateToFavorite.id
-import com.max.reader.app.NavigateToFeed.id
-import com.max.reader.app.NavigateToSettings.id
-import com.max.reader.app.NavigateToTrending.id
+import com.max.reader.app.ScreenId
 import com.max.reader.domain.Article
 import com.max.reader.screens.settings.SettingsState
 import java.util.*
-import java.util.UUID.randomUUID
 
-sealed class Message
-
-sealed class Navigation : Message()
-
-object NavigateToFeed : Navigation() {
-    val id: ScreenId = randomUUID()
+sealed interface Navigation : Message {
+    val id: ScreenId
 }
-
-object NavigateToFavorite : Navigation() {
-    val id: ScreenId = randomUUID()
-}
-
-object NavigateToTrending : Navigation() {
-    val id: ScreenId = randomUUID()
-}
-
-object NavigateToSettings : Navigation() {
-    val id: ScreenId = SettingsState.id
-}
-
-object Pop : Navigation()
 
 data class NavigateToArticleDetails(
     val article: Article,
-    val screenId: UUID = randomUUID(),
-) : Navigation()
+    override val id: ScreenId = UUID.randomUUID(),
+) : Navigation
 
-abstract class ScreenMessage : Message()
+object NavigateToFavorite : Navigation {
+    override val id: ScreenId = UUID.randomUUID()
+}
 
-val Navigation.screenId: ScreenId?
-    get() = when (this) {
-        is NavigateToArticleDetails -> screenId
-        is NavigateToFavorite -> id
-        is NavigateToFeed -> id
-        is NavigateToSettings -> id
-        is NavigateToTrending -> id
-        Pop -> null
-    }
+object NavigateToFeed : Navigation {
+    override val id: ScreenId = UUID.randomUUID()
+}
+
+object NavigateToSettings : Navigation {
+    override val id: ScreenId = SettingsState.id
+}
+
+object NavigateToTrending : Navigation {
+    override val id: ScreenId = UUID.randomUUID()
+}
+
+object Pop : Navigation {
+    override val id: ScreenId = UUID.randomUUID()
+}

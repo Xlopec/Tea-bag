@@ -46,7 +46,7 @@ data class ArticlesState(
     val articles: List<Article>,
     val hasMoreArticles: Boolean,
     val transientState: TransientState,
-) : ScreenState() {
+) : ScreenState {
 
     sealed class TransientState {
         data class Exception(

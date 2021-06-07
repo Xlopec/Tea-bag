@@ -53,7 +53,6 @@ interface Environment :
     AppNavigation,
     CoroutineScope
 
-@Suppress("FunctionName")
 fun Environment(
     application: Application,
     scope: CoroutineScope,

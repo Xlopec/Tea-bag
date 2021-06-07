@@ -22,15 +22,8 @@
  * SOFTWARE.
  */
 
-package com.max.reader.screens.article.details
+package com.max.reader.app.message
 
-import com.max.reader.app.ScreenId
-import com.max.reader.app.message.ScreenMessage
+sealed interface Message
 
-sealed interface ArticleDetailsMessage : ScreenMessage {
-    val id: ScreenId
-}
-
-data class OpenInBrowser(
-    override val id: ScreenId
-) : ArticleDetailsMessage
+interface ScreenMessage : Message

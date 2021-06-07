@@ -35,6 +35,8 @@ import androidx.compose.runtime.remember
 import androidx.core.view.WindowCompat
 import com.max.reader.R
 import com.max.reader.app.*
+import com.max.reader.app.message.Message
+import com.max.reader.app.message.Pop
 import com.max.reader.misc.safe
 import com.max.reader.screens.article.details.ArticleDetailsState
 import com.max.reader.screens.article.details.ui.ArticleDetailsScreen

@@ -75,7 +75,6 @@ fun LocalStorage(
     context: Context,
 ): LocalStorage = object : LocalStorage {
 
-    private val context = context
     private val db by lazy { DbHelper(context).writableDatabase }
     private val sharedPreferences by lazy {
         context.getSharedPreferences(context.getString(R.string.app_name), MODE_PRIVATE)

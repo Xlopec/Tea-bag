@@ -68,7 +68,9 @@ class InternalException(
     cause: Throwable,
 ) : AppException(message, cause)
 
-suspend fun <Env> Env.toAppException(th: Throwable): AppException where Env : HasGson =
+suspend fun <Env> Env.toAppException(
+    th: Throwable
+): AppException where Env : HasGson =
     th.wrap { raw ->
         when (raw) {
             is IOException -> NetworkException(raw)

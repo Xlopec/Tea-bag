@@ -27,6 +27,7 @@
 package com.max.reader.app
 
 import com.max.reader.app.env.Environment
+import com.max.reader.app.message.NavigateToFeed
 import com.max.reader.screens.article.list.ArticlesState
 import com.max.reader.screens.article.list.Query
 import com.max.reader.screens.article.list.QueryType.Regular

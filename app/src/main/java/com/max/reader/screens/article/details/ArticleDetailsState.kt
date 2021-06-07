@@ -31,4 +31,4 @@ import com.max.reader.domain.Article
 data class ArticleDetailsState(
     override val id: ScreenId,
     val article: Article,
-) : ScreenState()
+) : ScreenState

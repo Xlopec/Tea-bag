@@ -28,6 +28,7 @@ package com.max.reader.app.resolve
 
 import com.max.reader.app.*
 import com.max.reader.app.env.storage.local.LocalStorage
+import com.max.reader.app.message.Message
 import com.max.reader.screens.article.details.resolve.ArticleDetailsResolver
 import com.max.reader.screens.article.list.resolve.ArticlesResolver
 import com.oliynick.max.tea.core.component.sideEffect
@@ -39,7 +40,9 @@ fun <Env> AppResolver(): AppResolver<Env> where Env : HasCommandTransport,
                                                 Env : LocalStorage,
                                                 Env : ArticleDetailsResolver<Env> =
     object : AppResolver<Env> {
-        override suspend fun Env.resolve(command: Command): Set<Message> =
+        override suspend fun Env.resolve(
+            command: Command,
+        ): Set<Message> =
             when (command) {
                 is CloseApp -> command.sideEffect { closeCommands.send(command) }
                 is ArticlesCommand -> resolve(command)

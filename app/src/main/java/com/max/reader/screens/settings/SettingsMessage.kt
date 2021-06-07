@@ -24,8 +24,8 @@
 
 package com.max.reader.screens.settings
 
-import com.max.reader.app.ScreenMessage
+import com.max.reader.app.message.ScreenMessage
 
-sealed class SettingsMessage : ScreenMessage()
+sealed interface SettingsMessage : ScreenMessage
 
-object ToggleDarkMode : SettingsMessage()
+object ToggleDarkMode : SettingsMessage

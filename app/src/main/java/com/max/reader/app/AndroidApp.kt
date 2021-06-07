@@ -30,6 +30,7 @@ package com.max.reader.app
 import android.app.Activity
 import android.app.Application
 import com.max.reader.app.env.Environment
+import com.max.reader.app.message.Message
 import com.max.reader.misc.unsafeLazy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

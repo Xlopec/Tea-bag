@@ -35,8 +35,8 @@ import kotlin.collections.ArrayList
 
 typealias ScreenId = UUID
 
-abstract class ScreenState {
-    abstract val id: ScreenId?
+interface ScreenState {
+    val id: ScreenId
 }
 
 data class AppState(
@@ -44,8 +44,10 @@ data class AppState(
     val screens: PersistentList<ScreenState>,
 ) {
 
-    constructor(screen: ScreenState, isNightModeEnabled: Boolean) :
-            this(isNightModeEnabled, persistentListOf(screen))
+    constructor(
+        screen: ScreenState,
+        isInDarkMode: Boolean
+    ) : this(isInDarkMode, persistentListOf(screen))
 
     init {
         require(screens.isNotEmpty())

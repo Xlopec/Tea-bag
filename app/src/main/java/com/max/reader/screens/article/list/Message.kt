@@ -25,49 +25,55 @@
 package com.max.reader.screens.article.list
 
 import com.max.reader.app.ScreenId
-import com.max.reader.app.ScreenMessage
 import com.max.reader.app.exception.AppException
+import com.max.reader.app.message.ScreenMessage
 import com.max.reader.domain.Article
 
-sealed class ArticlesMessage : ScreenMessage()
+sealed interface ArticlesMessage : ScreenMessage {
+    val id: ScreenId?
+}
 
 data class LoadNextArticles(
-    val id: ScreenId,
-) : ArticlesMessage()
+    override val id: ScreenId,
+) : ArticlesMessage
 
 data class LoadArticlesFromScratch(
-    val id: ScreenId,
-) : ArticlesMessage()
+    override val id: ScreenId,
+) : ArticlesMessage
 
 data class RefreshArticles(
-    val id: ScreenId,
-) : ArticlesMessage()
+    override val id: ScreenId,
+) : ArticlesMessage
 
 data class ToggleArticleIsFavorite(
-    val id: ScreenId,
+    override val id: ScreenId,
     val article: Article,
-) : ArticlesMessage()
+) : ArticlesMessage
 
 data class ArticlesLoaded(
-    val id: ScreenId,
+    override val id: ScreenId,
     val articles: List<Article>,
     val hasMore: Boolean,
-) : ArticlesMessage()
+) : ArticlesMessage
 
 data class ArticlesOperationException(
-    val id: ScreenId?,
+    override val id: ScreenId?,
     val cause: AppException,
-) : ArticlesMessage()
+) : ArticlesMessage
 
 data class ArticleUpdated(
     val article: Article,
-) : ArticlesMessage()
+) : ArticlesMessage {
+    override val id: Nothing? = null
+}
 
 data class ShareArticle(
     val article: Article,
-) : ArticlesMessage()
+) : ArticlesMessage {
+    override val id: Nothing? = null
+}
 
 data class OnQueryUpdated(
-    val id: ScreenId,
+    override val id: ScreenId,
     val query: String,
-) : ArticlesMessage()
+) : ArticlesMessage

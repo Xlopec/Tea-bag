@@ -25,7 +25,7 @@
 package com.max.reader.serialization
 
 import com.max.reader.app.AppState
-import com.max.reader.app.ScreenMessage
+import com.max.reader.app.message.ScreenMessage
 import com.max.reader.app.serialization.PersistentListSerializer
 import com.max.reader.domain.Article
 import com.max.reader.domain.Description

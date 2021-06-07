@@ -54,9 +54,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.insets.statusBarsPadding
-import com.max.reader.app.Message
-import com.max.reader.app.NavigateToArticleDetails
 import com.max.reader.app.ScreenId
+import com.max.reader.app.message.Message
+import com.max.reader.app.message.NavigateToArticleDetails
 import com.max.reader.domain.Article
 import com.max.reader.domain.Author
 import com.max.reader.domain.Description
@@ -447,7 +447,7 @@ private fun ArticlesError(
 ) {
     Message(
         modifier,
-        "Failed to load articles, message: '${message.decapitalize(Locale.getDefault())}'",
+        "Failed to load articles, message: '${message.replaceFirstChar { it.lowercase(Locale.getDefault()) }}'",
         "Retry"
     ) {
         onMessage(LoadArticlesFromScratch(id))
@@ -633,7 +633,7 @@ private val DateFormatter: SimpleDateFormat by lazy {
 }
 
 private fun Throwable.toReadableMessage() =
-    message?.decapitalize(Locale.getDefault()) ?: "unknown exception"
+    message?.replaceFirstChar { it.lowercase(Locale.getDefault()) } ?: "unknown exception"
 
 private fun Query.toScreenTitle(): String =
     when (type) {
