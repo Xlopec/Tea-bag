@@ -26,13 +26,16 @@
 
 package com.max.reader.app.env.storage.network
 
+import android.app.Application
+import android.content.res.Configuration
+import android.os.Build
 import com.google.gson.*
 import com.google.gson.annotations.SerializedName
+import com.max.reader.app.env.HasAppContext
+import com.max.reader.app.env.storage.Page
 import com.max.reader.app.env.storage.TypeAdapter
-import com.max.reader.domain.Author
-import com.max.reader.domain.Description
-import com.max.reader.domain.Title
-import com.max.reader.domain.tryCreate
+import com.max.reader.app.env.storage.local.LocalStorage
+import com.max.reader.domain.*
 import io.ktor.client.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.JsonSerializer
@@ -57,10 +60,26 @@ val ArticleAdapters = mapOf(
     Description::class to DescriptionAdapter
 )
 
-fun NewsApi(
+interface NewsApi<Env> {
+
+    suspend fun Env.fetchFromEverything(
+        input: String,
+        currentSize: Int,
+        resultsPerPage: Int,
+    ): Page
+
+    suspend fun Env.fetchTopHeadlines(
+        input: String,
+        currentSize: Int,
+        resultsPerPage: Int,
+    ): Page
+}
+
+fun <Env> NewsApi(
     gson: Gson,
     debug: Boolean,
-): NewsApi = object : NewsApi {
+): NewsApi<Env> where Env : LocalStorage,
+                      Env : HasAppContext = object : NewsApi<Env> {
 
     private val httpClient = HttpClient {
         install(JsonFeature) {
@@ -74,50 +93,30 @@ fun NewsApi(
         }
     }
 
-    override suspend fun fetchFromEverything(
-        page: Int,
-        pageSize: Int,
-        query: Map<String, String>,
-    ): ArticleResponse =
-        httpClient.get(EverythingRequest(page, pageSize, query))
+    override suspend fun Env.fetchFromEverything(
+        input: String,
+        currentSize: Int,
+        resultsPerPage: Int,
+    ): Page =
+        toPage(
+            httpClient.get(EverythingRequest(input, currentSize, resultsPerPage)),
+            currentSize, resultsPerPage
+        )
 
-    override suspend fun fetchTopHeadlines(
-        countryCode: String,
-        page: Int,
-        pageSize: Int,
-        query: Map<String, String>,
-    ): ArticleResponse =
-        httpClient.get(TopHeadlinesRequest(page, pageSize, countryCode, query))
+    override suspend fun Env.fetchTopHeadlines(
+        input: String,
+        currentSize: Int,
+        resultsPerPage: Int,
+    ): Page =
+        toPage(
+            httpClient.get(TopHeadlinesRequest(input, currentSize, resultsPerPage)),
+            currentSize,
+            resultsPerPage
+        )
+
 }
 
-private class GsonSerializer(
-    private val gson: Gson,
-) : JsonSerializer {
-
-    override fun write(data: Any, contentType: ContentType): OutgoingContent =
-        TextContent(gson.toJson(data), contentType)
-
-    override fun read(type: TypeInfo, body: Input): Any =
-        gson.fromJson(body.readText(), type.reifiedType)
-}
-
-interface NewsApi {
-
-    suspend fun fetchFromEverything(
-        page: Int,
-        pageSize: Int,
-        query: Map<String, String>,
-    ): ArticleResponse
-
-    suspend fun fetchTopHeadlines(
-        countryCode: String,
-        page: Int,
-        pageSize: Int,
-        query: Map<String, String>,
-    ): ArticleResponse
-}
-
-data class ArticleElement(
+private data class ArticleElement(
     @SerializedName("author")
     val author: Author?,
     @SerializedName("description")
@@ -132,12 +131,54 @@ data class ArticleElement(
     val urlToImage: URL?,
 )
 
-data class ArticleResponse(
+private data class ArticleResponse(
     @SerializedName("totalResults")
     val totalResults: Int,
     @SerializedName("articles")
     val articles: List<ArticleElement>,
 )
+
+private suspend fun <Env> Env.toPage(
+    response: ArticleResponse,
+    currentSize: Int,
+    resultsPerPage: Int,
+): Page where Env : LocalStorage {
+    val (total, results) = response
+    val skip = currentSize % resultsPerPage
+
+    val tail = if (skip == 0 || results.isEmpty()) results
+    else results.subList(skip, results.size)
+
+    return Page(toArticles(tail), currentSize + tail.size < total)
+}
+
+private suspend fun <Env> Env.toArticles(
+    articles: Iterable<ArticleElement>,
+) where Env : LocalStorage = articles.map { elem -> toArticle(elem) }
+
+private suspend fun <Env> Env.toArticle(
+    element: ArticleElement,
+) where Env : LocalStorage =
+    Article(
+        url = element.url,
+        title = element.title,
+        author = element.author,
+        description = element.description,
+        urlToImage = element.urlToImage,
+        isFavorite = isFavoriteArticle(element.url),
+        published = element.publishedAt
+    )
+
+private class GsonSerializer(
+    private val gson: Gson,
+) : JsonSerializer {
+
+    override fun write(data: Any, contentType: ContentType): OutgoingContent =
+        TextContent(gson.toJson(data), contentType)
+
+    override fun read(type: TypeInfo, body: Input): Any =
+        gson.fromJson(body.readText(), type.reifiedType)
+}
 
 private object StringAdapter : TypeAdapter<String> {
     override fun serialize(
@@ -215,9 +256,9 @@ private object DescriptionAdapter : TypeAdapter<Description> {
 }
 
 private fun EverythingRequest(
-    page: Int,
-    pageSize: Int,
-    query: Map<String, String>,
+    input: String,
+    currentSize: Int,
+    resultsPerPage: Int,
 ) = HttpRequestBuilder(
     scheme = HTTPS.name,
     host = "newsapi.org",
@@ -225,20 +266,20 @@ private fun EverythingRequest(
 ) {
     with(parameters) {
         append("apiKey", ApiKey)
-        append("page", page.toString())
-        append("pageSize", pageSize.toString())
+        append("page", ((currentSize / resultsPerPage) + 1).toString())
+        append("pageSize", resultsPerPage.toString())
 
-        query.forEach { (k, v) ->
-            append(k, v)
-        }
+        input.toInputQueryMap()
+            .forEach { (k, v) ->
+                append(k, v)
+            }
     }
 }
 
-private fun TopHeadlinesRequest(
-    page: Int,
-    pageSize: Int,
-    countryCode: String,
-    query: Map<String, String>,
+private fun HasAppContext.TopHeadlinesRequest(
+    input: String,
+    currentSize: Int,
+    resultsPerPage: Int,
 ) = HttpRequestBuilder(
     scheme = HTTPS.name,
     host = "newsapi.org",
@@ -246,12 +287,28 @@ private fun TopHeadlinesRequest(
 ) {
     with(parameters) {
         append("apiKey", ApiKey)
-        append("page", page.toString())
-        append("pageSize", pageSize.toString())
-        append("country", countryCode)
+        append("page", ((currentSize / resultsPerPage) + 1).toString())
+        append("pageSize", resultsPerPage.toString())
+        append("country", application.countryCode)
 
-        query.forEach { (k, v) ->
-            append(k, v)
-        }
+        input.toInputQueryMap()
+            .forEach { (k, v) ->
+                append(k, v)
+            }
     }
 }
+
+private inline val Application.countryCode: String
+    get() = resources.configuration.countryCode
+
+@Suppress("DEPRECATION")
+private inline val Configuration.countryCode: String
+    get() =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locales.get(0)?.country ?: Locale.ENGLISH.country
+        } else {
+            locale.country
+        }
+
+private fun String.toInputQueryMap(): Map<String, String> =
+    if (isEmpty()) emptyMap() else mapOf("q" to this)

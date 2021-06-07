@@ -30,7 +30,9 @@ import android.content.Intent
 import com.max.reader.app.*
 import com.max.reader.app.env.HasAppContext
 import com.max.reader.app.env.storage.HasGson
-import com.max.reader.app.env.storage.Storage
+import com.max.reader.app.env.storage.Page
+import com.max.reader.app.env.storage.local.LocalStorage
+import com.max.reader.app.env.storage.network.NewsApi
 import com.max.reader.app.exception.AppException
 import com.max.reader.app.exception.toAppException
 import com.max.reader.domain.Article
@@ -38,13 +40,15 @@ import com.max.reader.screens.article.list.ArticleUpdated
 import com.max.reader.screens.article.list.ArticlesLoaded
 import com.max.reader.screens.article.list.ArticlesOperationException
 import com.max.reader.screens.article.list.Query
+import com.max.reader.screens.article.list.QueryType.*
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
 
 @Deprecated("wait until it'll be fixed")
 fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : HasAppContext,
                                                               Env : HasGson,
-                                                              Env : Storage<Env> =
+                                                              Env : NewsApi<Env>,
+                                                              Env : LocalStorage =
     object : ArticlesResolver<Env> {
         override suspend fun Env.resolve(
             command: ArticlesCommand,
@@ -52,7 +56,10 @@ fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : HasAppContex
 
             suspend fun resolve() =
                 when (command) {
-                    is LoadArticlesByQuery -> fetch(command.id, command.query, command.currentSize, command.resultsPerPage)
+                    is LoadArticlesByQuery -> fetch(command.id,
+                        command.query,
+                        command.currentSize,
+                        command.resultsPerPage)
                     is SaveArticle -> store(command.article)
                     is RemoveArticle -> remove(command.article)
                     is DoShareArticle -> shareArticle(command)
@@ -65,7 +72,7 @@ fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : HasAppContex
         suspend fun Env.store(
             article: Article,
         ): Set<ScreenMessage> = effect {
-            addToFavorite(article)
+            insertArticle(article)
             ArticleUpdated(
                 article
             )
@@ -74,7 +81,7 @@ fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : HasAppContex
         suspend fun Env.remove(
             article: Article,
         ): Set<ScreenMessage> = effect {
-            removeFromFavorite(article.url)
+            deleteArticle(article.url)
             ArticleUpdated(
                 article
             )
@@ -84,7 +91,7 @@ fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : HasAppContex
             id: ScreenId,
             query: Query,
             currentSize: Int,
-            resultsPerPage: Int
+            resultsPerPage: Int,
         ): Set<ScreenMessage> = query.effect {
 
             val (articles, hasMore) = fetch(this, currentSize, resultsPerPage)
@@ -96,6 +103,16 @@ fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : HasAppContex
             command: DoShareArticle,
         ): Set<ScreenMessage> = command.sideEffect {
             application.startActivity(createShareIntent(article))
+        }
+
+        suspend fun Env.fetch(
+            query: Query,
+            currentSize: Int,
+            resultsPerPage: Int,
+        ): Page = when (query.type) {
+            Regular -> fetchFromEverything(query.input, currentSize, resultsPerPage)
+            Favorite -> findAllArticles(query.input)
+            Trending -> fetchTopHeadlines(query.input, currentSize, resultsPerPage)
         }
 
         fun createShareIntent(
@@ -115,14 +132,14 @@ fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : HasAppContex
             th: AppException,
             command: ArticlesCommand,
         ) = ArticlesOperationException(
-            command.screenId(),
+            command.screenId,
             th
         )
 
     }
 
-private fun ArticlesCommand.screenId(): ScreenId? =
-    when (this) {
+private val ArticlesCommand.screenId: ScreenId?
+    get() = when (this) {
         is LoadArticlesByQuery -> id
         is SaveArticle, is RemoveArticle, is DoShareArticle -> null
     }

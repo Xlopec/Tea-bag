@@ -38,13 +38,14 @@ import Libraries.composeRuntime
 import Libraries.composeUi
 import Libraries.composeUiTooling
 import Libraries.coroutinesAndroid
+import Libraries.gson
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
+import Libraries.kotlinStdLibReflect
 import Libraries.ktorClientAndroid
 import Libraries.ktorClientGson
 import Libraries.ktorClientLogging
 import Libraries.logback
-import Libraries.mongoDb
 import TestLibraries.espressoCore
 import TestLibraries.espressoRunner
 
@@ -54,6 +55,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("release") {
+            storeFile = file(getenvSafe("STORE_FILE") ?: "release.keystore")
+            storePassword = getenvSafe("STORE_PASSWORD")
+            keyPassword = getenvSafe("KEY_PASSWORD")
+            keyAlias = getenvSafe("KEY_ALIAS")
+        }
+    }
     compileSdk = 30
 
     defaultConfig {
@@ -66,7 +75,9 @@ android {
     }
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isShrinkResources = true
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -123,6 +134,8 @@ dependencies {
     remoteImplementation(project(":tea-time-travel-adapter-gson"))
 
     implementation(kotlinStdLib)
+    implementation(kotlinStdLibReflect)
+
     implementation(immutableCollections)
     implementation(coroutinesAndroid)
 
@@ -143,8 +156,7 @@ dependencies {
 
     implementation(appCompat)
 
-    implementation(mongoDb)
-
+    implementation(gson)
     implementation(ktorClientAndroid)
     implementation(ktorClientGson)
     implementation(ktorClientLogging)

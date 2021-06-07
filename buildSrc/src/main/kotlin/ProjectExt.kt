@@ -148,7 +148,7 @@ private fun Project.getPropertySafe(
 ): String? =
     properties[name]?.toString().takeUnless(CharSequence?::isNullOrEmpty)
 
-private fun getenvSafe(
+fun getenvSafe(
     name: String,
 ): String? =
     System.getenv(name).takeUnless(CharSequence?::isNullOrEmpty)

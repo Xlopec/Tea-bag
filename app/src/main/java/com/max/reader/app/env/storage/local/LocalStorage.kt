@@ -31,6 +31,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
+import com.max.reader.app.env.storage.Page
 import com.max.reader.domain.Article
 import com.max.reader.domain.Author
 import com.max.reader.domain.Description
@@ -52,7 +53,7 @@ interface LocalStorage {
 
     suspend fun findAllArticles(
         input: String,
-    ): List<Article>
+    ): Page
 
     suspend fun isFavoriteArticle(
         url: URL,
@@ -81,7 +82,7 @@ fun LocalStorage(
 
     override suspend fun findAllArticles(
         input: String
-    ): List<Article> =
+    ): Page =
         withContext(Dispatchers.IO) {
 
             val selectionColumns =
@@ -94,7 +95,7 @@ fun LocalStorage(
                 selectionArgs = if (input.isEmpty()) null else "%$input%" * selectionColumns.size,
                 orderBy = "rowid DESC"
             ).use(Cursor::toArticles)
-        }
+        }.let(::Page)
 
     override suspend fun isFavoriteArticle(
         url: URL,

@@ -29,6 +29,8 @@ import com.max.reader.app.Message
 
 interface ArticlesResolver<Env> {
 
-    suspend fun Env.resolve(command: ArticlesCommand): Set<Message>
+    suspend fun Env.resolve(
+        command: ArticlesCommand
+    ): Set<Message>
 
 }

@@ -26,6 +26,7 @@
 import Libraries.gson
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
+import Libraries.kotlinStdLibReflect
 
 plugins {
     publishedLibrary()
@@ -34,6 +35,7 @@ plugins {
 dependencies {
 
     api(project(":tea-time-travel-protocol"))
+    api(kotlinStdLibReflect)
     api(gson)
 
     implementation(kotlinStdLib)

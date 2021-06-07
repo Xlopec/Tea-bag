@@ -27,6 +27,7 @@ import Libraries.coroutinesCore
 import Libraries.coroutinesSwing
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
+import Libraries.kotlinStdLibReflect
 import Libraries.ktorServerCore
 import Libraries.ktorServerNetty
 import Libraries.ktorServerWebsockets
@@ -92,6 +93,7 @@ dependencies {
     implementation(project(":tea-time-travel-adapter-gson"))
 
     implementation(kotlinStdLib)
+    implementation(kotlinStdLibReflect)
 
     implementation(logback)
     implementation(ktorServerCore)

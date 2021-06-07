@@ -29,7 +29,6 @@ import com.max.reader.BuildConfig.DEBUG
 import com.max.reader.app.AppModule
 import com.max.reader.app.env.storage.Gson
 import com.max.reader.app.env.storage.HasGson
-import com.max.reader.app.env.storage.Storage
 import com.max.reader.app.env.storage.local.LocalStorage
 import com.max.reader.app.env.storage.network.ArticleAdapters
 import com.max.reader.app.env.storage.network.NewsApi
@@ -45,10 +44,9 @@ interface Environment :
     ArticleDetailsModule<Environment>,
     HasCommandTransport,
     HasAppContext,
-    NewsApi,
+    NewsApi<Environment>,
     LocalStorage,
     HasGson,
-    Storage<Environment>,
     CoroutineScope
 
 @Suppress("FunctionName")
@@ -64,11 +62,10 @@ fun Environment(
         ArticlesModule<Environment> by ArticlesModule(),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(),
         HasCommandTransport by CommandTransport(),
-        NewsApi by NewsApi(gson, DEBUG),
+        NewsApi<Environment> by NewsApi(gson, DEBUG),
         LocalStorage by LocalStorage(application),
         HasGson by Gson(gson),
         HasAppContext by AppContext(application),
-        Storage<Environment> by Storage(),
         CoroutineScope by scope {
     }
 }
