@@ -25,7 +25,9 @@
 package com.max.reader.screens.settings
 
 import com.max.reader.app.ScreenState
+import java.util.*
+import java.util.UUID.randomUUID
 
 object SettingsState : ScreenState() {
-    override val id: Nothing? = null
+    override val id: UUID = randomUUID()
 }

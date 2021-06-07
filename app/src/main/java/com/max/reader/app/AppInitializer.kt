@@ -26,28 +26,28 @@
 
 package com.max.reader.app
 
+import com.max.reader.app.env.Environment
 import com.max.reader.screens.article.list.ArticlesState
 import com.max.reader.screens.article.list.Query
-import com.max.reader.screens.article.list.QueryType
+import com.max.reader.screens.article.list.QueryType.Regular
+import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Initializer
-import java.util.*
 
-fun AppInitializer(
-    isDarkModeEnabled: Boolean,
-): Initializer<AppState, Command> {
+fun Environment.AppInitializer(): Initializer<AppState, Command> = {
 
     val initScreen = ArticlesState.newLoading(
-        UUID.randomUUID(),
-        Query("android", QueryType.Regular),
+        NavigateToFeed.id,
+        Query("android", Regular),
     )
 
-    return Initializer(
-        AppState(initScreen, isDarkModeEnabled),
-        LoadArticlesByQuery(
-            initScreen.id,
-            initScreen.query,
-            initScreen.articles.size,
-            ArticlesState.ArticlesPerPage
-        )
-    )
+    Initial(AppState(initScreen, isDarkModeEnabled()), initScreen.toInitialQuery())
 }
+
+private fun ArticlesState.toInitialQuery(
+    perPage: Int = ArticlesState.ArticlesPerPage,
+) = LoadArticlesByQuery(id, query, articles.size, perPage)
+
+private fun Initial(
+    appState: AppState,
+    vararg initialCommands: Command,
+) = Initial(appState, setOf(*initialCommands))

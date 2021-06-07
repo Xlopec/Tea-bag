@@ -33,6 +33,10 @@ sealed class Command
 
 object CloseApp : Command()
 
+data class StoreDarkMode(
+    val isEnabled: Boolean
+) : Command()
+
 // Article details commands
 
 sealed class ArticleDetailsCommand : Command()

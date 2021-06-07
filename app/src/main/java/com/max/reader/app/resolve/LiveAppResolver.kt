@@ -27,6 +27,7 @@
 package com.max.reader.app.resolve
 
 import com.max.reader.app.*
+import com.max.reader.app.env.storage.local.LocalStorage
 import com.max.reader.screens.article.details.resolve.ArticleDetailsResolver
 import com.max.reader.screens.article.list.resolve.ArticlesResolver
 import com.oliynick.max.tea.core.component.sideEffect
@@ -35,18 +36,18 @@ import kotlinx.coroutines.channels.BroadcastChannel
 @Deprecated("wait until it'll be fixed")
 fun <Env> AppResolver(): AppResolver<Env> where Env : HasCommandTransport,
                                                 Env : ArticlesResolver<Env>,
-                                                Env : ArticleDetailsResolver<Env> = object : AppResolver<Env> {
-    override suspend fun Env.resolve(command: Command): Set<Message> =
-        when (command) {
-            is CloseApp -> close(command)
-            is ArticlesCommand -> resolve(command)
-            is ArticleDetailsCommand -> resolve(command)
-        }
+                                                Env : LocalStorage,
+                                                Env : ArticleDetailsResolver<Env> =
+    object : AppResolver<Env> {
+        override suspend fun Env.resolve(command: Command): Set<Message> =
+            when (command) {
+                is CloseApp -> command.sideEffect { closeCommands.send(command) }
+                is ArticlesCommand -> resolve(command)
+                is ArticleDetailsCommand -> resolve(command)
+                is StoreDarkMode -> command.sideEffect { storeIsDarkModeEnabled(command.isEnabled) }
+            }
 
-    suspend fun Env.close(
-        command: CloseApp
-    ): Set<Message> = command.sideEffect { closeCommands.send(command) }
-}
+    }
 
 interface HasCommandTransport {
     val closeCommands: BroadcastChannel<CloseApp>

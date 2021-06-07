@@ -82,7 +82,7 @@ private fun AppState.render(
     onMessage: (Message) -> Unit,
 ) {
     AppTheme(
-        isDarkModeEnabled = isDarkModeEnabled
+        isDarkModeEnabled = isInDarkMode
     ) {
 
         BackHandler {

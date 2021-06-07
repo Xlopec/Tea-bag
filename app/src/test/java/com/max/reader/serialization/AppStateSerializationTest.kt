@@ -79,7 +79,7 @@ internal class AppStateSerializationTest {
     )
 
     private val testState = AppState(
-        isDarkModeEnabled = false,
+        isInDarkMode = false,
         screens = persistentListOf(
             previewScreenState,
             loadingScreenState

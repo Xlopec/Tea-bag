@@ -64,7 +64,7 @@ fun SettingsScreen(
 
                 Icon(
                     contentDescription = "Dark Mode",
-                    imageVector = if (state.isDarkModeEnabled) Icons.Default.Brightness3 else Icons.Default.Brightness5
+                    imageVector = if (state.isInDarkMode) Icons.Default.Brightness3 else Icons.Default.Brightness5
                 )
 
                 Column {
@@ -76,7 +76,7 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "${if (state.isDarkModeEnabled) "Dis" else "En"}ables dark mode in the app",
+                        text = "${if (state.isInDarkMode) "Dis" else "En"}ables dark mode in the app",
                         style = MaterialTheme.typography.body1
                     )
                 }
@@ -84,7 +84,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.weight(weight = 1f, fill = false))
 
                 Switch(
-                    checked = state.isDarkModeEnabled,
+                    checked = state.isInDarkMode,
                     onCheckedChange = { onMessage(ToggleDarkMode) }
                 )
             }

@@ -31,7 +31,6 @@ import android.app.Activity
 import android.app.Application
 import com.max.reader.app.env.Environment
 import com.max.reader.misc.unsafeLazy
-import com.max.reader.ui.isDarkModeEnabled
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -47,7 +46,7 @@ class AndroidApp : Application(), CoroutineScope by AppComponentScope {
         Environment(this, this)
     }
 
-    val component by unsafeLazy { environment.AppComponent(AppInitializer(isDarkModeEnabled)) }
+    val component by unsafeLazy { with(environment) { AppComponent(AppInitializer()) } }
 
     val messages = BroadcastChannel<Message>(1)
 

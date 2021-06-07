@@ -40,7 +40,7 @@ abstract class ScreenState {
 }
 
 data class AppState(
-    val isDarkModeEnabled: Boolean,
+    val isInDarkMode: Boolean,
     val screens: PersistentList<ScreenState>,
 ) {
 

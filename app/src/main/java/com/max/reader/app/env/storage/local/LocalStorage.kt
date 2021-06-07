@@ -28,14 +28,17 @@ package com.max.reader.app.env.storage.local
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
+import com.max.reader.R
 import com.max.reader.app.env.storage.Page
 import com.max.reader.domain.Article
 import com.max.reader.domain.Author
 import com.max.reader.domain.Description
 import com.max.reader.domain.Title
+import com.max.reader.ui.isDarkModeEnabled
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -58,13 +61,25 @@ interface LocalStorage {
     suspend fun isFavoriteArticle(
         url: URL,
     ): Boolean
+
+    suspend fun isDarkModeEnabled(): Boolean
+
+    suspend fun storeIsDarkModeEnabled(
+        isEnabled: Boolean,
+    )
 }
+
+private const val DARK_MODE_ENABLED = "darkModeEnabled"
 
 fun LocalStorage(
     context: Context,
 ): LocalStorage = object : LocalStorage {
 
+    private val context = context
     private val db by lazy { DbHelper(context).writableDatabase }
+    private val sharedPreferences by lazy {
+        context.getSharedPreferences(context.getString(R.string.app_name), MODE_PRIVATE)
+    }
 
     override suspend fun insertArticle(
         article: Article,
@@ -81,7 +96,7 @@ fun LocalStorage(
     }
 
     override suspend fun findAllArticles(
-        input: String
+        input: String,
     ): Page =
         withContext(Dispatchers.IO) {
 
@@ -107,6 +122,16 @@ fun LocalStorage(
                 selection = "$_Url = ?",
                 selectionArgs = arrayOf(url.toExternalForm())
             ).use { c -> c.count > 0 }
+        }
+
+    override suspend fun isDarkModeEnabled(): Boolean =
+        withContext(Dispatchers.IO) {
+            context.isDarkModeEnabled || sharedPreferences.getBoolean(DARK_MODE_ENABLED, false)
+        }
+
+    override suspend fun storeIsDarkModeEnabled(isEnabled: Boolean) =
+        withContext(Dispatchers.IO) {
+            sharedPreferences.edit().putBoolean(DARK_MODE_ENABLED, isEnabled).apply()
         }
 }
 
@@ -154,15 +179,15 @@ private fun SQLiteDatabase.query(
 ) = query(table, columns, selection, selectionArgs, groupBy, having, orderBy)
 
 private fun Cursor.getString(
-    name: String
+    name: String,
 ): String? = getString(getColumnIndex(name))
 
 private fun Cursor.getLong(
-    name: String
+    name: String,
 ): Long = getLong(getColumnIndex(name))
 
 private fun Cursor.getBoolean(
-    name: String
+    name: String,
 ): Boolean = getInt(getColumnIndex(name)) != 0
 
 private infix operator fun String.times(

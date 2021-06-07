@@ -26,8 +26,10 @@
 
 package com.max.reader.app
 
+import com.max.reader.app.env.storage.local.LocalStorage
 import com.max.reader.app.resolve.AppResolver
 import com.max.reader.app.resolve.HasCommandTransport
+import com.max.reader.app.update.AppNavigation
 import com.max.reader.app.update.AppUpdater
 import com.max.reader.screens.article.details.resolve.ArticleDetailsResolver
 import com.max.reader.screens.article.details.update.ArticleDetailsUpdater
@@ -40,8 +42,11 @@ fun <Env> AppModule(): AppModule<Env> where Env : HasCommandTransport,
                                             Env : ArticlesResolver<Env>,
                                             Env : ArticleDetailsResolver<Env>,
                                             Env : ArticlesUpdater,
+                                            Env : LocalStorage,
+                                            Env : AppNavigation,
                                             Env : ArticleDetailsUpdater =
     object : AppModule<Env>,
+        AppNavigation by AppNavigation(),
         AppUpdater<Env> by AppUpdater(),
         AppResolver<Env> by AppResolver() {
 

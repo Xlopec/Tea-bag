@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+@file:Suppress("FunctionName")
+
 package com.max.reader.app.env
 
 import android.app.Application
@@ -34,6 +36,7 @@ import com.max.reader.app.env.storage.network.ArticleAdapters
 import com.max.reader.app.env.storage.network.NewsApi
 import com.max.reader.app.resolve.CommandTransport
 import com.max.reader.app.resolve.HasCommandTransport
+import com.max.reader.app.update.AppNavigation
 import com.max.reader.screens.article.details.ArticleDetailsModule
 import com.max.reader.screens.article.list.ArticlesModule
 import kotlinx.coroutines.CoroutineScope
@@ -47,6 +50,7 @@ interface Environment :
     NewsApi<Environment>,
     LocalStorage,
     HasGson,
+    AppNavigation,
     CoroutineScope
 
 @Suppress("FunctionName")
@@ -55,7 +59,7 @@ fun Environment(
     scope: CoroutineScope,
 ): Environment {
 
-    val gson = buildGson()
+    val gson = BuildGson()
 
     return object : Environment,
         AppModule<Environment> by AppModule(),
@@ -70,7 +74,7 @@ fun Environment(
     }
 }
 
-private fun buildGson() =
+private fun BuildGson() =
     AppGson {
         setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 
