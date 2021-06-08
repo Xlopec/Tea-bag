@@ -42,7 +42,7 @@ import Libraries.gson
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
 import Libraries.kotlinStdLibReflect
-import Libraries.ktorClientAndroid
+import Libraries.ktorClientCio
 import Libraries.ktorClientGson
 import Libraries.ktorClientLogging
 import Libraries.logback
@@ -157,7 +157,7 @@ dependencies {
     implementation(appCompat)
 
     implementation(gson)
-    implementation(ktorClientAndroid)
+    implementation(ktorClientCio)
     implementation(ktorClientGson)
     implementation(ktorClientLogging)
     implementation(logback)

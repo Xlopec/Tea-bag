@@ -23,7 +23,7 @@
  */
 
 import Libraries.kotlinStdLib
-import Libraries.ktorClientOkHttp
+import Libraries.ktorClientCio
 import Libraries.ktorClientWebsockets
 import TestLibraries.ktorMockJvm
 
@@ -39,7 +39,7 @@ dependencies {
     implementation(kotlinStdLib)
 
     implementation(ktorClientWebsockets)
-    implementation(ktorClientOkHttp)
+    implementation(ktorClientCio)
 
     testImplementation(project(":tea-test"))
     testImplementation(project(":tea-time-travel-adapter-gson"))

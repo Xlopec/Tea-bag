@@ -49,8 +49,9 @@ object Libraries {
     const val ktorServerWebsockets = "io.ktor:ktor-websockets:$ktor"
 
     const val ktorClientWebsockets = "io.ktor:ktor-client-websockets:$ktor"
-    const val ktorClientOkHttp = "io.ktor:ktor-client-okhttp:$ktor"
+    const val ktorClientCio = "io.ktor:ktor-client-cio:$ktor"
     const val ktorClientLogging = "io.ktor:ktor-client-logging:$ktor"
+    const val ktorClientGson = "io.ktor:ktor-client-gson:$ktor"
     const val gson = "com.google.code.gson:gson:2.8.7"
 
     const val logback = "ch.qos.logback:logback-classic:1.2.3"
@@ -75,9 +76,6 @@ object Libraries {
         "com.google.accompanist:accompanist-swiperefresh:$accompanies"
 
     const val appCompat = "androidx.appcompat:appcompat:1.2.0"
-
-    const val ktorClientAndroid = "io.ktor:ktor-client-android:$ktor"
-    const val ktorClientGson = "io.ktor:ktor-client-gson:$ktor"
 }
 
 object TestLibraries {

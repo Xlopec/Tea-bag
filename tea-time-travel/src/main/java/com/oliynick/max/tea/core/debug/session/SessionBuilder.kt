@@ -29,6 +29,7 @@ package com.oliynick.max.tea.core.debug.session
 import com.oliynick.max.tea.core.debug.component.ServerSettings
 import com.oliynick.max.tea.core.debug.component.URL
 import io.ktor.client.*
+import io.ktor.client.engine.cio.*
 import io.ktor.client.features.websocket.*
 import io.ktor.http.*
 import java.net.URL
@@ -75,7 +76,7 @@ public suspend inline fun <reified M, reified S, J> WebSocketSession(
 }
 
 @PublishedApi
-internal val HttpClient: HttpClient by lazy { HttpClient { install(WebSockets) } }
+internal val HttpClient: HttpClient by lazy { HttpClient(CIO) { install(WebSockets) } }
 
 @PublishedApi
 internal val Localhost: URL by lazy(::URL)
