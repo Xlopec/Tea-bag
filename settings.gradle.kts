@@ -1,3 +1,4 @@
+include(":demo-lib")
 
 include(
     ":app",
