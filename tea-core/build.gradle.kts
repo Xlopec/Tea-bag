@@ -26,14 +26,36 @@ import Libraries.coroutinesCore
 import Libraries.kotlinStdLib
 
 plugins {
-    publishedLibrary()
+    `maven-publish`
+    signing
+    id("org.jetbrains.dokka")
+    kotlin("multiplatform")
 }
 
-dependencies {
+kotlin {
 
-    api(coroutinesCore)
+    explicitApi()
 
-    implementation(kotlinStdLib)
+    jvm {
+        withJava()
+    }
 
-    testImplementation(project(":tea-test"))
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                api(coroutinesCore)
+                implementation(kotlinStdLib)
+            }
+        }
+
+        val commonTest by getting
+
+        val jvmMain by getting
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(project(":tea-test"))
+            }
+        }
+    }
 }

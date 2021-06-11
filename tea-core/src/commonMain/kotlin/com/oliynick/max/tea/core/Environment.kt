@@ -54,7 +54,7 @@ public data class Env<M, S, C>(
     val updater: Updater<M, S, C>,
     // todo: group to reduce number of arguments
     val scope: CoroutineScope,
-    val io: CoroutineDispatcher = Dispatchers.IO,
+    val io: CoroutineDispatcher = IO,
     val computation: CoroutineDispatcher = Dispatchers.Unconfined,
     val shareOptions: ShareOptions = ShareStateWhileSubscribed,
 )
@@ -70,6 +70,11 @@ public data class ShareOptions(
     val started: SharingStarted,
     val replay: UInt,
 )
+
+/**
+ * Platform-specific IO dispatcher implementation
+ */
+public expect val IO: CoroutineDispatcher
 
 @UnstableApi
 public val ShareStateWhileSubscribed: ShareOptions =
