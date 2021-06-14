@@ -22,43 +22,17 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
-
-package com.oliynick.max.tea.core.debug.gson
-
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.debug.protocol.JsonConverter
-import kotlin.reflect.KClass
+package com.oliynick.max.tea.core.debug.protocol
 
 /**
- * Configures and creates a new [converter][GsonConverter] instance
+ * Component identifier, it can be any non blank and non empty string
+ *
+ * @param value raw identifier value
  */
-public fun GsonSerializer(
-    config: GsonBuilder.() -> Unit = {}
-): JsonConverter<JsonElement> = GsonConverter(Gson(config))
-
-private class GsonConverter(
-    private val gson: Gson
-) : JsonConverter<JsonElement> {
-
-    override fun <T> toJsonTree(
-        any: T
-    ): JsonElement = gson.toJsonTree(any)
-
-    override fun <T : Any> fromJsonTree(
-        json: JsonElement,
-        cl: KClass<T>
-    ): T = gson.fromJson(json, cl.java)
-
-    override fun <T> toJson(
-        any: T
-    ): String = gson.toJson(any)
-
-    override fun <T : Any> fromJson(
-        json: String,
-        cl: KClass<T>
-    ): T = gson.fromJson(json, cl.java)
-
+public data class ComponentId(
+    public val value: String,
+) {
+    init {
+        require(value.isNotBlank() && value.isNotEmpty())
+    }
 }

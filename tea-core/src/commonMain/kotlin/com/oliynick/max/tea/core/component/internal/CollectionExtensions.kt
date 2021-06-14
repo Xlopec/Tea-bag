@@ -24,9 +24,13 @@
 
 package com.oliynick.max.tea.core.component.internal
 
-import kotlinx.coroutines.*
+import com.oliynick.max.tea.core.IO
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 internal suspend fun <T, R> Iterable<T>.parMapTo(
-    dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    dispatcher: CoroutineDispatcher = IO,
     mapper: suspend (T) -> R
 ) = coroutineScope { map { t -> async(dispatcher) { mapper(t) } }.awaitAll() }

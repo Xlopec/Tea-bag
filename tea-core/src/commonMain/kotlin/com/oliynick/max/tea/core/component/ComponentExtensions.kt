@@ -155,7 +155,7 @@ public suspend inline infix fun <C, M> C.sideEffect(
  */
 public suspend inline infix fun <C, M> C.effect(
     crossinline action: suspend C.() -> M?,
-): Set<M> = action(this@effect)?.let(::setOf) ?: emptySet()
+): Set<M> = action(this@effect)?.let { setOf(it) } ?: emptySet()
 
 /**
  * Transforms component into flow of snapshots

@@ -1,6 +1,5 @@
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URL
-import java.util.*
 
 plugins {
     `maven-publish`

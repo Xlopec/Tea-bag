@@ -28,8 +28,8 @@ package com.oliynick.max.tea.core.debug.gson
 
 import com.google.gson.*
 import com.oliynick.max.tea.core.debug.protocol.*
+import com.oliynick.max.tea.core.debug.protocol.UUID
 import java.lang.reflect.Type
-import java.util.*
 
 internal object UUIDAdapter : JsonSerializer<UUID>, JsonDeserializer<UUID> {
 
@@ -37,7 +37,7 @@ internal object UUIDAdapter : JsonSerializer<UUID>, JsonDeserializer<UUID> {
         src: UUID,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement = JsonPrimitive(src.toString())
+    ): JsonElement = JsonPrimitive(src.toHumanReadable())
 
     override fun deserialize(
         json: JsonElement,

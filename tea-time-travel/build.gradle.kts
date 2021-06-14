@@ -28,10 +28,49 @@ import Libraries.ktorClientWebsockets
 import TestLibraries.ktorMockJvm
 
 plugins {
-    publishedLibrary()
+    `maven-publish`
+    signing
+    id("org.jetbrains.dokka")
+    kotlin("multiplatform")
 }
 
-dependencies {
+kotlin {
+
+    explicitApi()
+
+    jvm {
+        withJava()
+    }
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(project(":tea-core"))
+                api(project(":tea-time-travel-protocol"))
+
+                implementation(kotlinStdLib)
+
+                implementation(ktorClientWebsockets)
+                implementation(ktorClientCio)
+            }
+        }
+
+        val commonTest by getting
+
+        val jvmMain by getting
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(project(":tea-test"))
+                implementation(project(":tea-time-travel-adapter-gson"))
+                implementation(ktorMockJvm)
+            }
+        }
+    }
+}
+
+
+/*dependencies {
 
     implementation(project(":tea-core"))
     api(project(":tea-time-travel-protocol"))
@@ -45,4 +84,4 @@ dependencies {
     testImplementation(project(":tea-time-travel-adapter-gson"))
     testImplementation(ktorMockJvm)
 
-}
+}*/

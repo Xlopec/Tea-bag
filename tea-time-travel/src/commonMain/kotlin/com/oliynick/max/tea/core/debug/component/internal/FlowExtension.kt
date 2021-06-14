@@ -22,43 +22,28 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+package com.oliynick.max.tea.core.debug.component.internal
 
-package com.oliynick.max.tea.core.debug.gson
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.debug.protocol.JsonConverter
-import kotlin.reflect.KClass
+internal fun <T> Flow<T>.mergeWith(
+    another: Flow<T>
+): Flow<T> = channelFlow {
+    coroutineScope {
+        launch {
+            another.collect {
+                send(it)
+            }
+        }
 
-/**
- * Configures and creates a new [converter][GsonConverter] instance
- */
-public fun GsonSerializer(
-    config: GsonBuilder.() -> Unit = {}
-): JsonConverter<JsonElement> = GsonConverter(Gson(config))
-
-private class GsonConverter(
-    private val gson: Gson
-) : JsonConverter<JsonElement> {
-
-    override fun <T> toJsonTree(
-        any: T
-    ): JsonElement = gson.toJsonTree(any)
-
-    override fun <T : Any> fromJsonTree(
-        json: JsonElement,
-        cl: KClass<T>
-    ): T = gson.fromJson(json, cl.java)
-
-    override fun <T> toJson(
-        any: T
-    ): String = gson.toJson(any)
-
-    override fun <T : Any> fromJson(
-        json: String,
-        cl: KClass<T>
-    ): T = gson.fromJson(json, cl.java)
-
+        launch {
+            collect {
+                send(it)
+            }
+        }
+    }
 }

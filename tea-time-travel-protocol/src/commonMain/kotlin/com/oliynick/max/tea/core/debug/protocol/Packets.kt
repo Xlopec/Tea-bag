@@ -22,43 +22,35 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+@file:Suppress("unused")
 
-package com.oliynick.max.tea.core.debug.gson
-
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.debug.protocol.JsonConverter
-import kotlin.reflect.KClass
+package com.oliynick.max.tea.core.debug.protocol
 
 /**
- * Configures and creates a new [converter][GsonConverter] instance
+ * Message that notifies a debug server about component's state changes
+ *
+ * @param messageId message identifier
+ * @param componentId component identifier
+ * @param payload payload that tells a debug server how to process this message
+ * @param J json specific implementation
  */
-public fun GsonSerializer(
-    config: GsonBuilder.() -> Unit = {}
-): JsonConverter<JsonElement> = GsonConverter(Gson(config))
+public data class NotifyServer<out J>(
+    val messageId: UUID,
+    val componentId: ComponentId,
+    val payload: ServerMessage<J>,
+)
 
-private class GsonConverter(
-    private val gson: Gson
-) : JsonConverter<JsonElement> {
+/**
+ * Message that tells a client to apply changes
+ *
+ * @param id message identifier
+ * @param component component identifier
+ * @param message payload that tells client how to process this message
+ * @param J json specific implementation
+ */
+public data class NotifyClient<out J>(
+    val id: UUID,
+    val component: ComponentId,
+    val message: ClientMessage<J>,
+)
 
-    override fun <T> toJsonTree(
-        any: T
-    ): JsonElement = gson.toJsonTree(any)
-
-    override fun <T : Any> fromJsonTree(
-        json: JsonElement,
-        cl: KClass<T>
-    ): T = gson.fromJson(json, cl.java)
-
-    override fun <T> toJson(
-        any: T
-    ): String = gson.toJson(any)
-
-    override fun <T : Any> fromJson(
-        json: String,
-        cl: KClass<T>
-    ): T = gson.fromJson(json, cl.java)
-
-}
