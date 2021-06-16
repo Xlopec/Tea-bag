@@ -1,3 +1,4 @@
+include(":shared-app-lib")
 
 include(
     ":app",

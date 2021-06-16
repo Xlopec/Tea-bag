@@ -24,6 +24,7 @@
 
 import Libraries.coroutinesCore
 import Libraries.kotlinStdLib
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     `maven-publish`
@@ -40,10 +41,24 @@ kotlin {
         withJava()
     }
 
+    val iosTarget: (String, KotlinNativeTarget.() -> Unit) -> KotlinNativeTarget =
+        if (System.getenv("SDK_NAME")?.startsWith("iphoneos") == true)
+            ::iosArm64
+        else
+            ::iosX64
+
+    iosTarget("ios") {
+        binaries {
+            framework {
+                baseName = "TeaCore"
+            }
+        }
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(coroutinesCore)
+                api(coroutinesCore + "-native-mt")
                 implementation(kotlinStdLib)
             }
         }
@@ -57,5 +72,28 @@ kotlin {
                 implementation(project(":tea-test"))
             }
         }
+
+        val iosMain by getting {
+            dependencies {
+                //implementation(kotlinStdLib)
+                //dependsOn(commonMain)
+                //org.jetbrains.kotlinx:kotlinx-coroutines-core-iosx64:1.5.0-native-mt'
+                //api("org.jetbrains.kotlinx:kotlinx-coroutines-core-iosx64:1.5.0")
+            }
+        }
+        val iosTest by getting
     }
 }
+
+val packForXcode by tasks.creating(Sync::class) {
+    group = "build"
+    val mode = System.getenv("CONFIGURATION") ?: "DEBUG"
+    val framework = kotlin.targets.getByName<KotlinNativeTarget>("ios").binaries.getFramework(mode)
+    inputs.property("mode", mode)
+    dependsOn(framework.linkTask)
+    val targetDir = File(buildDir, "xcode-frameworks")
+    from({ framework.outputDirectory })
+    into(targetDir)
+}
+
+tasks.getByName("build").dependsOn(packForXcode)
