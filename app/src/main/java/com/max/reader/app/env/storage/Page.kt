@@ -24,7 +24,7 @@
 
 package com.max.reader.app.env.storage
 
-import com.max.reader.domain.Article
+import com.oliynick.max.reader.domain.Article
 
 data class Page(
     val articles: List<Article>,

@@ -36,12 +36,12 @@ import com.max.reader.app.env.storage.network.NewsApi
 import com.max.reader.app.exception.AppException
 import com.max.reader.app.exception.toAppException
 import com.max.reader.app.message.ScreenMessage
-import com.max.reader.domain.Article
 import com.max.reader.screens.article.list.ArticleUpdated
 import com.max.reader.screens.article.list.ArticlesLoaded
 import com.max.reader.screens.article.list.ArticlesOperationException
 import com.max.reader.screens.article.list.Query
 import com.max.reader.screens.article.list.QueryType.*
+import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
 

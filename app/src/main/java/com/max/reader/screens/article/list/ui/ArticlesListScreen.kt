@@ -57,16 +57,12 @@ import com.google.accompanist.insets.statusBarsPadding
 import com.max.reader.app.ScreenId
 import com.max.reader.app.message.Message
 import com.max.reader.app.message.NavigateToArticleDetails
-import com.max.reader.domain.Article
-import com.max.reader.domain.Author
-import com.max.reader.domain.Description
-import com.max.reader.domain.Title
 import com.max.reader.misc.safe
 import com.max.reader.screens.article.list.*
 import com.max.reader.screens.article.list.ArticlesState.TransientState.*
 import com.max.reader.screens.article.list.QueryType.*
 import com.max.reader.ui.theme.ThemedPreview
-import java.net.URL
+import com.oliynick.max.reader.domain.*
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.ui.tooling.preview.Preview as Render
@@ -300,7 +296,7 @@ private fun LazyListScope.ArticlesContentNonEmptyImpl(
         Spacer(modifier = Modifier.height(16.dp))
     }
 
-    itemsIndexed(articles, { _, item -> item.url }) { index, article ->
+    itemsIndexed(articles, { _, item -> item.url.toExternalForm() }) { index, article ->
         Column {
             ArticleItem(
                 screenId = id,
@@ -324,7 +320,7 @@ private fun LazyListScope.ArticlesContentNonEmptyImpl(
 
 @Composable
 private fun ArticleImage(
-    imageUrl: URL?,
+    imageUrl: Url?,
 ) {
     Surface(
         modifier = Modifier
@@ -386,15 +382,17 @@ private fun ArticleContents(
             style = typography.h6
         )
 
-        if (article.author != null) {
+        val author = article.author
+
+        if (author != null) {
             Text(
-                text = article.author.value,
+                text = author.value,
                 style = typography.subtitle2
             )
         }
 
         Text(
-            text = "Published on ${DateFormatter.format(article.published)}",
+            text = "Published on ${DateFormatter.format(article.published.impl)}",
             style = typography.body2
         )
 
@@ -650,14 +648,14 @@ private fun QueryType.toSearchHint(): String =
     }
 
 private val ArticleSamplePreview = Article(
-    url = URL("https://www.google.com"),
+    url = Url.fromString("https://www.google.com"),
     title = Title("Jetpack Compose app"),
     author = Author("Max Oliinyk"),
     description = Description("Let your imagination fly! Modifiers let you modify your composable " +
             "in a very flexible way. For example, if you wanted to add some outer spacing, change " +
             "the background color of the composable, and round the corners of the Row, you could " +
             "use the following code"),
-    published = Date(),
+    published = CommonDate.now(),
     isFavorite = true,
-    urlToImage = URL("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png")
+    urlToImage = Url.fromString("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png")
 )

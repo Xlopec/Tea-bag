@@ -35,7 +35,8 @@ import com.max.reader.app.env.HasAppContext
 import com.max.reader.app.env.storage.Page
 import com.max.reader.app.env.storage.TypeAdapter
 import com.max.reader.app.env.storage.local.LocalStorage
-import com.max.reader.domain.*
+import com.oliynick.max.reader.domain.*
+import com.oliynick.max.reader.domain.Url
 import io.ktor.client.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.JsonSerializer
@@ -47,14 +48,15 @@ import io.ktor.http.content.*
 import io.ktor.util.reflect.*
 import io.ktor.utils.io.core.*
 import java.lang.reflect.Type
-import java.net.URL
 import java.util.*
+import java.net.URL as JavaURL
+import java.util.Date as JavaDate
 
 private const val ApiKey = "08a7e13902bf4cffab115365071e3850"
 
 val ArticleAdapters = mapOf(
     String::class to StringAdapter,
-    URL::class to URLAdapter,
+    JavaURL::class to URLAdapter,
     Title::class to TitleAdapter,
     Author::class to AuthorAdapter,
     Description::class to DescriptionAdapter
@@ -122,13 +124,13 @@ private data class ArticleElement(
     @SerializedName("description")
     val description: Description?,
     @SerializedName("publishedAt")
-    val publishedAt: Date,
+    val publishedAt: JavaDate,
     @SerializedName("title")
     val title: Title,
     @SerializedName("url")
-    val url: URL,
+    val url: JavaURL,
     @SerializedName("urlToImage")
-    val urlToImage: URL?,
+    val urlToImage: JavaURL?,
 )
 
 private data class ArticleResponse(
@@ -159,14 +161,15 @@ private suspend fun <Env> Env.toArticles(
 private suspend fun <Env> Env.toArticle(
     element: ArticleElement,
 ) where Env : LocalStorage =
+    // todo remove conversion
     Article(
-        url = element.url,
+        url = Url(element.url),
         title = element.title,
         author = element.author,
         description = element.description,
-        urlToImage = element.urlToImage,
+        urlToImage = element.urlToImage?.let(::Url),
         isFavorite = isFavoriteArticle(element.url),
-        published = element.publishedAt
+        published = CommonDate(element.publishedAt)
     )
 
 private class GsonSerializer(
@@ -195,9 +198,9 @@ private object StringAdapter : TypeAdapter<String> {
     ) = json.asString?.takeUnless(CharSequence::isNullOrEmpty)
 }
 
-private object URLAdapter : TypeAdapter<URL> {
+private object URLAdapter : TypeAdapter<JavaURL> {
     override fun serialize(
-        src: URL,
+        src: JavaURL,
         typeOfSrc: Type?,
         context: JsonSerializationContext?,
     ) =
@@ -207,7 +210,7 @@ private object URLAdapter : TypeAdapter<URL> {
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext?,
-    ) = URL(json.asString)
+    ) = JavaURL(json.asString)
 }
 
 private object TitleAdapter : TypeAdapter<Title> {

@@ -1,6 +1,6 @@
 import UIKit
 import SwiftUI
-import TeaCore
+//import tea_core
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -8,7 +8,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
-        TestFunctionsKt.foo1()
+        /* TestFunctionsKt.foo1()
         TestFunctionsKt.foo2 { (xy) -> String in
             xy.stringValue
         }
@@ -46,7 +46,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         component(TestFunctionsKt.someFlow())
             .collect(collector: CollectorImpl()) { r, e in
                 print("Collected r=\(r), e=\(e)")
-            }
+            }*/
         /*TestFunctionsKt.suspendingFooTakingSuspendingFun(
             f: {KotlinSuspendFunction1},
             
@@ -70,13 +70,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             
         }
         
-        let some = ComponentKt(env: Env<NSString, NSString, NSString>(initializer:
-                                                                        { ""  }, resolver: { "" },
-                                        updater: { (a, b) -> KotlinPair<NSString, NSSet> in KotlinPair(first: a, second: NSSet())
-                                        }, scope: <#T##Kotlinx_coroutines_coreCoroutineScope#>, io: <#T##Kotlinx_coroutines_coreCoroutineDispatcher#>, computation: <#T##Kotlinx_coroutines_coreCoroutineDispatcher#>, shareOptions: <#T##ShareOptions#>)
-        )
         */
-        let contentView = ContentView()
+        let contentView = ArticlesView(articles: articles)//RowItem(article: article)
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {

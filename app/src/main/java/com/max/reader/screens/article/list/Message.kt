@@ -27,7 +27,7 @@ package com.max.reader.screens.article.list
 import com.max.reader.app.ScreenId
 import com.max.reader.app.exception.AppException
 import com.max.reader.app.message.ScreenMessage
-import com.max.reader.domain.Article
+import com.oliynick.max.reader.domain.Article
 
 sealed interface ArticlesMessage : ScreenMessage {
     val id: ScreenId?

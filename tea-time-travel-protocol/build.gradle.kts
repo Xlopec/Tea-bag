@@ -61,12 +61,3 @@ kotlin {
         }
     }
 }
-
-/*
-dependencies {
-
-    implementation(kotlinStdLib)
-
-    testImplementation(project(":tea-test"))
-}
-*/

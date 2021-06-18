@@ -7,9 +7,8 @@
 //
 
 import Foundation
-import TeaCore
 
-class SuspendingImpl : KotlinSuspendFunction1 { 
+/*class SuspendingImpl : KotlinSuspendFunction1 {
     
     func invoke(p1: Any?, completionHandler: @escaping (Any?, Error?) -> Void) {
         completionHandler(p1.debugDescription, nil)
@@ -37,3 +36,4 @@ class CollectorImpl : Kotlinx_coroutines_coreFlowCollector {
     
     
 }
+*/

@@ -23,12 +23,14 @@ import com.max.reader.app.env.Environment
 import com.max.reader.app.message.Message
 import com.max.reader.app.serialization.PersistentListSerializer
 import com.oliynick.max.tea.core.Initializer
+import com.oliynick.max.tea.core.ShareStateWhileSubscribed
 import com.oliynick.max.tea.core.component.states
 import com.oliynick.max.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import io.ktor.http.*
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 
 fun Environment.AppComponent(
@@ -51,7 +53,10 @@ fun Environment.AppComponent(
         ::update,
         AppGsonSerializer(),
         scope = this,
-        Url("http://10.0.2.2:8080")
+        io = Dispatchers.IO,
+        computation = Dispatchers.Unconfined,
+        url = Url("http://10.0.2.2:8080"),
+        shareOptions = ShareStateWhileSubscribed
     ).states()
 }
 

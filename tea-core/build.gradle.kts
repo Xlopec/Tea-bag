@@ -26,12 +26,21 @@ import Libraries.coroutinesCore
 import Libraries.kotlinStdLib
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
+/**
+ * in case of shit, add this back to xcode -> .xcodeproj -> Build Phases -> Run Script
+ * cd "$SRCROOT/.."
+./gradlew :tea-core:packForXCode :shared-app-lib:packForXCode -PXCODE_CONFIGURATION=${CONFIGURATION}
+ */
+
 plugins {
     `maven-publish`
     signing
     id("org.jetbrains.dokka")
     kotlin("multiplatform")
+    kotlin("native.cocoapods")
 }
+
+version = "1.0.0"
 
 kotlin {
 
@@ -47,12 +56,14 @@ kotlin {
         else
             ::iosX64
 
-    iosTarget("ios") {
-        binaries {
-            framework {
-                baseName = "TeaCore"
-            }
-        }
+    iosTarget("ios") {}
+
+    cocoapods {
+        summary = "Tea core library"
+        homepage = "Link to the Tea library Module homepage"
+        ios.deploymentTarget = "14.0"
+        frameworkName = "TeaCore"
+        podfile = project.file("../iosApp/Podfile")
     }
 
     sourceSets {
@@ -84,16 +95,3 @@ kotlin {
         val iosTest by getting
     }
 }
-
-val packForXcode by tasks.creating(Sync::class) {
-    group = "build"
-    val mode = System.getenv("CONFIGURATION") ?: "DEBUG"
-    val framework = kotlin.targets.getByName<KotlinNativeTarget>("ios").binaries.getFramework(mode)
-    inputs.property("mode", mode)
-    dependsOn(framework.linkTask)
-    val targetDir = File(buildDir, "xcode-frameworks")
-    from({ framework.outputDirectory })
-    into(targetDir)
-}
-
-tasks.getByName("build").dependsOn(packForXcode)
