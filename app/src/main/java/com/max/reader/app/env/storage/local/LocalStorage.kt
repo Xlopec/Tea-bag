@@ -33,7 +33,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import com.max.reader.R
-import com.max.reader.app.env.storage.Page
+import com.oliynick.max.reader.network.Page
 import com.max.reader.ui.isDarkModeEnabled
 import com.oliynick.max.reader.domain.*
 import kotlinx.coroutines.Dispatchers

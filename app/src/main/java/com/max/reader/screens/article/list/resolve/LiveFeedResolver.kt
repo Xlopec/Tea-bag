@@ -30,7 +30,6 @@ import android.content.Intent
 import com.max.reader.app.*
 import com.max.reader.app.env.HasAppContext
 import com.max.reader.app.env.storage.HasGson
-import com.max.reader.app.env.storage.Page
 import com.max.reader.app.env.storage.local.LocalStorage
 import com.max.reader.app.env.storage.network.NewsApi
 import com.max.reader.app.exception.AppException
@@ -42,6 +41,7 @@ import com.max.reader.screens.article.list.ArticlesOperationException
 import com.max.reader.screens.article.list.Query
 import com.max.reader.screens.article.list.QueryType.*
 import com.oliynick.max.reader.domain.Article
+import com.oliynick.max.reader.network.Page
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
 
@@ -67,6 +67,9 @@ fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : HasAppContex
                 }
 
             return runCatching { resolve() }
+                .onFailure { th ->
+                    th.printStackTrace()
+                }
                 .getOrElse { th -> setOf(toErrorMessage(toAppException(th), command)) }
         }
 
@@ -83,9 +86,7 @@ fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : HasAppContex
             article: Article,
         ): Set<ScreenMessage> = effect {
             deleteArticle(article.url)
-            ArticleUpdated(
-                article
-            )
+            ArticleUpdated(article)
         }
 
         suspend fun Env.fetch(

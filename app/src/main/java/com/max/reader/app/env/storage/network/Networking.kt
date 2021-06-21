@@ -24,7 +24,7 @@
 
 @file:Suppress("FunctionName")
 
-package com.max.reader.app.env
+package com.max.reader.app.env.storage.network
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

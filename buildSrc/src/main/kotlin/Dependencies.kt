@@ -52,6 +52,8 @@ object Libraries {
     const val ktorClientCio = "io.ktor:ktor-client-cio:$ktor"
     const val ktorClientLogging = "io.ktor:ktor-client-logging:$ktor"
     const val ktorClientGson = "io.ktor:ktor-client-gson:$ktor"
+    const val ktorClientJson = "io.ktor:ktor-client-json:$ktor"
+    const val ktorClientSerialization = "io.ktor:ktor-client-serialization:$ktor"
     const val gson = "com.google.code.gson:gson:2.8.7"
 
     const val logback = "ch.qos.logback:logback-classic:1.2.3"

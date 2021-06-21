@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app.env.storage
+package com.oliynick.max.reader.network
 
 import com.oliynick.max.reader.domain.Article
 

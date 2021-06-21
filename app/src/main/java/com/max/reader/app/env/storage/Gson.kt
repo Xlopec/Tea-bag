@@ -26,13 +26,13 @@
 
 package com.max.reader.app.env.storage
 
-import com.google.gson.*
+import com.google.gson.Gson
 
 interface HasGson {
     val gson: Gson
 }
 
-interface TypeAdapter<T> : JsonSerializer<T>, JsonDeserializer<T>
+
 
 fun Gson(gson: Gson) = object : HasGson {
     override val gson: Gson = gson
