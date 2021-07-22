@@ -33,23 +33,15 @@ import com.max.reader.app.env.HasAppContext
 import com.max.reader.app.env.storage.local.LocalStorage
 import com.oliynick.max.reader.network.NewsApiCommon
 import com.oliynick.max.reader.network.Page
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
+import io.ktor.client.features.logging.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.util.reflect.*
 import io.ktor.utils.io.core.*
 import java.util.Locale.ENGLISH
-
-/*
-val ArticleAdapters = mapOf(
-    String::class to StringAdapter,
-    Url::class to UrlAdapter,
-    Title::class to TitleAdapter,
-    Author::class to AuthorAdapter,
-    Description::class to DescriptionAdapter,
-    CommonDate::class to DateAdapter
-)
-*/
 
 interface NewsApi<Env> {
 
@@ -72,7 +64,20 @@ fun <Env> NewsApi(
 ): NewsApi<Env> where Env : LocalStorage,
                       Env : HasAppContext = object : NewsApi<Env> {
 
-    private val impl = NewsApiCommon(debug, GsonSerializer(gson))
+    private val impl = NewsApiCommon(
+        /*HttpClient(CIO) {
+
+            install(JsonFeature) {
+                serializer = GsonSerializer(gson)
+            }
+
+            if (debug) {
+                Logging {
+                    level = LogLevel.ALL
+                }
+            }
+        }*/
+    )
 
     override suspend fun Env.fetchFromEverything(
         input: String,
@@ -98,99 +103,6 @@ private class GsonSerializer(
     override fun read(type: TypeInfo, body: Input): Any =
         gson.fromJson(body.readText(), type.reifiedType)
 }
-
-/*private object StringAdapter : TypeAdapter<String> {
-    override fun serialize(
-        src: String,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext?,
-    ) =
-        JsonPrimitive(src)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext?,
-    ) = json.asString?.takeUnless(CharSequence::isNullOrEmpty)
-}
-
-private object UrlAdapter : TypeAdapter<Url> {
-    override fun serialize(
-        src: Url,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext?,
-    ) =
-        JsonPrimitive(src.toExternalForm())
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext?,
-    ) = Url(java.net.URL(json.asString))
-}
-
-private object DateAdapter : TypeAdapter<CommonDate> {
-
-    private val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", ENGLISH)
-
-    override fun serialize(
-        src: CommonDate,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext?,
-    ) =
-        JsonPrimitive(parser.format(src.impl))
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext?,
-    ) = json.asString?.let(parser::parse)?.let(::CommonDate)
-}
-
-private object TitleAdapter : TypeAdapter<Title> {
-    override fun serialize(
-        src: Title,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext?,
-    ) =
-        JsonPrimitive(src.value)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext?,
-    ) = Title.tryCreate(json.asString)
-}
-
-private object AuthorAdapter : TypeAdapter<Author> {
-    override fun serialize(
-        src: Author,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext?,
-    ) =
-        JsonPrimitive(src.value)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext?,
-    ) = Author.tryCreate(json.asString)
-}
-
-private object DescriptionAdapter : TypeAdapter<Description> {
-    override fun serialize(
-        src: Description,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext?,
-    ) =
-        JsonPrimitive(src.value)
-
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type?,
-        context: JsonDeserializationContext?,
-    ) = Description.tryCreate(json.asString)
-}*/
 
 private inline val HasAppContext.countryCode: String
     get() = application.resources.configuration.countryCode

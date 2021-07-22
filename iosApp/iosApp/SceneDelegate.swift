@@ -1,77 +1,16 @@
 import UIKit
 import SwiftUI
-//import tea_core
+import SharedAppLib
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    var newsApi = NewsApiCommon()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
-        /* TestFunctionsKt.foo1()
-        TestFunctionsKt.foo2 { (xy) -> String in
-            xy.stringValue
-        }
         
-        TestFunctionsKt.foo3 { (a: Any?) -> String in
-            a.debugDescription
-        }
-        
-        TestFunctionsKt.fooTakingSuspendingFun(f: SuspendingImpl())
-        
-        TestFunctionsKt.suspendingFooTakingSuspendingFun(f: SuspendingImpl()) { r, e in
-            if e != nil {
-                print("error \(e)")
-            } else {
-                print("success \(r)")
-            }
-        }
-        
-        
-        let env = Env<AnyObject, NSString, NSString>(
-            initializer: SuspendingImpl0(),
-            resolver: SuspendingImpl(), updater: { a, b in
-            KotlinPair(first: a as? NSString, second: [])
-            }, scope: TestFunctionsKt.testScope(), io: TestFunctionsKt.io(), computation: TestFunctionsKt.io(), shareOptions: TestFunctionsKt.shareStateWhileSubscribed())
-        
-        print("env is \(env)")
-        
-        let component = ComponentKt.Component(
-            initializer: SuspendingImpl0(),
-            resolver: SuspendingImpl(), updater: { a, b in
-            KotlinPair(first: a as? NSString, second: [])
-            }, scope: TestFunctionsKt.testScope(), io: TestFunctionsKt.io(), computation: TestFunctionsKt.io(), shareOptions: TestFunctionsKt.shareStateWhileSubscribed()
-        )
-        
-        component(TestFunctionsKt.someFlow())
-            .collect(collector: CollectorImpl()) { r, e in
-                print("Collected r=\(r), e=\(e)")
-            }*/
-        /*TestFunctionsKt.suspendingFooTakingSuspendingFun(
-            f: {KotlinSuspendFunction1},
-            
-            { (_: KotlinUnit?, e: Error?) in
-            
-            if (e != nil) {
-                log("pizda \(e)")
-            }
-        }*/
-        
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-
-        // Create the SwiftUI view that provides the window contents.
-        //let contentView = MyContentView(viewModel: .init(sdk: sdk))
-        
-        
-        
-        /*let som1 = { (e: Error?) -> NSString in ""
-            
-        }
-        
-        */
-        let contentView = ArticlesView(articles: articles)//RowItem(article: article)
+        let contentView = ArticlesView(viewModel: ArticlesViewModel(newsApi: newsApi))//RowItem(article: article)
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
@@ -80,6 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.window = window
             window.makeKeyAndVisible()
         }
+        
+        
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

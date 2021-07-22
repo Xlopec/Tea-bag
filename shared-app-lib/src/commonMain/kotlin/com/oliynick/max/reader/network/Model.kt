@@ -1,29 +1,35 @@
 package com.oliynick.max.reader.network
 
 import com.oliynick.max.reader.domain.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-/*
- fixme: actually there should be only one model for both targets but since I don't want to break
- remote debugger and I don't have multiplatform adapter yet, let's create actual implementations:
- one that uses Gson (jvm only) and another one that uses multiplatform kotlinx serialization plugin
- (multiplatform one)
- */
+@Serializable
+data class ArticleElement(
+    @Serializable(with = AuthorSerializer::class)
+    @SerialName("author")
+    val author: Author?,
+    @SerialName("description")
+    @Serializable(with = DescriptionSerializer::class)
+    val description: Description?,
+    @SerialName("publishedAt")
+    @Serializable(with = CommonDateSerializer::class)
+    val publishedAt: CommonDate,
+    @SerialName("title")
+    @Serializable(with = TitleSerializer::class)
+    val title: Title,
+    @SerialName("url")
+    @Serializable(with = UrlSerializer::class)
+    val url: Url,
+    @SerialName("urlToImage")
+    @Serializable(with = UrlSerializer::class)
+    val urlToImage: Url?,
+)
 
-internal expect class ArticleElement {
-    val author: Author?
-    val description: Description?
-    val publishedAt: CommonDate
-    val title: Title
-    val url: Url
-    val urlToImage: Url?
-}
-
-internal expect class ArticleResponse {
-    val totalResults: Int
+@Serializable
+data class ArticleResponse(
+    @SerialName("totalResults")
+    val totalResults: Int,
+    @SerialName("articles")
     val articles: List<ArticleElement>
-}
-
-// fixme temp
-internal operator fun ArticleResponse.component1() = totalResults
-
-internal operator fun ArticleResponse.component2() = articles
+)

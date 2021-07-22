@@ -1,21 +1,36 @@
 @file:Suppress("FunctionName")
+@file:OptIn(InternalAPI::class)
 
 package com.oliynick.max.reader.network
 
 import com.oliynick.max.reader.domain.Article
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.util.*
+import kotlinx.serialization.json.Json
 
-class NewsApiCommon(
-    private val debug: Boolean,
-    private val serializer: JsonSerializer,
-) {
+class NewsApiCommon {
 
-    private val httpClient = HttpClient(CIO) {
+    private val httpClient = HttpClient {
+
+        install(JsonFeature) {
+            val json = kotlinx.serialization.json.Json {
+                ignoreUnknownKeys = true
+                useAlternativeNames = false
+            }
+            serializer = KotlinxSerializer(json)
+        }
+
+        Logging {
+            level = LogLevel.ALL
+        }
+    }
+
+    /*private val httpClient = HttpClient(CIO) {
         install(JsonFeature) {
             serializer = this@NewsApiCommon.serializer
         }
@@ -25,8 +40,9 @@ class NewsApiCommon(
                 level = LogLevel.ALL
             }
         }
-    }
+    }*/
 
+    @Throws(Exception::class)
     // todo try to make it return Either<Page, NetworkException>
     suspend fun fetchFromEverything(
         input: String,
@@ -39,6 +55,7 @@ class NewsApiCommon(
             resultsPerPage
         )
 
+    @Throws(Exception::class)
     // todo try to make it return Either<Page, NetworkException>
     suspend fun fetchTopHeadlines(
         input: String,

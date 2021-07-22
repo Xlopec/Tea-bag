@@ -1,6 +1,5 @@
 package com.oliynick.max.reader.domain
 
-import platform.Foundation.NSDate
 import platform.Foundation.NSURL
 
 actual class Url(
@@ -11,12 +10,15 @@ actual class Url(
             url: String
         ): Url = Url(NSURL(string = url))
     }
-}
 
-actual class CommonDate(
-    val impl: NSDate
-) {
-    actual companion object {
-        actual fun now(): CommonDate = CommonDate(NSDate())
-    }
+    override fun equals(other: Any?): Boolean =
+        if (other is Url) impl == other.impl
+        else false
+
+    override fun hashCode(): Int = impl.hashCode()
+
+    override fun toString(): String =
+        impl.toString()
+
+    actual fun toExternalValue(): String = impl.toString()
 }

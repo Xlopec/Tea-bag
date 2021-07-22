@@ -32,13 +32,14 @@ interface HasGson {
     val gson: Gson
 }
 
-
-
-fun Gson(gson: Gson) = object : HasGson {
+fun Gson(
+    gson: Gson
+) = object : HasGson {
     override val gson: Gson = gson
 }
 
-fun Gson(gson: () -> Gson) = object : HasGson {
+fun Gson(
+    gson: () -> Gson
+) = object : HasGson {
     override val gson: Gson by lazy(gson)
 }
-

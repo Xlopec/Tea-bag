@@ -17,19 +17,57 @@ Let your imagination fly! Modifiers let you modify your composable in a very fle
 
 let articles = [article, article, article]
 
+class ArticlesViewModel: ObservableObject {
+    
+    /*enum LoadableLaunches {
+        case loading
+        case result([RocketLaunch])
+        case error(String)
+    }*/
+    
+    @Published var articles: [Article] = [Article]()
+    
+    private let newsApi: NewsApiCommon
+    
+    init(newsApi: NewsApiCommon) {
+        self.newsApi = newsApi
+        load()
+    }
+    
+    func load() {
+        
+        newsApi.fetchFromEverything(input: "IOS new", currentSize: 0, resultsPerPage: 20) { (page, error) in
+            
+            if let page = page {
+                self.articles = page.articles
+            }
+            
+            if error != nil {
+                print("Oh shit \(error)")
+            } else {
+                print("ZBS \(page)")
+            }
+        }
+        
+    }
+    
+}
 
 struct ArticlesView: View {
     
-    let articles: [Article]
+    @ObservedObject private(set) var viewModel: ArticlesViewModel
     
-    init(articles: [Article]) {
-        self.articles = articles
-    }
+     //var articles: [Article] = [Article]()
     
     var body: some View {
-        List(articles, id: \.url) { article in
+        
+        
+        
+        List(viewModel.articles, id: \.url) { article in
             RowItem(article: article)
-        }
+        }.navigationBarItems(trailing:
+                                Button("Reload") {
+                                    self.viewModel.load()                            })
     }
 }
 

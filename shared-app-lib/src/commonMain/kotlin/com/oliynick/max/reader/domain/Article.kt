@@ -34,6 +34,8 @@ expect class Url {
             url: String
         ): Url
     }
+
+    fun toExternalValue(): String
 }
 //todo find a way around to overcome swift's names clash
 expect class CommonDate {

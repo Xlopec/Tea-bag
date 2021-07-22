@@ -1,4 +1,4 @@
-package com.oliynick.max.reader.network
+package com.max.reader.app.serialization
 
 import com.google.gson.*
 import com.oliynick.max.reader.domain.*

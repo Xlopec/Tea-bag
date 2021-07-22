@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
+import Libraries.Versions.ktor
 import Libraries.gson
 import Libraries.kotlinStdLib
-import Libraries.ktorClientCio
 import Libraries.ktorClientGson
 import Libraries.ktorClientJson
 import Libraries.ktorClientLogging
-import Libraries.ktorClientSerialization
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
+    `java-library`
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     kotlin("plugin.serialization")
@@ -65,10 +65,11 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlinStdLib)
-                implementation(ktorClientCio)
+                implementation("io.ktor:ktor-client-core:1.6.0")
                 implementation(ktorClientLogging)
                 implementation(ktorClientJson)
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
+                implementation("io.ktor:ktor-client-serialization:$ktor")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.2.1")
 
             }
         }
@@ -80,6 +81,7 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
+                implementation("io.ktor:ktor-client-cio:1.6.0")
                 implementation(ktorClientGson)
                 implementation(gson)
             }
@@ -92,8 +94,8 @@ kotlin {
         }
         val iosMain by getting {
             dependencies {
-                implementation(ktorClientSerialization)
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
+                implementation("io.ktor:ktor-client-ios:1.6.0")
+                implementation(ktorClientJson)
                 //implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$serializationVersion")
             }
         }
