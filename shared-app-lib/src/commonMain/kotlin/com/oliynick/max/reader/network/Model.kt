@@ -14,7 +14,7 @@ data class ArticleElement(
     val description: Description?,
     @SerialName("publishedAt")
     @Serializable(with = CommonDateSerializer::class)
-    val publishedAt: CommonDate,
+    val publishedAt: Date,
     @SerialName("title")
     @Serializable(with = TitleSerializer::class)
     val title: Title,

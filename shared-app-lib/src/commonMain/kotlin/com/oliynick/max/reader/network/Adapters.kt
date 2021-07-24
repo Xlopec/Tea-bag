@@ -35,23 +35,20 @@ object TitleSerializer : KSerializer<Title> {
 
 }
 
-expect fun CommonDate.toJson(): String
+expect fun Date.toJson(): String
 
-expect fun CommonDate.Companion.fromJson(
-    s: String
-): CommonDate
+expect fun String.toDate(): Date
 
-object CommonDateSerializer : KSerializer<CommonDate> {
+object CommonDateSerializer : KSerializer<Date> {
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("CommonDate", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: CommonDate) =
+    override fun serialize(encoder: Encoder, value: Date) =
         encoder.encodeString(value.toJson())
 
-    override fun deserialize(decoder: Decoder): CommonDate =
-        decoder.decodeString()
-            .let { dateAsString -> CommonDate.fromJson(dateAsString) }
+    override fun deserialize(decoder: Decoder): Date =
+        decoder.decodeString().toDate()
 
 }
 
@@ -61,6 +58,6 @@ object UrlSerializer : KSerializer<Url> {
         PrimitiveSerialDescriptor("Url", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: Url) = encoder.encodeString(value.toExternalValue())
-    override fun deserialize(decoder: Decoder): Url = Url.fromString(decoder.decodeString())
+    override fun deserialize(decoder: Decoder): Url = decoder.decodeString().toUrl()
 
 }

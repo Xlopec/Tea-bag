@@ -3,6 +3,7 @@ package com.max.reader.app.serialization
 import com.google.gson.*
 import com.oliynick.max.reader.domain.*
 import java.lang.reflect.Type
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Locale.*
 
@@ -14,7 +15,7 @@ val ArticleAdapters = mapOf(
     Title::class to TitleAdapter,
     Author::class to AuthorAdapter,
     Description::class to DescriptionAdapter,
-    CommonDate::class to DateAdapter
+    Date::class to DateAdapter
 )
 
 private object StringAdapter : TypeAdapter<String> {
@@ -44,25 +45,25 @@ private object UrlAdapter : TypeAdapter<Url> {
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext?,
-    ) = Url(java.net.URL(json.asString))
+    ) = URL(json.asString)
 }
 
-private object DateAdapter : TypeAdapter<CommonDate> {
+private object DateAdapter : TypeAdapter<Date> {
 
     private val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", ENGLISH)
 
     override fun serialize(
-        src: CommonDate,
+        src: Date,
         typeOfSrc: Type?,
         context: JsonSerializationContext?,
     ) =
-        JsonPrimitive(parser.format(src.impl))
+        JsonPrimitive(parser.format(src))
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext?,
-    ) = json.asString?.let(parser::parse)?.let(::CommonDate)
+    ) = json.asString?.let(parser::parse)
 }
 
 private object TitleAdapter : TypeAdapter<Title> {

@@ -63,6 +63,7 @@ import com.max.reader.screens.article.list.ArticlesState.TransientState.*
 import com.max.reader.screens.article.list.QueryType.*
 import com.max.reader.ui.theme.ThemedPreview
 import com.oliynick.max.reader.domain.*
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.ui.tooling.preview.Preview as Render
@@ -392,7 +393,7 @@ private fun ArticleContents(
         }
 
         Text(
-            text = "Published on ${DateFormatter.format(article.published.impl)}",
+            text = "Published on ${DateFormatter.format(article.published)}",
             style = typography.body2
         )
 
@@ -648,14 +649,16 @@ private fun QueryType.toSearchHint(): String =
     }
 
 private val ArticleSamplePreview = Article(
-    url = Url.fromString("https://www.google.com"),
+    url = URL("https://www.google.com"),
     title = Title("Jetpack Compose app"),
     author = Author("Max Oliinyk"),
-    description = Description("Let your imagination fly! Modifiers let you modify your composable " +
-            "in a very flexible way. For example, if you wanted to add some outer spacing, change " +
-            "the background color of the composable, and round the corners of the Row, you could " +
-            "use the following code"),
-    published = CommonDate.now(),
+    description = Description(
+        "Let your imagination fly! Modifiers let you modify your composable " +
+                "in a very flexible way. For example, if you wanted to add some outer spacing, change " +
+                "the background color of the composable, and round the corners of the Row, you could " +
+                "use the following code"
+    ),
+    published = now(),
     isFavorite = true,
-    urlToImage = Url.fromString("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png")
+    urlToImage = URL("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png")
 )

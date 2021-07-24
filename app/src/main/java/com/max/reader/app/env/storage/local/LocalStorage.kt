@@ -39,7 +39,7 @@ import com.oliynick.max.reader.domain.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
-import java.util.Date as JavaDate
+import java.util.Date
 
 interface LocalStorage {
 
@@ -141,7 +141,7 @@ private fun Article.toContentValues() =
         put(_Author, author?.value)
         put(_Description, description?.value)
         put(_UrlToImage, urlToImage?.toExternalForm())
-        put(_Published, published.impl.time)
+        put(_Published, published.time)
         put(_IsFavorite, if (isFavorite) 1 else 0)
     }
 
@@ -149,12 +149,12 @@ private fun Cursor.toArticles(): List<Article> {
     val articles = mutableListOf<Article>()
 
     while (moveToNext()) {
-        val url = Url(URL(getString(_Url) ?: error("$_Url was null")))
+        val url = URL(getString(_Url) ?: error("$_Url was null"))
         val title = Title(getString(_Title) ?: error("$_Title was null"))
         val author = getString(_Author)?.let(::Author)
         val description = getString(_Description)?.let(::Description)
-        val urlToImage = getString(_UrlToImage)?.let(::URL)?.let(::Url)
-        val published = CommonDate(JavaDate(getLong(_Published)))
+        val urlToImage = getString(_UrlToImage)?.let(::URL)
+        val published = Date(getLong(_Published))
         val isFavorite = getBoolean(_IsFavorite)
 
         articles += Article(url, title, author, description, urlToImage, published, isFavorite)

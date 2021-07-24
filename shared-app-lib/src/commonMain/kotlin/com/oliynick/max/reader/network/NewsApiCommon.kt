@@ -11,7 +11,6 @@ import io.ktor.client.features.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.util.*
-import kotlinx.serialization.json.Json
 
 class NewsApiCommon {
 
