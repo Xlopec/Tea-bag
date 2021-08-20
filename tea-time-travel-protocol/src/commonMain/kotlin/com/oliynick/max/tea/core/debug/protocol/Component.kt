@@ -24,12 +24,15 @@
 
 package com.oliynick.max.tea.core.debug.protocol
 
+import kotlin.jvm.JvmInline
+
 /**
  * Component identifier, it can be any non blank and non empty string
  *
  * @param value raw identifier value
  */
-public data class ComponentId(
+@JvmInline
+public value class ComponentId(
     public val value: String,
 ) {
     init {

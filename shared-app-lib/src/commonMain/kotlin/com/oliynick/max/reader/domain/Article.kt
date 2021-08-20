@@ -26,6 +26,7 @@
 package com.oliynick.max.reader.domain
 
 import kotlin.contracts.contract
+import kotlin.jvm.JvmInline
 
 expect class Url
 
@@ -47,7 +48,8 @@ data class Article(
     val isFavorite: Boolean,
 )
 
-data class Title(
+@JvmInline
+value class Title(
     val value: String,
 ) {
 
@@ -58,7 +60,8 @@ data class Title(
     }
 }
 
-data class Author(
+@JvmInline
+value class Author(
     val value: String,
 ) {
 
@@ -69,7 +72,8 @@ data class Author(
     }
 }
 
-data class Description(
+@JvmInline
+value class Description(
     val value: String,
 ) {
 

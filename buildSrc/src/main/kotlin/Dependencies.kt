@@ -27,14 +27,14 @@ import Libraries.Versions.compose
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 
-const val kotlinVersion = "1.5.10"
+const val kotlinVersion = "1.5.21"
 
 object Libraries {
     object Versions {
-        const val coroutines = "1.5.0"
-        const val ktor = "1.6.0"
-        const val compose = "1.0.0-beta08"
-        const val accompanies = "0.11.0"
+        const val coroutines = "1.5.1"
+        const val ktor = "1.6.2"
+        const val compose = "1.0.1"
+        const val accompanies = "0.17.0"
     }
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
@@ -70,10 +70,10 @@ object Libraries {
     const val composeRuntime = "androidx.compose.runtime:runtime:$compose"
     const val composeAnimation = "androidx.compose.animation:animation:$compose"
     const val composeCompiler = "androidx.compose.compiler:compiler:$compose"
-    const val composeActivity = "androidx.activity:activity-compose:1.3.0-alpha08"
+    const val composeActivity = "androidx.activity:activity-compose:1.3.1"
 
     const val accompaniestInsets = "com.google.accompanist:accompanist-insets:$accompanies"
-    const val accompaniestCoil = "com.google.accompanist:accompanist-coil:$accompanies"
+    const val accompaniestCoil = "io.coil-kt:coil-compose:1.3.2"
     const val accompaniestSwipeRefresh =
         "com.google.accompanist:accompanist-swiperefresh:$accompanies"
 
@@ -82,7 +82,7 @@ object Libraries {
 
 object TestLibraries {
     private object Versions {
-        const val ktor = "1.6.0"
+        const val ktor = "1.6.2"
     }
 
     const val junit = "junit:junit:4.13.1"
