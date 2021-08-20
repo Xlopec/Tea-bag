@@ -27,6 +27,7 @@ package com.max.reader.domain
 import java.net.URL
 import java.util.*
 import kotlin.contracts.contract
+import kotlin.jvm.JvmInline
 
 data class Article(
     val url: URL,

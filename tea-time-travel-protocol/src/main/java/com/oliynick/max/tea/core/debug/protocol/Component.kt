@@ -24,12 +24,13 @@
 
 package com.oliynick.max.tea.core.debug.protocol
 
+import kotlin.jvm.JvmInline
+
 /**
  * Component identifier, it can be any non blank and non empty string
  *
  * @param value raw identifier value
  */
-@Suppress("ModifierOrder") // TODO remove once it'll be fixed in ktlint
 @JvmInline
 public value class ComponentId(
     public val value: String,

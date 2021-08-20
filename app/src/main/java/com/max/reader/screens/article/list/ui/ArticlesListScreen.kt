@@ -52,7 +52,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.coil.rememberCoilPainter
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.statusBarsPadding
 import com.max.reader.app.ScreenId
 import com.max.reader.app.message.Message
@@ -336,10 +337,11 @@ private fun ArticleImage(
 
         if (imageUrl != null) {
             Image(
-                painter = rememberCoilPainter(
-                    request = imageUrl.toExternalForm(),
-                    fadeIn = true,
-                ),
+                painter = rememberImagePainter(
+                    data = imageUrl.toExternalForm(),
+                ) {
+                  crossfade(true)
+                },
                 contentDescription = "Article's Image",
                 modifier = Modifier.fillMaxWidth(),
                 contentScale = ContentScale.Crop,
