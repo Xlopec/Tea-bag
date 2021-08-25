@@ -29,7 +29,6 @@ package com.max.reader.app.update
 import com.max.reader.BuildConfig
 import com.max.reader.app.*
 import com.max.reader.app.message.*
-import com.max.reader.misc.unsafeLazy
 import com.max.reader.screens.article.details.ArticleDetailsState
 import com.max.reader.screens.article.list.ArticlesState
 import com.max.reader.screens.article.list.Query
@@ -40,26 +39,28 @@ import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
 
-fun AppNavigation() = object : AppNavigation {}
-
-interface AppNavigation {
+fun interface AppNavigation {
 
     fun navigate(
         nav: Navigation,
         state: AppState,
-    ): UpdateWith<AppState, Command> =
-        when (nav) {
-            // gson serializer breaks singletons identity, thus we should rely on `is` check rather
-            // then referential equality
-            is NavigateToFeed -> state.pushBottomNavigationScreen(nav, Query("android", Regular))
-            is NavigateToFavorite -> state.pushBottomNavigationScreen(nav, Query("", Favorite))
-            is NavigateToTrending -> state.pushBottomNavigationScreen(nav, Query("", Trending))
-            is NavigateToArticleDetails -> state.pushArticleDetailsScreen(nav)
-            is NavigateToSettings -> state.pushBottomNavigationScreenForSettings(nav)
-            is Pop -> state.pop()
-        }
+    ): UpdateWith<AppState, Command>
 }
 
+fun AppNavigation() = AppNavigation { nav, state ->
+    when (nav) {
+        // gson serializer breaks singletons identity, thus we should rely on `is` check rather
+        // then referential equality
+        is NavigateToFeed -> state.pushBottomNavigationScreen(nav, Query("android", Regular))
+        is NavigateToFavorite -> state.pushBottomNavigationScreen(nav, Query("", Favorite))
+        is NavigateToTrending -> state.pushBottomNavigationScreen(nav, Query("", Trending))
+        is NavigateToArticleDetails -> state.pushArticleDetailsScreen(nav)
+        is NavigateToSettings -> state.pushBottomNavigationScreenForSettings(nav)
+        is Pop -> state.pop()
+    }
+}
+
+// todo refactor, implement using another approach
 // if we encounter any screen out of bottom bar screens, we just close the app;
 // we pop the last screen in another case
 fun AppState.pop() =
@@ -91,7 +92,7 @@ inline fun AppState.pushScreenIfNotExists(
     crossinline screenWithCommand: (ScreenId) -> UpdateWith<ScreenState, Command>,
 ): UpdateWith<AppState, Command> {
     val i = findExistingScreenForNavigation(nav)
-    val screenToCommand by unsafeLazy { screenWithCommand(nav.id) }
+    val screenToCommand by lazy(LazyThreadSafetyMode.NONE) { screenWithCommand(nav.id) }
     val swap = i >= 0
     val newState = if (swap) {
         // move current screen to the end of screens stack,

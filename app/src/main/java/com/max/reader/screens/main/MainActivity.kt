@@ -29,24 +29,40 @@ import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.max.reader.R
-import com.max.reader.app.*
+import com.max.reader.app.AppState
+import com.max.reader.app.appComponent
+import com.max.reader.app.closeAppCommands
 import com.max.reader.app.message.Message
 import com.max.reader.app.message.Pop
+import com.max.reader.app.screen
 import com.max.reader.misc.safe
 import com.max.reader.screens.article.details.ArticleDetailsState
 import com.max.reader.screens.article.details.ui.ArticleDetailsScreen
 import com.max.reader.screens.article.list.ArticlesState
 import com.max.reader.screens.home.HomeScreen
 import com.max.reader.screens.settings.SettingsState
+import com.max.reader.ui.theme.AppDarkThemeColors
+import com.max.reader.ui.theme.AppLightThemeColors
 import com.max.reader.ui.theme.AppTheme
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
@@ -59,10 +75,14 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            val stateFlow = remember { appComponent(appMessages.asFlow()) }
-            val state = stateFlow.collectAsState(context = Dispatchers.Main, initial = null)
+            val messages = remember { MutableSharedFlow<Message>() }
+            val stateFlow = remember { appComponent(messages) }
+            val appState = stateFlow.collectAsNullableState(context = Dispatchers.Main).value
+                ?: return@setContent
+            val scope = rememberCoroutineScope()
+            val messageHandler = remember { scope.dispatcher(messages) }
 
-            state.value?.render(appMessages::offer)
+            Application(appState, messageHandler)
         }
 
         launch {
@@ -77,23 +97,34 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         super.onDestroy()
     }
 
+    private fun CoroutineScope.dispatcher(
+        messages: FlowCollector<Message>,
+    ): (Message) -> Unit =
+        { message -> launch { messages.emit(message) } }
+
 }
 
 @Composable
-private fun AppState.render(
+fun <T : R, R> Flow<T>.collectAsNullableState(
+    context: CoroutineContext = EmptyCoroutineContext,
+): State<R?> = collectAsState(context = context, initial = null)
+
+@Composable
+private fun Application(
+    appState: AppState,
     onMessage: (Message) -> Unit,
 ) {
     AppTheme(
-        isDarkModeEnabled = isInDarkMode
+        isDarkModeEnabled = appState.isInDarkMode
     ) {
 
         BackHandler {
             onMessage(Pop)
         }
 
-        when (val screen = screen) {
+        when (val screen = appState.screen) {
             is ArticlesState -> HomeScreen(screen, onMessage)
-            is SettingsState -> HomeScreen(this, onMessage)
+            is SettingsState -> HomeScreen(appState, onMessage)
             is ArticleDetailsState -> ArticleDetailsScreen(screen, onMessage)
             else -> error("unhandled branch $screen")
         }.safe

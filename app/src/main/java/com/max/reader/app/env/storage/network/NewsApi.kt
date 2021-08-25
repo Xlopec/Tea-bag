@@ -37,6 +37,7 @@ import com.max.reader.app.env.storage.TypeAdapter
 import com.max.reader.app.env.storage.local.LocalStorage
 import com.max.reader.domain.*
 import io.ktor.client.*
+import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.JsonSerializer
 import io.ktor.client.features.logging.*
@@ -81,7 +82,7 @@ fun <Env> NewsApi(
 ): NewsApi<Env> where Env : LocalStorage,
                       Env : HasAppContext = object : NewsApi<Env> {
 
-    private val httpClient = HttpClient {
+    private val httpClient = HttpClient(CIO) {
         install(JsonFeature) {
             serializer = GsonSerializer(gson)
         }

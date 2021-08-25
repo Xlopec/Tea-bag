@@ -40,10 +40,12 @@ internal class DebugWebSocketSession<M, S, J>(
     private val socketSession: DefaultClientWebSocketSession
 ) : DebugSession<M, S, J> {
 
-    private val incomingPackets: Flow<Either<M, S>> by unsafeLazy { settings.incomingCommands(socketSession) }
+    private val incomingPackets: Flow<Either<M, S>> by lazy(LazyThreadSafetyMode.NONE) {
+        settings.incomingCommands(socketSession)
+    }
 
-    override val messages: Flow<M> by unsafeLazy { incomingPackets.externalMessages() }
-    override val states: Flow<S> by unsafeLazy { incomingPackets.externalStates() }
+    override val messages: Flow<M> by lazy(LazyThreadSafetyMode.NONE) { incomingPackets.externalMessages() }
+    override val states: Flow<S> by lazy(LazyThreadSafetyMode.NONE) { incomingPackets.externalStates() }
 
     override suspend fun invoke(packet: NotifyServer<J>) =
         socketSession.send(settings.serializer.toJson(packet))
@@ -77,10 +79,6 @@ private fun <S> Flow<Either<*, S>>.externalStates(): Flow<S> =
 
 private fun <M> Flow<Either<M, *>>.externalMessages(): Flow<M> =
     filterIsInstance<Left<M>>().map { (m) -> m }
-
-private fun <T> unsafeLazy(
-    provider: () -> T
-) = lazy(LazyThreadSafetyMode.NONE, provider)
 
 private fun <M, S, J> ServerSettings<M, S, J>.incomingPackets(
     clientWebSocketSession: ClientWebSocketSession

@@ -21,14 +21,15 @@
     <ID>MagicNumber:ServerImpl.kt$10</ID>
     <ID>MagicNumber:ServerImpl.kt$5</ID>
     <ID>MatchingDeclarationName:Component.kt$ComponentId</ID>
+    <ID>MatchingDeclarationName:ComponentTest.kt$TestEnvironment : UpdaterNotificationUpdaterUiUpdaterAppResolverHasMessageChannel</ID>
     <ID>MatchingDeclarationName:HomeScreen.kt$BottomMenuItem</ID>
     <ID>MatchingDeclarationName:MapSerializer.kt$MapDeserializer : JsonDeserializer</ID>
     <ID>MatchingDeclarationName:Memoization.kt$Key7</ID>
-    <ID>MatchingDeclarationName:LocalStorage.kt$HasMongoCollection</ID>
     <ID>MatchingDeclarationName:PersistentSerializer.kt$PersistentListSerializer : JsonSerializerJsonDeserializer</ID>
     <ID>MatchingDeclarationName:UpdateUI.kt$UiUpdater</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
     <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>
+    <ID>ModifierOrder:Component.kt$ComponentId$@JvmInline public value</ID>
     <ID>NewLineAtEndOfFile:Networking.kt$com.max.reader.app.env.Networking.kt</ID>
     <ID>NewLineAtEndOfFile:NewsApi.kt$com.max.reader.app.env.storage.network.NewsApi.kt</ID>
     <ID>NewLineAtEndOfFile:PluginDependenciesSpecExt.kt$.PluginDependenciesSpecExt.kt</ID>
@@ -43,9 +44,6 @@
     <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;T> Flow&lt;T>.shareIn( scope: CoroutineScope, shareOptions: ShareOptions, ): SharedFlow&lt;T></ID>
     <ID>UndocumentedPublicFunction:FlowExtensions.kt$@UnstableApi public suspend fun &lt;T> Flow&lt;T>.into( sendChannel: SendChannel&lt;T> )</ID>
     <ID>UndocumentedPublicProperty:Environment.kt$@UnstableApi public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
-    <ID>UndocumentedPublicProperty:Snapshot.kt$Regular$/** * Message that triggered state update */ val message: M</ID>
-    <ID>UndocumentedPublicProperty:Snapshot.kt$Regular$/** * Previous state of a component */ val previousState: S</ID>
-    <ID>UnnecessaryAbstractClass:AppState.kt$ScreenState</ID>
     <ID>UnnecessaryAbstractClass:BasicComponentTest.kt$BasicComponentTest</ID>
   </CurrentIssues>
 </SmellBaseline>

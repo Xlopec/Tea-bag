@@ -28,26 +28,27 @@ package com.max.reader.app
 
 import com.max.reader.app.env.storage.local.LocalStorage
 import com.max.reader.app.resolve.AppResolver
-import com.max.reader.app.resolve.HasCommandTransport
 import com.max.reader.app.update.AppNavigation
 import com.max.reader.app.update.AppUpdater
 import com.max.reader.screens.article.details.resolve.ArticleDetailsResolver
 import com.max.reader.screens.article.details.update.ArticleDetailsUpdater
 import com.max.reader.screens.article.list.resolve.ArticlesResolver
 import com.max.reader.screens.article.list.update.ArticlesUpdater
+import kotlinx.coroutines.flow.MutableSharedFlow
 
-interface AppModule<Env> : AppUpdater<Env>, AppResolver<Env>
+interface AppModule<Env> : AppUpdater<Env>, AppResolver<Env>, AppNavigation
 
-fun <Env> AppModule(): AppModule<Env> where Env : HasCommandTransport,
-                                            Env : ArticlesResolver<Env>,
-                                            Env : ArticleDetailsResolver<Env>,
-                                            Env : ArticlesUpdater,
-                                            Env : LocalStorage,
-                                            Env : AppNavigation,
-                                            Env : ArticleDetailsUpdater =
+fun <Env> AppModule(
+    closeCommands: MutableSharedFlow<CloseApp>,
+): AppModule<Env> where Env : ArticlesResolver<Env>,
+                        Env : ArticleDetailsResolver<Env>,
+                        Env : ArticlesUpdater,
+                        Env : LocalStorage,
+                        Env : AppNavigation,
+                        Env : ArticleDetailsUpdater =
     object : AppModule<Env>,
         AppNavigation by AppNavigation(),
         AppUpdater<Env> by AppUpdater(),
-        AppResolver<Env> by AppResolver() {
+        AppResolver<Env> by AppResolver(closeCommands) {
 
     }

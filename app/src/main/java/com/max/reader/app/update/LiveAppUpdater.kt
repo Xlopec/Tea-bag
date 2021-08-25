@@ -29,7 +29,6 @@ package com.max.reader.app.update
 import com.max.reader.app.AppState
 import com.max.reader.app.Command
 import com.max.reader.app.StoreDarkMode
-import com.max.reader.app.message.Message
 import com.max.reader.app.message.Navigation
 import com.max.reader.app.message.ScreenMessage
 import com.max.reader.app.updateScreen
@@ -47,40 +46,33 @@ import com.oliynick.max.tea.core.component.command
 fun <Env> AppUpdater(): AppUpdater<Env> where Env : ArticlesUpdater,
                                               Env : ArticleDetailsUpdater,
                                               Env : AppNavigation =
-    object : LiveAppUpdater<Env> {}
-
-interface LiveAppUpdater<Env> : AppUpdater<Env> where Env : ArticlesUpdater,
-                                                      Env : AppNavigation,
-                                                      Env : ArticleDetailsUpdater {
-
-    override fun Env.update(
-        message: Message,
-        state: AppState,
-    ): UpdateWith<AppState, Command> =
+    AppUpdater { message, state ->
         when (message) {
             is Navigation -> navigate(message, state)
             is ScreenMessage -> updateScreen(message, state)
         }
+    }
 
-    fun Env.updateScreen(
-        message: ScreenMessage,
-        state: AppState,
-    ): UpdateWith<AppState, Command> =
-        when (message) {
-            is ArticlesMessage -> state.updateScreen<ArticlesState>(message.id) { screen ->
-                updateArticles(message, screen)
-            }
-            is ArticleDetailsMessage -> state.updateScreen<ArticleDetailsState>(message.id) { screen ->
-                updateArticleDetails(message, screen)
-            }
-            is SettingsMessage -> state.updateSettings(message)
-            else -> error("Unknown screen message, was $message")
+fun <Env> Env.updateScreen(
+    message: ScreenMessage,
+    state: AppState,
+): UpdateWith<AppState, Command> where Env : ArticlesUpdater,
+                                       Env : ArticleDetailsUpdater,
+                                       Env : AppNavigation =
+    when (message) {
+        is ArticlesMessage -> state.updateScreen<ArticlesState>(message.id) { screen ->
+            updateArticles(message, screen)
         }
+        is ArticleDetailsMessage -> state.updateScreen<ArticleDetailsState>(message.id) { screen ->
+            updateArticleDetails(message, screen)
+        }
+        is SettingsMessage -> state.updateSettings(message)
+        else -> error("Unknown screen message, was $message")
+    }
 
-    fun AppState.updateSettings(
-        message: SettingsMessage,
-    ): UpdateWith<AppState, Command> =
-        when (message) {
-            is ToggleDarkMode -> copy(isInDarkMode = !isInDarkMode) command StoreDarkMode(!isInDarkMode)
-        }
-}
+fun AppState.updateSettings(
+    message: SettingsMessage,
+): UpdateWith<AppState, Command> =
+    when (message) {
+        is ToggleDarkMode -> copy(isInDarkMode = !isInDarkMode) command StoreDarkMode(!isInDarkMode)
+    }

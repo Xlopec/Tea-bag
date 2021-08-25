@@ -28,5 +28,3 @@ package com.max.reader.misc
 
 /** forces compiler to check `when` clause is exhaustive */
 val <T> T.safe get() = this
-
-fun <T> unsafeLazy(block: () -> T) = lazy(LazyThreadSafetyMode.NONE, block)

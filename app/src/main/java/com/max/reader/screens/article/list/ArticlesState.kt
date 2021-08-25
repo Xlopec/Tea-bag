@@ -53,7 +53,6 @@ data class ArticlesState(
             val th: Throwable,
         ) : TransientState()
 
-
         object Loading : TransientState()
         object LoadingNext : TransientState()
         object Refreshing : TransientState()

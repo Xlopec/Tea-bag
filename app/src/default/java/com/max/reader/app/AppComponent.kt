@@ -31,26 +31,20 @@ import com.max.reader.app.message.Message
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.states
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
 
-fun Environment.AppComponent(
-    initializer: Initializer<AppState, Command>
-): (Flow<Message>) -> Flow<AppState> {
-
-    suspend fun resolve(command: Command) = this.resolve(command)
-
-    fun update(
-        message: Message,
-        state: AppState
-    ) = this.update(message, state)
-
-    // todo state persistence
-
-    return Component(
-        initializer,
-        ::resolve,
-        ::update,
-        this
+fun AppComponent(
+    environment: Environment,
+    initializer: Initializer<AppState, Command>,
+): (Flow<Message>) -> Flow<AppState> =
+    Component(
+        initializer = initializer,
+        resolver = { c -> with(environment) { resolve(c) } },
+        updater = { m, s -> with(environment) { update(m, s) } },
+        scope = environment,
+        io = IO,
+        computation = environment.coroutineContext[CoroutineDispatcher.Key] ?: Dispatchers.Default,
     ).states()
-
-}

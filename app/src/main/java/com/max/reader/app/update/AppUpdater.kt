@@ -29,7 +29,7 @@ import com.max.reader.app.Command
 import com.max.reader.app.message.Message
 import com.oliynick.max.tea.core.component.UpdateWith
 
-interface AppUpdater<Env> {
+fun interface AppUpdater<Env> {
 
     fun Env.update(
         message: Message,

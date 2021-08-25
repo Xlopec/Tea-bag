@@ -34,14 +34,16 @@ import com.max.reader.screens.article.list.QueryType.Regular
 import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Initializer
 
-fun Environment.AppInitializer(): Initializer<AppState, Command> = {
+fun AppInitializer(
+    environment: Environment
+): Initializer<AppState, Command> = {
 
     val initScreen = ArticlesState.newLoading(
         NavigateToFeed.id,
         Query("android", Regular),
     )
 
-    Initial(AppState(initScreen, isDarkModeEnabled()), initScreen.toInitialQuery())
+    Initial(AppState(initScreen, environment.isDarkModeEnabled()), initScreen.toInitialQuery())
 }
 
 private fun ArticlesState.toInitialQuery(

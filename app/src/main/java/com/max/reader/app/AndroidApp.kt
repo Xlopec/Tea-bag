@@ -23,7 +23,7 @@
  */
 
 // used by OS
-@file:Suppress("unused")
+@file:Suppress("unused", "FunctionName")
 
 package com.max.reader.app
 
@@ -31,27 +31,25 @@ import android.app.Activity
 import android.app.Application
 import com.max.reader.app.env.Environment
 import com.max.reader.app.message.Message
-import com.max.reader.misc.unsafeLazy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
-class AndroidApp : Application(), CoroutineScope by AppComponentScope {
-
-    val environment by unsafeLazy {
-        Environment(this, this)
-    }
-
-    val component by unsafeLazy { with(environment) { AppComponent(AppInitializer()) } }
-
-    val messages = BroadcastChannel<Message>(1)
-
+class AndroidApp : Application() {
+    val closeCommands = MutableSharedFlow<CloseApp>()
+    val component = AppComponent(this, AppComponentScope, closeCommands)
 }
+
+fun AppComponent(
+    application: Application,
+    scope: CoroutineScope,
+    closeCommands: MutableSharedFlow<CloseApp>,
+) = Environment(application, scope, closeCommands)
+    .let { env -> AppComponent(env, AppInitializer(env)) }
 
 private object AppComponentScope : CoroutineScope {
     override val coroutineContext: CoroutineContext =
@@ -65,11 +63,5 @@ inline val Activity.androidApp: AndroidApp
 inline val Activity.appComponent: (Flow<Message>) -> Flow<AppState>
     get() = androidApp.component
 
-inline val Activity.appMessages: BroadcastChannel<Message>
-    get() = androidApp.messages
-
-inline val Activity.environment: Environment
-    get() = androidApp.environment
-
 inline val Activity.closeAppCommands: Flow<CloseApp>
-    get() = androidApp.environment.closeCommands.asFlow()
+    get() = androidApp.closeCommands
