@@ -49,6 +49,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.*
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.Timeout
@@ -285,6 +286,7 @@ abstract class BasicComponentTest(
         }
 
     @Test
+    @Ignore("Ignored due to https://youtrack.jetbrains.com/issue/KT-47195")
     fun `test component's job gets canceled properly`() = runBlockingInTestScope {
 
         val resolver = ForeverWaitingResolver<Char>()

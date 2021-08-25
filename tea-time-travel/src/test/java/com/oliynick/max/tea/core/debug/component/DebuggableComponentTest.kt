@@ -61,6 +61,7 @@ public typealias StringSnapshot = Snapshot<String, String, String>
 
 @RunWith(JUnit4::class)
 @OptIn(InternalCoroutinesApi::class)
+@Ignore("Ignored due to https://youtrack.jetbrains.com/issue/KT-47195")
 internal class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
 
     private companion object {
