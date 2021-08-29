@@ -34,6 +34,20 @@ plugins {
     `kotlin-dsl-precompiled-script-plugins`
 }
 
+afterEvaluate {
+    tasks.withType<Test>().all {
+
+        val buildDir = File(rootProject.rootDir.parentFile, "build")
+
+        reports {
+            html.destination =
+                File("${buildDir}/junit-reports/${project.name}/html")
+            junitXml.destination =
+                File("${buildDir}/junit-reports/${project.name}/xml")
+        }
+    }
+}
+
 dependencies {
     implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21")
@@ -41,4 +55,7 @@ dependencies {
     implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.6.5")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
     implementation("org.jetbrains.kotlin:kotlin-serialization:1.5.21")
+
+    testImplementation("junit:junit:4.13.1")
+    testImplementation("io.kotlintest:kotlintest-runner-junit4:3.4.2")
 }

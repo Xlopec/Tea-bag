@@ -49,7 +49,7 @@ intellij {
 }
 
 tasks.named<PatchPluginXmlTask>("patchPluginXml") {
-    setVersion(versionName)
+    setVersion(libraryVersion.toVersionName())
 }
 
 tasks.named<PublishTask>("publishPlugin") {

@@ -40,7 +40,6 @@ allprojects {
         mavenCentral()
         google()
         mavenLocal()
-        jcenter()
     }
 
     apply {
@@ -64,20 +63,13 @@ allprojects {
         }
     }
 
-    if (isCiEnv) {
-
-        logger.info("Modifying tests output")
-
-        tasks.withType<Test>().all {
-            reports {
-                html.destination =
-                    file("${rootProject.buildDir}/junit-reports/${project.name}/html")
-                junitXml.destination =
-                    file("${rootProject.buildDir}/junit-reports/${project.name}/xml")
-            }
+    tasks.withType<Test>().all {
+        reports {
+            html.destination =
+                File("${rootProject.buildDir}/junit-reports/${project.name}/html")
+            junitXml.destination =
+                File("${rootProject.buildDir}/junit-reports/${project.name}/xml")
         }
-    } else {
-        logger.info("Default tests output")
     }
 }
 

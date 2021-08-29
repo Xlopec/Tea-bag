@@ -1,6 +1,5 @@
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URL
-import java.util.*
 
 plugins {
     `maven-publish`
@@ -89,7 +88,7 @@ publishing {
 
             groupId = "io.github.xlopec"
             artifactId = projectName
-            version = versionName
+            version = libraryVersion.toVersionName()
 
             pom {
                 name.set(projectName)
@@ -126,7 +125,7 @@ publishing {
         mavenLocal()
         maven {
             name = "OSSRH"
-            url = ossrhDeploymentUrl(tag)
+            url = libraryVersion.toOssrhDeploymentUri()
             credentials {
                 username = ossrhUser
                 password = ossrhPassword

@@ -29,56 +29,43 @@ import java.io.File
 import java.net.URI
 import java.nio.file.Paths
 
-private const val CommitHashLength = 6
-private val AlphaRegexp = Regex("v\\d+\\.\\d+\\.\\d+-alpha[1-9]\\d*")
-private val ReleaseCandidateRegexp = Regex("v\\d+\\.\\d+\\.\\d+(-alpha[1-9]\\d*)?-rc[1-9]\\d*")
-private val ReleaseRegexp = Regex("v\\d+\\.\\d+\\.\\d+")
-
-sealed class Tag {
-
-    object Develop : Tag()
-
-    data class Alpha(
-        val value: String,
-    ) : Tag()
-
-    data class ReleaseCandidate(
-        val value: String,
-    ) : Tag()
-
-    data class Release(
-        val value: String,
-    ) : Tag()
-}
+const val CommitHashLength = 6
 
 val isCiEnv: Boolean
     get() = getenvSafe("CI")?.toBoolean() == true
 
 val pluginReleaseChannels: Array<String>
-    get() = when (tag) {
-        Tag.Develop -> arrayOf("dev")
-        is Tag.Alpha -> arrayOf("eap")
-        is Tag.ReleaseCandidate -> arrayOf("rc")
-        is Tag.Release -> emptyArray()
+    get() = when (libraryVersion) {
+        is Snapshot -> arrayOf("dev")
+        is Alpha -> arrayOf("eap")
+        is ReleaseCandidate -> arrayOf("rc")
+        is Stable -> arrayOf()
     }
+
+val tag: String?
+    get() = getenvSafe("GITHUB_TAG")
+        ?.takeUnless { tag -> tag.startsWith("refs/heads/") }
+        ?.removePrefix("refs/tags/")
 
 val commitSha: String?
     get() = getenvSafe("GITHUB_SHA")
 
-val versionName: String
-    get() = when (val tag = tag) {
-        Tag.Develop -> commitSha?.let { sha -> "${sha.take(CommitHashLength)}-SNAPSHOT" }
-            ?: "SNAPSHOT"
-        is Tag.Alpha -> tag.value
-        is Tag.ReleaseCandidate -> tag.value
-        is Tag.Release -> tag.value
+val libraryVersion: Version
+    get() = Version(tag, commitSha)
+
+fun Version.toVersionName(): String =
+    when (this) {
+        is Snapshot -> commit?.let { sha -> "${sha.take(CommitHashLength)}-SNAPSHOT" } ?: "SNAPSHOT"
+        is Alpha -> "${mainVersion.versionName}-alpha$alpha"
+        is ReleaseCandidate -> "${mainVersion.versionName}-${alpha?.let { "alpha$it-" } ?: ""}rc${candidate}"
+        is Stable -> mainVersion.versionName
     }
 
-fun ossrhDeploymentUrl(tag: Tag): URI =
-    if (tag == Tag.Develop)
-        URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-    else
-        URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+fun Version.toOssrhDeploymentUri(): URI =
+    when (this) {
+        is Snapshot -> URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        is Alpha, is Stable, is ReleaseCandidate -> URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+    }
 
 val Project.ossrhUser: String?
     get() = ciVariable("OSSRH_USER")
@@ -121,28 +108,6 @@ fun Project.ciVariable(
     name: String,
 ): String? = getenvSafe(name) ?: getPropertySafe(name)
 
-val tag: Tag
-    get() {
-        val rawTag = getenvSafe("GITHUB_TAG")
-            ?.takeUnless { tag -> tag.startsWith("refs/heads/") }
-            ?.removePrefix("refs/tags/")
-
-        return when {
-            rawTag.isNullOrEmpty() -> Tag.Develop
-            rawTag.matches(AlphaRegexp) -> Tag.Alpha(rawTag)
-            rawTag.matches(ReleaseCandidateRegexp) -> Tag.ReleaseCandidate(rawTag)
-            rawTag.matches(ReleaseRegexp) -> Tag.Release(rawTag)
-            else -> error(
-                "Invalid tag: $rawTag, release tag should be absent or match any of the following regular " +
-                        "expressions: ${
-                            listOf(AlphaRegexp,
-                                ReleaseCandidateRegexp,
-                                ReleaseRegexp).joinToString(transform = Regex::pattern)
-                        }"
-            )
-        }
-    }
-
 private fun Project.getPropertySafe(
     name: String,
 ): String? =
@@ -152,3 +117,6 @@ fun getenvSafe(
     name: String,
 ): String? =
     System.getenv(name).takeUnless(CharSequence?::isNullOrEmpty)
+
+internal val MajorMinorPatch.versionName
+    get() = "${major}.${minor}.${patch}"
