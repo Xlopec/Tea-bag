@@ -21,8 +21,6 @@ easily add your own
   <img alt="Demo" src="demoRes/demo.gif">
 </p>
 
-This library available on [Bintray](https://bintray.com/xlopec/tea-bag) as well
-
 ## Main Modules
 
 - **tea-core** - contains core types along with basic component implementation
@@ -34,40 +32,30 @@ be added as dependency together with **tea-time-travel** module
 
 ## Gradle
 
-You have to add the maven repo to your root `build.gradle`
-
-```kotlin
-allprojects {
-    repositories {
-        maven { setUrl("https://dl.bintray.com/xlopec/tea-bag") }
-    }
-}
-```
-
 Add the dependency:
 
 ```kotlin
-implementation("com.github.Xlopec:tea-core:[version]")
-implementation("com.github.Xlopec:tea-time-travel:[version]")
-implementation("com.github.Xlopec:tea-time-travel-adapter-gson:[version]")
-implementation("com.github.Xlopec:tea-time-travel-protocol:[version]")
+implementation("io.github.xlopec:tea-core:[version]")
+implementation("io.github.xlopec:tea-time-travel:[version]")
+implementation("io.github.xlopec:tea-time-travel-adapter-gson:[version]")
+implementation("io.github.xlopec:tea-time-travel-protocol:[version]")
 ```
 
 ## Notes
 
-Android application that use this library and demonstrates how it can be combined with Jetpack Compose can be found [here](https://github.com/Xlopec/Tea-bag/tree/master/app).
+Android application that use this library and demonstrates how it can be used together with Jetpack Compose can be found [here](https://github.com/Xlopec/Tea-bag/tree/master/app).
 
 To build plugin from sources use ```./gradlew tea-time-travel-plugin:buildPlugin``` command. Installable plugin will be located
 in ```tea-time-travel-plugin/build/distributions``` directory.
 
 To run Intellij Idea with installed plugin use ```./gradlew tea-time-travel-plugin:runIde``` command.
 
+Currently, the debugger is broken due to [bug in coroutines implementation](https://youtrack.jetbrains.com/issue/KT-47195)
+
 ## Planned features and TODOs
-- Update sample and library to Kotlin 1.4.30
-- Add support for Android Studio
+- Release v1.0.0
+- Migrate project to KMP
 - Add Github Wiki
 - Add possibility to dump app's state to a file to restore debug session later
 - Rework component builders and possibly replace it with some kind of DSL
-- Add keyboard shortcuts for plugin, consider improving UX
-- Release v1.0.0
-- Migrate project to KMP
+- Add keyboard shortcuts for plugin, consider improving plugin UX
