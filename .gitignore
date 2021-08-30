@@ -44,3 +44,4 @@ out/
 .idea/markdown-navigator.xml
 /.idea/deploymentTargetDropDown.xml
 /.idea/artifacts/
+/.idea/gradle.properties

@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.Xlopec.elm.time.travel</id>
     <name>Time Travel Debugger</name>
-    <version>0.0.1-deploy2</version>
+    <version>SNAPSHOT</version>
     <vendor email="maksimolejn720@gmail.com">Maksym Oliinyk</vendor>
 
     <description><![CDATA[

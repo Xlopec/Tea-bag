@@ -41,4 +41,6 @@ import org.gradle.api.provider.Provider
  * limitations under the License.
  */
 
-fun Provider<out Task>.dependsOn(vararg other: String): Task = get().dependsOn(*other)
+fun Provider<out Task>.dependsOn(
+    vararg other: String
+): Task = get().dependsOn(*other)
