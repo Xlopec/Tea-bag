@@ -1,121 +1,152 @@
-# TEA Core
-[![Version](https://jitpack.io/v/Xlopec/TEA-core.svg)](https://jitpack.io/#Xlopec/TEA-core)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Build Status](https://travis-ci.org/Xlopec/TEA-core.svg?branch=master)](https://travis-ci.org/Xlopec/TEA-core)
-[![codecov](https://codecov.io/gh/Xlopec/TEA-core/branch/master/graph/badge.svg)](https://codecov.io/gh/Xlopec/TEA-core)
+# TEA Bag
 
-The Elm Architecture implementation in Kotlin for Android.
+<img align="right" alt="Tea Bag Logo" height="200px" src="res/tea-bag-logo.png">
 
-## What's This?
-TEA Core is the most simple implementation of [TEA](https://guide.elm-lang.org/architecture/) architecture for Android
-written in Kotlin. This library is based on Kotlin's coroutines and extensively uses extension-based approach.
+Tea Bag is the simplest implementation of [TEA](https://guide.elm-lang.org/architecture/)
+architecture written in Kotlin. This library is based on Kotlin's coroutines and extensively uses
+extension-based approach.
+
+This library isn't production ready yet and was originally intended as pet project to give TEA a
+try. Later I found that it'd be nice to make it simpler and more lightweight than analogs, add
+debugging capabilities...
+
+## Quick Sample
+
+Nothing special, we just need to code our initializer, resolver (`tracker` function),
+updater (`computeNewState`function), and UI (`renderSnapshot,` function). After that we should pass
+them to an appropriate `Component` builder overload.
+
+```kotlin
+import com.oliynick.max.tea.core.Initial
+import com.oliynick.max.tea.core.Regular
+import com.oliynick.max.tea.core.Snapshot
+import com.oliynick.max.tea.core.component.Component
+import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.component.invoke
+import com.oliynick.max.tea.core.component.sideEffect
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.runBlocking
+
+/**Async initializer*/
+suspend fun initializer() =
+    Initial<String, String>("Hello", emptySet())
+
+/**Some tracker*/
+suspend fun tracker(
+    event: String
+): Set<String> = event.sideEffect { println("Tracked: \"$event\"") }
+
+/**App logic, just appends user message and passes it further to tracker*/
+fun computeNewState(
+    msg: String,
+    state: String
+) = (state + msg) command msg
+
+/**Some UI, e.g. console*/
+suspend fun renderSnapshot(
+    snapshot: Snapshot<*, *, *>
+) {
+    val description = when (snapshot) {
+        is Initial -> "Initial snapshot, $snapshot"
+        is Regular -> "Regular snapshot, $snapshot"
+    }
+
+    println(description)
+}
+
+fun main() = runBlocking {
+    // Somewhere at the application level
+    val component = Component(
+        initializer = ::initializer,
+        resolver = ::tracker,
+        updater = ::computeNewState,
+        scope = this
+    )
+    // UI = component([message1, message2, ..., message N])
+    component(" ", "world").collect(::renderSnapshot)
+}
+```
+
+The sample above will print the following:
+
+```text
+Initial snapshot, Initial(currentState=Hello, commands=[])
+Tracked: " "
+Tracked: "world"
+Regular snapshot, Regular(currentState=Hello , commands=[ ], previousState=Hello, message= )
+Regular snapshot, Regular(currentState=Hello world, commands=[world], previousState=Hello , message=world)
+```
+
+Real world example includes [Android app sample](https://github.com/Xlopec/Tea-bag/tree/master/app)
+built on the top of Jetpack Compose and
+[Intellij plugin](https://github.com/Xlopec/Tea-bag/tree/master/tea-time-travel-plugin)
 
 ## Main Features
-- **Scaleability** it is build on the top of a simple idea of having pure functions that operate on plain data separated from impure one.
-Those functions are building blocks and form testable components that can be combined to build complex applications
-- **Component binding** components can be bound to each other in any way with automatic lifecycle handling
-- **Simplicity** component is implemented in 80 loc
-- **Extensibility** additional functionality and API is implemented as component extensions which means you can 
-easily add your own
+
+- **Scalability** it is build on the top of a simple idea of having pure functions that operate on
+  plain data separated from impure one. Those functions are building blocks and form testable
+  components that can be combined to build complex applications
+- **Simplicity** component implementation resides in a single file
+- **Extensibility** additional functionality and API is implemented as component extensions which
+  means you can easily add your own
+- **Debugger** [Intellij debugger plugin](https://plugins.jetbrains.com/plugin/14254-time-travel-debugger)
+  is available for this library, though it's not production ready yet
 
 ## Gradle
 
-You have to add the maven repo to your root `build.gradle`
-
-```groovy
-allprojects {
-    repositories {
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
-
 Add the dependency:
 
-```groovy
-implementation 'com.github.Xlopec:TEA-core:0.0.1-alpha1'
+```kotlin
+implementation("io.github.xlopec:tea-core:[version]")
+// Broken due to coroutines bug, see https://youtrack.jetbrains.com/issue/KT-47195
+// implementation("io.github.xlopec:tea-time-travel:[version]")
+implementation("io.github.xlopec:tea-time-travel-adapter-gson:[version]")
+implementation("io.github.xlopec:tea-time-travel-protocol:[version]")
 ```
 
-## Quick Sample
-To show usage case consider a simple example where we want to add items to our TODO list.
+Make sure that you have `mavenCentral()` in the list of repositories.
 
-Our state will reside in `TodoState` class:
+## Plugin
 
-```kotlin
-inline class TodoState(val items: List<Item> = emptyList())
+<p align="center">
+  <img alt="Demo" src="res/demo.gif">
+</p>
 
-data class Item(val what: String) {
-    init {
-        require(what.isNotBlank() && what.isNotEmpty())
-    }
-}
-```
+Plugin is available on [JetBrains marketplace](https://plugins.jetbrains.com/plugin/14254-time-travel-debugger)
 
-Messages that trigger state updates:
+## Main Modules
 
-```kotlin
-sealed class Message
+- **tea-core** - contains core types along with basic component implementation
+- **tea-time-travel** - contains debuggable version of the component (broken due
+  to [bug in coroutines](https://youtrack.jetbrains.com/issue/KT-47195))
+- **tea-time-travel-adapter-gson** - implements debug protocol and serialization by means
+  of [Gson](https://github.com/google/gson) library. Should be added as dependency together with **
+  tea-time-travel** module
+- **tea-time-travel-protocol** - contains debug protocol types definitions
+- **tea-time-travel-plugin** - contains Intellij plugin implementation
 
-data class AddItem(val item: Item) : Message()
+## Notes
 
-data class Updated(val items: List<Item>) : Message()
+To build plugin from sources use ```./gradlew tea-time-travel-plugin:buildPlugin``` command.
+Installable plugin will be located in ```tea-time-travel-plugin/build/distributions``` directory.
 
-data class RemoveItem(val item: Item) : Message()
-```
+To run Intellij Idea with installed plugin use ```./gradlew tea-time-travel-plugin:runIde```
+command.
 
-And commands that mutate list state
+Currently, the debugger is broken due
+to [bug in coroutines implementation](https://youtrack.jetbrains.com/issue/KT-47195)
 
-```kotlin
-sealed class Command
+## Planned features and TODOs
 
-data class DoAddItem(val item: Item, val from: List<Item>) : Command()
+- Release v1.0.0
+- Migrate project to KMP
+- Add Github Wiki
+- Add possibility to dump app's state to a file to restore debug session later
+- Rework component builders and possibly replace it with some kind of DSL
+- Add keyboard shortcuts for plugin, consider improving plugin UX
+- Consider implementing client-server communication protocol from scratch
 
-data class DoRemoveItem(val item: Item, val from: List<Item>) : Command()
-```
+## Contribution
 
-And, finally, our pure `update` and impure `resolve` functions
-
-```kotlin
-private suspend fun resolve(cmd: Command): Set<Message> {
-    return when (cmd) {
-        is DoAddItem -> cmd.effect { Updated(from + item) }
-        is DoRemoveItem -> cmd.effect { Updated(from - item) }
-    }
-}
-
-private fun update(message: Message, state: TodoState): UpdateWith<TodoState, Command> {
-    return when (message) {
-        is Updated -> TodoState(message.items).noCommand()
-        is AddItem -> state command DoAddItem(message.item, state.items)
-        is RemoveItem -> state command DoRemoveItem(message.item, state.items)
-    }
-}
-```
-
-To create and use component we should write following piece of code:
-
-```kotlin
-with(UIScope) {
-    val component1 = component(TodoState(), ::resolve, ::update, androidLogger("Component 1"))
-    
-    launch { component1(AddItem(Item("some"))).collect { state -> println(state) } }
-    
-    // or
-    
-    launch { component1(flowOf(Item("some2"), Item("some2"))).collect { state -> println(state) } }
-    
-    val component2 = component(TodoState(), ::resolve, ::update, androidLogger("Component 2"))
-    
-    // bind one component to another one
-    
-    bind(component2, component1, ::transformer)
-}
-````
-
-## TODO
-- improve sample
-- increase test coverage
-- add tests for corner cases
-- implement persistence API (ability to store and load data from DB, file, etc.)
-- finish logging API
-- consider time travelling debugger
+Contributions are more than welcome. If something cannot be done, not convenient, or does not work -
+create an issue or PR  

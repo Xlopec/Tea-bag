@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Tea core copyright" pattern="file[Tea-bag.*]:src//*.kt||file:build.gradle.kts&amp;&amp;!file[Tea-bag.*]:build//*" />
+</component>

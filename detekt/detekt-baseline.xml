@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
+    <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$override fun update( message: UIMessage, state: PluginState ): UpdateWith&lt;PluginState, PluginCommand></ID>
+    <ID>FunctionNaming:AppException.kt$private fun NetworkException( cause: IOException, )</ID>
+    <ID>FunctionNaming:ToolWindowView.kt$private fun JBEditorTabs( project: Project, )</ID>
+    <ID>FunctionNaming:ToolWindowView.kt$private fun TabInfo( id: ComponentId, content: JComponent, group: ActionGroup, )</ID>
+    <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") private fun Null.toReadableString(): String</ID>
+    <ID>LongParameterList:ArticlesListScreen.kt$( state: LazyListState, id: ScreenId, query: Query, articles: List&lt;Article>, cause: Throwable, onMessage: (Message) -> Unit, )</ID>
+    <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C>, noinline resolver: Resolver&lt;C, M>, noinline updater: Updater&lt;M, S, C>, jsonConverter: JsonConverter&lt;J>, // todo: group to reduce number of arguments scope: CoroutineScope, url: URL = Localhost, io: CoroutineDispatcher = Dispatchers.IO, computation: CoroutineDispatcher = Dispatchers.Unconfined, shareOptions: ShareOptions = ShareStateWhileSubscribed, noinline sessionBuilder: SessionBuilder&lt;M, S, J> = ::WebSocketSession, )</ID>
+    <ID>MagicNumber:Balloon.kt$15</ID>
+    <ID>MagicNumber:Balloon.kt$15_000L</ID>
+    <ID>MagicNumber:Balloon.kt$30</ID>
+    <ID>MagicNumber:Colors.kt$0x33412E</ID>
+    <ID>MagicNumber:Colors.kt$0x704745</ID>
+    <ID>MagicNumber:Colors.kt$0xbaeeba</ID>
+    <ID>MagicNumber:Colors.kt$0xffcccc</ID>
+    <ID>MagicNumber:Colors.kt$182</ID>
+    <ID>MagicNumber:ServerImpl.kt$10</ID>
+    <ID>MagicNumber:ServerImpl.kt$5</ID>
+    <ID>MatchingDeclarationName:Component.kt$ComponentId</ID>
+    <ID>MatchingDeclarationName:ComponentTest.kt$TestEnvironment : UpdaterNotificationUpdaterUiUpdaterAppResolverHasMessageChannel</ID>
+    <ID>MatchingDeclarationName:HomeScreen.kt$BottomMenuItem</ID>
+    <ID>MatchingDeclarationName:MapSerializer.kt$MapDeserializer : JsonDeserializer</ID>
+    <ID>MatchingDeclarationName:Memoization.kt$Key7</ID>
+    <ID>MatchingDeclarationName:PersistentSerializer.kt$PersistentListSerializer : JsonSerializerJsonDeserializer</ID>
+    <ID>MatchingDeclarationName:UpdateUI.kt$UiUpdater</ID>
+    <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
+    <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>
+    <ID>ModifierOrder:Component.kt$ComponentId$@JvmInline public value</ID>
+    <ID>NewLineAtEndOfFile:Networking.kt$com.max.reader.app.env.Networking.kt</ID>
+    <ID>NewLineAtEndOfFile:NewsApi.kt$com.max.reader.app.env.storage.network.NewsApi.kt</ID>
+    <ID>NewLineAtEndOfFile:PluginDependenciesSpecExt.kt$.PluginDependenciesSpecExt.kt</ID>
+    <ID>SpreadOperator:BasicComponentTest.kt$BasicComponentTest$(*messages)</ID>
+    <ID>SpreadOperator:ComponentLogic.kt$TodoState$(*items)</ID>
+    <ID>TooGenericExceptionCaught:ServerImpl.kt$e: Throwable</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;M, S, C> Env&lt;M, S, C>.compute( input: Flow&lt;M>, startFrom: Initial&lt;S, C>, sink: Sink&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;M, S, C> Env&lt;M, S, C>.resolveAsFlow( commands: Collection&lt;C>, ): Flow&lt;M></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;M, S, C> Env&lt;M, S, C>.upstream( snapshots: Flow&lt;Initial&lt;S, C>>, sink: Sink&lt;M>, input: (Initial&lt;S, C>) -> Flow&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;M, S, C> Flow&lt;Snapshot&lt;M, S, C>>.downstream( input: Flow&lt;M>, upstreamInput: SendChannel&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;S, C> Env&lt;*, S, C>.init(): Flow&lt;Initial&lt;S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;T> Flow&lt;T>.shareIn( scope: CoroutineScope, shareOptions: ShareOptions, ): SharedFlow&lt;T></ID>
+    <ID>UndocumentedPublicFunction:FlowExtensions.kt$@UnstableApi public suspend fun &lt;T> Flow&lt;T>.into( sendChannel: SendChannel&lt;T> )</ID>
+    <ID>UndocumentedPublicProperty:Environment.kt$@UnstableApi public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
+    <ID>UnnecessaryAbstractClass:BasicComponentTest.kt$BasicComponentTest</ID>
+  </CurrentIssues>
+</SmellBaseline>
