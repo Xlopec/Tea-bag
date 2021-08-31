@@ -1,19 +1,13 @@
 # TEA Bag
 
-<p align="left">
-  <img alt="Tea Bag Logo" width="350px" src="res/tea-bag-logo.png">
-</p>
+<img align="right" alt="Tea Bag Logo" height="200px" src="res/tea-bag-logo.png">
 
-The Elm Architecture implementation in Kotlin.
-
-## What's This?
-
-TEA Core is the simplest implementation of [TEA](https://guide.elm-lang.org/architecture/)
+Tea Bag is the simplest implementation of [TEA](https://guide.elm-lang.org/architecture/)
 architecture written in Kotlin. This library is based on Kotlin's coroutines and extensively uses
 extension-based approach.
 
 This library isn't production ready yet and was originally intended as pet project to give TEA a
-try. Later I found that it'd be nice to make it more simple and lightweight than analogs, add
+try. Later I found that it'd be nice to make it simpler and more lightweight than analogs, add
 debugging capabilities...
 
 ## Quick Sample
