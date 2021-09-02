@@ -34,12 +34,12 @@ const val CommitHashLength = 6
 val isCiEnv: Boolean
     get() = getenvSafe("CI")?.toBoolean() == true
 
-val pluginReleaseChannels: Array<String>
+val pluginReleaseChannels: Collection<String>
     get() = when (libraryVersion) {
-        is Snapshot -> arrayOf("dev")
-        is Alpha -> arrayOf("eap")
-        is ReleaseCandidate -> arrayOf("rc")
-        is Stable -> arrayOf()
+        is Snapshot -> listOf("dev")
+        is Alpha -> listOf("eap")
+        is ReleaseCandidate -> listOf("rc")
+        is Stable -> listOf()
     }
 
 val tag: String?

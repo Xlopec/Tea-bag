@@ -16,7 +16,9 @@
 
 package com.oliynick.max.tea.core.debug.app.component.cms
 
-import com.oliynick.max.tea.core.debug.app.domain.*
+import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
+import com.oliynick.max.tea.core.debug.app.domain.Settings
+import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 

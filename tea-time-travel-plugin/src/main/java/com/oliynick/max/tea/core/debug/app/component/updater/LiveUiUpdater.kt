@@ -16,9 +16,14 @@
 
 package com.oliynick.max.tea.core.debug.app.component.updater
 
-import com.oliynick.max.tea.core.component.*
+import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.component.noCommand
 import com.oliynick.max.tea.core.debug.app.component.cms.*
-import com.oliynick.max.tea.core.debug.app.domain.*
+import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
+import com.oliynick.max.tea.core.debug.app.domain.Settings
+import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
+import com.oliynick.max.tea.core.debug.app.domain.Valid
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 // privacy is for pussies

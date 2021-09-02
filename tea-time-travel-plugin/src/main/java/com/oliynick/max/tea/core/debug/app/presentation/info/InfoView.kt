@@ -17,10 +17,14 @@
 package com.oliynick.max.tea.core.debug.app.presentation.info
 
 import com.oliynick.max.tea.core.debug.app.component.cms.*
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.removeMouseListeners
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.safe
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.setOnClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import javax.swing.JLabel
 import javax.swing.JPanel

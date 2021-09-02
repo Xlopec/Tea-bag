@@ -20,7 +20,9 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.oliynick.max.tea.core.debug.app.component.resolver.*
 import com.oliynick.max.tea.core.debug.app.component.updater.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 
 interface Environment :
         Updater<Environment>,

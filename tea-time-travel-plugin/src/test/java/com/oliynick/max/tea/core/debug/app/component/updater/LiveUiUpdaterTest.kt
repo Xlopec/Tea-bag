@@ -27,7 +27,10 @@ import core.misc.shouldForEach
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.matchers.collections.shouldContainExactly
-import io.kotlintest.matchers.types.*
+import io.kotlintest.matchers.types.shouldBeInstanceOf
+import io.kotlintest.matchers.types.shouldBeNull
+import io.kotlintest.matchers.types.shouldBeSameInstanceAs
+import io.kotlintest.matchers.types.shouldNotBeNull
 import io.kotlintest.properties.forAll
 import io.kotlintest.should
 import io.kotlintest.shouldBe

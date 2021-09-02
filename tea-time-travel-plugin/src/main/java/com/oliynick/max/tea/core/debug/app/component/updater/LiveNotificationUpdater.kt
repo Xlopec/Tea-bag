@@ -16,7 +16,9 @@
 
 package com.oliynick.max.tea.core.debug.app.component.updater
 
-import com.oliynick.max.tea.core.component.*
+import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.component.noCommand
 import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.transport.Server
