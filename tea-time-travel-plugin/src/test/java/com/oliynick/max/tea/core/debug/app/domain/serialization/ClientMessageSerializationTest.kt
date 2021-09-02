@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2021. Maksym Oliinyk.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.oliynick.max.tea.core.debug.app.domain.serialization
 
 import com.google.gson.JsonElement
@@ -5,7 +21,10 @@ import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
 import com.oliynick.max.tea.core.debug.gson.Gson
-import com.oliynick.max.tea.core.debug.protocol.*
+import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
+import com.oliynick.max.tea.core.debug.protocol.ClientMessage
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import com.oliynick.max.tea.core.debug.protocol.NotifyClient
 import core.data.*
 import io.kotlintest.shouldBe
 import org.junit.Ignore
@@ -17,7 +36,7 @@ import java.io.FileReader
 import java.util.*
 
 @RunWith(JUnit4::class)
-class ClientMessageSerializationTest {
+internal class ClientMessageSerializationTest {
 
     private val gson = Gson()
 
@@ -74,14 +93,14 @@ class ClientMessageSerializationTest {
         val tree = gson.fromJson(FileReader(jsonFile), JsonElement::class.java)
 
         tree.asJsonObject.toValue() shouldBe Ref(
-            Type("com.max.weatherviewer.app.State"),
+            Type.of("com.max.weatherviewer.app.State"),
             setOf(
                 Property(
                     "screens",
                     CollectionWrapper(
                         listOf(
                             Ref(
-                                Type("com.max.weatherviewer.screens.feed.FeedLoading"),
+                                Type.of("com.max.weatherviewer.screens.feed.FeedLoading"),
                                 setOf(
                                     Property(
                                         "id",
@@ -89,7 +108,7 @@ class ClientMessageSerializationTest {
                                     ),
                                     Property(
                                         "criteria", Ref(
-                                            Type("com.max.weatherviewer.screens.feed.LoadCriteria\$Query"),
+                                            Type.of("com.max.weatherviewer.screens.feed.LoadCriteria\$Query"),
                                             setOf(Property("query", StringWrapper("android")))
                                         )
                                     )

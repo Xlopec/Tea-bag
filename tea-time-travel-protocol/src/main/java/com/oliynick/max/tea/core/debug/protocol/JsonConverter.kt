@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021. Maksym Oliinyk.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.oliynick.max.tea.core.debug.protocol
 
 /**
@@ -5,7 +29,7 @@ package com.oliynick.max.tea.core.debug.protocol
  *
  * @param J json tree
  */
-interface JsonConverter<J> {
+public interface JsonConverter<J> {
 
     /**
      * Converts object instance to a json tree representation.
@@ -16,7 +40,7 @@ interface JsonConverter<J> {
      * @param T object type
      * @return json tree
      */
-    fun <T> toJsonTree(
+    public fun <T> toJsonTree(
         any: T
     ): J
 
@@ -28,7 +52,7 @@ interface JsonConverter<J> {
      * @param T object type
      * @return parsed object instance
      */
-    fun <T> fromJsonTree(
+    public fun <T> fromJsonTree(
         json: J,
         cl: Class<T>
     ): T
@@ -40,7 +64,7 @@ interface JsonConverter<J> {
      * @param T object type
      * @return parsed object instance
      */
-    fun <T> toJson(
+    public fun <T> toJson(
         any: T
     ): String
 
@@ -52,7 +76,7 @@ interface JsonConverter<J> {
      * @param T object type
      * @return parsed object instance
      */
-    fun <T> fromJson(
+    public fun <T> fromJson(
         json: String,
         cl: Class<T>
     ): T

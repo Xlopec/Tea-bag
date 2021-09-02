@@ -1,7 +1,30 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021. Maksym Oliinyk.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.max.reader.screens.article.list.update
 
-import com.max.reader.app.command.*
-import com.max.reader.app.message.*
+import com.max.reader.app.*
 import com.max.reader.domain.Article
 import com.max.reader.domain.toggleFavorite
 import com.max.reader.screens.article.list.*
@@ -21,7 +44,8 @@ object LiveArticlesUpdater : ArticlesUpdater {
         when (message) {
             is ArticlesLoaded -> state.toPreview(message.articles, message.hasMore).noCommand()
             is LoadNextArticles -> loadNextArticles(state)
-            is LoadArticlesFromScratch, is RefreshArticles -> state.toRefreshing() command LoadArticlesByQuery(state.id, state.query, state.articles.size, ArticlesState.ArticlesPerPage)
+            is LoadArticlesFromScratch -> state.toLoading() command state.toLoadArticlesQuery()
+            is RefreshArticles -> state.toRefreshing() command state.toLoadArticlesQuery()
             is ArticlesOperationException -> state.toException(message.cause).noCommand()
             is ToggleArticleIsFavorite -> toggleFavorite(message.article, state)
             is ArticleUpdated -> updateArticle(message.article, state)
@@ -29,6 +53,9 @@ object LiveArticlesUpdater : ArticlesUpdater {
             // fixme redesign FeedState
             is OnQueryUpdated -> updateQuery(message.query, state)
         }
+
+    fun ArticlesState.toLoadArticlesQuery() =
+        LoadArticlesByQuery(id, query, articles.size, ArticlesState.ArticlesPerPage)
 
     fun loadNextArticles(
         state: ArticlesState

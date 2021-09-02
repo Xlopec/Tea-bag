@@ -1,17 +1,25 @@
 /*
- * Copyright (C) 2019 Maksym Oliinyk.
+ * MIT License
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Copyright (c) 2021. Maksym Oliinyk.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 @file:Suppress("unused", "MemberVisibilityCanBePrivate", "FunctionName")
@@ -27,61 +35,92 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
 
 /**
- * Component is a builder that accepts [flow][Flow] of messages as input and returns
- * [flow][Flow] of [snapshots][Snapshot] as result.
+ * Conceptually, component is a function that accepts [flow][Flow] of messages and returns [flow][Flow]
+ * of [snapshots][Snapshot] as result.
  *
- * Some behavior notes:
- * * the resulting flow of snapshots always provides observer with the latest available snapshot
- * * the whole component is a lazy function which means that incoming messages won't be consumed
- * unless there is an active collector because of the [Flow] semantic
+ * ### Concept
+ * For each incoming message component computes a pair that contain new computed state and set of
+ * commands to be executed using [Updater]. Such pair or computation result is represented by the
+ * [UpdateWith].
+ *
+ * After result if obtained it's fed to [Resolver] which in turn resolves commands to messages and
+ * executes side effects, if needed.
+ *
+ * ### Behavior notes
+ * Snapshot flow sharing is controlled by the [ShareOptions], which is just a shorthand for:
+ * ```
+ * flow { emit(1) }.shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
+ * ```
+ * This makes the resulting flow a hot one.
+ * For more information regarding behavior and error handling see documentation for
+ * [shareIn][kotlinx.coroutines.flow.shareIn] operator
  *
  * @param M incoming messages
  * @param S state of the application
  * @param C commands to be executed
  */
-typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
+public typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
 
 /**
- * Updater is a **pure** function that accepts message and current state of the application and then returns
- * a new state and possible empty set of commands to be resolved
+ * Updater is just a regular **pure** function that accepts incoming message, state and calculates
+ * a [pair][UpdateWith] that contains a new state and, possibly, empty set of commands to be resolved
  *
  * @param M incoming messages
  * @param S state of the application
  * @param C commands to be executed
  */
-typealias Updater<M, S, C> = (message: M, state: S) -> UpdateWith<S, C>
+public typealias Updater<M, S, C> = (message: M, state: S) -> UpdateWith<S, C>
 
 /**
- * Alias for result of the [updater][Updater] function
+ * Alias for kotlin's [Pair]. It can be created using the following [extensions][command]
  *
  * @param S state of the component
+ * @param C commands to be executed. There's **NO GUARANTEE** of commands ordering, they can be
+ * executed in any order. That implies calculation correctness mustn't depend on the ordering
+ *
+ * @param S state of the application
  * @param C commands to be executed
  */
-typealias UpdateWith<S, C> = Pair<S, Set<C>>
+public typealias UpdateWith<S, C> = Pair<S, Set<C>>
 
 /**
- * Alias for an **impure** function that resolves commands and returns possibly empty set of messages to feed the
- * [updater][Updater]
+ * Alias for a possibly **impure** function that resolves commands to messages and performs side
+ * effects.
+ *
+ * ### Exceptions
+ *
+ * Any exception that happens inside this function will redelivered to a [Component]'s scope and handled
+ * by it. For more information regarding error handling see [shareIn][kotlinx.coroutines.flow.shareIn]
  *
  * @param M incoming messages
  * @param C commands to be executed
  */
-typealias Resolver<C, M> = suspend (command: C) -> Set<M>
+public typealias Resolver<C, M> = suspend (command: C) -> Set<M>
 
+/**
+ * Type alias for suspending function that accepts incoming values a puts it to a queue for later
+ * processing
+ *
+ * @param T incoming values
+ */
 @UnstableApi
-typealias Sink<T> = suspend (T) -> Unit
+public typealias Sink<T> = suspend (T) -> Unit
 
 /**
  * Creates new component using supplied values
  *
- * @param initializer initializer to be used to provide initial values for application
- * @param resolver resolver to be used to resolve messages from commands
- * @param updater updater to be used to compute a new state with set of commands to execute
+ * @param initializer initializer that provides initial values
+ * @param resolver resolver that resolves messages to commands and performs side effects
+ * @param updater updater that computes new states and commands to be executed
+ * @param scope scope in which the sharing coroutine is started
+ * @param io coroutine dispatcher which is used to execute side effects
+ * @param computation coroutine dispatcher which is used to wrap [updater]'s computations
+ * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
  * @param M incoming messages
  * @param S state of the application
  * @param C commands to be executed
  */
-fun <M, C, S> Component(
+public fun <M, C, S> Component(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     updater: Updater<M, S, C>,
@@ -96,13 +135,13 @@ fun <M, C, S> Component(
 /**
  * Creates new component using preconfigured environment
  *
- * @param env environment to be used
+ * @param env preconfigured program environment
  * @param M incoming messages
  * @param S state of the application
  * @param C commands to be executed
  */
 @OptIn(UnstableApi::class)
-fun <M, S, C> Component(
+public fun <M, S, C> Component(
     env: Env<M, S, C>,
 ): Component<M, S, C> {
 
@@ -120,7 +159,7 @@ fun <M, S, C> Component(
 }
 
 @UnstableApi
-fun <M, S, C> Env<M, S, C>.upstream(
+public fun <M, S, C> Env<M, S, C>.upstream(
     snapshots: Flow<Initial<S, C>>,
     sink: Sink<M>,
     input: (Initial<S, C>) -> Flow<M>,
@@ -128,7 +167,7 @@ fun <M, S, C> Env<M, S, C>.upstream(
     snapshots.flatMapLatest { startFrom -> compute(input(startFrom), startFrom, sink) }
 
 @UnstableApi
-fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
+public fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
     input: Flow<M>,
     upstreamInput: SendChannel<M>,
 ): Flow<Snapshot<M, S, C>> =
@@ -139,11 +178,11 @@ fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
     }
 
 @UnstableApi
-fun <S, C> Env<*, S, C>.init(): Flow<Initial<S, C>> =
+public fun <S, C> Env<*, S, C>.init(): Flow<Initial<S, C>> =
     channelFlow { withContext(io) { send(initializer()) } }
 
 @UnstableApi
-fun <M, S, C> Env<M, S, C>.compute(
+public fun <M, S, C> Env<M, S, C>.compute(
     input: Flow<M>,
     startFrom: Initial<S, C>,
     sink: Sink<M>,
@@ -172,13 +211,13 @@ fun <M, S, C> Env<M, S, C>.compute(
 }
 
 @UnstableApi
-fun <T> Flow<T>.shareIn(
+public fun <T> Flow<T>.shareIn(
     scope: CoroutineScope,
     shareOptions: ShareOptions,
-) = shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
+): SharedFlow<T> = shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
 
 @UnstableApi
-fun <M, S, C> Env<M, S, C>.resolveAsFlow(
+public fun <M, S, C> Env<M, S, C>.resolveAsFlow(
     commands: Collection<C>,
 ): Flow<M> =
     flow { emitAll(resolve(commands)) }
@@ -190,7 +229,7 @@ private fun <M, S, C> Env<M, S, C>.resolveAll(
 ) =
 // launches each suspending function
 // in 'launch and forget' fashion so that
-// updater can process a new portion of messages
+// updater can process new portion of messages
     commands.forEach { command ->
         coroutineScope.launch(io + CoroutineName("Resolver coroutine: $command")) {
             sink(resolver(command))

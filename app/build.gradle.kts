@@ -1,27 +1,51 @@
 /*
- * Copyright (C) 2021. Maksym Oliinyk.
+ * MIT License
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Copyright (c) 2021. Maksym Oliinyk.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
-import Libraries.Versions.accompanies
 import Libraries.Versions.compose
-import Libraries.appcompat
+import Libraries.accompaniestCoil
+import Libraries.accompaniestInsets
+import Libraries.accompaniestSwipeRefresh
+import Libraries.appCompat
+import Libraries.composeActivity
+import Libraries.composeAnimation
+import Libraries.composeCompiler
+import Libraries.composeFoundation
+import Libraries.composeFoundationLayout
+import Libraries.composeMaterial
+import Libraries.composeMaterialIconsExtended
+import Libraries.composeRuntime
+import Libraries.composeUi
+import Libraries.composeUiTooling
 import Libraries.coroutinesAndroid
 import Libraries.gson
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
-import Libraries.stitch
+import Libraries.kotlinStdLibReflect
+import Libraries.ktorClientCio
+import Libraries.ktorClientGson
+import Libraries.ktorClientLogging
+import Libraries.logback
 import TestLibraries.espressoCore
 import TestLibraries.espressoRunner
 
@@ -31,19 +55,29 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
+    signingConfigs {
+        create("release") {
+            storeFile = file(getenvSafe("STORE_FILE") ?: "release.keystore")
+            storePassword = getenvSafe("STORE_PASSWORD")
+            keyPassword = getenvSafe("KEY_PASSWORD")
+            keyAlias = getenvSafe("KEY_ALIAS")
+        }
+    }
+    compileSdk = 30
 
     defaultConfig {
         applicationId = "com.oliinyk.max.news.reader"
-        minSdkVersion(21)
-        targetSdkVersion(30)
+        minSdk = 21
+        targetSdk = 30
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isShrinkResources = true
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -62,8 +96,6 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
-        useIR = true
-        kotlinOptions.languageVersion = "1.5"
     }
 
     composeOptions {
@@ -95,46 +127,46 @@ android {
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     implementation(project(":tea-core"))
-    implementation(project(":tea-time-travel"))
-    implementation(project(":tea-time-travel-adapter-gson"))
+
+    remoteImplementation(project(":tea-time-travel"))
+    remoteImplementation(project(":tea-time-travel-adapter-gson"))
 
     implementation(kotlinStdLib)
+    implementation(kotlinStdLibReflect)
+
     implementation(immutableCollections)
     implementation(coroutinesAndroid)
 
-    implementation("androidx.compose.ui:ui:$compose")
-    implementation("androidx.compose.foundation:foundation:$compose")
-    implementation("androidx.compose.foundation:foundation-layout:$compose")
-    implementation("androidx.compose.material:material:$compose")
-    implementation("androidx.compose.material:material-icons-core:$compose")
-    implementation("androidx.compose.material:material-icons-extended:$compose")
-    implementation("androidx.compose.ui:ui-tooling:$compose")
-    implementation("androidx.compose.runtime:runtime:$compose")
-    implementation("androidx.compose.animation:animation:$compose")
-    implementation("androidx.compose.compiler:compiler:$compose")
-    implementation("androidx.activity:activity-compose:1.3.0-alpha02")
+    implementation(composeUi)
+    implementation(composeFoundation)
+    implementation(composeFoundationLayout)
+    implementation(composeMaterial)
+    implementation(composeMaterialIconsExtended)
+    implementation(composeUiTooling)
+    implementation(composeRuntime)
+    implementation(composeAnimation)
+    implementation(composeCompiler)
+    implementation(composeActivity)
 
-    implementation("dev.chrisbanes.accompanist:accompanist-insets:$accompanies")
-    implementation("dev.chrisbanes.accompanist:accompanist-coil:$accompanies")
+    implementation(accompaniestInsets)
+    implementation(accompaniestCoil)
+    implementation(accompaniestSwipeRefresh)
 
-    implementation("androidx.appcompat:appcompat:$appcompat")
+    implementation(appCompat)
 
-    implementation("org.mongodb:stitch-android-sdk:$stitch")
-
-    implementation("com.google.code.gson:gson:$gson")
-    // todo remove
-    implementation("com.squareup.okhttp3:okhttp:4.8.1")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.8.1")
+    implementation(gson)
+    implementation(ktorClientCio)
+    implementation(ktorClientGson)
+    implementation(ktorClientLogging)
+    implementation(logback)
 
     testImplementation(project(":tea-test"))
     testImplementation(coroutinesAndroid)
+    testImplementation(project(":tea-time-travel"))
+    testImplementation(project(":tea-time-travel-adapter-gson"))
 
-    androidTestImplementation("androidx.test:runner:$espressoRunner")
-    androidTestImplementation("androidx.test.espresso:espresso-core:$espressoCore")
-
+    androidTestImplementation(espressoRunner)
+    androidTestImplementation(espressoCore)
 }

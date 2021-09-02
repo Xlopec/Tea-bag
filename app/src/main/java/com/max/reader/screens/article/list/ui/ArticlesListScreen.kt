@@ -1,11 +1,32 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021. Maksym Oliinyk.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 @file:Suppress("FunctionName")
 
 package com.max.reader.screens.article.list.ui
 
-import androidx.compose.animation.asDisposableClock
-import androidx.compose.foundation.InteractionState
-import androidx.compose.foundation.animation.defaultFlingConfig
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,16 +45,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.node.Ref
-import androidx.compose.ui.platform.LocalAnimationClock
-import androidx.compose.ui.text.SoftwareKeyboardController
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
+import com.google.accompanist.insets.statusBarsPadding
 import com.max.reader.app.ScreenId
-import com.max.reader.app.message.*
+import com.max.reader.app.message.Message
+import com.max.reader.app.message.NavigateToArticleDetails
 import com.max.reader.domain.Article
 import com.max.reader.domain.Author
 import com.max.reader.domain.Description
@@ -43,8 +67,6 @@ import com.max.reader.screens.article.list.*
 import com.max.reader.screens.article.list.ArticlesState.TransientState.*
 import com.max.reader.screens.article.list.QueryType.*
 import com.max.reader.ui.theme.ThemedPreview
-import dev.chrisbanes.accompanist.coil.CoilImage
-import dev.chrisbanes.accompanist.insets.statusBarsPadding
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
@@ -72,7 +94,9 @@ fun ArticlesScreen(
                 cause = transientState.th,
                 onMessage = onMessage
             )
-            is Loading -> ArticlesLoadingContent(
+            is LoadingNext,
+            is Loading,
+            -> ArticlesLoadingContent(
                 state = listState,
                 id = state.id,
                 query = state.query,
@@ -100,7 +124,9 @@ private fun ArticlesProgress(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(
+            color = colors.secondaryVariant
+        )
     }
 }
 
@@ -112,18 +138,21 @@ private fun ArticlesLoadingContent(
     articles: List<Article>,
     onMessage: (Message) -> Unit,
 ) {
-    ArticlesContent(
-        state = state,
-        id = id,
-        query = query,
-        onMessage = onMessage
-    ) {
-
-        if (articles.isEmpty()) {
-            item {
-                ArticlesProgress(modifier = Modifier.fillParentMaxSize())
-            }
-        } else {
+    if (articles.isEmpty()) {
+        ArticlesContent(
+            id = id,
+            query = query,
+            onMessage = onMessage
+        ) {
+            ArticlesProgress(modifier = Modifier.fillMaxSize())
+        }
+    } else {
+        ArticlesContent(
+            state = state,
+            id = id,
+            query = query,
+            onMessage = onMessage
+        ) {
             ArticlesContentNonEmptyImpl(
                 id = id,
                 query = query,
@@ -132,11 +161,10 @@ private fun ArticlesLoadingContent(
             )
 
             item {
-                Spacer(modifier = Modifier.preferredHeight(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 ArticlesProgress(modifier = Modifier.fillMaxWidth())
             }
         }
-
     }
 }
 
@@ -149,19 +177,18 @@ private fun ArticlesExceptionContent(
     cause: Throwable,
     onMessage: (Message) -> Unit,
 ) {
-    ArticlesContent(state, id, query, onMessage) {
-
-        if (articles.isEmpty()) {
-            item {
-                ArticlesError(
-                    modifier = Modifier.fillParentMaxSize(),
-                    id = id,
-                    message = cause.toReadableMessage(),
-                    onMessage = onMessage
-                )
-            }
-        } else {
-            ArticlesContentNonEmptyImpl(id, query, articles, onMessage) {}
+    if (articles.isEmpty()) {
+        ArticlesContent(id, query, onMessage) {
+            ArticlesError(
+                modifier = Modifier.fillMaxSize(),
+                id = id,
+                message = cause.toReadableMessage(),
+                onMessage = onMessage
+            )
+        }
+    } else {
+        ArticlesContent(state, id, query, onMessage) {
+            ArticlesContentNonEmptyImpl(id, query, articles, onMessage)
 
             item {
                 ArticlesError(
@@ -172,6 +199,7 @@ private fun ArticlesExceptionContent(
                 )
             }
         }
+
     }
 }
 
@@ -184,9 +212,43 @@ private fun ArticlesPreviewContent(
     onMessage: (Message) -> Unit,
 ) {
     if (articles.isEmpty()) {
-        ArticlesContentEmpty(state, id, query, onMessage)
+        ArticlesContent(id, query, onMessage) {
+            Message(
+                modifier = Modifier.fillMaxSize(),
+                message = "No articles",
+                actionText = "Reload",
+                onClick = {
+                    onMessage(LoadArticlesFromScratch(id))
+                }
+            )
+        }
     } else {
-        ArticlesContentNonEmpty(state, id, query, articles, onMessage)
+        ArticlesContent(state, id, query, onMessage) {
+            ArticlesContentNonEmptyImpl(id, query, articles, onMessage)
+        }
+    }
+}
+
+@Composable
+private fun ArticlesContent(
+    id: ScreenId,
+    query: Query,
+    onMessage: (Message) -> Unit,
+    children: @Composable () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ArticleSearchHeader(
+            id = id,
+            query = query,
+            onMessage = onMessage
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        children()
     }
 }
 
@@ -212,32 +274,10 @@ private fun ArticlesContent(
                 onMessage = onMessage
             )
 
-            Spacer(modifier = Modifier.preferredHeight(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         children()
-    }
-}
-
-@Composable
-private fun ArticlesContentEmpty(
-    state: LazyListState,
-    id: ScreenId,
-    query: Query,
-    onMessage: (Message) -> Unit,
-) {
-    ArticlesContent(state, id, query, onMessage) {
-
-        item {
-            Message(
-                modifier = Modifier.fillParentMaxSize(),
-                message = "No articles",
-                actionText = "Reload",
-                onClick = {
-                    onMessage(LoadArticlesFromScratch(id))
-                }
-            )
-        }
     }
 }
 
@@ -258,10 +298,10 @@ private fun LazyListScope.ArticlesContentNonEmptyImpl(
             style = typography.subtitle1
         )
 
-        Spacer(modifier = Modifier.preferredHeight(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
     }
 
-    itemsIndexed(articles) { index, article ->
+    itemsIndexed(articles, { _, item -> item.url }) { index, article ->
         Column {
             ArticleItem(
                 screenId = id,
@@ -270,7 +310,7 @@ private fun LazyListScope.ArticlesContentNonEmptyImpl(
             )
 
             if (index != articles.lastIndex) {
-                Spacer(modifier = Modifier.preferredHeight(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             if (index == articles.lastIndex) {
@@ -284,44 +324,34 @@ private fun LazyListScope.ArticlesContentNonEmptyImpl(
 }
 
 @Composable
-private fun ArticlesContentNonEmpty(
-    state: LazyListState,
-    id: ScreenId,
-    query: Query,
-    articles: List<Article>,
-    onMessage: (Message) -> Unit,
-) {
-    ArticlesContent(state, id, query, onMessage) {
-        ArticlesContentNonEmptyImpl(id, query, articles, onMessage)
-    }
-}
-
-@Composable
 private fun ArticleImage(
     imageUrl: URL?,
 ) {
     Surface(
         modifier = Modifier
-            .preferredHeight(200.dp)
+            .height(200.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
         color = colors.onSurface.copy(alpha = 0.2f)
     ) {
 
         if (imageUrl != null) {
-
-            CoilImage(
+            Image(
+                painter = rememberImagePainter(
+                    data = imageUrl.toExternalForm(),
+                ) {
+                  crossfade(true)
+                },
+                contentDescription = "Article's Image",
                 modifier = Modifier.fillMaxWidth(),
-                data = imageUrl.toExternalForm(),
-                fadeIn = true,
                 contentScale = ContentScale.Crop,
-                contentDescription = "Article's Image"
             )
         }
     }
 }
 
 @Composable
+@OptIn(ExperimentalMaterialApi::class)
 private fun ArticleItem(
     screenId: ScreenId,
     article: Article,
@@ -330,11 +360,9 @@ private fun ArticleItem(
     Card(
         elevation = 4.dp,
         shape = RoundedCornerShape(8.dp),
+        onClick = { onMessage(NavigateToArticleDetails(article)) }
     ) {
-        Column(
-            modifier = Modifier
-                .clickable(onClick = { onMessage(NavigateToArticleDetails(article)) })
-        ) {
+        Column {
 
             ArticleImage(imageUrl = article.urlToImage)
 
@@ -421,7 +449,7 @@ private fun ArticlesError(
 ) {
     Message(
         modifier,
-        "Failed to load articles, message: '${message.decapitalize(Locale.getDefault())}'",
+        "Failed to load articles, message: '${message.replaceFirstChar { it.lowercase(Locale.getDefault()) }}'",
         "Retry"
     ) {
         onMessage(LoadArticlesFromScratch(id))
@@ -457,6 +485,7 @@ private fun Message(
 }
 
 @Composable
+@OptIn(ExperimentalComposeUiApi::class)
 private fun ArticleSearchHeader(
     modifier: Modifier = Modifier,
     id: ScreenId,
@@ -470,28 +499,28 @@ private fun ArticleSearchHeader(
         shape = RoundedCornerShape(8.dp)
     ) {
 
-        val controllerRef = remember<Ref<SoftwareKeyboardController>> { Ref() }
+        val keyboardController = LocalSoftwareKeyboardController.current
 
         TextField(
+            value = query.input,
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text(text = query.type.toSearchHint(), style = typography.subtitle2) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            value = query.input,
             maxLines = 1,
-            onTextInputStarted = { controller ->
-                controllerRef.value = controller
-            },
             keyboardActions = KeyboardActions(
                 onSearch = {
+                    keyboardController?.hide()
                     onMessage(LoadArticlesFromScratch(id))
-                    controllerRef.value?.hideSoftwareKeyboard()
                 }
             ),
-            backgroundColor = colors.surface,
+            colors = TextFieldDefaults.textFieldColors(backgroundColor = colors.surface),
             textStyle = typography.subtitle2,
             trailingIcon = {
                 IconButton(
-                    onClick = { onMessage(LoadArticlesFromScratch(id)) }
+                    onClick = {
+                        keyboardController?.hide()
+                        onMessage(LoadArticlesFromScratch(id))
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Search,
@@ -509,10 +538,8 @@ private fun listState(
     id: ScreenId,
     initialFirstVisibleItemIndex: Int = 0,
     initialFirstVisibleItemScrollOffset: Int = 0,
-    interactionState: InteractionState? = null,
 ): LazyListState {
-    val clock = LocalAnimationClock.current.asDisposableClock()
-    val config = defaultFlingConfig()
+
     val idToListState = remember { mutableMapOf<ScreenId, LazyListState>() }
 
     return remember(id) {
@@ -520,9 +547,6 @@ private fun listState(
             LazyListState(
                 initialFirstVisibleItemIndex,
                 initialFirstVisibleItemScrollOffset,
-                interactionState,
-                config,
-                clock
             )
         }
     }
@@ -611,7 +635,7 @@ private val DateFormatter: SimpleDateFormat by lazy {
 }
 
 private fun Throwable.toReadableMessage() =
-    message?.decapitalize(Locale.getDefault()) ?: "unknown exception"
+    message?.replaceFirstChar { it.lowercase(Locale.getDefault()) } ?: "unknown exception"
 
 private fun Query.toScreenTitle(): String =
     when (type) {

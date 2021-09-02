@@ -1,19 +1,37 @@
-import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.version
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021. Maksym Oliinyk.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.plugin.use.PluginDependenciesSpec
 import org.gradle.plugin.use.PluginDependencySpec
 
-fun PluginDependenciesSpec.kotlin(): PluginDependencySpec =
-    kotlin("jvm") version kotlinVersion
-
-fun PluginDependenciesSpec.detekt(): PluginDependencySpec =
-    id("io.gitlab.arturbosch.detekt").version(BuildPlugins.Versions.detektVersion)
-
-fun PluginDependenciesSpec.dokka(): PluginDependencySpec =
-    id("org.jetbrains.dokka").version(BuildPlugins.Versions.dokkaVersion)
-
-fun PluginDependenciesSpec.bintray(): PluginDependencySpec =
-    id("com.jfrog.bintray").version(BuildPlugins.Versions.bintrayVersion)
-
 fun PluginDependenciesSpec.intellij(): PluginDependencySpec =
-    id("org.jetbrains.intellij").version(BuildPlugins.Versions.intellijVersion)
+    id("org.jetbrains.intellij")
+
+fun PluginDependenciesSpec.publishedLibrary(): PluginDependencySpec =
+    id("published-library")
+
+fun DependencyHandlerScope.remoteImplementation(dependencyNotation: Any) {
+    add("remoteImplementation", dependencyNotation)
+}

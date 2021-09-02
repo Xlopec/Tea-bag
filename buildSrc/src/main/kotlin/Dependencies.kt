@@ -1,47 +1,40 @@
 /*
- * Copyright (C) 2021. Maksym Oliinyk.
+ * MIT License
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Copyright (c) 2021. Maksym Oliinyk.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
-import BuildPlugins.Versions.buildToolsVersion
-import BuildPlugins.Versions.intellijVersion
+import Libraries.Versions.accompanies
+import Libraries.Versions.compose
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 
-const val kotlinVersion = "1.4.30"
-
-object BuildPlugins {
-
-    object Versions {
-        const val buildToolsVersion = "7.0.0-alpha06"
-        const val detektVersion = "1.15.0"
-        const val dokkaVersion = "1.4.20"
-        const val bintrayVersion = "1.8.4"
-        const val intellijVersion = "0.6.5"
-    }
-
-    const val androidGradlePlugin = "com.android.tools.build:gradle:$buildToolsVersion"
-    const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    const val intellijPlugin = "org.jetbrains.intellij.plugins:gradle-intellij-plugin:$intellijVersion"
-}
+const val kotlinVersion = "1.5.21"
 
 object Libraries {
     object Versions {
-        const val coroutines = "1.4.2"
-        const val ktor = "1.5.1"
-        const val compose = "1.0.0-alpha12"
-        const val accompanies = "0.5.1"
+        const val coroutines = "1.5.1"
+        const val ktor = "1.6.2"
+        const val compose = "1.0.1"
+        const val accompanies = "0.17.0"
     }
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
@@ -49,33 +42,51 @@ object Libraries {
     const val coroutinesSwing = "org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutines"
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines"
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    const val kotlinStdLibReflect = "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
     const val ktorServerCore = "io.ktor:ktor-server-core:$ktor"
     const val ktorServerNetty = "io.ktor:ktor-server-netty:$ktor"
     const val ktorServerWebsockets = "io.ktor:ktor-websockets:$ktor"
 
     const val ktorClientWebsockets = "io.ktor:ktor-client-websockets:$ktor"
-    const val ktorClientOkHttp = "io.ktor:ktor-client-okhttp:$ktor"
-    const val gson = "2.8.6"
+    const val ktorClientCio = "io.ktor:ktor-client-cio:$ktor"
+    const val ktorClientLogging = "io.ktor:ktor-client-logging:$ktor"
+    const val ktorClientGson = "io.ktor:ktor-client-gson:$ktor"
+    const val gson = "com.google.code.gson:gson:2.8.7"
 
-    const val stitch = "4.1.0"
-    const val appcompat = "1.2.0"
-
-    const val logback = "1.2.3"
-    const val atomicfu = "0.15.1"
+    const val logback = "ch.qos.logback:logback-classic:1.2.3"
+    const val atomicfu = "org.jetbrains.kotlinx:atomicfu:0.15.1"
     const val immutableCollections = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.3"
+
+    const val composeUi = "androidx.compose.ui:ui:$compose"
+    const val composeFoundation = "androidx.compose.foundation:foundation:$compose"
+    const val composeFoundationLayout = "androidx.compose.foundation:foundation-layout:$compose"
+    const val composeMaterial = "androidx.compose.material:material:$compose"
+    const val composeMaterialIconsExtended =
+        "androidx.compose.material:material-icons-extended:$compose"
+    const val composeUiTooling = "androidx.compose.ui:ui-tooling:$compose"
+    const val composeRuntime = "androidx.compose.runtime:runtime:$compose"
+    const val composeAnimation = "androidx.compose.animation:animation:$compose"
+    const val composeCompiler = "androidx.compose.compiler:compiler:$compose"
+    const val composeActivity = "androidx.activity:activity-compose:1.3.1"
+
+    const val accompaniestInsets = "com.google.accompanist:accompanist-insets:$accompanies"
+    const val accompaniestCoil = "io.coil-kt:coil-compose:1.3.2"
+    const val accompaniestSwipeRefresh =
+        "com.google.accompanist:accompanist-swiperefresh:$accompanies"
+
+    const val appCompat = "androidx.appcompat:appcompat:1.2.0"
 }
 
 object TestLibraries {
     private object Versions {
-        const val ktor = "1.5.1"
+        const val ktor = "1.6.2"
     }
 
-    const val junit = "4.13.1"
-    const val espressoRunner = "1.3.0"
-    const val espressoCore = "3.3.0"
+    const val junit = "junit:junit:4.13.1"
+    const val junitRunner = "io.kotlintest:kotlintest-runner-junit4:3.4.2"
+    const val espressoRunner = "androidx.test:runner:1.3.0"
+    const val espressoCore = "androidx.test.espresso:espresso-core:3.3.0"
     const val ktorMockJvm = "io.ktor:ktor-client-mock-jvm:${Versions.ktor}"
     const val ktorServerTests = "io.ktor:ktor-server-tests:${Versions.ktor}"
-
 }
-

@@ -20,7 +20,7 @@ jobs:
           java-version: 11
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Runs static code analysis
+      - name: Run static code analysis
         run: ./gradlew detektAll
 
   Test:
@@ -36,8 +36,11 @@ jobs:
           java-version: 11
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Runs tests
-        run: ./gradlew test
+      # workaround for Gradle since it can't run buildSrc tests from default location
+      - name: Run buildSrc tests
+        run: ./gradlew -p buildSrc test
+      - name: Run tests
+        run: ./gradlew ciTests
       - name: Archive test reports
         if: success() || failure()
         uses: actions/upload-artifact@v2
@@ -52,9 +55,9 @@ jobs:
     runs-on: ubuntu-latest
     # tags should be of the form:
     # <no-value> -> dev build
-    # v1.2.3-alpha1
-    # v1.2.3-rc1
-    # v1.2.3
+    # v1.2.3-alpha1 -> alpha build
+    # v1.2.3-rc1 or v1.2.3-alpha4-rc5 -> alpha RC
+    # v1.2.3 -> stable
     if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/develop'
     steps:
       - name: Get the version
@@ -67,13 +70,16 @@ jobs:
           java-version: 11
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Publishes artifacts
-        run: ./gradlew releaseAll
+      - name: Publish artifacts
+        run: ./gradlew releaseLibrary releasePlugin
         env:
           GITHUB_TAG: ${{ steps.get_version.outputs.GITHUB_TAG }}
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+          OSSRH_USER: ${{ secrets.OSSRH_USER }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           PUBLISH_PLUGIN_TOKEN: ${{ secrets.PUBLISH_PLUGIN_TOKEN }}
-      - name: Publish artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: publish-artifacts
