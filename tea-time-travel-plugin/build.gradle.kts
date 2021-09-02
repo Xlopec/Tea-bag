@@ -34,7 +34,7 @@ import Libraries.ktorServerWebsockets
 import Libraries.logback
 import TestLibraries.ktorServerTests
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
-import org.jetbrains.intellij.tasks.PublishTask
+import org.jetbrains.intellij.tasks.PublishPluginTask
 
 plugins {
     `maven-publish`
@@ -44,17 +44,17 @@ plugins {
 }
 
 intellij {
-    version = "2020.3"
-    setPlugins("com.intellij.java")
+    version.set("2020.3")
+    plugins.add("com.intellij.java")
 }
 
 tasks.named<PatchPluginXmlTask>("patchPluginXml") {
     setVersion(libraryVersion.toVersionName())
 }
 
-tasks.named<PublishTask>("publishPlugin") {
-    token(ciVariable("PUBLISH_PLUGIN_TOKEN"))
-    channels(*pluginReleaseChannels)
+tasks.named<PublishPluginTask>("publishPlugin") {
+    token.set(ciVariable("PUBLISH_PLUGIN_TOKEN"))
+    channels.set(pluginReleaseChannels)
 }
 
 val copyArtifacts by tasks.registering(Copy::class) {
