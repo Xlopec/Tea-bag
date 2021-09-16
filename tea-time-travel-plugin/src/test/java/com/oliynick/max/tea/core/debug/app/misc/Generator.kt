@@ -20,7 +20,7 @@ import com.oliynick.max.tea.core.debug.app.domain.*
 import io.kotlintest.properties.Gen
 
 val TestHost = Host.of("localhost")!!
-val TestPort = Port.of(123U)
+val TestPort = Port.of(123)
 
 object HostGen : Gen<Validated<Host>> {
 

@@ -36,18 +36,18 @@ class Host private constructor(
 }
 
 class Port private constructor(
-    val value: UInt
+    val value: Int
 ) {
 
     companion object {
 
         fun of(
-            value: UInt
+            value: Int
         ): Port = Port(value)
 
         fun of(
             value: String?
-        ): Port? = value?.toUIntOrNull()?.let(::of)
+        ): Port? = value?.toIntOrNull()?.let(::of)
     }
 }
 

@@ -96,7 +96,7 @@ private fun Server(
     embeddedServer(
             Netty,
             host = address.host.value,
-            port = address.port.value.toInt()
+            port = address.port.value
     ) {
 
         install(CallLogging) {

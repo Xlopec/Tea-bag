@@ -35,12 +35,18 @@ import Libraries.logback
 import TestLibraries.ktorServerTests
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PublishPluginTask
+import org.jetbrains.compose.compose
 
 plugins {
     `maven-publish`
     `java-library`
     kotlin("jvm")
     intellij()
+    id("org.jetbrains.compose")
+}
+
+repositories {
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
 intellij {
@@ -78,6 +84,24 @@ val ciTests by tasks.registering(Test::class) {
     dependsOn(tasks.test.get())
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+    kotlinOptions {
+        jvmTarget = "11"
+
+        freeCompilerArgs += listOf(
+            "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
+            "-Xuse-experimental=kotlin.Experimental",
+            "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
+            "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
+            "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
+            "-Xuse-experimental=kotlin.ExperimentalStdlibApi",
+            "-XXLanguage:+NewInference",
+            "-XXLanguage:+InlineClasses"
+        )
+    }
+}
+
 sourceSets {
     main {
         resources {
@@ -95,7 +119,9 @@ dependencies {
     implementation(kotlinStdLib)
     implementation(kotlinStdLibReflect)
 
+    implementation(compose.desktop.currentOs)
     implementation(logback)
+
     implementation(ktorServerCore)
     implementation(ktorServerNetty)
     implementation(ktorServerWebsockets)

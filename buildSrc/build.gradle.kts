@@ -25,6 +25,7 @@
 repositories {
     mavenCentral()
     maven { setUrl("https://plugins.gradle.org/m2/") }
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     google()
     mavenLocal()
 }
@@ -55,6 +56,7 @@ dependencies {
     implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.1.4")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
     implementation("org.jetbrains.kotlin:kotlin-serialization:1.5.21")
+    implementation("org.jetbrains.compose:compose-gradle-plugin:1.0.0-alpha3")
 
     testImplementation("junit:junit:4.13.1")
     testImplementation("io.kotlintest:kotlintest-runner-junit4:3.4.2")
