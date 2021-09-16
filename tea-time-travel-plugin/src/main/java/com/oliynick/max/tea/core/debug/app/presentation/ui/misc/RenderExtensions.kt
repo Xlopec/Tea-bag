@@ -19,10 +19,10 @@
 package com.oliynick.max.tea.core.debug.app.presentation.ui.misc
 
 import com.oliynick.max.tea.core.debug.app.domain.*
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ValueIcon.ClassIcon
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ValueIcon.PropertyIcon
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ValueIcon.VariableIcon
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ValueIcon.WatchIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.ClassIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.PropertyIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.VariableIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.WatchIcon
 import org.codehaus.groovy.runtime.wrappers.FloatWrapper
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle

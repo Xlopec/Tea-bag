@@ -26,13 +26,13 @@ import com.intellij.util.PsiNavigateUtil
 import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.javaPsiFacade
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RemoveIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.UpdateRunningAppIcon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ErrorColor
 import com.oliynick.max.tea.core.debug.app.presentation.ui.InputTimeoutMillis
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.ClassIcon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.action.DefaultMouseListener
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.RemoveIcon
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.UpdateRunningAppIcon
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ValueIcon.ClassIcon
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose

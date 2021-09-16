@@ -16,10 +16,13 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.ui.theme
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun WidgetTheme(
@@ -39,6 +42,11 @@ fun WidgetTheme(
             onSurface = swingColor.onBackground,
         ),
         typography = typography,
+        shapes = shapes.copy(
+            small = RoundedCornerShape(size = 0.dp),
+            medium = RoundedCornerShape(size = 0.dp),
+            large = RoundedCornerShape(size = 0.dp)
+        ),
         content = content
     )
 }

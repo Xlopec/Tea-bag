@@ -16,6 +16,16 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.sidebar
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.material.TextFieldDefaults.MinHeight
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.awt.ComposePanel
+import androidx.compose.ui.unit.dp
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.Constraints.LAST
@@ -27,25 +37,23 @@ import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.Validated
 import com.oliynick.max.tea.core.debug.app.domain.isValid
 import com.oliynick.max.tea.core.debug.app.misc.childScope
-import com.oliynick.max.tea.core.debug.app.misc.onStart
 import com.oliynick.max.tea.core.debug.app.presentation.component.ComponentView
 import com.oliynick.max.tea.core.debug.app.presentation.info.InfoView
-import com.oliynick.max.tea.core.debug.app.presentation.ui.ErrorColor
-import com.oliynick.max.tea.core.debug.app.presentation.ui.InputTimeoutMillis
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RunDefaultIconC
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RunDisabledIconC
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.SuspendDefaultIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.SuspendDefaultIconC
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.SuspendDisabledIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.SuspendDisabledIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.ResumeIcon
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.RunDefaultIcon
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.RunDisabledIcon
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.StoppingIcon
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.SuspendDefaultIcon
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.ActionIcons.SuspendDisabledIcon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tabs.CloseableTab
+import com.oliynick.max.tea.core.debug.app.presentation.ui.theme.WidgetTheme
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import java.awt.Container
 import java.awt.event.MouseEvent
 import javax.swing.*
@@ -64,105 +72,148 @@ class ToolWindowView private constructor(
             project: Project,
             scope: CoroutineScope,
             component: (Flow<PluginMessage>) -> Flow<PluginState>,
-        ) = ToolWindowView(project, scope, component).panel
+        ) = ToolWindowView(project, scope, component).composePanel
 
     }
 
-    private lateinit var panel: JPanel
+    private var panel: JPanel = JPanel()
     private lateinit var startButton: JLabel
     private lateinit var portTextField: JTextField
     private lateinit var hostTextField: JTextField
     private lateinit var componentsPanel: JPanel
 
-    val root: JPanel get() = panel
+    val composePanel = ComposePanel()
+        .apply { background = null }
 
     init {
 
-        launch {
-            val uiEvents = Channel<PluginMessage>()
+        val uiEvents = Channel<PluginMessage>()
 
-            component(
-                uiEvents.consumeAsFlow().mergeWith(updateServerSettings(component.firstState()))
-            )
-                .collect { state -> render(state, uiEvents::offer) }
+        composePanel.setContent {
+            WidgetTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+
+                    val stateFlow = remember { component(uiEvents.consumeAsFlow()) }
+                    val state = stateFlow.collectAsState(context = Dispatchers.Main, initial = null)
+
+                    state.value?.also { println("new state $it") }?.render1(uiEvents::offer)
+                }
+            }
         }
     }
 
-    private fun updateServerSettings(
-        initial: PluginState,
-    ) =
-        hostInputChanges(initial).combine(portInputChanges(initial)) { host, port ->
-            UpdateServerSettings(
-                host,
-                port
-            )
+    @Composable
+    private fun PluginState.render1(
+        events: (PluginMessage) -> Unit,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        ) {
+
+            Column(
+                modifier = Modifier.weight(2f)
+            ) {
+                if (this@render1 is Started && debugState.components.isNotEmpty()) {
+                    // todo implement component view
+                } else {
+                    InfoView(this@render1, events)
+                }
+            }
+            // settings section
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                SettingsFields(this@render1, events)
+                BottomActionMenu(this@render1, events)
+            }
         }
-            .distinctUntilChanged()
-            .debounce(InputTimeoutMillis)
+    }
 
-    private fun hostInputChanges(
-        initial: PluginState,
-    ) = hostTextField.textChanges().onStart(initial.settings.host.input)
+    @Composable
+    private fun SettingsFields(
+        pluginState: PluginState,
+        events: (PluginMessage) -> Unit,
+    ) {
+        SettingsInputField(
+            setting = pluginState.settings.host,
+            label = "Host:",
+            placeholder = "provide host",
+            enabled = pluginState.canModifySettings,
+            modifier = Modifier.fillMaxWidth().heightIn(28.dp, MinHeight),
+            onValueChange = { s ->
+                events(UpdateServerSettings(host = s, port = pluginState.settings.port.input))
+            }
+        )
 
-    private fun portInputChanges(
-        initial: PluginState,
-    ) = portTextField.textChanges().onStart(initial.settings.port.input)
+        Spacer(Modifier.height(12.dp))
 
-    private fun render(
+        SettingsInputField(
+            setting = pluginState.settings.port,
+            label = "Port:",
+            placeholder = "provide port",
+            enabled = pluginState.canModifySettings,
+            modifier = Modifier.fillMaxWidth(),
+            onValueChange = { s ->
+                events(UpdateServerSettings(host = pluginState.settings.host.input, port = s))
+            }
+        )
+    }
+
+    @Composable
+    private fun BottomActionMenu(
         state: PluginState,
-        messages: (PluginMessage) -> Unit,
+        events: (PluginMessage) -> Unit,
     ) {
-
-        portTextField.isEnabled = state is Stopped
-        hostTextField.isEnabled = portTextField.isEnabled
-
-        val serverSettings = state.settings
-
-        hostTextField.updateErrorMessage(serverSettings.host)
-        portTextField.updateErrorMessage(serverSettings.port)
-
-        hostTextField.textSafe = serverSettings.host.input
-        portTextField.textSafe = serverSettings.port.input
-
-        when (state) {
-            is Stopped -> render(state, messages)
-            is Starting -> render(state)
-            is Started -> render(state, messages)
-            is Stopping -> render(state)
-        }.safe
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            IconButton(
+                enabled = (state is Stopped && state.canStart) || state is Started,
+                onClick = { events(if (state is Stopped) StartServer else StopServer) }
+            ) {
+                Image(
+                    modifier = Modifier.size(16.dp),
+                    bitmap = state.toBottomActionIcon(),
+                    contentDescription = "Action button"
+                )
+            }
+        }
     }
 
-    private fun render(
-        state: Stopped,
-        messages: (PluginMessage) -> Unit,
-    ) {
-
-        startButton.icon = RunDefaultIcon
-        startButton.disabledIcon = RunDisabledIcon
-
-        if (state.canStart) {
-            startButton.setOnClickListenerEnabling { messages(StartServer) }
-        } else {
-            startButton.removeMouseListenersDisabling()
+    @Composable
+    private fun PluginState.toBottomActionIcon() =
+        when (this) {
+            is Stopped -> if (canStart) RunDefaultIconC else RunDisabledIconC
+            is Starting -> RunDisabledIconC
+            is Started -> SuspendDefaultIconC
+            is Stopping -> SuspendDisabledIconC
         }
 
-        val shouldRemoveOrEmpty =
-            componentsPanel.isEmpty || (componentsPanel.isNotEmpty && componentsPanel.first().name != InfoView.NAME)
+    private val PluginState.canModifySettings
+        get() = this is Stopped
 
-        if (shouldRemoveOrEmpty) {
-            showEmptyComponentsView()
-        }
-
-        check(componentsPanel.componentCount == 1) { "Invalid components count, children ${componentsPanel.children}" }
-    }
-
-    private fun render(
-        @Suppress("UNUSED_PARAMETER") state: Starting,
+    @Composable
+    private fun SettingsInputField(
+        setting: Validated<*>,
+        label: String,
+        placeholder: String,
+        enabled: Boolean,
+        modifier: Modifier = Modifier,
+        onValueChange: (newValue: String) -> Unit,
     ) {
-        startButton.icon = RunDisabledIcon
-        startButton.disabledIcon = ResumeIcon
-
-        startButton.removeMouseListenersDisabling()
+        TextField(
+            value = setting.input,
+            modifier = modifier,
+            enabled = enabled,
+            //label = { Text(text = label) },
+            placeholder = { Text(text = placeholder) },
+            isError = !setting.isValid(),
+            singleLine = true,
+            onValueChange = onValueChange
+        )
     }
 
     private fun render(
@@ -180,12 +231,12 @@ class ToolWindowView private constructor(
 
         if (state.debugState.components.isEmpty()) {
             // show empty view
-            if (componentsPanel.first().name != InfoView.NAME) {
+            if (componentsPanel.first().name != "InfoView.NAME") {
                 showEmptyComponentsView()
             }
         } else {
 
-            if (componentsPanel.first().name == InfoView.NAME) {
+            if (componentsPanel.first().name == "InfoView.NAME") {
                 // swap panels
                 componentsPanel.removeAll()
                 componentsPanel += JBEditorTabs(project)
@@ -199,22 +250,14 @@ class ToolWindowView private constructor(
         }
     }
 
-    private fun render(
-        @Suppress("UNUSED_PARAMETER") state: Stopping,
-    ) {
-        startButton.icon = SuspendDefaultIcon
-        startButton.disabledIcon = StoppingIcon
-
-        startButton.removeMouseListenersDisabling()
-    }
-
     private fun showEmptyComponentsView() {
         componentsPanel.removeAll()
 
         val infoViewScope = childScope()
-        val infoView = InfoView.new(infoViewScope, component.infoViewStates(infoViewScope))
+        TODO("removed")
+        //val infoView = InfoView.new(infoViewScope, component.infoViewStates(infoViewScope))
 
-        componentsPanel += infoView.panel
+        //componentsPanel += infoView.panel
     }
 
     private fun JBEditorTabs.update(
@@ -255,15 +298,6 @@ class ToolWindowView private constructor(
     }
 }
 
-private fun ((Flow<PluginMessage>) -> Flow<PluginState>).infoViewStates(
-    scope: CoroutineScope,
-): ((Flow<PluginMessage>) -> Flow<PluginState>) =
-    { input ->
-        this(input)
-            .takeWhile { s -> s !is Started || s.debugState.components.isEmpty() }
-            .onCompletion { scope.cancel() }
-    }
-
 private fun ((Flow<PluginMessage>) -> Flow<PluginState>).startedStates(
     id: ComponentId,
     scope: CoroutineScope,
@@ -283,18 +317,6 @@ private fun AwtComponent.setOnClickListenerEnabling(l: (MouseEvent) -> Unit) {
 private fun AwtComponent.removeMouseListenersDisabling() {
     removeMouseListeners()
     isEnabled = false
-}
-
-private fun JTextField.updateErrorMessage(
-    validated: Validated<*>,
-) {
-    if (validated.isValid()) {
-        background = null
-        toolTipText = null
-    } else {
-        background = ErrorColor
-        toolTipText = validated.message
-    }
 }
 
 private fun Container.first() = this[0]
