@@ -21,11 +21,16 @@ package com.oliynick.max.tea.core.debug.app.component.resolver
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
 import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.domain.Property
+import com.oliynick.max.tea.core.debug.app.domain.Ref
+import com.oliynick.max.tea.core.debug.app.domain.StringWrapper
+import com.oliynick.max.tea.core.debug.app.domain.Type
 import com.oliynick.max.tea.core.debug.app.misc.settings
 import com.oliynick.max.tea.core.debug.app.presentation.ui.balloon.showBalloon
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
 import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
 import com.oliynick.max.tea.core.debug.protocol.ApplyState
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 fun <Env> LiveAppResolver() where Env : HasMessageChannel,
                                   Env : HasProject,
@@ -38,27 +43,49 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
                                                         Env : HasServer {
 
     override suspend fun Env.resolve(
-        command: PluginCommand
+        command: PluginCommand,
     ): Set<PluginMessage> =
         runCatching { doResolve(command) }
             .getOrElse { th -> setOf(NotifyOperationException(th, command)) }
 
     suspend fun Env.doResolve(
-        command: PluginCommand
+        command: PluginCommand,
     ): Set<NotificationMessage> =
         when (command) {
             is DoStoreSettings -> command sideEffect { properties.settings = settings }
-            is DoStartServer -> command effect { NotifyStarted(newServer(address, events)) }
+            // fixme remove later
+            is DoStartServer -> setOf(with(command) { NotifyStarted(newServer(address, events)); },
+                ComponentAttached(
+                    ComponentId("Test component id"),
+                    Ref(
+                        Type.of("com.max.oliynick.Test"),
+                        setOf(
+                            Property("name", StringWrapper("Max")),
+                            Property("surname", StringWrapper("Oliynick")),
+                            Property("position", StringWrapper("Developer")),
+                        )
+                    )
+                )
+            )
             is DoStopServer -> command effect { server.stop(); NotifyStopped }
-            is DoApplyMessage -> command sideEffect { server(id, ApplyMessage(command.command.toJsonElement())) }
+            is DoApplyMessage -> command sideEffect {
+                server(id,
+                    ApplyMessage(command.command.toJsonElement()))
+            }
             is DoApplyState -> reApplyState(command)
-            is DoNotifyOperationException -> command sideEffect { project.showBalloon(ExceptionBalloon(exception, operation)) }
-            is DoWarnUnacceptableMessage -> command sideEffect { project.showBalloon(UnacceptableMessageBalloon(message, state)) }
-            is DoNotifyComponentAttached -> command sideEffect { project.showBalloon(ComponentAttachedBalloon(componentId)) }
+            is DoNotifyOperationException -> command sideEffect {
+                project.showBalloon(ExceptionBalloon(exception, operation))
+            }
+            is DoWarnUnacceptableMessage -> command sideEffect {
+                project.showBalloon(UnacceptableMessageBalloon(message, state))
+            }
+            is DoNotifyComponentAttached -> command sideEffect {
+                project.showBalloon(ComponentAttachedBalloon(componentId))
+            }
         }
 
     suspend fun Env.reApplyState(
-        command: DoApplyState
+        command: DoApplyState,
     ) = command effect {
         server(id, ApplyState(state.toJsonElement()))
         project.showBalloon(StateAppliedBalloon(id))
