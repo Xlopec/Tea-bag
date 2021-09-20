@@ -27,8 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
-import androidx.compose.ui.awt.SwingPanel
-import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.unit.dp
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionPlaces
@@ -39,14 +37,10 @@ import com.intellij.ui.tabs.TabInfo
 import com.intellij.ui.tabs.impl.JBEditorTabs
 import com.jetbrains.rd.util.first
 import com.oliynick.max.tea.core.debug.app.component.cms.*
-import com.oliynick.max.tea.core.debug.app.domain.Property
 import com.oliynick.max.tea.core.debug.app.domain.Validated
-import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.domain.isValid
 import com.oliynick.max.tea.core.debug.app.misc.childScope
-import com.oliynick.max.tea.core.debug.app.presentation.component.ComponentView
-import com.oliynick.max.tea.core.debug.app.presentation.component.ItemFormatter
-import com.oliynick.max.tea.core.debug.app.presentation.component.drawComposeTreeInit
+import com.oliynick.max.tea.core.debug.app.presentation.component.*
 import com.oliynick.max.tea.core.debug.app.presentation.info.InfoView
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RunDefaultIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RunDisabledIconC
@@ -120,10 +114,7 @@ class ToolWindowView private constructor(
 
                     val (id, state) = debugState.components.first()
 
-                    drawComposeTreeInit(state.state, object : ItemFormatter {
-                        override fun format(v: Value): String = toReadableStringShort(v)
-                        override fun format(p: Property): String = toReadableStringShort(p)
-                    })
+                    ValueTree(state.state.toRenderTree(), TreeItemFormatterImpl)
                     /*SwingPanel(
                         background = Unspecified,
                         modifier = Modifier.fillMaxSize(),

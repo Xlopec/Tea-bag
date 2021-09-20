@@ -71,167 +71,198 @@ class RenderTreeRenderer private constructor(
 
 }
 
-interface ItemFormatter {
-    fun format(v: Value) : String
-    fun format(p: Property): String
+interface TreeItemFormatter {
+    fun format(p: ValueTree): String
+    fun format(p: PropertyNode1): String
 }
 
-sealed interface RenderNode1
+object TreeItemFormatterImpl : TreeItemFormatter {
+
+    override fun format(p: ValueTree): String =
+        when (p) {
+            is CollectionNode -> p.values.joinToString(prefix = "[",
+                postfix = "]",
+                transform = ::format)
+            is Leaf1 -> toReadableStringShort(p.value)
+            is RefNode1 -> p.type.name
+        }
+
+    override fun format(p: PropertyNode1): String = "${p.name}=${format(p.v)}"
+}
+
+sealed interface ValueTree
 
 @JvmInline
-value class Leaf1(val value: Value) : RenderNode1
+value class Leaf1(
+    val value: Value,
+) : ValueTree
 
-data class RefNode1(val ref: Ref, val expanded: Boolean) : RenderNode1
+data class RefNode1(
+    val type: Type,
+    val properties: Collection<PropertyNode1>,
+    val expanded: Boolean,
+) : ValueTree
 
-data class PropertyNode1(val p: Property, val expanded: Boolean) : RenderNode1
+data class PropertyNode1(
+    val name: String,
+    val v: ValueTree,
+)
+
+data class CollectionNode(
+    val expanded: Boolean,
+    val values: List<ValueTree>,
+) : ValueTree
+
+//todo rework
+fun Value.toRenderTree(): ValueTree =
+    when (this) {
+        is BooleanWrapper, is CharWrapper, is NumberWrapper, is StringWrapper, Null -> Leaf1(this)
+        is CollectionWrapper -> CollectionNode(
+            true,
+            value.map { it.toRenderTree() }
+        )
+        is Ref -> RefNode1(
+            type,
+            properties.map { PropertyNode1(it.name, it.v.toRenderTree()) },
+            true
+        )
+    }
 
 @Composable
-fun drawComposeTreeInit(
-    tree: Value,
-    transformer: ItemFormatter,
+fun ValueTree(
+    value: ValueTree,
+    formatter: TreeItemFormatter,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        drawComposeTree(tree, 0, transformer)
-    }
-}
-
-fun LazyListScope.drawComposeTree(
-    tree: Value,
-    level: Int,
-    transformer: ItemFormatter,
-) {
-    when (tree) {
-        is Ref -> ref(tree, level, transformer)
-        is CollectionWrapper -> list(tree, level, transformer)
-        is BooleanWrapper, is CharWrapper, Null, is NumberWrapper, is StringWrapper -> item {
-            Text(transformer.format(tree))
+        when (value) {
+            is RefNode1 -> referenceNode(value, 0, formatter)
+            is CollectionNode -> collectionNode(value, 0, formatter)
+            is Leaf1 -> leaf(value, formatter)
         }
     }
 }
 
-fun LazyListScope.drawProperties(
-    p: Iterable<Property>,
-    level: Int,
-    transformer: ItemFormatter
+fun LazyListScope.leaf(
+    leaf: Leaf1,
+    transformer: TreeItemFormatter,
 ) {
-    // expanded = true
-    // is ref.expanded == true
-    p.forEach { property ->
-
-        // property.expanded == false
-        /*item {
-
-            Text(text = toReadableString(property))
-        }*/
-        // property.expanded == true
-
-        drawProperty(property, level, transformer)
+    item {
+        Text(transformer.format(leaf))
     }
 }
 
-fun LazyListScope.drawElement(
-    v: Value,
+fun LazyListScope.propertyNodes(
+    properties: Iterable<PropertyNode1>,
+    level: Int,
+    transformer: TreeItemFormatter,
+) = properties.forEach { property -> propertyNode(property, level, transformer) }
+
+fun LazyListScope.elementNodes(
+    nodes: Iterable<ValueTree>,
+    level: Int,
+    formatter: TreeItemFormatter,
+) = nodes.forEachIndexed { index, value -> elementNode(value, index, level, formatter) }
+
+fun LazyListScope.elementNode(
+    v: ValueTree,
     index: Int,
     level: Int,
-    formatter: ItemFormatter
+    formatter: TreeItemFormatter,
 ) {
     val m = Modifier.fillMaxWidth().padding(start = Dp(24f * level))
 
     when (v) {
-        is Ref -> {
+        is RefNode1 -> {
             item {
                 Text(modifier = m, text = "[$index] = " + formatter.format(v))
             }
             // expanded = true
             // is ref.expanded == true
-            drawProperties(v.properties, level + 1, formatter)
+            if (v.expanded) {
+                propertyNodes(v.properties, level + 1, formatter)
+            }
         }
-        is CollectionWrapper -> {
+        is CollectionNode -> {
             item {
                 Text(modifier = m, text = "[$index] = " + formatter.format(v))
             }
-
             // expanded = true
             // is collection.expanded == true
-
-            v.value.forEachIndexed { index, value ->
-                drawElement(value, index, level + 1, formatter)
+            if (v.expanded) {
+                elementNodes(v.values, level + 1, formatter)
             }
         }
-        is BooleanWrapper, is CharWrapper, Null, is NumberWrapper, is StringWrapper -> item {
+        is Leaf1 -> item {
             Text(modifier = m, text = "[$index] = " + formatter.format(v))
         }
     }
 }
 
-fun LazyListScope.list(
-    w: CollectionWrapper,
+fun LazyListScope.collectionNode(
+    node: CollectionNode,
     level: Int,
-    formatter: ItemFormatter
+    formatter: TreeItemFormatter,
 ) {
     val m = Modifier.fillMaxWidth().padding(start = Dp(24f * level))
 
     item {
-        Text(modifier = m, text = " + " + formatter.format(w))
+        Text(modifier = m, text = " + " + formatter.format(node))
     }
 
-    // expanded = true
-    // is collection.expanded == true
-
-    w.value.forEachIndexed { index, value ->
-        drawElement(value, index, level + 1, formatter)
+    if (node.expanded) {
+        elementNodes(node.values, level + 1, formatter)
     }
 }
 
-fun LazyListScope.drawProperty(
-    p: Property,
+fun LazyListScope.propertyNode(
+    node: PropertyNode1,
     level: Int,
-    formatter: ItemFormatter
+    formatter: TreeItemFormatter,
 ) {
     val m = Modifier.fillMaxWidth().padding(start = Dp(24f * level))
 
-    when (val tree = p.v) {
-        is Ref -> {
+    when (val tree = node.v) {
+        is RefNode1 -> {
             item {
-                Text(modifier = m, text = " + " + formatter.format(p))
+                Text(modifier = m, text = " + " + formatter.format(tree))
             }
             // expanded = true
             // is ref.expanded == true
-            drawProperties(tree.properties, level + 1, formatter)
+            if (tree.expanded) {
+                propertyNodes(tree.properties, level + 1, formatter)
+            }
         }
-        is CollectionWrapper -> {
+        is CollectionNode -> {
             item {
-                Text(modifier = m, text = " + " + formatter.format(p))
+                Text(modifier = m, text = " + " + formatter.format(node))
             }
-
-            // expanded = true
-            // is collection.expanded == true
-
-            tree.value.forEachIndexed { index, value ->
-                drawElement(value, index, level + 1, formatter)
+            if (tree.expanded) {
+                elementNodes(tree.values, level + 1, formatter)
             }
         }
-        is BooleanWrapper, is CharWrapper, Null, is NumberWrapper, is StringWrapper -> item {
-            Text(modifier = m, text = formatter.format(p))
+        is Leaf1 -> item {
+            Text(modifier = m, text = formatter.format(node))
         }
     }
 }
 
-fun LazyListScope.ref(
-    tree: Ref,
+fun LazyListScope.referenceNode(
+    node: RefNode1,
     level: Int,
-    transformer: ItemFormatter,
+    transformer: TreeItemFormatter,
 ) {
     val m = Modifier.fillMaxWidth().padding(start = Dp(24f * level))
 
     item {
         Text(
             modifier = m,
-            text = " + " + transformer.format(tree)
+            text = " + " + transformer.format(node)
         )
     }
 
-    drawProperties(tree.properties, level + 1, transformer)
+    if (node.expanded) {
+        propertyNodes(node.properties, level + 1, transformer)
+    }
 }
 
 private fun toReadableStateString(
