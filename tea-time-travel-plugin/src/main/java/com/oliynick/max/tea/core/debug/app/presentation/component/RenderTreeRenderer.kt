@@ -18,6 +18,8 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.component
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,8 +27,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
 import java.awt.Component
@@ -92,6 +97,10 @@ object TreeItemFormatterImpl : TreeItemFormatter {
 
 sealed interface ValueTree
 
+sealed interface Node : ValueTree {
+    val expanded: MutableState<Boolean>
+}
+
 @JvmInline
 value class Leaf1(
     val value: Value,
@@ -100,8 +109,8 @@ value class Leaf1(
 data class RefNode1(
     val type: Type,
     val properties: Collection<PropertyNode1>,
-    val expanded: Boolean,
-) : ValueTree
+    override val expanded: MutableState<Boolean>,
+) : Node
 
 data class PropertyNode1(
     val name: String,
@@ -109,22 +118,22 @@ data class PropertyNode1(
 )
 
 data class CollectionNode(
-    val expanded: Boolean,
+    override val expanded: MutableState<Boolean>,
     val values: List<ValueTree>,
-) : ValueTree
+) : Node
 
 //todo rework
 fun Value.toRenderTree(): ValueTree =
     when (this) {
         is BooleanWrapper, is CharWrapper, is NumberWrapper, is StringWrapper, Null -> Leaf1(this)
         is CollectionWrapper -> CollectionNode(
-            true,
+            mutableStateOf(true),
             value.map { it.toRenderTree() }
         )
         is Ref -> RefNode1(
             type,
             properties.map { PropertyNode1(it.name, it.v.toRenderTree()) },
-            true
+            mutableStateOf(true)
         )
     }
 
@@ -164,36 +173,47 @@ fun LazyListScope.elementNodes(
 ) = nodes.forEachIndexed { index, value -> elementNode(value, index, level, formatter) }
 
 fun LazyListScope.elementNode(
-    v: ValueTree,
+    treeNode: ValueTree,
     index: Int,
     level: Int,
     formatter: TreeItemFormatter,
 ) {
-    val m = Modifier.fillMaxWidth().padding(start = Dp(24f * level))
 
-    when (v) {
+    when (treeNode) {
         is RefNode1 -> {
             item {
-                Text(modifier = m, text = "[$index] = " + formatter.format(v))
+                ExpandableRow(
+                    Modifier.fillMaxWidth().indentLevel(level),
+                    "[$index] = " + formatter.format(treeNode),
+                    treeNode.expanded
+                )
             }
-            // expanded = true
-            // is ref.expanded == true
-            if (v.expanded) {
-                propertyNodes(v.properties, level + 1, formatter)
+
+            if (treeNode.expanded.value) {
+                propertyNodes(treeNode.properties, level + 1, formatter)
             }
         }
         is CollectionNode -> {
+
             item {
-                Text(modifier = m, text = "[$index] = " + formatter.format(v))
+                ExpandableRow(
+                    Modifier.fillMaxWidth().indentLevel(level),
+                    "[$index] = " + formatter.format(treeNode),
+                    treeNode.expanded
+                )
             }
-            // expanded = true
-            // is collection.expanded == true
-            if (v.expanded) {
-                elementNodes(v.values, level + 1, formatter)
+
+            if (treeNode.expanded.value) {
+                elementNodes(treeNode.values, level + 1, formatter)
             }
         }
-        is Leaf1 -> item {
-            Text(modifier = m, text = "[$index] = " + formatter.format(v))
+        is Leaf1 -> {
+            item {
+                Text(
+                    modifier = Modifier.fillMaxWidth().indentLevel(level),
+                    text = "[$index] = " + formatter.format(treeNode)
+                )
+            }
         }
     }
 }
@@ -203,14 +223,33 @@ fun LazyListScope.collectionNode(
     level: Int,
     formatter: TreeItemFormatter,
 ) {
-    val m = Modifier.fillMaxWidth().padding(start = Dp(24f * level))
-
     item {
-        Text(modifier = m, text = " + " + formatter.format(node))
+        ExpandableRow(Modifier.fillMaxWidth().indentLevel(level),
+            formatter.format(node),
+            node.expanded)
+        /*Text(
+            modifier = Modifier.fillMaxWidth().indentLevel(level),
+            text = " + " + formatter.format(node)
+        )*/
     }
 
-    if (node.expanded) {
+    if (node.expanded.value) {
         elementNodes(node.values, level + 1, formatter)
+    }
+}
+
+@Composable
+fun ExpandableRow(
+    modifier: Modifier = Modifier,
+    text: String,
+    expanded: MutableState<Boolean>,
+) {
+    Row(modifier = modifier.padding(all = 8.dp)) {
+        Text(
+            modifier = Modifier.clickable(onClick = { expanded.value = !expanded.value })
+                .then(modifier),
+            text = (if (expanded.value) " - " else " + ") + text
+        )
     }
 }
 
@@ -219,29 +258,32 @@ fun LazyListScope.propertyNode(
     level: Int,
     formatter: TreeItemFormatter,
 ) {
-    val m = Modifier.fillMaxWidth().padding(start = Dp(24f * level))
+    val m = Modifier.fillMaxWidth().indentLevel(level)
 
     when (val tree = node.v) {
         is RefNode1 -> {
+
             item {
-                Text(modifier = m, text = " + " + formatter.format(tree))
+                ExpandableRow(m, formatter.format(node) + " -> L:${level}", tree.expanded)
+                // Text(modifier = m, text = " + " + formatter.format(tree))
             }
-            // expanded = true
-            // is ref.expanded == true
-            if (tree.expanded) {
+
+            if (tree.expanded.value) {
                 propertyNodes(tree.properties, level + 1, formatter)
             }
         }
         is CollectionNode -> {
             item {
-                Text(modifier = m, text = " + " + formatter.format(node))
+                ExpandableRow(m, formatter.format(node) + " -> L:${level}", tree.expanded)
+                //Text(modifier = m, text = " + " + formatter.format(node))
             }
-            if (tree.expanded) {
+
+            if (tree.expanded.value) {
                 elementNodes(tree.values, level + 1, formatter)
             }
         }
         is Leaf1 -> item {
-            Text(modifier = m, text = formatter.format(node))
+            Text(modifier = m, text = formatter.format(node) + " -> L:${level}")
         }
     }
 }
@@ -251,19 +293,28 @@ fun LazyListScope.referenceNode(
     level: Int,
     transformer: TreeItemFormatter,
 ) {
-    val m = Modifier.fillMaxWidth().padding(start = Dp(24f * level))
 
     item {
-        Text(
-            modifier = m,
-            text = " + " + transformer.format(node)
+        ExpandableRow(
+            Modifier.fillMaxWidth().indentLevel(level),
+            transformer.format(node),
+            node.expanded
         )
+        /*Text(
+            modifier = Modifier.fillMaxWidth().indentLevel(level),
+            text = " + " + transformer.format(node)
+        )*/
     }
 
-    if (node.expanded) {
+    if (node.expanded.value) {
         propertyNodes(node.properties, level + 1, transformer)
     }
 }
+
+fun Modifier.indentLevel(
+    level: Int,
+    step: Dp = 24.dp,
+) = padding(start = Dp(step.value * level))
 
 private fun toReadableStateString(
     renderTree: RenderTree,

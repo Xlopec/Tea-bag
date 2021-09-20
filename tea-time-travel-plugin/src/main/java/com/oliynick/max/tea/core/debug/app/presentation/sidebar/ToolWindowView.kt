@@ -21,10 +21,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.TextFieldDefaults.MinHeight
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
 import androidx.compose.ui.unit.dp
@@ -114,7 +111,9 @@ class ToolWindowView private constructor(
 
                     val (id, state) = debugState.components.first()
 
-                    ValueTree(state.state.toRenderTree(), TreeItemFormatterImpl)
+                    val treeState by derivedStateOf { state.state.toRenderTree() }
+
+                    ValueTree(treeState, TreeItemFormatterImpl)
                     /*SwingPanel(
                         background = Unspecified,
                         modifier = Modifier.fillMaxSize(),
