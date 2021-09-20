@@ -18,6 +18,16 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.component
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
 import java.awt.Component
 import javax.swing.JLabel
@@ -28,17 +38,17 @@ import javax.swing.tree.TreeModel
 
 class RenderTreeRenderer private constructor(
     var formatter: ValueFormatter,
-    private val transformer: RenderTree.(TreeModel, ValueFormatter) -> String
+    private val transformer: RenderTree.(TreeModel, ValueFormatter) -> String,
 ) : TreeCellRenderer {
 
     companion object {
 
         fun SnapshotsRenderer(
-            formatter: ValueFormatter
+            formatter: ValueFormatter,
         ) = RenderTreeRenderer(formatter, ::toReadableSnapshotString)
 
         fun StateRenderer(
-            formatter: ValueFormatter
+            formatter: ValueFormatter,
         ) = RenderTreeRenderer(formatter) { _, f -> toReadableStateString(this, f) }
     }
 
@@ -49,7 +59,7 @@ class RenderTreeRenderer private constructor(
         expanded: Boolean,
         leaf: Boolean,
         row: Int,
-        hasFocus: Boolean
+        hasFocus: Boolean,
     ): Component =
         JLabel().apply {
 
@@ -61,9 +71,172 @@ class RenderTreeRenderer private constructor(
 
 }
 
+interface ItemFormatter {
+    fun format(v: Value) : String
+    fun format(p: Property): String
+}
+
+sealed interface RenderNode1
+
+@JvmInline
+value class Leaf1(val value: Value) : RenderNode1
+
+data class RefNode1(val ref: Ref, val expanded: Boolean) : RenderNode1
+
+data class PropertyNode1(val p: Property, val expanded: Boolean) : RenderNode1
+
+@Composable
+fun drawComposeTreeInit(
+    tree: Value,
+    transformer: ItemFormatter,
+) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        drawComposeTree(tree, 0, transformer)
+    }
+}
+
+fun LazyListScope.drawComposeTree(
+    tree: Value,
+    level: Int,
+    transformer: ItemFormatter,
+) {
+    when (tree) {
+        is Ref -> ref(tree, level, transformer)
+        is CollectionWrapper -> list(tree, level, transformer)
+        is BooleanWrapper, is CharWrapper, Null, is NumberWrapper, is StringWrapper -> item {
+            Text(transformer.format(tree))
+        }
+    }
+}
+
+fun LazyListScope.drawProperties(
+    p: Iterable<Property>,
+    level: Int,
+    transformer: ItemFormatter
+) {
+    // expanded = true
+    // is ref.expanded == true
+    p.forEach { property ->
+
+        // property.expanded == false
+        /*item {
+
+            Text(text = toReadableString(property))
+        }*/
+        // property.expanded == true
+
+        drawProperty(property, level, transformer)
+    }
+}
+
+fun LazyListScope.drawElement(
+    v: Value,
+    index: Int,
+    level: Int,
+    formatter: ItemFormatter
+) {
+    val m = Modifier.fillMaxWidth().padding(start = Dp(24f * level))
+
+    when (v) {
+        is Ref -> {
+            item {
+                Text(modifier = m, text = "[$index] = " + formatter.format(v))
+            }
+            // expanded = true
+            // is ref.expanded == true
+            drawProperties(v.properties, level + 1, formatter)
+        }
+        is CollectionWrapper -> {
+            item {
+                Text(modifier = m, text = "[$index] = " + formatter.format(v))
+            }
+
+            // expanded = true
+            // is collection.expanded == true
+
+            v.value.forEachIndexed { index, value ->
+                drawElement(value, index, level + 1, formatter)
+            }
+        }
+        is BooleanWrapper, is CharWrapper, Null, is NumberWrapper, is StringWrapper -> item {
+            Text(modifier = m, text = "[$index] = " + formatter.format(v))
+        }
+    }
+}
+
+fun LazyListScope.list(
+    w: CollectionWrapper,
+    level: Int,
+    formatter: ItemFormatter
+) {
+    val m = Modifier.fillMaxWidth().padding(start = Dp(24f * level))
+
+    item {
+        Text(modifier = m, text = " + " + formatter.format(w))
+    }
+
+    // expanded = true
+    // is collection.expanded == true
+
+    w.value.forEachIndexed { index, value ->
+        drawElement(value, index, level + 1, formatter)
+    }
+}
+
+fun LazyListScope.drawProperty(
+    p: Property,
+    level: Int,
+    formatter: ItemFormatter
+) {
+    val m = Modifier.fillMaxWidth().padding(start = Dp(24f * level))
+
+    when (val tree = p.v) {
+        is Ref -> {
+            item {
+                Text(modifier = m, text = " + " + formatter.format(p))
+            }
+            // expanded = true
+            // is ref.expanded == true
+            drawProperties(tree.properties, level + 1, formatter)
+        }
+        is CollectionWrapper -> {
+            item {
+                Text(modifier = m, text = " + " + formatter.format(p))
+            }
+
+            // expanded = true
+            // is collection.expanded == true
+
+            tree.value.forEachIndexed { index, value ->
+                drawElement(value, index, level + 1, formatter)
+            }
+        }
+        is BooleanWrapper, is CharWrapper, Null, is NumberWrapper, is StringWrapper -> item {
+            Text(modifier = m, text = formatter.format(p))
+        }
+    }
+}
+
+fun LazyListScope.ref(
+    tree: Ref,
+    level: Int,
+    transformer: ItemFormatter,
+) {
+    val m = Modifier.fillMaxWidth().padding(start = Dp(24f * level))
+
+    item {
+        Text(
+            modifier = m,
+            text = " + " + transformer.format(tree)
+        )
+    }
+
+    drawProperties(tree.properties, level + 1, transformer)
+}
+
 private fun toReadableStateString(
     renderTree: RenderTree,
-    formatter: ValueFormatter
+    formatter: ValueFormatter,
 ): String =
     when (renderTree) {
         RootNode -> "State"
@@ -78,7 +251,7 @@ private fun toReadableStateString(
 private fun toReadableSnapshotString(
     renderTree: RenderTree,
     model: TreeModel,
-    formatter: ValueFormatter
+    formatter: ValueFormatter,
 ): String =
     when (renderTree) {
         RootNode -> "Snapshots (${model.getChildCount(model.root)})"

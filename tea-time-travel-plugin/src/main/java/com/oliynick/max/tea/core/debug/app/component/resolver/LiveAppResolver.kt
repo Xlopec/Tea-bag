@@ -21,10 +21,7 @@ package com.oliynick.max.tea.core.debug.app.component.resolver
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
 import com.oliynick.max.tea.core.debug.app.component.cms.*
-import com.oliynick.max.tea.core.debug.app.domain.Property
-import com.oliynick.max.tea.core.debug.app.domain.Ref
-import com.oliynick.max.tea.core.debug.app.domain.StringWrapper
-import com.oliynick.max.tea.core.debug.app.domain.Type
+import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.settings
 import com.oliynick.max.tea.core.debug.app.presentation.ui.balloon.showBalloon
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
@@ -57,14 +54,7 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
             is DoStartServer -> setOf(with(command) { NotifyStarted(newServer(address, events)); },
                 ComponentAttached(
                     ComponentId("Test component id"),
-                    Ref(
-                        Type.of("com.max.oliynick.Test"),
-                        setOf(
-                            Property("name", StringWrapper("Max")),
-                            Property("surname", StringWrapper("Oliynick")),
-                            Property("position", StringWrapper("Developer")),
-                        )
-                    )
+                    appState
                 )
             )
             is DoStopServer -> command effect { server.stop(); NotifyStopped }
@@ -93,3 +83,47 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
     }
 
 }
+
+
+
+val user = Ref(
+    Type.of("com.max.oliynick.Test"),
+    setOf(
+        Property("name", StringWrapper("Max")),
+        Property("surname", StringWrapper("Oliynick")),
+        Property("contacts", Ref(
+            Type.of("com.max.oliynick.Contact"),
+            setOf(
+                Property("site", Ref(
+                    Type.of("java.util.URL"),
+                    setOf(
+                        Property("domain", StringWrapper("google")),
+                        Property("port", NumberWrapper(8080)),
+                        Property("protocol", StringWrapper("https"))
+                    ),
+                )
+                ),
+            )
+        )),
+        Property("position", StringWrapper("Developer")),
+    )
+)
+
+val appState =
+    Ref(
+        Type.of("app.State"),
+        setOf(
+            Property(
+                "users",
+                CollectionWrapper(
+                    listOf(
+                        user,
+                        user,
+                        user,
+                        user,
+                        user,
+                    )
+                )
+            )
+        )
+    )

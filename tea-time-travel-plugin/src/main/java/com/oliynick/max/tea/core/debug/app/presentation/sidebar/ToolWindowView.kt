@@ -16,6 +16,7 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.sidebar
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -23,8 +24,11 @@ import androidx.compose.material.TextFieldDefaults.MinHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
+import androidx.compose.ui.awt.SwingPanel
+import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.unit.dp
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionPlaces
@@ -33,17 +37,20 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.ui.tabs.TabInfo
 import com.intellij.ui.tabs.impl.JBEditorTabs
+import com.jetbrains.rd.util.first
 import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.domain.Property
 import com.oliynick.max.tea.core.debug.app.domain.Validated
+import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.domain.isValid
 import com.oliynick.max.tea.core.debug.app.misc.childScope
 import com.oliynick.max.tea.core.debug.app.presentation.component.ComponentView
+import com.oliynick.max.tea.core.debug.app.presentation.component.ItemFormatter
+import com.oliynick.max.tea.core.debug.app.presentation.component.drawComposeTreeInit
 import com.oliynick.max.tea.core.debug.app.presentation.info.InfoView
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RunDefaultIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RunDisabledIconC
-import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.SuspendDefaultIcon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.SuspendDefaultIconC
-import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.SuspendDisabledIcon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.SuspendDisabledIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tabs.CloseableTab
@@ -54,33 +61,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import java.awt.Container
-import java.awt.event.MouseEvent
 import javax.swing.*
-import java.awt.Component as AwtComponent
-
 
 class ToolWindowView private constructor(
     private val project: Project,
-    scope: CoroutineScope,
     private val component: (Flow<PluginMessage>) -> Flow<PluginState>,
-) : CoroutineScope by scope {
+) {
 
     companion object {
 
         fun new(
             project: Project,
-            scope: CoroutineScope,
             component: (Flow<PluginMessage>) -> Flow<PluginState>,
-        ) = ToolWindowView(project, scope, component).composePanel
+        ): JComponent = ToolWindowView(project, component).composePanel
 
     }
-
-    private var panel: JPanel = JPanel()
-    private lateinit var startButton: JLabel
-    private lateinit var portTextField: JTextField
-    private lateinit var hostTextField: JTextField
-    private lateinit var componentsPanel: JPanel
 
     val composePanel = ComposePanel()
         .apply { background = null }
@@ -89,6 +84,8 @@ class ToolWindowView private constructor(
 
         val uiEvents = Channel<PluginMessage>()
 
+        val events: (PluginMessage) -> Unit = { uiEvents.offer(it) }
+
         composePanel.setContent {
             WidgetTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
@@ -96,7 +93,7 @@ class ToolWindowView private constructor(
                     val stateFlow = remember { component(uiEvents.consumeAsFlow()) }
                     val state = stateFlow.collectAsState(context = Dispatchers.Main, initial = null)
 
-                    state.value?.also { println("new state $it") }?.render1(uiEvents::offer)
+                    state.value?.also { println("new state $it") }?.render1(events)
                 }
             }
         }
@@ -115,12 +112,36 @@ class ToolWindowView private constructor(
             Column(
                 modifier = Modifier.weight(2f)
             ) {
+
+                val t = remember("loh") {  JBEditorTabs(project) }
+                val scope = rememberCoroutineScope()
+
                 if (this@render1 is Started && debugState.components.isNotEmpty()) {
-                    // todo implement component view
+
+                    val (id, state) = debugState.components.first()
+
+                    drawComposeTreeInit(state.state, object : ItemFormatter {
+                        override fun format(v: Value): String = toReadableStringShort(v)
+                        override fun format(p: Property): String = toReadableStringShort(p)
+                    })
+                    /*SwingPanel(
+                        background = Unspecified,
+                        modifier = Modifier.fillMaxSize(),
+                        factory = { t },
+                        update = { tabs ->
+
+                           tabs.update(this@render1, scope, events)
+
+                        }
+                    )*/
+
                 } else {
                     InfoView(this@render1, events)
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             // settings section
             Column(
                 modifier = Modifier.fillMaxWidth()
@@ -195,80 +216,16 @@ class ToolWindowView private constructor(
     private val PluginState.canModifySettings
         get() = this is Stopped
 
-    @Composable
-    private fun SettingsInputField(
-        setting: Validated<*>,
-        label: String,
-        placeholder: String,
-        enabled: Boolean,
-        modifier: Modifier = Modifier,
-        onValueChange: (newValue: String) -> Unit,
-    ) {
-        TextField(
-            value = setting.input,
-            modifier = modifier,
-            enabled = enabled,
-            //label = { Text(text = label) },
-            placeholder = { Text(text = placeholder) },
-            isError = !setting.isValid(),
-            singleLine = true,
-            onValueChange = onValueChange
-        )
-    }
-
-    private fun render(
-        state: Started,
-        messages: (PluginMessage) -> Unit,
-    ) {
-        startButton.icon = SuspendDefaultIcon
-        startButton.disabledIcon = SuspendDisabledIcon
-
-        startButton.setOnClickListenerEnabling { messages(StopServer) }
-
-        require(componentsPanel.componentCount == 1) {
-            "Invalid components count, children ${componentsPanel.children}"
-        }
-
-        if (state.debugState.components.isEmpty()) {
-            // show empty view
-            if (componentsPanel.first().name != "InfoView.NAME") {
-                showEmptyComponentsView()
-            }
-        } else {
-
-            if (componentsPanel.first().name == "InfoView.NAME") {
-                // swap panels
-                componentsPanel.removeAll()
-                componentsPanel += JBEditorTabs(project)
-            }
-
-            (componentsPanel.first() as JBEditorTabs).update(state, messages)
-        }
-
-        check(componentsPanel.componentCount == 1) {
-            "Invalid components count, children ${componentsPanel.children}"
-        }
-    }
-
-    private fun showEmptyComponentsView() {
-        componentsPanel.removeAll()
-
-        val infoViewScope = childScope()
-        TODO("removed")
-        //val infoView = InfoView.new(infoViewScope, component.infoViewStates(infoViewScope))
-
-        //componentsPanel += infoView.panel
-    }
-
     private fun JBEditorTabs.update(
         state: Started,
+        scope: CoroutineScope,
         messages: (PluginMessage) -> Unit,
     ) {
 
         fun addTab(
             id: ComponentId,
         ) {
-            val componentScope = childScope()
+            val componentScope = scope.childScope()
             val componentView = ComponentView.new(
                 componentScope,
                 id,
@@ -309,18 +266,6 @@ private fun ((Flow<PluginMessage>) -> Flow<PluginState>).startedStates(
         .onCompletion { scope.cancel() }
 }
 
-private fun AwtComponent.setOnClickListenerEnabling(l: (MouseEvent) -> Unit) {
-    setOnClickListener(l)
-    isEnabled = true
-}
-
-private fun AwtComponent.removeMouseListenersDisabling() {
-    removeMouseListeners()
-    isEnabled = false
-}
-
-private fun Container.first() = this[0]
-
 private fun TabInfo(
     id: ComponentId,
     content: JComponent,
@@ -337,5 +282,36 @@ private fun JBEditorTabs(
 ) = JBEditorTabs(project, null, NoOpDisposable)
     .apply { isTabDraggingEnabled = true }
 
-private suspend fun ((Flow<PluginMessage>) -> Flow<PluginState>).firstState() =
-    this(emptyFlow()).first()
+@Composable
+private fun SettingsInputField(
+    setting: Validated<*>,
+    label: String,
+    placeholder: String,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+    onValueChange: (newValue: String) -> Unit,
+) {
+    TextField(
+        value = setting.input,
+        modifier = modifier,
+        enabled = enabled,
+        label = { Text(text = label) },
+        placeholder = { Text(text = placeholder) },
+        isError = !setting.isValid(),
+        singleLine = true,
+        onValueChange = onValueChange
+    )
+}
+
+@Composable
+@Preview
+fun SettingsInputFieldPreview() {
+    TextField(
+        value = "abc",
+        enabled = true,
+        placeholder = { Text(text = "placeholder") },
+        isError = false,
+        singleLine = true,
+        onValueChange = {}
+    )
+}

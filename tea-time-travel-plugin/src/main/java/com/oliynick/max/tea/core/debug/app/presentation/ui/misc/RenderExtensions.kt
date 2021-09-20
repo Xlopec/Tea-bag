@@ -39,6 +39,18 @@ private val DATE_TIME_FORMATTER: DateTimeFormatter by lazy {
     )
 }
 
+/*fun Value.toRenderTree(): RenderTree =
+    when (this) {
+        is Null -> ValueNode(this)
+        is CollectionWrapper -> toJTree()
+        is Ref -> toJTree()
+        is NumberWrapper -> ValueNode(this)
+        is CharWrapper -> ValueNode(this)
+        is FloatWrapper -> ValueNode(this)
+        is StringWrapper -> ValueNode(this)
+        is BooleanWrapper -> ValueNode(this)
+    }*/
+
 fun Value.toJTree(): DefaultMutableTreeNode =
     when (this) {
         is Null -> toJTree()
@@ -140,6 +152,21 @@ private fun Primitive(
 private fun Null.toJTree(): DefaultMutableTreeNode =
     DefaultMutableTreeNode(ValueNode(this))
 
+/*
+private fun Ref.toRenderTree(
+    parent: RenderTree = ValueNode(this)
+): RenderTree =
+    properties.fold(parent) { acc, property ->
+
+        val propertyNode = PropertyNode(property)
+
+        property.v.tryAppendSubTree(propertyNode)
+
+        acc += propertyNode
+        acc
+    }
+*/
+
 private fun Ref.toJTree(
     parent: DefaultMutableTreeNode = DefaultMutableTreeNode(ValueNode(this))
 ): DefaultMutableTreeNode =
@@ -152,6 +179,15 @@ private fun Ref.toJTree(
         acc += propertyNode
         acc
     }
+
+
+/*private fun CollectionWrapper.toRenderTree(
+    parent: RenderTree = ValueNode(this)
+) = value.mapIndexed { index, value ->
+        val indexedNode = IndexedNode(index, value)
+
+        value.tryAppendSubTree(indexedNode)
+    }*/
 
 private fun CollectionWrapper.toJTree(
     parent: DefaultMutableTreeNode = DefaultMutableTreeNode(ValueNode(this))
@@ -166,6 +202,18 @@ private fun CollectionWrapper.toJTree(
         acc
     }
 
+/*private fun Value.tryAppendSubTree(parent: PropertyNode): RenderTree? =
+    when (this) {
+        is CollectionWrapper -> toRenderTree(parent)
+        is Ref -> toRenderTree(parent)
+        is CharWrapper,
+        is NumberWrapper,
+        is StringWrapper,
+        is BooleanWrapper,
+        is Null
+        -> null
+    }*/
+
 private fun Value.tryAppendSubTree(parent: DefaultMutableTreeNode): DefaultMutableTreeNode? =
     when (this) {
         is CollectionWrapper -> toJTree(parent)
@@ -177,6 +225,19 @@ private fun Value.tryAppendSubTree(parent: DefaultMutableTreeNode): DefaultMutab
         is Null
         -> null
     }
+/*
+private fun Value.tryAppendSubTree(parent: RenderTree): RenderTree? =
+    when (this) {
+        is CollectionWrapper -> toRenderTree(parent)
+        is Ref -> toRenderTree(parent)
+        is CharWrapper,
+        is NumberWrapper,
+        is StringWrapper,
+        is BooleanWrapper,
+        is Null
+        -> null
+    }*/
+
 
 private operator fun DefaultMutableTreeNode.plusAssign(children: Iterable<MutableTreeNode>) =
     children.forEach(::add)
@@ -184,34 +245,37 @@ private operator fun DefaultMutableTreeNode.plusAssign(children: Iterable<Mutabl
 private operator fun DefaultMutableTreeNode.plusAssign(child: MutableTreeNode) = add(child)
 
 @Suppress("unused")
-private fun Null.toReadableString(): String = "null"
+internal fun Null.toReadableString(): String = "null"
 
-private fun StringWrapper.toReadableString(): String = "\"$value\":$primitiveTypeName"
+internal fun StringWrapper.toReadableString(): String = "\"$value\":$primitiveTypeName"
 
-private fun Ref.toReadableString(): String =
+internal fun Ref.toReadableString(): String =
     "${type.name}(${properties.joinToString(transform = ::toReadableString, limit = 120)})"
 
-private fun Ref.toReadableStringShort(): String = type.name
+internal fun Ref.toReadableStringShort(): String = type.name
 
-private fun toReadableString(field: Property): String =
+internal fun toReadableString(field: Property): String =
     "${field.name}=${toReadableStringDetailed(field.v)}"
 
-private fun CollectionWrapper.toReadableString(): String =
+internal fun toReadableStringShort(field: Property): String =
+    "${field.name}=${toReadableStringShort(field.v)}"
+
+internal fun CollectionWrapper.toReadableString(): String =
     value.joinToString(
         prefix = "[",
         postfix = "]",
         transform = ::toReadableStringDetailed
     )
 
-private fun CollectionWrapper.toReadableStringShort(): String =
+internal fun CollectionWrapper.toReadableStringShort(): String =
     "[${value.size} element${if (value.size == 1) "" else "s"}]"
 
-private fun NumberWrapper.toReadableString(): String =
+internal fun NumberWrapper.toReadableString(): String =
     "$value:$primitiveTypeName"
 
-private fun CharWrapper.toReadableString(): String = "$value:$primitiveTypeName"
+internal fun CharWrapper.toReadableString(): String = "$value:$primitiveTypeName"
 
-private fun BooleanWrapper.toReadableString(): String = "$value:$primitiveTypeName"
+internal fun BooleanWrapper.toReadableString(): String = "$value:$primitiveTypeName"
 
 private val Value.icon: Icon?
     inline get() = when {
