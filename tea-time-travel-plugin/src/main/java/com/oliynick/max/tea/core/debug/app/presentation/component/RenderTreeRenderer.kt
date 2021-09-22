@@ -18,6 +18,9 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.component
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.ExperimentalDesktopApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,13 +28,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.mouseClickable
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.oliynick.max.tea.core.debug.app.component.resolver.appState
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
 import java.awt.Component
@@ -123,17 +128,17 @@ data class CollectionNode(
 ) : Node
 
 //todo rework
-fun Value.toRenderTree(): ValueTree =
+fun Value.toRenderTree(expanded: Boolean = true): ValueTree =
     when (this) {
         is BooleanWrapper, is CharWrapper, is NumberWrapper, is StringWrapper, Null -> Leaf1(this)
         is CollectionWrapper -> CollectionNode(
-            mutableStateOf(true),
+            mutableStateOf(expanded),
             value.map { it.toRenderTree() }
         )
         is Ref -> RefNode1(
             type,
             properties.map { PropertyNode1(it.name, it.v.toRenderTree()) },
-            mutableStateOf(true)
+            mutableStateOf(expanded)
         )
     }
 
@@ -143,20 +148,7 @@ fun ValueTree(
     formatter: TreeItemFormatter,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        when (value) {
-            is RefNode1 -> referenceNode(value, 0, formatter)
-            is CollectionNode -> collectionNode(value, 0, formatter)
-            is Leaf1 -> leaf(value, formatter)
-        }
-    }
-}
-
-fun LazyListScope.leaf(
-    leaf: Leaf1,
-    transformer: TreeItemFormatter,
-) {
-    item {
-        Text(transformer.format(leaf))
+        subtree(value, 0, formatter, formatter.format(value))
     }
 }
 
@@ -178,44 +170,7 @@ fun LazyListScope.elementNode(
     level: Int,
     formatter: TreeItemFormatter,
 ) {
-
-    when (treeNode) {
-        is RefNode1 -> {
-            item {
-                ExpandableRow(
-                    Modifier.fillMaxWidth().indentLevel(level),
-                    "[$index] = " + formatter.format(treeNode),
-                    treeNode.expanded
-                )
-            }
-
-            if (treeNode.expanded.value) {
-                propertyNodes(treeNode.properties, level + 1, formatter)
-            }
-        }
-        is CollectionNode -> {
-
-            item {
-                ExpandableRow(
-                    Modifier.fillMaxWidth().indentLevel(level),
-                    "[$index] = " + formatter.format(treeNode),
-                    treeNode.expanded
-                )
-            }
-
-            if (treeNode.expanded.value) {
-                elementNodes(treeNode.values, level + 1, formatter)
-            }
-        }
-        is Leaf1 -> {
-            item {
-                Text(
-                    modifier = Modifier.fillMaxWidth().indentLevel(level),
-                    text = "[$index] = " + formatter.format(treeNode)
-                )
-            }
-        }
-    }
+    subtree(treeNode, level, formatter, "[$index] = " + formatter.format(treeNode))
 }
 
 fun LazyListScope.collectionNode(
@@ -224,13 +179,7 @@ fun LazyListScope.collectionNode(
     formatter: TreeItemFormatter,
 ) {
     item {
-        ExpandableRow(Modifier.fillMaxWidth().indentLevel(level),
-            formatter.format(node),
-            node.expanded)
-        /*Text(
-            modifier = Modifier.fillMaxWidth().indentLevel(level),
-            text = " + " + formatter.format(node)
-        )*/
+        ExpandableNode(level, formatter.format(node), node.expanded)
     }
 
     if (node.expanded.value) {
@@ -238,76 +187,85 @@ fun LazyListScope.collectionNode(
     }
 }
 
-@Composable
-fun ExpandableRow(
-    modifier: Modifier = Modifier,
-    text: String,
-    expanded: MutableState<Boolean>,
-) {
-    Row(modifier = modifier.padding(all = 8.dp)) {
-        Text(
-            modifier = Modifier.clickable(onClick = { expanded.value = !expanded.value })
-                .then(modifier),
-            text = (if (expanded.value) " - " else " + ") + text
-        )
-    }
-}
+private fun RowColor(
+    level: Int,
+) = if (level % 2 == 0) Color.Cyan else Color.Red
 
 fun LazyListScope.propertyNode(
     node: PropertyNode1,
     level: Int,
     formatter: TreeItemFormatter,
 ) {
-    val m = Modifier.fillMaxWidth().indentLevel(level)
+    subtree(node.v, level, formatter, "${node.name}=${formatter.format(node.v)}")
+}
 
-    when (val tree = node.v) {
+fun LazyListScope.subtree(
+    node: ValueTree,
+    level: Int,
+    formatter: TreeItemFormatter,
+    text: String,
+) {
+    when (node) {
         is RefNode1 -> {
-
             item {
-                ExpandableRow(m, formatter.format(node) + " -> L:${level}", tree.expanded)
-                // Text(modifier = m, text = " + " + formatter.format(tree))
+                ExpandableNode(level, text, node.expanded)
             }
 
-            if (tree.expanded.value) {
-                propertyNodes(tree.properties, level + 1, formatter)
+            if (node.expanded.value) {
+                propertyNodes(node.properties, level + 1, formatter)
             }
         }
         is CollectionNode -> {
+
             item {
-                ExpandableRow(m, formatter.format(node) + " -> L:${level}", tree.expanded)
-                //Text(modifier = m, text = " + " + formatter.format(node))
+                ExpandableNode(level, text, node.expanded)
             }
 
-            if (tree.expanded.value) {
-                elementNodes(tree.values, level + 1, formatter)
+            if (node.expanded.value) {
+                elementNodes(node.values, level + 1, formatter)
             }
         }
-        is Leaf1 -> item {
-            Text(modifier = m, text = formatter.format(node) + " -> L:${level}")
+        is Leaf1 -> {
+            item {
+                LeafNode(level, text) { }
+            }
         }
     }
 }
 
-fun LazyListScope.referenceNode(
-    node: RefNode1,
+@OptIn(ExperimentalDesktopApi::class)
+@Composable
+fun LeafNode(
     level: Int,
-    transformer: TreeItemFormatter,
+    text: String,
+    onClick: () -> Unit,
 ) {
-
-    item {
-        ExpandableRow(
-            Modifier.fillMaxWidth().indentLevel(level),
-            transformer.format(node),
-            node.expanded
-        )
-        /*Text(
-            modifier = Modifier.fillMaxWidth().indentLevel(level),
-            text = " + " + transformer.format(node)
-        )*/
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(if (PreviewMode.current) Modifier.background(RowColor(level)) else Modifier)
+            // TODO: should handle both left and right clicks
+            .mouseClickable { buttons.isSecondaryPressed } //(onClick = { onClick() })
+            .indentLevel(level),
+    ) {
+        Text(text = text)
     }
+}
 
-    if (node.expanded.value) {
-        propertyNodes(node.properties, level + 1, transformer)
+@Composable
+fun ExpandableNode(
+    level: Int,
+    text: String,
+    expanded: MutableState<Boolean>,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(if (PreviewMode.current) Modifier.background(RowColor(level)) else Modifier)
+            .clickable(onClick = { expanded.value = !expanded.value })
+            .indentLevel(level),
+    ) {
+        Text(text = (if (expanded.value) " - " else " + ") + text)
     }
 }
 
@@ -315,6 +273,18 @@ fun Modifier.indentLevel(
     level: Int,
     step: Dp = 24.dp,
 ) = padding(start = Dp(step.value * level))
+
+private val PreviewMode = compositionLocalOf { false }
+
+@Preview
+@Composable
+private fun ValueTreePreviewExpanded() {
+    Surface(color = Color.Unspecified) {
+        CompositionLocalProvider(PreviewMode provides true) {
+            ValueTree(appState.toRenderTree(expanded = true), TreeItemFormatterImpl)
+        }
+    }
+}
 
 private fun toReadableStateString(
     renderTree: RenderTree,
