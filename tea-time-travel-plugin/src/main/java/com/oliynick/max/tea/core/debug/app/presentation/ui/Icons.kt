@@ -34,7 +34,11 @@ object ValueIcon {
     val ClassIcon by unsafeLazy { getIcon("class") }
     val PropertyIcon by unsafeLazy { getIcon("property") }
     val WatchIcon by unsafeLazy { getIcon("watch") }
+
     val VariableIconC @Composable get() = bitmap("variable")
+    val ClassIconC @Composable get() = bitmap("class")
+    val PropertyIconC @Composable get() = bitmap("property")
+    val WatchIconC @Composable get() = bitmap("watch")
 }
 
 object ActionIcons {

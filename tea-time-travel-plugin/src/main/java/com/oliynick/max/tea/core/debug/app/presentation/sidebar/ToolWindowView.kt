@@ -46,6 +46,9 @@ import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.SuspendDi
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tabs.CloseableTab
 import com.oliynick.max.tea.core.debug.app.presentation.ui.theme.WidgetTheme
+import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.Tree
+import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.TreeItemFormatterImpl
+import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.toRenderTree
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -104,7 +107,7 @@ class ToolWindowView private constructor(
                 modifier = Modifier.weight(2f)
             ) {
 
-                val t = remember("loh") {  JBEditorTabs(project) }
+                val t = remember("loh") { JBEditorTabs(project) }
                 val scope = rememberCoroutineScope()
 
                 if (this@render1 is Started && debugState.components.isNotEmpty()) {
@@ -113,7 +116,7 @@ class ToolWindowView private constructor(
 
                     val treeState by derivedStateOf { state.state.toRenderTree() }
 
-                    ValueTree(treeState, TreeItemFormatterImpl)
+                    Tree(treeState, TreeItemFormatterImpl)
                     /*SwingPanel(
                         background = Unspecified,
                         modifier = Modifier.fillMaxSize(),
