@@ -25,7 +25,7 @@
 package com.max.reader.app.message
 
 import com.max.reader.app.ScreenId
-import com.max.reader.domain.Article
+import com.oliynick.max.reader.domain.Article
 import com.max.reader.screens.settings.SettingsState
 import java.util.*
 

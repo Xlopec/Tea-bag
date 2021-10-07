@@ -24,8 +24,8 @@
 
 package com.max.reader.app
 
-import com.max.reader.domain.Article
 import com.max.reader.screens.article.list.Query
+import com.oliynick.max.reader.domain.Article
 
 sealed interface Command
 

@@ -30,7 +30,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.debug.protocol.*
-import java.util.*
 
 /**
  * Type alias a for Gson specific [ClientMessage]

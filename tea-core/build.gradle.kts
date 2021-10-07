@@ -24,16 +24,74 @@
 
 import Libraries.coroutinesCore
 import Libraries.kotlinStdLib
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
+/**
+ * in case of shit, add this back to xcode -> .xcodeproj -> Build Phases -> Run Script
+ * cd "$SRCROOT/.."
+./gradlew :tea-core:packForXCode :shared-app-lib:packForXCode -PXCODE_CONFIGURATION=${CONFIGURATION}
+ */
 
 plugins {
-    publishedLibrary()
+    `maven-publish`
+    signing
+    id("org.jetbrains.dokka")
+    kotlin("multiplatform")
+    kotlin("native.cocoapods")
 }
 
-dependencies {
+version = "1.0.0"
 
-    api(coroutinesCore)
+kotlin {
 
-    implementation(kotlinStdLib)
+    explicitApi()
 
-    testImplementation(project(":tea-test"))
+    jvm {
+        withJava()
+    }
+
+    val iosTarget: (String, KotlinNativeTarget.() -> Unit) -> KotlinNativeTarget =
+        if (System.getenv("SDK_NAME")?.startsWith("iphoneos") == true)
+            ::iosArm64
+        else
+            ::iosX64
+
+    iosTarget("ios") {}
+
+    cocoapods {
+        summary = "Tea core library"
+        homepage = "Link to the Tea library Module homepage"
+        ios.deploymentTarget = "14.0"
+        frameworkName = "TeaCore"
+        podfile = project.file("../iosApp/Podfile")
+    }
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                api(coroutinesCore + "-native-mt")
+                implementation(kotlinStdLib)
+            }
+        }
+
+        val commonTest by getting
+
+        val jvmMain by getting
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(project(":tea-test"))
+            }
+        }
+
+        val iosMain by getting {
+            dependencies {
+                //implementation(kotlinStdLib)
+                //dependsOn(commonMain)
+                //org.jetbrains.kotlinx:kotlinx-coroutines-core-iosx64:1.5.0-native-mt'
+                //api("org.jetbrains.kotlinx:kotlinx-coroutines-core-iosx64:1.5.0")
+            }
+        }
+        val iosTest by getting
+    }
 }

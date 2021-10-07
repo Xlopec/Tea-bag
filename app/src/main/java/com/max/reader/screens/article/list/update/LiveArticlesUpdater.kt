@@ -25,10 +25,10 @@
 package com.max.reader.screens.article.list.update
 
 import com.max.reader.app.*
-import com.max.reader.domain.Article
-import com.max.reader.domain.toggleFavorite
 import com.max.reader.screens.article.list.*
 import com.max.reader.screens.article.list.QueryType.*
+import com.oliynick.max.reader.domain.Article
+import com.oliynick.max.reader.domain.toggleFavorite
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand

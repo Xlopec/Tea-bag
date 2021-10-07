@@ -12,5 +12,6 @@ include(
     ":tea-time-travel-protocol",
     ":tea-time-travel-plugin",
     ":tea-test",
-    ":tea-time-travel-adapter-gson"
+    ":tea-time-travel-adapter-gson",
+    ":shared-app-lib"
 )

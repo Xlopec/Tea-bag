@@ -29,6 +29,7 @@
 /.idea/shelf/
 /.idea/runConfigurations.xml
 /.idea/vcs.xml
+/.idea/kotlinScripting.xml
 /projectFilesBackup*/
 .DS_Store
 /build

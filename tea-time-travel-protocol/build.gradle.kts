@@ -25,12 +25,39 @@
 import Libraries.kotlinStdLib
 
 plugins {
-    publishedLibrary()
+    `maven-publish`
+    signing
+    id("org.jetbrains.dokka")
+    kotlin("multiplatform")
 }
 
-dependencies {
+kotlin {
 
-    implementation(kotlinStdLib)
+    explicitApi()
 
-    testImplementation(project(":tea-test"))
+    jvm {
+        withJava()
+    }
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(kotlinStdLib)
+            }
+        }
+
+        val commonTest by getting
+
+        val jvmMain by getting {
+            dependencies {
+
+            }
+        }
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(project(":tea-test"))
+            }
+        }
+    }
 }

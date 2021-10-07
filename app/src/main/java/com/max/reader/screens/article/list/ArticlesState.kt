@@ -28,8 +28,8 @@ package com.max.reader.screens.article.list
 
 import com.max.reader.app.ScreenId
 import com.max.reader.app.ScreenState
-import com.max.reader.domain.Article
 import com.max.reader.screens.article.list.ArticlesState.TransientState.*
+import com.oliynick.max.reader.domain.Article
 
 enum class QueryType {
     Regular, Favorite, Trending

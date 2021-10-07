@@ -129,6 +129,7 @@ android {
 dependencies {
 
     implementation(project(":tea-core"))
+    implementation(project(":shared-app-lib"))
 
     remoteImplementation(project(":tea-time-travel"))
     remoteImplementation(project(":tea-time-travel-adapter-gson"))

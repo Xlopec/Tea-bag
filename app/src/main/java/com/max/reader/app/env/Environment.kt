@@ -35,11 +35,12 @@ import com.max.reader.app.CloseApp
 import com.max.reader.app.env.storage.Gson
 import com.max.reader.app.env.storage.HasGson
 import com.max.reader.app.env.storage.local.LocalStorage
-import com.max.reader.app.env.storage.network.ArticleAdapters
+import com.max.reader.app.env.storage.network.AppGson
 import com.max.reader.app.env.storage.network.NewsApi
 import com.max.reader.app.update.AppNavigation
 import com.max.reader.screens.article.details.ArticleDetailsModule
 import com.max.reader.screens.article.list.ArticlesModule
+import com.max.reader.app.serialization.ArticleAdapters
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 

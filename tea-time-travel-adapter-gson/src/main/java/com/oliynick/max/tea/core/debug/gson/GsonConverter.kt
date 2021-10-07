@@ -30,6 +30,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.debug.protocol.JsonConverter
+import kotlin.reflect.KClass
 
 /**
  * Configures and creates a new [converter][GsonConverter] instance
@@ -46,18 +47,18 @@ private class GsonConverter(
         any: T
     ): JsonElement = gson.toJsonTree(any)
 
-    override fun <T> fromJsonTree(
+    override fun <T : Any> fromJsonTree(
         json: JsonElement,
-        cl: Class<T>
-    ): T = gson.fromJson(json, cl)
+        cl: KClass<T>
+    ): T = gson.fromJson(json, cl.java)
 
     override fun <T> toJson(
         any: T
     ): String = gson.toJson(any)
 
-    override fun <T> fromJson(
+    override fun <T : Any> fromJson(
         json: String,
-        cl: Class<T>
-    ): T = gson.fromJson(json, cl)
+        cl: KClass<T>
+    ): T = gson.fromJson(json, cl.java)
 
 }

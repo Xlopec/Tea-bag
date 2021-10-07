@@ -33,16 +33,13 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import com.max.reader.R
-import com.max.reader.app.env.storage.Page
-import com.max.reader.domain.Article
-import com.max.reader.domain.Author
-import com.max.reader.domain.Description
-import com.max.reader.domain.Title
+import com.oliynick.max.reader.network.Page
 import com.max.reader.ui.isDarkModeEnabled
+import com.oliynick.max.reader.domain.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
-import java.util.*
+import java.util.Date
 
 interface LocalStorage {
 
@@ -51,7 +48,7 @@ interface LocalStorage {
     )
 
     suspend fun deleteArticle(
-        url: URL,
+        url: Url,
     )
 
     suspend fun findAllArticles(
@@ -88,7 +85,7 @@ fun LocalStorage(
         }
     }
 
-    override suspend fun deleteArticle(url: URL) {
+    override suspend fun deleteArticle(url: Url) {
         withContext(Dispatchers.IO) {
             db.delete(TableName, "$_Url = ?", arrayOf(url.toExternalForm()))
         }
