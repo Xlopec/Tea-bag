@@ -51,7 +51,7 @@ private fun Ref.toJsonElement(): JsonElement = JsonObject().apply {
 }
 
 private fun CollectionWrapper.toJsonElement(): JsonArray =
-    value.fold(JsonArray(value.size)) { acc, v ->
+    items.fold(JsonArray(items.size)) { acc, v ->
         acc.add(v.toJsonElement())
         acc
     }

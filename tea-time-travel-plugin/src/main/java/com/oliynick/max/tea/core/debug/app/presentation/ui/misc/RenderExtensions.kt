@@ -33,7 +33,7 @@ import javax.swing.tree.TreeModel
 
 typealias ValueFormatter = Value.() -> String
 
-private val DATE_TIME_FORMATTER: DateTimeFormatter by lazy {
+val DATE_TIME_FORMATTER: DateTimeFormatter by lazy {
     DateTimeFormatter.ofLocalizedDateTime(
         FormatStyle.MEDIUM
     )
@@ -192,7 +192,7 @@ private fun Ref.toJTree(
 private fun CollectionWrapper.toJTree(
     parent: DefaultMutableTreeNode = DefaultMutableTreeNode(ValueNode(this))
 ): DefaultMutableTreeNode =
-    value.foldIndexed(parent) { index, acc, value ->
+    items.foldIndexed(parent) { index, acc, value ->
 
         val indexedNode = DefaultMutableTreeNode(IndexedNode(index, value))
 
@@ -261,14 +261,14 @@ internal fun toReadableStringShort(field: Property): String =
     "${field.name}=${toReadableStringShort(field.v)}"
 
 internal fun CollectionWrapper.toReadableString(): String =
-    value.joinToString(
+    items.joinToString(
         prefix = "[",
         postfix = "]",
         transform = ::toReadableStringDetailed
     )
 
 internal fun CollectionWrapper.toReadableStringShort(): String =
-    "[${value.size} element${if (value.size == 1) "" else "s"}]"
+    "[${items.size} element${if (items.size == 1) "" else "s"}]"
 
 internal fun NumberWrapper.toReadableString(): String =
     "$value:$primitiveTypeName"

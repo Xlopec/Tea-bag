@@ -100,7 +100,7 @@ class BooleanWrapper private constructor(
 }
 
 data class CollectionWrapper(
-    val value: List<Value>
+    val items: List<Value>
 ) : Value()
 
 data class Ref(

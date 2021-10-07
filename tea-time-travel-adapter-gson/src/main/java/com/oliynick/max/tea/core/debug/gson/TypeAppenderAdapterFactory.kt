@@ -40,19 +40,29 @@ import kotlin.contracts.contract
  *
  * Consider the following example:
  * ```
- * data class C(val value: String = "C")
+ * data class C(val value: String = "C", val list: List<Int> = listOf(1, 2 ,3))
  * ```
  * it'll be transformed to the next json object (if only default serializers are used):
  * ```
  * {
  * "@type": "java.lang.String",
- * "value": "C"
+ * "value": "C",
+ * "list": [1, 2, 3]
  * }
  * ```
  *
  * **Note** that [Map] which can hold entry with ```null``` key will be deserialized incorrectly since ```null``` key will
  * be transformed to a string during serialization.
  */
+// `<->` is two way conversion and `->` is one way conversion
+// json conversion as is:
+// Object <-> { "@type": "${instance.javaClass}", other properties }
+// Collection -> [elements]
+// Primitive <-> json primitive
+// json conversion that'd be nice to have:
+// Object <-> { "@type": "${instance.javaClass}", "@type.${property.name}": "${property.javaClass}" }
+// Collection <-> { "@type": "${instance.javaClass}", "values": [elements] }
+// Primitive <-> json primitive
 internal object TypeAppenderAdapterFactory : TypeAdapterFactory {
 
     override fun <T> create(

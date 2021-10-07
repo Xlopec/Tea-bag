@@ -154,7 +154,7 @@ private fun applyToWrapper(
     wrapper: CollectionWrapper,
     predicate: Predicate
 ): CollectionWrapper? =
-    wrapper.value
+    wrapper.items
         .mapNotNull { v -> applyTo(v, predicate) }
         .takeIf { filtered -> filtered.isNotEmpty() }
         ?.let(::CollectionWrapper)

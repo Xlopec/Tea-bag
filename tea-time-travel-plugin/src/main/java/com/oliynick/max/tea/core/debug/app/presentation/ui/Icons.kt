@@ -44,7 +44,9 @@ object ValueIcon {
 object ActionIcons {
 
     val UpdateRunningAppIcon by unsafeLazy { getIcon("updateRunningApplication") }
+    val UpdateRunningAppIconC @Composable get() = bitmap("updateRunningApplication")
     val RemoveIcon by unsafeLazy { getIcon("remove") }
+    val RemoveIconC @Composable get() = bitmap("remove")
 
     val RunDefaultIcon by unsafeLazy { getIcon("run") }
     val RunDefaultIconC @Composable get() = bitmap("run")
@@ -54,6 +56,7 @@ object ActionIcons {
     val ResumeIcon by unsafeLazy { getIcon("resume") }
 
     val CloseDefaultIcon by unsafeLazy { getIcon("close") }
+    val CloseDefaultIconC @Composable get() = bitmap("close")
     val CloseDarkIcon by unsafeLazy { getIcon("close_dark") }
 
     val SuspendDefaultIcon by unsafeLazy { getIcon("suspend") }
@@ -72,8 +75,12 @@ private fun resource(
 
 @Composable
 private fun bitmap(name: String): ImageBitmap =
-    remember(name) {
-        makeFromEncoded(resource("/images/$name.png").readBytes()).asImageBitmap()
+    if (PreviewMode.current) {
+        ImageStub
+    } else {
+        remember(name) {
+            makeFromEncoded(resource("/images/$name.png").readBytes()).asImageBitmap()
+        }
     }
 
 private fun getIcon(
@@ -83,3 +90,6 @@ private fun getIcon(
 private fun <T> unsafeLazy(
     provider: () -> T,
 ) = lazy(LazyThreadSafetyMode.NONE, provider)
+
+private const val StubImageSize = 80
+private val ImageStub = ImageBitmap(StubImageSize, StubImageSize)

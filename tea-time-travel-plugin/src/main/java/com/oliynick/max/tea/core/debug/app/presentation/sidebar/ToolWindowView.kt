@@ -46,6 +46,7 @@ import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.SuspendDi
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tabs.CloseableTab
 import com.oliynick.max.tea.core.debug.app.presentation.ui.theme.WidgetTheme
+import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.SnapshotINode
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.Tree
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.TreeItemFormatterImpl
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.toRenderTree
@@ -114,9 +115,10 @@ class ToolWindowView private constructor(
 
                     val (id, state) = debugState.components.first()
 
-                    val treeState by derivedStateOf { state.state.toRenderTree() }
+                    val treeState by derivedStateOf { state.filteredSnapshots.toRenderTree() }
 
-                    Tree(treeState, TreeItemFormatterImpl)
+                    Tree(treeState, TreeItemFormatterImpl) { println("Event $it") }
+
                     /*SwingPanel(
                         background = Unspecified,
                         modifier = Modifier.fillMaxSize(),

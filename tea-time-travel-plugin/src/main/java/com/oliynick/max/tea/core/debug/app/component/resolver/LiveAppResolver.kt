@@ -28,6 +28,8 @@ import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
 import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
 import com.oliynick.max.tea.core.debug.protocol.ApplyState
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import java.time.LocalDateTime
+import java.util.*
 
 fun <Env> LiveAppResolver() where Env : HasMessageChannel,
                                   Env : HasProject,
@@ -53,9 +55,40 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
             // fixme remove later
             is DoStartServer -> setOf(with(command) { NotifyStarted(newServer(address, events)); },
                 ComponentAttached(
-                    ComponentId("Test component id"),
+                    componentId,
+                    appState
+                ),
+                AppendSnapshot(
+                    componentId,
+                    SnapshotMeta(
+                        SnapshotId(UUID.randomUUID()),
+                        LocalDateTime.now()
+                    ),
+                    appState,
+                    appState,
+                    appState
+                ),
+                AppendSnapshot(
+                    componentId,
+                    SnapshotMeta(
+                        SnapshotId(UUID.randomUUID()),
+                        LocalDateTime.now()
+                    ),
+                    appState,
+                    appState,
+                    appState
+                ),
+                AppendSnapshot(
+                    componentId,
+                    SnapshotMeta(
+                        SnapshotId(UUID.randomUUID()),
+                        LocalDateTime.now()
+                    ),
+                    appState,
+                    appState,
                     appState
                 )
+            // fixme end of removal section
             )
             is DoStopServer -> command effect { server.stop(); NotifyStopped }
             is DoApplyMessage -> command sideEffect {
@@ -108,6 +141,8 @@ val user = Ref(
         Property("position", StringWrapper("Developer")),
     )
 )
+
+val componentId = ComponentId("Test component id")
 
 val appState =
     Ref(
