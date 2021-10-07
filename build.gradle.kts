@@ -40,6 +40,8 @@ allprojects {
         mavenCentral()
         google()
         mavenLocal()
+        maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-coroutines/maven")
+        maven("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
     }
 
     apply {

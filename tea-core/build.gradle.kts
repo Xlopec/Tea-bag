@@ -69,7 +69,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(coroutinesCore + "-native-mt")
+                api(coroutinesCore)
                 implementation(kotlinStdLib)
             }
         }

@@ -31,8 +31,8 @@ const val kotlinVersion = "1.5.21"
 
 object Libraries {
     object Versions {
-        const val coroutines = "1.5.2"
-        const val ktor = "1.6.3"
+        const val coroutines = "1.5.1-new-mm-dev2"
+        const val ktor = "1.6.2-native-mm-eap-196"
         const val compose = "1.0.1"
         const val accompanies = "0.17.0"
     }
@@ -41,7 +41,7 @@ object Libraries {
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
     const val coroutinesSwing = "org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutines"
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines"
-    const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     const val kotlinStdLibReflect = "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
     const val ktorServerCore = "io.ktor:ktor-server-core:$ktor"
@@ -57,7 +57,7 @@ object Libraries {
     const val gson = "com.google.code.gson:gson:2.8.7"
 
     const val logback = "ch.qos.logback:logback-classic:1.2.3"
-    const val atomicfu = "org.jetbrains.kotlinx:atomicfu:0.15.1"
+    const val atomicfu = "org.jetbrains.kotlinx:atomicfu:0.16.3"
     const val immutableCollections = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.3"
 
     const val composeUi = "androidx.compose.ui:ui:$compose"
@@ -82,7 +82,7 @@ object Libraries {
 
 object TestLibraries {
     private object Versions {
-        const val ktor = "1.6.2"
+        const val ktor = "1.6.2-native-mm-eap-196"
     }
 
     const val junit = "junit:junit:4.13.1"
