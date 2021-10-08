@@ -24,16 +24,11 @@
 
 @file:Suppress("FunctionName")
 
-package com.max.reader.app
+package com.oliynick.max.reader.app
 
-import com.max.reader.app.env.Environment
-import com.oliynick.max.reader.app.NavigateToFeed
 import com.oliynick.max.reader.article.list.ArticlesState
 import com.oliynick.max.reader.article.list.Query
 import com.oliynick.max.reader.article.list.QueryType.Regular
-import com.oliynick.max.reader.app.AppState
-import com.oliynick.max.reader.app.Command
-import com.oliynick.max.reader.app.LoadArticlesByQuery
 import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Initializer
 

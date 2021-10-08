@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app.serialization
+package com.oliynick.max.reader.app.serialization
 
 import com.google.gson.*
 import kotlinx.collections.immutable.PersistentList

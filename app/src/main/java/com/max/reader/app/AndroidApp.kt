@@ -29,10 +29,8 @@ package com.max.reader.app
 
 import android.app.Activity
 import android.app.Application
-import com.max.reader.app.env.Environment
-import com.oliynick.max.reader.app.AppState
-import com.oliynick.max.reader.app.CloseApp
-import com.oliynick.max.reader.app.Message
+import com.max.reader.BuildConfig.DEBUG
+import com.oliynick.max.reader.app.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -50,7 +48,7 @@ fun AppComponent(
     application: Application,
     scope: CoroutineScope,
     closeCommands: MutableSharedFlow<CloseApp>,
-) = Environment(application, scope, closeCommands)
+) = Environment(PlatformEnv(BuildConfig.DEBUG, application, scope, closeCommands))
     .let { env -> AppComponent(env, AppInitializer(env)) }
 
 private object AppComponentScope : CoroutineScope {

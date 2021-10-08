@@ -24,20 +24,16 @@
 
 @file:Suppress("FunctionName")
 
-package com.max.reader.app
+package com.oliynick.max.reader.app
 
-import com.max.reader.app.env.Environment
-import com.oliynick.max.reader.app.AppState
-import com.oliynick.max.reader.app.Command
-import com.oliynick.max.reader.app.Message
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.states
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
 
+@OptIn(ExperimentalStdlibApi::class)
 fun AppComponent(
     environment: Environment,
     initializer: Initializer<AppState, Command>,
@@ -47,6 +43,6 @@ fun AppComponent(
         resolver = { c -> with(environment) { resolve(c) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment,
-        io = IO,
+        io = Dispatchers.Default,//fixme make IO
         computation = environment.coroutineContext[CoroutineDispatcher.Key] ?: Dispatchers.Default,
     ).states()
