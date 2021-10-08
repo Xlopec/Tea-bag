@@ -53,7 +53,7 @@ afterEvaluate {
 
 dependencies {
     implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.0-M1")
     implementation("com.android.tools.build:gradle:7.0.2")
     implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.1.4")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
