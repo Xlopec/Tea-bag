@@ -30,7 +30,7 @@ import com.max.reader.app.env.HasAppContext
 import com.max.reader.app.env.storage.HasGson
 import com.oliynick.max.reader.app.LocalStorage
 import com.max.reader.app.env.storage.network.NewsApi
-import com.max.reader.screens.article.list.resolve.ArticlesResolver
+import com.oliynick.max.reader.article.list.ArticlesResolver
 import com.max.reader.screens.article.list.resolve.LiveArticlesResolver
 import com.oliynick.max.reader.article.list.ArticlesUpdater
 import com.oliynick.max.reader.article.list.LiveArticlesUpdater

@@ -22,7 +22,9 @@
  * SOFTWARE.
  */
 
+import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
+import Libraries.coroutinesCore
 import Libraries.gson
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
@@ -66,6 +68,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(immutableCollections)
+                api(coroutinesCore)
                 api(project(":tea-core"))
                 implementation(kotlinStdLib)
                 implementation("io.ktor:ktor-client-core:$ktor")
@@ -97,6 +100,7 @@ kotlin {
         }
         val iosMain by getting {
             dependencies {
+                implementation(project(":tea-core"))
                 implementation("io.ktor:ktor-client-ios:$ktor")
                 implementation(ktorClientJson)
             }

@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app.resolve
+package com.oliynick.max.reader.article.list
 
-import com.oliynick.max.reader.app.Command
+import com.oliynick.max.reader.app.ArticlesCommand
 import com.oliynick.max.reader.app.Message
 
-fun interface AppResolver<Env> {
+fun interface ArticlesResolver<Env> {
 
     suspend fun Env.resolve(
-        command: Command
+        command: ArticlesCommand
     ): Set<Message>
 
 }

@@ -27,11 +27,11 @@
 package com.max.reader.screens.article.details
 
 import com.max.reader.app.env.HasAppContext
-import com.max.reader.screens.article.details.resolve.ArticleDetailsResolver
+import com.oliynick.max.reader.article.details.ArticleDetailsResolver
 import com.max.reader.screens.article.details.resolve.LiveArticleDetailsResolver
 import com.oliynick.max.reader.article.details.ArticleDetailsUpdater
 import com.oliynick.max.reader.article.details.LiveArticleDetailsUpdater
-import com.max.reader.screens.article.list.resolve.ArticlesResolver
+import com.oliynick.max.reader.article.list.ArticlesResolver
 
 interface ArticleDetailsModule<Env> : ArticleDetailsUpdater, ArticleDetailsResolver<Env>
 

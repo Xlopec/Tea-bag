@@ -30,7 +30,7 @@ import android.app.Application
 import android.os.StrictMode.*
 import android.os.StrictMode.VmPolicy.Builder
 import com.max.reader.BuildConfig.DEBUG
-import com.max.reader.app.AppModule
+import com.oliynick.max.reader.app.AppModule
 import com.oliynick.max.reader.app.CloseApp
 import com.max.reader.app.env.storage.Gson
 import com.max.reader.app.env.storage.HasGson

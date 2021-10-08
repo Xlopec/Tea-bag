@@ -24,17 +24,12 @@
 
 @file:Suppress("FunctionName")
 
-package com.max.reader.app
+package com.oliynick.max.reader.app
 
-import com.oliynick.max.reader.app.LocalStorage
-import com.max.reader.app.resolve.AppResolver
-import com.oliynick.max.reader.app.AppNavigation
-import com.max.reader.screens.article.details.resolve.ArticleDetailsResolver
-import com.max.reader.screens.article.list.resolve.ArticlesResolver
-import com.oliynick.max.reader.article.list.ArticlesUpdater
-import com.oliynick.max.reader.app.AppUpdater
-import com.oliynick.max.reader.app.CloseApp
+import com.oliynick.max.reader.article.details.ArticleDetailsResolver
 import com.oliynick.max.reader.article.details.ArticleDetailsUpdater
+import com.oliynick.max.reader.article.list.ArticlesResolver
+import com.oliynick.max.reader.article.list.ArticlesUpdater
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 interface AppModule<Env> : AppUpdater<Env>, AppResolver<Env>, AppNavigation

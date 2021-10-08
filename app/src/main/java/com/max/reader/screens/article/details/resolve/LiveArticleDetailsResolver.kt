@@ -33,6 +33,7 @@ import com.oliynick.max.reader.app.DoOpenArticle
 import com.max.reader.app.env.HasAppContext
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenMessage
+import com.oliynick.max.reader.article.details.ArticleDetailsResolver
 import com.oliynick.max.tea.core.component.sideEffect
 
 fun <Env> LiveArticleDetailsResolver(): ArticleDetailsResolver<Env> where Env : HasAppContext =
