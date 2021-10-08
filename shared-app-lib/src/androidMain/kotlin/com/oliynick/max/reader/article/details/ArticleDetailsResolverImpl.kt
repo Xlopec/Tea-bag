@@ -24,16 +24,43 @@
 
 @file:Suppress("FunctionName")
 
-package com.max.reader.app.env
+package com.oliynick.max.reader.article.details
 
 import android.app.Application
+import android.content.Intent
+import android.net.Uri
+import com.oliynick.max.reader.app.*
+import com.oliynick.max.tea.core.component.sideEffect
 
-interface HasAppContext {
+actual interface ArticleDetailsEnv {
     val application: Application
 }
 
-fun AppContext(
+fun ArticleDetailsDeps(
     application: Application
-) = object : HasAppContext {
+) = object : ArticleDetailsEnv {
     override val application: Application = application
 }
+
+actual fun <Env : ArticleDetailsEnv> ArticleDetailsResolver(): ArticleDetailsResolver<Env> =
+    object : ArticleDetailsResolver<Env> {
+
+        override suspend fun Env.resolve(
+            command: ArticleDetailsCommand
+        ): Set<Message> =
+            when (command) {
+                is DoOpenArticle -> openArticle(command)
+            }
+
+        suspend fun Env.openArticle(
+            command: DoOpenArticle
+        ): Set<ScreenMessage> = command.sideEffect {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url.toString()))
+                .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
+
+            if (intent.resolveActivity(application.packageManager) != null) {
+                application.startActivity(intent)
+            }
+        }
+
+    }

@@ -34,9 +34,9 @@ import Libraries.ktorClientLogging
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
-    `java-library`
     kotlin("multiplatform")
     kotlin("native.cocoapods")
+    id("com.android.library")
     kotlin("plugin.serialization")
 }
 
@@ -44,9 +44,7 @@ version = "1.0.0"
 
 kotlin {
 
-    jvm {
-        withJava()
-    }
+    android()
 
     val iosTarget: (String, KotlinNativeTarget.() -> Unit) -> KotlinNativeTarget =
         if (System.getenv("SDK_NAME")?.startsWith("iphoneos") == true)
@@ -85,14 +83,14 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
-        val jvmMain by getting {
+        val androidMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-cio:$ktor")
                 implementation(ktorClientGson)
                 implementation(gson)
             }
         }
-        val jvmTest by getting {
+        val androidTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation("junit:junit:4.13.2")
@@ -106,5 +104,14 @@ kotlin {
             }
         }
         val iosTest by getting
+    }
+}
+
+android {
+    compileSdkVersion(30)
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    defaultConfig {
+        minSdkVersion(21)
+        targetSdkVersion(30)
     }
 }

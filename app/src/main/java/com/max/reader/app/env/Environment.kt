@@ -30,18 +30,17 @@ import android.app.Application
 import android.os.StrictMode.*
 import android.os.StrictMode.VmPolicy.Builder
 import com.max.reader.BuildConfig.DEBUG
-import com.oliynick.max.reader.app.AppModule
-import com.oliynick.max.reader.app.CloseApp
 import com.max.reader.app.env.storage.Gson
 import com.max.reader.app.env.storage.HasGson
 import com.max.reader.app.env.storage.local.LocalStorage
-import com.oliynick.max.reader.app.LocalStorage
 import com.max.reader.app.env.storage.network.AppGson
 import com.max.reader.app.env.storage.network.NewsApi
-import com.oliynick.max.reader.app.AppNavigation
 import com.max.reader.screens.article.details.ArticleDetailsModule
 import com.max.reader.screens.article.list.ArticlesModule
 import com.max.reader.app.serialization.ArticleAdapters
+import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.article.details.ArticleDetailsDeps
+import com.oliynick.max.reader.article.details.ArticleDetailsEnv
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -49,7 +48,7 @@ interface Environment :
     AppModule<Environment>,
     ArticlesModule<Environment>,
     ArticleDetailsModule<Environment>,
-    HasAppContext,
+    ArticleDetailsEnv,
     NewsApi<Environment>,
     LocalStorage,
     HasGson,
@@ -75,7 +74,7 @@ fun Environment(
         NewsApi<Environment> by NewsApi(gson, DEBUG),
         LocalStorage by LocalStorage(application),
         HasGson by Gson(gson),
-        HasAppContext by AppContext(application),
+        ArticleDetailsEnv by ArticleDetailsDeps(application),
         CoroutineScope by scope {
     }
 }

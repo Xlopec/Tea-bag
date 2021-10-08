@@ -29,8 +29,8 @@ package com.max.reader.app.env.storage.network
 import android.content.res.Configuration
 import android.os.Build
 import com.google.gson.Gson
-import com.max.reader.app.env.HasAppContext
 import com.oliynick.max.reader.app.LocalStorage
+import com.oliynick.max.reader.article.details.ArticleDetailsEnv
 import com.oliynick.max.reader.network.NewsApiCommon
 import com.oliynick.max.reader.network.Page
 import io.ktor.client.features.json.*
@@ -59,7 +59,7 @@ fun <Env> NewsApi(
     gson: Gson,
     debug: Boolean,
 ): NewsApi<Env> where Env : LocalStorage,
-                      Env : HasAppContext = object : NewsApi<Env> {
+                      Env : ArticleDetailsEnv = object : NewsApi<Env> {
 
     private val impl = NewsApiCommon(
         /*HttpClient(CIO) {
@@ -101,7 +101,7 @@ private class GsonSerializer(
         gson.fromJson(body.readText(), type.reifiedType)
 }
 
-private inline val HasAppContext.countryCode: String
+private inline val ArticleDetailsEnv.countryCode: String
     get() = application.resources.configuration.countryCode
 
 @Suppress("DEPRECATION")

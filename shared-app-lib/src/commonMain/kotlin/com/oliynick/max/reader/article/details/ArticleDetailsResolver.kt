@@ -27,7 +27,7 @@ package com.oliynick.max.reader.article.details
 import com.oliynick.max.reader.app.ArticleDetailsCommand
 import com.oliynick.max.reader.app.Message
 
-interface ArticleDetailsResolver<Env> {
+fun interface ArticleDetailsResolver<Env> {
 
     suspend fun Env.resolve(
         command: ArticleDetailsCommand

@@ -26,19 +26,19 @@
 
 package com.max.reader.screens.article.details
 
-import com.max.reader.app.env.HasAppContext
+import com.oliynick.max.reader.article.details.ArticleDetailsEnv
 import com.oliynick.max.reader.article.details.ArticleDetailsResolver
-import com.max.reader.screens.article.details.resolve.LiveArticleDetailsResolver
 import com.oliynick.max.reader.article.details.ArticleDetailsUpdater
 import com.oliynick.max.reader.article.details.LiveArticleDetailsUpdater
 import com.oliynick.max.reader.article.list.ArticlesResolver
 
 interface ArticleDetailsModule<Env> : ArticleDetailsUpdater, ArticleDetailsResolver<Env>
 
-fun <Env> ArticleDetailsModule(): ArticleDetailsModule<Env> where Env : ArticlesResolver<Env>,
-                                                                  Env : HasAppContext,
-                                                                  Env : ArticleDetailsResolver<Env> =
+fun <Env> ArticleDetailsModule(): ArticleDetailsModule<Env>
+        where Env : ArticlesResolver<Env>,
+              Env : ArticleDetailsEnv,
+              Env : ArticleDetailsResolver<Env> =
     object : ArticleDetailsModule<Env>,
         ArticleDetailsUpdater by LiveArticleDetailsUpdater,
-        ArticleDetailsResolver<Env> by LiveArticleDetailsResolver() {
+        ArticleDetailsResolver<Env> by ArticleDetailsResolver() {
     }

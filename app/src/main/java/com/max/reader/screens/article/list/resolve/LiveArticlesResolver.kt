@@ -28,21 +28,19 @@ package com.max.reader.screens.article.list.resolve
 
 import android.content.Intent
 import android.content.Intent.*
-import com.max.reader.app.env.HasAppContext
 import com.max.reader.app.env.storage.HasGson
 import com.max.reader.app.env.storage.network.NewsApi
 import com.max.reader.app.exception.toAppException
-import com.oliynick.max.reader.app.ScreenMessage
-import com.oliynick.max.reader.article.list.QueryType.*
 import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.article.details.ArticleDetailsEnv
 import com.oliynick.max.reader.article.list.*
-import com.oliynick.max.reader.article.list.ArticlesResolver
+import com.oliynick.max.reader.article.list.QueryType.*
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.network.Page
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
 
-fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : HasAppContext,
+fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : ArticleDetailsEnv,
                                                               Env : HasGson,
                                                               Env : NewsApi<Env>,
                                                               Env : LocalStorage =
@@ -83,7 +81,7 @@ suspend fun <Env> Env.fetch(
         ArticlesLoaded(command.id, articles, hasMore)
     }
 
-suspend fun <Env : HasAppContext> Env.shareArticle(
+suspend fun <Env : ArticleDetailsEnv> Env.shareArticle(
     command: DoShareArticle,
 ): Set<ScreenMessage> = command.sideEffect {
     application.startActivity(ShareIntent(article))
