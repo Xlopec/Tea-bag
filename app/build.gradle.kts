@@ -137,7 +137,6 @@ dependencies {
     implementation(kotlinStdLib)
     implementation(kotlinStdLibReflect)
 
-    implementation(immutableCollections)
     implementation(coroutinesAndroid)
 
     implementation(composeUi)

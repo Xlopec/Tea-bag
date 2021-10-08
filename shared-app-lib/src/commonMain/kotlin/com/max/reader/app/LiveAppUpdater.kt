@@ -24,22 +24,17 @@
 
 @file:Suppress("FunctionName")
 
-package com.max.reader.app.update
+package com.max.reader.app
 
-import com.max.reader.app.AppState
-import com.max.reader.app.Command
-import com.max.reader.app.StoreDarkMode
 import com.max.reader.app.message.Navigation
 import com.max.reader.app.message.ScreenMessage
-import com.max.reader.app.updateScreen
+import com.max.reader.app.settings.SettingsMessage
+import com.max.reader.app.settings.ToggleDarkMode
+import com.max.reader.app.update.AppNavigation
 import com.max.reader.screens.article.details.ArticleDetailsMessage
-import com.max.reader.screens.article.details.ArticleDetailsState
-import com.max.reader.screens.article.details.update.ArticleDetailsUpdater
 import com.max.reader.screens.article.list.ArticlesMessage
 import com.max.reader.screens.article.list.ArticlesState
-import com.max.reader.screens.article.list.update.ArticlesUpdater
-import com.max.reader.screens.settings.SettingsMessage
-import com.max.reader.screens.settings.ToggleDarkMode
+import com.max.reader.update.ArticlesUpdater
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 

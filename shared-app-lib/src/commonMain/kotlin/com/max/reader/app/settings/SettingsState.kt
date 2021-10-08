@@ -22,23 +22,12 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+package com.max.reader.app.settings
 
-package com.max.reader.screens.article.details
+import com.max.reader.app.ScreenId
+import com.max.reader.app.ScreenState
+import com.oliynick.max.reader.app.randomUUID
 
-import com.max.reader.app.env.HasAppContext
-import com.max.reader.screens.article.details.resolve.ArticleDetailsResolver
-import com.max.reader.screens.article.details.resolve.LiveArticleDetailsResolver
-import com.max.reader.app.ArticleDetailsUpdater
-import com.max.reader.app.LiveArticleDetailsUpdater
-import com.max.reader.screens.article.list.resolve.ArticlesResolver
-
-interface ArticleDetailsModule<Env> : ArticleDetailsUpdater, ArticleDetailsResolver<Env>
-
-fun <Env> ArticleDetailsModule(): ArticleDetailsModule<Env> where Env : ArticlesResolver<Env>,
-                                                                  Env : HasAppContext,
-                                                                  Env : ArticleDetailsResolver<Env> =
-    object : ArticleDetailsModule<Env>,
-        ArticleDetailsUpdater by LiveArticleDetailsUpdater,
-        ArticleDetailsResolver<Env> by LiveArticleDetailsResolver() {
-    }
+object SettingsState : ScreenState {
+    override val id: ScreenId = randomUUID()
+}

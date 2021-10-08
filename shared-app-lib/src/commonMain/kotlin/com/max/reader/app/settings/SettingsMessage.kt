@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.max.reader.screens.settings
+package com.max.reader.app.settings
 
 import com.max.reader.app.message.ScreenMessage
 

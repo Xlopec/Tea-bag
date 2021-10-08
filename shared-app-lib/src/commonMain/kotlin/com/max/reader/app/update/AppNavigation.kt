@@ -26,15 +26,13 @@
 
 package com.max.reader.app.update
 
-import com.max.reader.BuildConfig
 import com.max.reader.app.*
 import com.max.reader.app.message.*
-import com.max.reader.screens.article.details.ArticleDetailsState
+import com.max.reader.app.settings.SettingsState
 import com.max.reader.screens.article.list.ArticlesState
 import com.max.reader.screens.article.list.Query
 import com.max.reader.screens.article.list.QueryType
 import com.max.reader.screens.article.list.QueryType.*
-import com.max.reader.screens.settings.SettingsState
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -47,15 +45,17 @@ fun interface AppNavigation {
     ): UpdateWith<AppState, Command>
 }
 
-fun AppNavigation() = AppNavigation { nav, state ->
+fun AppNavigation(
+    debug: Boolean = true
+) = AppNavigation { nav, state ->
     when (nav) {
         // gson serializer breaks singletons identity, thus we should rely on `is` check rather
         // then referential equality
-        is NavigateToFeed -> state.pushBottomNavigationScreen(nav, Query("android", Regular))
-        is NavigateToFavorite -> state.pushBottomNavigationScreen(nav, Query("", Favorite))
-        is NavigateToTrending -> state.pushBottomNavigationScreen(nav, Query("", Trending))
+        is NavigateToFeed -> state.pushBottomNavigationScreen(debug, nav, Query("android", Regular))
+        is NavigateToFavorite -> state.pushBottomNavigationScreen(debug, nav, Query("", Favorite))
+        is NavigateToTrending -> state.pushBottomNavigationScreen(debug, nav, Query("", Trending))
         is NavigateToArticleDetails -> state.pushArticleDetailsScreen(nav)
-        is NavigateToSettings -> state.pushBottomNavigationScreenForSettings(nav)
+        is NavigateToSettings -> state.pushBottomNavigationScreenForSettings(debug, nav)
         is Pop -> state.pop()
     }
 }
@@ -72,11 +72,12 @@ fun AppState.pushArticleDetailsScreen(
 ) = pushScreen(ArticleDetailsState(nav.id, nav.article)).noCommand()
 
 fun AppState.pushBottomNavigationScreenForSettings(
+    debug: Boolean,
     nav: NavigateToSettings,
 ): UpdateWith<AppState, Command> =
     pushScreenIfNotExistsWithState(nav) { SettingsState }
         .also { (newState, _) ->
-            if (BuildConfig.DEBUG) {
+            if (debug) {
                 checkSettingsScreensNumber(newState, this)
             }
         }
@@ -107,13 +108,14 @@ inline fun AppState.pushScreenIfNotExists(
 }
 
 fun AppState.pushBottomNavigationScreen(
+    debug: Boolean,
     nav: Navigation,
     query: Query,
 ): UpdateWith<AppState, Command> =
     pushScreenIfNotExists(nav) { screenId ->
         ArticlesState.newLoading(screenId, query) command LoadArticlesByQuery(screenId, query)
     }.also { (newState, _) ->
-        if (BuildConfig.DEBUG) {
+        if (debug) {
             checkArticlesScreensNumber(nav, query, newState, this)
         }
     }

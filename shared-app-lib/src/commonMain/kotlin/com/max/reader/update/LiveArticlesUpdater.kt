@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.max.reader.screens.article.list.update
+package com.max.reader.update
 
 import com.max.reader.app.*
 import com.max.reader.screens.article.list.*

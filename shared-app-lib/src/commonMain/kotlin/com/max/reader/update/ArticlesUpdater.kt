@@ -22,12 +22,16 @@
  * SOFTWARE.
  */
 
-package com.max.reader.screens.settings
+package com.max.reader.update
 
-import com.max.reader.app.ScreenId
-import com.max.reader.app.ScreenState
-import java.util.UUID.randomUUID
+import com.max.reader.app.Command
+import com.max.reader.screens.article.list.ArticlesMessage
+import com.max.reader.screens.article.list.ArticlesState
+import com.oliynick.max.tea.core.component.UpdateWith
 
-object SettingsState : ScreenState {
-    override val id: ScreenId = randomUUID()
+fun interface ArticlesUpdater {
+    fun updateArticles(
+        message: ArticlesMessage,
+        state: ArticlesState
+    ): UpdateWith<ArticlesState, Command>
 }

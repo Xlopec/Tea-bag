@@ -1,70 +1,18 @@
-/*
- * MIT License
- *
- * Copyright (c) 2021. Maksym Oliinyk.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
-@file:Suppress("FunctionName")
-
 package com.max.reader.app.env.storage.local
 
 import android.content.ContentValues
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import com.max.reader.R
-import com.oliynick.max.reader.network.Page
 import com.max.reader.ui.isDarkModeEnabled
+import com.max.reader.app.storage.LocalStorage
 import com.oliynick.max.reader.domain.*
+import com.oliynick.max.reader.network.Page
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
 import java.util.Date
-
-interface LocalStorage {
-
-    suspend fun insertArticle(
-        article: Article,
-    )
-
-    suspend fun deleteArticle(
-        url: Url,
-    )
-
-    suspend fun findAllArticles(
-        input: String,
-    ): Page
-
-    suspend fun isFavoriteArticle(
-        url: URL,
-    ): Boolean
-
-    suspend fun isDarkModeEnabled(): Boolean
-
-    suspend fun storeIsDarkModeEnabled(
-        isEnabled: Boolean,
-    )
-}
 
 private const val DARK_MODE_ENABLED = "darkModeEnabled"
 
@@ -74,14 +22,19 @@ fun LocalStorage(
 
     private val db by lazy { DbHelper(context).writableDatabase }
     private val sharedPreferences by lazy {
-        context.getSharedPreferences(context.getString(R.string.app_name), MODE_PRIVATE)
+        context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE)
     }
 
     override suspend fun insertArticle(
         article: Article,
     ) {
         withContext(Dispatchers.IO) {
-            db.insertWithOnConflict(TableName, null, article.toContentValues(), CONFLICT_REPLACE)
+            db.insertWithOnConflict(
+                TableName,
+                null,
+                article.toContentValues(),
+                SQLiteDatabase.CONFLICT_REPLACE
+            )
         }
     }
 
@@ -109,7 +62,7 @@ fun LocalStorage(
         }.let(::Page)
 
     override suspend fun isFavoriteArticle(
-        url: URL,
+        url: Url,
     ): Boolean =
         withContext(Dispatchers.IO) {
             db.query(

@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.max.reader.app.AppState
 import com.max.reader.app.message.Message
+import com.max.reader.app.settings.ToggleDarkMode
 
 @Composable
 fun SettingsScreen(

@@ -28,12 +28,12 @@ package com.max.reader.screens.article.list
 
 import com.max.reader.app.env.HasAppContext
 import com.max.reader.app.env.storage.HasGson
-import com.max.reader.app.env.storage.local.LocalStorage
+import com.max.reader.app.storage.LocalStorage
 import com.max.reader.app.env.storage.network.NewsApi
 import com.max.reader.screens.article.list.resolve.ArticlesResolver
 import com.max.reader.screens.article.list.resolve.LiveArticlesResolver
-import com.max.reader.screens.article.list.update.ArticlesUpdater
-import com.max.reader.screens.article.list.update.LiveArticlesUpdater
+import com.max.reader.update.ArticlesUpdater
+import com.max.reader.update.LiveArticlesUpdater
 
 interface ArticlesModule<Env> : ArticlesUpdater, ArticlesResolver<Env>
 

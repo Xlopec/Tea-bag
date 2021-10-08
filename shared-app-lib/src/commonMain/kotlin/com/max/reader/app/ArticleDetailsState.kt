@@ -22,10 +22,8 @@
  * SOFTWARE.
  */
 
-package com.max.reader.screens.article.details
+package com.max.reader.app
 
-import com.max.reader.app.ScreenId
-import com.max.reader.app.ScreenState
 import com.oliynick.max.reader.domain.Article
 
 data class ArticleDetailsState(

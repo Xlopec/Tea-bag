@@ -22,16 +22,20 @@
  * SOFTWARE.
  */
 
-package com.max.reader.screens.article.list.update
+package com.max.reader.app
 
-import com.max.reader.app.Command
-import com.max.reader.screens.article.list.ArticlesMessage
-import com.max.reader.screens.article.list.ArticlesState
+import com.max.reader.screens.article.details.ArticleDetailsMessage
+import com.max.reader.screens.article.details.OpenInBrowser
 import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.component.command
 
-fun interface ArticlesUpdater {
-    fun updateArticles(
-        message: ArticlesMessage,
-        state: ArticlesState
-    ): UpdateWith<ArticlesState, Command>
+object LiveArticleDetailsUpdater : ArticleDetailsUpdater {
+
+    override fun updateArticleDetails(
+        message: ArticleDetailsMessage,
+        screen: ArticleDetailsState,
+    ): UpdateWith<ArticleDetailsState, ArticleDetailsCommand> =
+        when(message) {
+            is OpenInBrowser -> screen command DoOpenArticle(screen.article)
+        }
 }

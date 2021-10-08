@@ -32,7 +32,7 @@ const val kotlinVersion = "1.5.21"
 object Libraries {
     object Versions {
         const val coroutines = "1.5.1-new-mm-dev2"
-        const val ktor = "1.6.2-native-mm-eap-196"
+        const val ktor = "1.6.3"
         const val compose = "1.0.1"
         const val accompanies = "0.17.0"
     }
@@ -82,7 +82,7 @@ object Libraries {
 
 object TestLibraries {
     private object Versions {
-        const val ktor = "1.6.2-native-mm-eap-196"
+        const val ktor = "1.6.3"
     }
 
     const val junit = "junit:junit:4.13.1"

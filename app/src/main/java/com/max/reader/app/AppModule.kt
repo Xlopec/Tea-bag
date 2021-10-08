@@ -26,14 +26,12 @@
 
 package com.max.reader.app
 
-import com.max.reader.app.env.storage.local.LocalStorage
+import com.max.reader.app.storage.LocalStorage
 import com.max.reader.app.resolve.AppResolver
 import com.max.reader.app.update.AppNavigation
-import com.max.reader.app.update.AppUpdater
 import com.max.reader.screens.article.details.resolve.ArticleDetailsResolver
-import com.max.reader.screens.article.details.update.ArticleDetailsUpdater
 import com.max.reader.screens.article.list.resolve.ArticlesResolver
-import com.max.reader.screens.article.list.update.ArticlesUpdater
+import com.max.reader.update.ArticlesUpdater
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 interface AppModule<Env> : AppUpdater<Env>, AppResolver<Env>, AppNavigation

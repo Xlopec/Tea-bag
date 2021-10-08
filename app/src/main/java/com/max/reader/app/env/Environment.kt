@@ -35,6 +35,7 @@ import com.max.reader.app.CloseApp
 import com.max.reader.app.env.storage.Gson
 import com.max.reader.app.env.storage.HasGson
 import com.max.reader.app.env.storage.local.LocalStorage
+import com.max.reader.app.storage.LocalStorage
 import com.max.reader.app.env.storage.network.AppGson
 import com.max.reader.app.env.storage.network.NewsApi
 import com.max.reader.app.update.AppNavigation

@@ -22,23 +22,35 @@
  * SOFTWARE.
  */
 
-package com.max.reader.screens.article.details.update
+@file:Suppress("FunctionName")
 
-import com.max.reader.app.ArticleDetailsCommand
-import com.max.reader.app.DoOpenArticle
-import com.max.reader.screens.article.details.ArticleDetailsMessage
-import com.max.reader.screens.article.details.ArticleDetailsState
-import com.max.reader.screens.article.details.OpenInBrowser
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
+package com.max.reader.app.storage
 
-object LiveArticleDetailsUpdater : ArticleDetailsUpdater {
+import com.oliynick.max.reader.domain.Article
+import com.oliynick.max.reader.domain.Url
+import com.oliynick.max.reader.network.Page
 
-    override fun updateArticleDetails(
-        message: ArticleDetailsMessage,
-        screen: ArticleDetailsState,
-    ): UpdateWith<ArticleDetailsState, ArticleDetailsCommand> =
-        when(message) {
-            is OpenInBrowser -> screen command DoOpenArticle(screen.article)
-        }
+interface LocalStorage {
+
+    suspend fun insertArticle(
+        article: Article,
+    )
+
+    suspend fun deleteArticle(
+        url: Url,
+    )
+
+    suspend fun findAllArticles(
+        input: String,
+    ): Page
+
+    suspend fun isFavoriteArticle(
+        url: Url,
+    ): Boolean
+
+    suspend fun isDarkModeEnabled(): Boolean
+
+    suspend fun storeIsDarkModeEnabled(
+        isEnabled: Boolean,
+    )
 }

@@ -52,7 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import com.max.reader.app.message.Message
 import com.max.reader.app.message.Pop
-import com.max.reader.screens.article.details.ArticleDetailsState
+import com.max.reader.app.ArticleDetailsState
 import com.max.reader.screens.article.details.OpenInBrowser
 import com.max.reader.ui.ProgressInsetAwareTopAppBar
 

@@ -22,38 +22,31 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app.message
+package com.max.reader.app
 
-import com.max.reader.app.ScreenId
-import com.oliynick.max.reader.domain.Article
-import com.max.reader.screens.settings.SettingsState
-import java.util.*
+sealed class AppException : RuntimeException {
 
-sealed interface Navigation : Message {
-    val id: ScreenId
+    constructor() : super()
+
+    constructor(message: String) : super(message)
+
+    constructor(
+        message: String,
+        cause: Throwable,
+    ) : super(message, cause)
+
+    constructor(cause: Throwable) : super(cause)
+
 }
 
-data class NavigateToArticleDetails(
-    val article: Article,
-    override val id: ScreenId = UUID.randomUUID(),
-) : Navigation
+class NetworkException(
+    message: String,
+    cause: Throwable,
+) : AppException(message, cause)
 
-object NavigateToFavorite : Navigation {
-    override val id: ScreenId = UUID.randomUUID()
-}
+class InternalException(
+    message: String,
+    cause: Throwable,
+) : AppException(message, cause)
 
-object NavigateToFeed : Navigation {
-    override val id: ScreenId = UUID.randomUUID()
-}
 
-object NavigateToSettings : Navigation {
-    override val id: ScreenId = SettingsState.id
-}
-
-object NavigateToTrending : Navigation {
-    override val id: ScreenId = UUID.randomUUID()
-}
-
-object Pop : Navigation {
-    override val id: ScreenId = UUID.randomUUID()
-}

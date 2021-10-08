@@ -22,18 +22,16 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app.update
+package com.max.reader.app
 
-import com.max.reader.app.AppState
-import com.max.reader.app.Command
-import com.max.reader.app.message.Message
+import com.max.reader.screens.article.details.ArticleDetailsMessage
 import com.oliynick.max.tea.core.component.UpdateWith
 
-fun interface AppUpdater<Env> {
+interface ArticleDetailsUpdater {
 
-    fun Env.update(
-        message: Message,
-        state: AppState
-    ): UpdateWith<AppState, Command>
+    fun updateArticleDetails(
+        message: ArticleDetailsMessage,
+        screen: ArticleDetailsState
+    ): UpdateWith<ArticleDetailsState, ArticleDetailsCommand>
 
 }

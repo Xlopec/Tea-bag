@@ -22,58 +22,38 @@
  * SOFTWARE.
  */
 
-package com.max.reader.screens.article.list
+package com.max.reader.app.message
 
 import com.max.reader.app.ScreenId
-import com.max.reader.app.exception.AppException
-import com.max.reader.app.message.ScreenMessage
+import com.max.reader.app.settings.SettingsState
+import com.oliynick.max.reader.app.randomUUID
 import com.oliynick.max.reader.domain.Article
 
-sealed interface ArticlesMessage : ScreenMessage {
-    val id: ScreenId?
+sealed interface Navigation : Message {
+    val id: ScreenId
 }
 
-data class LoadNextArticles(
-    override val id: ScreenId,
-) : ArticlesMessage
-
-data class LoadArticlesFromScratch(
-    override val id: ScreenId,
-) : ArticlesMessage
-
-data class RefreshArticles(
-    override val id: ScreenId,
-) : ArticlesMessage
-
-data class ToggleArticleIsFavorite(
-    override val id: ScreenId,
+data class NavigateToArticleDetails(
     val article: Article,
-) : ArticlesMessage
+    override val id: ScreenId = randomUUID(),
+) : Navigation
 
-data class ArticlesLoaded(
-    override val id: ScreenId,
-    val articles: List<Article>,
-    val hasMore: Boolean,
-) : ArticlesMessage
-
-data class ArticlesOperationException(
-    override val id: ScreenId?,
-    val cause: AppException,
-) : ArticlesMessage
-
-data class ArticleUpdated(
-    val article: Article,
-) : ArticlesMessage {
-    override val id: Nothing? = null
+object NavigateToFavorite : Navigation {
+    override val id: ScreenId = randomUUID()
 }
 
-data class ShareArticle(
-    val article: Article,
-) : ArticlesMessage {
-    override val id: Nothing? = null
+object NavigateToFeed : Navigation {
+    override val id: ScreenId = randomUUID()
 }
 
-data class OnQueryUpdated(
-    override val id: ScreenId,
-    val query: String,
-) : ArticlesMessage
+object NavigateToSettings : Navigation {
+    override val id: ScreenId = SettingsState.id
+}
+
+object NavigateToTrending : Navigation {
+    override val id: ScreenId = randomUUID()
+}
+
+object Pop : Navigation {
+    override val id: ScreenId = randomUUID()
+}

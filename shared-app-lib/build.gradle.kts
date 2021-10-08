@@ -24,6 +24,7 @@
 
 import Libraries.Versions.ktor
 import Libraries.gson
+import Libraries.immutableCollections
 import Libraries.kotlinStdLib
 import Libraries.ktorClientGson
 import Libraries.ktorClientJson
@@ -64,6 +65,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                api(immutableCollections)
+                api(project(":tea-core"))
                 implementation(kotlinStdLib)
                 implementation("io.ktor:ktor-client-core:$ktor")
                 implementation(ktorClientLogging)
