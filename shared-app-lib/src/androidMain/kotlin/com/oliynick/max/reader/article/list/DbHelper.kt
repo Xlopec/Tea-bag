@@ -24,7 +24,7 @@
 
 @file:Suppress("ObjectPropertyName")
 
-package com.max.reader.app.env.storage.local
+package com.oliynick.max.reader.article.list
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase

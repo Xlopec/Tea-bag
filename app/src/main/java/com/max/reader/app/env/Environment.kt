@@ -30,16 +30,15 @@ import android.app.Application
 import android.os.StrictMode.*
 import android.os.StrictMode.VmPolicy.Builder
 import com.max.reader.BuildConfig.DEBUG
-import com.max.reader.app.env.storage.Gson
-import com.max.reader.app.env.storage.HasGson
-import com.max.reader.app.env.storage.local.LocalStorage
 import com.max.reader.app.env.storage.network.AppGson
-import com.max.reader.app.env.storage.network.NewsApi
-import com.oliynick.max.reader.article.details.ArticleDetailsModule
-import com.max.reader.screens.article.list.ArticlesModule
 import com.max.reader.app.serialization.ArticleAdapters
-import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.app.AppModule
+import com.oliynick.max.reader.app.AppNavigation
+import com.oliynick.max.reader.app.CloseApp
+import com.oliynick.max.reader.app.LocalStorage
 import com.oliynick.max.reader.article.details.ArticleDetailsEnv
+import com.oliynick.max.reader.article.details.ArticleDetailsModule
+import com.oliynick.max.reader.article.list.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -48,9 +47,10 @@ interface Environment :
     ArticlesModule<Environment>,
     ArticleDetailsModule<Environment>,
     ArticleDetailsEnv,
+    ArticlesEnv,
+    NewsApiEnv,
     NewsApi<Environment>,
     LocalStorage,
-    HasGson,
     AppNavigation,
     CoroutineScope
 
@@ -70,11 +70,14 @@ fun Environment(
         AppModule<Environment> by AppModule(closeCommands),
         ArticlesModule<Environment> by ArticlesModule(),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(),
-        NewsApi<Environment> by NewsApi(gson, DEBUG),
+        NewsApi<Environment> by NewsApi(),
+        NewsApiEnv by NewsApiEnv(application),
         LocalStorage by LocalStorage(application),
-        HasGson by Gson(gson),
         ArticleDetailsEnv by ArticleDetailsEnv(application),
+        ArticlesEnv by ArticlesEnv(gson, application),
         CoroutineScope by scope {
+
+        override val application: Application = application
     }
 }
 

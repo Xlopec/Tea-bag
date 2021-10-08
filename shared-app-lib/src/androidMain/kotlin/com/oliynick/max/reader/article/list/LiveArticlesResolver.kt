@@ -24,32 +24,47 @@
 
 @file:Suppress("FunctionName")
 
-package com.max.reader.screens.article.list.resolve
+package com.oliynick.max.reader.article.list
 
+import android.app.Application
 import android.content.Intent
 import android.content.Intent.*
-import com.max.reader.app.env.storage.HasGson
-import com.max.reader.app.env.storage.network.NewsApi
-import com.max.reader.app.exception.toAppException
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.oliynick.max.reader.app.*
-import com.oliynick.max.reader.article.details.ArticleDetailsEnv
-import com.oliynick.max.reader.article.list.*
 import com.oliynick.max.reader.article.list.QueryType.*
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.network.Page
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
+import io.ktor.client.features.*
+import io.ktor.client.statement.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.IOException
 
-fun <Env> LiveArticlesResolver(): ArticlesResolver<Env> where Env : ArticleDetailsEnv,
-                                                              Env : HasGson,
-                                                              Env : NewsApi<Env>,
-                                                              Env : LocalStorage =
+actual interface ArticlesEnv {
+    val gson: Gson
+    val application: Application
+    val storage: LocalStorage
+}
+
+fun ArticlesEnv(
+    gson: Gson,
+    application: Application,
+): ArticlesEnv = object : ArticlesEnv {
+    override val gson: Gson = gson
+    override val application: Application = application
+    override val storage: LocalStorage = LocalStorage(application)
+}
+
+actual fun <Env> ArticlesResolver(): ArticlesResolver<Env> where Env : ArticlesEnv, Env : NewsApi<Env> =
     ArticlesResolver { command ->
         suspend fun resolve() =
             when (command) {
                 is LoadArticlesByQuery -> fetch(command)
-                is SaveArticle -> store(command.article)
-                is RemoveArticle -> remove(command.article)
+                is SaveArticle -> storage.store(command.article)
+                is RemoveArticle -> storage.remove(command.article)
                 is DoShareArticle -> shareArticle(command)
             }
 
@@ -68,12 +83,12 @@ suspend fun <Env : LocalStorage> Env.remove(
     article: Article,
 ): Set<ScreenMessage> = effect {
     deleteArticle(article.url)
-            ArticleUpdated(article)
+    ArticleUpdated(article)
 }
 
 suspend fun <Env> Env.fetch(
     command: LoadArticlesByQuery,
-): Set<ScreenMessage> where Env : NewsApi<Env>, Env : LocalStorage =
+): Set<ScreenMessage> where Env : NewsApi<Env>, Env : ArticlesEnv =
     command.query.effect {
 
         val (articles, hasMore) = fetch(this, command.currentSize, command.resultsPerPage)
@@ -81,7 +96,7 @@ suspend fun <Env> Env.fetch(
         ArticlesLoaded(command.id, articles, hasMore)
     }
 
-suspend fun <Env : ArticleDetailsEnv> Env.shareArticle(
+suspend fun <Env : ArticlesEnv> Env.shareArticle(
     command: DoShareArticle,
 ): Set<ScreenMessage> = command.sideEffect {
     application.startActivity(ShareIntent(article))
@@ -91,10 +106,10 @@ suspend fun <Env> Env.fetch(
     query: Query,
     currentSize: Int,
     resultsPerPage: Int,
-): Page where Env : NewsApi<Env>, Env : LocalStorage =
+): Page where Env : NewsApi<Env>, Env : ArticlesEnv =
     when (query.type) {
         Regular -> fetchFromEverything(query.input, currentSize, resultsPerPage)
-        Favorite -> findAllArticles(query.input)
+        Favorite -> storage.findAllArticles(query.input)
         Trending -> fetchTopHeadlines(query.input, currentSize, resultsPerPage)
     }
 
@@ -121,3 +136,46 @@ private val ArticlesCommand.screenId: ScreenId?
         is LoadArticlesByQuery -> id
         is SaveArticle, is RemoveArticle, is DoShareArticle -> null
     }
+
+suspend fun <Env> Env.toAppException(
+    th: Throwable
+): AppException where Env : ArticlesEnv =
+    th.wrap { raw ->
+        when (raw) {
+            is IOException -> NetworkException(raw)
+            is ClientRequestException -> toAppException(raw)
+            else -> null
+        }
+    } ?: InternalException("An internal exception occurred", th)
+
+private suspend inline fun Throwable.wrap(
+    crossinline transform: suspend (Throwable) -> AppException?,
+): AppException? =
+    if (this is AppException) this
+    else transform(this) ?: cause?.let { th -> transform(th) }
+
+private suspend fun <Env> Env.toAppException(
+    exception: ClientRequestException,
+): AppException where Env : ArticlesEnv =
+    NetworkException(
+        gson.readErrorMessage(exception) ?: exception.toGenericExceptionDescription(),
+        exception
+    )
+
+private suspend fun Gson.readErrorMessage(
+    exception: ClientRequestException,
+) = withContext(Dispatchers.IO) {
+    fromJson(exception.response.readText(), JsonObject::class.java)["message"]
+        ?.takeUnless { elem -> elem.isJsonNull }
+        ?.asString
+}
+
+private fun ClientRequestException.toGenericExceptionDescription() =
+    "Server returned status code ${response.status.value}"
+
+private fun NetworkException(
+    cause: IOException,
+) = NetworkException(
+    "Network exception occurred, check connectivity",
+    cause
+)

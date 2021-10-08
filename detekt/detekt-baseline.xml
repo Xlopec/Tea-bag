@@ -31,7 +31,7 @@
     <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>
     <ID>ModifierOrder:Component.kt$ComponentId$@JvmInline public value</ID>
     <ID>NewLineAtEndOfFile:Networking.kt$com.max.reader.app.env.Networking.kt</ID>
-    <ID>NewLineAtEndOfFile:NewsApi.kt$com.max.reader.app.env.storage.network.NewsApi.kt</ID>
+    <ID>NewLineAtEndOfFile:NewsApi.kt$com.oliynick.max.reader.article.list.NewsApi.kt</ID>
     <ID>NewLineAtEndOfFile:PluginDependenciesSpecExt.kt$.PluginDependenciesSpecExt.kt</ID>
     <ID>SpreadOperator:BasicComponentTest.kt$BasicComponentTest$(*messages)</ID>
     <ID>SpreadOperator:ComponentLogic.kt$TodoState$(*items)</ID>

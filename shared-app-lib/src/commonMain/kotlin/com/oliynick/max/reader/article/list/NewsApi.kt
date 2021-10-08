@@ -24,25 +24,25 @@
 
 @file:Suppress("FunctionName")
 
-package com.max.reader.screens.article.list
+package com.oliynick.max.reader.article.list
 
-import com.max.reader.app.env.storage.HasGson
-import com.max.reader.app.env.storage.network.NewsApi
-import com.max.reader.screens.article.list.resolve.LiveArticlesResolver
-import com.oliynick.max.reader.app.LocalStorage
-import com.oliynick.max.reader.article.details.ArticleDetailsEnv
-import com.oliynick.max.reader.article.list.ArticlesResolver
-import com.oliynick.max.reader.article.list.ArticlesUpdater
-import com.oliynick.max.reader.article.list.LiveArticlesUpdater
+import com.oliynick.max.reader.network.Page
 
-interface ArticlesModule<Env> : ArticlesUpdater, ArticlesResolver<Env>
+expect interface NewsApiEnv
 
-fun <Env> ArticlesModule(): ArticlesModule<Env> where Env : ArticleDetailsEnv,
-                                                      Env : HasGson,
-                                                      Env : NewsApi<Env>,
-                                                      Env : LocalStorage =
+interface NewsApi<Env> {
 
-    object : ArticlesModule<Env>,
-        ArticlesUpdater by LiveArticlesUpdater,
-        ArticlesResolver<Env> by LiveArticlesResolver() {
-    }
+    suspend fun Env.fetchFromEverything(
+        input: String,
+        currentSize: Int,
+        resultsPerPage: Int,
+    ): Page
+
+    suspend fun Env.fetchTopHeadlines(
+        input: String,
+        currentSize: Int,
+        resultsPerPage: Int,
+    ): Page
+}
+
+expect fun <Env : NewsApiEnv> NewsApi(): NewsApi<Env>

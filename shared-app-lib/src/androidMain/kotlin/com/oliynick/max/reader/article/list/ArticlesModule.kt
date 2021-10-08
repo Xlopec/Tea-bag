@@ -24,22 +24,17 @@
 
 @file:Suppress("FunctionName")
 
-package com.max.reader.app.env.storage
+package com.oliynick.max.reader.article.list
 
-import com.google.gson.Gson
+import com.oliynick.max.reader.app.LocalStorage
 
-interface HasGson {
-    val gson: Gson
-}
+interface ArticlesModule<Env> : ArticlesUpdater, ArticlesResolver<Env>
 
-fun Gson(
-    gson: Gson
-) = object : HasGson {
-    override val gson: Gson = gson
-}
+fun <Env> ArticlesModule(): ArticlesModule<Env> where Env : NewsApi<Env>,
+                                                      Env : ArticlesEnv,
+                                                      Env : LocalStorage =
 
-fun Gson(
-    gson: () -> Gson
-) = object : HasGson {
-    override val gson: Gson by lazy(gson)
-}
+    object : ArticlesModule<Env>,
+        ArticlesUpdater by LiveArticlesUpdater,
+        ArticlesResolver<Env> by ArticlesResolver() {
+    }

@@ -1,11 +1,10 @@
-package com.max.reader.app.env.storage.local
+package com.oliynick.max.reader.article.list
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.res.Configuration
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import com.max.reader.R
-import com.max.reader.ui.isDarkModeEnabled
 import com.oliynick.max.reader.app.LocalStorage
 import com.oliynick.max.reader.domain.*
 import com.oliynick.max.reader.network.Page
@@ -16,13 +15,16 @@ import java.util.Date
 
 private const val DARK_MODE_ENABLED = "darkModeEnabled"
 
+inline val Context.isDarkModeEnabled: Boolean
+    get() = Configuration.UI_MODE_NIGHT_YES == resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+
 fun LocalStorage(
     context: Context,
 ): LocalStorage = object : LocalStorage {
 
     private val db by lazy { DbHelper(context).writableDatabase }
     private val sharedPreferences by lazy {
-        context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE)
+        context.getSharedPreferences("News Reader", Context.MODE_PRIVATE)
     }
 
     override suspend fun insertArticle(
