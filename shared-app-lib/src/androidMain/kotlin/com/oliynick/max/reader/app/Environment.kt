@@ -4,6 +4,7 @@ package com.oliynick.max.reader.app
 
 import android.app.Application
 import android.os.StrictMode
+import com.google.gson.Gson
 import com.oliynick.max.reader.app.serialization.ArticleAdapters
 import com.oliynick.max.reader.article.details.ArticleDetailsEnv
 import com.oliynick.max.reader.article.details.ArticleDetailsModule
@@ -14,23 +15,21 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 actual interface PlatformEnv {
     val debug: Boolean
     val application: Application
-    val scope: CoroutineScope
-    val closeCommands: MutableSharedFlow<CloseApp>
+    val gson: Gson
+    actual val closeCommands: CloseCommandsSink
 }
 
-fun PlatformEnv(
+/*fun PlatformEnv(
     debug: Boolean,
     application: Application,
-    scope: CoroutineScope,
     closeCommands: MutableSharedFlow<CloseApp>
 ): PlatformEnv = object : PlatformEnv {
     override val debug: Boolean = debug
     override val application: Application = application
-    override val scope: CoroutineScope = scope
-    override val closeCommands: MutableSharedFlow<CloseApp> = closeCommands
-}
+    override val gson: Gson = BuildGson()
+}*/
 
-actual fun Environment(
+/*actual fun Environment(
     platform: PlatformEnv
 ): Environment {
 
@@ -41,19 +40,19 @@ actual fun Environment(
     }
 
     return object : Environment,
-        AppModule<Environment> by AppModule(platform.closeCommands),
+        AppModule<Environment> by AppModule(platform),
         ArticlesModule<Environment> by ArticlesModule(),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(),
         NewsApi<Environment> by NewsApi(),
         NewsApiEnv by NewsApiEnv(platform.application),
         LocalStorage by LocalStorage(platform.application),
-        ArticleDetailsEnv by ArticleDetailsEnv(platform.application),
-        ArticlesEnv by ArticlesEnv(gson, platform.application),
+        ArticleDetailsEnv by ArticleDetailsEnv(platform),
+        ArticlesEnv by ArticlesEnv(platform),
         CoroutineScope by platform.scope {
 
         override val application: Application = platform.application
     }
-}
+}*/
 
 private fun setupStrictAppPolicies() {
     StrictMode.setThreadPolicy(

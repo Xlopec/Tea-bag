@@ -7,6 +7,9 @@ import com.oliynick.max.reader.article.list.ArticlesModule
 import com.oliynick.max.reader.article.list.NewsApi
 import com.oliynick.max.reader.article.list.NewsApiEnv
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 interface Environment :
     AppModule<Environment>,
@@ -20,8 +23,26 @@ interface Environment :
     AppNavigation,
     CoroutineScope
 
-expect interface PlatformEnv
+expect interface PlatformEnv {
+    val closeCommands: CloseCommandsSink
+}
 
-expect fun Environment(
+fun Environment(
     platform: PlatformEnv
-): Environment
+): Environment {
+
+    val scope = CoroutineScope(Job() + Dispatchers.Default)
+
+    return object : Environment,
+        AppModule<Environment> by AppModule(platform),
+        ArticlesModule<Environment> by ArticlesModule(),
+        ArticleDetailsModule<Environment> by ArticleDetailsModule(),
+        NewsApi<Environment> by NewsApi(),
+        NewsApiEnv by NewsApiEnv(platform),
+        LocalStorage by LocalStorage(platform),
+        ArticleDetailsEnv by ArticleDetailsEnv(platform),
+        ArticlesEnv by ArticlesEnv(platform),
+        CoroutineScope by scope {
+
+    }
+}

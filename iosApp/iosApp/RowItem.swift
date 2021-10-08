@@ -37,7 +37,19 @@ class ArticlesViewModel: ObservableObject {
     
     func load() {
         
-        newsApi.fetchFromEverything(input: "IOS new", currentSize: 0, resultsPerPage: 20) { (page, error) in
+        let wrapper = IosComponentWrapper.init(env: EnvironmentKt.PlatformEnv(closeCommandsFlow: { close in
+            print("Close app \(close)")
+        }))
+        
+        wrapper.render { state in
+            print("New app state \(state)")
+            
+            state.screen
+            
+        }
+        wrapper.send(message: ToggleDarkMode.init())
+        
+            /*newsApi.fetchFromEverything(input: "IOS new", currentSize: 0, resultsPerPage: 20) { (page, error) in
             
             if let page = page {
                 self.articles = page.articles
@@ -48,7 +60,7 @@ class ArticlesViewModel: ObservableObject {
             } else {
                 print("ZBS \(page)")
             }
-        }
+        }*/
         
     }
     

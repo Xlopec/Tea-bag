@@ -1,11 +1,12 @@
-package com.oliynick.max.reader.article.list
+package com.oliynick.max.reader.app
 
 import android.content.ContentValues
 import android.content.Context
 import android.content.res.Configuration
+import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import com.oliynick.max.reader.app.LocalStorage
+import com.oliynick.max.reader.article.list.*
 import com.oliynick.max.reader.domain.*
 import com.oliynick.max.reader.network.Page
 import kotlinx.coroutines.Dispatchers
@@ -16,15 +17,15 @@ import java.util.Date
 private const val DARK_MODE_ENABLED = "darkModeEnabled"
 
 inline val Context.isDarkModeEnabled: Boolean
-    get() = Configuration.UI_MODE_NIGHT_YES == resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    get() = Configuration.UI_MODE_NIGHT_YES == resources.configuration.uiMode and UI_MODE_NIGHT_MASK
 
-fun LocalStorage(
-    context: Context,
+actual fun LocalStorage(
+    platform: PlatformEnv,
 ): LocalStorage = object : LocalStorage {
 
-    private val db by lazy { DbHelper(context).writableDatabase }
+    private val db by lazy { DbHelper(platform.application).writableDatabase }
     private val sharedPreferences by lazy {
-        context.getSharedPreferences("News Reader", Context.MODE_PRIVATE)
+        platform.application.getSharedPreferences("News Reader", Context.MODE_PRIVATE)
     }
 
     override suspend fun insertArticle(
@@ -77,7 +78,7 @@ fun LocalStorage(
 
     override suspend fun isDarkModeEnabled(): Boolean =
         withContext(Dispatchers.IO) {
-            context.isDarkModeEnabled || sharedPreferences.getBoolean(DARK_MODE_ENABLED, false)
+            platform.application.isDarkModeEnabled || sharedPreferences.getBoolean(DARK_MODE_ENABLED, false)
         }
 
     override suspend fun storeIsDarkModeEnabled(isEnabled: Boolean) =

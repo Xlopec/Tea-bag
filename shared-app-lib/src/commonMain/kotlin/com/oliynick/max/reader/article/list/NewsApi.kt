@@ -26,9 +26,14 @@
 
 package com.oliynick.max.reader.article.list
 
+import com.oliynick.max.reader.app.PlatformEnv
 import com.oliynick.max.reader.network.Page
 
 expect interface NewsApiEnv
+
+expect fun NewsApiEnv(
+    platformEnv: PlatformEnv
+): NewsApiEnv
 
 interface NewsApi<Env> {
 

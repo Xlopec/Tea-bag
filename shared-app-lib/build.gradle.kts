@@ -98,6 +98,8 @@ kotlin {
         }
         val iosMain by getting {
             dependencies {
+               // implementation(coroutinesCore)
+                implementation(kotlinStdLib)
                 implementation(project(":tea-core"))
                 implementation("io.ktor:ktor-client-ios:$ktor")
                 implementation(ktorClientJson)

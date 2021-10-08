@@ -49,13 +49,12 @@ actual interface ArticlesEnv {
     val storage: LocalStorage
 }
 
-fun ArticlesEnv(
-    gson: Gson,
-    application: Application,
+actual fun ArticlesEnv(
+    platform: PlatformEnv
 ): ArticlesEnv = object : ArticlesEnv {
-    override val gson: Gson = gson
-    override val application: Application = application
-    override val storage: LocalStorage = LocalStorage(application)
+    override val gson: Gson = platform.gson
+    override val application: Application = platform.application
+    override val storage: LocalStorage = LocalStorage(platform)
 }
 
 actual fun <Env> ArticlesResolver(): ArticlesResolver<Env> where Env : ArticlesEnv, Env : NewsApi<Env> =

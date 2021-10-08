@@ -36,10 +36,10 @@ actual interface ArticleDetailsEnv {
     val application: Application
 }
 
-fun ArticleDetailsEnv(
-    application: Application
+actual fun ArticleDetailsEnv(
+    platformEnv: PlatformEnv
 ) = object : ArticleDetailsEnv {
-    override val application: Application = application
+    override val application: Application = platformEnv.application
 }
 
 actual fun <Env : ArticleDetailsEnv> ArticleDetailsResolver(): ArticleDetailsResolver<Env> =

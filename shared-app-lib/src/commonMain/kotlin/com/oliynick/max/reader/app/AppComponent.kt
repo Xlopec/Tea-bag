@@ -29,9 +29,11 @@ package com.oliynick.max.reader.app
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.states
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collect
+import kotlin.coroutines.CoroutineContext
 
 @OptIn(ExperimentalStdlibApi::class)
 fun AppComponent(
@@ -46,3 +48,37 @@ fun AppComponent(
         io = Dispatchers.Default,//fixme make IO
         computation = environment.coroutineContext[CoroutineDispatcher.Key] ?: Dispatchers.Default,
     ).states()
+
+object IosAppComponentScope : CoroutineScope {
+    override val coroutineContext: CoroutineContext =
+        Job() + Dispatchers.Default
+}
+
+class IosComponentWrapper(
+    env: PlatformEnv
+) {
+
+    private val component = Environment(env)
+        .let { env -> AppComponent(env, AppInitializer(env)) }
+
+    private val messages = MutableSharedFlow<Message>()
+
+    fun send(
+        message: Message
+    ) {
+        IosAppComponentScope.launch {
+            messages.emit(message)
+        }
+    }
+
+    fun render(
+        renderCallback: (AppState) -> Unit
+    ) {
+        IosAppComponentScope.launch {
+            component(messages).collect { state ->
+                renderCallback(state)
+            }
+        }
+    }
+
+}

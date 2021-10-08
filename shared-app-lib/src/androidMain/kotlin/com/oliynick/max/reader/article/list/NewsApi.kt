@@ -3,6 +3,7 @@ package com.oliynick.max.reader.article.list
 import android.app.Application
 import android.content.res.Configuration
 import android.os.Build
+import com.oliynick.max.reader.app.PlatformEnv
 import com.oliynick.max.reader.network.NewsApiCommon
 import com.oliynick.max.reader.network.Page
 import java.util.Locale.ENGLISH
@@ -71,3 +72,7 @@ private inline val Configuration.countryCode: String
         } else {
             locale.country
         }
+
+actual fun NewsApiEnv(platformEnv: PlatformEnv): NewsApiEnv {
+    TODO("Not yet implemented")
+}
