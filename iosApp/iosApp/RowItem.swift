@@ -40,14 +40,25 @@ class ArticlesViewModel: ObservableObject {
         let wrapper = IosComponentWrapper.init(env: EnvironmentKt.PlatformEnv(closeCommandsFlow: { close in
             print("Close app \(close)")
         }))
-        
+                
         wrapper.render { state in
             print("New app state \(state)")
             
-            state.screen
+            let screen = state.screen
             
+            switch screen {
+            case let articlesState as ArticlesState:
+                self.articles = articlesState.articles
+            case let settingsState as SettingsState:
+                print("Render settings")
+            case let articleDetailsState as ArticleDetailsState:
+                print("Render article details")
+            default:
+                fatalError("Unhandled app state: \(state), screen: \(screen)")
+            }
         }
-        wrapper.send(message: ToggleDarkMode.init())
+        
+        
         
             /*newsApi.fetchFromEverything(input: "IOS new", currentSize: 0, resultsPerPage: 20) { (page, error) in
             
