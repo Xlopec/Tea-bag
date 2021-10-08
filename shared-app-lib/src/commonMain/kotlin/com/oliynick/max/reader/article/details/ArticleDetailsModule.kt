@@ -24,12 +24,8 @@
 
 @file:Suppress("FunctionName")
 
-package com.max.reader.screens.article.details
+package com.oliynick.max.reader.article.details
 
-import com.oliynick.max.reader.article.details.ArticleDetailsEnv
-import com.oliynick.max.reader.article.details.ArticleDetailsResolver
-import com.oliynick.max.reader.article.details.ArticleDetailsUpdater
-import com.oliynick.max.reader.article.details.LiveArticleDetailsUpdater
 import com.oliynick.max.reader.article.list.ArticlesResolver
 
 interface ArticleDetailsModule<Env> : ArticleDetailsUpdater, ArticleDetailsResolver<Env>

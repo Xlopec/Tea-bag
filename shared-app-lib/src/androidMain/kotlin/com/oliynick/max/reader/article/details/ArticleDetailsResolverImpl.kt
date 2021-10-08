@@ -36,7 +36,7 @@ actual interface ArticleDetailsEnv {
     val application: Application
 }
 
-fun ArticleDetailsDeps(
+fun ArticleDetailsEnv(
     application: Application
 ) = object : ArticleDetailsEnv {
     override val application: Application = application

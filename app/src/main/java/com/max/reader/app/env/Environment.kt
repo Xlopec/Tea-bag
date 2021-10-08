@@ -35,11 +35,10 @@ import com.max.reader.app.env.storage.HasGson
 import com.max.reader.app.env.storage.local.LocalStorage
 import com.max.reader.app.env.storage.network.AppGson
 import com.max.reader.app.env.storage.network.NewsApi
-import com.max.reader.screens.article.details.ArticleDetailsModule
+import com.oliynick.max.reader.article.details.ArticleDetailsModule
 import com.max.reader.screens.article.list.ArticlesModule
 import com.max.reader.app.serialization.ArticleAdapters
 import com.oliynick.max.reader.app.*
-import com.oliynick.max.reader.article.details.ArticleDetailsDeps
 import com.oliynick.max.reader.article.details.ArticleDetailsEnv
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -74,7 +73,7 @@ fun Environment(
         NewsApi<Environment> by NewsApi(gson, DEBUG),
         LocalStorage by LocalStorage(application),
         HasGson by Gson(gson),
-        ArticleDetailsEnv by ArticleDetailsDeps(application),
+        ArticleDetailsEnv by ArticleDetailsEnv(application),
         CoroutineScope by scope {
     }
 }
