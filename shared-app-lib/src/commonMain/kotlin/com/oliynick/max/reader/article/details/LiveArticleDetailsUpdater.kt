@@ -22,27 +22,20 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+package com.oliynick.max.reader.article.details
 
-package com.max.reader.screens.article.list
+import com.oliynick.max.reader.app.ArticleDetailsCommand
+import com.oliynick.max.reader.app.DoOpenArticle
+import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.component.command
 
-import com.max.reader.app.env.HasAppContext
-import com.max.reader.app.env.storage.HasGson
-import com.oliynick.max.reader.app.LocalStorage
-import com.max.reader.app.env.storage.network.NewsApi
-import com.max.reader.screens.article.list.resolve.ArticlesResolver
-import com.max.reader.screens.article.list.resolve.LiveArticlesResolver
-import com.oliynick.max.reader.article.list.ArticlesUpdater
-import com.oliynick.max.reader.article.list.LiveArticlesUpdater
+object LiveArticleDetailsUpdater : ArticleDetailsUpdater {
 
-interface ArticlesModule<Env> : ArticlesUpdater, ArticlesResolver<Env>
-
-fun <Env> ArticlesModule(): ArticlesModule<Env> where Env : HasAppContext,
-                                                      Env : HasGson,
-                                                      Env : NewsApi<Env>,
-                                                      Env : LocalStorage =
-
-    object : ArticlesModule<Env>,
-        ArticlesUpdater by LiveArticlesUpdater,
-        ArticlesResolver<Env> by LiveArticlesResolver() {
-    }
+    override fun updateArticleDetails(
+        message: ArticleDetailsMessage,
+        screen: ArticleDetailsState,
+    ): UpdateWith<ArticleDetailsState, ArticleDetailsCommand> =
+        when(message) {
+            is OpenInBrowser -> screen command DoOpenArticle(screen.article)
+        }
+}

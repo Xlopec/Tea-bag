@@ -40,16 +40,15 @@ import androidx.compose.ui.Modifier
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.max.reader.app.*
-import com.max.reader.app.message.*
-import com.max.reader.screens.article.list.ArticlesState
-import com.max.reader.screens.article.list.Query
-import com.max.reader.screens.article.list.QueryType
-import com.max.reader.screens.article.list.RefreshArticles
+import com.oliynick.max.reader.article.list.ArticlesState
+import com.oliynick.max.reader.article.list.Query
+import com.oliynick.max.reader.article.list.QueryType
+import com.oliynick.max.reader.article.list.RefreshArticles
 import com.max.reader.screens.article.list.ui.ArticlesScreen
 import com.max.reader.screens.home.BottomMenuItem.*
 import com.max.reader.screens.settings.SettingsScreen
 import com.max.reader.ui.InsetAwareTopAppBar
+import com.oliynick.max.reader.app.*
 
 enum class BottomMenuItem {
     Feed,

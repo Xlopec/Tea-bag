@@ -24,15 +24,14 @@
 
 @file:Suppress("FunctionName")
 
-package com.max.reader.app.update
+package com.oliynick.max.reader.app
 
-import com.max.reader.app.*
-import com.max.reader.app.message.*
-import com.max.reader.app.settings.SettingsState
-import com.max.reader.screens.article.list.ArticlesState
-import com.max.reader.screens.article.list.Query
-import com.max.reader.screens.article.list.QueryType
-import com.max.reader.screens.article.list.QueryType.*
+import com.oliynick.max.reader.settings.SettingsState
+import com.oliynick.max.reader.article.list.ArticlesState
+import com.oliynick.max.reader.article.list.Query
+import com.oliynick.max.reader.article.list.QueryType
+import com.oliynick.max.reader.article.list.QueryType.*
+import com.oliynick.max.reader.article.details.ArticleDetailsState
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand

@@ -22,12 +22,15 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app.settings
+package com.oliynick.max.reader.article.details
 
-import com.max.reader.app.ScreenId
-import com.max.reader.app.ScreenState
-import com.oliynick.max.reader.app.randomUUID
+import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.app.ScreenMessage
 
-object SettingsState : ScreenState {
-    override val id: ScreenId = randomUUID()
+sealed interface ArticleDetailsMessage : ScreenMessage {
+    val id: ScreenId
 }
+
+data class OpenInBrowser(
+    override val id: ScreenId
+) : ArticleDetailsMessage

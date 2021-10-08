@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app
+package com.oliynick.max.reader.article.details
 
-import com.max.reader.screens.article.details.ArticleDetailsMessage
+import com.oliynick.max.reader.app.ArticleDetailsCommand
 import com.oliynick.max.tea.core.component.UpdateWith
 
 interface ArticleDetailsUpdater {

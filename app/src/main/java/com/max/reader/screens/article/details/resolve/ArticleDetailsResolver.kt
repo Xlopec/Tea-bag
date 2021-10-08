@@ -24,8 +24,8 @@
 
 package com.max.reader.screens.article.details.resolve
 
-import com.max.reader.app.ArticleDetailsCommand
-import com.max.reader.app.message.Message
+import com.oliynick.max.reader.app.ArticleDetailsCommand
+import com.oliynick.max.reader.app.Message
 
 interface ArticleDetailsResolver<Env> {
 

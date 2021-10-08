@@ -6,7 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.max.reader.R
 import com.max.reader.ui.isDarkModeEnabled
-import com.max.reader.app.storage.LocalStorage
+import com.oliynick.max.reader.app.LocalStorage
 import com.oliynick.max.reader.domain.*
 import com.oliynick.max.reader.network.Page
 import kotlinx.coroutines.Dispatchers

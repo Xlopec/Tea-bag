@@ -22,31 +22,35 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app
+@file:Suppress("FunctionName")
 
-sealed class AppException : RuntimeException {
+package com.oliynick.max.reader.app
 
-    constructor() : super()
+import com.oliynick.max.reader.domain.Article
+import com.oliynick.max.reader.domain.Url
+import com.oliynick.max.reader.network.Page
 
-    constructor(message: String) : super(message)
+interface LocalStorage {
 
-    constructor(
-        message: String,
-        cause: Throwable,
-    ) : super(message, cause)
+    suspend fun insertArticle(
+        article: Article,
+    )
 
-    constructor(cause: Throwable) : super(cause)
+    suspend fun deleteArticle(
+        url: Url,
+    )
 
+    suspend fun findAllArticles(
+        input: String,
+    ): Page
+
+    suspend fun isFavoriteArticle(
+        url: Url,
+    ): Boolean
+
+    suspend fun isDarkModeEnabled(): Boolean
+
+    suspend fun storeIsDarkModeEnabled(
+        isEnabled: Boolean,
+    )
 }
-
-class NetworkException(
-    message: String,
-    cause: Throwable,
-) : AppException(message, cause)
-
-class InternalException(
-    message: String,
-    cause: Throwable,
-) : AppException(message, cause)
-
-

@@ -30,7 +30,7 @@ import android.content.res.Configuration
 import android.os.Build
 import com.google.gson.Gson
 import com.max.reader.app.env.HasAppContext
-import com.max.reader.app.storage.LocalStorage
+import com.oliynick.max.reader.app.LocalStorage
 import com.oliynick.max.reader.network.NewsApiCommon
 import com.oliynick.max.reader.network.Page
 import io.ktor.client.features.json.*

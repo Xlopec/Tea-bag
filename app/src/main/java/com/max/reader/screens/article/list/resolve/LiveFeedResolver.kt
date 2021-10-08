@@ -28,19 +28,17 @@ package com.max.reader.screens.article.list.resolve
 
 import android.content.Intent
 import android.content.Intent.*
-import com.max.reader.app.*
 import com.max.reader.app.env.HasAppContext
 import com.max.reader.app.env.storage.HasGson
-import com.max.reader.app.storage.LocalStorage
 import com.max.reader.app.env.storage.network.NewsApi
-import com.max.reader.app.AppException
 import com.max.reader.app.exception.toAppException
-import com.max.reader.app.message.ScreenMessage
-import com.max.reader.screens.article.list.ArticleUpdated
-import com.max.reader.screens.article.list.ArticlesLoaded
-import com.max.reader.screens.article.list.ArticlesOperationException
-import com.max.reader.screens.article.list.Query
-import com.max.reader.screens.article.list.QueryType.*
+import com.oliynick.max.reader.app.ScreenMessage
+import com.oliynick.max.reader.article.list.ArticleUpdated
+import com.oliynick.max.reader.article.list.ArticlesLoaded
+import com.oliynick.max.reader.article.list.ArticlesOperationException
+import com.oliynick.max.reader.article.list.Query
+import com.oliynick.max.reader.article.list.QueryType.*
+import com.oliynick.max.reader.app.*
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.network.Page
 import com.oliynick.max.tea.core.component.effect

@@ -2,8 +2,8 @@ package com.max.reader.app.exception
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.max.reader.app.AppException
-import com.max.reader.app.InternalException
+import com.oliynick.max.reader.app.AppException
+import com.oliynick.max.reader.app.InternalException
 import com.max.reader.app.env.storage.HasGson
 import io.ktor.client.features.*
 import io.ktor.client.statement.*
@@ -31,7 +31,7 @@ private suspend inline fun Throwable.wrap(
 private suspend fun <Env> Env.toAppException(
     exception: ClientRequestException,
 ): AppException where Env : HasGson =
-    com.max.reader.app.NetworkException(
+    com.oliynick.max.reader.app.NetworkException(
         gson.readErrorMessage(exception) ?: exception.toGenericExceptionDescription(),
         exception
     )
@@ -49,4 +49,7 @@ private fun ClientRequestException.toGenericExceptionDescription() =
 
 private fun NetworkException(
     cause: IOException,
-) = com.max.reader.app.NetworkException("Network exception occurred, check connectivity", cause)
+) = com.oliynick.max.reader.app.NetworkException(
+    "Network exception occurred, check connectivity",
+    cause
+)

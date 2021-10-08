@@ -27,10 +27,13 @@
 package com.max.reader.app
 
 import com.max.reader.app.env.Environment
-import com.max.reader.app.message.NavigateToFeed
-import com.max.reader.screens.article.list.ArticlesState
-import com.max.reader.screens.article.list.Query
-import com.max.reader.screens.article.list.QueryType.Regular
+import com.oliynick.max.reader.app.NavigateToFeed
+import com.oliynick.max.reader.article.list.ArticlesState
+import com.oliynick.max.reader.article.list.Query
+import com.oliynick.max.reader.article.list.QueryType.Regular
+import com.oliynick.max.reader.app.AppState
+import com.oliynick.max.reader.app.Command
+import com.oliynick.max.reader.app.LoadArticlesByQuery
 import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Initializer
 

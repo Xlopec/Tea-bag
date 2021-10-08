@@ -22,15 +22,48 @@
  * SOFTWARE.
  */
 
-package com.max.reader.screens.article.details
+package com.oliynick.max.reader.app
 
-import com.max.reader.app.ScreenId
-import com.max.reader.app.message.ScreenMessage
+import com.oliynick.max.reader.article.list.Query
+import com.oliynick.max.reader.domain.Article
 
-sealed interface ArticleDetailsMessage : ScreenMessage {
-    val id: ScreenId
-}
+sealed interface Command
 
-data class OpenInBrowser(
-    override val id: ScreenId
-) : ArticleDetailsMessage
+// App wide commands
+
+object CloseApp : Command
+
+data class StoreDarkMode(
+    val isEnabled: Boolean
+) : Command
+
+// Article details commands
+
+sealed interface ArticleDetailsCommand : Command
+
+data class DoOpenArticle(
+    val article: Article,
+) : ArticleDetailsCommand
+
+// Feed screen commands
+
+sealed interface ArticlesCommand : Command
+
+data class LoadArticlesByQuery(
+    val id: ScreenId,
+    val query: Query,
+    val currentSize: Int,
+    val resultsPerPage: Int,
+) : ArticlesCommand
+
+data class SaveArticle(
+    val article: Article,
+) : ArticlesCommand
+
+data class RemoveArticle(
+    val article: Article,
+) : ArticlesCommand
+
+data class DoShareArticle(
+    val article: Article,
+) : ArticlesCommand

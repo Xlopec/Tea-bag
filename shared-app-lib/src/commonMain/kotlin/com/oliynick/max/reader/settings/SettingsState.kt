@@ -22,10 +22,12 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app.settings
+package com.oliynick.max.reader.settings
 
-import com.max.reader.app.message.ScreenMessage
+import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.app.ScreenState
+import com.oliynick.max.reader.app.randomUUID
 
-sealed interface SettingsMessage : ScreenMessage
-
-object ToggleDarkMode : SettingsMessage
+object SettingsState : ScreenState {
+    override val id: ScreenId = randomUUID()
+}

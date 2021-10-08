@@ -22,16 +22,31 @@
  * SOFTWARE.
  */
 
-package com.max.reader.update
+package com.oliynick.max.reader.app
 
-import com.max.reader.app.Command
-import com.max.reader.screens.article.list.ArticlesMessage
-import com.max.reader.screens.article.list.ArticlesState
-import com.oliynick.max.tea.core.component.UpdateWith
+sealed class AppException : RuntimeException {
 
-fun interface ArticlesUpdater {
-    fun updateArticles(
-        message: ArticlesMessage,
-        state: ArticlesState
-    ): UpdateWith<ArticlesState, Command>
+    constructor() : super()
+
+    constructor(message: String) : super(message)
+
+    constructor(
+        message: String,
+        cause: Throwable,
+    ) : super(message, cause)
+
+    constructor(cause: Throwable) : super(cause)
+
 }
+
+class NetworkException(
+    message: String,
+    cause: Throwable,
+) : AppException(message, cause)
+
+class InternalException(
+    message: String,
+    cause: Throwable,
+) : AppException(message, cause)
+
+

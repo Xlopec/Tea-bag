@@ -22,11 +22,9 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app.message
+package com.oliynick.max.reader.app
 
-import com.max.reader.app.ScreenId
-import com.max.reader.app.settings.SettingsState
-import com.oliynick.max.reader.app.randomUUID
+import com.oliynick.max.reader.settings.SettingsState
 import com.oliynick.max.reader.domain.Article
 
 sealed interface Navigation : Message {

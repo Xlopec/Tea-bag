@@ -22,8 +22,10 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app.message
+package com.oliynick.max.reader.settings
 
-sealed interface Message
+import com.oliynick.max.reader.app.ScreenMessage
 
-interface ScreenMessage : Message
+sealed interface SettingsMessage : ScreenMessage
+
+object ToggleDarkMode : SettingsMessage

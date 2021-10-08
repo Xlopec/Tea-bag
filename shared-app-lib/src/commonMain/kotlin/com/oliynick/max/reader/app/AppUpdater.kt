@@ -22,35 +22,15 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+package com.oliynick.max.reader.app
 
-package com.max.reader.app.storage
+import com.oliynick.max.tea.core.component.UpdateWith
 
-import com.oliynick.max.reader.domain.Article
-import com.oliynick.max.reader.domain.Url
-import com.oliynick.max.reader.network.Page
+fun interface AppUpdater<Env> {
 
-interface LocalStorage {
+    fun Env.update(
+        message: Message,
+        state: AppState
+    ): UpdateWith<AppState, Command>
 
-    suspend fun insertArticle(
-        article: Article,
-    )
-
-    suspend fun deleteArticle(
-        url: Url,
-    )
-
-    suspend fun findAllArticles(
-        input: String,
-    ): Page
-
-    suspend fun isFavoriteArticle(
-        url: Url,
-    ): Boolean
-
-    suspend fun isDarkModeEnabled(): Boolean
-
-    suspend fun storeIsDarkModeEnabled(
-        isEnabled: Boolean,
-    )
 }

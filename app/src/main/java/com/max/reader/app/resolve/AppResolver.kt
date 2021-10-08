@@ -24,8 +24,8 @@
 
 package com.max.reader.app.resolve
 
-import com.max.reader.app.Command
-import com.max.reader.app.message.Message
+import com.oliynick.max.reader.app.Command
+import com.oliynick.max.reader.app.Message
 
 fun interface AppResolver<Env> {
 

@@ -24,16 +24,16 @@
 
 package com.max.reader.serialization
 
-import com.max.reader.app.AppState
-import com.max.reader.app.message.ScreenMessage
+import com.oliynick.max.reader.app.AppState
+import com.oliynick.max.reader.app.ScreenMessage
 import com.max.reader.app.serialization.PersistentListSerializer
 import com.max.reader.domain.Article
 import com.max.reader.domain.Description
 import com.max.reader.domain.Title
-import com.max.reader.screens.article.list.ArticlesState
-import com.max.reader.screens.article.list.LoadArticlesFromScratch
-import com.max.reader.screens.article.list.Query
-import com.max.reader.screens.article.list.QueryType
+import com.oliynick.max.reader.article.list.ArticlesState
+import com.oliynick.max.reader.article.list.LoadArticlesFromScratch
+import com.oliynick.max.reader.article.list.Query
+import com.oliynick.max.reader.article.list.QueryType
 import com.oliynick.max.tea.core.debug.gson.Gson
 import com.oliynick.max.tea.core.debug.protocol.NotifyComponentAttached
 import com.oliynick.max.tea.core.debug.protocol.NotifyComponentSnapshot

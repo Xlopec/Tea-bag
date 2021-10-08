@@ -22,11 +22,16 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app
+package com.oliynick.max.reader.article.list
 
-import com.oliynick.max.reader.domain.Article
+import com.oliynick.max.reader.app.Command
+import com.oliynick.max.reader.article.list.ArticlesMessage
+import com.oliynick.max.reader.article.list.ArticlesState
+import com.oliynick.max.tea.core.component.UpdateWith
 
-data class ArticleDetailsState(
-    override val id: ScreenId,
-    val article: Article,
-) : ScreenState
+fun interface ArticlesUpdater {
+    fun updateArticles(
+        message: ArticlesMessage,
+        state: ArticlesState
+    ): UpdateWith<ArticlesState, Command>
+}

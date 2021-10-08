@@ -35,9 +35,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.max.reader.app.AppState
-import com.max.reader.app.message.Message
-import com.max.reader.app.settings.ToggleDarkMode
+import com.oliynick.max.reader.app.AppState
+import com.oliynick.max.reader.app.Message
+import com.oliynick.max.reader.settings.ToggleDarkMode
 
 @Composable
 fun SettingsScreen(

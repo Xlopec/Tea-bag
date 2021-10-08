@@ -31,14 +31,14 @@ import android.os.StrictMode.*
 import android.os.StrictMode.VmPolicy.Builder
 import com.max.reader.BuildConfig.DEBUG
 import com.max.reader.app.AppModule
-import com.max.reader.app.CloseApp
+import com.oliynick.max.reader.app.CloseApp
 import com.max.reader.app.env.storage.Gson
 import com.max.reader.app.env.storage.HasGson
 import com.max.reader.app.env.storage.local.LocalStorage
-import com.max.reader.app.storage.LocalStorage
+import com.oliynick.max.reader.app.LocalStorage
 import com.max.reader.app.env.storage.network.AppGson
 import com.max.reader.app.env.storage.network.NewsApi
-import com.max.reader.app.update.AppNavigation
+import com.oliynick.max.reader.app.AppNavigation
 import com.max.reader.screens.article.details.ArticleDetailsModule
 import com.max.reader.screens.article.list.ArticlesModule
 import com.max.reader.app.serialization.ArticleAdapters

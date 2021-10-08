@@ -22,48 +22,58 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app
+package com.oliynick.max.reader.article.list
 
-import com.max.reader.screens.article.list.Query
+import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.app.AppException
+import com.oliynick.max.reader.app.ScreenMessage
 import com.oliynick.max.reader.domain.Article
 
-sealed interface Command
+sealed interface ArticlesMessage : ScreenMessage {
+    val id: ScreenId?
+}
 
-// App wide commands
+data class LoadNextArticles(
+    override val id: ScreenId,
+) : ArticlesMessage
 
-object CloseApp : Command
+data class LoadArticlesFromScratch(
+    override val id: ScreenId,
+) : ArticlesMessage
 
-data class StoreDarkMode(
-    val isEnabled: Boolean
-) : Command
+data class RefreshArticles(
+    override val id: ScreenId,
+) : ArticlesMessage
 
-// Article details commands
-
-sealed interface ArticleDetailsCommand : Command
-
-data class DoOpenArticle(
+data class ToggleArticleIsFavorite(
+    override val id: ScreenId,
     val article: Article,
-) : ArticleDetailsCommand
+) : ArticlesMessage
 
-// Feed screen commands
+data class ArticlesLoaded(
+    override val id: ScreenId,
+    val articles: List<Article>,
+    val hasMore: Boolean,
+) : ArticlesMessage
 
-sealed interface ArticlesCommand : Command
+data class ArticlesOperationException(
+    override val id: ScreenId?,
+    val cause: AppException,
+) : ArticlesMessage
 
-data class LoadArticlesByQuery(
-    val id: ScreenId,
-    val query: Query,
-    val currentSize: Int,
-    val resultsPerPage: Int,
-) : ArticlesCommand
-
-data class SaveArticle(
+data class ArticleUpdated(
     val article: Article,
-) : ArticlesCommand
+) : ArticlesMessage {
+    override val id: Nothing? = null
+}
 
-data class RemoveArticle(
+data class ShareArticle(
     val article: Article,
-) : ArticlesCommand
+) : ArticlesMessage {
+    override val id: Nothing? = null
+}
 
-data class DoShareArticle(
-    val article: Article,
-) : ArticlesCommand
+data class OnQueryUpdated(
+    override val id: ScreenId,
+    val query: String,
+) : ArticlesMessage

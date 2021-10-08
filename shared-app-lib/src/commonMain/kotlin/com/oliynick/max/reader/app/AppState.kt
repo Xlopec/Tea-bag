@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
-package com.max.reader.app
+package com.oliynick.max.reader.app
 
-import com.oliynick.max.reader.app.UUID
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand

@@ -26,11 +26,11 @@
 
 package com.max.reader.app.resolve
 
-import com.max.reader.app.ArticleDetailsCommand
-import com.max.reader.app.ArticlesCommand
-import com.max.reader.app.CloseApp
-import com.max.reader.app.StoreDarkMode
-import com.max.reader.app.storage.LocalStorage
+import com.oliynick.max.reader.app.ArticleDetailsCommand
+import com.oliynick.max.reader.app.ArticlesCommand
+import com.oliynick.max.reader.app.CloseApp
+import com.oliynick.max.reader.app.StoreDarkMode
+import com.oliynick.max.reader.app.LocalStorage
 import com.max.reader.screens.article.details.resolve.ArticleDetailsResolver
 import com.max.reader.screens.article.list.resolve.ArticlesResolver
 import com.oliynick.max.tea.core.component.sideEffect

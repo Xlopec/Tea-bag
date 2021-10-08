@@ -24,11 +24,11 @@
 
 @file:Suppress("FunctionName")
 
-package com.max.reader.screens.article.list
+package com.oliynick.max.reader.article.list
 
-import com.max.reader.app.ScreenId
-import com.max.reader.app.ScreenState
-import com.max.reader.screens.article.list.ArticlesState.TransientState.*
+import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.app.ScreenState
+import com.oliynick.max.reader.article.list.ArticlesState.TransientState.*
 import com.oliynick.max.reader.domain.Article
 
 enum class QueryType {

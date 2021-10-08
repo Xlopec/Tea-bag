@@ -22,11 +22,10 @@
  * SOFTWARE.
  */
 
-package com.max.reader.update
+package com.oliynick.max.reader.article.list
 
-import com.max.reader.app.*
-import com.max.reader.screens.article.list.*
-import com.max.reader.screens.article.list.QueryType.*
+import com.oliynick.max.reader.article.list.QueryType.*
+import com.oliynick.max.reader.app.*
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.domain.toggleFavorite
 import com.oliynick.max.tea.core.component.UpdateWith
