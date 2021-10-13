@@ -1,3 +1,6 @@
 package com.oliynick.max.tea.core
 
-//public actual val IO: CoroutineDispatcher = Dispatchers.IO
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+
+public actual val IO: CoroutineDispatcher = Dispatchers.IO

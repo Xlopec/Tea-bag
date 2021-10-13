@@ -26,6 +26,7 @@
 
 package com.oliynick.max.reader.app
 
+import com.oliynick.max.tea.core.IO
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.states
@@ -46,41 +47,6 @@ fun AppComponent(
         resolver = { c -> with(environment) { resolve(c) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment,
-        io = Dispatchers.Default,//fixme make IO
+        io = IO,
         computation = environment.coroutineContext[CoroutineDispatcher.Key] ?: Dispatchers.Default,
     ).with { println("New snapshot: $it") }.states()
-
-object IosAppComponentScope : CoroutineScope {
-    override val coroutineContext: CoroutineContext =
-        Job() + Dispatchers.Default
-}
-
-class IosComponentWrapper(
-    env: PlatformEnv
-) {
-
-    private val component = Environment(env)
-        .let { env -> AppComponent(env, AppInitializer(env)) }
-
-    private val messages = MutableSharedFlow<Message>()
-
-    fun send(
-        message: Message
-    ) {
-        IosAppComponentScope.launch {
-            println("Emit $message")
-            messages.emit(message)
-        }
-    }
-
-    fun render(
-        renderCallback: (AppState) -> Unit
-    ) {
-        IosAppComponentScope.launch {
-            component(messages).collect { state ->
-                renderCallback(state)
-            }
-        }
-    }
-
-}

@@ -1,3 +1,5 @@
+rootProject.name = "Tea-bag"
+
 pluginManagement {
     repositories {
         gradlePluginPortal()

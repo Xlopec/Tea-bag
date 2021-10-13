@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 import Libraries.coroutinesCore
 import Libraries.gson
@@ -31,7 +30,6 @@ import Libraries.kotlinStdLib
 import Libraries.ktorClientGson
 import Libraries.ktorClientJson
 import Libraries.ktorClientLogging
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     kotlin("multiplatform")
@@ -46,13 +44,7 @@ kotlin {
 
     android()
 
-    val iosTarget: (String, KotlinNativeTarget.() -> Unit) -> KotlinNativeTarget =
-        if (System.getenv("SDK_NAME")?.startsWith("iphoneos") == true)
-            ::iosArm64
-        else
-            ::iosX64
-
-    iosTarget("ios") {}
+    ios()
 
     cocoapods {
         summary = "Shared app lib with common code"
@@ -98,7 +90,7 @@ kotlin {
         }
         val iosMain by getting {
             dependencies {
-               // implementation(coroutinesCore)
+                // implementation(coroutinesCore)
                 implementation(kotlinStdLib)
                 implementation(project(":tea-core"))
                 implementation("io.ktor:ktor-client-ios:$ktor")
@@ -110,10 +102,10 @@ kotlin {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 30
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdkVersion(21)
-        targetSdkVersion(30)
+        minSdk = 21
+        targetSdk = 30
     }
 }

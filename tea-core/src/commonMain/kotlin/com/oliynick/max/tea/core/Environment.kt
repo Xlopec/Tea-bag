@@ -34,6 +34,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 
+public expect val IO: CoroutineDispatcher
+
 /**
  * Environment is an application component responsible for holding application dependencies
  *
@@ -54,7 +56,7 @@ public data class Env<M, S, C>(
     val updater: Updater<M, S, C>,
     // todo: group to reduce number of arguments
     val scope: CoroutineScope,
-    val io: CoroutineDispatcher = Dispatchers.Default,
+    val io: CoroutineDispatcher = IO,
     val computation: CoroutineDispatcher = Dispatchers.Unconfined,
     val shareOptions: ShareOptions = ShareStateWhileSubscribed,
 )

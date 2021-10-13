@@ -5,13 +5,11 @@ import SharedAppLib
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    var newsApi = NewsApiCommon()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        let appComponent = ObservableAppComponent()
+        let contentView = AppView(appComponent: appComponent)
         
-        
-        let contentView = ArticlesView(viewModel: ArticlesViewModel(newsApi: newsApi))//RowItem(article: article)
-
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)

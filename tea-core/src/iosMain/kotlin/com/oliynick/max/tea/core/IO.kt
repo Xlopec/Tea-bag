@@ -1,7 +1,6 @@
 package com.oliynick.max.tea.core
 
-/*
-public fun some() {
-    dispatch_async()
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 
-}*/
+public actual val IO: CoroutineDispatcher = Dispatchers.Default

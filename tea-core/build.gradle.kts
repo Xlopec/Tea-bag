@@ -50,13 +50,7 @@ kotlin {
         withJava()
     }
 
-    val iosTarget: (String, KotlinNativeTarget.() -> Unit) -> KotlinNativeTarget =
-        if (System.getenv("SDK_NAME")?.startsWith("iphoneos") == true)
-            ::iosArm64
-        else
-            ::iosX64
-
-    iosTarget("ios") {}
+    ios()
 
     cocoapods {
         summary = "Tea core library"
