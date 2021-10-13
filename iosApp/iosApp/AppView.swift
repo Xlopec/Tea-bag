@@ -19,9 +19,9 @@ class ObservableAppComponent : ObservableObject {
     private let component: IosComponent
         
     init() {
-        component = IosComponent(env: EnvironmentKt.PlatformEnv(closeCommandsFlow: { close in
+        component = IosComponent(closeCommandsSink: { close in
             print("Close app \(close)")
-        }))
+        })
         
         cancellation = component.render { state in
             print("New app state \(state)")

@@ -4,7 +4,7 @@ import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.domain.Url
 import com.oliynick.max.reader.network.Page
 
-actual fun LocalStorage(platform: PlatformEnv): LocalStorage =
+fun LocalStorage(): LocalStorage =
     object : LocalStorage {
         override suspend fun insertArticle(article: Article) {
 

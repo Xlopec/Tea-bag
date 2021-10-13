@@ -26,15 +26,4 @@
 
 package com.oliynick.max.reader.article.list
 
-import com.oliynick.max.reader.app.LocalStorage
-
 interface ArticlesModule<Env> : ArticlesUpdater, ArticlesResolver<Env>
-
-fun <Env> ArticlesModule(): ArticlesModule<Env> where Env : NewsApi<Env>,
-                                                      Env : ArticlesEnv,
-                                                      Env : LocalStorage =
-
-    object : ArticlesModule<Env>,
-        ArticlesUpdater by LiveArticlesUpdater,
-        ArticlesResolver<Env> by ArticlesResolver() {
-    }

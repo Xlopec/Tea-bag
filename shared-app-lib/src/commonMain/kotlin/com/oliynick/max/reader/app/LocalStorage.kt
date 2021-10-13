@@ -30,10 +30,6 @@ import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.domain.Url
 import com.oliynick.max.reader.network.Page
 
-expect fun LocalStorage(
-    platform: PlatformEnv,
-): LocalStorage
-
 interface LocalStorage {
 
     suspend fun insertArticle(

@@ -3,37 +3,42 @@ package com.oliynick.max.reader.article.list
 import com.oliynick.max.reader.app.*
 import com.oliynick.max.tea.core.component.effect
 
-actual interface ArticlesEnv {
-    val storage: LocalStorage
-}
+fun <Env> ArticlesResolver(): ArticlesResolver<Env> where Env : LocalStorage, Env : NewsApi =
+    object : ArticlesResolver<Env> {
+        // fixme rewrite
+        override suspend fun Env.resolve(command: ArticlesCommand): Set<Message> {
 
-actual fun <Env> ArticlesResolver(): ArticlesResolver<Env> where Env : ArticlesEnv, Env : NewsApi<Env> =
-    ArticlesResolver { command ->
-        when (command) {
-            is LoadArticlesByQuery -> command.effect {
-                val (articles, hasMore) = when (query.type) {
-                    QueryType.Regular -> fetchFromEverything(query.input, currentSize, resultsPerPage)
-                    QueryType.Favorite -> storage.findAllArticles(query.input)
-                    QueryType.Trending -> fetchTopHeadlines(query.input, currentSize, resultsPerPage)
+            val r = when (command) {
+                is LoadArticlesByQuery -> command.effect {
+                    runCatching<Message> {
+                        val (articles, hasMore) = when (query.type) {
+                            QueryType.Regular -> fetchFromEverything(
+                                query.input,
+                                currentSize,
+                                resultsPerPage
+                            )
+                            QueryType.Favorite -> findAllArticles(query.input)
+                            QueryType.Trending -> fetchTopHeadlines(
+                                query.input,
+                                currentSize,
+                                resultsPerPage
+                            )
+                        }
+
+                        ArticlesLoaded(command.id, articles, hasMore)
+                    }.getOrElse { th -> ArticlesOperationException(command.id, NetworkException("Couldn't load articles feed", th)) }
                 }
-
-                ArticlesLoaded(command.id, articles, hasMore)
-            }
-            is SaveArticle -> command.effect {
-                storage.insertArticle(article)
-                ArticleUpdated(article)
-            }
-            is RemoveArticle -> command.effect {
-                    storage.deleteArticle(article.url)
+                is SaveArticle -> command.effect {
+                    insertArticle(article)
                     ArticleUpdated(article)
+                }
+                is RemoveArticle -> command.effect {
+                    deleteArticle(article.url)
+                    ArticleUpdated(article)
+                }
+                is DoShareArticle -> setOf()
             }
-            is DoShareArticle -> setOf()
+
+            return r
         }
     }
-
-actual fun ArticlesEnv(
-    platform: PlatformEnv
-): ArticlesEnv = object : ArticlesEnv {
-    override val storage: LocalStorage = LocalStorage(platform)
-
-}

@@ -3,23 +3,13 @@ package com.oliynick.max.reader.article.list
 import android.app.Application
 import android.content.res.Configuration
 import android.os.Build
-import com.oliynick.max.reader.app.PlatformEnv
 import com.oliynick.max.reader.network.NewsApiCommon
 import com.oliynick.max.reader.network.Page
 import java.util.Locale.ENGLISH
 
-actual interface NewsApiEnv {
-    val application: Application
-}
-
-fun NewsApiEnv(
+fun NewsApi(
     application: Application
-): NewsApiEnv =
-    object : NewsApiEnv {
-        override val application: Application = application
-    }
-
-actual fun <Env : NewsApiEnv> NewsApi(): NewsApi<Env> = object : NewsApi<Env> {
+): NewsApi = object : NewsApi {
 
     private val impl = NewsApiCommon(
         /*HttpClient(CIO) {
@@ -36,13 +26,13 @@ actual fun <Env : NewsApiEnv> NewsApi(): NewsApi<Env> = object : NewsApi<Env> {
         }*/
     )
 
-    override suspend fun Env.fetchFromEverything(
+    override suspend fun fetchFromEverything(
         input: String,
         currentSize: Int,
         resultsPerPage: Int,
     ): Page = impl.fetchFromEverything(input, currentSize, resultsPerPage)
 
-    override suspend fun Env.fetchTopHeadlines(
+    override suspend fun fetchTopHeadlines(
         input: String,
         currentSize: Int,
         resultsPerPage: Int,
@@ -72,7 +62,3 @@ private inline val Configuration.countryCode: String
         } else {
             locale.country
         }
-
-actual fun NewsApiEnv(platformEnv: PlatformEnv): NewsApiEnv {
-    TODO("Not yet implemented")
-}

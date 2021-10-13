@@ -4,55 +4,43 @@ package com.oliynick.max.reader.app
 
 import android.app.Application
 import android.os.StrictMode
-import com.google.gson.Gson
 import com.oliynick.max.reader.app.serialization.ArticleAdapters
-import com.oliynick.max.reader.article.details.ArticleDetailsEnv
 import com.oliynick.max.reader.article.details.ArticleDetailsModule
-import com.oliynick.max.reader.article.list.*
+import com.oliynick.max.reader.article.list.ArticlesModule
+import com.oliynick.max.reader.article.list.NewsApi
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 
-actual interface PlatformEnv {
-    val debug: Boolean
-    val application: Application
-    val gson: Gson
-    actual val closeCommands: CloseCommandsSink
-}
+actual interface Environment :
+    AppModule<Environment>,
+    ArticlesModule<Environment>,
+    ArticleDetailsModule<Environment>,
+    NewsApi,
+    LocalStorage,
+    AppNavigation,
+    CoroutineScope
 
-/*fun PlatformEnv(
+fun Environment(
     debug: Boolean,
     application: Application,
-    closeCommands: MutableSharedFlow<CloseApp>
-): PlatformEnv = object : PlatformEnv {
-    override val debug: Boolean = debug
-    override val application: Application = application
-    override val gson: Gson = BuildGson()
-}*/
-
-/*actual fun Environment(
-    platform: PlatformEnv
+    scope: CoroutineScope,
+    closeCommands: CloseCommandsSink
 ): Environment {
 
     val gson = BuildGson()
 
-    if (platform.debug) {
+    if (debug) {
         setupStrictAppPolicies()
     }
 
     return object : Environment,
-        AppModule<Environment> by AppModule(platform),
-        ArticlesModule<Environment> by ArticlesModule(),
-        ArticleDetailsModule<Environment> by ArticleDetailsModule(),
-        NewsApi<Environment> by NewsApi(),
-        NewsApiEnv by NewsApiEnv(platform.application),
-        LocalStorage by LocalStorage(platform.application),
-        ArticleDetailsEnv by ArticleDetailsEnv(platform),
-        ArticlesEnv by ArticlesEnv(platform),
-        CoroutineScope by platform.scope {
-
-        override val application: Application = platform.application
-    }
-}*/
+        AppModule<Environment> by AppModule(closeCommands),
+        ArticlesModule<Environment> by ArticlesModule(gson, application),
+        ArticleDetailsModule<Environment> by ArticleDetailsModule(application),
+        NewsApi by NewsApi(application),
+        LocalStorage by LocalStorage(application),
+        CoroutineScope by scope {
+        }
+}
 
 private fun setupStrictAppPolicies() {
     StrictMode.setThreadPolicy(

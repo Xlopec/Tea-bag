@@ -8,4 +8,4 @@ private val DateParser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENG
 
 actual fun Date.toJson(): String = DateParser.format(this)
 
-actual fun String.toDate(): Date = DateParser.parse(this)
+actual fun String.toDate(): Date = DateParser.parse(this) ?: error("Invalid date $this")

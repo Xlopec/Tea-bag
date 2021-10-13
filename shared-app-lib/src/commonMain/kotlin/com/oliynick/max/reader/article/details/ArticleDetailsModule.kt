@@ -26,15 +26,4 @@
 
 package com.oliynick.max.reader.article.details
 
-import com.oliynick.max.reader.article.list.ArticlesResolver
-
-interface ArticleDetailsModule<Env> : ArticleDetailsUpdater, ArticleDetailsResolver<Env>
-
-fun <Env> ArticleDetailsModule(): ArticleDetailsModule<Env>
-        where Env : ArticlesResolver<Env>,
-              Env : ArticleDetailsEnv,
-              Env : ArticleDetailsResolver<Env> =
-    object : ArticleDetailsModule<Env>,
-        ArticleDetailsUpdater by LiveArticleDetailsUpdater,
-        ArticleDetailsResolver<Env> by ArticleDetailsResolver() {
-    }
+interface ArticleDetailsModule<Env> : ArticleDetailsUpdater, ArticleDetailsResolver

@@ -1,5 +1,6 @@
 package com.oliynick.max.reader.app
 
+import android.app.Application
 import android.content.ContentValues
 import android.content.Context
 import android.content.res.Configuration
@@ -19,13 +20,13 @@ private const val DARK_MODE_ENABLED = "darkModeEnabled"
 inline val Context.isDarkModeEnabled: Boolean
     get() = Configuration.UI_MODE_NIGHT_YES == resources.configuration.uiMode and UI_MODE_NIGHT_MASK
 
-actual fun LocalStorage(
-    platform: PlatformEnv,
+fun LocalStorage(
+    application: Application,
 ): LocalStorage = object : LocalStorage {
 
-    private val db by lazy { DbHelper(platform.application).writableDatabase }
+    private val db by lazy { DbHelper(application).writableDatabase }
     private val sharedPreferences by lazy {
-        platform.application.getSharedPreferences("News Reader", Context.MODE_PRIVATE)
+        application.getSharedPreferences("News Reader", Context.MODE_PRIVATE)
     }
 
     override suspend fun insertArticle(
@@ -78,7 +79,7 @@ actual fun LocalStorage(
 
     override suspend fun isDarkModeEnabled(): Boolean =
         withContext(Dispatchers.IO) {
-            platform.application.isDarkModeEnabled || sharedPreferences.getBoolean(DARK_MODE_ENABLED, false)
+            application.isDarkModeEnabled || sharedPreferences.getBoolean(DARK_MODE_ENABLED, false)
         }
 
     override suspend fun storeIsDarkModeEnabled(isEnabled: Boolean) =

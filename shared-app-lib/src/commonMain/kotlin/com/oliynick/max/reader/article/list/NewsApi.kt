@@ -26,28 +26,19 @@
 
 package com.oliynick.max.reader.article.list
 
-import com.oliynick.max.reader.app.PlatformEnv
 import com.oliynick.max.reader.network.Page
 
-expect interface NewsApiEnv
+interface NewsApi {
 
-expect fun NewsApiEnv(
-    platformEnv: PlatformEnv
-): NewsApiEnv
-
-interface NewsApi<Env> {
-
-    suspend fun Env.fetchFromEverything(
+    suspend fun fetchFromEverything(
         input: String,
         currentSize: Int,
         resultsPerPage: Int,
     ): Page
 
-    suspend fun Env.fetchTopHeadlines(
+    suspend fun fetchTopHeadlines(
         input: String,
         currentSize: Int,
         resultsPerPage: Int,
     ): Page
 }
-
-expect fun <Env : NewsApiEnv> NewsApi(): NewsApi<Env>

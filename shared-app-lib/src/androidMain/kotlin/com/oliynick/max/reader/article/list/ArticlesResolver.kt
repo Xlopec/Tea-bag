@@ -43,73 +43,73 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
-actual interface ArticlesEnv {
-    val gson: Gson
-    val application: Application
-    val storage: LocalStorage
-}
+fun <Env> ArticlesResolver(
+    gson: Gson,
+    application: Application,
+): ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage = object : ArticlesResolver<Env> {
+        override suspend fun Env.resolve(command: ArticlesCommand): Set<Message> {
+            suspend fun resolve() =
+                when (command) {
+                    is LoadArticlesByQuery -> fetch(this, this, command)
+                    is SaveArticle -> store(command.article)
+                    is RemoveArticle -> remove(command.article)
+                    is DoShareArticle -> application.shareArticle(command)
+                }
 
-actual fun ArticlesEnv(
-    platform: PlatformEnv
-): ArticlesEnv = object : ArticlesEnv {
-    override val gson: Gson = platform.gson
-    override val application: Application = platform.application
-    override val storage: LocalStorage = LocalStorage(platform)
-}
-
-actual fun <Env> ArticlesResolver(): ArticlesResolver<Env> where Env : ArticlesEnv, Env : NewsApi<Env> =
-    ArticlesResolver { command ->
-        suspend fun resolve() =
-            when (command) {
-                is LoadArticlesByQuery -> fetch(command)
-                is SaveArticle -> storage.store(command.article)
-                is RemoveArticle -> storage.remove(command.article)
-                is DoShareArticle -> shareArticle(command)
-            }
-
-        runCatching { resolve() }
-            .getOrElse { th -> setOf(ExceptionMessage(toAppException(th), command)) }
+            return runCatching { resolve() }
+                .getOrElse { th -> setOf(ExceptionMessage(gson.toAppException(th), command)) }
+        }
     }
 
-suspend fun <Env : LocalStorage> Env.store(
+suspend fun LocalStorage.store(
     article: Article,
 ): Set<ScreenMessage> = effect {
     insertArticle(article)
     ArticleUpdated(article)
 }
 
-suspend fun <Env : LocalStorage> Env.remove(
+suspend fun LocalStorage.remove(
     article: Article,
 ): Set<ScreenMessage> = effect {
     deleteArticle(article.url)
     ArticleUpdated(article)
 }
 
-suspend fun <Env> Env.fetch(
+suspend fun fetch(
+    api: NewsApi,
+    storage: LocalStorage,
     command: LoadArticlesByQuery,
-): Set<ScreenMessage> where Env : NewsApi<Env>, Env : ArticlesEnv =
+): Set<ScreenMessage> =
     command.query.effect {
 
-        val (articles, hasMore) = fetch(this, command.currentSize, command.resultsPerPage)
+        val (articles, hasMore) = fetch(
+            api,
+            storage,
+            this,
+            command.currentSize,
+            command.resultsPerPage
+        )
 
         ArticlesLoaded(command.id, articles, hasMore)
     }
 
-suspend fun <Env : ArticlesEnv> Env.shareArticle(
+suspend fun Application.shareArticle(
     command: DoShareArticle,
 ): Set<ScreenMessage> = command.sideEffect {
-    application.startActivity(ShareIntent(article))
+    startActivity(ShareIntent(article))
 }
 
-suspend fun <Env> Env.fetch(
+suspend fun fetch(
+    api: NewsApi,
+    storage: LocalStorage,
     query: Query,
     currentSize: Int,
     resultsPerPage: Int,
-): Page where Env : NewsApi<Env>, Env : ArticlesEnv =
+): Page =
     when (query.type) {
-        Regular -> fetchFromEverything(query.input, currentSize, resultsPerPage)
+        Regular -> api.fetchFromEverything(query.input, currentSize, resultsPerPage)
         Favorite -> storage.findAllArticles(query.input)
-        Trending -> fetchTopHeadlines(query.input, currentSize, resultsPerPage)
+        Trending -> api.fetchTopHeadlines(query.input, currentSize, resultsPerPage)
     }
 
 fun ShareIntent(
@@ -136,9 +136,9 @@ private val ArticlesCommand.screenId: ScreenId?
         is SaveArticle, is RemoveArticle, is DoShareArticle -> null
     }
 
-suspend fun <Env> Env.toAppException(
+suspend fun Gson.toAppException(
     th: Throwable
-): AppException where Env : ArticlesEnv =
+): AppException =
     th.wrap { raw ->
         when (raw) {
             is IOException -> NetworkException(raw)
@@ -153,11 +153,11 @@ private suspend inline fun Throwable.wrap(
     if (this is AppException) this
     else transform(this) ?: cause?.let { th -> transform(th) }
 
-private suspend fun <Env> Env.toAppException(
+private suspend fun Gson.toAppException(
     exception: ClientRequestException,
-): AppException where Env : ArticlesEnv =
+): AppException =
     NetworkException(
-        gson.readErrorMessage(exception) ?: exception.toGenericExceptionDescription(),
+        readErrorMessage(exception) ?: exception.toGenericExceptionDescription(),
         exception
     )
 

@@ -26,39 +26,4 @@
 
 package com.oliynick.max.reader.app
 
-import com.oliynick.max.reader.article.details.ArticleDetailsResolver
-import com.oliynick.max.reader.article.details.ArticleDetailsUpdater
-import com.oliynick.max.reader.article.list.ArticlesResolver
-import com.oliynick.max.reader.article.list.ArticlesUpdater
-
 interface AppModule<Env> : AppUpdater<Env>, AppResolver<Env>, AppNavigation
-
-fun <Env> AppModule(
-    closeCommands: PlatformEnv,
-): AppModule<Env> where Env : ArticlesResolver<Env>,
-                        Env : ArticleDetailsResolver<Env>,
-                        Env : ArticlesUpdater,
-                        Env : LocalStorage,
-                        Env : AppNavigation,
-                        Env : ArticleDetailsUpdater =
-    object : AppModule<Env>,
-        AppNavigation by AppNavigation(),
-        AppUpdater<Env> by AppUpdater(),
-        AppResolver<Env> by AppResolverImpl(closeCommands.closeCommands) {
-
-    }
-
-/*fun <Env> AppModule(
-    closeCommands: MutableSharedFlow<CloseApp>,
-): AppModule<Env> where Env : ArticlesResolver<Env>,
-                        Env : ArticleDetailsResolver<Env>,
-                        Env : ArticlesUpdater,
-                        Env : LocalStorage,
-                        Env : AppNavigation,
-                        Env : ArticleDetailsUpdater =
-    object : AppModule<Env>,
-        AppNavigation by AppNavigation(),
-        AppUpdater<Env> by AppUpdater(),
-        AppResolver<Env> by AppResolver(closeCommands) {
-
-    }*/

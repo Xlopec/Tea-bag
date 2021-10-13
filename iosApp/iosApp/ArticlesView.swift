@@ -92,7 +92,7 @@ struct ArticlesView: View {
                 } else if state.isLoadingNext {
                     ProgressView()
                 } else if let transientState = state.transientState as? ArticlesState.TransientStateException {
-                    Text("Exception \(transientState.th.message ?? "Failed to load articles, please, try again later")")
+                    Text(transientState.th.message ?? "Failed to load articles, please, try again later")
                 }
             }
         }.refreshable {

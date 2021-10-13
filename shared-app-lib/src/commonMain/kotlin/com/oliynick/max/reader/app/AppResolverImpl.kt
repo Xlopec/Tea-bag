@@ -5,7 +5,6 @@ package com.oliynick.max.reader.app
 import com.oliynick.max.reader.article.details.ArticleDetailsResolver
 import com.oliynick.max.reader.article.list.ArticlesResolver
 import com.oliynick.max.tea.core.component.sideEffect
-import kotlinx.coroutines.flow.MutableSharedFlow
 
 typealias CloseCommandsSink = (CloseApp) -> Unit
 
@@ -13,7 +12,7 @@ fun <Env> AppResolverImpl(
     closeCommands: CloseCommandsSink,
 ): AppResolver<Env> where Env : ArticlesResolver<Env>,
                           Env : LocalStorage,
-                          Env : ArticleDetailsResolver<Env> =
+                          Env : ArticleDetailsResolver =
     AppResolver { command: Command ->
         when (command) {
             is CloseApp -> command.sideEffect { closeCommands(command) }

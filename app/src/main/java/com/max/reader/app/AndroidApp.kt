@@ -29,6 +29,7 @@ package com.max.reader.app
 
 import android.app.Activity
 import android.app.Application
+import com.max.reader.BuildConfig
 import com.max.reader.BuildConfig.DEBUG
 import com.oliynick.max.reader.app.*
 import kotlinx.coroutines.CoroutineScope
@@ -48,7 +49,7 @@ fun AppComponent(
     application: Application,
     scope: CoroutineScope,
     closeCommands: MutableSharedFlow<CloseApp>,
-) = Environment(PlatformEnv(BuildConfig.DEBUG, application, scope, closeCommands))
+) = Environment(DEBUG, application, scope, closeCommands::tryEmit /*fixme closeCommands::tryEmit may not work*/)
     .let { env -> AppComponent(env, AppInitializer(env)) }
 
 private object AppComponentScope : CoroutineScope {
