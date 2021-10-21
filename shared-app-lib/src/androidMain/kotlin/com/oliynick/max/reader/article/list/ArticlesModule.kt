@@ -2,7 +2,6 @@ package com.oliynick.max.reader.article.list
 
 import android.app.Application
 import com.google.gson.Gson
-import com.oliynick.max.reader.app.LocalStorage
 
 fun <Env> ArticlesModule(
     gson: Gson,

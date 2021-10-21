@@ -117,7 +117,7 @@ struct RowItem: View {
     var body: some View {
         
         
-        VStack(alignment: HorizontalAlignment.leading, spacing: /*@START_MENU_TOKEN@*/nil/*@END_MENU_TOKEN@*/, content: {
+        VStack(alignment: .leading, spacing: 10, content: {
             
             if let image = article.urlToImage {
                 KFImage.url(image)
@@ -140,6 +140,24 @@ struct RowItem: View {
             
             Text("Published on \(dateFormatter.string(from: article.published))")
                 .font(.caption)
+            
+            HStack(spacing: 10) {
+                
+                Spacer()
+                
+                Button {
+                    print("trash")
+                } label: {
+                    Image(systemName: article.isFavorite ? "heart.fill" : "heart")
+                }.tint(.red)
+                
+                Button {
+                    print("zzzz")
+                } label: {
+                    Image(systemName: "zzz")
+                }.tint(.red)
+            }
+            
         }).padding(
             EdgeInsets(
                 top: CGFloat(16.0),
@@ -153,8 +171,8 @@ struct RowItem: View {
 
 
 
-/*struct ContentView_Previews: PreviewProvider {
+struct ContentView_Previews: PreviewProvider {
  static var previews: some View {
- //RowItem(article: article)
+     RowItem(article: Article.init(url: URL(string: "www.google.com")!, title: "Title", author: nil, description: nil, urlToImage: nil, published: Date(), isFavorite: true))
  }
- }*/
+ }

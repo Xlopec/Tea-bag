@@ -58,6 +58,7 @@ dependencies {
     implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.1.4")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
     implementation("org.jetbrains.kotlin:kotlin-serialization:1.5.21")
+    implementation("com.squareup.sqldelight:gradle-plugin:1.5.2")
     implementation("org.jetbrains.compose:compose-gradle-plugin:1.0.0-alpha3")
 
     testImplementation("junit:junit:4.13.1")

@@ -46,3 +46,4 @@ out/
 /.idea/deploymentTargetDropDown.xml
 /.idea/artifacts/
 /.idea/gradle.properties
+/buildSrc/local.properties

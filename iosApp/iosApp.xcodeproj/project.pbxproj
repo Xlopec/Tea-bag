@@ -654,6 +654,24 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"c++\"",
+					"-framework",
+					"\"Accelerate\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"Kingfisher\"",
+					"-framework",
+					"\"SharedAppLib\"",
+					"-weak_framework",
+					"\"Combine\"",
+					"-weak_framework",
+					"\"SwiftUI\"",
+					"-lsqlite3",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = orgIdentifier.iosApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -680,6 +698,24 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"c++\"",
+					"-framework",
+					"\"Accelerate\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"Kingfisher\"",
+					"-framework",
+					"\"SharedAppLib\"",
+					"-weak_framework",
+					"\"Combine\"",
+					"-weak_framework",
+					"\"SwiftUI\"",
+					"-lsqlite3",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = orgIdentifier.iosApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -695,11 +731,26 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = iosAppTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-l\"c++\"",
+					"-framework",
+					"\"Accelerate\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"Kingfisher\"",
+					"-weak_framework",
+					"\"Combine\"",
+					"-weak_framework",
+					"\"SwiftUI\"",
+					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = orgIdentifier.iosAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -717,11 +768,26 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = iosAppTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-l\"c++\"",
+					"-framework",
+					"\"Accelerate\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"Kingfisher\"",
+					"-weak_framework",
+					"\"Combine\"",
+					"-weak_framework",
+					"\"SwiftUI\"",
+					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = orgIdentifier.iosAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -743,6 +809,24 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"c++\"",
+					"-framework",
+					"\"Accelerate\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"Kingfisher\"",
+					"-framework",
+					"\"SharedAppLib\"",
+					"-weak_framework",
+					"\"Combine\"",
+					"-weak_framework",
+					"\"SwiftUI\"",
+					"-lsqlite3",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = orgIdentifier.iosAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -762,6 +846,24 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"c++\"",
+					"-framework",
+					"\"Accelerate\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"Kingfisher\"",
+					"-framework",
+					"\"SharedAppLib\"",
+					"-weak_framework",
+					"\"Combine\"",
+					"-weak_framework",
+					"\"SwiftUI\"",
+					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = orgIdentifier.iosAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -5,6 +5,7 @@ package com.oliynick.max.reader.app
 import android.app.Application
 import android.os.StrictMode
 import com.oliynick.max.reader.app.serialization.ArticleAdapters
+import com.oliynick.max.reader.app.storage.LocalStorageNew
 import com.oliynick.max.reader.article.details.ArticleDetailsModule
 import com.oliynick.max.reader.article.list.ArticlesModule
 import com.oliynick.max.reader.article.list.NewsApi
@@ -37,7 +38,7 @@ fun Environment(
         ArticlesModule<Environment> by ArticlesModule(gson, application),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(application),
         NewsApi by NewsApi(application),
-        LocalStorage by LocalStorage(application),
+        LocalStorage by LocalStorageNew(application),
         CoroutineScope by scope {
         }
 }

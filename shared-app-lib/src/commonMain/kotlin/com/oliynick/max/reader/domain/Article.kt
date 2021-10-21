@@ -38,6 +38,12 @@ expect class Date
 
 expect fun now(): Date
 
+expect fun fromMillis(
+    millis: Long
+): Date
+
+expect fun Date.toMillis(): Long
+
 data class Article(
     val url: Url,
     val title: Title,

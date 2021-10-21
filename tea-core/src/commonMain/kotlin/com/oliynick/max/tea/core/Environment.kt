@@ -34,8 +34,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 
-public expect val IO: CoroutineDispatcher
-
 /**
  * Environment is an application component responsible for holding application dependencies
  *
@@ -76,7 +74,7 @@ public data class ShareOptions(
 /**
  * Platform-specific IO dispatcher implementation
  */
-//public expect val IO: CoroutineDispatcher
+public expect val IO: CoroutineDispatcher
 
 @UnstableApi
 public val ShareStateWhileSubscribed: ShareOptions =

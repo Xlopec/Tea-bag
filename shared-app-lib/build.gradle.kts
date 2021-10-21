@@ -35,6 +35,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     id("com.android.library")
+    id("com.squareup.sqldelight")
     kotlin("plugin.serialization")
 }
 
@@ -66,6 +67,7 @@ kotlin {
                 implementation(ktorClientJson)
                 implementation("io.ktor:ktor-client-serialization:$ktor")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.0-RC")
+                implementation("com.russhwolf:multiplatform-settings:0.8.1")
 
             }
         }
@@ -80,6 +82,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-cio:$ktor")
                 implementation(ktorClientGson)
                 implementation(gson)
+                implementation("com.squareup.sqldelight:android-driver:1.5.2")
             }
         }
         val androidTest by getting {
@@ -95,6 +98,7 @@ kotlin {
                 implementation(project(":tea-core"))
                 implementation("io.ktor:ktor-client-ios:$ktor")
                 implementation(ktorClientJson)
+                implementation("com.squareup.sqldelight:native-driver:1.5.2")
             }
         }
         val iosTest by getting
@@ -107,5 +111,11 @@ android {
     defaultConfig {
         minSdk = 21
         targetSdk = 30
+    }
+}
+
+sqldelight {
+    database("AppDatabase") {
+        packageName = "com.oliynick.max.reader.app.storage"
     }
 }

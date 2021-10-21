@@ -1,32 +1,49 @@
-package com.oliynick.max.reader.app
+@file:Suppress("FunctionName")
+
+package com.oliynick.max.reader.app.storage
 
 import android.app.Application
 import android.content.ContentValues
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import com.oliynick.max.reader.app.LocalStorage
 import com.oliynick.max.reader.article.list.*
 import com.oliynick.max.reader.domain.*
 import com.oliynick.max.reader.network.Page
+import com.russhwolf.settings.AndroidSettings
+import com.squareup.sqldelight.android.AndroidSqliteDriver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
 import java.util.Date
 
 private const val DARK_MODE_ENABLED = "darkModeEnabled"
+private const val DB_FILE_NAME = "app.db"
+private const val SHARED_PREFERENCES_NAME = "News_Reader"
 
 inline val Context.isDarkModeEnabled: Boolean
     get() = Configuration.UI_MODE_NIGHT_YES == resources.configuration.uiMode and UI_MODE_NIGHT_MASK
 
+fun LocalStorageNew(
+    application: Application
+): LocalStorage =
+    LocalStorage(
+        AndroidSqliteDriver(AppDatabase.Schema, application, DB_FILE_NAME),
+        AndroidSettings(application.getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE))
+    )
+
+@Deprecated("Will be replaced with sqldelight")
 fun LocalStorage(
     application: Application,
 ): LocalStorage = object : LocalStorage {
 
     private val db by lazy { DbHelper(application).writableDatabase }
     private val sharedPreferences by lazy {
-        application.getSharedPreferences("News Reader", Context.MODE_PRIVATE)
+        application.getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE)
     }
 
     override suspend fun insertArticle(
