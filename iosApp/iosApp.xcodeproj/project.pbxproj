@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D0EED4927218D5B0020E30E /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D0EED4827218D5A0020E30E /* SearchBar.swift */; };
 		3D18EDC72717146200D8FA2B /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D18EDC62717146200D8FA2B /* AlertView.swift */; };
 		3D1C3F6A2714DC4300AD2F0C /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1C3F692714DC4300AD2F0C /* AppView.swift */; };
 		3D4F2860267D108E00D3D126 /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F986668854AAE55513203521 /* Pods_iosApp.framework */; };
@@ -56,6 +57,7 @@
 
 /* Begin PBXFileReference section */
 		230A1D31ACA4687670AE06CC /* Pods_iosAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D0EED4827218D5A0020E30E /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		3D18EDC62717146200D8FA2B /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		3D1C3F692714DC4300AD2F0C /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
 		3D4F286D267D118A00D3D126 /* SharedAppLib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SharedAppLib.framework; path = "../shared-app-lib/build/cocoapods/framework/SharedAppLib.framework"; sourceTree = "<group>"; };
@@ -148,6 +150,7 @@
 				7555FF86242A565B00829871 /* Preview Content */,
 				3D1C3F692714DC4300AD2F0C /* AppView.swift */,
 				3D18EDC62717146200D8FA2B /* AlertView.swift */,
+				3D0EED4827218D5A0020E30E /* SearchBar.swift */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -469,6 +472,7 @@
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				7555FF81242A565900829871 /* SceneDelegate.swift in Sources */,
 				7555FF83242A565900829871 /* ArticlesView.swift in Sources */,
+				3D0EED4927218D5B0020E30E /* SearchBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

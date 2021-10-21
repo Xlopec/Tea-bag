@@ -70,6 +70,7 @@ struct ArticlesView: View {
     let handler: MessageHandler
     
     @SwiftUI.State var showsAlert: Bool
+    @SwiftUI.State private var searchText: String = ""
     
     init(state: ArticlesState, handler: @escaping MessageHandler) {
         self.state = state
@@ -78,28 +79,70 @@ struct ArticlesView: View {
     }
     
     var body: some View {
-        List {
+        ZStack {
             
-            //showsAlert = state.transientState is ArticlesState.TransientStateException
-            
-            ForEach(state.articles, id: \.url) { article in
-                RowItem(article: article)
-            }
-            
-            VStack(alignment: HorizontalAlignment.center) {
-                if state.isLoading && state.articles.isEmpty {
-                    ProgressView().scaledToFill()
-                } else if state.isLoadingNext {
-                    ProgressView()
-                } else if let transientState = state.transientState as? ArticlesState.TransientStateException {
-                    Text(transientState.th.message ?? "Failed to load articles, please, try again later")
+            TabView {
+                
+                VStack(alignment: .leading, spacing: 10) {
+                    
+                    Text("Feed")
+                        .font(.title)
+                        .padding()
+                    
+                    SearchBar(text: $searchText)
+                    
+                    List {
+                        
+                        //showsAlert = state.transientState is ArticlesState.TransientStateException
+                        
+                        ForEach(state.articles, id: \.url) { article in
+                            RowItem(article: article)
+                        }
+                        
+                        VStack(alignment: HorizontalAlignment.center) {
+                            if state.isLoading && state.articles.isEmpty {
+                                ProgressView().scaledToFill()
+                            } else if state.isLoadingNext {
+                                ProgressView()
+                            } else if let transientState = state.transientState as? ArticlesState.TransientStateException {
+                                Text(transientState.th.message ?? "Failed to load articles, please, try again later")
+                            }
+                        }
+                    }.refreshable {
+                        handler(RefreshArticles(id: state.id))
+                    }.alert(isPresented: $showsAlert, TextAlert(title: "Title") {_ in
+                        print("Loh")
+                    })
+                    
                 }
-            }
-        }.refreshable {
-            handler(RefreshArticles(id: state.id))
-        }.alert(isPresented: $showsAlert, TextAlert(title: "Title") {_ in
-            print("Loh")
-        })
+            
+                .tabItem {
+                    Image(systemName: "globe")
+                    Text("Articles")
+                }
+                
+                Text("pidor")
+                .tabItem {
+                    Image(systemName: "heart")
+                    Text("Favorites")
+                }
+                
+                Text("suka")
+                .tabItem {
+                    Image(systemName: "chart.line.uptrend.xyaxis")
+                    Text("Trending")
+                }
+                
+                Text("blyat")
+                .tabItem {
+                    Image(systemName: "gear")
+                    Text("Settings")
+                }
+                
+            }.font(.headline)
+            
+            
+        }
     }
 }
 
@@ -124,7 +167,8 @@ struct RowItem: View {
                     .resizable()
                     .fade(duration: 0.25)
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: .infinity, height: 200, alignment: Alignment.center)
+                    .frame(height: 200, alignment: .center)
+                   // .background(.red)
             }
             // todo get rid of casts
             Text(article.title as! String)
@@ -141,38 +185,38 @@ struct RowItem: View {
             Text("Published on \(dateFormatter.string(from: article.published))")
                 .font(.caption)
             
-            HStack(spacing: 10) {
+            HStack(alignment: .center, spacing: 10) {
                 
                 Spacer()
+                
+                Button {
+                    print("zzzz")
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
                 
                 Button {
                     print("trash")
                 } label: {
                     Image(systemName: article.isFavorite ? "heart.fill" : "heart")
                 }.tint(.red)
-                
-                Button {
-                    print("zzzz")
-                } label: {
-                    Image(systemName: "zzz")
-                }.tint(.red)
             }
             
-        }).padding(
-            EdgeInsets(
-                top: CGFloat(16.0),
-                leading: CGFloat(16.0),
-                bottom: CGFloat(16.0),
-                trailing: CGFloat(16.0)
-            )
-        )
+        })/*.padding(
+           EdgeInsets(
+           top: CGFloat(16.0),
+           leading: CGFloat(16.0),
+           bottom: CGFloat(16.0),
+           trailing: CGFloat(16.0)
+           )
+           )*/
     }
 }
 
 
 
 struct ContentView_Previews: PreviewProvider {
- static var previews: some View {
-     RowItem(article: Article.init(url: URL(string: "www.google.com")!, title: "Title", author: nil, description: nil, urlToImage: nil, published: Date(), isFavorite: true))
- }
- }
+    static var previews: some View {
+        RowItem(article: Article.init(url: URL(string: "www.google.com")!, title: "Title", author: nil, description: nil, urlToImage: nil, published: Date(), isFavorite: true))
+    }
+}
