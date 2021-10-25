@@ -3,7 +3,7 @@ package com.oliynick.max.reader.article.list
 import com.oliynick.max.reader.app.*
 import com.oliynick.max.tea.core.component.effect
 
-fun <Env> ArticlesResolver(): ArticlesResolver<Env> where Env : LocalStorage, Env : NewsApi =
+fun <Env> ArticlesResolver(): ArticlesResolver<Env> where Env : LocalStorage, Env : NewsApi<Env> =
     object : ArticlesResolver<Env> {
         // fixme rewrite
         override suspend fun Env.resolve(command: ArticlesCommand): Set<Message> {
@@ -26,7 +26,13 @@ fun <Env> ArticlesResolver(): ArticlesResolver<Env> where Env : LocalStorage, En
                         }
 
                         ArticlesLoaded(command.id, articles, hasMore)
-                    }.getOrElse { th -> ArticlesOperationException(command.id, NetworkException("Couldn't load articles feed", th)) }
+                    }.getOrElse { th ->
+                        th.printStackTrace()
+                        ArticlesOperationException(
+                            command.id,
+                            NetworkException("Couldn't load articles feed", th)
+                        )
+                    }
                 }
                 is SaveArticle -> command.effect {
                     insertArticle(article)

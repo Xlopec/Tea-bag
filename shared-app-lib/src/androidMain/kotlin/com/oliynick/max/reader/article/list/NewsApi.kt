@@ -3,42 +3,13 @@ package com.oliynick.max.reader.article.list
 import android.app.Application
 import android.content.res.Configuration
 import android.os.Build
-import com.oliynick.max.reader.network.NewsApiCommon
-import com.oliynick.max.reader.network.Page
+import com.oliynick.max.reader.app.LocalStorage
+import com.oliynick.max.reader.network.NewsApiImpl
 import java.util.Locale.ENGLISH
 
-fun NewsApi(
+fun <Env : LocalStorage> NewsApi(
     application: Application
-): NewsApi = object : NewsApi {
-
-    private val impl = NewsApiCommon(
-        /*HttpClient(CIO) {
-
-            install(JsonFeature) {
-                serializer = GsonSerializer(gson)
-            }
-
-            if (debug) {
-                Logging {
-                    level = LogLevel.ALL
-                }
-            }
-        }*/
-    )
-
-    override suspend fun fetchFromEverything(
-        input: String,
-        currentSize: Int,
-        resultsPerPage: Int,
-    ): Page = impl.fetchFromEverything(input, currentSize, resultsPerPage)
-
-    override suspend fun fetchTopHeadlines(
-        input: String,
-        currentSize: Int,
-        resultsPerPage: Int,
-    ): Page = impl.fetchTopHeadlines(input, currentSize, resultsPerPage, application.countryCode)
-
-}
+): NewsApi<Env> = NewsApiImpl(application.countryCode)
 
 /*private class GsonSerializer(
     private val gson: Gson,

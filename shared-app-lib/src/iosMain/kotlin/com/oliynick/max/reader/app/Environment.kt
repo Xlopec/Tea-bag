@@ -10,7 +10,7 @@ actual interface Environment :
     ArticlesModule<Environment>,
     ArticleDetailsModule<Environment>,
     LocalStorage,
-    NewsApi,
+    NewsApi<Environment>,
     CoroutineScope
 
 fun Environment(
@@ -23,7 +23,7 @@ fun Environment(
         ArticlesModule<Environment> by ArticlesModule(),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(),
         LocalStorage by LocalStorage(),
-        NewsApi by NewsApi(),
+        NewsApi<Environment> by NewsApi(),
         CoroutineScope by scope {
     }
 }

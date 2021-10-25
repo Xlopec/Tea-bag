@@ -28,15 +28,19 @@ package com.oliynick.max.reader.article.list
 
 import com.oliynick.max.reader.network.Page
 
-interface NewsApi {
+interface NewsApi<Env> {
 
-    suspend fun fetchFromEverything(
+    @Throws(Exception::class)
+    // todo try to make it return Either<Page, AppException>
+    suspend fun Env.fetchFromEverything(
         input: String,
         currentSize: Int,
         resultsPerPage: Int,
     ): Page
 
-    suspend fun fetchTopHeadlines(
+    @Throws(Exception::class)
+    // todo try to make it return Either<Page, AppException>
+    suspend fun Env.fetchTopHeadlines(
         input: String,
         currentSize: Int,
         resultsPerPage: Int,

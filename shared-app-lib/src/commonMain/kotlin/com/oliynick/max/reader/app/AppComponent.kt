@@ -49,4 +49,4 @@ fun AppComponent(
         scope = environment,
         io = IO,
         computation = environment.coroutineContext[CoroutineDispatcher.Key] ?: Dispatchers.Default,
-    ).with { println("New snapshot: $it") }.states()
+    ).states()

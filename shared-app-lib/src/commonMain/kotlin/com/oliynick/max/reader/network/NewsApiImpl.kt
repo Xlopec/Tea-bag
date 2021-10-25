@@ -3,6 +3,8 @@
 
 package com.oliynick.max.reader.network
 
+import com.oliynick.max.reader.app.LocalStorage
+import com.oliynick.max.reader.article.list.NewsApi
 import com.oliynick.max.reader.domain.Article
 import io.ktor.client.*
 import io.ktor.client.features.json.*
@@ -12,7 +14,10 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.util.*
 
-class NewsApiCommon {
+class NewsApiImpl<Env : LocalStorage>(
+    // todo refine this field
+    private val countryCode: String
+) : NewsApi<Env> {
 
     private val httpClient = HttpClient {
 
@@ -29,24 +34,12 @@ class NewsApiCommon {
         }
     }
 
-    /*private val httpClient = HttpClient(CIO) {
-        install(JsonFeature) {
-            serializer = this@NewsApiCommon.serializer
-        }
-
-        if (debug) {
-            Logging {
-                level = LogLevel.ALL
-            }
-        }
-    }*/
-
     @Throws(Exception::class)
     // todo try to make it return Either<Page, NetworkException>
-    suspend fun fetchFromEverything(
+    override suspend fun Env.fetchFromEverything(
         input: String,
         currentSize: Int,
-        resultsPerPage: Int,
+        resultsPerPage: Int
     ): Page =
         toPage(
             httpClient.get(EverythingRequest(input, currentSize, resultsPerPage)),
@@ -56,11 +49,10 @@ class NewsApiCommon {
 
     @Throws(Exception::class)
     // todo try to make it return Either<Page, NetworkException>
-    suspend fun fetchTopHeadlines(
+    override suspend fun Env.fetchTopHeadlines(
         input: String,
         currentSize: Int,
-        resultsPerPage: Int,
-        countryCode: String,
+        resultsPerPage: Int
     ): Page =
         toPage(
             httpClient.get(TopHeadlinesRequest(input, currentSize, resultsPerPage, countryCode)),
@@ -70,7 +62,7 @@ class NewsApiCommon {
 
 }
 
-private /*suspend*/ fun toPage(
+private suspend fun <Env : LocalStorage> Env.toPage(
     response: ArticleResponse,
     currentSize: Int,
     resultsPerPage: Int,
@@ -84,11 +76,11 @@ private /*suspend*/ fun toPage(
     return Page(toArticles(tail), currentSize + tail.size < total)
 }
 
-private /*suspend*/ fun toArticles(
+private suspend fun <Env : LocalStorage> Env.toArticles(
     articles: Iterable<ArticleElement>,
 ) = articles.map { elem -> toArticle(elem) }
 
-private /*suspend*/ fun toArticle(
+private suspend fun <Env : LocalStorage> Env.toArticle(
     element: ArticleElement,
 ) =
     // todo remove conversion
@@ -98,7 +90,7 @@ private /*suspend*/ fun toArticle(
         author = element.author,
         description = element.description,
         urlToImage = element.urlToImage,
-        isFavorite = false,//isFavoriteArticle(element.url),
+        isFavorite = isFavoriteArticle(element.url),
         published = element.publishedAt
     )
 

@@ -29,15 +29,19 @@ private class LocalStorageImpl(
 
     override suspend fun insertArticle(article: Article) = withContext(IO) {
         with(article) {
-            queries.insertArticle(
-                url = url.toExternalValue(),
-                title = title.value,
-                author = author?.value,
-                description = description?.value,
-                url_to_image = urlToImage?.toExternalValue(),
-                published = published.toMillis(),
-                is_favorite = isFavorite
-            )
+            // fixme there should be insert or replace option (upsert)
+            queries.transaction {
+                queries.deleteArticle(url.toExternalValue())
+                queries.insertArticle(
+                    url = url.toExternalValue(),
+                    title = title.value,
+                    author = author?.value,
+                    description = description?.value,
+                    url_to_image = urlToImage?.toExternalValue(),
+                    published = published.toMillis(),
+                    is_favorite = isFavorite
+                )
+            }
         }
     }
 
@@ -51,6 +55,7 @@ private class LocalStorageImpl(
     }
 
     override suspend fun isFavoriteArticle(url: Url): Boolean = withContext(IO) {
+        // todo perform raw sql query, there is no need to materialize full model
         queries.isFavoriteArticle(url.toExternalValue(), ::dbModelToArticle)
             .executeAsOneOrNull()?.isFavorite == true
     }

@@ -17,14 +17,13 @@ class ObservableAppComponent : ObservableObject {
     
     private var cancellation: Cancellation?
     private let component: IosComponent
-        
+    
     init() {
         component = IosComponent(closeCommandsSink: { close in
             print("Close app \(close)")
         })
         
         cancellation = component.render { state in
-            print("New app state \(state)")
             self.appState = state
         }
     }

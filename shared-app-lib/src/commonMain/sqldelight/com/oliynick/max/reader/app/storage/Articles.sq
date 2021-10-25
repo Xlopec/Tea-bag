@@ -1,5 +1,5 @@
 CREATE TABLE Articles(
-  url TEXT PRIMARY KEY NOT NULL,
+  url TEXT NOT NULL,-- url TEXT PRIMARY KEY NOT NULL definition doesn't work for IOS
   title TEXT NOT NULL,
   author TEXT,
   description TEXT,
