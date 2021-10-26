@@ -5,11 +5,9 @@ package com.oliynick.max.reader.network
 
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.InternalException
-import com.oliynick.max.reader.app.LocalStorage
 import com.oliynick.max.reader.app.NetworkException
 import com.oliynick.max.reader.app.datatypes.Either
 import com.oliynick.max.reader.article.list.NewsApi
-import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.tea.core.IO
 import io.ktor.client.*
 import io.ktor.client.features.*
@@ -26,10 +24,10 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
 
-class NewsApiImpl<Env : LocalStorage>(
+class NewsApiImpl(
     // todo refine this field
     private val countryCode: String
-) : NewsApi<Env> {
+) : NewsApi {
 
     private val httpClient = HttpClient {
 
@@ -46,39 +44,24 @@ class NewsApiImpl<Env : LocalStorage>(
         }
     }
 
-    override suspend fun Env.fetchFromEverything(
+    override suspend fun fetchFromEverything(
         input: String,
         currentSize: Int,
         resultsPerPage: Int
     ) = Either {
-        toPage(
-            httpClient.get(EverythingRequest(input, currentSize, resultsPerPage)),
-            currentSize,
-            resultsPerPage
-        )
+        httpClient.get(EverythingRequest(input, currentSize, resultsPerPage))
     }
 
-    override suspend fun Env.fetchTopHeadlines(
+    override suspend fun fetchTopHeadlines(
         input: String,
         currentSize: Int,
         resultsPerPage: Int
     ) = Either {
-        toPage(
-            httpClient.get(
-                TopHeadlinesRequest(
-                    input,
-                    currentSize,
-                    resultsPerPage,
-                    countryCode
-                )
-            ),
-            currentSize,
-            resultsPerPage
-        )
+        httpClient.get(TopHeadlinesRequest(input, currentSize, resultsPerPage, countryCode))
     }
 }
 
-private suspend inline fun Either(ifSuccess: () -> Page) =
+private suspend inline fun Either(ifSuccess: () -> ArticleResponse) =
     Either(ifSuccess, { it.toAppException() })
 
 private suspend fun Throwable.toAppException(): AppException =
@@ -117,38 +100,6 @@ private fun ClientRequestException.toGenericExceptionDescription() =
 private fun NetworkException(
     cause: UnresolvedAddressException,
 ) = NetworkException("Network exception occurred, check connectivity", cause)
-
-private suspend fun <Env : LocalStorage> Env.toPage(
-    response: ArticleResponse,
-    currentSize: Int,
-    resultsPerPage: Int,
-): Page {
-    val (total, results) = response
-    val skip = currentSize % resultsPerPage
-
-    val tail = if (skip == 0 || results.isEmpty()) results
-    else results.subList(skip, results.size)
-
-    return Page(toArticles(tail), currentSize + tail.size < total)
-}
-
-private suspend fun <Env : LocalStorage> Env.toArticles(
-    articles: Iterable<ArticleElement>,
-) = articles.map { elem -> toArticle(elem) }
-
-private suspend fun <Env : LocalStorage> Env.toArticle(
-    element: ArticleElement,
-) =
-    // todo remove conversion
-    Article(
-        url = element.url,
-        title = element.title,
-        author = element.author,
-        description = element.description,
-        urlToImage = element.urlToImage,
-        isFavorite = isFavoriteArticle(element.url),
-        published = element.publishedAt
-    )
 
 private fun EverythingRequest(
     input: String,

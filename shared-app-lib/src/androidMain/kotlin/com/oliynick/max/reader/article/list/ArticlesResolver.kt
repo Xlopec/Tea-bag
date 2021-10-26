@@ -39,7 +39,7 @@ import kotlinx.serialization.json.*
 
 fun <Env> ArticlesResolver(
     application: Application,
-): ArticlesResolver<Env> where Env : NewsApi<Env>, Env : LocalStorage =
+): ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage =
     object : ArticlesResolver<Env> {
         override suspend fun Env.resolve(command: ArticlesCommand): Set<Message> {
             return when (command) {
@@ -51,13 +51,13 @@ fun <Env> ArticlesResolver(
         }
     }
 
-suspend fun Application.shareArticle(
+private suspend fun Application.shareArticle(
     command: DoShareArticle,
 ): Set<ScreenMessage> = command.sideEffect {
     startActivity(ShareIntent(article))
 }
 
-fun ShareIntent(
+private fun ShareIntent(
     article: Article,
 ): Intent =
     Intent().apply {

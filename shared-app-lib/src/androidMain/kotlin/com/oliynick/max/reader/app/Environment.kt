@@ -14,7 +14,7 @@ actual interface Environment :
     AppModule<Environment>,
     ArticlesModule<Environment>,
     ArticleDetailsModule<Environment>,
-    NewsApi<Environment>,
+    NewsApi,
     LocalStorage,
     AppNavigation,
     CoroutineScope
@@ -34,7 +34,7 @@ fun Environment(
         AppModule<Environment> by AppModule(closeCommands),
         ArticlesModule<Environment> by ArticlesModule(application),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(application),
-        NewsApi<Environment> by NewsApi(application),
+        NewsApi by NewsApi(application),
         LocalStorage by LocalStorageNew(application),
         CoroutineScope by scope {
         }

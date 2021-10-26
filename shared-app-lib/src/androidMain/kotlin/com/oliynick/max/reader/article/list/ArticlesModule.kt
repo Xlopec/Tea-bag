@@ -7,7 +7,7 @@ import com.oliynick.max.reader.app.LocalStorage
 
 fun <Env> ArticlesModule(
     application: Application,
-): ArticlesModule<Env> where Env : NewsApi<Env>,
+): ArticlesModule<Env> where Env : NewsApi,
                              Env : LocalStorage =
 
     object : ArticlesModule<Env>,

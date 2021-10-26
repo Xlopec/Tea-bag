@@ -7,9 +7,9 @@ import com.oliynick.max.reader.app.LocalStorage
 import com.oliynick.max.reader.network.NewsApiImpl
 import java.util.Locale.ENGLISH
 
-fun <Env : LocalStorage> NewsApi(
+fun NewsApi(
     application: Application
-): NewsApi<Env> = NewsApiImpl(application.countryCode)
+): NewsApi = NewsApiImpl(application.countryCode)
 
 /*private class GsonSerializer(
     private val gson: Gson,

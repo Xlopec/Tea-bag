@@ -10,20 +10,18 @@ actual interface Environment :
     ArticlesModule<Environment>,
     ArticleDetailsModule<Environment>,
     LocalStorage,
-    NewsApi<Environment>,
+    NewsApi,
     CoroutineScope
 
 fun Environment(
     scope: CoroutineScope,
     closeCommandsSink: CloseCommandsSink
-): Environment {
-
-    return object : Environment,
+): Environment =
+    object : Environment,
         AppModule<Environment> by AppModule(closeCommandsSink),
         ArticlesModule<Environment> by ArticlesModule(),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(),
         LocalStorage by LocalStorage(),
-        NewsApi<Environment> by NewsApi(),
+        NewsApi by NewsApi(),
         CoroutineScope by scope {
     }
-}
