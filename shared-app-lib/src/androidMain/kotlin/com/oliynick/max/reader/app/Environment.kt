@@ -3,8 +3,7 @@
 package com.oliynick.max.reader.app
 
 import android.app.Application
-import android.os.StrictMode
-import com.oliynick.max.reader.app.serialization.ArticleAdapters
+import android.os.StrictMode.*
 import com.oliynick.max.reader.app.storage.LocalStorageNew
 import com.oliynick.max.reader.article.details.ArticleDetailsModule
 import com.oliynick.max.reader.article.list.ArticlesModule
@@ -27,15 +26,13 @@ fun Environment(
     closeCommands: CloseCommandsSink
 ): Environment {
 
-    val gson = BuildGson()
-
     if (debug) {
         setupStrictAppPolicies()
     }
 
     return object : Environment,
         AppModule<Environment> by AppModule(closeCommands),
-        ArticlesModule<Environment> by ArticlesModule(gson, application),
+        ArticlesModule<Environment> by ArticlesModule(application),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(application),
         NewsApi<Environment> by NewsApi(application),
         LocalStorage by LocalStorageNew(application),
@@ -44,27 +41,27 @@ fun Environment(
 }
 
 private fun setupStrictAppPolicies() {
-    StrictMode.setThreadPolicy(
-        StrictMode.ThreadPolicy.Builder()
+    setThreadPolicy(
+        ThreadPolicy.Builder()
             .detectAll()
             .penaltyFlashScreen()
             .penaltyLog()
             .build()
     )
 
-    StrictMode.setVmPolicy(
-        StrictMode.VmPolicy.Builder()
+    setVmPolicy(
+        VmPolicy.Builder()
             .detectAll()
             .penaltyLog()
             .build()
     )
 }
 
-private fun BuildGson() =
+/*private fun BuildGson() =
     AppGson {
         setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 
         ArticleAdapters.forEach { (cl, adapter) ->
             registerTypeAdapter(cl.java, adapter)
         }
-    }
+    }*/

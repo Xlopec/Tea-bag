@@ -26,23 +26,21 @@
 
 package com.oliynick.max.reader.article.list
 
+import com.oliynick.max.reader.app.AppException
+import com.oliynick.max.reader.app.datatypes.Either
 import com.oliynick.max.reader.network.Page
 
 interface NewsApi<Env> {
 
-    @Throws(Exception::class)
-    // todo try to make it return Either<Page, AppException>
     suspend fun Env.fetchFromEverything(
         input: String,
         currentSize: Int,
         resultsPerPage: Int,
-    ): Page
+    ): Either<Page, AppException>
 
-    @Throws(Exception::class)
-    // todo try to make it return Either<Page, AppException>
     suspend fun Env.fetchTopHeadlines(
         input: String,
         currentSize: Int,
         resultsPerPage: Int,
-    ): Page
+    ): Either<Page, AppException>
 }

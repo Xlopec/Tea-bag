@@ -7,7 +7,9 @@ import com.oliynick.max.tea.core.IO
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set
+import com.squareup.sqldelight.db.SqlCursor
 import com.squareup.sqldelight.db.SqlDriver
+import com.squareup.sqldelight.db.use
 import kotlinx.coroutines.withContext
 
 fun LocalStorage(
@@ -51,13 +53,17 @@ private class LocalStorageImpl(
 
     override suspend fun findAllArticles(input: String): Page = withContext(IO) {
         val wrappedInput = "%$input%"
-        Page(queries.findAllArticles(wrappedInput, wrappedInput, wrappedInput, ::dbModelToArticle).executeAsList())
+        Page(
+            queries.findAllArticles(wrappedInput, wrappedInput, wrappedInput, ::dbModelToArticle)
+                .executeAsList()
+        )
     }
 
     override suspend fun isFavoriteArticle(url: Url): Boolean = withContext(IO) {
-        // todo perform raw sql query, there is no need to materialize full model
-        queries.isFavoriteArticle(url.toExternalValue(), ::dbModelToArticle)
-            .executeAsOneOrNull()?.isFavorite == true
+        queries
+            .isFavoriteArticle(url.toExternalValue())
+            .execute()
+            .use { cursor -> cursor.next() && cursor.isFavorite }
     }
 
     override suspend fun isDarkModeEnabled(): Boolean = withContext(IO) {
@@ -87,3 +93,6 @@ private fun dbModelToArticle(
     published = fromMillis(published),
     isFavorite = isFavorite
 )
+
+private inline val SqlCursor.isFavorite: Boolean
+    get() = getLong(6) == 1L
