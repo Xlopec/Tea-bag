@@ -12,7 +12,7 @@ import com.oliynick.max.reader.network.ArticleResponse
 import com.oliynick.max.reader.network.Page
 import com.oliynick.max.tea.core.component.effect
 
-suspend fun <Env> Env.loadArticles(
+internal suspend fun <Env> Env.loadArticles(
     command: LoadArticlesByQuery
 ): Set<ArticlesMessage> where Env : LocalStorage, Env : NewsApi =
     command.effect {
@@ -26,14 +26,14 @@ suspend fun <Env> Env.loadArticles(
         }
     }
 
-suspend fun LocalStorage.storeArticle(
+internal suspend fun LocalStorage.storeArticle(
     article: Article,
 ): Set<ScreenMessage> = effect {
     insertArticle(article)
     ArticleUpdated(article)
 }
 
-suspend fun LocalStorage.removeArticle(
+internal suspend fun LocalStorage.removeArticle(
     article: Article,
 ): Set<ScreenMessage> = effect {
     deleteArticle(article.url)
@@ -82,9 +82,7 @@ private suspend fun LocalStorage.toArticles(
 
 private suspend fun LocalStorage.toArticle(
     element: ArticleElement,
-) =
-    // todo remove conversion
-    Article(
+) = Article(
         url = element.url,
         title = element.title,
         author = element.author,

@@ -61,8 +61,9 @@ class NewsApiImpl(
     }
 }
 
-private suspend inline fun Either(ifSuccess: () -> ArticleResponse) =
-    Either(ifSuccess, { it.toAppException() })
+private suspend inline fun Either(
+    ifSuccess: () -> ArticleResponse
+) = Either(ifSuccess, { it.toAppException() })
 
 private suspend fun Throwable.toAppException(): AppException =
     wrap { raw ->

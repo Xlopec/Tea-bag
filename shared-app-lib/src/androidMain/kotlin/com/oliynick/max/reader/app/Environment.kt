@@ -4,7 +4,7 @@ package com.oliynick.max.reader.app
 
 import android.app.Application
 import android.os.StrictMode.*
-import com.oliynick.max.reader.app.storage.LocalStorageNew
+import com.oliynick.max.reader.app.storage.LocalStorage
 import com.oliynick.max.reader.article.details.ArticleDetailsModule
 import com.oliynick.max.reader.article.list.ArticlesModule
 import com.oliynick.max.reader.article.list.NewsApi
@@ -35,7 +35,7 @@ fun Environment(
         ArticlesModule<Environment> by ArticlesModule(application),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(application),
         NewsApi by NewsApi(application),
-        LocalStorage by LocalStorageNew(application),
+        LocalStorage by LocalStorage(application),
         CoroutineScope by scope {
         }
 }

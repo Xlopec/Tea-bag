@@ -27,14 +27,13 @@ private class LocalStorageImpl(
     }
 
     private val database = AppDatabase(driver)
-    private val queries = database.articlesQueries
 
-    override suspend fun insertArticle(article: Article) = withContext(IO) {
-        with(article) {
-            // fixme there should be insert or replace option (upsert)
-            queries.transaction {
-                queries.deleteArticle(url.toExternalValue())
-                queries.insertArticle(
+    override suspend fun insertArticle(article: Article) = query {
+        // fixme there should be insert or replace option (upsert)
+        transaction {
+            with(article) {
+                deleteArticle(url.toExternalValue())
+                insertArticle(
                     url = url.toExternalValue(),
                     title = title.value,
                     author = author?.value,
@@ -47,33 +46,39 @@ private class LocalStorageImpl(
         }
     }
 
-    override suspend fun deleteArticle(url: Url) = withContext(IO) {
-        queries.deleteArticle(url.toExternalValue())
+    override suspend fun deleteArticle(url: Url) = query {
+        deleteArticle(url.toExternalValue())
     }
 
-    override suspend fun findAllArticles(input: String): Page = withContext(IO) {
+    override suspend fun findAllArticles(input: String): Page = query {
+        // todo check if it actually works
         val wrappedInput = "%$input%"
+
         Page(
-            queries.findAllArticles(wrappedInput, wrappedInput, wrappedInput, ::dbModelToArticle)
+            findAllArticles(wrappedInput, wrappedInput, wrappedInput, ::dbModelToArticle)
                 .executeAsList()
         )
     }
 
-    override suspend fun isFavoriteArticle(url: Url): Boolean = withContext(IO) {
-        queries
-            .isFavoriteArticle(url.toExternalValue())
+    override suspend fun isFavoriteArticle(url: Url): Boolean = query {
+        isFavoriteArticle(url.toExternalValue())
             .execute()
             .use { cursor -> cursor.next() && cursor.isFavorite }
     }
 
-    override suspend fun isDarkModeEnabled(): Boolean = withContext(IO) {
+    override suspend fun isDarkModeEnabled(): Boolean = query {
         settings[DarkModeEnabledKey, false]
     }
 
-    override suspend fun storeIsDarkModeEnabled(isEnabled: Boolean) = withContext(IO) {
+    override suspend fun storeIsDarkModeEnabled(isEnabled: Boolean) = query {
         settings[DarkModeEnabledKey] = isEnabled
     }
 
+    private suspend inline fun <T> query(
+        crossinline block: ArticlesQueries.() -> T
+    ) = withContext(IO) {
+        database.articlesQueries.run(block)
+    }
 }
 
 private fun dbModelToArticle(

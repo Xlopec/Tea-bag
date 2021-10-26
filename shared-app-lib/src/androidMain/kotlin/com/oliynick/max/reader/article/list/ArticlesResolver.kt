@@ -41,14 +41,15 @@ fun <Env> ArticlesResolver(
     application: Application,
 ): ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage =
     object : ArticlesResolver<Env> {
-        override suspend fun Env.resolve(command: ArticlesCommand): Set<Message> {
-            return when (command) {
+        override suspend fun Env.resolve(
+            command: ArticlesCommand
+        ): Set<Message> =
+            when (command) {
                 is LoadArticlesByQuery -> loadArticles(command)
                 is SaveArticle -> storeArticle(command.article)
                 is RemoveArticle -> removeArticle(command.article)
                 is DoShareArticle -> application.shareArticle(command)
             }
-        }
     }
 
 private suspend fun Application.shareArticle(
