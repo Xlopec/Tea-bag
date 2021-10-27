@@ -2,6 +2,8 @@ import SwiftUI
 import SharedAppLib
 import Kingfisher
 import SharedAppLib
+import CoreMIDI
+import CoreAudio
 
 struct ArticlesView: View {
     
@@ -33,7 +35,7 @@ struct ArticlesView: View {
                     
                     if (state.isLoading || state.isLoadingNext || state.isRefreshing) && state.articles.isEmpty {
                         ZStack {
-                            ProgressView().scaledToFill()
+                            ProgressView()
                         }
                         .frame(
                             maxWidth: .infinity,
@@ -54,6 +56,11 @@ struct ArticlesView: View {
                                                         
                             ForEach(state.articles, id: \.url) { article in
                                 RowItem(screenId: state.id, article: article, handler: handler)
+                                    .onAppear {
+                                        if article == state.articles[safe: state.articles.count - 2] {
+                                            handler(LoadNextArticles(id: state.id))
+                                        }
+                                    }
                             }
                             
                             VStack(alignment: .center) {
@@ -64,7 +71,7 @@ struct ArticlesView: View {
                                         handler(RefreshArticles(id: state.id))
                                     }
                                 }
-                            }
+                            }.frame(maxWidth: .infinity)
                         }.refreshable {
                             handler(RefreshArticles(id: state.id))
                         }
@@ -103,7 +110,11 @@ struct ArticlesView: View {
 
 struct RowItem: View {
     
-    private let dateFormatter = DateFormatter()
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMM' at 'hh:mm"
+        return formatter
+    }()
     
     let article: Article
     let handler: MessageHandler
@@ -111,7 +122,6 @@ struct RowItem: View {
     
     // todo how to pass environmental vars implicitly?
     init(screenId: UUID, article: Article, handler: @escaping MessageHandler) {
-        dateFormatter.dateFormat = "dd MMM' at 'hh:mm"
         self.article = article
         self.handler = handler
         self.screenId = screenId
@@ -127,7 +137,6 @@ struct RowItem: View {
                     .fade(duration: 0.25)
                     .aspectRatio(contentMode: .fit)
                     .frame(height: 200, alignment: .center)
-                // .background(.red) // for layout debug
             }
             // todo get rid of casts
             Text(article.title as! String)
@@ -143,7 +152,7 @@ struct RowItem: View {
                     .lineLimit(100)
             }
             
-            Text("Published on \(dateFormatter.string(from: article.published))")
+            Text("Published on \(RowItem.dateFormatter.string(from: article.published))")
                 .font(.caption)
         }).background {
             // Context menu seems keeping old state and doesn't update on state change
@@ -197,4 +206,12 @@ struct ContentView_Previews: PreviewProvider {
 
 private extension ArticlesState.TransientStateException {
     var displayMessage: String { return th.message ?? "Failed to load articles, please, try again later" }
+}
+
+private extension Collection {
+    
+    subscript (safe index: Index) -> Element? {
+        return indices.contains(index) ? self[index] : nil
+    }
+    
 }
