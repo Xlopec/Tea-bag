@@ -24,23 +24,27 @@
 
 package com.oliynick.max.reader.article.list
 
-import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.AppException
+import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.ScreenMessage
 import com.oliynick.max.reader.domain.Article
+import kotlin.jvm.JvmInline
 
 sealed interface ArticlesMessage : ScreenMessage {
     val id: ScreenId?
 }
 
+/*@JvmInline value*///see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
 data class LoadNextArticles(
     override val id: ScreenId,
 ) : ArticlesMessage
 
+/*@JvmInline value*///see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
 data class LoadArticlesFromScratch(
     override val id: ScreenId,
 ) : ArticlesMessage
 
+/*@JvmInline value*///see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
 data class RefreshArticles(
     override val id: ScreenId,
 ) : ArticlesMessage
@@ -61,16 +65,20 @@ data class ArticlesOperationException(
     val cause: AppException,
 ) : ArticlesMessage
 
-data class ArticleUpdated(
+@JvmInline
+value class OnArticleUpdated(
     val article: Article,
 ) : ArticlesMessage {
-    override val id: Nothing? = null
+    override val id: Nothing?
+        get() = null
 }
 
-data class ShareArticle(
+@JvmInline
+value class OnShareArticle(
     val article: Article,
 ) : ArticlesMessage {
-    override val id: Nothing? = null
+    override val id: Nothing?
+        get() = null
 }
 
 data class OnQueryUpdated(

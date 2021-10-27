@@ -24,8 +24,8 @@
 
 package com.oliynick.max.reader.article.list
 
-import com.oliynick.max.reader.article.list.QueryType.*
 import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.article.list.QueryType.*
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.domain.toggleFavorite
 import com.oliynick.max.tea.core.component.UpdateWith
@@ -47,8 +47,8 @@ object LiveArticlesUpdater : ArticlesUpdater {
             is RefreshArticles -> state.toRefreshing() command state.toLoadArticlesQuery()
             is ArticlesOperationException -> state.toException(message.cause).noCommand()
             is ToggleArticleIsFavorite -> toggleFavorite(message.article, state)
-            is ArticleUpdated -> updateArticle(message.article, state)
-            is ShareArticle -> shareArticle(message.article, state)
+            is OnArticleUpdated -> updateArticle(message.article, state)
+            is OnShareArticle -> shareArticle(message.article, state)
             // fixme redesign FeedState
             is OnQueryUpdated -> updateQuery(message.query, state)
         }

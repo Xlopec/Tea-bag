@@ -30,14 +30,14 @@ internal suspend fun LocalStorage.storeArticle(
     article: Article,
 ): Set<ScreenMessage> = effect {
     insertArticle(article)
-    ArticleUpdated(article)
+    OnArticleUpdated(article)
 }
 
 internal suspend fun LocalStorage.removeArticle(
     article: Article,
 ): Set<ScreenMessage> = effect {
     deleteArticle(article.url)
-    ArticleUpdated(article)
+    OnArticleUpdated(article)
 }
 
 private suspend fun LocalStorage.toArticlesMessage(

@@ -54,14 +54,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.statusBarsPadding
-import com.oliynick.max.reader.app.ScreenId
+import com.max.reader.misc.safe
+import com.max.reader.ui.theme.ThemedPreview
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.NavigateToArticleDetails
-import com.max.reader.misc.safe
+import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.article.list.*
 import com.oliynick.max.reader.article.list.ArticlesState.TransientState.*
 import com.oliynick.max.reader.article.list.QueryType.*
-import com.max.reader.ui.theme.ThemedPreview
-import com.oliynick.max.reader.article.list.*
 import com.oliynick.max.reader.domain.*
 import java.net.URL
 import java.text.SimpleDateFormat
@@ -419,7 +419,7 @@ private fun ArticleActions(
     ) {
 
         IconButton(
-            onClick = { onMessage(ShareArticle(article)) }
+            onClick = { onMessage(OnShareArticle(article)) }
         ) {
             Icon(
                 imageVector = Icons.Default.Share,
