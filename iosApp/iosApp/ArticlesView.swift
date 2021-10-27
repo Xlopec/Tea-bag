@@ -9,12 +9,13 @@ struct ArticlesView: View {
     let handler: MessageHandler
     
     @SwiftUI.State var showsAlert: Bool
-    @SwiftUI.State private var searchText: String = ""
+    private var searchText: Binding<String>
     
     init(state: ArticlesState, handler: @escaping MessageHandler) {
         self.state = state
         self.handler = handler
         self.showsAlert = state.transientState is ArticlesState.TransientStateException
+        self.searchText = Binding.constant(state.query.input)
     }
     
     var body: some View {
@@ -30,7 +31,7 @@ struct ArticlesView: View {
                     
                     SearchBar(text: searchText)
                     
-                    if (state.isLoading || state.isLoadingNext) && state.articles.isEmpty {
+                    if (state.isLoading || state.isLoadingNext || state.isRefreshing) && state.articles.isEmpty {
                         ZStack {
                             ProgressView().scaledToFill()
                         }
@@ -39,21 +40,29 @@ struct ArticlesView: View {
                             maxHeight: .infinity,
                             alignment: .center
                         )
+                    } else if let transientState = state.transientState as? ArticlesState.TransientStateException, state.articles.isEmpty {
+                        MessageView(message: transientState.displayMessage, actionButtonMessage: "Retry") {
+                            handler(RefreshArticles(id: state.id))
+                        }.frame(
+                            maxWidth: .infinity,
+                            maxHeight: .infinity,
+                            alignment: .center
+                        )
                     } else {
                         
                         List {
-                            
-                            //showsAlert = state.transientState is ArticlesState.TransientStateException
-                            
+                                                        
                             ForEach(state.articles, id: \.url) { article in
                                 RowItem(screenId: state.id, article: article, handler: handler)
                             }
                             
-                            VStack(alignment: HorizontalAlignment.center) {
+                            VStack(alignment: .center) {
                                 if state.isLoadingNext {
                                     ProgressView()
                                 } else if let transientState = state.transientState as? ArticlesState.TransientStateException {
-                                    Text(transientState.th.message ?? "Failed to load articles, please, try again later")
+                                    MessageView(message: transientState.displayMessage, actionButtonMessage: "Retry") {
+                                        handler(RefreshArticles(id: state.id))
+                                    }
                                 }
                             }
                         }.refreshable {
@@ -129,7 +138,9 @@ struct RowItem: View {
             }
             
             if let description = article.description_ as? String {
-                Text(description).font(.subheadline).lineLimit(100)
+                Text(description)
+                    .font(.subheadline)
+                    .lineLimit(100)
             }
             
             Text("Published on \(dateFormatter.string(from: article.published))")
@@ -148,14 +159,13 @@ struct RowItem: View {
                     }
                     
                     Button {
-                        print("article \(article)")
                         handler(ToggleArticleIsFavorite(id: screenId, article: article))
                     } label: {
                         Label(article.isFavorite ? "Remove from favorite" : "Add to favorite", systemImage: article.isFavorite ? "heart.fill" : "heart")
                     }
                 }.id(article.isFavorite)
         }
-           
+        
         /*.padding(
          EdgeInsets(
          top: CGFloat(16.0),
@@ -175,7 +185,16 @@ struct RowItem: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
+    
+    static private let article = Article(url: URL(string: "www.google.com")!, title: "Title", author: nil, description: nil, urlToImage: nil, published: Date(), isFavorite: true)
+    
     static var previews: some View {
-        RowItem(screenId: UUID(), article: Article.init(url: URL(string: "www.google.com")!, title: "Title", author: nil, description: nil, urlToImage: nil, published: Date(), isFavorite: true)) {_ in }
+        RowItem(screenId: UUID(), article: article) {_ in }
+        
+        ArticlesView(state: ArticlesState(id: UUID(), query: Query(input: "Ios articles", type: QueryType.favorite), articles: [article], hasMoreArticles: true, transientState: ArticlesState.TransientStatePreview.shared))  { _ in }
     }
+}
+
+private extension ArticlesState.TransientStateException {
+    var displayMessage: String { return th.message ?? "Failed to load articles, please, try again later" }
 }
