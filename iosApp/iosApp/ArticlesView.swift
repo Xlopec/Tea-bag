@@ -28,10 +28,17 @@ struct ArticlesView: View {
                         .font(.title)
                         .padding()
                     
-                    SearchBar(text: $searchText)
+                    SearchBar(text: searchText)
                     
                     if (state.isLoading || state.isLoadingNext) && state.articles.isEmpty {
-                        ProgressView().scaledToFill()
+                        ZStack {
+                            ProgressView().scaledToFill()
+                        }
+                        .frame(
+                            maxWidth: .infinity,
+                            maxHeight: .infinity,
+                            alignment: .center
+                        )
                     } else {
                         
                         List {
@@ -51,9 +58,7 @@ struct ArticlesView: View {
                             }
                         }.refreshable {
                             handler(RefreshArticles(id: state.id))
-                        }.alert(isPresented: $showsAlert, TextAlert(title: "Title") {_ in
-                            print("Loh")
-                        })
+                        }
                     }
                     
                 }
@@ -81,7 +86,8 @@ struct ArticlesView: View {
                         Text("Settings")
                     }
                 
-            }.font(.headline)
+            }
+            .font(.headline)
         }
     }
 }

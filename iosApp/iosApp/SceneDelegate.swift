@@ -10,6 +10,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let appComponent = ObservableAppComponent()
         let contentView = AppView(appComponent: appComponent)
         
+        UITabBar.appearance().isTranslucent = false
+        
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
