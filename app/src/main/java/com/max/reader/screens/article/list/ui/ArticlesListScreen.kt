@@ -90,9 +90,14 @@ fun ArticlesScreen(
                 cause = transientState.th,
                 onMessage = onMessage
             )
-            is LoadingNext,
-            is Loading,
-            -> ArticlesLoadingContent(
+            is Loading ->
+                ArticlesLoadingFromScratchContent(
+                    id = state.id,
+                    query = state.query,
+                    onMessage = onMessage
+                )
+            is LoadingNext
+            -> ArticlesLoadingNextContent(
                 state = listState,
                 id = state.id,
                 query = state.query,
@@ -127,39 +132,44 @@ private fun ArticlesProgress(
 }
 
 @Composable
-private fun ArticlesLoadingContent(
+private fun ArticlesLoadingFromScratchContent(
+    id: ScreenId,
+    query: Query,
+    onMessage: (Message) -> Unit,
+) {
+    ArticlesContent(
+        id = id,
+        query = query,
+        onMessage = onMessage
+    ) {
+        ArticlesProgress(modifier = Modifier.fillMaxSize())
+    }
+}
+
+@Composable
+private fun ArticlesLoadingNextContent(
     state: LazyListState,
     id: ScreenId,
     query: Query,
     articles: List<Article>,
     onMessage: (Message) -> Unit,
 ) {
-    if (articles.isEmpty()) {
-        ArticlesContent(
+    ArticlesContent(
+        state = state,
+        id = id,
+        query = query,
+        onMessage = onMessage
+    ) {
+        ArticlesContentNonEmptyImpl(
             id = id,
             query = query,
+            articles = articles,
             onMessage = onMessage
-        ) {
-            ArticlesProgress(modifier = Modifier.fillMaxSize())
-        }
-    } else {
-        ArticlesContent(
-            state = state,
-            id = id,
-            query = query,
-            onMessage = onMessage
-        ) {
-            ArticlesContentNonEmptyImpl(
-                id = id,
-                query = query,
-                articles = articles,
-                onMessage = onMessage
-            )
+        )
 
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                ArticlesProgress(modifier = Modifier.fillMaxWidth())
-            }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            ArticlesProgress(modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -284,7 +294,7 @@ private fun LazyListScope.ArticlesContentNonEmptyImpl(
     onMessage: (Message) -> Unit,
     onLastElement: () -> Unit = { onMessage(LoadNextArticles(id)) },
 ) {
-    require(articles.isNotEmpty())
+    require(articles.isNotEmpty()) { "Empty articles for id=$id, query=$query" }
 
     item {
         Text(
@@ -336,7 +346,7 @@ private fun ArticleImage(
                 painter = rememberImagePainter(
                     data = imageUrl.toExternalForm(),
                 ) {
-                  crossfade(true)
+                    crossfade(true)
                 },
                 contentDescription = "Article's Image",
                 modifier = Modifier.fillMaxWidth(),
@@ -618,7 +628,7 @@ private fun ArticlesExceptionContentPreview() {
 @Render("Articles loading list preview")
 private fun ArticlesLoadingContentPreview() {
     ThemedPreview {
-        ArticlesLoadingContent(
+        ArticlesLoadingNextContent(
             state = rememberLazyListState(),
             id = UUID.randomUUID(),
             query = Query("Android", Regular),

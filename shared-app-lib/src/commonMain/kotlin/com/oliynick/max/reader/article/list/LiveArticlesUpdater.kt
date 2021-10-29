@@ -25,6 +25,7 @@
 package com.oliynick.max.reader.article.list
 
 import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.article.list.ArticlesState.Companion.ArticlesPerPage
 import com.oliynick.max.reader.article.list.QueryType.*
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.domain.toggleFavorite
@@ -40,11 +41,12 @@ object LiveArticlesUpdater : ArticlesUpdater {
         message: ArticlesMessage,
         state: ArticlesState
     ): UpdateWith<ArticlesState, Command> =
+        // fixme refactor this bit
         when (message) {
             is ArticlesLoaded -> state.toPreview(message.articles, message.hasMore).noCommand()
-            is LoadNextArticles -> loadNextArticles(state)
-            is LoadArticlesFromScratch -> state.toLoading() command state.toLoadArticlesQuery()
-            is RefreshArticles -> state.toRefreshing() command state.toLoadArticlesQuery()
+            is LoadNextArticles -> state.toLoadNextArticlesUpdate()
+            is LoadArticlesFromScratch -> state.toLoadArticlesFromScratchUpdate()
+            is RefreshArticles -> state.toRefreshUpdate()
             is ArticlesOperationException -> state.toException(message.cause).noCommand()
             is ToggleArticleIsFavorite -> toggleFavorite(message.article, state)
             is OnArticleUpdated -> updateArticle(message.article, state)
@@ -53,21 +55,20 @@ object LiveArticlesUpdater : ArticlesUpdater {
             is OnQueryUpdated -> updateQuery(message.query, state)
         }
 
-    fun ArticlesState.toLoadArticlesQuery() =
-        LoadArticlesByQuery(id, query, articles.size, ArticlesState.ArticlesPerPage)
+    fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadArticlesQuery()
 
-    fun loadNextArticles(
-        state: ArticlesState
-    ) =
-        if (state.isPreview && state.hasMoreArticles) {
-            state.toLoadingNext() command LoadArticlesByQuery(
-                state.id,
-                state.query,
-                state.articles.size,
-                ArticlesState.ArticlesPerPage
-            )
+    fun ArticlesState.toLoadArticlesQuery() =
+        LoadArticlesByQuery(id, query, articles.size, ArticlesPerPage)
+
+    fun ArticlesState.toLoadArticlesFromScratchUpdate() =
+        toLoading() command toLoadArticlesQuery()
+
+    fun ArticlesState.toLoadNextArticlesUpdate() =
+        if (isPreview && hasMoreArticles && articles.isNotEmpty() /*todo should we throw an error in this case?*/) {
+            toLoadingNext() command toLoadArticlesQuery()
         } else {
-            state.noCommand()
+            // just ignore the command
+            noCommand()
         }
 
     fun updateArticle(
