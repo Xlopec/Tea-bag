@@ -102,7 +102,7 @@ struct ArticlesView: View {
                         Text("Trending")
                     }
                 
-                Text("blyat")
+                WebView(pageURL: "www.google.com")
                     .tabItem {
                         Image(systemName: "gear")
                         Text("Settings")

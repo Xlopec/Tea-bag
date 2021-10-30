@@ -75,7 +75,7 @@ data class ArticlesState(
             id: ScreenId,
             query: Query,
             articles: List<Article> = emptyList(),
-        ) = ArticlesState(id, query, articles, false, LoadingNext)
+        ) = ArticlesState(id, query, articles, false, Loading)
     }
 
 }
