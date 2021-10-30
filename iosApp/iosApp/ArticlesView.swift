@@ -10,14 +10,13 @@ struct ArticlesView: View {
     let state: ArticlesState
     let handler: MessageHandler
     
-    @SwiftUI.State var showsAlert: Bool
-    private var searchText: Binding<String>
+    @State
+    private var searchText: String
     
     init(state: ArticlesState, handler: @escaping MessageHandler) {
         self.state = state
         self.handler = handler
-        self.showsAlert = state.transientState is ArticlesState.TransientStateException
-        self.searchText = Binding.constant(state.query.input)
+        self.searchText = state.query.input
     }
     
     var body: some View {
@@ -31,9 +30,14 @@ struct ArticlesView: View {
                         .font(.title)
                         .padding()
                     
-                    SearchBar(text: searchText)
+                    SearchBar(text: $searchText, hintText: "Search in articles...") {
+                        handler(LoadArticlesFromScratch(id: state.id))
+                    }.onChange(of: searchText) { updatedSearchText in
+                        // todo send request to fetch and show suggestions
+                        handler(OnQueryUpdated(id: state.id, query: updatedSearchText))
+                    }
                     
-                    if (state.isLoading || state.isLoadingNext || state.isRefreshing) && state.articles.isEmpty {
+                    if state.isLoading {
                         ZStack {
                             ProgressView()
                         }
@@ -53,10 +57,12 @@ struct ArticlesView: View {
                     } else {
                         
                         List {
-                                                        
+                            
                             ForEach(state.articles, id: \.url) { article in
                                 RowItem(screenId: state.id, article: article, handler: handler)
                                     .onAppear {
+                                        // give window of size of 2 last items in order to prefetch next articles
+                                        // before user will scroll to the end of the list
                                         if article == state.articles[safe: state.articles.count - 2] {
                                             handler(LoadNextArticles(id: state.id))
                                         }

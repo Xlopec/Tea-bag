@@ -11,17 +11,21 @@ import SwiftUI
 
 struct SearchBar: View {
     @Binding var text: String
-
     @State private var isEditing = false
+    @State var hintText: String
+    
+    let onSubmit: () -> Void
         
     var body: some View {
         HStack {
             
-            TextField("Search ...", text: $text)
+            TextField(hintText, text: $text)
                 .padding(7)
                 .padding(.horizontal, 25)
                 .background(Color(.systemGray6))
                 .cornerRadius(8)
+                .submitLabel(.done)
+                .onSubmit(onSubmit)
                 .overlay(
                     HStack {
                         Image(systemName: "magnifyingglass")
@@ -31,6 +35,7 @@ struct SearchBar: View {
                         
                         if isEditing {
                             Button(action: {
+                                // doesn't re-render at this point, wtf?
                                 self.text = ""
                                 
                             }) {
@@ -66,6 +71,6 @@ struct SearchBar: View {
 
 struct SearchBar_Previews: PreviewProvider {
     static var previews: some View {
-        SearchBar(text: .constant(""))
+        SearchBar(text: .constant(""), hintText: "Search in afticles...") {}
     }
 }
