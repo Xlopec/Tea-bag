@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.article.details.ArticleDetailsResolver
