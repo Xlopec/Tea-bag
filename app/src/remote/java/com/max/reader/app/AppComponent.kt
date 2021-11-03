@@ -16,6 +16,7 @@
 
 @file:Suppress("FunctionName")
 
+/*
 package com.max.reader.app
 
 import android.os.Build
@@ -64,3 +65,4 @@ fun AppComponent(
 private fun AppGsonSerializer() = GsonSerializer {
     registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
 }
+*/

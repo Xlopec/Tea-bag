@@ -29,7 +29,6 @@ import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 
 typealias ScreenId = UUID
 
@@ -37,8 +36,28 @@ interface ScreenState {
     val id: ScreenId
 }
 
+interface TabScreen : ScreenState {
+    // things for consideration:
+    // 1 how to make fast search & update for nested screens
+    // 2 how to keep class layout as simple as possible with p1 in mind
+    // 3 how to avoid code duplication? (consider Arrow Meta optics API)
+    // fixme this probably should go as extensions
+    // probably I can make typealias for this and implement all the necessary operations on the top of it
+    val screens: PersistentList<ScreenState>
+    fun pop(): TabScreen
+    fun contains(id: ScreenId): Boolean
+    fun <T : ScreenState> update(
+        id: ScreenId,
+        how: (T) -> UpdateWith<T, Command>
+    ): UpdateWith<TabScreen, Command>
+}
+
 data class AppState(
     val isInDarkMode: Boolean,
+    /**
+     * Holds application stack of screens
+     * invariants: [Screen 0..*, TabScreen 1..3]
+     */
     val screens: PersistentList<ScreenState>,
 ) {
 
@@ -53,51 +72,40 @@ data class AppState(
 }
 
 inline val AppState.screen: ScreenState
-    get() = screens.last()
+    get() = screens[0]
 
 inline fun <reified T : ScreenState> AppState.updateScreen(
     id: ScreenId?,
-    how: (T) -> UpdateWith<T, Command>,
+    noinline how: (T) -> UpdateWith<T, Command>,
 ): UpdateWith<AppState, Command> {
 
-    val index by lazy { screens.indexOfFirst { screen -> screen.id == id && screen is T } }
 
-    return when {
-        id == null -> updateScreen(how)
-        index < 0 -> noCommand()
-        else -> {
-            val (screen, commands) = how(screens[index] as T)
+    for (i in screens.indices) {
 
-            copy(screens = screens.set(index, screen)) command commands
+        val current = screens[i]
+
+        if (current.id == id || id == null /*fixme shit*/) {
+            val (screen, commands) = how(current as T)
+
+            return copy(screens = screens.set(i, screen)) command commands
+
+        } else if (current is TabScreen && current.contains(id)) {
+            val (screen, commands) = current.update(id, how)
+
+            return copy(screens = screens.set(i, screen)) command commands
         }
     }
+
+    return noCommand()
 }
 
-inline fun <reified T : ScreenState> AppState.updateScreen(
-    how: (T) -> UpdateWith<T, Command>,
-): UpdateWith<AppState, Command> {
+fun AppState.dropTopScreen() =
+    copy(screens = screens.pop())
 
-    val cmds = mutableSetOf<Command>()
-    val scrs = screens.fold(ArrayList<ScreenState>(screens.size)) { acc, screen ->
-
-        if (screen is T) {
-            val (updatedScreen, commands) = how(screen)
-
-            cmds += commands
-            acc += updatedScreen
-        } else {
-            acc += screen
-        }
-
-        acc
-    }.toPersistentList()
-
-    return copy(screens = scrs) command cmds
-}
-
-fun AppState.swapWithLast(
-    i: Int,
-) = swapScreens(i, screens.lastIndex)
+// new api
+inline fun <T : ScreenState> AppState.updateTopScreen(
+    how: () -> T
+) = copy(screens = screens.set(0, how()))
 
 fun AppState.swapScreens(
     i: Int,
@@ -113,8 +121,21 @@ fun AppState.swapScreens(
 
 fun AppState.pushScreen(
     screen: ScreenState,
-): AppState = copy(screens = screens.add(screen))
+): AppState = copy(screens = screens.add(0, screen))
 
-fun AppState.popScreen(): AppState = copy(screens = screens.pop())
+// todo refactor this bit
+fun AppState.popScreen(): AppState {
+    val screen = screen
 
-private fun <T> PersistentList<T>.pop() = if (lastIndex >= 0) removeAt(lastIndex) else this
+    return if (screen is TabScreen) {
+        if (screen.screens.isEmpty()) {
+            this // should close app
+        } else {
+            updateTopScreen { screen.pop() }
+        }
+    } else {
+        dropTopScreen()
+    }
+}
+
+fun <T> PersistentList<T>.pop() = if (isEmpty()) this else removeAt(0)

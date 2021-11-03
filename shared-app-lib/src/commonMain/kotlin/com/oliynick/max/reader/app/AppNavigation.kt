@@ -29,7 +29,6 @@ package com.oliynick.max.reader.app
 import com.oliynick.max.reader.settings.SettingsState
 import com.oliynick.max.reader.article.list.ArticlesState
 import com.oliynick.max.reader.article.list.Query
-import com.oliynick.max.reader.article.list.QueryType
 import com.oliynick.max.reader.article.list.QueryType.*
 import com.oliynick.max.reader.article.details.ArticleDetailsState
 import com.oliynick.max.tea.core.component.UpdateWith
@@ -48,121 +47,59 @@ fun AppNavigation(
     debug: Boolean = true
 ) = AppNavigation { nav, state ->
     when (nav) {
+        is TabNavigation -> state.pushTabIfNotExists(nav, TabNavigation::toTabScreen)
         // gson serializer breaks singletons identity, thus we should rely on `is` check rather
         // then referential equality
-        is NavigateToFeed -> state.pushBottomNavigationScreen(debug, nav, Query("android", Regular))
-        is NavigateToFavorite -> state.pushBottomNavigationScreen(debug, nav, Query("", Favorite))
-        is NavigateToTrending -> state.pushBottomNavigationScreen(debug, nav, Query("", Trending))
         is NavigateToArticleDetails -> state.pushArticleDetailsScreen(nav)
-        is NavigateToSettings -> state.pushBottomNavigationScreenForSettings(debug, nav)
         is Pop -> state.pop()
     }
 }
 
-// todo refactor, implement using another approach
+// todo refactor later
+fun TabNavigation.toTabScreen(): UpdateWith<TabScreen, Command> =
+    when (this) {
+        NavigateToSettings -> SettingsState.noCommand()
+        NavigateToFeed -> Query("android", Regular).let { ArticlesState.newLoading(id, it) command LoadArticlesByQuery(id, it) }
+        NavigateToFavorite -> Query("", Favorite).let { ArticlesState.newLoading(id, it) command LoadArticlesByQuery(id, it) }
+        NavigateToTrending -> Query("", Trending).let { ArticlesState.newLoading(id, it) command LoadArticlesByQuery(id, it) }
+    }
+
+inline fun AppState.pushTabIfNotExists(
+    nav: TabNavigation,
+    crossinline screenWithCommand: (TabNavigation) -> UpdateWith<TabScreen, Command>,
+): UpdateWith<AppState, Command> {
+    val i = findTabScreenIndex(nav)
+    val screenToCommand by lazy { screenWithCommand(nav) }
+    val swap = i >= 0
+    val newState = if (swap) {
+        // move current screen to the start of screens stack,
+        // so that it'll be popped out first
+        swapScreens(i, 0)
+    } else {
+        pushScreen(screenToCommand.first)
+    }
+
+    return (if (swap) newState.noCommand() else newState command screenToCommand.second)
+        .also { (state, commands) ->
+            // non tab screens should always go before tab screens
+            // there always should be at least 1 tab screen
+        }
+}
+
+fun AppState.findTabScreenIndex(
+    nav: TabNavigation,
+): Int = screens.indexOfFirst { s -> nav.id == s.id }
+
 // if we encounter any screen out of bottom bar screens, we just close the app;
 // we pop the last screen in another case
 fun AppState.pop() =
-    if (screens.last().isBottomBarScreen) this command CloseApp
+    // fixme refactor this bit
+    if (screen is TabScreen && (screen as TabScreen).screens.isEmpty()) this command CloseApp
     else popScreen().noCommand()
 
 fun AppState.pushArticleDetailsScreen(
     nav: NavigateToArticleDetails,
 ) = pushScreen(ArticleDetailsState(nav.id, nav.article)).noCommand()
-
-fun AppState.pushBottomNavigationScreenForSettings(
-    debug: Boolean,
-    nav: NavigateToSettings,
-): UpdateWith<AppState, Command> =
-    pushScreenIfNotExistsWithState(nav) { SettingsState }
-        .also { (newState, _) ->
-            if (debug) {
-                checkSettingsScreensNumber(newState, this)
-            }
-        }
-
-inline fun AppState.pushScreenIfNotExistsWithState(
-    nav: Navigation,
-    crossinline screenWithCommand: () -> ScreenState,
-): UpdateWith<AppState, Command> =
-    pushScreenIfNotExists(nav) { screenWithCommand() to emptySet() }
-
-inline fun AppState.pushScreenIfNotExists(
-    nav: Navigation,
-    crossinline screenWithCommand: (ScreenId) -> UpdateWith<ScreenState, Command>,
-): UpdateWith<AppState, Command> {
-    val i = findExistingScreenForNavigation(nav)
-    val screenToCommand by lazy(LazyThreadSafetyMode.NONE) { screenWithCommand(nav.id) }
-    val swap = i >= 0
-    val newState = if (swap) {
-        // move current screen to the end of screens stack,
-        // so that it'll be popped out first
-        swapWithLast(i)
-    } else {
-        pushScreen(screenToCommand.first)
-    }
-
-    return if (swap) newState.noCommand()
-    else newState command screenToCommand.second
-}
-
-fun AppState.pushBottomNavigationScreen(
-    debug: Boolean,
-    nav: Navigation,
-    query: Query,
-): UpdateWith<AppState, Command> =
-    pushScreenIfNotExists(nav) { screenId ->
-        ArticlesState.newLoading(screenId, query) command LoadArticlesByQuery(screenId, query)
-    }.also { (newState, _) ->
-        if (debug) {
-            checkArticlesScreensNumber(nav, query, newState, this)
-        }
-    }
-
-fun AppState.findExistingScreenForNavigation(
-    nav: Navigation,
-): Int = screens.indexOfFirst { s -> nav.id == s.id }
-
-private inline val ScreenState.isBottomBarScreen: Boolean
-    get() = this is ArticlesState || this is SettingsState
-
-private fun checkArticlesScreensNumber(
-    nav: Navigation,
-    query: Query,
-    newState: AppState,
-    oldState: AppState,
-) {
-    val grouped = newState.screens.groupBy { screen -> (screen as? ArticlesState)?.query?.type }
-
-    val predicate =
-        QueryType.values().map { type -> grouped[type]?.size ?: 0 }.all { size -> size <= 1 }
-
-    check(predicate) {
-        WrongScreensNumberErrorMessage(nav, query, newState, oldState)
-    }
-}
-
-private fun checkSettingsScreensNumber(
-    newState: AppState,
-    oldState: AppState,
-) =
-    check(newState.screens.count { screen -> screen is SettingsState } == 1) {
-        WrongSettingsScreensNumberErrorMessage(newState, oldState)
-    }
-
-private fun WrongSettingsScreensNumberErrorMessage(
-    newState: AppState,
-    oldState: AppState,
-) = "Wrong number of settings screens after update," +
-        "new state: $newState,\nold state: $oldState"
-
-private fun WrongScreensNumberErrorMessage(
-    nav: Navigation,
-    query: Query,
-    newState: AppState,
-    oldState: AppState,
-) = "Wrong number of bottom navigation screens after navigation update: " +
-        "$nav,\nquery: $query,\nnew state: $newState,\nold state: $oldState"
 
 private fun LoadArticlesByQuery(
     id: ScreenId,

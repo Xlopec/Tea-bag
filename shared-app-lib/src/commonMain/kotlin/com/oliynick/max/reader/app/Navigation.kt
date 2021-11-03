@@ -27,31 +27,31 @@ package com.oliynick.max.reader.app
 import com.oliynick.max.reader.settings.SettingsState
 import com.oliynick.max.reader.domain.Article
 
-sealed interface Navigation : Message {
-    val id: ScreenId
-}
+sealed interface Navigation : Message
 
 data class NavigateToArticleDetails(
     val article: Article,
-    override val id: ScreenId = randomUUID(),
+    val id: ScreenId = randomUUID(),
 ) : Navigation
 
-object NavigateToFavorite : Navigation {
+sealed interface TabNavigation : Navigation {
+    val id: ScreenId
+}
+
+object NavigateToFavorite : TabNavigation {
     override val id: ScreenId = randomUUID()
 }
 
-object NavigateToFeed : Navigation {
+object NavigateToFeed : TabNavigation {
     override val id: ScreenId = randomUUID()
 }
 
-object NavigateToSettings : Navigation {
+object NavigateToSettings : TabNavigation {
     override val id: ScreenId = SettingsState.id
 }
 
-object NavigateToTrending : Navigation {
+object NavigateToTrending : TabNavigation {
     override val id: ScreenId = randomUUID()
 }
 
-object Pop : Navigation {
-    override val id: ScreenId = randomUUID()
-}
+object Pop : Navigation
