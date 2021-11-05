@@ -36,22 +36,6 @@ interface ScreenState {
     val id: ScreenId
 }
 
-interface TabScreen : ScreenState {
-    // things for consideration:
-    // 1 how to make fast search & update for nested screens
-    // 2 how to keep class layout as simple as possible with p1 in mind
-    // 3 how to avoid code duplication? (consider Arrow Meta optics API)
-    // fixme this probably should go as extensions
-    // probably I can make typealias for this and implement all the necessary operations on the top of it
-    val screens: PersistentList<ScreenState>
-    fun pop(): TabScreen
-    fun contains(id: ScreenId): Boolean
-    fun <T : ScreenState> update(
-        id: ScreenId,
-        how: (T) -> UpdateWith<T, Command>
-    ): UpdateWith<TabScreen, Command>
-}
-
 data class AppState(
     val isInDarkMode: Boolean,
     /**
@@ -72,7 +56,7 @@ data class AppState(
 }
 
 inline val AppState.screen: ScreenState
-    get() = screens[0]
+    get() = screens.screen
 
 inline fun <reified T : ScreenState> AppState.updateScreen(
     id: ScreenId?,
@@ -89,7 +73,7 @@ inline fun <reified T : ScreenState> AppState.updateScreen(
 
             return copy(screens = screens.set(i, screen)) command commands
 
-        } else if (current is TabScreen && current.contains(id)) {
+        } else if (current is TabScreen && id in current.screens) {
             val (screen, commands) = current.update(id, how)
 
             return copy(screens = screens.set(i, screen)) command commands
@@ -103,8 +87,8 @@ fun AppState.dropTopScreen() =
     copy(screens = screens.pop())
 
 // new api
-inline fun <T : ScreenState> AppState.updateTopScreen(
-    how: () -> T
+inline fun AppState.updateTopScreen(
+    how: () -> ScreenState
 ) = copy(screens = screens.set(0, how()))
 
 fun AppState.swapScreens(
@@ -114,28 +98,25 @@ fun AppState.swapScreens(
 
     if (i == j) return this
 
-    val tmp = screens[j]
-
-    return copy(screens = screens.set(j, screens[i]).set(i, tmp))
+    return copy(screens = screens.swap(i, j))
 }
 
 fun AppState.pushScreen(
     screen: ScreenState,
-): AppState = copy(screens = screens.add(0, screen))
+): AppState = copy(screens = screens.push(screen))
 
 // todo refactor this bit
-fun AppState.popScreen(): AppState {
+fun AppState.popScreen(): UpdateWith<AppState, CloseApp> {
     val screen = screen
 
     return if (screen is TabScreen) {
         if (screen.screens.isEmpty()) {
-            this // should close app
+            this command CloseApp
         } else {
-            updateTopScreen { screen.pop() }
+            updateTopScreen { screen.pop() }.noCommand()
         }
     } else {
-        dropTopScreen()
+        dropTopScreen().noCommand()
     }
 }
 
-fun <T> PersistentList<T>.pop() = if (isEmpty()) this else removeAt(0)

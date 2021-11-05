@@ -64,20 +64,15 @@ data class ArticlesState(
     }
 
     override fun pop(): TabScreen = copy(screens = screens.pop())
-    override fun contains(id: ScreenId): Boolean = screens.find { it.id == id } != null
 
     override fun <T : ScreenState> update(
         id: ScreenId,
         how: (T) -> UpdateWith<T, Command>
     ): UpdateWith<TabScreen, Command> {
         // fixme bullshit
-        val i = screens.indexOfFirst { it.id == id }
+        val (stack, commands) = screens.update(id) { s -> how(s as T) }
 
-        if (i < 0) error("unknown screen for id $id, id=${this.id} screens=$screens")
-
-        val (t, cmds) = how(screens[i] as T)
-
-        return copy(screens = screens.set(i, t)) command cmds
+        return copy(screens = stack) command commands
     }
 
     val isLoading = transientState === Loading

@@ -26,11 +26,11 @@
 
 package com.oliynick.max.reader.app
 
-import com.oliynick.max.reader.settings.SettingsState
+import com.oliynick.max.reader.article.details.ArticleDetailsState
 import com.oliynick.max.reader.article.list.ArticlesState
 import com.oliynick.max.reader.article.list.Query
 import com.oliynick.max.reader.article.list.QueryType.*
-import com.oliynick.max.reader.article.details.ArticleDetailsState
+import com.oliynick.max.reader.settings.SettingsState
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -51,7 +51,7 @@ fun AppNavigation(
         // gson serializer breaks singletons identity, thus we should rely on `is` check rather
         // then referential equality
         is NavigateToArticleDetails -> state.pushArticleDetailsScreen(nav)
-        is Pop -> state.pop()
+        is Pop -> state.popScreen()
     }
 }
 
@@ -89,13 +89,6 @@ inline fun AppState.pushTabIfNotExists(
 fun AppState.findTabScreenIndex(
     nav: TabNavigation,
 ): Int = screens.indexOfFirst { s -> nav.id == s.id }
-
-// if we encounter any screen out of bottom bar screens, we just close the app;
-// we pop the last screen in another case
-fun AppState.pop() =
-    // fixme refactor this bit
-    if (screen is TabScreen && (screen as TabScreen).screens.isEmpty()) this command CloseApp
-    else popScreen().noCommand()
 
 fun AppState.pushArticleDetailsScreen(
     nav: NavigateToArticleDetails,

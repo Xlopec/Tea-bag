@@ -33,7 +33,6 @@ import kotlinx.collections.immutable.persistentListOf
 object SettingsState : ScreenState, TabScreen {
     override val screens: PersistentList<ScreenState> = persistentListOf()
     override fun pop(): TabScreen = this
-    override fun contains(id: ScreenId): Boolean = false
 
     override fun <T : ScreenState> update(
         id: ScreenId,
