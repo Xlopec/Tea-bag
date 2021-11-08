@@ -29,6 +29,7 @@ import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 typealias ScreenId = UUID
 
@@ -63,24 +64,41 @@ inline fun <reified T : ScreenState> AppState.updateScreen(
     noinline how: (T) -> UpdateWith<T, Command>,
 ): UpdateWith<AppState, Command> {
 
+    val newScreens = ArrayList<ScreenState>(screens.size)
+    val resultCommands = mutableSetOf<Command>()
 
     for (i in screens.indices) {
 
         val current = screens[i]
 
-        if (current.id == id || id == null /*fixme shit*/) {
+        if (id == null) {
+
+            if (current is T) {
+                val (new, commands) = how(current)
+
+                newScreens.add(new)
+                resultCommands += commands
+            } else {
+                newScreens.add(current)
+            }
+
+        } else if (current.id == id) {
             val (screen, commands) = how(current as T)
 
-            return copy(screens = screens.set(i, screen)) command commands
+            resultCommands += commands
+            newScreens.add(screen)
 
         } else if (current is TabScreen && id in current.screens) {
             val (screen, commands) = current.update(id, how)
 
-            return copy(screens = screens.set(i, screen)) command commands
+            newScreens.add(screen)
+            resultCommands += commands
+        } else {
+            newScreens.add(current)
         }
     }
 
-    return noCommand()
+    return copy(screens = newScreens.toPersistentList()) command resultCommands
 }
 
 fun AppState.dropTopScreen() =
