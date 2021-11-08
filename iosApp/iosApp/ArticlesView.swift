@@ -9,107 +9,85 @@ struct ArticlesView: View {
     
     let state: ArticlesState
     let handler: MessageHandler
+    @State private var searchHintText: String
+    @State private var tab: Int = 0
+    @State private var searchText: String
+    private let headingText: String
     
-    @State
-    private var searchText: String
-    
-    init(state: ArticlesState, handler: @escaping MessageHandler) {
+    init(state: ArticlesState, handler: @escaping MessageHandler, searchHintText: String, headingText: String) {
         self.state = state
         self.handler = handler
         self.searchText = state.query.input
+        self.searchHintText = searchHintText
+        self.headingText = headingText
     }
     
     var body: some View {
-        ZStack {
+        VStack(alignment: .leading, spacing: 10) {
             
-            TabView {
-                
-                VStack(alignment: .leading, spacing: 10) {
-                    
-                    Text("Feed")
-                        .font(.title)
-                        .padding()
-                    
-                    SearchBar(text: $searchText, hintText: "Search in articles...") {
-                        handler(LoadArticlesFromScratch(id: state.id))
-                    }.onChange(of: searchText) { updatedSearchText in
-                        // todo send request to fetch and show suggestions
-                        handler(OnQueryUpdated(id: state.id, query: updatedSearchText))
-                    }
-                    
-                    if state.isLoading {
-                        ZStack {
-                            ProgressView()
-                        }
-                        .frame(
-                            maxWidth: .infinity,
-                            maxHeight: .infinity,
-                            alignment: .center
-                        )
-                    } else if let transientState = state.transientState as? ArticlesState.TransientStateException, state.articles.isEmpty {
-                        MessageView(message: transientState.displayMessage, actionButtonMessage: "Retry") {
-                            handler(RefreshArticles(id: state.id))
-                        }.frame(
-                            maxWidth: .infinity,
-                            maxHeight: .infinity,
-                            alignment: .center
-                        )
-                    } else {
-                        
-                        List {
-                            
-                            ForEach(state.articles, id: \.url) { article in
-                                RowItem(screenId: state.id, article: article, handler: handler)
-                                    .onAppear {
-                                        // give window of size of 2 last items in order to prefetch next articles
-                                        // before user will scroll to the end of the list
-                                        if article == state.articles[safe: state.articles.count - 2] {
-                                            handler(LoadNextArticles(id: state.id))
-                                        }
-                                    }
-                            }
-                            
-                            VStack(alignment: .center) {
-                                if state.isLoadingNext {
-                                    ProgressView()
-                                } else if let transientState = state.transientState as? ArticlesState.TransientStateException {
-                                    MessageView(message: transientState.displayMessage, actionButtonMessage: "Retry") {
-                                        handler(RefreshArticles(id: state.id))
-                                    }
-                                }
-                            }.frame(maxWidth: .infinity)
-                        }.refreshable {
-                            handler(RefreshArticles(id: state.id))
-                        }
-                    }
-                    
-                }
-                
-                .tabItem {
-                    Image(systemName: "globe")
-                    Text("Articles")
-                }
-                
-                Text("pidor")
-                    .tabItem {
-                        Image(systemName: "heart")
-                        Text("Favorites")
-                    }
-                
-                Text("suka")
-                    .tabItem {
-                        Image(systemName: "chart.line.uptrend.xyaxis")
-                        Text("Trending")
-                    }
-                
-                WebView(pageURL: "www.google.com")
-                    .tabItem {
-                        Image(systemName: "gear")
-                        Text("Settings")
-                    }
-                
+            Text(headingText)
+                .font(.title)
+                .padding()
+            
+            SearchBar(text: $searchText, hintText: searchHintText) {
+                handler(LoadArticlesFromScratch(id: state.id))
+            }.onChange(of: searchText) { updatedSearchText in
+                // todo send request to fetch and show suggestions
+                handler(OnQueryUpdated(id: state.id, query: updatedSearchText))
             }
-            .font(.headline)
+            
+            if state.isLoading {
+                ZStack {
+                    ProgressView()
+                }
+                .frame(
+                    maxWidth: .infinity,
+                    maxHeight: .infinity,
+                    alignment: .center
+                )
+            } else if let transientState = state.transientState as? ArticlesState.TransientStateException, state.articles.isEmpty {
+                MessageView(message: transientState.displayMessage, actionButtonMessage: "Retry") {
+                    handler(RefreshArticles(id: state.id))
+                }.frame(
+                    maxWidth: .infinity,
+                    maxHeight: .infinity,
+                    alignment: .center
+                )
+            } else if state.articles.isEmpty {
+                MessageView(message: "No articles found", actionButtonMessage: "Reload") {
+                    handler(RefreshArticles(id: state.id))
+                }.frame(
+                    maxWidth: .infinity,
+                    maxHeight: .infinity,
+                    alignment: .center
+                )
+            } else {
+                List {
+                    
+                    ForEach(state.articles, id: \.url) { article in
+                        RowItem(screenId: state.id, article: article, handler: handler)
+                            .onAppear {
+                                // give window of size of 2 last items in order to prefetch next articles
+                                // before user will scroll to the end of the list
+                                if article == state.articles[safe: state.articles.count - 2] {
+                                    handler(LoadNextArticles(id: state.id))
+                                }
+                            }
+                    }
+                    
+                    VStack(alignment: .center) {
+                        if state.isLoadingNext {
+                            ProgressView()
+                        } else if let transientState = state.transientState as? ArticlesState.TransientStateException {
+                            MessageView(message: transientState.displayMessage, actionButtonMessage: "Retry") {
+                                handler(RefreshArticles(id: state.id))
+                            }
+                        }
+                    }.frame(maxWidth: .infinity)
+                }.refreshable {
+                    handler(RefreshArticles(id: state.id))
+                }
+            }
         }
     }
 }
@@ -206,7 +184,7 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         RowItem(screenId: UUID(), article: article) {_ in }
         
-        ArticlesView(state: ArticlesState(id: UUID(), query: Query(input: "Ios articles", type: QueryType.favorite), articles: [article], hasMoreArticles: true, transientState: ArticlesState.TransientStatePreview.shared))  { _ in }
+        ArticlesView(state: ArticlesState(id: UUID(), query: Query(input: "Ios articles", type: QueryType.favorite), articles: [article], hasMoreArticles: true, transientState: ArticlesState.TransientStatePreview.shared, screens: []), handler: { _ in }, searchHintText: "Search in articles", headingText: "Feed")
     }
 }
 

@@ -19,9 +19,7 @@ class ObservableAppComponent : ObservableObject {
     private let component: IosComponent
     
     init() {
-        component = IosComponent(closeCommandsSink: { close in
-            print("Close app \(close)")
-        })
+        component = IosComponent()
         
         cancellation = component.render { state in
             self.appState = state
@@ -44,18 +42,23 @@ struct AppView: View {
     
     @ObservedObject private(set) var appComponent: ObservableAppComponent
     
+    let handler: MessageHandler
+    
+    init(appComponent: ObservableAppComponent) {
+        self.appComponent = appComponent
+        self.handler = appComponent.dispatch
+    }
+    
     var body: some View {
         ZStack {
             if let appState = appComponent.appState {
                 
                 let screen = appState.screen
-                let handler: MessageHandler = appComponent.dispatch
                 
                 switch screen {
-                case let articlesState as ArticlesState:
-                    ArticlesView(state: articlesState, handler: handler)
-                case let settingsState as SettingsState:
-                    Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+                    // fixme refactor in truly Swift fashion
+                case let tabScreen as TabScreen:
+                    AppTabViewContent(tabScreen: tabScreen)
                 case let articleDetailsState as ArticleDetailsState:
                     Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
                 default:
@@ -66,6 +69,83 @@ struct AppView: View {
                 Text("Splash screen!")
             }
         }
+    }
+    
+    @ViewBuilder
+    private func AppTabViewContent(tabScreen: TabScreen) -> some View {
+        AppTabView(initialTab: (tabScreen as? ArticlesState)?.displayTab ?? 3, handler: handler) { tab in
+            
+            if let articlesState = tabScreen as? ArticlesState {
+                ArticlesView(state: articlesState, handler: handler, searchHintText: tab.searchHintText, headingText: articlesState.headingText)
+            } else {
+                Text("App Settings")
+            }
+        }
+    }
+    
+}
+
+private extension Int {
+    
+    var searchHintText: String {
+        var text = "Search in articles..."
+        
+        if self == 0 {
+            text = "Search in articles..."
+        } else if self == 1 {
+            text = "Search in favorite..."
+        } else if self == 2 {
+            text = "Search in trending..."
+        }
+        
+        return text
+    }
+    
+}
+
+private extension ArticlesState {
+    
+    var headingText: String {
+        var text = "Feed"
+        
+        if query.type.description() == "Regular" {
+            text = "Feed"
+        } else if query.type.description() == "Favorite" {
+            text = "Favorite"
+        } else if query.type.description() == "Trending" {
+            text = "Trending"
+        }
+        
+        return text
+    }
+    
+    var displayTab: Int {
+        
+        var initialTab = 0
+        
+        if query.type.description() == "Regular" {
+            initialTab = 0
+        } else if query.type.description() == "Favorite" {
+            initialTab = 1
+        } else if query.type.description() == "Trending" {
+            initialTab = 2
+        }
+        
+        return initialTab
+    }
+    
+    var searchHintText: String {
+        var text = "Search in articles..."
+        
+        if query.type.description() == "Regular" {
+            text = "Search in articles..."
+        } else if query.type.description() == "Favorite" {
+            text = "Search in favorite..."
+        } else if query.type.description() == "Trending" {
+            text = "Search in trending..."
+        }
+        
+        return text
     }
 }
 

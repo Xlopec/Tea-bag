@@ -13,14 +13,12 @@ fun interface Cancellation {
     fun cancel()
 }
 
-class IosComponent(
-    closeCommandsSink: CloseCommandsSink
-) {
+class IosComponent {
 
     private val componentJob = Job()
     private val componentScope = CoroutineScope(Main + componentJob)
 
-    private val component = Environment(componentScope, closeCommandsSink)
+    private val component = Environment(componentScope, {})
         .let { env -> AppComponent(env, AppInitializer(env)) }
 
     private val messages = MutableSharedFlow<Message>()
