@@ -26,7 +26,6 @@ package com.oliynick.max.reader.app
 
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -47,9 +46,10 @@ data class AppState(
 ) {
 
     constructor(
-        screen: ScreenState,
-        isInDarkMode: Boolean
-    ) : this(isInDarkMode, persistentListOf(screen))
+        screen: TabScreen,
+        isSystemInDarkMode: Boolean,
+        isAppInDarkMode: Boolean
+    ) : this(isSystemInDarkMode || isAppInDarkMode, persistentListOf(screen))
 
     init {
         require(screens.isNotEmpty())
@@ -123,18 +123,4 @@ fun AppState.pushScreen(
     screen: ScreenState,
 ): AppState = copy(screens = screens.push(screen))
 
-// todo refactor this bit
-fun AppState.popScreen(): UpdateWith<AppState, CloseApp> {
-    val screen = screen
-
-    return if (screen is TabScreen) {
-        if (screen.screens.isEmpty()) {
-            this command CloseApp
-        } else {
-            updateTopScreen { screen.pop() }.noCommand()
-        }
-    } else {
-        dropTopScreen().noCommand()
-    }
-}
-
+expect fun AppState.popScreen(): UpdateWith<AppState, Command>

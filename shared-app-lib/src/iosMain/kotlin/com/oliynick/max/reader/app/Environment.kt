@@ -15,10 +15,9 @@ actual interface Environment :
 
 fun Environment(
     scope: CoroutineScope,
-    closeCommandsSink: CloseCommandsSink
 ): Environment =
     object : Environment,
-        AppModule<Environment> by AppModule(closeCommandsSink),
+        AppModule<Environment> by AppModule(),
         ArticlesModule<Environment> by ArticlesModule(),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(),
         LocalStorage by LocalStorage(),

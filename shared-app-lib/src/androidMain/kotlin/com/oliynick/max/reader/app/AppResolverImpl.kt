@@ -6,7 +6,6 @@ import com.oliynick.max.reader.article.details.ArticleDetailsResolver
 import com.oliynick.max.reader.article.list.ArticlesResolver
 import com.oliynick.max.tea.core.component.sideEffect
 
-// fixme looks like it's android specific navigation feature, remove it for IOS
 typealias CloseCommandsSink = suspend (CloseApp) -> Unit
 
 fun <Env> AppResolverImpl(

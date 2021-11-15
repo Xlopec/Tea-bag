@@ -18,7 +18,7 @@ class IosComponent {
     private val componentJob = Job()
     private val componentScope = CoroutineScope(Main + componentJob)
 
-    private val component = Environment(componentScope, {})
+    private val component = Environment(componentScope)
         .let { env -> AppComponent(env, AppInitializer(env)) }
 
     private val messages = MutableSharedFlow<Message>()
