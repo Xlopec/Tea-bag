@@ -34,6 +34,7 @@ import com.oliynick.max.reader.settings.SettingsState
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
+import kotlinx.collections.immutable.PersistentList
 
 fun interface AppNavigation {
 
@@ -47,10 +48,10 @@ fun AppNavigation(
     debug: Boolean = true
 ) = AppNavigation { nav, state ->
     when (nav) {
-        is TabNavigation -> state.pushTabIfNotExists(nav, TabNavigation::toTabScreen)
+        is TabNavigation -> state.navigateToTab(nav, TabNavigation::toTabScreen)
         // gson serializer breaks singletons identity, thus we should rely on `is` check rather
         // then referential equality
-        is NavigateToArticleDetails -> state.pushArticleDetailsScreen(nav)
+        is NavigateToArticleDetails -> state.navigateToArticleDetails(nav)
         is Pop -> state.popScreen()
     }
 }
@@ -59,10 +60,52 @@ fun AppNavigation(
 fun TabNavigation.toTabScreen(): UpdateWith<TabScreen, Command> =
     when (this) {
         NavigateToSettings -> SettingsState.noCommand()
-        NavigateToFeed -> Query("android", Regular).let { ArticlesState.newLoading(id, it) command LoadArticlesByQuery(id, it) }
-        NavigateToFavorite -> Query("", Favorite).let { ArticlesState.newLoading(id, it) command LoadArticlesByQuery(id, it) }
-        NavigateToTrending -> Query("", Trending).let { ArticlesState.newLoading(id, it) command LoadArticlesByQuery(id, it) }
+        NavigateToFeed -> ArticlesInitialUpdate(id, Query("android", Regular))
+        NavigateToFavorite -> ArticlesInitialUpdate(id, Query("", Favorite))
+        NavigateToTrending -> ArticlesInitialUpdate(id, Query("", Trending))
     }
+
+private fun ArticlesInitialUpdate(
+    id: ScreenId,
+    query: Query
+) = ArticlesState.newLoading(id, query) command LoadArticlesByQuery(id, query)
+
+fun AppState.navigateToTab(
+    nav: TabNavigation,
+    screenWithCommand: (TabNavigation) -> UpdateWith<TabScreen, Command>,
+): UpdateWith<AppState, Command> {
+    val i = findTabScreenIndex(nav)
+
+    return if (i >= 0) {
+        // tab might contain child screen stack
+        // collect all child screens for this tab and place them on the top of the stack
+        copy(screens = screens.swapGroups(i, nav.id)).noCommand()
+    } else {
+
+        val (tab, cmds) = screenWithCommand(nav)
+
+        pushScreen(tab) command cmds
+    }
+}
+
+fun <T> PersistentList<T>.swapGroups(
+    tabIdx: Int,
+    tabId: ScreenId
+): PersistentList<T> {
+    require(tabIdx in indices) { "Tab index out of bounds, bounds=${indices}, index=$tabIdx" }
+
+    var newList = this
+    var bottomGroupIdx = 0
+
+    indices.reversed().forEach { idx ->
+        if ((this[idx] as? FullScreen)?.tabId == tabId) {
+            newList = swap(idx, 0)
+            bottomGroupIdx++
+        }
+    }
+
+    return newList.swap(tabIdx, bottomGroupIdx)
+}
 
 inline fun AppState.pushTabIfNotExists(
     nav: TabNavigation,
@@ -90,9 +133,12 @@ fun AppState.findTabScreenIndex(
     nav: TabNavigation,
 ): Int = screens.indexOfFirst { s -> nav.id == s.id }
 
-fun AppState.pushArticleDetailsScreen(
+private val AppState.currentTab: TabScreen
+    get() = screens.first { it is TabScreen } as TabScreen
+
+fun AppState.navigateToArticleDetails(
     nav: NavigateToArticleDetails,
-) = pushScreen(ArticleDetailsState(nav.id, nav.article)).noCommand()
+) = pushScreen(ArticleDetailsState(nav.id, nav.article, currentTab.id)).noCommand()
 
 private fun LoadArticlesByQuery(
     id: ScreenId,

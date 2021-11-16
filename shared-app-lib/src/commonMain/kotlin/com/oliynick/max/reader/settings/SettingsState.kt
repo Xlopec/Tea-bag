@@ -24,20 +24,18 @@
 
 package com.oliynick.max.reader.settings
 
-import com.oliynick.max.reader.app.*
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.noCommand
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
+import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.app.TabScreen
+import com.oliynick.max.reader.app.randomUUID
 
-object SettingsState : ScreenState, TabScreen {
-    override val screens: PersistentList<ScreenState> = persistentListOf()
+object SettingsState : TabScreen {
+    /*override val screens: PersistentList<ScreenState> = persistentListOf()
     override fun pop(): TabScreen = this
 
     override fun <T : ScreenState> update(
         id: ScreenId,
         how: (T) -> UpdateWith<T, Command>
-    ): UpdateWith<TabScreen, Command> = noCommand()
+    ): UpdateWith<TabScreen, Command> = noCommand()*/
 
     override val id: ScreenId = randomUUID()
 }

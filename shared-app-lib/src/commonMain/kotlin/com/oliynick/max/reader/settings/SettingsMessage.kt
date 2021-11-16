@@ -31,6 +31,8 @@ sealed interface SettingsMessage : ScreenMessage
 object OnToggleDarkMode : SettingsMessage
 
 /*@JvmInline value*/
+/*
 data class OnSystemDarkModeUpdated(
     val isSystemInDarkMode: Boolean
 ) : SettingsMessage
+*/

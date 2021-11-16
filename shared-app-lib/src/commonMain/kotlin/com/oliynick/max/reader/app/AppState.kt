@@ -32,10 +32,6 @@ import kotlinx.collections.immutable.toPersistentList
 
 typealias ScreenId = UUID
 
-interface ScreenState {
-    val id: ScreenId
-}
-
 data class AppState(
     val isInDarkMode: Boolean,
     /**
@@ -47,9 +43,8 @@ data class AppState(
 
     constructor(
         screen: TabScreen,
-        isSystemInDarkMode: Boolean,
         isAppInDarkMode: Boolean
-    ) : this(isSystemInDarkMode || isAppInDarkMode, persistentListOf(screen))
+    ) : this(isAppInDarkMode, persistentListOf(screen))
 
     init {
         require(screens.isNotEmpty())
@@ -68,7 +63,7 @@ inline fun <reified T : ScreenState> AppState.updateScreen(
     val resultCommands = mutableSetOf<Command>()
 
     for (i in screens.indices) {
-
+        // todo refactor
         val current = screens[i]
 
         if (id == null) {
@@ -82,17 +77,12 @@ inline fun <reified T : ScreenState> AppState.updateScreen(
                 newScreens.add(current)
             }
 
-        } else if (current.id == id) {
-            val (screen, commands) = how(current as T)
+        } else if (current.id == id && current is T) {
+            val (screen, commands) = how(current)
 
             resultCommands += commands
             newScreens.add(screen)
 
-        } else if (current is TabScreen && id in current.screens) {
-            val (screen, commands) = current.update(id, how)
-
-            newScreens.add(screen)
-            resultCommands += commands
         } else {
             newScreens.add(current)
         }
@@ -100,9 +90,6 @@ inline fun <reified T : ScreenState> AppState.updateScreen(
 
     return copy(screens = newScreens.toPersistentList()) command resultCommands
 }
-
-fun AppState.dropTopScreen() =
-    copy(screens = screens.pop())
 
 // new api
 inline fun AppState.updateTopScreen(

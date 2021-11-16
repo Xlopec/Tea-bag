@@ -26,13 +26,10 @@
 
 package com.oliynick.max.reader.article.list
 
-import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.article.list.ArticlesState.TransientState.*
 import com.oliynick.max.reader.domain.Article
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
 
 enum class QueryType {
     Regular, Favorite, Trending
@@ -49,8 +46,8 @@ data class ArticlesState(
     val articles: List<Article>,
     val hasMoreArticles: Boolean,
     val transientState: TransientState,
-    override val screens: PersistentList<ScreenState> = persistentListOf(),
-) : ScreenState, TabScreen {
+    //override val screens: PersistentList<ScreenState> = persistentListOf(),
+) : TabScreen {
 
     sealed class TransientState {
         data class Exception(
@@ -63,7 +60,7 @@ data class ArticlesState(
         object Preview : TransientState()
     }
 
-    override fun pop(): TabScreen = copy(screens = screens.pop())
+    /*override fun pop(): TabScreen = copy(screens = screens.pop())
 
     override fun <T : ScreenState> update(
         id: ScreenId,
@@ -73,7 +70,7 @@ data class ArticlesState(
         val (stack, commands) = screens.update(id) { s -> how(s as T) }
 
         return copy(screens = stack) command commands
-    }
+    }*/
 
     val isLoading = transientState === Loading
 

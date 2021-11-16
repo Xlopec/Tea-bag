@@ -26,14 +26,14 @@
 
 package com.oliynick.max.reader.app
 
+import com.oliynick.max.reader.article.details.ArticleDetailsMessage
 import com.oliynick.max.reader.article.details.ArticleDetailsState
 import com.oliynick.max.reader.article.details.ArticleDetailsUpdater
-import com.oliynick.max.reader.settings.SettingsMessage
-import com.oliynick.max.reader.settings.ToggleDarkMode
-import com.oliynick.max.reader.article.details.ArticleDetailsMessage
 import com.oliynick.max.reader.article.list.ArticlesMessage
 import com.oliynick.max.reader.article.list.ArticlesState
 import com.oliynick.max.reader.article.list.ArticlesUpdater
+import com.oliynick.max.reader.settings.OnToggleDarkMode
+import com.oliynick.max.reader.settings.SettingsMessage
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 
@@ -68,5 +68,5 @@ fun AppState.updateSettings(
     message: SettingsMessage,
 ): UpdateWith<AppState, Command> =
     when (message) {
-        is ToggleDarkMode -> copy(isInDarkMode = !isInDarkMode) command StoreDarkMode(!isInDarkMode)
+        is OnToggleDarkMode -> copy(isInDarkMode = !isInDarkMode) command StoreDarkMode(!isInDarkMode)
     }

@@ -7,12 +7,8 @@ actual fun AppState.popScreen(): UpdateWith<AppState, Command> {
     val screen = screen
 
     return if (screen is TabScreen) {
-        if (screen.screens.isEmpty()) {
-            noCommand()
-        } else {
-            updateTopScreen { screen.pop() }.noCommand()
-        }
+        noCommand()
     } else {
-        dropTopScreen().noCommand()
+        copy(screens = screens.pop()).noCommand()
     }
 }

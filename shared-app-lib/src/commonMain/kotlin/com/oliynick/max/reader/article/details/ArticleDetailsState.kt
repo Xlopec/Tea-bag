@@ -24,11 +24,12 @@
 
 package com.oliynick.max.reader.article.details
 
+import com.oliynick.max.reader.app.FullScreen
 import com.oliynick.max.reader.app.ScreenId
-import com.oliynick.max.reader.app.ScreenState
 import com.oliynick.max.reader.domain.Article
 
 data class ArticleDetailsState(
     override val id: ScreenId,
     val article: Article,
-) : ScreenState
+    override val tabId: ScreenId,
+) : FullScreen
