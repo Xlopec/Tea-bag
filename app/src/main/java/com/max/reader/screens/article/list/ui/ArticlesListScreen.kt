@@ -27,6 +27,7 @@
 package com.max.reader.screens.article.list.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,6 +45,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -54,7 +56,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.statusBarsPadding
-import com.max.reader.misc.safe
 import com.max.reader.ui.theme.ThemedPreview
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.NavigateToArticleDetails
@@ -63,6 +64,9 @@ import com.oliynick.max.reader.article.list.*
 import com.oliynick.max.reader.article.list.ArticlesState.TransientState.*
 import com.oliynick.max.reader.article.list.QueryType.*
 import com.oliynick.max.reader.domain.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.launch
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
@@ -70,231 +74,36 @@ import androidx.compose.ui.tooling.preview.Preview as Render
 
 @Composable
 fun ArticlesScreen(
-    modifier: Modifier,
     state: ArticlesState,
     onMessage: (Message) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-
         val listState = listState(id = state.id)
+            .apply { setScrollingEnabled(state.articles.isNotEmpty(), rememberCoroutineScope()) }
 
-        when (val transientState = state.transientState) {
-            is Exception -> ArticlesExceptionContent(
-                id = state.id,
-                state = listState,
-                query = state.query,
-                articles = state.articles,
-                cause = transientState.th,
-                onMessage = onMessage
-            )
-            is Loading ->
-                ArticlesLoadingFromScratchContent(
-                    id = state.id,
-                    query = state.query,
-                    onMessage = onMessage
-                )
-            is LoadingNext
-            -> ArticlesLoadingNextContent(
-                state = listState,
-                id = state.id,
-                query = state.query,
-                articles = state.articles,
-                onMessage = onMessage
-            )
-            is Refreshing,
-            is Preview,
-            -> ArticlesPreviewContent(
-                state = listState,
-                id = state.id,
-                query = state.query,
-                articles = state.articles,
-                onMessage = onMessage
-            )
-        }.safe
-    }
-}
+        ArticlesContent(listState, state, onMessage) {
 
-@Composable
-private fun ArticlesProgress(
-    modifier: Modifier,
-) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            color = colors.secondaryVariant
-        )
-    }
-}
-
-@Composable
-private fun ArticlesLoadingFromScratchContent(
-    id: ScreenId,
-    query: Query,
-    onMessage: (Message) -> Unit,
-) {
-    ArticlesContent(
-        id = id,
-        query = query,
-        onMessage = onMessage
-    ) {
-        ArticlesProgress(modifier = Modifier.fillMaxSize())
-    }
-}
-
-@Composable
-private fun ArticlesLoadingNextContent(
-    state: LazyListState,
-    id: ScreenId,
-    query: Query,
-    articles: List<Article>,
-    onMessage: (Message) -> Unit,
-) {
-    ArticlesContent(
-        state = state,
-        id = id,
-        query = query,
-        onMessage = onMessage
-    ) {
-        ArticlesContentNonEmptyImpl(
-            id = id,
-            query = query,
-            articles = articles,
-            onMessage = onMessage
-        )
-
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-            ArticlesProgress(modifier = Modifier.fillMaxWidth())
-        }
-    }
-}
-
-@Composable
-private fun ArticlesExceptionContent(
-    state: LazyListState,
-    id: ScreenId,
-    query: Query,
-    articles: List<Article>,
-    cause: Throwable,
-    onMessage: (Message) -> Unit,
-) {
-    if (articles.isEmpty()) {
-        ArticlesContent(id, query, onMessage) {
-            ArticlesError(
-                modifier = Modifier.fillMaxSize(),
-                id = id,
-                message = cause.toReadableMessage(),
-                onMessage = onMessage
-            )
-        }
-    } else {
-        ArticlesContent(state, id, query, onMessage) {
-            ArticlesContentNonEmptyImpl(id, query, articles, onMessage)
-
-            item {
-                ArticlesError(
-                    modifier = Modifier.fillMaxWidth(),
-                    id = id,
-                    message = cause.toReadableMessage(),
-                    onMessage = onMessage
-                )
+            if (state.articles.isNotEmpty()) {
+                ArticleItems(state, onMessage)
             }
-        }
 
-    }
-}
-
-@Composable
-private fun ArticlesPreviewContent(
-    state: LazyListState,
-    id: ScreenId,
-    query: Query,
-    articles: List<Article>,
-    onMessage: (Message) -> Unit,
-) {
-    if (articles.isEmpty()) {
-        ArticlesContent(id, query, onMessage) {
-            Message(
-                modifier = Modifier.fillMaxSize(),
-                message = "No articles",
-                actionText = "Reload",
-                onClick = {
-                    onMessage(LoadArticlesFromScratch(id))
-                }
-            )
-        }
-    } else {
-        ArticlesContent(state, id, query, onMessage) {
-            ArticlesContentNonEmptyImpl(id, query, articles, onMessage)
+            TransientContent(state, onMessage)
         }
     }
 }
 
-@Composable
-private fun ArticlesContent(
-    id: ScreenId,
-    query: Query,
+private fun LazyListScope.ArticleItems(
+    screen: ArticlesState,
     onMessage: (Message) -> Unit,
-    children: @Composable () -> Unit,
+    onLastElement: () -> Unit = { onMessage(LoadNextArticles(screen.id)) },
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        ArticleSearchHeader(
-            id = id,
-            query = query,
-            onMessage = onMessage
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        children()
-    }
-}
+    val (id, query, articles) = screen
 
-@Composable
-private fun ArticlesContent(
-    state: LazyListState,
-    id: ScreenId,
-    query: Query,
-    onMessage: (Message) -> Unit,
-    children: LazyListScope.() -> Unit,
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = state,
-        contentPadding = PaddingValues(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        item {
-            ArticleSearchHeader(
-                id = id,
-                query = query,
-                onMessage = onMessage
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        children()
-    }
-}
-
-private fun LazyListScope.ArticlesContentNonEmptyImpl(
-    id: ScreenId,
-    query: Query,
-    articles: List<Article>,
-    onMessage: (Message) -> Unit,
-    onLastElement: () -> Unit = { onMessage(LoadNextArticles(id)) },
-) {
-    require(articles.isNotEmpty()) { "Empty articles for id=$id, query=$query" }
+    require(articles.isNotEmpty()) { "Empty articles for screen=$screen" }
 
     item {
         Text(
@@ -326,6 +135,79 @@ private fun LazyListScope.ArticlesContentNonEmptyImpl(
                 }
             }
         }
+    }
+}
+
+private fun LazyListScope.TransientContent(
+    state: ArticlesState,
+    onMessage: (Message) -> Unit,
+) = item {
+
+    val (id, _, articles, _, transientState) = state
+
+    when (transientState) {
+        is Exception ->
+            ArticlesError(
+                modifier = if (articles.isEmpty()) Modifier.fillParentMaxSize() else Modifier.fillParentMaxWidth(),
+                id = id,
+                message = transientState.th.readableMessage,
+                onMessage = onMessage
+            )
+        is Loading -> ArticlesProgress(modifier = Modifier.fillParentMaxSize())
+        is LoadingNext -> {
+            Spacer(modifier = Modifier.height(16.dp))
+            ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
+        }
+        is Preview, is Refreshing -> {
+            if (articles.isEmpty()) {
+                Message(
+                    modifier = Modifier.fillParentMaxSize(),
+                    message = "No articles",
+                    actionText = "Reload",
+                    onClick = {
+                        onMessage(LoadArticlesFromScratch(id))
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ArticlesProgress(
+    modifier: Modifier,
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = colors.secondaryVariant
+        )
+    }
+}
+
+@Composable
+private fun ArticlesContent(
+    listState: LazyListState,
+    screen: ArticlesState,
+    onMessage: (Message) -> Unit,
+    children: LazyListScope.() -> Unit,
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = listState,
+        contentPadding = PaddingValues(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        item {
+            ArticleSearchHeader(state = screen, onMessage = onMessage)
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        children()
     }
 }
 
@@ -496,10 +378,11 @@ private fun Message(
 @OptIn(ExperimentalComposeUiApi::class)
 private fun ArticleSearchHeader(
     modifier: Modifier = Modifier,
-    id: ScreenId,
-    query: Query,
+    state: ArticlesState,
     onMessage: (Message) -> Unit,
 ) {
+    val (id, query) = state
+
     Card(
         modifier = modifier
             .statusBarsPadding()
@@ -565,8 +448,13 @@ private fun listState(
 private fun ArticleSearchHeaderPreview() {
     ThemedPreview {
         ArticleSearchHeader(
-            id = UUID.randomUUID(),
-            query = Query("some input text", Trending),
+            state = ArticlesState(
+                UUID.randomUUID(),
+                Query("some input text", Trending),
+                listOf(),
+                false,
+                Preview
+            ),
             onMessage = {}
         )
     }
@@ -578,7 +466,7 @@ private fun ArticleItemPreview() {
     ThemedPreview {
         ArticleItem(
             screenId = UUID.randomUUID(),
-            article = ArticleSamplePreview,
+            article = PreviewArticle,
             onMessage = {}
         )
     }
@@ -590,7 +478,7 @@ private fun ArticleActionsPreview() {
     ThemedPreview {
         ArticleActions(
             onMessage = {},
-            article = ArticleSamplePreview,
+            article = PreviewArticle,
             screenId = UUID.randomUUID()
         )
     }
@@ -610,40 +498,61 @@ private fun MessagePreview() {
 }
 
 @Composable
-@Render("Articles exception non empty list preview")
-private fun ArticlesExceptionContentPreview() {
+@Render("Articles screen preview")
+private fun ArticlesScreenPreview() {
     ThemedPreview {
-        ArticlesExceptionContent(
-            state = rememberLazyListState(),
-            id = UUID.randomUUID(),
-            query = Query("Android", Regular),
-            articles = listOf(ArticleSamplePreview),
-            cause = RuntimeException("Some exception"),
-            onMessage = { }
+        ArticlesScreen(
+            state = ArticlesState(Trending, PreviewArticles, Preview),
+            {}
         )
     }
 }
 
 @Composable
-@Render("Articles loading list preview")
-private fun ArticlesLoadingContentPreview() {
+@Render("Articles screen loading next")
+private fun ArticlesScreenLoadingNextPreview() {
     ThemedPreview {
-        ArticlesLoadingNextContent(
-            state = rememberLazyListState(),
-            id = UUID.randomUUID(),
-            query = Query("Android", Regular),
-            articles = listOf(ArticleSamplePreview),
-            onMessage = { }
+        ArticlesScreen(
+            state = ArticlesState(Trending, listOf(PreviewArticle), LoadingNext),
+            {}
         )
     }
 }
+
+@Composable
+@Render("Articles screen loading")
+private fun ArticlesScreenLoadingPreview() {
+    ThemedPreview {
+        ArticlesScreen(
+            state = ArticlesState(Trending, listOf(), Loading),
+            {}
+        )
+    }
+}
+
+@Composable
+@Render("Articles screen refreshing")
+private fun ArticlesScreenRefreshingPreview() {
+    ThemedPreview {
+        ArticlesScreen(
+            state = ArticlesState(Trending, listOf(PreviewArticle), Refreshing),
+            {}
+        )
+    }
+}
+
+private fun ArticlesState(
+    type: QueryType,
+    articles: List<Article>,
+    transientState: ArticlesState.TransientState
+) = ArticlesState(UUID.randomUUID(), Query("input", type), articles, false, transientState)
 
 private val DateFormatter: SimpleDateFormat by lazy {
     SimpleDateFormat("dd MMM' at 'hh:mm", Locale.getDefault())
 }
 
-private fun Throwable.toReadableMessage() =
-    message?.replaceFirstChar { it.lowercase(Locale.getDefault()) } ?: "unknown exception"
+private val Throwable.readableMessage: String
+    get() = message?.replaceFirstChar { it.lowercase(Locale.getDefault()) } ?: "unknown exception"
 
 private fun Query.toScreenTitle(): String =
     when (type) {
@@ -659,7 +568,7 @@ private fun QueryType.toSearchHint(): String =
         Trending -> "Search in trending"
     }
 
-private val ArticleSamplePreview = Article(
+private val PreviewArticle = Article(
     url = URL("https://www.google.com"),
     title = Title("Jetpack Compose app"),
     author = Author("Max Oliinyk"),
@@ -673,3 +582,21 @@ private val ArticleSamplePreview = Article(
     isFavorite = true,
     urlToImage = URL("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png")
 )
+
+private val PreviewArticles = listOf(
+    PreviewArticle.copy(url = URL("https://miro.medium.com/1")),
+    PreviewArticle.copy(url = URL("https://miro.medium.com/2")),
+    PreviewArticle.copy(url = URL("https://miro.medium.com/3"))
+)
+
+private fun LazyListState.setScrollingEnabled(enabled: Boolean, scope: CoroutineScope) {
+    scope.launch {
+        scroll(scrollPriority = MutatePriority.PreventUserInput) {
+            if (!enabled) {
+                // Await indefinitely, blocking scrolls
+                awaitCancellation()
+            }
+            // Do nothing, just cancel the previous indefinite "scroll"
+        }
+    }
+}

@@ -1,0 +1,20 @@
+package com.max.reader.misc
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.remember
+import java.util.concurrent.atomic.AtomicLong
+
+val LocalLogCompositions = compositionLocalOf { false }
+
+@Composable
+inline fun LogCompositions(
+    tag: String
+) {
+    if (LocalLogCompositions.current) {
+        val ref = remember { AtomicLong(0) }
+        SideEffect { ref.incrementAndGet() }
+        println("$tag, compositions: $ref")
+    }
+}

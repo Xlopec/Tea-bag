@@ -40,15 +40,20 @@ import androidx.compose.ui.Modifier
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.oliynick.max.reader.article.list.ArticlesState
-import com.oliynick.max.reader.article.list.Query
-import com.oliynick.max.reader.article.list.QueryType
-import com.oliynick.max.reader.article.list.RefreshArticles
 import com.max.reader.screens.article.list.ui.ArticlesScreen
-import com.max.reader.screens.home.BottomMenuItem.*
+import com.max.reader.screens.home.BottomMenuItem.Favorite
+import com.max.reader.screens.home.BottomMenuItem.Feed
+import com.max.reader.screens.home.BottomMenuItem.Settings
+import com.max.reader.screens.home.BottomMenuItem.Trending
 import com.max.reader.screens.settings.SettingsScreen
 import com.max.reader.ui.InsetAwareTopAppBar
 import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.article.list.ArticlesState
+import com.oliynick.max.reader.article.list.Query
+import com.oliynick.max.reader.article.list.RefreshArticles
+import com.oliynick.max.reader.article.list.QueryType.Favorite as FavoriteQuery
+import com.oliynick.max.reader.article.list.QueryType.Regular as RegularQuery
+import com.oliynick.max.reader.article.list.QueryType.Trending as TrendingQuery
 
 enum class BottomMenuItem {
     Feed,
@@ -76,7 +81,7 @@ fun HomeScreen(
                     onMessage = onMessage
                 )
             }, content = { innerPadding ->
-                ArticlesScreen(Modifier.padding(innerPadding), state, onMessage)
+                ArticlesScreen(state, onMessage, Modifier.padding(innerPadding))
             })
     }
 }
@@ -162,7 +167,7 @@ fun BottomBar(
 }
 
 private fun Query.toMenuItem() = when (type) {
-    QueryType.Regular -> Feed
-    QueryType.Favorite -> Favorite
-    QueryType.Trending -> Trending
+    RegularQuery -> Feed
+    FavoriteQuery -> Favorite
+    TrendingQuery -> Trending
 }

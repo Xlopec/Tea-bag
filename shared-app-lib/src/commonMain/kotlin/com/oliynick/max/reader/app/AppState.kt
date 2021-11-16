@@ -91,11 +91,6 @@ inline fun <reified T : ScreenState> AppState.updateScreen(
     return copy(screens = newScreens.toPersistentList()) command resultCommands
 }
 
-// new api
-inline fun AppState.updateTopScreen(
-    how: () -> ScreenState
-) = copy(screens = screens.set(0, how()))
-
 fun AppState.swapScreens(
     i: Int,
     j: Int,

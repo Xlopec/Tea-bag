@@ -31,20 +31,18 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.*
 import androidx.core.view.WindowCompat
+import com.max.reader.BuildConfig.DEBUG
 import com.max.reader.R
-import com.oliynick.max.reader.app.AppState
 import com.max.reader.app.appComponent
 import com.max.reader.app.closeAppCommands
-import com.oliynick.max.reader.app.Message
-import com.oliynick.max.reader.app.Pop
-import com.oliynick.max.reader.app.screen
-import com.max.reader.misc.safe
-import com.oliynick.max.reader.article.details.ArticleDetailsState
+import com.max.reader.misc.LocalLogCompositions
 import com.max.reader.screens.article.details.ui.ArticleDetailsScreen
-import com.oliynick.max.reader.article.list.ArticlesState
 import com.max.reader.screens.home.HomeScreen
-import com.oliynick.max.reader.settings.SettingsState
 import com.max.reader.ui.theme.AppTheme
+import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.article.details.ArticleDetailsState
+import com.oliynick.max.reader.article.list.ArticlesState
+import com.oliynick.max.reader.settings.SettingsState
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -111,11 +109,34 @@ private fun Application(
             onMessage(Pop)
         }
 
-        when (val screen = appState.screen) {
-            is ArticlesState -> HomeScreen(screen, onMessage)
-            is SettingsState -> HomeScreen(appState, onMessage)
-            is ArticleDetailsState -> ArticleDetailsScreen(screen, onMessage)
-            else -> error("unhandled branch $screen")
-        }.safe
+        CompositionLocalProvider(LocalLogCompositions provides DEBUG) {
+            when (val screen = appState.screen) {
+                is FullScreen -> FullScreen(screen, onMessage)
+                is TabScreen -> TabScreen(appState, screen, onMessage)
+            }
+        }
+    }
+}
+
+@Composable
+private fun TabScreen(
+    appState: AppState,
+    screen: TabScreen,
+    onMessage: (Message) -> Unit
+) {
+    when (screen) {
+        is ArticlesState -> HomeScreen(screen, onMessage)
+        is SettingsState -> HomeScreen(appState, onMessage)
+        else -> error("unhandled branch $screen")
+    }
+}
+
+@Composable
+private fun FullScreen(
+    screen: FullScreen,
+    onMessage: (Message) -> Unit,
+) {
+    when (screen) {
+        is ArticleDetailsState -> ArticleDetailsScreen(screen, onMessage)
     }
 }

@@ -107,28 +107,6 @@ fun <T> PersistentList<T>.swapGroups(
     return newList.swap(tabIdx, bottomGroupIdx)
 }
 
-inline fun AppState.pushTabIfNotExists(
-    nav: TabNavigation,
-    crossinline screenWithCommand: (TabNavigation) -> UpdateWith<TabScreen, Command>,
-): UpdateWith<AppState, Command> {
-    val i = findTabScreenIndex(nav)
-    val screenToCommand by lazy { screenWithCommand(nav) }
-    val swap = i >= 0
-    val newState = if (swap) {
-        // move current screen to the start of screens stack,
-        // so that it'll be popped out first
-        swapScreens(i, 0)
-    } else {
-        pushScreen(screenToCommand.first)
-    }
-
-    return (if (swap) newState.noCommand() else newState command screenToCommand.second)
-        .also { (state, commands) ->
-            // non tab screens should always go before tab screens
-            // there always should be at least 1 tab screen
-        }
-}
-
 fun AppState.findTabScreenIndex(
     nav: TabNavigation,
 ): Int = screens.indexOfFirst { s -> nav.id == s.id }
