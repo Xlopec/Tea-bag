@@ -5,8 +5,6 @@ import com.oliynick.max.reader.domain.*
 import com.oliynick.max.reader.network.Page
 import com.oliynick.max.tea.core.IO
 import com.russhwolf.settings.Settings
-import com.russhwolf.settings.get
-import com.russhwolf.settings.set
 import com.squareup.sqldelight.db.SqlCursor
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.db.use
@@ -15,11 +13,16 @@ import kotlinx.coroutines.withContext
 fun LocalStorage(
     driver: SqlDriver,
     settings: Settings
+): LocalStorage = LocalStorageImpl(driver, DeferredSettings { settings })
+
+fun LocalStorage(
+    driver: SqlDriver,
+    settings: DeferredSettings
 ): LocalStorage = LocalStorageImpl(driver, settings)
 
 private class LocalStorageImpl(
     driver: SqlDriver,
-    private val settings: Settings
+    private val settings: DeferredSettings
 ) : LocalStorage {
 
     private companion object {
@@ -66,13 +69,11 @@ private class LocalStorageImpl(
             .use { cursor -> cursor.next() && cursor.isFavorite }
     }
 
-    override suspend fun isDarkModeEnabled(): Boolean = query {
-        settings[DarkModeEnabledKey, false]
-    }
+    override suspend fun isDarkModeEnabled(): Boolean =
+        settings.get(DarkModeEnabledKey, false)
 
-    override suspend fun storeIsDarkModeEnabled(isEnabled: Boolean) = query {
-        settings[DarkModeEnabledKey] = isEnabled
-    }
+    override suspend fun storeIsDarkModeEnabled(isEnabled: Boolean) =
+        settings.set(DarkModeEnabledKey, isEnabled)
 
     private suspend inline fun <T> query(
         crossinline block: ArticlesQueries.() -> T

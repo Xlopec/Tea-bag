@@ -13,7 +13,7 @@ fun <Env> AppResolverImpl(
 ): AppResolver<Env> where Env : ArticlesResolver<Env>,
                           Env : LocalStorage,
                           Env : ArticleDetailsResolver =
-    AppResolver { command: Command ->
+    AppResolver { command ->
         when (command) {
             is CloseApp -> command.sideEffect { closeCommands(command) }
             is ArticlesCommand -> resolve(command)

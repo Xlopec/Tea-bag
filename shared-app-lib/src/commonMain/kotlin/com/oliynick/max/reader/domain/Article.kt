@@ -62,7 +62,7 @@ value class Title(
     companion object;
 
     init {
-        require(isValid(value))
+        require(isValid(value)) { "Invalid title value, was $value" }
     }
 }
 
@@ -74,7 +74,7 @@ value class Author(
     companion object;
 
     init {
-        require(isValid(value))
+        require(isValid(value)) { "Invalid author value, was $value" }
     }
 }
 
@@ -86,7 +86,7 @@ value class Description(
     companion object;
 
     init {
-        require(isValid(value))
+        require(isValid(value)) { "Invalid description value, was $value" }
     }
 }
 

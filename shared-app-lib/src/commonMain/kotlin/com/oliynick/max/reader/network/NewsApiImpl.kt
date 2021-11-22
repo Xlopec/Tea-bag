@@ -29,20 +29,7 @@ class NewsApiImpl(
     private val countryCode: String
 ) : NewsApi {
 
-    private val httpClient = HttpClient {
-
-        install(JsonFeature) {
-            val json = kotlinx.serialization.json.Json {
-                ignoreUnknownKeys = true
-                useAlternativeNames = false
-            }
-            serializer = KotlinxSerializer(json)
-        }
-
-        Logging {
-            level = LogLevel.ALL
-        }
-    }
+    private val httpClient by lazy { HttpClient() }
 
     override suspend fun fetchFromEverything(
         input: String,
@@ -58,6 +45,21 @@ class NewsApiImpl(
         resultsPerPage: Int
     ) = Either {
         httpClient.get(TopHeadlinesRequest(input, currentSize, resultsPerPage, countryCode))
+    }
+}
+
+private fun HttpClient() = HttpClient {
+
+    install(JsonFeature) {
+        val json = kotlinx.serialization.json.Json {
+            ignoreUnknownKeys = true
+            useAlternativeNames = false
+        }
+        serializer = KotlinxSerializer(json)
+    }
+
+    Logging {
+        level = LogLevel.ALL
     }
 }
 

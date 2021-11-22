@@ -39,7 +39,6 @@ import Libraries.composeUi
 import Libraries.composeUiTooling
 import Libraries.coroutinesAndroid
 import Libraries.gson
-import Libraries.immutableCollections
 import Libraries.kotlinStdLib
 import Libraries.kotlinStdLibReflect
 import Libraries.ktorClientCio
@@ -57,10 +56,10 @@ plugins {
 android {
     signingConfigs {
         create("release") {
-            storeFile = file(getenvSafe("STORE_FILE") ?: "release.keystore")
-            storePassword = getenvSafe("STORE_PASSWORD")
-            keyPassword = getenvSafe("KEY_PASSWORD")
-            keyAlias = getenvSafe("KEY_ALIAS")
+            storeFile = file(getenvSafe("STORE_FILE") ?: "../test.jks")
+            storePassword = getenvSafe("STORE_PASSWORD") ?: "qwerty"
+            keyPassword = getenvSafe("KEY_PASSWORD") ?: "qwerty"
+            keyAlias = getenvSafe("KEY_ALIAS") ?: "test"
         }
     }
     compileSdk = 30

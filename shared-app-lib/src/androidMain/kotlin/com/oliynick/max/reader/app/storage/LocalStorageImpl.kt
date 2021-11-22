@@ -23,5 +23,11 @@ fun LocalStorage(
 ): LocalStorage =
     LocalStorage(
         AndroidSqliteDriver(AppDatabase.Schema, application, DB_FILE_NAME),
-        AndroidSettings(application.getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE))
+        DeferredSettings(application)
     )
+
+fun DeferredSettings(
+    application: Application
+) = DeferredSettings {
+    AndroidSettings(application.getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE))
+}

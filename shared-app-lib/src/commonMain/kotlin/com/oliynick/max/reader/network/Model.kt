@@ -8,10 +8,10 @@ import kotlinx.serialization.Serializable
 data class ArticleElement(
     @Serializable(with = AuthorSerializer::class)
     @SerialName("author")
-    val author: Author?,
+    val author: Author? = null,
     @SerialName("description")
     @Serializable(with = DescriptionSerializer::class)
-    val description: Description?,
+    val description: Description? = null,
     @SerialName("publishedAt")
     @Serializable(with = CommonDateSerializer::class)
     val publishedAt: Date,
@@ -23,7 +23,7 @@ data class ArticleElement(
     val url: Url,
     @SerialName("urlToImage")
     @Serializable(with = UrlSerializer::class)
-    val urlToImage: Url?,
+    val urlToImage: Url? = null,
 )
 
 @Serializable

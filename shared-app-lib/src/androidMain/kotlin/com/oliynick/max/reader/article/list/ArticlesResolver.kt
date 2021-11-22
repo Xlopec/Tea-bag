@@ -29,13 +29,10 @@ package com.oliynick.max.reader.article.list
 import android.app.Application
 import android.content.Intent
 import android.content.Intent.*
+import android.util.Log
 import com.oliynick.max.reader.app.*
-import com.oliynick.max.reader.article.list.QueryType.*
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.tea.core.component.sideEffect
-import io.ktor.client.features.*
-import io.ktor.client.statement.*
-import kotlinx.serialization.json.*
 
 fun <Env> ArticlesResolver(
     application: Application,
@@ -45,7 +42,13 @@ fun <Env> ArticlesResolver(
             command: ArticlesCommand
         ): Set<Message> =
             when (command) {
-                is LoadArticlesByQuery -> loadArticles(command)
+                is LoadArticlesByQuery -> loadArticles(command).also {
+                    it.forEach {
+                        if (it is ArticlesOperationException) {
+                            Log.e("Resolver", "resolution error", it.cause)
+                        }
+                    }
+                }
                 is SaveArticle -> storeArticle(command.article)
                 is RemoveArticle -> removeArticle(command.article)
                 is DoShareArticle -> application.shareArticle(command)
