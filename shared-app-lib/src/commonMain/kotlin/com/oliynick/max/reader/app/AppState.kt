@@ -32,6 +32,7 @@ import kotlinx.collections.immutable.toPersistentList
 
 typealias ScreenId = UUID
 
+@ImmutableType
 data class AppState(
     val isInDarkMode: Boolean,
     /**

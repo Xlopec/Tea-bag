@@ -1,5 +1,6 @@
 package com.oliynick.max.reader.app
 
+@ImmutableType
 sealed interface ScreenState {
     val id: ScreenId
 }
@@ -15,6 +16,7 @@ interface FullScreen : ScreenState {
 /**
  * Root screen in the navigation hierarchy
  */
+@ImmutableType
 interface TabScreen : ScreenState {
     // things for consideration:
     // 1 how to make fast search & update for nested screens

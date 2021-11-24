@@ -29,7 +29,10 @@ package com.max.reader.screens.article.list.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -78,20 +81,23 @@ fun ArticlesScreen(
     onMessage: (Message) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+
+    val (id, _, articles, _, transientState) = state
+
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        val listState = listState(id = state.id)
-            .apply { setScrollingEnabled(state.articles.isNotEmpty(), rememberCoroutineScope()) }
+        val listState = listState(id = id)
+            .apply { setScrollingEnabled(articles.isNotEmpty(), rememberCoroutineScope()) }
 
         ArticlesContent(listState, state, onMessage) {
 
-            if (state.articles.isNotEmpty()) {
+            if (articles.isNotEmpty()) {
                 ArticleItems(state, onMessage)
             }
 
-            TransientContent(state, onMessage)
+            TransientContent(id, articles.isEmpty(), transientState, onMessage)
         }
     }
 }
@@ -139,16 +145,16 @@ private fun LazyListScope.ArticleItems(
 }
 
 private fun LazyListScope.TransientContent(
-    state: ArticlesState,
+    id: ScreenId,
+    isEmpty: Boolean,
+    transientState: ArticlesState.TransientState,
     onMessage: (Message) -> Unit,
 ) = item {
-
-    val (id, _, articles, _, transientState) = state
 
     when (transientState) {
         is Exception ->
             ArticlesError(
-                modifier = if (articles.isEmpty()) Modifier.fillParentMaxSize() else Modifier.fillParentMaxWidth(),
+                modifier = if (isEmpty) Modifier.fillParentMaxSize() else Modifier.fillParentMaxWidth(),
                 id = id,
                 message = transientState.th.readableMessage,
                 onMessage = onMessage
@@ -159,7 +165,7 @@ private fun LazyListScope.TransientContent(
             ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
         }
         is Preview, is Refreshing -> {
-            if (articles.isEmpty()) {
+            if (isEmpty) {
                 Message(
                     modifier = Modifier.fillParentMaxSize(),
                     message = "No articles",

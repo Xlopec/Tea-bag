@@ -23,6 +23,7 @@
  */
 
 import Libraries.Versions.ktor
+import Libraries.composeRuntime
 import Libraries.coroutinesCore
 import Libraries.gson
 import Libraries.immutableCollections
@@ -82,6 +83,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-cio:$ktor")
                 implementation(ktorClientGson)
                 implementation(gson)
+                implementation(composeRuntime)
                 implementation("com.squareup.sqldelight:android-driver:1.5.2")
             }
         }

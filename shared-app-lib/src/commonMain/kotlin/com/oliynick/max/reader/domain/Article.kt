@@ -25,6 +25,7 @@
 
 package com.oliynick.max.reader.domain
 
+import com.oliynick.max.reader.app.ImmutableType
 import kotlin.contracts.contract
 import kotlin.jvm.JvmInline
 
@@ -44,6 +45,7 @@ expect fun fromMillis(
 
 expect fun Date.toMillis(): Long
 
+@ImmutableType
 data class Article(
     val url: Url,
     val title: Title,

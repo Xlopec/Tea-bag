@@ -1,5 +1,6 @@
 package com.max.reader.misc
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
@@ -15,6 +16,6 @@ inline fun LogCompositions(
     if (LocalLogCompositions.current) {
         val ref = remember { AtomicLong(0) }
         SideEffect { ref.incrementAndGet() }
-        println("$tag, compositions: $ref")
+        Log.i(tag, "compositions: $ref")
     }
 }
