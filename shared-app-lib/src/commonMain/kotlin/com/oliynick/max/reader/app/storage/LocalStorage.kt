@@ -42,6 +42,9 @@ private class LocalStorageImpl(
                     author = author?.value,
                     description = description?.value,
                     url_to_image = urlToImage?.toExternalValue(),
+                    // I don't expect performance issues here as we aren't going
+                    // to store thousands of articles in a row
+                    saved_on = now().toMillis(),
                     published = published.toMillis(),
                     is_favorite = isFavorite
                 )
@@ -89,6 +92,8 @@ private fun dbModelToArticle(
     description: String?,
     urlToImage: String?,
     published: Long,
+    // this unused arg is needed just to make function signatures match
+    @Suppress("UNUSED_PARAMETER") savedOn: Long,
     isFavorite: Boolean
 ): Article = Article(
     url = url.toUrl(),

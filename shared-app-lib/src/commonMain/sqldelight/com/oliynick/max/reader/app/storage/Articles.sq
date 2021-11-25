@@ -5,18 +5,20 @@ CREATE TABLE Articles(
   description TEXT,
   url_to_image TEXT,
   published INTEGER NOT NULL,
+  saved_on INTEGER NOT NULL,
   is_favorite INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
 insertArticle:
-INSERT INTO Articles(url, title, author, description, url_to_image, published, is_favorite)
-VALUES (?, ?, ?, ?, ?, ?, ?);
+INSERT INTO Articles(url, title, author, description, url_to_image, published, saved_on, is_favorite)
+VALUES (?, ?, ?, ?, ?, ?, ?,?);
 
 deleteArticle:
 DELETE FROM Articles WHERE url = ?;
 
 findAllArticles:
-SELECT * FROM Articles WHERE title LIKE ? OR author LIKE ? OR description LIKE ?;
+SELECT * FROM Articles WHERE title LIKE ? OR author LIKE ? OR description LIKE ?
+ORDER BY saved_on ASC;
 
 isFavoriteArticle:
 SELECT * FROM Articles WHERE url = ?;
