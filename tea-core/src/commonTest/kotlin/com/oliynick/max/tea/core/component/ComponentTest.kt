@@ -24,16 +24,12 @@
 
 @file:Suppress("TestFunctionName")
 
-package component
-/*
+package com.oliynick.max.tea.core.component
+
 import com.oliynick.max.tea.core.Env
-import com.oliynick.max.tea.core.component.Component
 import core.component.BasicComponentTest
 import kotlinx.coroutines.CoroutineScope
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 
-@RunWith(JUnit4::class)
 internal class ComponentTest : BasicComponentTest(Companion::ComponentFactory) {
 
     private companion object {
@@ -44,4 +40,4 @@ internal class ComponentTest : BasicComponentTest(Companion::ComponentFactory) {
         ): Component<Char, String, Char> = Component(env)
     }
 
-}*/
+}

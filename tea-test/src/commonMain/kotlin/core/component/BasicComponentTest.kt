@@ -26,7 +26,7 @@
 
 package core.component
 
-/*import com.oliynick.max.tea.core.*
+import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import core.misc.TestEnv
 import core.misc.messageAsCommand
@@ -34,31 +34,17 @@ import core.misc.throwingResolver
 import core.misc.throwingUpdater
 import core.scope.coroutineDispatcher
 import core.scope.runBlockingInTestScope
-import io.kotlintest.matchers.boolean.shouldBeFalse
-import io.kotlintest.matchers.boolean.shouldBeTrue
-import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
-import io.kotlintest.matchers.throwable.shouldHaveMessage
-import io.kotlintest.matchers.types.shouldBeSameInstanceAs
-import io.kotlintest.matchers.types.shouldBeTypeOf
-import io.kotlintest.matchers.types.shouldNotBeNull
-import io.kotlintest.matchers.withClue
-import io.kotlintest.shouldBe
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.*
-import org.junit.Ignore
-import org.junit.Rule
-import org.junit.Test
-import org.junit.rules.Timeout
+import sun.tools.jconsole.ProxyClient
 import java.util.concurrent.Executors
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.coroutineContext
 import kotlin.math.abs
-import kotlin.test.Ignore
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import kotlin.test.*
 
 @OptIn(InternalCoroutinesApi::class)
 abstract class BasicComponentTest(
@@ -66,7 +52,7 @@ abstract class BasicComponentTest(
 ) {
 
     private companion object {
-        val TestTimeout: Timeout = Timeout.seconds(10L)
+        //val TestTimeout: Timeout = Timeout.seconds(10L)
         const val ThreadName = "test thread"
 
         val SingleThreadDispatcher =
@@ -74,15 +60,19 @@ abstract class BasicComponentTest(
                 .asCoroutineDispatcher()
     }
 
-    @get:Rule
-    var globalTimeout: Timeout = TestTimeout
+    //@get:Rule
+    //var globalTimeout: Timeout = TestTimeout
 
     @Test
     fun `test initializer is invoked each time for component with no active subscribers`() =
         runBlockingInTestScope {
 
             var counter = 0
-            val initial = Initial<String, Char>("", emptySet())
+            val initial =
+                Initial<String, Char>(
+                    "",
+                    emptySet()
+                )
             val env = TestEnv<Char, String, Char>(
                 { counter++; initial },
                 ::noOpResolver,
@@ -134,10 +124,20 @@ abstract class BasicComponentTest(
 
             val (state, commands) = lastInitial
 
-            resultingStates shouldContainExactly (initialStates + Regular(state,
+            assertContentEquals(
+                (initialStates + Regular(
+                    state,
+                    commands,
+                    state,
+                    commands.first()
+                )),
+                resultingStates
+            )
+
+            /*resultingStates shouldContainExactly (initialStates + Regular(state,
                 commands,
                 state,
-                commands.first()))
+                commands.first()))*/
         }
 
     @Test
@@ -152,11 +152,22 @@ abstract class BasicComponentTest(
         val messages = arrayOf('a', 'b', 'c')
         val snapshots = factory(env)(*messages).take(messages.size + 1).toList()
 
-        snapshots.shouldContainExactly(
+        /*snapshots.shouldContainExactly(
             Initial("", emptySet()),
             Regular("a", emptySet(), "", 'a'),
             Regular("b", emptySet(), "a", 'b'),
             Regular("c", emptySet(), "b", 'c')
+        )*/
+
+        assertContentEquals(
+            listOf(
+                Initial("", emptySet()),
+                Regular("a", emptySet(), "", 'a'),
+                Regular("b", emptySet(), "a", 'b'),
+                Regular("c", emptySet(), "b", 'c')
+            ),
+
+            snapshots
         )
     }
 
@@ -175,12 +186,22 @@ abstract class BasicComponentTest(
 
             val snapshots = factory(env)('a').take(3).toList()
 
-            @Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
+            assertContentEquals(
+                listOf<ProxyClient.Snapshot<Char, String, Char>>(
+                    Initial("", emptySet()),
+                    Regular("a", setOf('a'), "", 'a'),
+                    Regular("ab", setOf('b'), "a", 'b')
+                ),
+
+                snapshots
+            )
+
+            /*@Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
             snapshots shouldBe listOf<Snapshot<Char, String, Char>>(
                 Initial("", emptySet()),
                 Regular("a", setOf('a'), "", 'a'),
                 Regular("ab", setOf('b'), "a", 'b')
-            )
+            )*/
         }
 
     @Test
@@ -192,13 +213,14 @@ abstract class BasicComponentTest(
             { m, _ -> m.toString().noCommand() },
         )
 
-        val sink = mutableListOf<Snapshot<Char, String, Char>>()
+        val sink = mutableListOf<ProxyClient.Snapshot<Char, String, Char>>()
         val component = factory(env) with sink::add
         val messages = arrayOf('a', 'b', 'c')
         val snapshots =
             component(*messages).take(messages.size + 1).toList()
 
-        sink shouldContainExactly snapshots
+        assertContentEquals(snapshots, sink)
+        //sink shouldContainExactly snapshots
     }
 
     @Test
@@ -237,7 +259,22 @@ abstract class BasicComponentTest(
         val snapshots1 = snapshots1Deferred.await()
         val snapshots2 = snapshots2Deferred.await()
 
-        withClue(
+        assertContentEquals(
+            expected, snapshots1, """
+            snapshots1: $snapshots1
+            snapshots2: $snapshots2
+            expected: $expected
+            """.trimIndent()
+        )
+        assertContentEquals(
+            expected, snapshots2, """
+            snapshots1: $snapshots1
+            snapshots2: $snapshots2
+            expected: $expected
+            """.trimIndent()
+        )
+
+        /*withClue(
             """
             snapshots1: $snapshots1
             snapshots2: $snapshots2
@@ -246,7 +283,7 @@ abstract class BasicComponentTest(
         ) {
             snapshots1 shouldContainExactly expected
             snapshots2 shouldContainExactly expected
-        }
+        }*/
     }
 
     @Test
@@ -276,7 +313,8 @@ abstract class BasicComponentTest(
 
             val component = factory(env)
 
-            countingInitializer.invocations.value shouldBe 0
+            assertEquals(0, countingInitializer.invocations.value)
+            //countingInitializer.invocations.value shouldBe 0
 
             val coroutines = 1_000
             val jobs = (0 until coroutines).map { launch { component('a').first() } }
@@ -284,11 +322,13 @@ abstract class BasicComponentTest(
 
             jobs.joinAll()
 
-            countingInitializer.invocations.value shouldBe 1
+            assertEquals(1, countingInitializer.invocations.value)
+
+            //countingInitializer.invocations.value shouldBe 1
         }
 
     @Test
-    @Ignore("Ignored due to https://youtrack.jetbrains.com/issue/KT-47195")
+    //@Ignore("Ignored due to https://youtrack.jetbrains.com/issue/KT-47195")
     fun `test component's job gets canceled properly`() = runBlockingInTestScope {
 
         val resolver = ForeverWaitingResolver<Char>()
@@ -307,7 +347,8 @@ abstract class BasicComponentTest(
             .take(messages.size)
             .toList()
 
-        canceled shouldContainExactlyInAnyOrder messages.toList()
+        assertEquals(messages.toList(), canceled)
+        // canceled shouldContainExactlyInAnyOrder messages.toList()
     }
 
     @Test
@@ -365,7 +406,23 @@ abstract class BasicComponentTest(
             val snapshots1 = snapshots1Deferred.await()
             val snapshots2 = snapshots2Deferred.await()
 
-            withClue(
+            assertContentEquals(
+                expected, snapshots1, """
+            snapshots1: $snapshots1
+            snapshots2: $snapshots2
+            expected: $expected
+            """.trimIndent()
+            )
+
+            assertContentEquals(
+                expected, snapshots2, """
+            snapshots1: $snapshots1
+            snapshots2: $snapshots2
+            expected: $expected
+            """.trimIndent()
+            )
+
+            /*withClue(
                 """
             snapshots1: $snapshots1
             snapshots2: $snapshots2
@@ -374,7 +431,7 @@ abstract class BasicComponentTest(
             ) {
                 snapshots1 shouldContainExactly expected
                 snapshots2 shouldContainExactly expected
-            }
+            }*/
         }
 
     @Test
@@ -403,17 +460,22 @@ abstract class BasicComponentTest(
             val job = launch { component("").collect() }
 
             job.join()
-            job.isCancelled.shouldBeTrue()
+
+            assertTrue(job.isCancelled)
+            //job.isCancelled.shouldBeTrue()
 
             val th = job.getCancellationException().cause
+            // todo maybe IllegalStateException should be replaced with custom exception
+            assertTrue("Cancellation cause $th") { th is IllegalStateException }
 
-            withClue("Cancellation cause $th") {
+            /*withClue("Cancellation cause $th") {
                 th.shouldNotBeNull()
                 // todo maybe IllegalStateException should be replaced with custom exception
                 th.shouldBeTypeOf<IllegalStateException>()
-            }
+            }*/
 
-            isActive.shouldBeFalse()
+            assertTrue(!isActive)
+            //isActive.shouldBeFalse()
         }
 
     @Test
@@ -430,17 +492,23 @@ abstract class BasicComponentTest(
             val job = launch { component("").collect() }
 
             job.join()
-            job.isCancelled.shouldBeTrue()
+            assertTrue(job.isCancelled)
+            //job.isCancelled.shouldBeTrue()
 
             val th = job.getCancellationException().cause
 
-            withClue("Cancellation cause $th") {
+            assertTrue("Cancellation cause $th") {
+                th is RuntimeException && th.message == expectedException.message
+            }
+
+            /*withClue("Cancellation cause $th") {
                 th.shouldNotBeNull()
                 th.shouldBeTypeOf<RuntimeException>()
                 th.shouldHaveMessage(expectedException.message!!)
-            }
+            }*/
 
-            isActive.shouldBeFalse()
+            //isActive.shouldBeFalse()
+            assertTrue(!isActive)
         }
 
     @Test
@@ -477,14 +545,14 @@ private fun <T> noOpSink(t: T) = Unit
 private fun CheckingInitializer(
     expectedDispatcher: CoroutineDispatcher,
 ): Initializer<String, Nothing> = {
-    coroutineContext[ContinuationInterceptor] shouldBeSameInstanceAs expectedDispatcher
+    assertTrue { coroutineContext[ContinuationInterceptor] === expectedDispatcher }
     Initial("", emptySet())
 }
 
 private fun CheckingResolver(
     expectedDispatcher: CoroutineDispatcher,
 ): Resolver<Any?, Nothing> = {
-    coroutineContext[CoroutineDispatcher.Key] shouldBeSameInstanceAs expectedDispatcher
+    assertTrue { coroutineContext[CoroutineDispatcher.Key] === expectedDispatcher }
     emptySet()
 }
 
@@ -501,9 +569,13 @@ private fun <M, S> CheckingUpdater(
 
     val threadName = currentThreadName()
 
-    withClue("Thread name should match '${expectedThreadGroup.pattern}' but was '$threadName'") {
-        threadName.matches(expectedThreadGroup).shouldBeTrue()
+    assertTrue("Thread name should match '${expectedThreadGroup.pattern}' but was '$threadName'") {
+        threadName.matches(expectedThreadGroup)
     }
+
+    /*withClue("Thread name should match '${expectedThreadGroup.pattern}' but was '$threadName'") {
+        threadName.matches(expectedThreadGroup).shouldBeTrue()
+    }*/
     s.noCommand()
 }
 
@@ -536,4 +608,3 @@ class ForeverWaitingResolver<T> {
 
 private val CharRange.size: Int
     get() = 1 + abs(last - first)
-*/

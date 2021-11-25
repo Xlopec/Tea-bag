@@ -64,6 +64,7 @@ kotlin {
                 api(coroutinesCore)
                 api(coroutinesTest)
                 api(kotlinTest)
+                api("org.jetbrains.kotlin:kotlin-test-annotations-common")
                 implementation(project(":tea-core"))
             }
         }
