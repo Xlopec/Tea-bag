@@ -91,4 +91,5 @@ object TestLibraries {
     const val espressoCore = "androidx.test.espresso:espresso-core:3.3.0"
     const val ktorMockJvm = "io.ktor:ktor-client-mock-jvm:${Versions.ktor}"
     const val ktorServerTests = "io.ktor:ktor-server-tests:${Versions.ktor}"
+    const val kotlinTest = "org.jetbrains.kotlin:kotlin-test"
 }

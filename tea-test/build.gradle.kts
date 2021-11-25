@@ -27,24 +27,59 @@ import Libraries.atomicfu
 import Libraries.coroutinesCore
 import Libraries.coroutinesTest
 import Libraries.kotlinStdLib
-import TestLibraries.junit
-import TestLibraries.junitRunner
+import TestLibraries.kotlinTest
 
 plugins {
-    `java-library`
-    kotlin("jvm")
+    kotlin("multiplatform")
+    kotlin("native.cocoapods")
 }
 
-dependencies {
+version = "1.0.0"
 
-    implementation(project(":tea-core"))
+kotlin {
 
-    api(kotlinStdLib)
-    api(atomicfu)
+    jvm {
+        withJava()
 
-    api(coroutinesCore)
-    api(junit)
-    api(coroutinesTest)
-    api(junitRunner)
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
+        }
+    }
 
+    ios()
+
+    cocoapods {
+        summary = "Tea test library"
+        homepage = "Link to the Tea test library Module homepage"
+        ios.deploymentTarget = "14.0"
+        frameworkName = "TeaTest"
+        podfile = project.file("../iosApp/Podfile")
+    }
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                api(kotlinStdLib)
+                api(atomicfu)
+                api(coroutinesCore)
+                api(coroutinesTest)
+                api(kotlinTest)
+                implementation(project(":tea-core"))
+            }
+        }
+
+        val commonTest by getting {
+            dependencies {
+
+            }
+        }
+
+        val iosMain by getting
+
+        val iosTest by getting
+
+        val jvmMain by getting
+
+        val jvmTest by getting
+    }
 }

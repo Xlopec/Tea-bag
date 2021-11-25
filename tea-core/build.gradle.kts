@@ -24,7 +24,7 @@
 
 import Libraries.coroutinesCore
 import Libraries.kotlinStdLib
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import TestLibraries.kotlinTest
 
 /**
  * in case of shit, add this back to xcode -> .xcodeproj -> Build Phases -> Run Script
@@ -48,6 +48,10 @@ kotlin {
 
     jvm {
         withJava()
+
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
+        }
     }
 
     ios()
@@ -68,24 +72,19 @@ kotlin {
             }
         }
 
-        val commonTest by getting
-
-        val jvmMain by getting
-
-        val jvmTest by getting {
+        val commonTest by getting {
             dependencies {
+                implementation(kotlinTest)
                 implementation(project(":tea-test"))
             }
         }
 
-        val iosMain by getting {
-            dependencies {
-                //implementation(kotlinStdLib)
-                //dependsOn(commonMain)
-                //org.jetbrains.kotlinx:kotlinx-coroutines-core-iosx64:1.5.0-native-mt'
-                //api("org.jetbrains.kotlinx:kotlinx-coroutines-core-iosx64:1.5.0")
-            }
-        }
+        val jvmMain by getting
+
+        val jvmTest by getting
+
+        val iosMain by getting
+
         val iosTest by getting
     }
 }

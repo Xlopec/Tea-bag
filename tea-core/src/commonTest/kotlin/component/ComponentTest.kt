@@ -22,20 +22,26 @@
  * SOFTWARE.
  */
 
-package core.misc
+@file:Suppress("TestFunctionName")
 
-import io.kotlintest.shouldBe
+package component
+/*
+import com.oliynick.max.tea.core.Env
+import com.oliynick.max.tea.core.component.Component
+import core.component.BasicComponentTest
+import kotlinx.coroutines.CoroutineScope
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
-inline fun <T, E> Collection<T>.shouldForEach(
-    another: Collection<E>,
-    block: (t: T, e: E) -> Unit
-) {
-    size shouldBe another.size
+@RunWith(JUnit4::class)
+internal class ComponentTest : BasicComponentTest(Companion::ComponentFactory) {
 
-    val thisIter = iterator()
-    val anotherIter = another.iterator()
+    private companion object {
 
-    while(thisIter.hasNext()) {
-        block(thisIter.next(), anotherIter.next())
+        fun ComponentFactory(
+            @Suppress("UNUSED_PARAMETER") scope: CoroutineScope,
+            env: Env<Char, String, Char>,
+        ): Component<Char, String, Char> = Component(env)
     }
-}
+
+}*/

@@ -25,15 +25,12 @@
 package com.oliynick.max.tea.core.component
 
 import core.component.*
-import io.kotlintest.matchers.collections.shouldBeEmpty
-import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
-import io.kotlintest.shouldBe
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
+import kotlin.test.Test
+import kotlin.test.assertContains
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
-@RunWith(JUnit4::class)
 internal class ComponentExtensionsTest {
 
     private val initialState = TodoState(Item("some1"), Item("some2"), Item("some3"))
@@ -44,8 +41,8 @@ internal class ComponentExtensionsTest {
 
         val (state, commands) = initialState.command(DoAddItem(Item("some4"), initialState.items))
 
-        initialState shouldBe state
-        commands.shouldContainExactlyInAnyOrder(first)
+        assertEquals(state, initialState)
+        assertContains(commands, first)
     }
 
     @Test
@@ -55,8 +52,9 @@ internal class ComponentExtensionsTest {
 
         val (state, commands) = initialState.command(first, second)
 
-        initialState shouldBe state
-        commands.shouldContainExactlyInAnyOrder(first, second)
+        assertEquals(initialState, state)
+        assertContains(commands, first)
+        assertContains(commands, second)
     }
 
     @Test
@@ -67,8 +65,10 @@ internal class ComponentExtensionsTest {
 
         val (state, commands) = initialState.command(first, second, third)
 
-        initialState shouldBe state
-        commands.shouldContainExactlyInAnyOrder(first, second, third)
+        assertEquals(initialState, state)
+        assertContains(commands, first)
+        assertContains(commands, second)
+        assertContains(commands, third)
     }
 
     @Test
@@ -80,16 +80,19 @@ internal class ComponentExtensionsTest {
 
         val (state, commands) = initialState.command(first, second, third, fourth)
 
-        initialState shouldBe state
-        commands.shouldContainExactlyInAnyOrder(first, second, third, fourth)
+        assertEquals(initialState, state)
+        assertContains(commands, first)
+        assertContains(commands, second)
+        assertContains(commands, third)
+        assertContains(commands, fourth)
     }
 
     @Test
     fun `test no commands extension`() {
         val (state, commands) = initialState.noCommand()
 
-        initialState shouldBe state
-        commands.shouldBeEmpty()
+        assertEquals(initialState, state)
+        assertTrue("commands should be empty", commands::isEmpty)
     }
 
     @Test
@@ -97,14 +100,14 @@ internal class ComponentExtensionsTest {
 
         val messages = DoAddItem(Item("some"), emptyList()).sideEffect<Command, Updated> { }
 
-        messages.shouldBeEmpty()
+        assertTrue("messages should be empty", messages::isEmpty)
     }
 
     @Test
     fun `test when effect returns no command the result is empty set`() = runBlockingTest {
         val messages = DoAddItem(Item("some"), emptyList()).effect<Command, Updated> { null }
 
-        messages.shouldBeEmpty()
+        assertTrue("messages should be empty", messages::isEmpty)
     }
 
     @Test
@@ -114,7 +117,7 @@ internal class ComponentExtensionsTest {
             val expectedMessage = Updated(listOf(item))
             val messages = DoAddItem(item, emptyList()).effect { expectedMessage }
 
-            messages.shouldContainExactlyInAnyOrder(expectedMessage)
+            assertContains(messages, expectedMessage)
         }
 
 }

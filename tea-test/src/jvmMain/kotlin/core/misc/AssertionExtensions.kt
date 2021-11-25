@@ -22,34 +22,22 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+package core.misc
 
-package core.data
+/*
+import io.kotlintest.shouldBe
 
-import java.net.URL
-import java.util.*
+inline fun <T, E> Collection<T>.shouldForEach(
+    another: Collection<E>,
+    block: (t: T, e: E) -> Unit
+) {
+    size shouldBe another.size
 
-data class User(
-    val id: Id,
-    val name: Name,
-    val photos: List<Photo>,
-    val avatar: URL? = null
-)
+    val thisIter = iterator()
+    val anotherIter = another.iterator()
 
-@JvmInline
-value class Id(val uuid: UUID)
-
-data class Name(val value: String) {
-    init {
-        require(value.isNotEmpty())
+    while(thisIter.hasNext()) {
+        block(thisIter.next(), anotherIter.next())
     }
 }
-
-@JvmInline
-value class Photo(val url: URL)
-
-fun RandomId() = Id(UUID.randomUUID())
-
-fun Photo(urlSpec: String) = Photo(URL(urlSpec))
-
-fun Avatar(s: String) = URL(s)
+*/

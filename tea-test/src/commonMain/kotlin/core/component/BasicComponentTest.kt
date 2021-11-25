@@ -26,7 +26,7 @@
 
 package core.component
 
-import com.oliynick.max.tea.core.*
+/*import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import core.misc.TestEnv
 import core.misc.messageAsCommand
@@ -36,7 +36,6 @@ import core.scope.coroutineDispatcher
 import core.scope.runBlockingInTestScope
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.boolean.shouldBeTrue
-import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotlintest.matchers.throwable.shouldHaveMessage
 import io.kotlintest.matchers.types.shouldBeSameInstanceAs
@@ -57,8 +56,11 @@ import java.util.concurrent.Executors
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.coroutineContext
 import kotlin.math.abs
+import kotlin.test.Ignore
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-@OptIn(UnstableApi::class, InternalCoroutinesApi::class)
+@OptIn(InternalCoroutinesApi::class)
 abstract class BasicComponentTest(
     protected val factory: CoroutineScope.(Env<Char, String, Char>) -> Component<Char, String, Char>,
 ) {
@@ -97,7 +99,7 @@ abstract class BasicComponentTest(
             component.collect('g'..'k')
             // each time new subscriber attaches to a component
             // with no subscribers initializer should be invoked
-            counter shouldBe 2
+            assertEquals(2, counter, "Counter should be equal 2")
         }
 
     @Test
@@ -534,3 +536,4 @@ class ForeverWaitingResolver<T> {
 
 private val CharRange.size: Int
     get() = 1 + abs(last - first)
+*/

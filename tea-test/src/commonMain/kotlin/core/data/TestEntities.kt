@@ -22,11 +22,41 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.tea.core.component
+@file:Suppress("FunctionName")
 
-import org.junit.runner.RunWith
-import org.junit.runners.Suite
+package core.data
 
-@RunWith(Suite::class)
-@Suite.SuiteClasses(ComponentTest::class, ComponentExtensionsTest::class)
-internal object ComponentTestSuite
+expect class UUID
+
+expect class Url
+
+expect fun UrlFor(
+    s: String
+): Url
+
+expect fun randomUUID(): UUID
+
+data class User(
+    val id: Id,
+    val name: Name,
+    val photos: List<Photo>,
+    val avatar: Url? = null
+)
+
+@JvmInline
+value class Id(val uuid: UUID)
+
+data class Name(val value: String) {
+    init {
+        require(value.isNotEmpty())
+    }
+}
+
+@JvmInline
+value class Photo(val url: Url)
+
+fun RandomId() = Id(randomUUID())
+
+fun Photo(urlSpec: String) = Photo(UrlFor(urlSpec))
+
+fun Avatar(s: String) = UrlFor(s)
