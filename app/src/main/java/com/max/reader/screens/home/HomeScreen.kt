@@ -26,8 +26,7 @@
 
 package com.max.reader.screens.home
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.Icons.Outlined
@@ -37,6 +36,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -117,6 +117,15 @@ fun HomeScreen(
 }
 
 @Composable
+operator fun PaddingValues.plus(other: PaddingValues) =
+    PaddingValues(
+        start = other.calculateStartPadding(LocalLayoutDirection.current),
+        top = other.calculateTopPadding(),
+        end = other.calculateEndPadding(LocalLayoutDirection.current),
+        bottom = other.calculateBottomPadding()
+    )
+
+@Composable
 fun BottomBar(
     modifier: Modifier,
     item: BottomMenuItem,
@@ -124,7 +133,8 @@ fun BottomBar(
 ) {
     BottomNavigation(modifier = modifier) {
 
-        BottomNavigationItem(icon = {
+        BottomNavigationItem(
+            icon = {
             Icon(
                 imageVector = Outlined.Language,
                 contentDescription = "Feed"

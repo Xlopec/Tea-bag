@@ -45,7 +45,7 @@ private val Domine = FontFamily(
     )
 )
 
-val AppTypography = Typography(
+val Typography = Typography(
     h4 = TextStyle(
         fontFamily = Montserrat,
         fontWeight = FontWeight.W600,

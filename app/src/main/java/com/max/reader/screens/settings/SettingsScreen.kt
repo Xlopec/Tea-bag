@@ -29,7 +29,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Brightness3
 import androidx.compose.material.icons.filled.Brightness5
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -65,10 +64,13 @@ fun SettingsScreen(
 
                 Icon(
                     contentDescription = "Dark Mode",
-                    imageVector = if (state.isInDarkMode) Icons.Default.Brightness3 else Icons.Default.Brightness5
+                    tint = MaterialTheme.colors.onSurface,
+                    imageVector = Icons.Default.Brightness5
                 )
 
-                Column {
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "Dark mode",
                         style = MaterialTheme.typography.subtitle1
@@ -81,8 +83,6 @@ fun SettingsScreen(
                         style = MaterialTheme.typography.body1
                     )
                 }
-
-                Spacer(modifier = Modifier.weight(weight = 1f, fill = false))
 
                 Switch(
                     checked = state.isInDarkMode,

@@ -24,9 +24,12 @@
 
 package com.max.reader.ui.theme
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import com.google.accompanist.insets.ProvideWindowInsets
 
 @Composable
@@ -35,13 +38,48 @@ fun AppTheme(
     content: @Composable () -> Unit,
 ) {
     MaterialTheme(
-        colors = if (isDarkModeEnabled) AppDarkThemeColors else AppLightThemeColors,
-        typography = AppTypography,
+        colors = appColors(isDarkModeEnabled),
+        typography = Typography,
     ) {
         ProvideWindowInsets {
             content()
         }
     }
+}
+
+@Composable
+private fun appColors(
+    isDarkModeEnabled: Boolean
+): Colors {
+    //todo refactor
+    val primary by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.primary else DarkThemeColors.primary)
+    val primaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.primaryVariant else DarkThemeColors.primaryVariant)
+    val secondary by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondary else DarkThemeColors.secondary)
+    val secondaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant)
+    val background by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.background else DarkThemeColors.background)
+    val surface by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.surface else DarkThemeColors.surface)
+    val error by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.error else DarkThemeColors.error)
+    val onPrimary by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.onPrimary else DarkThemeColors.onPrimary)
+    val onSecondary by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.onSecondary else DarkThemeColors.onSecondary)
+    val onBackground by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.onBackground else DarkThemeColors.onBackground)
+    val onSurface by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.onSurface else DarkThemeColors.onSurface)
+    val onError by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.onError else DarkThemeColors.onError)
+
+    return Colors(
+        primary = primary,
+        primaryVariant = primaryVariant,
+        secondary = secondary,
+        secondaryVariant = secondaryVariant,
+        background = background,
+        surface = surface,
+        error = error,
+        onPrimary = onPrimary,
+        onSecondary = onSecondary,
+        onBackground = onBackground,
+        onSurface = onSurface,
+        onError = onError,
+        isLight = true
+    )
 }
 
 @Composable
