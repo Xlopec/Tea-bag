@@ -27,6 +27,7 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.article.list.ArticlesState
+import com.oliynick.max.reader.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.article.list.Query
 import com.oliynick.max.reader.article.list.QueryType.Regular
 import com.oliynick.max.tea.core.Initial
@@ -44,9 +45,10 @@ fun AppInitializer(
     Initial(AppState(initScreen, environment.isDarkModeEnabled()), initScreen.toInitialQuery())
 }
 
-private fun ArticlesState.toInitialQuery(
-    perPage: Int = ArticlesState.ArticlesPerPage,
-) = LoadArticlesByQuery(id, query, articles.size, perPage)
+private fun ArticlesState.toInitialQuery(): LoadArticlesByQuery {
+    require(articles.isEmpty()) { "non initial state $this" }
+    return LoadArticlesByQuery(id, query, FirstPage)
+}
 
 private fun Initial(
     appState: AppState,

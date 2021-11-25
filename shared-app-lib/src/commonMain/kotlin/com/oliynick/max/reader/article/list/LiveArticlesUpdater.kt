@@ -25,7 +25,7 @@
 package com.oliynick.max.reader.article.list
 
 import com.oliynick.max.reader.app.*
-import com.oliynick.max.reader.article.list.ArticlesState.Companion.ArticlesPerPage
+import com.oliynick.max.reader.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.article.list.QueryType.*
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.domain.toggleFavorite
@@ -43,7 +43,7 @@ object LiveArticlesUpdater : ArticlesUpdater {
     ): UpdateWith<ArticlesState, Command> =
         // fixme refactor this bit
         when (message) {
-            is ArticlesLoaded -> state.toPreview(message.articles, message.hasMore).noCommand()
+            is ArticlesLoaded -> state.toPreview(message.page).noCommand()
             is LoadNextArticles -> state.toLoadNextArticlesUpdate()
             is LoadArticlesFromScratch -> state.toLoadArticlesFromScratchUpdate()
             is RefreshArticles -> state.toRefreshUpdate()
@@ -55,17 +55,18 @@ object LiveArticlesUpdater : ArticlesUpdater {
             is OnQueryUpdated -> updateQuery(message.query, state)
         }
 
-    fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadArticlesQuery()
+    fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadArticlesQuery(FirstPage)
 
-    fun ArticlesState.toLoadArticlesQuery() =
-        LoadArticlesByQuery(id, query, articles.size, ArticlesPerPage)
+    fun ArticlesState.toLoadArticlesQuery(
+        paging: Paging
+    ) = LoadArticlesByQuery(id, query, paging)
 
     fun ArticlesState.toLoadArticlesFromScratchUpdate() =
-        toLoading() command toLoadArticlesQuery()
+        toLoading() command toLoadArticlesQuery(FirstPage)
 
     fun ArticlesState.toLoadNextArticlesUpdate() =
         if (isPreview && hasMoreArticles && articles.isNotEmpty() /*todo should we throw an error in this case?*/) {
-            toLoadingNext() command toLoadArticlesQuery()
+            toLoadingNext() command toLoadArticlesQuery(nextPage())
         } else {
             // just ignore the command
             noCommand()

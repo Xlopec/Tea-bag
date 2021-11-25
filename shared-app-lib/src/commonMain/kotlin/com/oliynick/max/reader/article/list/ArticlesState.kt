@@ -104,21 +104,20 @@ fun ArticlesState.toRefreshing() =
     copy(transientState = Refreshing)
 
 fun ArticlesState.toPreview(
-    append: List<Article>,
-    hasMore: Boolean,
+    page: Page,
 ): ArticlesState =
     when (transientState) {
         LoadingNext, is Exception -> {
             copy(
-                articles = articles + append,
+                articles = articles + page.articles,
                 transientState = Preview,
-                hasMoreArticles = hasMore
+                hasMoreArticles = page.hasMore
             )
         }
         Loading, Refreshing -> copy(
-            articles = append,
+            articles = page.articles,
             transientState = Preview,
-            hasMoreArticles = hasMore
+            hasMoreArticles = page.hasMore
         )
         Preview -> this
     }

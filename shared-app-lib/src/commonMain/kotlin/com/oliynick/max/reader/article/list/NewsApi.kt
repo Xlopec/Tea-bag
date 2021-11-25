@@ -29,19 +29,16 @@ package com.oliynick.max.reader.article.list
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.datatypes.Either
 import com.oliynick.max.reader.network.ArticleResponse
-import com.oliynick.max.reader.network.Page
 
 interface NewsApi {
 
     suspend fun fetchFromEverything(
         input: String,
-        currentSize: Int,
-        resultsPerPage: Int,
+        paging: Paging
     ): Either<ArticleResponse, AppException>
 
     suspend fun fetchTopHeadlines(
         input: String,
-        currentSize: Int,
-        resultsPerPage: Int,
+        paging: Paging
     ): Either<ArticleResponse, AppException>
 }

@@ -28,6 +28,7 @@ package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.article.details.ArticleDetailsState
 import com.oliynick.max.reader.article.list.ArticlesState
+import com.oliynick.max.reader.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.article.list.Query
 import com.oliynick.max.reader.article.list.QueryType.*
 import com.oliynick.max.reader.settings.SettingsState
@@ -68,7 +69,7 @@ fun TabNavigation.toTabScreen(): UpdateWith<TabScreen, Command> =
 private fun ArticlesInitialUpdate(
     id: ScreenId,
     query: Query
-) = ArticlesState.newLoading(id, query) command LoadArticlesByQuery(id, query)
+) = ArticlesState.newLoading(id, query) command LoadArticlesByQuery(id, query, FirstPage)
 
 fun AppState.navigateToTab(
     nav: TabNavigation,
@@ -117,9 +118,3 @@ private val AppState.currentTab: TabScreen
 fun AppState.navigateToArticleDetails(
     nav: NavigateToArticleDetails,
 ) = pushScreen(ArticleDetailsState(nav.id, nav.article, currentTab.id)).noCommand()
-
-private fun LoadArticlesByQuery(
-    id: ScreenId,
-    query: Query,
-    resultsPerPage: Int = ArticlesState.ArticlesPerPage,
-) = LoadArticlesByQuery(id, query, 0, resultsPerPage)

@@ -8,6 +8,8 @@ import com.oliynick.max.reader.app.InternalException
 import com.oliynick.max.reader.app.NetworkException
 import com.oliynick.max.reader.app.datatypes.Either
 import com.oliynick.max.reader.article.list.NewsApi
+import com.oliynick.max.reader.article.list.Paging
+import com.oliynick.max.reader.article.list.nextPage
 import com.oliynick.max.tea.core.IO
 import io.ktor.client.*
 import io.ktor.client.features.*
@@ -16,7 +18,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.http.*
+import io.ktor.http.URLProtocol.Companion.HTTPS
 import io.ktor.util.*
 import io.ktor.util.network.*
 import kotlinx.coroutines.withContext
@@ -33,18 +35,16 @@ class NewsApiImpl(
 
     override suspend fun fetchFromEverything(
         input: String,
-        currentSize: Int,
-        resultsPerPage: Int
+        paging: Paging
     ) = Either {
-        httpClient.get(EverythingRequest(input, currentSize, resultsPerPage))
+        httpClient.get(EverythingRequest(input, paging))
     }
 
     override suspend fun fetchTopHeadlines(
         input: String,
-        currentSize: Int,
-        resultsPerPage: Int
+        paging: Paging
     ) = Either {
-        httpClient.get(TopHeadlinesRequest(input, currentSize, resultsPerPage, countryCode))
+        httpClient.get(TopHeadlinesRequest(input, paging, countryCode))
     }
 }
 
@@ -106,17 +106,16 @@ private fun NetworkException(
 
 private fun EverythingRequest(
     input: String,
-    currentSize: Int,
-    resultsPerPage: Int,
+    paging: Paging,
 ) = HttpRequestBuilder(
-    scheme = URLProtocol.HTTPS.name,
+    scheme = HTTPS.name,
     host = "newsapi.org",
     path = "/v2/everything"
 ) {
     with(parameters) {
         append("apiKey", ApiKey)
-        append("page", ((currentSize / resultsPerPage) + 1).toString())
-        append("pageSize", resultsPerPage.toString())
+        append("page", paging.nextPage.toString())
+        append("pageSize", paging.resultsPerPage.toString())
 
         input.toInputQueryMap()
             .forEach { (k, v) ->
@@ -127,18 +126,17 @@ private fun EverythingRequest(
 
 private fun TopHeadlinesRequest(
     input: String,
-    currentSize: Int,
-    resultsPerPage: Int,
+    paging: Paging,
     countryCode: String,
 ) = HttpRequestBuilder(
-    scheme = URLProtocol.HTTPS.name,
+    scheme = HTTPS.name,
     host = "newsapi.org",
     path = "/v2/top-headlines"
 ) {
     with(parameters) {
         append("apiKey", ApiKey)
-        append("page", ((currentSize / resultsPerPage) + 1).toString())
-        append("pageSize", resultsPerPage.toString())
+        append("page", paging.nextPage.toString())
+        append("pageSize", paging.resultsPerPage.toString())
         append("country", countryCode)
 
         input.toInputQueryMap()

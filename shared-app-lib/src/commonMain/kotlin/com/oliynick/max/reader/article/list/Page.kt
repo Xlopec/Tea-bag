@@ -22,11 +22,32 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.network
+package com.oliynick.max.reader.article.list
 
+import com.oliynick.max.reader.article.list.ArticlesState.Companion.ArticlesPerPage
 import com.oliynick.max.reader.domain.Article
 
 data class Page(
     val articles: List<Article>,
     val hasMore: Boolean = false
 )
+
+data class Paging(
+    val currentSize: Int,
+    val resultsPerPage: Int = ArticlesPerPage
+) {
+    companion object {
+        val FirstPage = Paging(currentSize = 0)
+    }
+}
+
+/**
+ * Calculates and returns next page for current Paging instance.
+ * For 0 page it'll return 1, which is acceptable by API
+ */
+inline val Paging.nextPage: Int
+    get() = (currentSize / resultsPerPage) + 1
+
+fun ArticlesState.nextPage(
+    resultsPerPage: Int = ArticlesPerPage
+) = Paging(articles.size, resultsPerPage)

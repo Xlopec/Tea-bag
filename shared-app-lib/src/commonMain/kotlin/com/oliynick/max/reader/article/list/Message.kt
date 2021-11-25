@@ -56,8 +56,7 @@ data class ToggleArticleIsFavorite(
 
 data class ArticlesLoaded(
     override val id: ScreenId,
-    val articles: List<Article>,
-    val hasMore: Boolean,
+    val page: Page,
 ) : ArticlesMessage
 
 data class ArticlesOperationException(

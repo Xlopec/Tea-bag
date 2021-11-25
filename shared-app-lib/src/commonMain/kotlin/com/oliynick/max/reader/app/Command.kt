@@ -24,6 +24,7 @@
 
 package com.oliynick.max.reader.app
 
+import com.oliynick.max.reader.article.list.Paging
 import com.oliynick.max.reader.article.list.Query
 import com.oliynick.max.reader.domain.Article
 
@@ -52,8 +53,7 @@ sealed interface ArticlesCommand : Command
 data class LoadArticlesByQuery(
     val id: ScreenId,
     val query: Query,
-    val currentSize: Int,
-    val resultsPerPage: Int,
+    val paging: Paging
 ) : ArticlesCommand
 
 data class SaveArticle(

@@ -1,8 +1,8 @@
 package com.oliynick.max.reader.app.storage
 
 import com.oliynick.max.reader.app.LocalStorage
+import com.oliynick.max.reader.article.list.Page
 import com.oliynick.max.reader.domain.*
-import com.oliynick.max.reader.network.Page
 import com.oliynick.max.tea.core.IO
 import com.russhwolf.settings.Settings
 import com.squareup.sqldelight.db.SqlCursor
