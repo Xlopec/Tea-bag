@@ -66,6 +66,7 @@ enum class BottomMenuItem {
 fun HomeScreen(
     state: ArticlesState,
     onMessage: (Message) -> Unit,
+    content: (@Composable (innerPadding: PaddingValues) -> Unit)?
 ) {
     SwipeRefresh(
         state = rememberSwipeRefreshState(state.isRefreshing),
@@ -81,7 +82,11 @@ fun HomeScreen(
                     onMessage = onMessage
                 )
             }, content = { innerPadding ->
-                ArticlesScreen(state, onMessage, Modifier.padding(innerPadding))
+                if (content == null) {
+                    ArticlesScreen(state, onMessage, Modifier.padding(innerPadding))
+                } else {
+                    content(innerPadding)
+                }
             })
     }
 }
@@ -135,11 +140,11 @@ fun BottomBar(
 
         BottomNavigationItem(
             icon = {
-            Icon(
-                imageVector = Outlined.Language,
-                contentDescription = "Feed"
-            )
-        },
+                Icon(
+                    imageVector = Outlined.Language,
+                    contentDescription = "Feed"
+                )
+            },
             selected = item === Feed,
             onClick = { onMessage(NavigateToFeed) }
         )

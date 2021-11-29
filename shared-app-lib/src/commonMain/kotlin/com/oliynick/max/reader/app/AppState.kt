@@ -26,7 +26,6 @@ package com.oliynick.max.reader.app
 
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
@@ -39,7 +38,7 @@ data class AppState(
      * Holds application stack of screens
      * invariants: [Screen 0..*, TabScreen 1..3]
      */
-    val screens: PersistentList<ScreenState>,
+    val screens: NavigationStack,
 ) {
 
     constructor(

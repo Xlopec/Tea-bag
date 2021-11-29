@@ -29,6 +29,7 @@ import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.*
 import androidx.core.view.WindowCompat
 import com.max.reader.BuildConfig.DEBUG
@@ -43,6 +44,7 @@ import com.oliynick.max.reader.app.*
 import com.oliynick.max.reader.article.details.ArticleDetailsState
 import com.oliynick.max.reader.article.list.ArticlesState
 import com.oliynick.max.reader.settings.SettingsState
+import kotlinx.collections.immutable.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -113,6 +115,9 @@ private fun Application(
             when (val screen = appState.screen) {
                 is FullScreen -> FullScreen(screen, onMessage)
                 is TabScreen -> TabScreen(appState, screen, onMessage)
+                is NestedScreen -> TabScreen(appState, appState.currentTab, onMessage) {
+                    TODO("Not implemented yet")
+                }
             }
         }
     }
@@ -122,10 +127,11 @@ private fun Application(
 private fun TabScreen(
     appState: AppState,
     screen: TabScreen,
-    onMessage: (Message) -> Unit
+    onMessage: (Message) -> Unit,
+    content: (@Composable (innerPadding: PaddingValues) -> Unit)? = null
 ) {
     when (screen) {
-        is ArticlesState -> HomeScreen(screen, onMessage)
+        is ArticlesState -> HomeScreen(screen, onMessage, content)
         is SettingsState -> HomeScreen(appState, onMessage)
         else -> error("unhandled branch $screen")
     }

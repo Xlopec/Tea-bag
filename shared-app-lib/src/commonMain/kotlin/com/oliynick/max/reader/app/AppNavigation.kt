@@ -35,8 +35,6 @@ import com.oliynick.max.reader.settings.SettingsState
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlin.Int.Companion.MAX_VALUE
 import kotlin.Int.Companion.MIN_VALUE
 
@@ -64,6 +62,7 @@ fun AppNavigation(
     }
 }
 
+// todo looks like we should extract class for navigation stack
 private fun checkInvariants(
     state: AppState
 ) {
@@ -202,31 +201,11 @@ fun NavigationStack.floatGroup(
     }.swap(tabIdx, bottomGroupIdx)
 }
 
-typealias RenderStack = Pair<TabScreen, ImmutableList<NestedScreen>>
-
-inline val NavigationStack.renderStack: RenderStack
-    get() {
-        val tabIndex = indexOfFirst { it is TabScreen }
-        require(tabIndex >= 0) { "Invalid navigation stack, was $this" }
-        @Suppress("UNCHECKED_CAST")
-        return this[tabIndex] as TabScreen to subListOrEmpty(
-            0,
-            tabIndex - 1
-        ) as ImmutableList<NestedScreen>
-    }
-
-@PublishedApi
-internal fun <T> ImmutableList<T>.subListOrEmpty(
-    from: Int,
-    to: Int
-): ImmutableList<T> =
-    if (from !in indices || to !in indices) persistentListOf() else subList(from, to)
-
 fun AppState.findTabScreenIndex(
     nav: TabNavigation,
 ): Int = screens.indexOfFirst { s -> nav.id == s.id }
 
-private val AppState.currentTab: TabScreen
+val AppState.currentTab: TabScreen
     get() = screens.first { it is TabScreen } as TabScreen
 
 fun AppState.navigateToArticleDetails(
