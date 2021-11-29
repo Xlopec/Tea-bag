@@ -31,5 +31,4 @@ import com.oliynick.max.reader.domain.Article
 data class ArticleDetailsState(
     override val id: ScreenId,
     val article: Article,
-    override val tabId: ScreenId,
 ) : FullScreen

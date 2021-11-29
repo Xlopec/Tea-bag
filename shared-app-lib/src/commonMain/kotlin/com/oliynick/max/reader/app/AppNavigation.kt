@@ -35,7 +35,10 @@ import com.oliynick.max.reader.settings.SettingsState
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
-import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlin.Int.Companion.MAX_VALUE
+import kotlin.Int.Companion.MIN_VALUE
 
 fun interface AppNavigation {
 
@@ -54,6 +57,34 @@ fun AppNavigation(
         // then referential equality
         is NavigateToArticleDetails -> state.navigateToArticleDetails(nav)
         is Pop -> state.popScreen()
+    }.also { (appState, _) ->
+        if (debug) {
+            checkInvariants(appState)
+        }
+    }
+}
+
+private fun checkInvariants(
+    state: AppState
+) {
+    check(state.screens.size > 0) { "screens stack can't be empty" }
+    check(state.screens.count { it is TabScreen } > 0) {
+        "should be at least one tab screen, were ${state.screens}"
+    }
+
+    val mapping = state.screens.groupBy({ it::class }, state.screens::indexOf)
+    val fullScreens = mapping[FullScreen::class]
+    // maximum fullscreen index should be less than minimum index for any other screen type
+    val maxFullScreenIndex = fullScreens?.maxOrNull() ?: MIN_VALUE
+    val maxOtherIndex =
+        mapping.filterKeys { it != FullScreen::class }.values.flatten().minOrNull() ?: MAX_VALUE
+
+    check(maxFullScreenIndex < maxOtherIndex) {
+        "maxFullScreenIndex >= maxOtherIndex, was ${state.screens}"
+    }
+    // fullscreen segment should be continuous
+    check(fullScreens?.let { it.indices == it.first()..it.last() } ?: true) {
+        "Fullscreen segment isn't continuous, was $fullScreens for stack ${state.screens}"
     }
 }
 
@@ -80,7 +111,7 @@ fun AppState.navigateToTab(
     return if (i >= 0) {
         // tab might contain child screen stack
         // collect all child screens for this tab and place them on the top of the stack
-        copy(screens = screens.swapGroups(i, nav.id)).noCommand()
+        copy(screens = screens.floatGroup(i, nav.id)).noCommand()
     } else {
 
         val (tab, cmds) = screenWithCommand(nav)
@@ -89,24 +120,107 @@ fun AppState.navigateToTab(
     }
 }
 
-fun <T> PersistentList<T>.swapGroups(
+/**
+ * This functions moves specified navigation group to the top of the navigation stack and returns
+ * new navigation stack
+ *
+ * r1 - root #1
+ *
+ * s1,2 - screen #1 the belongs to the root #2
+ *
+ * s3 - screen #3 that should be drawn fullscreen. Fullscreen objects must be placed on the top,
+ * they can't reside in the middle of the stack. You can't navigate from fullscreen to a nested
+ * screen since it complicates navigation from user perspective, e.g. consider case when navigating
+ * from fullscreen #1 that resides in tab #2 to tab #3 and then navigating back to the tab #1.
+ *
+ * Screens that relate to the same root are considered to belong to the same stack group.
+ * Screens that should be rendered simultaneously are considered to belong to the same drawing group
+ * At any moment only one drawing group can be rendered
+ *
+ * Navigation stack sample:
+ *
+ * ```
+ * s2,2 <- screen to draw
+ * s1,2 <- screen to draw
+ * r2 <- drawing frame, end of group
+ * r1
+ * s4,1
+ * s5,1
+ * ...
+ * ```
+ *
+ * Will produce the following result:
+ *
+ * ```
+ * +-----------------------------+
+ * |         Root 2 (r2)         |
+ * |   +---------------------+   |
+ * |   |   Screen 2 (s2,2)   |   |
+ * |   | +-----------------+ |   |
+ * |   | | Screen 1 (s1,2) | |   |
+ * |   | +-----------------+ |   |
+ * |   +---------------------+   |
+ * +-----------------------------+
+ * ```
+ *
+ * Navigation stack for screen that occupies whole display:
+ *
+ * ```
+ * s100 <- fullscreen
+ * r2
+ * s3,2
+ * s2,2
+ * s1,2
+ * r1
+ * s4,1
+ * s5,1
+ * ...
+ * ```
+ *
+ * In this case no drawing frame will be displayed
+ *
+ * ***Implementation note***. If we ever have to support nesting of the depth more than 1, drawing
+ * groups might be implemented as linked list.
+ */
+fun NavigationStack.floatGroup(
     tabIdx: Int,
     tabId: ScreenId
-): PersistentList<T> {
+): NavigationStack {
     require(tabIdx in indices) { "Tab index out of bounds, bounds=${indices}, index=$tabIdx" }
 
-    var newList = this
     var bottomGroupIdx = 0
 
-    indices.reversed().forEach { idx ->
-        if ((this[idx] as? FullScreen)?.tabId == tabId) {
-            newList = swap(idx, 0)
+    return foldRightIndexed(this) { idx, screen, acc ->
+        // we don't support nesting of the depth more than 1,
+        // reference to the tab is enough for now
+        if ((screen as? NestedScreen)?.tabId == tabId) {
             bottomGroupIdx++
+            acc.swap(idx, 0)
+        } else {
+            acc
         }
+    }.swap(tabIdx, bottomGroupIdx)
+}
+
+typealias RenderStack = Pair<TabScreen, ImmutableList<NestedScreen>>
+
+inline val NavigationStack.renderStack: RenderStack
+    get() {
+        val tabIndex = indexOfFirst { it is TabScreen }
+        require(tabIndex >= 0) { "Invalid navigation stack, was $this" }
+        @Suppress("UNCHECKED_CAST")
+        return this[tabIndex] as TabScreen to subListOrEmpty(
+            0,
+            tabIndex - 1
+        ) as ImmutableList<NestedScreen>
     }
 
-    return newList.swap(tabIdx, bottomGroupIdx)
-}
+@PublishedApi
+internal fun <T> ImmutableList<T>.subListOrEmpty(
+    from: Int,
+    to: Int
+): ImmutableList<T> =
+    if (from !in indices || to !in indices) persistentListOf() else subList(from, to)
 
 fun AppState.findTabScreenIndex(
     nav: TabNavigation,
@@ -117,4 +231,4 @@ private val AppState.currentTab: TabScreen
 
 fun AppState.navigateToArticleDetails(
     nav: NavigateToArticleDetails,
-) = pushScreen(ArticleDetailsState(nav.id, nav.article, currentTab.id)).noCommand()
+) = pushScreen(ArticleDetailsState(nav.id, nav.article)).noCommand()

@@ -9,7 +9,9 @@ sealed interface ScreenState {
  * Intermediate screen that should be rendered without
  * tab frame
  */
-interface FullScreen : ScreenState {
+interface FullScreen : ScreenState
+
+interface NestedScreen : ScreenState {
     val tabId: ScreenId
 }
 
