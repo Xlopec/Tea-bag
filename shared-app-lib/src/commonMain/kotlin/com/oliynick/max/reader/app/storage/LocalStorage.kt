@@ -106,4 +106,4 @@ private fun dbModelToArticle(
 )
 
 private inline val SqlCursor.isFavorite: Boolean
-    get() = getLong(6) == 1L
+    get() = getLong(6) != 0L
