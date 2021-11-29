@@ -7,6 +7,8 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Locale.*
 
+// Gson adapters, needed for to enable debugging facilities
+
 interface TypeAdapter<T> : JsonSerializer<T>, JsonDeserializer<T>
 
 val ArticleAdapters = mapOf(

@@ -29,6 +29,8 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import java.lang.reflect.Type
 
+// gson serializers to enable debugging facilities
+
 interface Serializer<T> : JsonSerializer<T>, JsonDeserializer<T>
 
 object PersistentListSerializer : Serializer<PersistentList<*>> {
