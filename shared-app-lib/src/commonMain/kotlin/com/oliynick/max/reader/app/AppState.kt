@@ -26,8 +26,8 @@ package com.oliynick.max.reader.app
 
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.component.noCommand
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 
 typealias ScreenId = UUID
 
@@ -59,46 +59,44 @@ inline fun <reified T : ScreenState> AppState.updateScreen(
     noinline how: (T) -> UpdateWith<T, Command>,
 ): UpdateWith<AppState, Command> {
 
-    val newScreens = ArrayList<ScreenState>(screens.size)
-    val resultCommands = mutableSetOf<Command>()
-
-    for (i in screens.indices) {
-        // todo refactor
-        val current = screens[i]
-
-        if (id == null) {
-
-            if (current is T) {
-                val (new, commands) = how(current)
-
-                newScreens.add(new)
-                resultCommands += commands
-            } else {
-                newScreens.add(current)
-            }
-
-        } else if (current.id == id && current is T) {
-            val (screen, commands) = how(current)
-
-            resultCommands += commands
-            newScreens.add(screen)
-
-        } else {
-            newScreens.add(current)
-        }
+    val (updatedStack, commands) = if (id == null) {
+        screens.updateAllScreens(how)
+    } else {
+        screens.updateScreen(id, how)
     }
 
-    return copy(screens = newScreens.toPersistentList()) command resultCommands
+    return copy(screens = updatedStack) command commands
 }
 
-fun AppState.swapScreens(
-    i: Int,
-    j: Int,
-): AppState {
+@PublishedApi
+internal inline fun <reified T : ScreenState> NavigationStack.updateAllScreens(
+    noinline how: (T) -> UpdateWith<T, Command>,
+): UpdateWith<NavigationStack, Command> {
+    val builder = builder()
+    val commands = foldIndexed(mutableSetOf<Command>()) { i, cmds, screen ->
+        if (screen is T) {
+            val (new, commands) = how(screen)
 
-    if (i == j) return this
+            builder[i] = new
+            cmds += commands
+        }
+        cmds
+    }
 
-    return copy(screens = screens.swap(i, j))
+    return builder.build() to commands
+}
+
+@PublishedApi
+internal inline fun <reified T : ScreenState> NavigationStack.updateScreen(
+    id: ScreenId,
+    noinline how: (T) -> UpdateWith<T, Command>,
+): UpdateWith<NavigationStack, Command> {
+    val screenIdx = indexOfFirst { it.id == id && it is T }
+        .takeIf { it >= 0 } ?: return noCommand()
+
+    val (updated, commands) = how(this[screenIdx] as T)
+
+    return set(screenIdx, updated) to commands
 }
 
 fun AppState.pushScreen(

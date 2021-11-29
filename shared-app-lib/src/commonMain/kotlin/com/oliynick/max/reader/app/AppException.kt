@@ -37,15 +37,16 @@ sealed class AppException : RuntimeException {
 
     constructor(cause: Throwable) : super(cause)
 
+    abstract override val message: String
 }
 
 class NetworkException(
-    message: String,
+    override val message: String,
     cause: Throwable,
 ) : AppException(message, cause)
 
 class InternalException(
-    message: String,
+    override val message: String,
     cause: Throwable,
 ) : AppException(message, cause)
 

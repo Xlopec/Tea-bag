@@ -11,6 +11,9 @@ sealed interface ScreenState {
  */
 interface FullScreen : ScreenState
 
+/**
+ * Screen that should be drawn inside tab
+ */
 interface NestedScreen : ScreenState {
     val tabId: ScreenId
 }
@@ -18,18 +21,4 @@ interface NestedScreen : ScreenState {
 /**
  * Root screen in the navigation hierarchy
  */
-@ImmutableType
-interface TabScreen : ScreenState {
-    // things for consideration:
-    // 1 how to make fast search & update for nested screens
-    // 2 how to keep class layout as simple as possible with p1 in mind
-    // 3 how to avoid code duplication? (consider Arrow Meta optics API)
-    // fixme this probably should go as extensions
-    // probably I can make typealias for this and implement all the necessary operations on the top of it
-    /* val screens: NavigationStack
-     fun pop(): TabScreen
-     fun <T : ScreenState> update(
-         id: ScreenId,
-         how: (T) -> UpdateWith<T, Command>
-     ): UpdateWith<TabScreen, Command>*/
-}
+interface TabScreen : ScreenState

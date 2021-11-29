@@ -26,6 +26,7 @@
 
 package com.oliynick.max.reader.article.list
 
+import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.article.list.ArticlesState.TransientState.*
@@ -46,12 +47,11 @@ data class ArticlesState(
     val articles: List<Article>,
     val hasMoreArticles: Boolean,
     val transientState: TransientState,
-    //override val screens: PersistentList<ScreenState> = persistentListOf(),
 ) : TabScreen {
 
     sealed class TransientState {
         data class Exception(
-            val th: Throwable,
+            val th: AppException,
         ) : TransientState()
 
         object Loading : TransientState()
@@ -59,18 +59,6 @@ data class ArticlesState(
         object Refreshing : TransientState()
         object Preview : TransientState()
     }
-
-    /*override fun pop(): TabScreen = copy(screens = screens.pop())
-
-    override fun <T : ScreenState> update(
-        id: ScreenId,
-        how: (T) -> UpdateWith<T, Command>
-    ): UpdateWith<TabScreen, Command> {
-        // fixme bullshit
-        val (stack, commands) = screens.update(id) { s -> how(s as T) }
-
-        return copy(screens = stack) command commands
-    }*/
 
     val isLoading = transientState === Loading
 
@@ -123,7 +111,7 @@ fun ArticlesState.toPreview(
     }
 
 fun ArticlesState.toException(
-    cause: Throwable,
+    cause: AppException,
 ) = copy(transientState = Exception(cause))
 
 fun ArticlesState.updateArticle(

@@ -29,13 +29,5 @@ import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.randomUUID
 
 object SettingsState : TabScreen {
-    /*override val screens: PersistentList<ScreenState> = persistentListOf()
-    override fun pop(): TabScreen = this
-
-    override fun <T : ScreenState> update(
-        id: ScreenId,
-        how: (T) -> UpdateWith<T, Command>
-    ): UpdateWith<TabScreen, Command> = noCommand()*/
-
     override val id: ScreenId = randomUUID()
 }

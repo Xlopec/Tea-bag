@@ -48,7 +48,6 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -60,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.statusBarsPadding
 import com.max.reader.ui.theme.ThemedPreview
+import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.NavigateToArticleDetails
 import com.oliynick.max.reader.app.ScreenId
@@ -89,7 +89,8 @@ fun ArticlesScreen(
         contentAlignment = Alignment.Center
     ) {
         val listState = listState(id = id)
-            .apply { setScrollingEnabled(articles.isNotEmpty(), rememberCoroutineScope()) }
+        // buggy behavior
+        // .apply { setScrollingEnabled(articles.isNotEmpty(), rememberCoroutineScope()) }
 
         ArticlesContent(listState, state, onMessage) {
 
@@ -557,8 +558,8 @@ private val DateFormatter: SimpleDateFormat by lazy {
     SimpleDateFormat("dd MMM' at 'hh:mm", Locale.getDefault())
 }
 
-private val Throwable.readableMessage: String
-    get() = message?.replaceFirstChar { it.lowercase(Locale.getDefault()) } ?: "unknown exception"
+private val AppException.readableMessage: String
+    get() = message.replaceFirstChar { it.lowercase(Locale.getDefault()) }
 
 private fun Query.toScreenTitle(): String =
     when (type) {
