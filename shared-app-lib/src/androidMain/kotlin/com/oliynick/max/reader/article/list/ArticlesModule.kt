@@ -3,7 +3,7 @@
 package com.oliynick.max.reader.article.list
 
 import android.app.Application
-import com.oliynick.max.reader.app.LocalStorage
+import com.oliynick.max.reader.app.storage.LocalStorage
 
 fun <Env> ArticlesModule(
     application: Application,

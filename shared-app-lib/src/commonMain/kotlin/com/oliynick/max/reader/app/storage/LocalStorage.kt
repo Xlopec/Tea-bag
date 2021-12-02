@@ -1,109 +1,56 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021. Maksym Oliinyk.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.reader.app.storage
 
-import com.oliynick.max.reader.app.LocalStorage
 import com.oliynick.max.reader.article.list.Page
-import com.oliynick.max.reader.domain.*
-import com.oliynick.max.tea.core.IO
-import com.russhwolf.settings.Settings
-import com.squareup.sqldelight.db.SqlCursor
-import com.squareup.sqldelight.db.SqlDriver
-import com.squareup.sqldelight.db.use
-import kotlinx.coroutines.withContext
+import com.oliynick.max.reader.domain.Article
+import com.oliynick.max.reader.domain.Url
 
-fun LocalStorage(
-    driver: SqlDriver,
-    settings: Settings
-): LocalStorage = LocalStorageImpl(driver, DeferredSettings { settings })
+interface LocalStorage {
 
-fun LocalStorage(
-    driver: SqlDriver,
-    settings: DeferredSettings
-): LocalStorage = LocalStorageImpl(driver, settings)
+    suspend fun insertArticle(
+        article: Article,
+    )
 
-private class LocalStorageImpl(
-    driver: SqlDriver,
-    private val settings: DeferredSettings
-) : LocalStorage {
+    suspend fun deleteArticle(
+        url: Url,
+    )
 
-    private companion object {
-        private const val DarkModeEnabledKey = "isDarkModeEnabled"
-    }
+    suspend fun findAllArticles(
+        input: String,
+    ): Page
 
-    private val database = AppDatabase(driver)
+    suspend fun isFavoriteArticle(
+        url: Url,
+    ): Boolean
 
-    override suspend fun insertArticle(article: Article) = query {
-        // fixme there should be insert or replace option (upsert)
-        transaction {
-            with(article) {
-                deleteArticle(url.toExternalValue())
-                insertArticle(
-                    url = url.toExternalValue(),
-                    title = title.value,
-                    author = author?.value,
-                    description = description?.value,
-                    url_to_image = urlToImage?.toExternalValue(),
-                    // I don't expect performance issues here as we aren't going
-                    // to store thousands of articles in a row
-                    saved_on = now().toMillis(),
-                    published = published.toMillis(),
-                    is_favorite = isFavorite
-                )
-            }
-        }
-    }
+    suspend fun isDarkModeEnabled(): Boolean
 
-    override suspend fun deleteArticle(url: Url) = query {
-        deleteArticle(url.toExternalValue())
-    }
-
-    override suspend fun findAllArticles(input: String): Page = query {
-        // todo check if it actually works
-        val wrappedInput = "%$input%"
-
-        Page(
-            findAllArticles(wrappedInput, wrappedInput, wrappedInput, ::dbModelToArticle)
-                .executeAsList()
-        )
-    }
-
-    override suspend fun isFavoriteArticle(url: Url): Boolean = query {
-        isFavoriteArticle(url.toExternalValue())
-            .execute()
-            .use { cursor -> cursor.next() && cursor.isFavorite }
-    }
-
-    override suspend fun isDarkModeEnabled(): Boolean =
-        settings.get(DarkModeEnabledKey, false)
-
-    override suspend fun storeIsDarkModeEnabled(isEnabled: Boolean) =
-        settings.set(DarkModeEnabledKey, isEnabled)
-
-    private suspend inline fun <T> query(
-        crossinline block: ArticlesQueries.() -> T
-    ) = withContext(IO) {
-        database.articlesQueries.run(block)
-    }
+    suspend fun storeIsDarkModeEnabled(
+        isEnabled: Boolean,
+    )
 }
-
-private fun dbModelToArticle(
-    url: String,
-    title: String,
-    author: String?,
-    description: String?,
-    urlToImage: String?,
-    published: Long,
-    // this unused arg is needed just to make function signatures match
-    @Suppress("UNUSED_PARAMETER") savedOn: Long,
-    isFavorite: Boolean
-): Article = Article(
-    url = url.toUrl(),
-    title = Title(title),
-    author = author?.let(::Author),
-    description = description?.let(::Description),
-    urlToImage = urlToImage?.toUrl(),
-    published = fromMillis(published),
-    isFavorite = isFavorite
-)
-
-private inline val SqlCursor.isFavorite: Boolean
-    get() = getLong(6) != 0L

@@ -27,14 +27,14 @@ import Libraries.Versions.compose
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 
-const val kotlinVersion = "1.6.0-M1"
+const val kotlinVersion = "1.6.0"
 
 object Libraries {
     object Versions {
         const val coroutines = "1.5.1-new-mm-dev2"
         const val ktor = "1.6.2-native-mm-eap-196"
-        const val compose = "1.0.1"
-        const val accompanies = "0.17.0"
+        const val compose = "1.1.0-beta04"
+        const val accompanies = "0.21.3-beta"
     }
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
@@ -73,7 +73,7 @@ object Libraries {
     const val composeActivity = "androidx.activity:activity-compose:1.3.1"
 
     const val accompaniestInsets = "com.google.accompanist:accompanist-insets:$accompanies"
-    const val accompaniestCoil = "io.coil-kt:coil-compose:1.3.2"
+    const val accompaniestCoil = "io.coil-kt:coil-compose:1.4.0"
     const val accompaniestSwipeRefresh =
         "com.google.accompanist:accompanist-swiperefresh:$accompanies"
 

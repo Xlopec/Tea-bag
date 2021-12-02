@@ -3,21 +3,16 @@
 package com.oliynick.max.reader.app
 
 import android.app.Application
-import android.os.StrictMode.*
+import android.os.StrictMode.ThreadPolicy
+import android.os.StrictMode.VmPolicy
+import android.os.StrictMode.setThreadPolicy
+import android.os.StrictMode.setVmPolicy
+import com.oliynick.max.reader.app.navigation.AppNavigation
 import com.oliynick.max.reader.app.storage.LocalStorage
 import com.oliynick.max.reader.article.details.ArticleDetailsModule
 import com.oliynick.max.reader.article.list.ArticlesModule
 import com.oliynick.max.reader.article.list.NewsApi
 import kotlinx.coroutines.CoroutineScope
-
-actual interface Environment :
-    AppModule<Environment>,
-    ArticlesModule<Environment>,
-    ArticleDetailsModule<Environment>,
-    NewsApi,
-    LocalStorage,
-    AppNavigation,
-    CoroutineScope
 
 fun Environment(
     debug: Boolean,
@@ -65,3 +60,11 @@ private fun setupStrictAppPolicies() {
             registerTypeAdapter(cl.java, adapter)
         }
     }*/
+actual interface Environment :
+    AppModule<Environment>,
+    ArticlesModule<Environment>,
+    ArticleDetailsModule<Environment>,
+    NewsApi,
+    LocalStorage,
+    AppNavigation,
+    CoroutineScope

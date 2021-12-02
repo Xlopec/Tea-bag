@@ -22,8 +22,38 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.app
+package com.oliynick.max.reader.app.message
 
-sealed interface Message
+import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.app.randomUUID
+import com.oliynick.max.reader.domain.Article
+import com.oliynick.max.reader.settings.SettingsState
 
-interface ScreenMessage : Message
+sealed interface Navigation : Message
+
+data class NavigateToArticleDetails(
+    val article: Article,
+    val id: ScreenId = randomUUID(),
+) : Navigation
+
+sealed interface TabNavigation : Navigation {
+    val id: ScreenId
+}
+
+object NavigateToFavorite : TabNavigation {
+    override val id: ScreenId = randomUUID()
+}
+
+object NavigateToFeed : TabNavigation {
+    override val id: ScreenId = randomUUID()
+}
+
+object NavigateToSettings : TabNavigation {
+    override val id: ScreenId = SettingsState.id
+}
+
+object NavigateToTrending : TabNavigation {
+    override val id: ScreenId = randomUUID()
+}
+
+object Pop : Navigation

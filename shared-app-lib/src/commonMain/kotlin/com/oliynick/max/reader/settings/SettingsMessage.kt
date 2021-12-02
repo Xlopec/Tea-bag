@@ -24,7 +24,7 @@
 
 package com.oliynick.max.reader.settings
 
-import com.oliynick.max.reader.app.ScreenMessage
+import com.oliynick.max.reader.app.message.ScreenMessage
 
 sealed interface SettingsMessage : ScreenMessage
 

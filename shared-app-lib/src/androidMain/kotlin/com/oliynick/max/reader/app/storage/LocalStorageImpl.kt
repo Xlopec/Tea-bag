@@ -1,5 +1,7 @@
 @file:Suppress("FunctionName")
 
+@file:JvmName("AndroidLocalStorageImpl")
+
 package com.oliynick.max.reader.app.storage
 
 import android.app.Application
@@ -7,7 +9,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import com.oliynick.max.reader.app.LocalStorage
 import com.russhwolf.settings.AndroidSettings
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 

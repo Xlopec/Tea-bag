@@ -22,36 +22,49 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.app
+package com.oliynick.max.reader.app.command
 
-import com.oliynick.max.reader.settings.SettingsState
+import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.article.list.Paging
+import com.oliynick.max.reader.article.list.Query
 import com.oliynick.max.reader.domain.Article
 
-sealed interface Navigation : Message
+sealed interface Command
 
-data class NavigateToArticleDetails(
+// App wide commands
+
+object CloseApp : Command
+
+data class StoreDarkMode(
+    val isEnabled: Boolean
+) : Command
+
+// Article details commands
+
+sealed interface ArticleDetailsCommand : Command
+
+data class DoOpenArticle(
     val article: Article,
-    val id: ScreenId = randomUUID(),
-) : Navigation
+) : ArticleDetailsCommand
 
-sealed interface TabNavigation : Navigation {
-    val id: ScreenId
-}
+// Feed screen commands
 
-object NavigateToFavorite : TabNavigation {
-    override val id: ScreenId = randomUUID()
-}
+sealed interface ArticlesCommand : Command
 
-object NavigateToFeed : TabNavigation {
-    override val id: ScreenId = randomUUID()
-}
+data class LoadArticlesByQuery(
+    val id: ScreenId,
+    val query: Query,
+    val paging: Paging
+) : ArticlesCommand
 
-object NavigateToSettings : TabNavigation {
-    override val id: ScreenId = SettingsState.id
-}
+data class SaveArticle(
+    val article: Article,
+) : ArticlesCommand
 
-object NavigateToTrending : TabNavigation {
-    override val id: ScreenId = randomUUID()
-}
+data class RemoveArticle(
+    val article: Article,
+) : ArticlesCommand
 
-object Pop : Navigation
+data class DoShareArticle(
+    val article: Article,
+) : ArticlesCommand

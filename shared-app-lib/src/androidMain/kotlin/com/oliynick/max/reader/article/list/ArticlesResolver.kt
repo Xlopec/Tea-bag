@@ -30,23 +30,46 @@ import android.app.Application
 import android.content.Intent
 import android.content.Intent.*
 import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.app.command.ArticlesCommand
+import com.oliynick.max.reader.app.command.DoShareArticle
+import com.oliynick.max.reader.app.command.LoadArticlesByQuery
+import com.oliynick.max.reader.app.command.RemoveArticle
+import com.oliynick.max.reader.app.command.SaveArticle
+import com.oliynick.max.reader.app.message.Message
+import com.oliynick.max.reader.app.message.ScreenMessage
+import com.oliynick.max.reader.app.storage.LocalStorage
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.tea.core.component.sideEffect
 
 fun <Env> ArticlesResolver(
     application: Application,
 ): ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage =
-    object : ArticlesResolver<Env> {
-        override suspend fun Env.resolve(
-            command: ArticlesCommand
-        ): Set<Message> =
-            when (command) {
-                is LoadArticlesByQuery -> loadArticles(command)
-                is SaveArticle -> storeArticle(command.article)
-                is RemoveArticle -> removeArticle(command.article)
-                is DoShareArticle -> application.shareArticle(command)
-            }
-    }
+    ArticlesResolverImpl(application)
+/*object : ArticlesResolver<Env> {
+    override suspend fun Env.resolve(
+        command: ArticlesCommand
+    ): Set<Message> =
+        when (command) {
+            is LoadArticlesByQuery -> loadArticles(command)
+            is SaveArticle -> storeArticle(command.article)
+            is RemoveArticle -> removeArticle(command.article)
+            is DoShareArticle -> application.shareArticle(command)
+        }
+}*/
+
+private class ArticlesResolverImpl<Env>(
+    private val application: Application
+) : ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage {
+    override suspend fun Env.resolve(
+        command: ArticlesCommand
+    ): Set<Message> =
+        when (command) {
+            is LoadArticlesByQuery -> loadArticles(command)
+            is SaveArticle -> storeArticle(command.article)
+            is RemoveArticle -> removeArticle(command.article)
+            is DoShareArticle -> application.shareArticle(command)
+        }
+}
 
 private suspend fun Application.shareArticle(
     command: DoShareArticle,

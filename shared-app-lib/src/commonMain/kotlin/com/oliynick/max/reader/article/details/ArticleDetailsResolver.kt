@@ -24,8 +24,8 @@
 
 package com.oliynick.max.reader.article.details
 
-import com.oliynick.max.reader.app.ArticleDetailsCommand
-import com.oliynick.max.reader.app.Message
+import com.oliynick.max.reader.app.command.ArticleDetailsCommand
+import com.oliynick.max.reader.app.message.Message
 
 fun interface ArticleDetailsResolver {
 

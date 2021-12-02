@@ -62,12 +62,12 @@ android {
             keyAlias = getenvSafe("KEY_ALIAS") ?: "test"
         }
     }
-    compileSdk = 30
+    compileSdk = 31
 
     defaultConfig {
         applicationId = "com.oliinyk.max.news.reader"
         minSdk = 21
-        targetSdk = 30
+        targetSdk = 31
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

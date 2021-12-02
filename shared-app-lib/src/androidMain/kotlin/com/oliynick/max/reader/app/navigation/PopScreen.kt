@@ -1,5 +1,10 @@
-package com.oliynick.max.reader.app
+package com.oliynick.max.reader.app.navigation
 
+import com.oliynick.max.reader.app.AppState
+import com.oliynick.max.reader.app.TabScreen
+import com.oliynick.max.reader.app.command.CloseApp
+import com.oliynick.max.reader.app.command.Command
+import com.oliynick.max.reader.app.screen
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand

@@ -28,19 +28,11 @@ package core.component
 
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
-import core.misc.TestEnv
-import core.misc.messageAsCommand
-import core.misc.throwingResolver
-import core.misc.throwingUpdater
-import core.scope.coroutineDispatcher
 import core.scope.runBlockingInTestScope
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.*
-import sun.tools.jconsole.ProxyClient
-import java.util.concurrent.Executors
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.coroutineContext
 import kotlin.math.abs
@@ -55,9 +47,9 @@ abstract class BasicComponentTest(
         //val TestTimeout: Timeout = Timeout.seconds(10L)
         const val ThreadName = "test thread"
 
-        val SingleThreadDispatcher =
-            Executors.newSingleThreadExecutor { r -> Thread(r, ThreadName) }
-                .asCoroutineDispatcher()
+        //val SingleThreadDispatcher =
+        //    Executors.newSingleThreadExecutor { r -> Thread(r, ThreadName) }
+        //       .asCoroutineDispatcher()
     }
 
     //@get:Rule

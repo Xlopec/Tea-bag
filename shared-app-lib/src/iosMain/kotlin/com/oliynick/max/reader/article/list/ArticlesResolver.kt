@@ -2,7 +2,14 @@
 
 package com.oliynick.max.reader.article.list
 
-import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.app.command.ArticlesCommand
+import com.oliynick.max.reader.app.command.DoShareArticle
+import com.oliynick.max.reader.app.command.LoadArticlesByQuery
+import com.oliynick.max.reader.app.command.RemoveArticle
+import com.oliynick.max.reader.app.command.SaveArticle
+import com.oliynick.max.reader.app.message.Message
+import com.oliynick.max.reader.app.message.ScreenMessage
+import com.oliynick.max.reader.app.storage.LocalStorage
 
 fun <Env> ArticlesResolver(): ArticlesResolver<Env> where Env : LocalStorage, Env : NewsApi =
     object : ArticlesResolver<Env> {

@@ -24,9 +24,7 @@
 
 package com.oliynick.max.reader.article.list
 
-import com.oliynick.max.reader.app.Command
-import com.oliynick.max.reader.article.list.ArticlesMessage
-import com.oliynick.max.reader.article.list.ArticlesState
+import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.tea.core.component.UpdateWith
 
 fun interface ArticlesUpdater {

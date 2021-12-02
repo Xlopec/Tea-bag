@@ -60,9 +60,9 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.statusBarsPadding
 import com.max.reader.ui.theme.ThemedPreview
 import com.oliynick.max.reader.app.AppException
-import com.oliynick.max.reader.app.Message
-import com.oliynick.max.reader.app.NavigateToArticleDetails
 import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.app.message.Message
+import com.oliynick.max.reader.app.message.NavigateToArticleDetails
 import com.oliynick.max.reader.article.list.*
 import com.oliynick.max.reader.article.list.ArticlesState.TransientState.*
 import com.oliynick.max.reader.article.list.QueryType.*

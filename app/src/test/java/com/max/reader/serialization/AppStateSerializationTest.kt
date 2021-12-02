@@ -24,12 +24,12 @@
 
 package com.max.reader.serialization
 
-import com.oliynick.max.reader.app.AppState
-import com.oliynick.max.reader.app.ScreenMessage
-import com.oliynick.max.reader.app.serialization.PersistentListSerializer
 import com.max.reader.domain.Article
 import com.max.reader.domain.Description
 import com.max.reader.domain.Title
+import com.oliynick.max.reader.app.AppState
+import com.oliynick.max.reader.app.message.ScreenMessage
+import com.oliynick.max.reader.app.serialization.PersistentListSerializer
 import com.oliynick.max.reader.article.list.ArticlesState
 import com.oliynick.max.reader.article.list.LoadArticlesFromScratch
 import com.oliynick.max.reader.article.list.Query

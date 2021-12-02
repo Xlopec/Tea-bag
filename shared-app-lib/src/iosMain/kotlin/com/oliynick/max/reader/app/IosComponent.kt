@@ -1,5 +1,6 @@
 package com.oliynick.max.reader.app
 
+import com.oliynick.max.reader.app.message.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job

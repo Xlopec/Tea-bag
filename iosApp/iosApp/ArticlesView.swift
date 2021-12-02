@@ -184,12 +184,12 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         RowItem(screenId: UUID(), article: article) {_ in }
         
-        ArticlesView(state: ArticlesState(id: UUID(), query: Query(input: "Ios articles", type: QueryType.favorite), articles: [article], hasMoreArticles: true, transientState: ArticlesState.TransientStatePreview.shared, screens: []), handler: { _ in }, searchHintText: "Search in articles", headingText: "Feed")
+        ArticlesView(state: ArticlesState(id: UUID(), query: Query(input: "Ios articles", type: QueryType.favorite), articles: [article], hasMoreArticles: true, transientState: ArticlesState.TransientStatePreview.shared), handler: { _ in }, searchHintText: "Search in articles", headingText: "Feed")
     }
 }
 
 private extension ArticlesState.TransientStateException {
-    var displayMessage: String { return th.message ?? "Failed to load articles, please, try again later" }
+    var displayMessage: String { return th.message }
 }
 
 private extension Collection {

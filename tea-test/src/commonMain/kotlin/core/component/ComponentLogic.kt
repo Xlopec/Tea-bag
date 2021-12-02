@@ -28,6 +28,7 @@ import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.noCommand
+import kotlin.jvm.JvmInline
 
 @JvmInline
 value class TodoState(val items: List<Item> = emptyList()) {

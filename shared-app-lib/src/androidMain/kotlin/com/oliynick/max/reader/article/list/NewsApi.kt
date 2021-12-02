@@ -3,7 +3,6 @@ package com.oliynick.max.reader.article.list
 import android.app.Application
 import android.content.res.Configuration
 import android.os.Build
-import com.oliynick.max.reader.app.LocalStorage
 import com.oliynick.max.reader.network.NewsApiImpl
 import java.util.Locale.ENGLISH
 

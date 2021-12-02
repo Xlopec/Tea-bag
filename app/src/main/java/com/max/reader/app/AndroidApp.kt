@@ -30,7 +30,12 @@ package com.max.reader.app
 import android.app.Activity
 import android.app.Application
 import com.max.reader.BuildConfig.DEBUG
-import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.app.AppComponent
+import com.oliynick.max.reader.app.AppInitializer
+import com.oliynick.max.reader.app.AppState
+import com.oliynick.max.reader.app.Environment
+import com.oliynick.max.reader.app.command.CloseApp
+import com.oliynick.max.reader.app.message.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -41,7 +46,7 @@ import kotlin.coroutines.CoroutineContext
 
 class AndroidApp : Application() {
     val closeCommands = MutableSharedFlow<CloseApp>()
-    val component = AppComponent(this, AppComponentScope, closeCommands)
+    val component by lazy { AppComponent(this, AppComponentScope, closeCommands) }
 }
 
 fun AppComponent(

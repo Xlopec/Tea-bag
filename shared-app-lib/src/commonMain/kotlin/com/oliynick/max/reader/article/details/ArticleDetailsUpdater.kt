@@ -24,7 +24,7 @@
 
 package com.oliynick.max.reader.article.details
 
-import com.oliynick.max.reader.app.ArticleDetailsCommand
+import com.oliynick.max.reader.app.command.ArticleDetailsCommand
 import com.oliynick.max.tea.core.component.UpdateWith
 
 interface ArticleDetailsUpdater {

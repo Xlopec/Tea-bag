@@ -26,8 +26,17 @@
 
 package com.max.reader.screens.home
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.filled.Settings
@@ -47,7 +56,13 @@ import com.max.reader.screens.home.BottomMenuItem.Settings
 import com.max.reader.screens.home.BottomMenuItem.Trending
 import com.max.reader.screens.settings.SettingsScreen
 import com.max.reader.ui.InsetAwareTopAppBar
-import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.app.AppState
+import com.oliynick.max.reader.app.message.Message
+import com.oliynick.max.reader.app.message.NavigateToFavorite
+import com.oliynick.max.reader.app.message.NavigateToFeed
+import com.oliynick.max.reader.app.message.NavigateToSettings
+import com.oliynick.max.reader.app.message.NavigateToTrending
+import com.oliynick.max.reader.app.message.Navigation
 import com.oliynick.max.reader.article.list.ArticlesState
 import com.oliynick.max.reader.article.list.Query
 import com.oliynick.max.reader.article.list.RefreshArticles

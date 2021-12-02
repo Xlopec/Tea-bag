@@ -3,12 +3,14 @@
 package com.oliynick.max.reader.article.list
 
 import com.oliynick.max.reader.app.AppException
-import com.oliynick.max.reader.app.LoadArticlesByQuery
-import com.oliynick.max.reader.app.LocalStorage
-import com.oliynick.max.reader.app.ScreenMessage
+import com.oliynick.max.reader.app.command.LoadArticlesByQuery
 import com.oliynick.max.reader.app.datatypes.Either
 import com.oliynick.max.reader.app.datatypes.fold
-import com.oliynick.max.reader.article.list.QueryType.*
+import com.oliynick.max.reader.app.message.ScreenMessage
+import com.oliynick.max.reader.app.storage.LocalStorage
+import com.oliynick.max.reader.article.list.QueryType.Favorite
+import com.oliynick.max.reader.article.list.QueryType.Regular
+import com.oliynick.max.reader.article.list.QueryType.Trending
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.network.ArticleElement
 import com.oliynick.max.reader.network.ArticleResponse

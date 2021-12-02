@@ -2,6 +2,8 @@
 
 package com.oliynick.max.reader.app
 
+import com.oliynick.max.reader.app.navigation.AppNavigation
+import com.oliynick.max.reader.app.storage.LocalStorage
 import com.oliynick.max.reader.article.details.ArticleDetailsResolver
 import com.oliynick.max.reader.article.details.ArticleDetailsUpdater
 import com.oliynick.max.reader.article.list.ArticlesResolver

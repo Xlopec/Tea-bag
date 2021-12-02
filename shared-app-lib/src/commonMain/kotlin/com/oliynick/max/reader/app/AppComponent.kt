@@ -26,16 +26,15 @@
 
 package com.oliynick.max.reader.app
 
+import com.oliynick.max.reader.app.command.Command
+import com.oliynick.max.reader.app.message.Message
 import com.oliynick.max.tea.core.IO
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.states
-import com.oliynick.max.tea.core.component.with
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlin.coroutines.CoroutineContext
 
 @OptIn(ExperimentalStdlibApi::class)
 fun AppComponent(

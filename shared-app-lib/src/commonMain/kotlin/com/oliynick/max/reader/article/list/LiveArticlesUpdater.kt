@@ -24,9 +24,16 @@
 
 package com.oliynick.max.reader.article.list
 
-import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.app.command.ArticlesCommand
+import com.oliynick.max.reader.app.command.Command
+import com.oliynick.max.reader.app.command.DoShareArticle
+import com.oliynick.max.reader.app.command.LoadArticlesByQuery
+import com.oliynick.max.reader.app.command.RemoveArticle
+import com.oliynick.max.reader.app.command.SaveArticle
 import com.oliynick.max.reader.article.list.Paging.Companion.FirstPage
-import com.oliynick.max.reader.article.list.QueryType.*
+import com.oliynick.max.reader.article.list.QueryType.Favorite
+import com.oliynick.max.reader.article.list.QueryType.Regular
+import com.oliynick.max.reader.article.list.QueryType.Trending
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.domain.toggleFavorite
 import com.oliynick.max.tea.core.component.UpdateWith

@@ -26,6 +26,8 @@
 
 package core.data
 
+import kotlin.jvm.JvmInline
+
 expect class UUID
 
 expect class Url

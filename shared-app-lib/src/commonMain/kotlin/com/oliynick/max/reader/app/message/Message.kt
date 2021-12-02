@@ -22,35 +22,8 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+package com.oliynick.max.reader.app.message
 
-package com.oliynick.max.reader.app
+sealed interface Message
 
-import com.oliynick.max.reader.article.list.Page
-import com.oliynick.max.reader.domain.Article
-import com.oliynick.max.reader.domain.Url
-
-interface LocalStorage {
-
-    suspend fun insertArticle(
-        article: Article,
-    )
-
-    suspend fun deleteArticle(
-        url: Url,
-    )
-
-    suspend fun findAllArticles(
-        input: String,
-    ): Page
-
-    suspend fun isFavoriteArticle(
-        url: Url,
-    ): Boolean
-
-    suspend fun isDarkModeEnabled(): Boolean
-
-    suspend fun storeIsDarkModeEnabled(
-        isEnabled: Boolean,
-    )
-}
+interface ScreenMessage : Message

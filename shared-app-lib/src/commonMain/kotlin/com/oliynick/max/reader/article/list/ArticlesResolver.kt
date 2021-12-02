@@ -24,8 +24,8 @@
 
 package com.oliynick.max.reader.article.list
 
-import com.oliynick.max.reader.app.ArticlesCommand
-import com.oliynick.max.reader.app.Message
+import com.oliynick.max.reader.app.command.ArticlesCommand
+import com.oliynick.max.reader.app.message.Message
 
 interface ArticlesResolver<Env> {
 

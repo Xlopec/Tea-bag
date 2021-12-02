@@ -24,6 +24,10 @@
 
 package com.oliynick.max.reader.app
 
+import com.oliynick.max.reader.app.command.Command
+import com.oliynick.max.reader.app.navigation.NavigationStack
+import com.oliynick.max.reader.app.navigation.push
+import com.oliynick.max.reader.app.navigation.screen
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -34,10 +38,6 @@ typealias ScreenId = UUID
 @ImmutableType
 data class AppState(
     val isInDarkMode: Boolean,
-    /**
-     * Holds application stack of screens
-     * invariants: [Screen 0..*, TabScreen 1..3]
-     */
     val screens: NavigationStack,
 ) {
 
@@ -102,5 +102,3 @@ internal inline fun <reified T : ScreenState> NavigationStack.updateScreen(
 fun AppState.pushScreen(
     screen: ScreenState,
 ): AppState = copy(screens = screens.push(screen))
-
-expect fun AppState.popScreen(): UpdateWith<AppState, Command>

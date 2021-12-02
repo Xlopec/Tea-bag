@@ -2,7 +2,7 @@
 
 package com.oliynick.max.reader.article.list
 
-import com.oliynick.max.reader.app.LocalStorage
+import com.oliynick.max.reader.app.storage.LocalStorage
 
 fun <Env> ArticlesModule(): ArticlesModule<Env> where Env : NewsApi, Env : LocalStorage =
 

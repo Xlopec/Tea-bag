@@ -41,6 +41,9 @@ import com.max.reader.screens.article.details.ui.ArticleDetailsScreen
 import com.max.reader.screens.home.HomeScreen
 import com.max.reader.ui.theme.AppTheme
 import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.app.message.Message
+import com.oliynick.max.reader.app.message.Pop
+import com.oliynick.max.reader.app.navigation.currentTab
 import com.oliynick.max.reader.article.details.ArticleDetailsState
 import com.oliynick.max.reader.article.list.ArticlesState
 import com.oliynick.max.reader.settings.SettingsState

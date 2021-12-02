@@ -1,5 +1,5 @@
 package com.oliynick.max.reader.app
 
-actual typealias StableType = PublishedApi
+actual annotation class StableType()
 
-actual typealias ImmutableType = PublishedApi
+actual annotation class ImmutableType()

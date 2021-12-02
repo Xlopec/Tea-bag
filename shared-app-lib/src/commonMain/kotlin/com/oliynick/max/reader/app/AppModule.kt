@@ -26,4 +26,6 @@
 
 package com.oliynick.max.reader.app
 
+import com.oliynick.max.reader.app.navigation.AppNavigation
+
 interface AppModule<Env> : AppUpdater<Env>, AppResolver<Env>, AppNavigation
