@@ -23,6 +23,7 @@
  */
 
 
+import Libraries.coroutinesBom
 import Libraries.coroutinesCore
 import Libraries.coroutinesSwing
 import Libraries.immutableCollections
@@ -33,9 +34,9 @@ import Libraries.ktorServerNetty
 import Libraries.ktorServerWebsockets
 import Libraries.logback
 import TestLibraries.ktorServerTests
+import org.jetbrains.compose.compose
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PublishPluginTask
-import org.jetbrains.compose.compose
 
 plugins {
     `maven-publish`
@@ -125,6 +126,7 @@ dependencies {
     implementation(ktorServerCore)
     implementation(ktorServerNetty)
     implementation(ktorServerWebsockets)
+    implementation(project.enforcedPlatform(coroutinesBom))
     implementation(coroutinesCore)
     implementation(coroutinesSwing)
     implementation(immutableCollections)

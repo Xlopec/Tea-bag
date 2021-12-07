@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import Libraries.coroutinesBom
 import Libraries.coroutinesCore
 import Libraries.kotlinStdLib
 import TestLibraries.kotlinTest
@@ -67,6 +68,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                api(project.enforcedPlatform(coroutinesBom))
                 api(coroutinesCore)
                 implementation(kotlinStdLib)
             }

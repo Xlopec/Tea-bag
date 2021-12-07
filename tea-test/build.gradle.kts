@@ -24,6 +24,7 @@
 
 
 import Libraries.atomicfu
+import Libraries.coroutinesBom
 import Libraries.coroutinesCore
 import Libraries.coroutinesTest
 import Libraries.kotlinStdLib
@@ -61,6 +62,7 @@ kotlin {
             dependencies {
                 api(kotlinStdLib)
                 api(atomicfu)
+                api(project.enforcedPlatform(coroutinesBom))
                 api(coroutinesCore)
                 api(coroutinesTest)
                 api(kotlinTest)

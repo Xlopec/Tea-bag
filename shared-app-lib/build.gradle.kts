@@ -22,15 +22,19 @@
  * SOFTWARE.
  */
 
-import Libraries.Versions.ktor
 import Libraries.composeRuntime
+import Libraries.coroutinesBom
 import Libraries.coroutinesCore
 import Libraries.gson
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
+import Libraries.ktorClientCio
+import Libraries.ktorClientCore
 import Libraries.ktorClientGson
+import Libraries.ktorClientIos
 import Libraries.ktorClientJson
 import Libraries.ktorClientLogging
+import Libraries.ktorClientSerialization
 
 plugins {
     kotlin("multiplatform")
@@ -60,14 +64,15 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(immutableCollections)
+                api(project.enforcedPlatform(coroutinesBom))
                 api(coroutinesCore)
                 api(project(":tea-core"))
                 implementation(kotlinStdLib)
-                implementation("io.ktor:ktor-client-core:$ktor")
+                implementation(ktorClientCore)
                 implementation(ktorClientLogging)
                 implementation(ktorClientJson)
-                implementation("io.ktor:ktor-client-serialization:$ktor")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.0-RC")
+                implementation(ktorClientSerialization)
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.1")
                 implementation("com.russhwolf:multiplatform-settings:0.8.1")
 
             }
@@ -80,11 +85,13 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-cio:$ktor")
+                implementation(ktorClientCio)
                 implementation(ktorClientGson)
                 implementation(gson)
                 implementation(composeRuntime)
                 implementation("com.squareup.sqldelight:android-driver:1.5.2")
+                api(project(":tea-time-travel"))
+                api(project(":tea-time-travel-adapter-gson"))
             }
         }
         val androidTest by getting {
@@ -95,11 +102,7 @@ kotlin {
         }
         val iosMain by getting {
             dependencies {
-                // implementation(coroutinesCore)
-                implementation(kotlinStdLib)
-                implementation(project(":tea-core"))
-                implementation("io.ktor:ktor-client-ios:$ktor")
-                implementation(ktorClientJson)
+                implementation(ktorClientIos)
                 implementation("com.squareup.sqldelight:native-driver:1.5.2")
             }
         }

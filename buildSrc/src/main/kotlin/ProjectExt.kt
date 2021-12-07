@@ -23,6 +23,7 @@
  */
 
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.get
 import java.io.File
@@ -107,6 +108,10 @@ val Project.detektBaseline: File
 fun Project.ciVariable(
     name: String,
 ): String? = getenvSafe(name) ?: getPropertySafe(name)
+
+fun Project.enforcedPlatform(
+    dependencyNotation: String
+): Dependency = dependencies.enforcedPlatform(dependencyNotation)
 
 private fun Project.getPropertySafe(
     name: String,

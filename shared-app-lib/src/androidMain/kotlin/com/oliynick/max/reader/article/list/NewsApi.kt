@@ -4,11 +4,12 @@ import android.app.Application
 import android.content.res.Configuration
 import android.os.Build
 import com.oliynick.max.reader.network.NewsApiImpl
+import io.ktor.client.engine.cio.*
 import java.util.Locale.ENGLISH
 
 fun NewsApi(
     application: Application
-): NewsApi = NewsApiImpl(application.countryCode)
+): NewsApi = NewsApiImpl(CIO, application.countryCode)
 
 /*private class GsonSerializer(
     private val gson: Gson,

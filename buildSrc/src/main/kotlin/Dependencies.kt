@@ -34,13 +34,14 @@ object Libraries {
         const val coroutines = "1.5.1-new-mm-dev2"
         const val ktor = "1.6.2-native-mm-eap-196"
         const val compose = "1.1.0-beta04"
-        const val accompanies = "0.21.3-beta"
+        const val accompanies = "0.21.4-beta"
     }
 
-    const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
-    const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
-    const val coroutinesSwing = "org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutines"
-    const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines"
+    const val coroutinesBom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:$coroutines"
+    const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core"
+    const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android"
+    const val coroutinesSwing = "org.jetbrains.kotlinx:kotlinx-coroutines-swing"
+    const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test"
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     const val kotlinStdLibReflect = "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
@@ -48,6 +49,8 @@ object Libraries {
     const val ktorServerNetty = "io.ktor:ktor-server-netty:$ktor"
     const val ktorServerWebsockets = "io.ktor:ktor-websockets:$ktor"
 
+    const val ktorClientCore = "io.ktor:ktor-client-core:$ktor"
+    const val ktorClientIos = "io.ktor:ktor-client-ios:$ktor"
     const val ktorClientWebsockets = "io.ktor:ktor-client-websockets:$ktor"
     const val ktorClientCio = "io.ktor:ktor-client-cio:$ktor"
     const val ktorClientLogging = "io.ktor:ktor-client-logging:$ktor"
@@ -70,7 +73,7 @@ object Libraries {
     const val composeRuntime = "androidx.compose.runtime:runtime:$compose"
     const val composeAnimation = "androidx.compose.animation:animation:$compose"
     const val composeCompiler = "androidx.compose.compiler:compiler:$compose"
-    const val composeActivity = "androidx.activity:activity-compose:1.3.1"
+    const val composeActivity = "androidx.activity:activity-compose:1.4.0"
 
     const val accompaniestInsets = "com.google.accompanist:accompanist-insets:$accompanies"
     const val accompaniestCoil = "io.coil-kt:coil-compose:1.4.0"

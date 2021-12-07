@@ -12,6 +12,7 @@ import com.oliynick.max.reader.article.list.Paging
 import com.oliynick.max.reader.article.list.nextPage
 import com.oliynick.max.tea.core.IO
 import io.ktor.client.*
+import io.ktor.client.engine.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
@@ -24,14 +25,19 @@ import io.ktor.util.network.*
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 class NewsApiImpl(
     // todo refine this field
+    engine: HttpClientEngineFactory<HttpClientEngineConfig>,
     private val countryCode: String
 ) : NewsApi {
 
-    private val httpClient by lazy { HttpClient() }
+    private val httpClient by lazy { HttpClient(engine) }
 
     override suspend fun fetchFromEverything(
         input: String,
@@ -48,7 +54,9 @@ class NewsApiImpl(
     }
 }
 
-private fun HttpClient() = HttpClient {
+private fun HttpClient(
+    engine: HttpClientEngineFactory<HttpClientEngineConfig>
+) = HttpClient(engine) {
 
     install(JsonFeature) {
         val json = kotlinx.serialization.json.Json {
