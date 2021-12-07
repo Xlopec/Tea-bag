@@ -57,11 +57,11 @@ object Libraries {
     const val ktorClientGson = "io.ktor:ktor-client-gson:$ktor"
     const val ktorClientJson = "io.ktor:ktor-client-json:$ktor"
     const val ktorClientSerialization = "io.ktor:ktor-client-serialization:$ktor"
-    const val gson = "com.google.code.gson:gson:2.8.7"
+    const val gson = "com.google.code.gson:gson:2.8.9"
 
     const val logback = "ch.qos.logback:logback-classic:1.2.3"
-    const val atomicfu = "org.jetbrains.kotlinx:atomicfu:0.16.3"
-    const val immutableCollections = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.3"
+    const val atomicfu = "org.jetbrains.kotlinx:atomicfu:0.17.0"
+    const val immutableCollections = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.4"
 
     const val composeUi = "androidx.compose.ui:ui:$compose"
     const val composeFoundation = "androidx.compose.foundation:foundation:$compose"
@@ -80,7 +80,10 @@ object Libraries {
     const val accompaniestSwipeRefresh =
         "com.google.accompanist:accompanist-swiperefresh:$accompanies"
 
-    const val appCompat = "androidx.appcompat:appcompat:1.2.0"
+    const val appCompat = "androidx.appcompat:appcompat:1.4.0"
+
+    const val sqlDelightAndroidDriver = "com.squareup.sqldelight:android-driver:1.5.2"
+    const val sqlDelightNativeDriver = "com.squareup.sqldelight:native-driver:1.5.2"
 }
 
 object TestLibraries {

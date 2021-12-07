@@ -35,6 +35,8 @@ import Libraries.ktorClientIos
 import Libraries.ktorClientJson
 import Libraries.ktorClientLogging
 import Libraries.ktorClientSerialization
+import Libraries.sqlDelightAndroidDriver
+import Libraries.sqlDelightNativeDriver
 
 plugins {
     kotlin("multiplatform")
@@ -89,7 +91,7 @@ kotlin {
                 implementation(ktorClientGson)
                 implementation(gson)
                 implementation(composeRuntime)
-                implementation("com.squareup.sqldelight:android-driver:1.5.2")
+                implementation(sqlDelightAndroidDriver)
                 api(project(":tea-time-travel"))
                 api(project(":tea-time-travel-adapter-gson"))
             }
@@ -103,7 +105,7 @@ kotlin {
         val iosMain by getting {
             dependencies {
                 implementation(ktorClientIos)
-                implementation("com.squareup.sqldelight:native-driver:1.5.2")
+                implementation(sqlDelightNativeDriver)
             }
         }
         val iosTest by getting
