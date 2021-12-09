@@ -53,6 +53,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -74,6 +76,8 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.ui.tooling.preview.Preview as Render
+
+internal const val ProgressIndicatorTag = "Progress Indicator"
 
 @Composable
 fun ArticlesScreen(
@@ -103,6 +107,10 @@ fun ArticlesScreen(
     }
 }
 
+internal fun ArticleTestTag(
+    url: Url
+) = "Article $url"
+
 private fun LazyListScope.ArticleItems(
     screen: ArticlesState,
     onMessage: (Message) -> Unit,
@@ -124,7 +132,11 @@ private fun LazyListScope.ArticleItems(
     }
 
     itemsIndexed(articles, { _, item -> item.url.toExternalForm() }) { index, article ->
-        Column {
+        Column(
+            modifier = Modifier.semantics(mergeDescendants = true) {
+                testTag = ArticleTestTag(article.url)
+            }
+        ) {
             ArticleItem(
                 screenId = id,
                 article = article,
@@ -189,6 +201,7 @@ private fun ArticlesProgress(
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
+            modifier = Modifier.semantics { testTag = ProgressIndicatorTag },
             color = colors.secondaryVariant
         )
     }

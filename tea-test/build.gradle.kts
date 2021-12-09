@@ -28,6 +28,7 @@ import Libraries.coroutinesBom
 import Libraries.coroutinesCore
 import Libraries.coroutinesTest
 import Libraries.kotlinStdLib
+import Libraries.kotlinStdLibBom
 import TestLibraries.kotlinTest
 
 plugins {
@@ -61,6 +62,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(kotlinStdLib)
+                api(project.enforcedPlatform(kotlinStdLibBom))
                 api(atomicfu)
                 api(project.enforcedPlatform(coroutinesBom))
                 api(coroutinesCore)

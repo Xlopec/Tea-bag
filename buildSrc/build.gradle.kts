@@ -54,14 +54,15 @@ afterEvaluate {
 dependencies {
     implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.0")
-    implementation("com.android.tools.build:gradle:7.0.3")
+    implementation("com.android.tools.build:gradle:7.0.4")
     implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.1.4")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
-    implementation("org.jetbrains.kotlin:kotlin-serialization:1.5.21")
-    implementation("com.squareup.sqldelight:gradle-plugin:1.5.2")
+    implementation("org.jetbrains.kotlin:kotlin-serialization:1.6.0")
+    implementation("com.squareup.sqldelight:gradle-plugin:1.5.3")
     implementation("org.jetbrains.compose:compose-gradle-plugin:1.0.0")
     implementation("com.github.ben-manes:gradle-versions-plugin:0.39.0")
 
     testImplementation("junit:junit:4.13.1")
+    // used for tests under buildSrc directory
     testImplementation("io.kotlintest:kotlintest-runner-junit4:3.4.2")
 }

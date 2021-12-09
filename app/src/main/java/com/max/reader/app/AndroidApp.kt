@@ -40,21 +40,21 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
-class AndroidApp : Application() {
-    val closeCommands = MutableSharedFlow<CloseApp>()
-    val component by lazy { AndroidAppComponent(this, AppComponentScope, closeCommands) }
+class AndroidApp : Application(), HasEnvironment {
+    override val closeCommands = MutableSharedFlow<CloseApp>()
+    override val component by lazy { AndroidAppComponent(this, AppComponentScope, closeCommands) }
 }
 
-private object AppComponentScope : CoroutineScope {
+object AppComponentScope : CoroutineScope {
     override val coroutineContext: CoroutineContext =
         Job() + Executors.newSingleThreadExecutor { r -> Thread(r, "App Scheduler") }
             .asCoroutineDispatcher()
 }
 
-inline val Activity.androidApp: AndroidApp
-    get() = application as AndroidApp
+inline val Activity.androidApp: HasEnvironment
+    get() = application as HasEnvironment
 
-inline val Activity.appComponent: (Flow<Message>) -> Flow<AppState>
+inline val Activity.component: (Flow<Message>) -> Flow<AppState>
     get() = androidApp.component
 
 inline val Activity.closeAppCommands: Flow<CloseApp>

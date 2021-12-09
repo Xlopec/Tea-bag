@@ -25,6 +25,7 @@
 import Libraries.coroutinesBom
 import Libraries.coroutinesCore
 import Libraries.kotlinStdLib
+import Libraries.kotlinStdLibBom
 import TestLibraries.kotlinTest
 
 /**
@@ -71,6 +72,7 @@ kotlin {
                 api(project.enforcedPlatform(coroutinesBom))
                 api(coroutinesCore)
                 implementation(kotlinStdLib)
+                implementation(project.enforcedPlatform(kotlinStdLibBom))
             }
         }
 

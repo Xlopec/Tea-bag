@@ -111,7 +111,7 @@ fun Project.ciVariable(
 
 fun Project.enforcedPlatform(
     dependencyNotation: String
-): Dependency = dependencies.enforcedPlatform(dependencyNotation)
+): Dependency = dependencies.platform(dependencyNotation)
 
 private fun Project.getPropertySafe(
     name: String,

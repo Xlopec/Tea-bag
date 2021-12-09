@@ -30,29 +30,41 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.core.view.WindowCompat
 import com.max.reader.BuildConfig.DEBUG
 import com.max.reader.R
-import com.max.reader.app.appComponent
 import com.max.reader.app.closeAppCommands
+import com.max.reader.app.component
 import com.max.reader.misc.LocalLogCompositions
 import com.max.reader.screens.article.details.ui.ArticleDetailsScreen
 import com.max.reader.screens.home.HomeScreen
 import com.max.reader.ui.theme.AppTheme
-import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.app.AppState
+import com.oliynick.max.reader.app.FullScreen
+import com.oliynick.max.reader.app.NestedScreen
+import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.message.Message
 import com.oliynick.max.reader.app.message.Pop
 import com.oliynick.max.reader.app.navigation.currentTab
+import com.oliynick.max.reader.app.screen
 import com.oliynick.max.reader.article.details.ArticleDetailsState
 import com.oliynick.max.reader.article.list.ArticlesState
 import com.oliynick.max.reader.settings.SettingsState
-import kotlinx.collections.immutable.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -67,14 +79,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            val messages = remember { MutableSharedFlow<Message>() }
-            val stateFlow = remember { appComponent(messages) }
-            val appState = stateFlow.collectAsNullableState(context = Dispatchers.Main).value
-                ?: return@setContent
-            val scope = rememberCoroutineScope()
-            val messageHandler = remember { scope.dispatcher(messages) }
-
-            Application(appState, messageHandler)
+            Application(component)
         }
 
         launch {
@@ -89,12 +94,12 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         super.onDestroy()
     }
 
-    private fun CoroutineScope.dispatcher(
-        messages: FlowCollector<Message>,
-    ): (Message) -> Unit =
-        { message -> launch { messages.emit(message) } }
-
 }
+
+private fun CoroutineScope.dispatcher(
+    messages: FlowCollector<Message>,
+): (Message) -> Unit =
+    { message -> launch { messages.emit(message) } }
 
 @Composable
 fun <T : R, R> Flow<T>.collectAsNullableState(
@@ -102,7 +107,20 @@ fun <T : R, R> Flow<T>.collectAsNullableState(
 ): State<R?> = collectAsState(context = context, initial = null)
 
 @Composable
-private fun Application(
+fun Application(
+    component: (Flow<Message>) -> Flow<AppState>
+) {
+    val messages = remember { MutableSharedFlow<Message>() }
+    val stateFlow = remember { component(messages) }
+    val appState = stateFlow.collectAsNullableState(context = Dispatchers.Main).value ?: return
+    val scope = rememberCoroutineScope()
+    val messageHandler = remember { scope.dispatcher(messages) }
+
+    Application(appState, messageHandler)
+}
+
+@Composable
+fun Application(
     appState: AppState,
     onMessage: (Message) -> Unit,
 ) {

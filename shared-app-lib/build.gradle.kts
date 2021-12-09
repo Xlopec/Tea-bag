@@ -28,6 +28,7 @@ import Libraries.coroutinesCore
 import Libraries.gson
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
+import Libraries.kotlinStdLibBom
 import Libraries.ktorClientCio
 import Libraries.ktorClientCore
 import Libraries.ktorClientGson
@@ -70,6 +71,7 @@ kotlin {
                 api(coroutinesCore)
                 api(project(":tea-core"))
                 implementation(kotlinStdLib)
+                implementation(project.enforcedPlatform(kotlinStdLibBom))
                 implementation(ktorClientCore)
                 implementation(ktorClientLogging)
                 implementation(ktorClientJson)

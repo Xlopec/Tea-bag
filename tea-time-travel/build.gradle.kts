@@ -23,6 +23,7 @@
  */
 
 import Libraries.kotlinStdLib
+import Libraries.kotlinStdLibBom
 import Libraries.ktorClientCio
 import Libraries.ktorClientWebsockets
 import TestLibraries.ktorMockJvm
@@ -49,7 +50,7 @@ kotlin {
                 api(project(":tea-time-travel-protocol"))
 
                 implementation(kotlinStdLib)
-
+                implementation(project.enforcedPlatform(kotlinStdLibBom))
                 implementation(ktorClientWebsockets)
                 implementation(ktorClientCio)
             }
@@ -76,6 +77,7 @@ kotlin {
     api(project(":tea-time-travel-protocol"))
 
     implementation(kotlinStdLib)
+implementation(project.enforcedPlatform(kotlinStdLibBom))
 
     implementation(ktorClientWebsockets)
     implementation(ktorClientCio)

@@ -27,8 +27,6 @@ import Libraries.Versions.compose
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 
-const val kotlinVersion = "1.6.0"
-
 object Libraries {
     object Versions {
         const val coroutines = "1.5.1-new-mm-dev2"
@@ -42,8 +40,9 @@ object Libraries {
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android"
     const val coroutinesSwing = "org.jetbrains.kotlinx:kotlinx-coroutines-swing"
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test"
-    const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    const val kotlinStdLibReflect = "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+    const val kotlinStdLibBom = "org.jetbrains.kotlin:kotlin-bom"
+    const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib"
+    const val kotlinStdLibReflect = "org.jetbrains.kotlin:kotlin-reflect"
 
     const val ktorServerCore = "io.ktor:ktor-server-core:$ktor"
     const val ktorServerNetty = "io.ktor:ktor-server-netty:$ktor"
@@ -82,8 +81,8 @@ object Libraries {
 
     const val appCompat = "androidx.appcompat:appcompat:1.4.0"
 
-    const val sqlDelightAndroidDriver = "com.squareup.sqldelight:android-driver:1.5.2"
-    const val sqlDelightNativeDriver = "com.squareup.sqldelight:native-driver:1.5.2"
+    const val sqlDelightAndroidDriver = "com.squareup.sqldelight:android-driver:1.5.3"
+    const val sqlDelightNativeDriver = "com.squareup.sqldelight:native-driver:1.5.3"
 }
 
 object TestLibraries {
@@ -92,9 +91,8 @@ object TestLibraries {
     }
 
     const val junit = "junit:junit:4.13.1"
-    const val junitRunner = "io.kotlintest:kotlintest-runner-junit4:3.4.2"
-    const val espressoRunner = "androidx.test:runner:1.3.0"
-    const val espressoCore = "androidx.test.espresso:espresso-core:3.3.0"
+    const val composeJunit = "androidx.compose.ui:ui-test-junit4:$compose"
+    const val composeTestManifest = "androidx.compose.ui:ui-test-manifest:$compose"
     const val ktorMockJvm = "io.ktor:ktor-client-mock-jvm:${Versions.ktor}"
     const val ktorServerTests = "io.ktor:ktor-server-tests:${Versions.ktor}"
     const val kotlinTest = "org.jetbrains.kotlin:kotlin-test"

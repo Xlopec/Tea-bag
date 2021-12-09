@@ -23,6 +23,7 @@
  */
 
 package com.max.reader.serialization
+/*
 
 import com.max.reader.domain.Article
 import com.max.reader.domain.Description
@@ -124,3 +125,4 @@ internal class AppStateSerializationTest {
     }
 
 }
+*/

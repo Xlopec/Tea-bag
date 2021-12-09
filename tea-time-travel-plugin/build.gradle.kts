@@ -28,6 +28,7 @@ import Libraries.coroutinesCore
 import Libraries.coroutinesSwing
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
+import Libraries.kotlinStdLibBom
 import Libraries.kotlinStdLibReflect
 import Libraries.ktorServerCore
 import Libraries.ktorServerNetty
@@ -118,6 +119,7 @@ dependencies {
     implementation(project(":tea-time-travel-adapter-gson"))
 
     implementation(kotlinStdLib)
+    implementation(project.enforcedPlatform(kotlinStdLibBom))
     implementation(kotlinStdLibReflect)
 
     implementation(compose.desktop.currentOs)

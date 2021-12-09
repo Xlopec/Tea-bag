@@ -40,13 +40,14 @@ import Libraries.composeUiTooling
 import Libraries.coroutinesAndroid
 import Libraries.gson
 import Libraries.kotlinStdLib
+import Libraries.kotlinStdLibBom
 import Libraries.kotlinStdLibReflect
 import Libraries.ktorClientCio
 import Libraries.ktorClientGson
 import Libraries.ktorClientLogging
 import Libraries.logback
-import TestLibraries.espressoCore
-import TestLibraries.espressoRunner
+import TestLibraries.composeJunit
+import TestLibraries.composeTestManifest
 
 plugins {
     id("com.android.application")
@@ -70,8 +71,18 @@ android {
         targetSdk = 31
         versionCode = 1
         versionName = "1.0"
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // The following argument makes the Android Test Orchestrator run its
+        // "pm clear" command after each test invocation. This command ensures
+        // that the app's state is completely cleared between tests.
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
     }
+
+    testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+    }
+
     buildTypes {
         getByName("release") {
             isShrinkResources = true
@@ -82,6 +93,10 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
+
+    packagingOptions {
+        resources.excludes.add("META-INF/*")
     }
 
     buildFeatures {
@@ -130,6 +145,7 @@ dependencies {
     implementation(project(":tea-core"))
     implementation(project(":shared-app-lib"))
 
+    implementation(project.enforcedPlatform(kotlinStdLibBom))
     implementation(kotlinStdLib)
     implementation(kotlinStdLibReflect)
 
@@ -158,11 +174,12 @@ dependencies {
     implementation(ktorClientLogging)
     implementation(logback)
 
-    testImplementation(project(":tea-test"))
-    testImplementation(coroutinesAndroid)
-    testImplementation(project(":tea-time-travel"))
-    testImplementation(project(":tea-time-travel-adapter-gson"))
+    //testImplementation(project(":tea-test"))
+    //testImplementation(project(":tea-time-travel"))
+    //testImplementation(project(":tea-time-travel-adapter-gson"))
 
-    androidTestImplementation(espressoRunner)
-    androidTestImplementation(espressoCore)
+    androidTestImplementation("androidx.test:runner:1.4.0")
+    androidTestUtil("androidx.test:orchestrator:1.4.0")
+    androidTestImplementation(composeJunit)
+    debugImplementation(composeTestManifest)
 }

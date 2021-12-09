@@ -23,6 +23,7 @@
  */
 
 import Libraries.kotlinStdLib
+import Libraries.kotlinStdLibBom
 
 plugins {
     `maven-publish`
@@ -43,6 +44,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlinStdLib)
+                implementation(project.enforcedPlatform(kotlinStdLibBom))
             }
         }
 

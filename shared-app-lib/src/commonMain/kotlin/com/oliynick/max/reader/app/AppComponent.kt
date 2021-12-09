@@ -46,6 +46,6 @@ fun AppComponent(
         resolver = { c -> with(environment) { resolve(c) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment,
-        io = IO,
+        io = Dispatchers.Unconfined,//IO,
         computation = environment.coroutineContext[CoroutineDispatcher.Key] ?: Dispatchers.Default,
     ).states()
