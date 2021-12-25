@@ -24,11 +24,6 @@
 
 package com.oliynick.max.tea.core.component
 
-import core.component.Command
-import core.component.DoAddItem
-import core.component.Item
-import core.component.TodoState
-import core.component.Updated
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContains

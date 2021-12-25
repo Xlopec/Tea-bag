@@ -24,7 +24,7 @@
 
 @file:Suppress("FunctionName")
 
-package core.data
+package com.oliynick.max.tea.core.data
 
 import kotlin.jvm.JvmInline
 

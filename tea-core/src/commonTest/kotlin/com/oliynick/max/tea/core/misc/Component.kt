@@ -24,18 +24,10 @@
 
 @file:Suppress("FunctionName")
 
-package core.misc
+package com.oliynick.max.tea.core.misc
 
-import com.oliynick.max.tea.core.Env
-import com.oliynick.max.tea.core.Initializer
-import com.oliynick.max.tea.core.ShareOptions
-import com.oliynick.max.tea.core.ShareStateWhileSubscribed
-import com.oliynick.max.tea.core.UnstableApi
-import com.oliynick.max.tea.core.component.Resolver
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.Updater
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
+import com.oliynick.max.tea.core.*
+import com.oliynick.max.tea.core.component.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.test.TestScope
 
@@ -44,8 +36,8 @@ fun <M, S, C> TestScope.TestEnv(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     updater: Updater<M, S, C>,
-    io: CoroutineDispatcher /*= coroutineDispatcher*/,
-    computation: CoroutineDispatcher /*= coroutineDispatcher*/,
+    io: CoroutineDispatcher = coroutineDispatcher,
+    computation: CoroutineDispatcher = coroutineDispatcher,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ) = Env(
     initializer,
@@ -57,17 +49,21 @@ fun <M, S, C> TestScope.TestEnv(
     shareOptions
 )
 
+@OptIn(ExperimentalStdlibApi::class)
+val TestScope.coroutineDispatcher: CoroutineDispatcher
+    get() = coroutineContext[CoroutineDispatcher.Key]!!
+
 @Suppress("RedundantSuspendModifier")
 suspend fun <C> throwingResolver(
     c: C,
 ): Nothing =
-    throw IllegalStateException("Unexpected command $c")
+    throw ComponentException("Unexpected command $c")
 
 fun <M, S> throwingUpdater(
     m: M,
     s: S,
 ): Nothing =
-    throw IllegalStateException("message=$m, state=$s")
+    throw ComponentException("message=$m, state=$s")
 
 fun <S> messageAsStateUpdate(
     message: S,

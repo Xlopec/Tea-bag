@@ -22,33 +22,44 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+@file:Suppress("FunctionName", "TestFunctionName")
+@file:OptIn(
+    ExperimentalCoroutinesApi::class,
+    InternalCoroutinesApi::class,
+    UnstableApi::class,
+    ExperimentalStdlibApi::class
+)
 
-package core.component
+package com.oliynick.max.tea.core.component
 
-/*
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
-import core.scope.runBlockingInTestScope
+import com.oliynick.max.tea.core.misc.*
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.test.*
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.coroutineContext
 import kotlin.math.abs
 import kotlin.test.*
 
-@OptIn(InternalCoroutinesApi::class)
-abstract class BasicComponentTest(
-    protected val factory: CoroutineScope.(Env<Char, String, Char>) -> Component<Char, String, Char>,
+class BasicComponentTest(
+
 ) {
 
-    private companion object {
+    val factory: CoroutineScope.(Env<Char, String, Char>) -> Component<Char, String, Char> =
+        { Component(it) }
+
+    companion object {
+        const val TestTimeoutMillis = 10 * 1000L
+
         //val TestTimeout: Timeout = Timeout.seconds(10L)
         const val ThreadName = "test thread"
 
-        //val SingleThreadDispatcher =
+        val SingleThreadDispatcher = Dispatchers.Default.limitedParallelism(1)
         //    Executors.newSingleThreadExecutor { r -> Thread(r, ThreadName) }
         //       .asCoroutineDispatcher()
     }
@@ -58,7 +69,7 @@ abstract class BasicComponentTest(
 
     @Test
     fun `test initializer is invoked each time for component with no active subscribers`() =
-        runBlockingInTestScope {
+        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
             var counter = 0
             val initial =
@@ -76,9 +87,10 @@ abstract class BasicComponentTest(
 
             suspend fun Component<Char, String, Char>.collect(
                 messages: CharRange,
-            ) = this(messages).take(messages.size + 1*/
-/*plus initial snapshot*//*
-).collect()
+            ) = this(messages).take(
+                messages.size + 1
+//plus initial snapshot
+            ).collect()
 
             component.collect('a'..'f')
             component.collect('g'..'k')
@@ -89,7 +101,7 @@ abstract class BasicComponentTest(
 
     @Test
     fun `test when receiving new input previous downstream gets canceled`() =
-        runBlockingInTestScope {
+        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
@@ -129,50 +141,58 @@ abstract class BasicComponentTest(
                 resultingStates
             )
 
-            */
+            assertContentEquals(
+                (initialStates + Regular(
+                    state,
+                    commands,
+                    state,
+                    commands.first()
+                )),
+
+                resultingStates
+            )
+
 /*resultingStates shouldContainExactly (initialStates + Regular(state,
                 commands,
                 state,
-                commands.first()))*//*
+                commands.first()))*/
 
         }
 
     @Test
-    fun `test component emits a correct sequence of snapshots`() = runBlockingInTestScope {
+    fun `test component emits a correct sequence of snapshots`() =
+        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
-        val env = TestEnv<Char, String, Char>(
-            Initializer(""),
-            ::throwingResolver,
-            { m, _ -> m.toString().noCommand() }
-        )
+            val env = TestEnv<Char, String, Char>(
+                Initializer(""),
+                ::throwingResolver,
+                { m, _ -> m.toString().noCommand() }
+            )
 
-        val messages = arrayOf('a', 'b', 'c')
-        val snapshots = factory(env)(*messages).take(messages.size + 1).toList()
+            val messages = arrayOf('a', 'b', 'c')
+            val snapshots = factory(env)(*messages).take(messages.size + 1).toList()
 
-        */
+            assertContentEquals(
+                listOf(
+                    Initial("", emptySet()),
+                    Regular("a", emptySet(), "", 'a'),
+                    Regular("b", emptySet(), "a", 'b'),
+                    Regular("c", emptySet(), "b", 'c')
+                ),
+
+                snapshots
+            )
 /*snapshots.shouldContainExactly(
             Initial("", emptySet()),
             Regular("a", emptySet(), "", 'a'),
             Regular("b", emptySet(), "a", 'b'),
             Regular("c", emptySet(), "b", 'c')
-        )*//*
-
-
-        assertContentEquals(
-            listOf(
-                Initial("", emptySet()),
-                Regular("a", emptySet(), "", 'a'),
-                Regular("b", emptySet(), "a", 'b'),
-                Regular("c", emptySet(), "b", 'c')
-            ),
-
-            snapshots
-        )
-    }
+        )*/
+        }
 
     @Test
     fun `test component emits a correct sequence of snapshots if we have recursive calculations`() =
-        runBlockingInTestScope {
+        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
@@ -186,7 +206,7 @@ abstract class BasicComponentTest(
             val snapshots = factory(env)('a').take(3).toList()
 
             assertContentEquals(
-                listOf<ProxyClient.Snapshot<Char, String, Char>>(
+                listOf<Snapshot<Char, String, Char>>(
                     Initial("", emptySet()),
                     Regular("a", setOf('a'), "", 'a'),
                     Regular("ab", setOf('b'), "a", 'b')
@@ -195,87 +215,87 @@ abstract class BasicComponentTest(
                 snapshots
             )
 
-            */
 /*@Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
             snapshots shouldBe listOf<Snapshot<Char, String, Char>>(
                 Initial("", emptySet()),
                 Regular("a", setOf('a'), "", 'a'),
                 Regular("ab", setOf('b'), "a", 'b')
-            )*//*
+            )*/
 
         }
 
     @Test
-    fun `test interceptor sees an original sequence of snapshots`() = runBlockingInTestScope {
+    fun `test interceptor sees an original sequence of snapshots`() =
+        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
-        val env = TestEnv<Char, String, Char>(
-            Initializer(""),
-            { c -> setOf(c) },
-            { m, _ -> m.toString().noCommand() },
-        )
+            val env = TestEnv<Char, String, Char>(
+                Initializer(""),
+                { c -> setOf(c) },
+                { m, _ -> m.toString().noCommand() },
+            )
 
-        val sink = mutableListOf<ProxyClient.Snapshot<Char, String, Char>>()
-        val component = factory(env) with sink::add
-        val messages = arrayOf('a', 'b', 'c')
-        val snapshots =
-            component(*messages).take(messages.size + 1).toList()
+            val sink = mutableListOf<Snapshot<Char, String, Char>>()
+            val component = factory(env) with sink::add
+            val messages = arrayOf('a', 'b', 'c')
+            val snapshots =
+                component(*messages).take(messages.size + 1).toList()
 
-        assertContentEquals(snapshots, sink)
-        //sink shouldContainExactly snapshots
-    }
+            assertContentEquals(snapshots, sink)
+            //sink shouldContainExactly snapshots
+        }
 
     @Test
-    fun `test component's snapshots shared among consumers`() = runBlockingInTestScope {
+    fun `test component's snapshots shared among consumers`() =
+        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
-        val env = TestEnv<Char, String, Char>(
-            Initializer(""),
-            { ch ->
-                if (ch == 'a') setOf(
-                    ch + 1,// only this message should be consumed
-                    ch + 2,
-                    ch + 3
-                ) else emptySet()
-            },
-            { m, str -> (str + m).command(m) }
-        )
+            val env = TestEnv<Char, String, Char>(
+                Initializer(""),
+                { ch ->
+                    if (ch == 'a') setOf(
+                        ch + 1,// only this message should be consumed
+                        ch + 2,
+                        ch + 3
+                    ) else emptySet()
+                },
+                { m, str -> (str + m).command(m) }
+            )
 
-        val take = 3
-        val component = factory(env)
-        val snapshots2Deferred =
-            GlobalScope.async {
-                component(emptyFlow()).take(take)
-                    .toList()
+            val take = 3
+            val component = factory(env)
+            val snapshots2Deferred =
+                GlobalScope.async {
+                    component(emptyFlow()).take(take)
+                        .toList()
+                }
+            val snapshots1Deferred = GlobalScope.async {
+                component('a').take(take).toList()
             }
-        val snapshots1Deferred = GlobalScope.async {
-            component('a').take(take).toList()
-        }
 
-        @Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
-        val expected = listOf<Snapshot<Char, String, Char>>(
-            Initial("", emptySet()),
-            Regular("a", setOf('a'), "", 'a'),
-            Regular("ab", setOf('b'), "a", 'b')
-        )
+            @Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
+            val expected = listOf<Snapshot<Char, String, Char>>(
+                Initial("", emptySet()),
+                Regular("a", setOf('a'), "", 'a'),
+                Regular("ab", setOf('b'), "a", 'b')
+            )
 
-        val snapshots1 = snapshots1Deferred.await()
-        val snapshots2 = snapshots2Deferred.await()
+            val snapshots1 = snapshots1Deferred.await()
+            val snapshots2 = snapshots2Deferred.await()
 
-        assertContentEquals(
-            expected, snapshots1, """
+            assertContentEquals(
+                expected, snapshots1, """
             snapshots1: $snapshots1
             snapshots2: $snapshots2
             expected: $expected
             """.trimIndent()
-        )
-        assertContentEquals(
-            expected, snapshots2, """
+            )
+            assertContentEquals(
+                expected, snapshots2, """
             snapshots1: $snapshots1
             snapshots2: $snapshots2
             expected: $expected
             """.trimIndent()
-        )
+            )
 
-        */
 /*withClue(
             """
             snapshots1: $snapshots1
@@ -285,13 +305,13 @@ abstract class BasicComponentTest(
         ) {
             snapshots1 shouldContainExactly expected
             snapshots2 shouldContainExactly expected
-        }*//*
+        }*/
 
-    }
+        }
 
     @Test
     fun `test component gets initialized only once if we have multiple consumers`() =
-        runBlockingInTestScope {
+        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
             val countingInitializer = object {
 
@@ -308,7 +328,7 @@ abstract class BasicComponentTest(
                 countingInitializer.initializer(),
                 ::throwingResolver,
                 { _, s -> s.noCommand() },
-                io = Dispatchers.IO,
+                io = Dispatchers.Default,//IO,
                 // SharingStarted.Lazily since in case of default option the replay
                 // cache will be disposed immediately causing test to fail
                 shareOptions = ShareOptions(SharingStarted.Lazily, 1U)
@@ -332,33 +352,35 @@ abstract class BasicComponentTest(
 
     @Test
     //@Ignore("Ignored due to https://youtrack.jetbrains.com/issue/KT-47195")
-    fun `test component's job gets canceled properly`() = runBlockingInTestScope {
+    fun `test component's job gets canceled properly`() =
+        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
-        val resolver = ForeverWaitingResolver<Char>()
-        val env = TestEnv(
-            Initializer(""),
-            resolver::resolveForever,
-            ::messageAsCommand
-        )
+            val resolver = ForeverWaitingResolver<Char>()
+            val env = TestEnv(
+                Initializer(""),
+                resolver::resolveForever,
+                ::messageAsCommand
+            )
 
-        val messages = 'a'..'z'
+            val messages = 'a'..'z'
 
-        factory(env)(messages).take(messages.size + 1*/
-/*plus initial snapshot*//*
-).collect()
+            factory(env)(messages).take(
+                messages.size + 1
+//plus initial snapshot
+            ).collect()
 
-        val canceled = resolver.messages
-            .consumeAsFlow()
-            .take(messages.size)
-            .toList()
+            val canceled = resolver.messages
+                .consumeAsFlow()
+                .take(messages.size)
+                .toList()
 
-        assertEquals(messages.toList(), canceled)
-        // canceled shouldContainExactlyInAnyOrder messages.toList()
-    }
+            assertEquals(messages.toList(), canceled)
+            // canceled shouldContainExactlyInAnyOrder messages.toList()
+        }
 
     @Test
     fun `test component doesn't block if serves multiple message sources`() =
-        runBlockingInTestScope {
+        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
@@ -426,8 +448,6 @@ abstract class BasicComponentTest(
             expected: $expected
             """.trimIndent()
             )
-
-            */
 /*withClue(
                 """
             snapshots1: $snapshots1
@@ -437,65 +457,56 @@ abstract class BasicComponentTest(
             ) {
                 snapshots1 shouldContainExactly expected
                 snapshots2 shouldContainExactly expected
-            }*//*
+            }*/
 
         }
 
     @Test
-    fun `test resolver runs on a given dispatcher`() = runBlockingInTestScope {
+    fun `test resolver runs on a given dispatcher`() =
+        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
-        val env = TestEnv<Char, String, Char>(
-            Initializer(""),
-            CheckingResolver(coroutineDispatcher),
-            ::messageAsCommand
+            val env = TestEnv<Char, String, Char>(
+                Initializer(""),
+                CheckingResolver(coroutineDispatcher),
+                ::messageAsCommand
+            )
+
+            factory(env)('a'..'d')
+                .take('d' - 'a').collect()
+        }
+
+    @Test
+    fun `when collecting component, given updater throws exception, then it's handled by coroutine scope`() {
+        val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
+
+        val component = Component<String, String, String>(
+            Initializer("", "a"),
+            ::throwingResolver,
+            ::throwingUpdater,
+            scope,
+            scope.coroutineDispatcher,
+            scope.coroutineDispatcher
         )
 
-        factory(env)('a'..'d')
-            .take('d' - 'a').collect()
+        val job = scope.launch { component("").collect() }
+
+        assertTrue(job.isCancelled)
+
+        val th = job.getCancellationException().cause
+
+        assertTrue("Cancellation cause $th") { th is ComponentException }
+        assertTrue(!scope.isActive)
     }
 
     @Test
-    fun `test if resolver fails with exception it gets handled by coroutine scope`() =
-        runBlockingInTestScope {
-            val component = Component<String, String, String>(
-                Initializer("", "a"),
-                ::throwingResolver,
-                ::throwingUpdater,
-                this@runBlockingInTestScope
-            )
-
-            val job = launch { component("").collect() }
-
-            job.join()
-
-            assertTrue(job.isCancelled)
-            //job.isCancelled.shouldBeTrue()
-
-            val th = job.getCancellationException().cause
-            // todo maybe IllegalStateException should be replaced with custom exception
-            assertTrue("Cancellation cause $th") { th is IllegalStateException }
-
-            */
-/*withClue("Cancellation cause $th") {
-                th.shouldNotBeNull()
-                // todo maybe IllegalStateException should be replaced with custom exception
-                th.shouldBeTypeOf<IllegalStateException>()
-            }*//*
-
-
-            assertTrue(!isActive)
-            //isActive.shouldBeFalse()
-        }
-
-    @Test
     fun `test if initializer fails with exception it gets handled by coroutine scope`() =
-        runBlockingInTestScope {
+        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
             val expectedException = RuntimeException("hello")
             val component = Component<String, String, String>(
                 ThrowingInitializer(expectedException),
                 ::throwingResolver,
                 ::throwingUpdater,
-                this@runBlockingInTestScope
+                this@runTest
             )
 
             val job = launch { component("").collect() }
@@ -510,12 +521,11 @@ abstract class BasicComponentTest(
                 th is RuntimeException && th.message == expectedException.message
             }
 
-            */
 /*withClue("Cancellation cause $th") {
                 th.shouldNotBeNull()
                 th.shouldBeTypeOf<RuntimeException>()
                 th.shouldHaveMessage(expectedException.message!!)
-            }*//*
+            }*/
 
 
             //isActive.shouldBeFalse()
@@ -523,30 +533,32 @@ abstract class BasicComponentTest(
         }
 
     @Test
-    fun `test initializer runs on a given dispatcher`() = runBlockingInTestScope {
+    fun `test initializer runs on a given dispatcher`() =
+        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
-        val env = TestEnv<Char, String, Char>(
-            CheckingInitializer(SingleThreadDispatcher),
-            ::throwingResolver,
-            { m, _ -> m.toString().noCommand() },
-            io = SingleThreadDispatcher
-        )
+            val env = TestEnv<Char, String, Char>(
+                CheckingInitializer(SingleThreadDispatcher),
+                ::throwingResolver,
+                { m, _ -> m.toString().noCommand() },
+                io = SingleThreadDispatcher
+            )
 
-        factory(env)('a'..'d').take('d' - 'a').collect()
-    }
+            factory(env)('a'..'d').take('d' - 'a').collect()
+        }
 
     @Test
-    fun `test updater runs on a given dispatcher`() = runBlockingInTestScope {
+    fun `test updater runs on a given dispatcher`() =
+        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
-        val env = TestEnv<Char, String, Char>(
-            Initializer(""),
-            ::throwingResolver,
-            CheckingUpdater(Regex("$ThreadName @coroutine#\\d+")),
-            computation = SingleThreadDispatcher
-        )
+            val env = TestEnv<Char, String, Char>(
+                Initializer(""),
+                ::throwingResolver,
+                CheckingUpdater(Regex("$ThreadName @coroutine#\\d+")),
+                computation = SingleThreadDispatcher
+            )
 
-        factory(env)('a'..'d').take('d' - 'a').collect()
-    }
+            factory(env)('a'..'d').take('d' - 'a').collect()
+        }
 
 }
 
@@ -572,7 +584,7 @@ fun ThrowingInitializer(
 ): Initializer<Nothing, Nothing> = { throw th }
 
 private fun currentThreadName(): String =
-    Thread.currentThread().name
+    TODO()//Thread.currentThread().name
 
 private fun <M, S> CheckingUpdater(
     expectedThreadGroup: Regex,
@@ -584,10 +596,9 @@ private fun <M, S> CheckingUpdater(
         threadName.matches(expectedThreadGroup)
     }
 
-    */
 /*withClue("Thread name should match '${expectedThreadGroup.pattern}' but was '$threadName'") {
         threadName.matches(expectedThreadGroup).shouldBeTrue()
-    }*//*
+    }*/
 
     s.noCommand()
 }
@@ -621,4 +632,3 @@ class ForeverWaitingResolver<T> {
 
 private val CharRange.size: Int
     get() = 1 + abs(last - first)
-*/

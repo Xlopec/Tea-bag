@@ -1,6 +1,6 @@
 @file:Suppress("FunctionName")
 
-package core.data
+package com.oliynick.max.tea.core.data
 
 actual class UUID
 

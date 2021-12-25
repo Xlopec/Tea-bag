@@ -1,4 +1,4 @@
-package core.data
+package com.oliynick.max.tea.core.data
 
 actual typealias Url = java.net.URL
 
