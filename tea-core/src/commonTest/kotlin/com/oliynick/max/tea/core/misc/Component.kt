@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+@file:Suppress("FunctionName", "TestFunctionName")
 
 package com.oliynick.max.tea.core.misc
 

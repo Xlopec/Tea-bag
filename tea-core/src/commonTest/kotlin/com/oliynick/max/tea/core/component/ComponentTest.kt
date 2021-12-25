@@ -42,19 +42,19 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.*
 import kotlin.coroutines.ContinuationInterceptor
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.coroutineContext
 import kotlin.math.abs
 import kotlin.test.*
 
-class BasicComponentTest(
+class ComponentTest {
 
-) {
-
+    @Deprecated("replace", ReplaceWith("Component"))
     val factory: CoroutineScope.(Env<Char, String, Char>) -> Component<Char, String, Char> =
         { Component(it) }
 
     companion object {
-        const val TestTimeoutMillis = 10 * 1000L
 
         //val TestTimeout: Timeout = Timeout.seconds(10L)
         const val ThreadName = "test thread"
@@ -68,32 +68,25 @@ class BasicComponentTest(
     //var globalTimeout: Timeout = TestTimeout
 
     @Test
-    fun `test initializer is invoked each time for component with no active subscribers`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
+    fun `when subscriber disconnects, then component initializer is re-invoked`() =
+        runTestCancellingChildren {
 
             var counter = 0
-            val initial =
-                Initial<String, Char>(
-                    "",
-                    emptySet()
-                )
+            val initial = Initial<String, Char>("", setOf())
             val env = TestEnv<Char, String, Char>(
                 { counter++; initial },
                 ::noOpResolver,
                 { m, str -> (str + m).command(m) },
             )
 
-            val component = factory(env)
+            val component = Component(env)
 
-            suspend fun Component<Char, String, Char>.collect(
+            suspend fun Component<Char, String, Char>.collectRange(
                 messages: CharRange,
-            ) = this(messages).take(
-                messages.size + 1
-//plus initial snapshot
-            ).collect()
+            ) = this(messages).take(messages.size + 1/*plus initial snapshot*/).collect()
 
-            component.collect('a'..'f')
-            component.collect('g'..'k')
+            component.collectRange('a'..'f')
+            component.collectRange('g'..'k')
             // each time new subscriber attaches to a component
             // with no subscribers initializer should be invoked
             assertEquals(2, counter, "Counter should be equal 2")
@@ -632,3 +625,22 @@ class ForeverWaitingResolver<T> {
 
 private val CharRange.size: Int
     get() = 1 + abs(last - first)
+
+const val TestTimeoutMillis = 10 * 1000L
+
+/**
+ * Same as [runTest] but cancels child jobs before leaving test.
+ * This is useful when testing running [Component] since component's upstream doesn't get
+ * destroyed until host scope is canceled
+ */
+fun runTestCancellingChildren(
+    context: CoroutineContext = EmptyCoroutineContext,
+    dispatchTimeoutMs: Long = TestTimeoutMillis,
+    testBody: suspend TestScope.() -> Unit
+): TestResult = runTest(context, dispatchTimeoutMs) {
+    testBody()
+    job.cancelChildren()
+}
+
+inline val CoroutineScope.job: Job
+    get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")
