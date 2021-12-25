@@ -41,6 +41,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.*
+import kotlin.Long.Companion.MAX_VALUE
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -111,7 +112,7 @@ class ComponentTest {
             ) = input.commands.asFlow()
                 .onStart {
                     if (input !== initialStates.last()) {
-                        delay(Long.MAX_VALUE)
+                        delay(MAX_VALUE)
                     }
                 }
 
@@ -137,10 +138,10 @@ class ComponentTest {
             val messages = arrayOf('a', 'b', 'c')
             val actualSnapshots = Component(env)(*messages).take(messages.size + 1).toList()
             val expectedSnapshots = listOf<Snapshot<Char, String, Char>>(
-                Initial("", emptySet()),
-                Regular("a", emptySet(), "", 'a'),
-                Regular("b", emptySet(), "a", 'b'),
-                Regular("c", emptySet(), "b", 'c')
+                Initial("", setOf()),
+                Regular("a", setOf(), "", 'a'),
+                Regular("b", setOf(), "a", 'b'),
+                Regular("c", setOf(), "b", 'c')
             )
 
             assertContentEquals(expectedSnapshots, actualSnapshots)
@@ -154,14 +155,14 @@ class ComponentTest {
                 Initializer(""),
                 { ch ->
                     // only message 'b' should be consumed
-                    if (ch == 'a') ('b'..'d').toSet() else emptySet()
+                    if (ch == 'a') ('b'..'d').toSet() else setOf()
                 },
                 { m, str -> (str + m).command(m) }
             )
 
             val actualSnapshots = Component(env)('a').take(3).toList()
             val expectedSnapshots = listOf(
-                Initial("", emptySet()),
+                Initial("", setOf()),
                 Regular("a", setOf('a'), "", 'a'),
                 Regular("ab", setOf('b'), "a", 'b')
             )
@@ -189,8 +190,8 @@ class ComponentTest {
         }
 
     @Test
-    fun `test component's snapshots shared among consumers`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
+    fun `when component has multiple consumers, then snapshots are shared among them`() =
+        runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
@@ -199,58 +200,32 @@ class ComponentTest {
                         ch + 1,// only this message should be consumed
                         ch + 2,
                         ch + 3
-                    ) else emptySet()
+                    ) else setOf()
                 },
                 { m, str -> (str + m).command(m) }
             )
 
             val take = 3
-            val component = factory(env)
-            val snapshots2Deferred =
-                GlobalScope.async {
-                    component(emptyFlow()).take(take)
-                        .toList()
-                }
-            val snapshots1Deferred = GlobalScope.async {
-                component('a').take(take).toList()
-            }
+            val component = Component(env)
+            val snapshots2Deferred = async { component(emptyFlow()).take(take).toList() }
+            val snapshots1Deferred = async { component('a').take(take).toList() }
 
-            @Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
-            val expected = listOf<Snapshot<Char, String, Char>>(
-                Initial("", emptySet()),
+            val expectedSnapshots = listOf(
+                Initial("", setOf()),
                 Regular("a", setOf('a'), "", 'a'),
                 Regular("ab", setOf('b'), "a", 'b')
             )
 
-            val snapshots1 = snapshots1Deferred.await()
-            val snapshots2 = snapshots2Deferred.await()
+            val actualSnapshots1 = snapshots1Deferred.await()
+            val actualSnapshots2 = snapshots2Deferred.await()
 
             assertContentEquals(
-                expected, snapshots1, """
-            snapshots1: $snapshots1
-            snapshots2: $snapshots2
-            expected: $expected
+                expectedSnapshots, actualSnapshots1, """
+            snapshots1: $actualSnapshots1
+            snapshots2: $actualSnapshots2
+            expected: $expectedSnapshots
             """.trimIndent()
             )
-            assertContentEquals(
-                expected, snapshots2, """
-            snapshots1: $snapshots1
-            snapshots2: $snapshots2
-            expected: $expected
-            """.trimIndent()
-            )
-
-/*withClue(
-            """
-            snapshots1: $snapshots1
-            snapshots2: $snapshots2
-            expected: $expected
-            """.trimIndent()
-        ) {
-            snapshots1 shouldContainExactly expected
-            snapshots2 shouldContainExactly expected
-        }*/
-
         }
 
     @Test
@@ -264,7 +239,7 @@ class ComponentTest {
                 fun initializer(): Initializer<String, Nothing> = {
                     invocations.incrementAndGet()
                     yield()
-                    Initial("bar", emptySet())
+                    Initial("bar", setOf())
                 }
             }
 
@@ -363,12 +338,12 @@ class ComponentTest {
                 listOf(
                     Initial(
                         "",
-                        emptySet<Char>()
+                        setOf<Char>()
                     )
                 ) + range.mapIndexed { index, ch ->
                     Regular(
                         ch.toString(),
-                        emptySet(),
+                        setOf(),
                         if (index == 0) "" else ch.dec().toString(),
                         ch
                     )
@@ -513,14 +488,14 @@ private fun CheckingInitializer(
     expectedDispatcher: CoroutineDispatcher,
 ): Initializer<String, Nothing> = {
     assertTrue { coroutineContext[ContinuationInterceptor] === expectedDispatcher }
-    Initial("", emptySet())
+    Initial("", setOf())
 }
 
 private fun CheckingResolver(
     expectedDispatcher: CoroutineDispatcher,
 ): Resolver<Any?, Nothing> = {
     assertTrue { coroutineContext[CoroutineDispatcher.Key] === expectedDispatcher }
-    emptySet()
+    setOf()
 }
 
 fun ThrowingInitializer(
@@ -550,7 +525,7 @@ private fun <M, S> CheckingUpdater(
 @Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
 private suspend fun <T> noOpResolver(
     m: T,
-): Set<Nothing> = emptySet()
+): Set<Nothing> = setOf()
 
 class ForeverWaitingResolver<T> {
 
@@ -563,7 +538,7 @@ class ForeverWaitingResolver<T> {
     ): Nothing {
 
         try {
-            delay(Long.MAX_VALUE)
+            delay(MAX_VALUE)
         } finally {
             withContext(NonCancellable) {
                 _messages.send(t)
