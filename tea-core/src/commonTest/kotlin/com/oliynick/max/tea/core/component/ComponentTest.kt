@@ -357,8 +357,8 @@ class ComponentTest {
         }
 
     @Test
-    fun `test resolver runs on a given dispatcher`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
+    fun `when collecting component with specific dispatcher, then resolver runs on this dispatcher`() =
+        runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
@@ -366,7 +366,7 @@ class ComponentTest {
                 ::messageAsCommand
             )
 
-            factory(env)('a'..'d')
+            Component(env)('a'..'d')
                 .take('d' - 'a').collect()
         }
 
