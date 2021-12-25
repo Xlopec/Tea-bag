@@ -35,6 +35,7 @@ package com.oliynick.max.tea.core.component
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.misc.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.*
@@ -49,23 +50,6 @@ import kotlin.math.abs
 import kotlin.test.*
 
 class ComponentTest {
-
-    @Deprecated("replace", ReplaceWith("Component"))
-    val factory: CoroutineScope.(Env<Char, String, Char>) -> Component<Char, String, Char> =
-        { Component(it) }
-
-    companion object {
-
-        //val TestTimeout: Timeout = Timeout.seconds(10L)
-        const val ThreadName = "test thread"
-
-        val SingleThreadDispatcher = Dispatchers.Default.limitedParallelism(1)
-        //    Executors.newSingleThreadExecutor { r -> Thread(r, ThreadName) }
-        //       .asCoroutineDispatcher()
-    }
-
-    //@get:Rule
-    //var globalTimeout: Timeout = TestTimeout
 
     @Test
     fun `when subscriber disconnects, then component initializer is re-invoked`() =
@@ -422,14 +406,18 @@ class ComponentTest {
         }
 
     @Test
-    fun `test updater runs on a given dispatcher`() =
+    fun `when collecting component with specific dispatcher, then updater runs on this dispatcher`() =
         runTestCancellingChildren {
-
+            // All test schedulers use 'Test worker' as prefix, so to workaround this issue we use
+            // custom dispatcher with different thread naming strategy
+            val computation = Default.limitedParallelism(1)
+            val mainThreadNamePrefix = async { currentThreadName() }
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
                 ::throwingResolver,
-                CheckingUpdater(Regex("$ThreadName @coroutine#\\d+")),
-                computation = SingleThreadDispatcher
+                CheckingUpdater(mainThreadNamePrefix.await()),
+                StandardTestDispatcher(testScheduler, "IO dispatcher"),
+                computation
             )
 
             Component(env)('a'..'d').take('d' - 'a').collect()
@@ -474,22 +462,14 @@ fun ThrowingInitializer(
     th: Throwable,
 ): Initializer<Nothing, Nothing> = { throw th }
 
-private fun currentThreadName(): String =
-    TODO()//Thread.currentThread().name
-
 private fun <M, S> CheckingUpdater(
-    expectedThreadGroup: Regex,
+    mainThreadName: String,
 ): Updater<M, S, Nothing> = { _, s ->
 
-    val threadName = currentThreadName()
+    val actualThreadNamePrefix = currentThreadName().replaceAfterLast('@', "")
+    val mainThreadNamePrefix = mainThreadName.replaceAfterLast('@', "")
 
-    assertTrue("Thread name should match '${expectedThreadGroup.pattern}' but was '$threadName'") {
-        threadName.matches(expectedThreadGroup)
-    }
-
-/*withClue("Thread name should match '${expectedThreadGroup.pattern}' but was '$threadName'") {
-        threadName.matches(expectedThreadGroup).shouldBeTrue()
-    }*/
+    assertNotEquals(mainThreadNamePrefix, actualThreadNamePrefix)
 
     s.noCommand()
 }
