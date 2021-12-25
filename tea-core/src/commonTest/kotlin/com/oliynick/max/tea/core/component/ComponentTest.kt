@@ -26,7 +26,7 @@
 
 package com.oliynick.max.tea.core.component
 
-import com.oliynick.max.tea.core.Env
+/*import com.oliynick.max.tea.core.Env
 import core.component.BasicComponentTest
 import kotlinx.coroutines.CoroutineScope
 
@@ -40,4 +40,4 @@ internal class ComponentTest : BasicComponentTest(Companion::ComponentFactory) {
         ): Component<Char, String, Char> = Component(env)
     }
 
-}
+}*/

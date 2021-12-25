@@ -12,11 +12,12 @@ import com.oliynick.max.reader.article.list.Paging
 import com.oliynick.max.reader.article.list.nextPage
 import com.oliynick.max.tea.core.IO
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.engine.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.features.logging.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.json.*
+import io.ktor.client.plugins.json.serializer.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.URLProtocol.Companion.HTTPS
@@ -43,14 +44,14 @@ class NewsApiImpl(
         input: String,
         paging: Paging
     ) = Either {
-        httpClient.get(EverythingRequest(input, paging))
+        httpClient.get(EverythingRequest(input, paging)).body()
     }
 
     override suspend fun fetchTopHeadlines(
         input: String,
         paging: Paging
     ) = Either {
-        httpClient.get(TopHeadlinesRequest(input, paging, countryCode))
+        httpClient.get(TopHeadlinesRequest(input, paging, countryCode)).body()
     }
 }
 
@@ -58,7 +59,7 @@ private fun HttpClient(
     engine: HttpClientEngineFactory<HttpClientEngineConfig>
 ) = HttpClient(engine) {
 
-    install(JsonFeature) {
+    install(JsonPlugin.Plugin) {
         val json = kotlinx.serialization.json.Json {
             ignoreUnknownKeys = true
             useAlternativeNames = false
@@ -99,7 +100,7 @@ private suspend fun ClientRequestException.toAppException(): AppException =
 @OptIn(ExperimentalSerializationApi::class)
 private suspend fun ClientRequestException.errorMessage(
 ) = withContext(IO) {
-    Json.decodeFromString<JsonElement>(response.readText())
+    Json.decodeFromString<JsonElement>(response.bodyAsText())
         .jsonObject["message"]
         ?.jsonPrimitive
         ?.contentOrNull

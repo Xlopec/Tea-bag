@@ -76,7 +76,7 @@ kotlin {
                 implementation(ktorClientLogging)
                 implementation(ktorClientJson)
                 implementation(ktorClientSerialization)
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2")
                 implementation("com.russhwolf:multiplatform-settings:0.8.1")
 
             }

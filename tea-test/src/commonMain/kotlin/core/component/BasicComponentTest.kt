@@ -26,6 +26,7 @@
 
 package core.component
 
+/*
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import core.scope.runBlockingInTestScope
@@ -75,7 +76,9 @@ abstract class BasicComponentTest(
 
             suspend fun Component<Char, String, Char>.collect(
                 messages: CharRange,
-            ) = this(messages).take(messages.size + 1/*plus initial snapshot*/).collect()
+            ) = this(messages).take(messages.size + 1*/
+/*plus initial snapshot*//*
+).collect()
 
             component.collect('a'..'f')
             component.collect('g'..'k')
@@ -126,10 +129,12 @@ abstract class BasicComponentTest(
                 resultingStates
             )
 
-            /*resultingStates shouldContainExactly (initialStates + Regular(state,
+            */
+/*resultingStates shouldContainExactly (initialStates + Regular(state,
                 commands,
                 state,
-                commands.first()))*/
+                commands.first()))*//*
+
         }
 
     @Test
@@ -144,12 +149,14 @@ abstract class BasicComponentTest(
         val messages = arrayOf('a', 'b', 'c')
         val snapshots = factory(env)(*messages).take(messages.size + 1).toList()
 
-        /*snapshots.shouldContainExactly(
+        */
+/*snapshots.shouldContainExactly(
             Initial("", emptySet()),
             Regular("a", emptySet(), "", 'a'),
             Regular("b", emptySet(), "a", 'b'),
             Regular("c", emptySet(), "b", 'c')
-        )*/
+        )*//*
+
 
         assertContentEquals(
             listOf(
@@ -188,12 +195,14 @@ abstract class BasicComponentTest(
                 snapshots
             )
 
-            /*@Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
+            */
+/*@Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
             snapshots shouldBe listOf<Snapshot<Char, String, Char>>(
                 Initial("", emptySet()),
                 Regular("a", setOf('a'), "", 'a'),
                 Regular("ab", setOf('b'), "a", 'b')
-            )*/
+            )*//*
+
         }
 
     @Test
@@ -266,7 +275,8 @@ abstract class BasicComponentTest(
             """.trimIndent()
         )
 
-        /*withClue(
+        */
+/*withClue(
             """
             snapshots1: $snapshots1
             snapshots2: $snapshots2
@@ -275,7 +285,8 @@ abstract class BasicComponentTest(
         ) {
             snapshots1 shouldContainExactly expected
             snapshots2 shouldContainExactly expected
-        }*/
+        }*//*
+
     }
 
     @Test
@@ -332,7 +343,9 @@ abstract class BasicComponentTest(
 
         val messages = 'a'..'z'
 
-        factory(env)(messages).take(messages.size + 1/*plus initial snapshot*/).collect()
+        factory(env)(messages).take(messages.size + 1*/
+/*plus initial snapshot*//*
+).collect()
 
         val canceled = resolver.messages
             .consumeAsFlow()
@@ -414,7 +427,8 @@ abstract class BasicComponentTest(
             """.trimIndent()
             )
 
-            /*withClue(
+            */
+/*withClue(
                 """
             snapshots1: $snapshots1
             snapshots2: $snapshots2
@@ -423,7 +437,8 @@ abstract class BasicComponentTest(
             ) {
                 snapshots1 shouldContainExactly expected
                 snapshots2 shouldContainExactly expected
-            }*/
+            }*//*
+
         }
 
     @Test
@@ -460,11 +475,13 @@ abstract class BasicComponentTest(
             // todo maybe IllegalStateException should be replaced with custom exception
             assertTrue("Cancellation cause $th") { th is IllegalStateException }
 
-            /*withClue("Cancellation cause $th") {
+            */
+/*withClue("Cancellation cause $th") {
                 th.shouldNotBeNull()
                 // todo maybe IllegalStateException should be replaced with custom exception
                 th.shouldBeTypeOf<IllegalStateException>()
-            }*/
+            }*//*
+
 
             assertTrue(!isActive)
             //isActive.shouldBeFalse()
@@ -493,11 +510,13 @@ abstract class BasicComponentTest(
                 th is RuntimeException && th.message == expectedException.message
             }
 
-            /*withClue("Cancellation cause $th") {
+            */
+/*withClue("Cancellation cause $th") {
                 th.shouldNotBeNull()
                 th.shouldBeTypeOf<RuntimeException>()
                 th.shouldHaveMessage(expectedException.message!!)
-            }*/
+            }*//*
+
 
             //isActive.shouldBeFalse()
             assertTrue(!isActive)
@@ -565,9 +584,11 @@ private fun <M, S> CheckingUpdater(
         threadName.matches(expectedThreadGroup)
     }
 
-    /*withClue("Thread name should match '${expectedThreadGroup.pattern}' but was '$threadName'") {
+    */
+/*withClue("Thread name should match '${expectedThreadGroup.pattern}' but was '$threadName'") {
         threadName.matches(expectedThreadGroup).shouldBeTrue()
-    }*/
+    }*//*
+
     s.noCommand()
 }
 
@@ -600,3 +621,4 @@ class ForeverWaitingResolver<T> {
 
 private val CharRange.size: Int
     get() = 1 + abs(last - first)
+*/

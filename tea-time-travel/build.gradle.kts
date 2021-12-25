@@ -25,6 +25,7 @@
 import Libraries.kotlinStdLib
 import Libraries.kotlinStdLibBom
 import Libraries.ktorClientCio
+import Libraries.ktorClientCore
 import Libraries.ktorClientWebsockets
 import TestLibraries.ktorMockJvm
 
@@ -52,13 +53,17 @@ kotlin {
                 implementation(kotlinStdLib)
                 implementation(project.enforcedPlatform(kotlinStdLibBom))
                 implementation(ktorClientWebsockets)
-                implementation(ktorClientCio)
+                implementation(ktorClientCore)
             }
         }
 
         val commonTest by getting
 
-        val jvmMain by getting
+        val jvmMain by getting {
+            dependencies {
+                implementation(ktorClientCio)
+            }
+        }
 
         val jvmTest by getting {
             dependencies {

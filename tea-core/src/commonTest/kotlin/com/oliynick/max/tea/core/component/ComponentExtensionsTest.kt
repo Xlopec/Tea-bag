@@ -24,8 +24,12 @@
 
 package com.oliynick.max.tea.core.component
 
-import core.component.*
-import kotlinx.coroutines.test.runBlockingTest
+import core.component.Command
+import core.component.DoAddItem
+import core.component.Item
+import core.component.TodoState
+import core.component.Updated
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -96,7 +100,7 @@ internal class ComponentExtensionsTest {
     }
 
     @Test
-    fun `test side effect`() = runBlockingTest {
+    fun `test side effect`() = runTest {
 
         val messages = DoAddItem(Item("some"), emptyList()).sideEffect<Command, Updated> { }
 
@@ -104,7 +108,7 @@ internal class ComponentExtensionsTest {
     }
 
     @Test
-    fun `test when effect returns no command the result is empty set`() = runBlockingTest {
+    fun `test when effect returns no command the result is empty set`() = runTest {
         val messages = DoAddItem(Item("some"), emptyList()).effect<Command, Updated> { null }
 
         assertTrue("messages should be empty", messages::isEmpty)
@@ -112,7 +116,7 @@ internal class ComponentExtensionsTest {
 
     @Test
     fun `test when effect returns command the result is set containing the messages`() =
-        runBlockingTest {
+        runTest {
             val item = Item("some")
             val expectedMessage = Updated(listOf(item))
             val messages = DoAddItem(item, emptyList()).effect { expectedMessage }

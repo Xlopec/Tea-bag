@@ -29,8 +29,8 @@ import Libraries.Versions.ktor
 
 object Libraries {
     object Versions {
-        const val coroutines = "1.5.1-new-mm-dev2"
-        const val ktor = "1.6.2-native-mm-eap-196"
+        const val coroutines = "1.6.0"
+        const val ktor = "2.0.0-beta-1"
         const val compose = "1.1.0-beta04"
         const val accompanies = "0.21.4-beta"
     }
@@ -87,7 +87,7 @@ object Libraries {
 
 object TestLibraries {
     private object Versions {
-        const val ktor = "1.6.2-native-mm-eap-196"
+        const val ktor = "2.0.0-beta-1"
     }
 
     const val junit = "junit:junit:4.13.1"

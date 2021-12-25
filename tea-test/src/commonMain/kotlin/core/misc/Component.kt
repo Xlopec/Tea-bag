@@ -26,19 +26,26 @@
 
 package core.misc
 
-import com.oliynick.max.tea.core.*
-import com.oliynick.max.tea.core.component.*
-import core.scope.coroutineDispatcher
+import com.oliynick.max.tea.core.Env
+import com.oliynick.max.tea.core.Initializer
+import com.oliynick.max.tea.core.ShareOptions
+import com.oliynick.max.tea.core.ShareStateWhileSubscribed
+import com.oliynick.max.tea.core.UnstableApi
+import com.oliynick.max.tea.core.component.Resolver
+import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.component.Updater
+import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.component.noCommand
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestScope
 
 @OptIn(UnstableApi::class)
-fun <M, S, C> TestCoroutineScope.TestEnv(
+fun <M, S, C> TestScope.TestEnv(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     updater: Updater<M, S, C>,
-    io: CoroutineDispatcher = coroutineDispatcher,
-    computation: CoroutineDispatcher = coroutineDispatcher,
+    io: CoroutineDispatcher /*= coroutineDispatcher*/,
+    computation: CoroutineDispatcher /*= coroutineDispatcher*/,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ) = Env(
     initializer,
