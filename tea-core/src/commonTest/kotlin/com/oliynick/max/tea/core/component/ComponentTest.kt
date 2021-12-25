@@ -125,8 +125,8 @@ class ComponentTest {
         }
 
     @Test
-    fun `test component emits a correct sequence of snapshots`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
+    fun `when component receives input, then it emits a correct sequence of snapshots`() =
+        runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
@@ -135,24 +135,15 @@ class ComponentTest {
             )
 
             val messages = arrayOf('a', 'b', 'c')
-            val snapshots = factory(env)(*messages).take(messages.size + 1).toList()
-
-            assertContentEquals(
-                listOf(
-                    Initial("", emptySet()),
-                    Regular("a", emptySet(), "", 'a'),
-                    Regular("b", emptySet(), "a", 'b'),
-                    Regular("c", emptySet(), "b", 'c')
-                ),
-
-                snapshots
+            val actualSnapshots = Component(env)(*messages).take(messages.size + 1).toList()
+            val expectedSnapshots = listOf<Snapshot<Char, String, Char>>(
+                Initial("", emptySet()),
+                Regular("a", emptySet(), "", 'a'),
+                Regular("b", emptySet(), "a", 'b'),
+                Regular("c", emptySet(), "b", 'c')
             )
-/*snapshots.shouldContainExactly(
-            Initial("", emptySet()),
-            Regular("a", emptySet(), "", 'a'),
-            Regular("b", emptySet(), "a", 'b'),
-            Regular("c", emptySet(), "b", 'c')
-        )*/
+
+            assertContentEquals(expectedSnapshots, actualSnapshots)
         }
 
     @Test
