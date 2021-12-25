@@ -33,7 +33,6 @@
 package com.oliynick.max.tea.core.component
 
 import com.oliynick.max.tea.core.*
-import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.misc.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -395,38 +394,31 @@ class ComponentTest {
     }
 
     @Test
-    fun `test if initializer fails with exception it gets handled by coroutine scope`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
-            val expectedException = RuntimeException("hello")
-            val component = Component<String, String, String>(
-                ThrowingInitializer(expectedException),
-                ::throwingResolver,
-                ::throwingUpdater,
-                this@runTest
-            )
+    fun `when collecting component, given initializer throws exception, then it's handled by coroutine scope`() {
 
-            val job = launch { component("").collect() }
+        val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
 
-            job.join()
-            assertTrue(job.isCancelled)
-            //job.isCancelled.shouldBeTrue()
+        val expectedException = RuntimeException("hello")
+        val component = Component<String, String, String>(
+            ThrowingInitializer(expectedException),
+            ::throwingResolver,
+            ::throwingUpdater,
+            scope,
+            scope.coroutineDispatcher,
+            scope.coroutineDispatcher
+        )
 
-            val th = job.getCancellationException().cause
+        val job = scope.launch { component("").collect() }
 
-            assertTrue("Cancellation cause $th") {
-                th is RuntimeException && th.message == expectedException.message
-            }
+        assertTrue(job.isCancelled)
 
-/*withClue("Cancellation cause $th") {
-                th.shouldNotBeNull()
-                th.shouldBeTypeOf<RuntimeException>()
-                th.shouldHaveMessage(expectedException.message!!)
-            }*/
+        val th = job.getCancellationException().cause
 
-
-            //isActive.shouldBeFalse()
-            assertTrue(!isActive)
+        assertTrue("Cancellation cause $th") {
+            th is RuntimeException && th.message == expectedException.message
         }
+        assertTrue(!scope.isActive)
+    }
 
     @Test
     fun `test initializer runs on a given dispatcher`() =
