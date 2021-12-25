@@ -35,11 +35,11 @@ package com.oliynick.max.tea.core.component
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.misc.*
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
 import kotlinx.coroutines.test.*
 import kotlin.Long.Companion.MAX_VALUE
 import kotlin.coroutines.ContinuationInterceptor
@@ -229,44 +229,27 @@ class ComponentTest {
         }
 
     @Test
-    fun `test component gets initialized only once if we have multiple consumers`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
+    fun `when component has multiple consumers, then component is initialized only once`() =
+        runTestCancellingChildren {
 
-            val countingInitializer = object {
-
-                val invocations = atomic(0)
-
-                fun initializer(): Initializer<String, Nothing> = {
-                    invocations.incrementAndGet()
-                    yield()
-                    Initial("bar", setOf())
-                }
-            }
-
+            var invocations = 0
             val env = TestEnv<Char, String, Char>(
-                countingInitializer.initializer(),
+                { invocations++; yield(); Initial("bar", setOf()) },
                 ::throwingResolver,
                 { _, s -> s.noCommand() },
-                io = Dispatchers.Default,//IO,
-                // SharingStarted.Lazily since in case of default option the replay
+                // SharingStarted.Lazily since in case of default option replay
                 // cache will be disposed immediately causing test to fail
-                shareOptions = ShareOptions(SharingStarted.Lazily, 1U)
+                shareOptions = ShareOptions(Lazily, 1U)
             )
 
-            val component = factory(env)
+            val component = Component(env)
+            // Ensure component builder won't invoke initializer before first consumer arrives
+            assertEquals(0, invocations)
 
-            assertEquals(0, countingInitializer.invocations.value)
-            //countingInitializer.invocations.value shouldBe 0
+            repeat(1_000) { launch { component('a').first() } }
 
-            val coroutines = 1_000
-            val jobs = (0 until coroutines).map { launch { component('a').first() } }
-                .toCollection(ArrayList(coroutines))
-
-            jobs.joinAll()
-
-            assertEquals(1, countingInitializer.invocations.value)
-
-            //countingInitializer.invocations.value shouldBe 1
+            advanceUntilIdle()
+            assertEquals(1, invocations)
         }
 
     @Test
