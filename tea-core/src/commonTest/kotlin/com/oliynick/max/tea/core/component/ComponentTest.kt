@@ -170,8 +170,8 @@ class ComponentTest {
         }
 
     @Test
-    fun `test interceptor sees an original sequence of snapshots`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
+    fun `when attaching interceptor to component, then original sequence of snapshots pipes through it`() =
+        runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
@@ -180,13 +180,12 @@ class ComponentTest {
             )
 
             val sink = mutableListOf<Snapshot<Char, String, Char>>()
-            val component = factory(env) with sink::add
+            val component = Component(env) with sink::add
             val messages = arrayOf('a', 'b', 'c')
             val snapshots =
                 component(*messages).take(messages.size + 1).toList()
 
             assertContentEquals(snapshots, sink)
-            //sink shouldContainExactly snapshots
         }
 
     @Test
