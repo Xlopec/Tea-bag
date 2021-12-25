@@ -357,20 +357,6 @@ class ComponentTest {
         }
 
     @Test
-    fun `when collecting component with specific dispatcher, then resolver runs on this dispatcher`() =
-        runTestCancellingChildren {
-
-            val env = TestEnv<Char, String, Char>(
-                Initializer(""),
-                CheckingResolver(coroutineDispatcher),
-                ::messageAsCommand
-            )
-
-            Component(env)('a'..'d')
-                .take('d' - 'a').collect()
-        }
-
-    @Test
     fun `when collecting component, given updater throws exception, then it's handled by coroutine scope`() {
         val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
 
@@ -421,22 +407,23 @@ class ComponentTest {
     }
 
     @Test
-    fun `test initializer runs on a given dispatcher`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
-
+    fun `when collecting component with specific dispatcher, then initializer runs on this dispatcher`() =
+        runTestCancellingChildren {
+            val io = StandardTestDispatcher(testScheduler, "IO dispatcher")
             val env = TestEnv<Char, String, Char>(
-                CheckingInitializer(SingleThreadDispatcher),
+                CheckingInitializer(io),
                 ::throwingResolver,
                 { m, _ -> m.toString().noCommand() },
-                io = SingleThreadDispatcher
+                io,
+                StandardTestDispatcher(testScheduler, "Computation dispatcher")
             )
 
-            factory(env)('a'..'d').take('d' - 'a').collect()
+            Component(env)('a'..'d').take('d' - 'a').collect()
         }
 
     @Test
     fun `test updater runs on a given dispatcher`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
+        runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
@@ -445,7 +432,23 @@ class ComponentTest {
                 computation = SingleThreadDispatcher
             )
 
-            factory(env)('a'..'d').take('d' - 'a').collect()
+            Component(env)('a'..'d').take('d' - 'a').collect()
+        }
+
+    @Test
+    fun `when collecting component with specific dispatcher, then resolver runs on this dispatcher`() =
+        runTestCancellingChildren {
+            val io = StandardTestDispatcher(testScheduler, "IO dispatcher")
+            val env = TestEnv<Char, String, Char>(
+                Initializer(""),
+                CheckingResolver(io),
+                ::messageAsCommand,
+                io,
+                StandardTestDispatcher(testScheduler, "Computation dispatcher")
+            )
+
+            Component(env)('a'..'d')
+                .take('d' - 'a').collect()
         }
 
 }
@@ -456,14 +459,14 @@ private fun <T> noOpSink(t: T) = Unit
 private fun CheckingInitializer(
     expectedDispatcher: CoroutineDispatcher,
 ): Initializer<String, Nothing> = {
-    assertTrue { coroutineContext[ContinuationInterceptor] === expectedDispatcher }
+    assertSame(expectedDispatcher, coroutineContext[ContinuationInterceptor])
     Initial("", setOf())
 }
 
 private fun CheckingResolver(
     expectedDispatcher: CoroutineDispatcher,
 ): Resolver<Any?, Nothing> = {
-    assertTrue { coroutineContext[CoroutineDispatcher.Key] === expectedDispatcher }
+    assertSame(expectedDispatcher, coroutineContext[CoroutineDispatcher.Key])
     setOf()
 }
 
