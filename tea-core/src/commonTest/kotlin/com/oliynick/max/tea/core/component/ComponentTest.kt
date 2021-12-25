@@ -125,7 +125,7 @@ class ComponentTest {
         }
 
     @Test
-    fun `when component receives input, then it emits a correct sequence of snapshots`() =
+    fun `when component receives input, then it emits correct sequence of snapshots`() =
         runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
@@ -147,8 +147,8 @@ class ComponentTest {
         }
 
     @Test
-    fun `test component emits a correct sequence of snapshots if we have recursive calculations`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
+    fun `when component receives input, given recursive calculations, then it emits correct sequence of snapshots`() =
+        runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
@@ -159,25 +159,14 @@ class ComponentTest {
                 { m, str -> (str + m).command(m) }
             )
 
-            val snapshots = factory(env)('a').take(3).toList()
-
-            assertContentEquals(
-                listOf<Snapshot<Char, String, Char>>(
-                    Initial("", emptySet()),
-                    Regular("a", setOf('a'), "", 'a'),
-                    Regular("ab", setOf('b'), "a", 'b')
-                ),
-
-                snapshots
-            )
-
-/*@Suppress("RemoveExplicitTypeArguments")// helps to track down types when refactoring
-            snapshots shouldBe listOf<Snapshot<Char, String, Char>>(
+            val actualSnapshots = Component(env)('a').take(3).toList()
+            val expectedSnapshots = listOf(
                 Initial("", emptySet()),
                 Regular("a", setOf('a'), "", 'a'),
                 Regular("ab", setOf('b'), "a", 'b')
-            )*/
+            )
 
+            assertContentEquals(expectedSnapshots, actualSnapshots)
         }
 
     @Test
