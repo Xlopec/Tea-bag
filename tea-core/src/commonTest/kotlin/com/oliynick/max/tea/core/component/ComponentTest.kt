@@ -252,10 +252,13 @@ class ComponentTest {
             assertEquals(1, invocations)
         }
 
+    /**
+     * Ignored due to the [following issue](https://youtrack.jetbrains.com/issue/KT-47195)
+     */
     @Test
-    //@Ignore("Ignored due to https://youtrack.jetbrains.com/issue/KT-47195")
+    @Ignore
     fun `test component's job gets canceled properly`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
+        runTestCancellingChildren {
 
             val resolver = ForeverWaitingResolver<Char>()
             val env = TestEnv(
@@ -266,10 +269,7 @@ class ComponentTest {
 
             val messages = 'a'..'z'
 
-            factory(env)(messages).take(
-                messages.size + 1
-//plus initial snapshot
-            ).collect()
+            Component(env)(messages).take(messages.size + 1 /*plus initial snapshot*/).collect()
 
             val canceled = resolver.messages
                 .consumeAsFlow()
@@ -277,12 +277,11 @@ class ComponentTest {
                 .toList()
 
             assertEquals(messages.toList(), canceled)
-            // canceled shouldContainExactlyInAnyOrder messages.toList()
         }
 
     @Test
-    fun `test component doesn't block if serves multiple message sources`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
+    fun `when component has multiple consumers, then it can serve multiple message sources`() =
+        runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
@@ -291,7 +290,7 @@ class ComponentTest {
             )
 
             val range = 'a'..'h'
-            val component = factory(env)
+            val component = Component(env)
 
             val chan1 = Channel<Char>()
             val chan2 = Channel<Char>()
@@ -314,10 +313,11 @@ class ComponentTest {
                 } else {
                     chan2.send(ch)
                 }
-
+                // forces enqueued coroutines to run
+                runCurrent()
             }
 
-            val expected: List<Snapshot<Char, String, Char>> =
+            val expectedSnapshots: List<Snapshot<Char, String, Char>> =
                 listOf(
                     Initial(
                         "",
@@ -332,35 +332,29 @@ class ComponentTest {
                     )
                 }
 
-            val snapshots1 = snapshots1Deferred.await()
-            val snapshots2 = snapshots2Deferred.await()
-
+            val actualSnapshots1 = snapshots1Deferred.await()
+            val actualSnapshots2 = snapshots2Deferred.await()
+            // performance gain is miserable for this case
+            @Suppress("ConvertArgumentToSet")
             assertContentEquals(
-                expected, snapshots1, """
-            snapshots1: $snapshots1
-            snapshots2: $snapshots2
-            expected: $expected
+                expectedSnapshots, actualSnapshots1, """
+            snapshots1: $actualSnapshots1
+            snapshots2: $actualSnapshots2
+            expected: $expectedSnapshots
+            diff: ${expectedSnapshots - actualSnapshots1}
             """.trimIndent()
             )
 
+            // performance gain is miserable for this case
+            @Suppress("ConvertArgumentToSet")
             assertContentEquals(
-                expected, snapshots2, """
-            snapshots1: $snapshots1
-            snapshots2: $snapshots2
-            expected: $expected
+                expectedSnapshots, actualSnapshots2, """
+            snapshots1: $actualSnapshots1
+            snapshots2: $actualSnapshots2
+            expected: $expectedSnapshots
+            diff: ${expectedSnapshots - actualSnapshots2}
             """.trimIndent()
             )
-/*withClue(
-                """
-            snapshots1: $snapshots1
-            snapshots2: $snapshots2
-            expected: $expected
-            """.trimIndent()
-            ) {
-                snapshots1 shouldContainExactly expected
-                snapshots2 shouldContainExactly expected
-            }*/
-
         }
 
     @Test
