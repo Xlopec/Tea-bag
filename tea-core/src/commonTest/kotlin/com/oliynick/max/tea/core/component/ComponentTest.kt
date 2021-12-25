@@ -81,19 +81,15 @@ class ComponentTest {
 
             val component = Component(env)
 
-            suspend fun Component<Char, String, Char>.collectRange(
-                messages: CharRange,
-            ) = this(messages).take(messages.size + 1/*plus initial snapshot*/).collect()
-
-            component.collectRange('a'..'f')
-            component.collectRange('g'..'k')
+            component.collectRanged('a'..'f')
+            component.collectRanged('g'..'k')
             // each time new subscriber attaches to a component
             // with no subscribers initializer should be invoked
             assertEquals(2, counter, "Counter should be equal 2")
         }
 
     @Test
-    fun `test when receiving new input previous downstream gets canceled`() =
+    fun `when upstream receives new input, then previous downstream is canceled`() =
         runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
             val env = TestEnv<Char, String, Char>(
@@ -119,37 +115,13 @@ class ComponentTest {
                     }
                 }
 
-            val resultingStates = env.upstream(initialStates.asFlow(), ::noOpSink, ::testInput)
+            val actualStates = env.upstream(initialStates.asFlow(), ::noOpSink, ::testInput)
                 .toList()
 
             val (state, commands) = lastInitial
+            val expectedStates = initialStates + Regular(state, commands, state, commands.first())
 
-            assertContentEquals(
-                (initialStates + Regular(
-                    state,
-                    commands,
-                    state,
-                    commands.first()
-                )),
-                resultingStates
-            )
-
-            assertContentEquals(
-                (initialStates + Regular(
-                    state,
-                    commands,
-                    state,
-                    commands.first()
-                )),
-
-                resultingStates
-            )
-
-/*resultingStates shouldContainExactly (initialStates + Regular(state,
-                commands,
-                state,
-                commands.first()))*/
-
+            assertContentEquals(expectedStates, actualStates)
         }
 
     @Test
@@ -644,3 +616,7 @@ fun runTestCancellingChildren(
 
 inline val CoroutineScope.job: Job
     get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")
+
+private suspend fun Component<Char, String, Char>.collectRanged(
+    messages: CharRange,
+) = this(messages).take(messages.size + 1/*plus initial snapshot*/).collect()
