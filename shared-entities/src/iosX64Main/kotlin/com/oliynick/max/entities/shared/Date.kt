@@ -1,4 +1,4 @@
-package com.oliynick.max.reader.domain
+package com.oliynick.max.entities.shared
 
 import platform.Foundation.NSDate
 import platform.Foundation.dateWithTimeIntervalSince1970

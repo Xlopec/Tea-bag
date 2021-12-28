@@ -1,9 +1,13 @@
 package com.oliynick.max.reader.network
 
+import com.oliynick.max.entities.shared.Date
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.entities.shared.UrlFor
 import com.oliynick.max.entities.shared.toExternalValue
-import com.oliynick.max.reader.domain.*
+import com.oliynick.max.reader.domain.Author
+import com.oliynick.max.reader.domain.Description
+import com.oliynick.max.reader.domain.Title
+import com.oliynick.max.reader.domain.tryCreate
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

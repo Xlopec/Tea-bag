@@ -1,8 +1,8 @@
 package com.oliynick.max.reader.network
 
+import com.oliynick.max.entities.shared.Date
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.domain.Author
-import com.oliynick.max.reader.domain.Date
 import com.oliynick.max.reader.domain.Description
 import com.oliynick.max.reader.domain.Title
 import kotlinx.serialization.SerialName

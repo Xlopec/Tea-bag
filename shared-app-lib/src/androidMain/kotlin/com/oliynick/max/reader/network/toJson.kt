@@ -1,6 +1,5 @@
 package com.oliynick.max.reader.network
 
-import com.oliynick.max.reader.domain.Date
 import java.text.SimpleDateFormat
 import java.util.*
 

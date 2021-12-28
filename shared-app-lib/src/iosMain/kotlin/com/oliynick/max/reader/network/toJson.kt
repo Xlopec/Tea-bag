@@ -1,6 +1,6 @@
 package com.oliynick.max.reader.network
 
-/*import com.oliynick.max.reader.domain.Date
+/*import com.oliynick.max.entities.shared.Date
 import platform.Foundation.NSDateFormatter
 
 private val DateParser = NSDateFormatter().apply {

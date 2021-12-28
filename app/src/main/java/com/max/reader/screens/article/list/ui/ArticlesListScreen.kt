@@ -69,7 +69,10 @@ import com.oliynick.max.reader.app.message.NavigateToArticleDetails
 import com.oliynick.max.reader.article.list.*
 import com.oliynick.max.reader.article.list.ArticlesState.TransientState.*
 import com.oliynick.max.reader.article.list.QueryType.*
-import com.oliynick.max.reader.domain.*
+import com.oliynick.max.reader.domain.Article
+import com.oliynick.max.reader.domain.Author
+import com.oliynick.max.reader.domain.Description
+import com.oliynick.max.reader.domain.Title
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
@@ -599,7 +602,7 @@ private val PreviewArticle = Article(
                 "the background color of the composable, and round the corners of the Row, you could " +
                 "use the following code"
     ),
-    published = now(),
+    published = com.oliynick.max.entities.shared.now(),
     isFavorite = true,
     urlToImage = URL("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png")
 )

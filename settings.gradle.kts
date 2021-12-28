@@ -15,6 +15,6 @@ include(
     ":tea-time-travel-plugin",
     ":tea-test",
     ":tea-time-travel-adapter-gson",
-    ":shared-app-lib"
+    ":shared-app-lib",
+    ":shared-entities"
 )
-include(":shared-entities")

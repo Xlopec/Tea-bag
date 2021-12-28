@@ -25,20 +25,11 @@
 
 package com.oliynick.max.reader.domain
 
+import com.oliynick.max.entities.shared.Date
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.ImmutableType
 import kotlin.contracts.contract
 import kotlin.jvm.JvmInline
-
-expect class Date
-
-expect fun now(): Date
-
-expect fun fromMillis(
-    millis: Long
-): Date
-
-expect fun Date.toMillis(): Long
 
 @ImmutableType
 data class Article(
