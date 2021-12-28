@@ -4,7 +4,7 @@ import java.net.URL
 plugins {
     `maven-publish`
     signing
-    `java-library`
+    //`java-library`
     kotlin("jvm")
     id("org.jetbrains.dokka")
 }

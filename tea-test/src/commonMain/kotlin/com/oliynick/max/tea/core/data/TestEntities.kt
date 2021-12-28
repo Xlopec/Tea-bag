@@ -22,30 +22,43 @@
  * SOFTWARE.
  */
 
+@file:Suppress("FunctionName")
 
-import Libraries.gson
-import Libraries.immutableCollections
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibReflect
+package com.oliynick.max.tea.core.data
 
-plugins {
-    publishedLibrary()
+import com.oliynick.max.entities.shared.UUID
+import com.oliynick.max.entities.shared.Url
+import com.oliynick.max.entities.shared.UrlFor
+import com.oliynick.max.entities.shared.randomUUID
+import kotlin.jvm.JvmInline
+
+data class User(
+    val id: Id,
+    val name: Name,
+    val photos: List<Photo>,
+    val avatar: Url? = null
+)
+
+@JvmInline
+value class Id(
+    val uuid: UUID
+)
+
+data class Name(
+    val value: String
+) {
+    init {
+        require(value.isNotEmpty())
+    }
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
+@JvmInline
+value class Photo(
+    val url: Url
+)
 
-dependencies {
+fun RandomId() = Id(randomUUID())
 
-    api(project(":tea-time-travel-protocol"))
-    api(kotlinStdLibReflect)
-    api(gson)
+fun Photo(urlSpec: String) = Photo(UrlFor(urlSpec))
 
-    implementation(kotlinStdLib)
-
-    testImplementation(project(":tea-test"))
-    testImplementation(project(":tea-time-travel-protocol"))
-    testImplementation(immutableCollections)
-    testImplementation("junit:junit:4.13")
-}
+fun Avatar(s: String) = UrlFor(s)

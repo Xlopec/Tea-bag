@@ -70,6 +70,7 @@ kotlin {
                 api(kotlinTest)
                 api("org.jetbrains.kotlin:kotlin-test-annotations-common:1.6.10")
                 implementation(project(":tea-core"))
+                api(project(":shared-entities"))
             }
         }
 

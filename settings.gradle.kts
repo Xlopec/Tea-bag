@@ -17,3 +17,4 @@ include(
     ":tea-time-travel-adapter-gson",
     ":shared-app-lib"
 )
+include(":shared-entities")

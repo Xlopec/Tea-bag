@@ -22,30 +22,52 @@
  * SOFTWARE.
  */
 
+package com.oliynick.max.tea.core.debug.gson.serialization.data
 
-import Libraries.gson
-import Libraries.immutableCollections
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibReflect
+import kotlinx.collections.immutable.PersistentList
 
-plugins {
-    publishedLibrary()
+internal data class Container(val list: PersistentList<String>)
+
+internal data class PolyContainer(val list: PersistentList<Poly>)
+
+internal interface Poly {
+    val property: String
 }
 
-tasks.test {
-    useJUnitPlatform()
+internal class PolyB : Poly {
+    override val property: String = "b"
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as PolyB
+
+        if (property != other.property) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return property.hashCode()
+    }
 }
 
-dependencies {
+internal class PolyA : Poly {
+    override val property: String = "a"
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-    api(project(":tea-time-travel-protocol"))
-    api(kotlinStdLibReflect)
-    api(gson)
+        other as PolyA
 
-    implementation(kotlinStdLib)
+        if (property != other.property) return false
 
-    testImplementation(project(":tea-test"))
-    testImplementation(project(":tea-time-travel-protocol"))
-    testImplementation(immutableCollections)
-    testImplementation("junit:junit:4.13")
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return property.hashCode()
+    }
+
+
 }
