@@ -39,6 +39,7 @@ tasks.test {
 dependencies {
 
     api(project(":tea-time-travel-protocol"))
+    api(project(":shared-entities"))
     api(kotlinStdLibReflect)
     api(gson)
 

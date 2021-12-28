@@ -1,6 +1,6 @@
 package com.oliynick.max.reader.network
 
-/*import com.oliynick.max.reader.domain.Date
+import com.oliynick.max.reader.domain.Date
 import platform.Foundation.NSDateFormatter
 
 private val DateParser = NSDateFormatter().apply {
@@ -10,4 +10,4 @@ private val DateParser = NSDateFormatter().apply {
 actual fun Date.toJson(): String = DateParser.stringFromDate(this)
 
 actual fun String.toDate(): Date = DateParser.dateFromString(this)
-    ?: error("couldn't parse $this as date")*/
+    ?: error("couldn't parse $this as date")

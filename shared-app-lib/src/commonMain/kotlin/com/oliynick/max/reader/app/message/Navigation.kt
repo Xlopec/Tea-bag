@@ -24,8 +24,8 @@
 
 package com.oliynick.max.reader.app.message
 
+import com.oliynick.max.entities.shared.randomUUID
 import com.oliynick.max.reader.app.ScreenId
-import com.oliynick.max.reader.app.randomUUID
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.settings.SettingsState
 

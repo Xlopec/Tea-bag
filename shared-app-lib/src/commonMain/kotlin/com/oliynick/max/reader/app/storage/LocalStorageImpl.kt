@@ -1,16 +1,10 @@
 package com.oliynick.max.reader.app.storage
 
+import com.oliynick.max.entities.shared.Url
+import com.oliynick.max.entities.shared.UrlFor
+import com.oliynick.max.entities.shared.toExternalValue
 import com.oliynick.max.reader.article.list.Page
-import com.oliynick.max.reader.domain.Article
-import com.oliynick.max.reader.domain.Author
-import com.oliynick.max.reader.domain.Description
-import com.oliynick.max.reader.domain.Title
-import com.oliynick.max.reader.domain.Url
-import com.oliynick.max.reader.domain.fromMillis
-import com.oliynick.max.reader.domain.now
-import com.oliynick.max.reader.domain.toExternalValue
-import com.oliynick.max.reader.domain.toMillis
-import com.oliynick.max.reader.domain.toUrl
+import com.oliynick.max.reader.domain.*
 import com.oliynick.max.tea.core.IO
 import com.russhwolf.settings.Settings
 import com.squareup.sqldelight.db.SqlCursor
@@ -104,11 +98,11 @@ private fun dbModelToArticle(
     @Suppress("UNUSED_PARAMETER") savedOn: Long,
     isFavorite: Boolean
 ): Article = Article(
-    url = url.toUrl(),
+    url = UrlFor(url),
     title = Title(title),
     author = author?.let(::Author),
     description = description?.let(::Description),
-    urlToImage = urlToImage?.toUrl(),
+    urlToImage = urlToImage?.let(::UrlFor),
     published = fromMillis(published),
     isFavorite = isFavorite
 )

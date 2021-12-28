@@ -26,9 +26,9 @@
 
 package com.oliynick.max.reader.app.storage
 
+import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.article.list.Page
 import com.oliynick.max.reader.domain.Article
-import com.oliynick.max.reader.domain.Url
 
 interface LocalStorage {
 

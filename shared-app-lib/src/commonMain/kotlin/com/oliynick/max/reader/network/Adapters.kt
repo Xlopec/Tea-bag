@@ -1,5 +1,8 @@
 package com.oliynick.max.reader.network
 
+import com.oliynick.max.entities.shared.Url
+import com.oliynick.max.entities.shared.UrlFor
+import com.oliynick.max.entities.shared.toExternalValue
 import com.oliynick.max.reader.domain.*
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -68,7 +71,7 @@ object UrlSerializer : KSerializer<Url> {
     override fun serialize(encoder: Encoder, value: Url) =
         encoder.encodeString(value.toExternalValue())
 
-    override fun deserialize(decoder: Decoder): Url = decoder.decodeString().toUrl()
+    override fun deserialize(decoder: Decoder): Url = UrlFor(decoder.decodeString())
 
 }
 

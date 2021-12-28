@@ -71,7 +71,7 @@ object Libraries {
     const val composeUiTooling = "androidx.compose.ui:ui-tooling:$compose"
     const val composeRuntime = "androidx.compose.runtime:runtime:$compose"
     const val composeAnimation = "androidx.compose.animation:animation:$compose"
-    const val composeCompiler = "androidx.compose.compiler:compiler:$compose"
+    const val composeCompiler = "androidx.compose.compiler:compiler:1.1.0-rc02"// compatible with kotlin 1.6.10
     const val composeActivity = "androidx.activity:activity-compose:1.4.0"
 
     const val accompaniestInsets = "com.google.accompanist:accompanist-insets:$accompanies"

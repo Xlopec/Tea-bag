@@ -24,13 +24,12 @@
 
 package com.oliynick.max.tea.core.debug.gson.serialization.test
 
-/*import core.data.Id
-import core.data.Name
-import core.data.Photo
-import core.data.User*/
 import com.google.gson.reflect.TypeToken
-import com.oliynick.max.tea.core.data.*
-import com.oliynick.max.tea.core.data.UUID
+import com.oliynick.max.entities.shared.UUID
+import com.oliynick.max.tea.core.data.Id
+import com.oliynick.max.tea.core.data.Name
+import com.oliynick.max.tea.core.data.Photo
+import com.oliynick.max.tea.core.data.User
 import com.oliynick.max.tea.core.debug.gson.Gson
 import com.oliynick.max.tea.core.debug.gson.GsonClientMessage
 import com.oliynick.max.tea.core.debug.gson.serialization.data.Singleton

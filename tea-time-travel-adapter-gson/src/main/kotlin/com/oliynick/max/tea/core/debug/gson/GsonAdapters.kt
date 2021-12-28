@@ -27,9 +27,10 @@
 package com.oliynick.max.tea.core.debug.gson
 
 import com.google.gson.*
+import com.oliynick.max.entities.shared.UUID
+import com.oliynick.max.entities.shared.toHumanReadable
 import com.oliynick.max.tea.core.debug.protocol.*
 import java.lang.reflect.Type
-import java.util.*
 
 internal object UUIDAdapter : JsonSerializer<UUID>, JsonDeserializer<UUID> {
 

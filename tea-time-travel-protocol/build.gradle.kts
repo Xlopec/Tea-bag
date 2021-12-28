@@ -43,6 +43,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                api(project(":shared-entities"))
                 implementation(kotlinStdLib)
                 implementation(project.enforcedPlatform(kotlinStdLibBom))
             }

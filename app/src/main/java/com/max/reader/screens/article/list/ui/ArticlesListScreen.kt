@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.statusBarsPadding
 import com.max.reader.ui.theme.ThemedPreview
+import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.message.Message

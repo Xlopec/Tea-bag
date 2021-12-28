@@ -24,6 +24,7 @@
 
 package com.oliynick.max.reader.app
 
+import com.oliynick.max.entities.shared.UUID
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.navigation.NavigationStack
 import com.oliynick.max.reader.app.navigation.push

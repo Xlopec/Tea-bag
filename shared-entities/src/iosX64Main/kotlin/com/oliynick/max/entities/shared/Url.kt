@@ -10,3 +10,5 @@ actual typealias Url = NSURL
 actual fun UrlFor(
     s: String
 ): Url = NSURL(string = s)
+
+actual fun Url.toExternalValue(): String = toString()

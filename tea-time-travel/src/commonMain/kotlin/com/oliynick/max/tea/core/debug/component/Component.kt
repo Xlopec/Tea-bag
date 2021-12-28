@@ -27,6 +27,7 @@
 
 package com.oliynick.max.tea.core.debug.component
 
+import com.oliynick.max.entities.shared.randomUUID
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.component.internal.into
@@ -138,7 +139,7 @@ private suspend fun <M, S, C, J> DebugEnv<M, S, C, J>.notifyServer(
 ) = with(serverSettings) {
     session(
         NotifyServer(
-            UUID.randomUUID(),
+            randomUUID(),
             id,
             serializer.toServerMessage(snapshot)
         )

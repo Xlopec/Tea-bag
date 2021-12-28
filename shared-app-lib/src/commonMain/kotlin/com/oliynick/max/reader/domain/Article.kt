@@ -25,15 +25,10 @@
 
 package com.oliynick.max.reader.domain
 
+import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.ImmutableType
 import kotlin.contracts.contract
 import kotlin.jvm.JvmInline
-
-expect class Url
-
-expect fun String.toUrl(): Url
-
-expect fun Url.toExternalValue(): String
 
 expect class Date
 

@@ -1,6 +1,7 @@
 package com.oliynick.max.reader.app.serialization
 
 import com.google.gson.*
+import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.domain.*
 import java.lang.reflect.Type
 import java.net.URL

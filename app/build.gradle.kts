@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import Libraries.Versions.compose
 import Libraries.accompaniestCoil
 import Libraries.accompaniestInsets
 import Libraries.accompaniestSwipeRefresh
@@ -113,7 +112,8 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = compose
+        kotlinCompilerExtensionVersion = "1.1.0-rc02"
+        //kotlinCompilerExtensionVersion = compose
     }
 
     flavorDimensions += "remote"
