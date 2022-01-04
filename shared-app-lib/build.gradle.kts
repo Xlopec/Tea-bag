@@ -79,7 +79,8 @@ kotlin {
                 implementation(ktorClientJson)
                 implementation(ktorClientSerialization)
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2")
-                implementation("com.russhwolf:multiplatform-settings:0.8.1")
+                implementation("com.russhwolf:multiplatform-settings-no-arg:0.8.1")
+                implementation("com.squareup.sqldelight:runtime:1.5.3")
             }
         }
         val commonTest by getting {

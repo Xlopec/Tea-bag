@@ -8,24 +8,19 @@ import com.oliynick.max.reader.domain.Description
 import com.oliynick.max.reader.domain.Title
 import com.oliynick.max.tea.core.IO
 import com.russhwolf.settings.Settings
+import com.russhwolf.settings.get
+import com.russhwolf.settings.set
 import com.squareup.sqldelight.db.SqlCursor
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.db.use
 import kotlinx.coroutines.withContext
 
 fun LocalStorage(
-    driver: SqlDriver,
-    settings: Settings
-): LocalStorage = LocalStorageImpl(driver, DeferredSettings { settings })
-
-fun LocalStorage(
-    driver: SqlDriver,
-    settings: DeferredSettings
-): LocalStorage = LocalStorageImpl(driver, settings)
+    driver: SqlDriver
+): LocalStorage = LocalStorageImpl(driver)
 
 private class LocalStorageImpl(
     driver: SqlDriver,
-    private val settings: DeferredSettings
 ) : LocalStorage {
 
     private companion object {
@@ -33,6 +28,7 @@ private class LocalStorageImpl(
     }
 
     private val database = AppDatabase(driver)
+    private val settings = Settings()
 
     override suspend fun insertArticle(article: Article) = query {
         // fixme there should be insert or replace option (upsert)
@@ -75,11 +71,13 @@ private class LocalStorageImpl(
             .use { cursor -> cursor.next() && cursor.isFavorite }
     }
 
-    override suspend fun isDarkModeEnabled(): Boolean =
-        settings.get(DarkModeEnabledKey, false)
+    override suspend fun isDarkModeEnabled(): Boolean = query {
+        settings[DarkModeEnabledKey, false]
+    }
 
-    override suspend fun storeIsDarkModeEnabled(isEnabled: Boolean) =
-        settings.set(DarkModeEnabledKey, isEnabled)
+    override suspend fun storeIsDarkModeEnabled(isEnabled: Boolean) = query {
+        settings[DarkModeEnabledKey] = isEnabled
+    }
 
     private suspend inline fun <T> query(
         crossinline block: ArticlesQueries.() -> T
