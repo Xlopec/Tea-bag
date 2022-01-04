@@ -46,7 +46,9 @@ object Libraries {
 
     const val ktorServerCore = "io.ktor:ktor-server-core:$ktor"
     const val ktorServerNetty = "io.ktor:ktor-server-netty:$ktor"
-    const val ktorServerWebsockets = "io.ktor:ktor-websockets:$ktor"
+    const val ktorServerWebsockets = "io.ktor:ktor-server-websockets:$ktor"
+    const val ktorServerConditionalHeaders = "io.ktor:ktor-server-conditional-headers:$ktor"
+    const val ktorServerCallLoggingJvm = "io.ktor:ktor-server-call-logging-jvm:$ktor"
 
     const val ktorClientCore = "io.ktor:ktor-client-core:$ktor"
     const val ktorClientIos = "io.ktor:ktor-client-ios:$ktor"

@@ -4,11 +4,11 @@ package com.max.reader.environment
 
 import android.app.Application
 import androidx.compose.ui.test.IdlingResource
+import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.AppModule
 import com.oliynick.max.reader.app.CloseCommandsSink
 import com.oliynick.max.reader.app.Environment
-import com.oliynick.max.reader.app.datatypes.Either
 import com.oliynick.max.reader.app.storage.LocalStorage
 import com.oliynick.max.reader.article.details.ArticleDetailsModule
 import com.oliynick.max.reader.article.list.ArticlesModule

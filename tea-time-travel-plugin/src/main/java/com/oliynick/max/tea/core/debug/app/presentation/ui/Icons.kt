@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.intellij.openapi.util.IconLoader
 import com.intellij.util.ReflectionUtil
-import org.jetbrains.skija.Image.makeFromEncoded
+import org.jetbrains.skia.Image.Companion.makeFromEncoded
 import javax.swing.Icon
 
 object ValueIcon {

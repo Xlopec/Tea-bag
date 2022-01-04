@@ -1,8 +1,7 @@
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.reader.app.datatypes
+package com.oliynick.max.entities.shared.datatypes
 
-// todo do something with bunch of Eithers
 sealed interface Either<out L, out R>
 
 data class Left<L>(

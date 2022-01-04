@@ -30,6 +30,8 @@ import Libraries.immutableCollections
 import Libraries.kotlinStdLib
 import Libraries.kotlinStdLibBom
 import Libraries.kotlinStdLibReflect
+import Libraries.ktorServerCallLoggingJvm
+import Libraries.ktorServerConditionalHeaders
 import Libraries.ktorServerCore
 import Libraries.ktorServerNetty
 import Libraries.ktorServerWebsockets
@@ -128,6 +130,8 @@ dependencies {
     implementation(ktorServerCore)
     implementation(ktorServerNetty)
     implementation(ktorServerWebsockets)
+    implementation(ktorServerConditionalHeaders)
+    implementation(ktorServerCallLoggingJvm)
     implementation(project.enforcedPlatform(coroutinesBom))
     implementation(coroutinesCore)
     implementation(coroutinesSwing)

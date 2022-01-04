@@ -1,8 +1,8 @@
 package com.max.reader.environment
 
 import androidx.compose.ui.test.IdlingResource
+import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
-import com.oliynick.max.reader.app.datatypes.Either
 import com.oliynick.max.reader.article.list.Paging
 import com.oliynick.max.reader.network.ArticleResponse
 import kotlinx.coroutines.runBlocking

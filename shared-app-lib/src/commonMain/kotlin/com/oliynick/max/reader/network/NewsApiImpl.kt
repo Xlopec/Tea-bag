@@ -3,10 +3,10 @@
 
 package com.oliynick.max.reader.network
 
+import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.InternalException
 import com.oliynick.max.reader.app.NetworkException
-import com.oliynick.max.reader.app.datatypes.Either
 import com.oliynick.max.reader.article.list.NewsApi
 import com.oliynick.max.reader.article.list.Paging
 import com.oliynick.max.reader.article.list.nextPage
@@ -26,11 +26,7 @@ import io.ktor.util.network.*
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 
 class NewsApiImpl(
     // todo refine this field

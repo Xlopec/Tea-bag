@@ -26,8 +26,8 @@
 
 package com.oliynick.max.reader.article.list
 
+import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
-import com.oliynick.max.reader.app.datatypes.Either
 import com.oliynick.max.reader.network.ArticleResponse
 
 interface NewsApi {

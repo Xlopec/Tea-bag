@@ -59,7 +59,7 @@ dependencies {
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
     implementation("org.jetbrains.kotlin:kotlin-serialization:1.6.10")
     implementation("com.squareup.sqldelight:gradle-plugin:1.5.3")
-    implementation("org.jetbrains.compose:compose-gradle-plugin:1.0.0")
+    implementation("org.jetbrains.compose:compose-gradle-plugin:1.0.1")
     implementation("com.github.ben-manes:gradle-versions-plugin:0.39.0")
 
     testImplementation("junit:junit:4.13.1")

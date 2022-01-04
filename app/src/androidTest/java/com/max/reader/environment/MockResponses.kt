@@ -2,7 +2,7 @@
 
 package com.max.reader.environment
 
-import com.oliynick.max.reader.app.datatypes.Left
+import com.oliynick.max.entities.shared.datatypes.Left
 import com.oliynick.max.reader.network.ArticleElement
 import kotlinx.coroutines.delay
 

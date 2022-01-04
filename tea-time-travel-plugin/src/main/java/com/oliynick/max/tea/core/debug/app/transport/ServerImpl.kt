@@ -34,13 +34,13 @@ import com.oliynick.max.tea.core.debug.gson.GsonNotifyServer
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.NotifyClient
 import com.oliynick.max.tea.core.debug.protocol.NotifyServer
-import io.ktor.application.*
-import io.ktor.features.*
-import io.ktor.http.cio.websocket.*
-import io.ktor.request.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.*
+import io.ktor.server.request.*
+import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BroadcastChannel
@@ -54,7 +54,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 class ServerImpl private constructor(
-    val address: ServerAddress,
+    private val address: ServerAddress,
     private val events: BroadcastChannel<PluginMessage>,
     private val calls: BroadcastChannel<RemoteCallArgs>
 ) : ApplicationEngine by Server(address, events, calls), Server {
@@ -104,11 +104,12 @@ private fun Server(
             filter { call -> call.request.path().startsWith("/") }
         }
 
+        install(Routing)
         install(ConditionalHeaders)
-        install(DataConversion)
-        install(DefaultHeaders) { header("X-Engine", "Ktor") }
+        //install(DataConversion)
+        //install(DefaultHeaders) { header("X-Engine", "Ktor") }
 
-        install(WebSockets) {
+        install(io.ktor.server.websocket.WebSockets) {
             pingPeriod = Duration.ofSeconds(10)
             timeout = Duration.ofSeconds(5)
         }
