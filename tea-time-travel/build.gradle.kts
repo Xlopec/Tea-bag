@@ -34,7 +34,10 @@ plugins {
     signing
     id("org.jetbrains.dokka")
     kotlin("multiplatform")
+    kotlin("native.cocoapods")
 }
+
+version = "1.0.0"
 
 kotlin {
 
@@ -42,6 +45,20 @@ kotlin {
 
     jvm {
         withJava()
+
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
+        }
+    }
+
+    ios()
+
+    cocoapods {
+        summary = "Tea time travel library"
+        homepage = "Link to the Tea library Module homepage"
+        ios.deploymentTarget = "14.0"
+        frameworkName = "TeaTimeTravel"
+        podfile = project.file("../iosApp/Podfile")
     }
 
     sourceSets {
@@ -73,6 +90,10 @@ kotlin {
                 implementation(ktorMockJvm)
             }
         }
+
+        val iosMain by getting
+
+        val iosTest by getting
     }
 }
 

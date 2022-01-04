@@ -31,16 +31,16 @@ import com.oliynick.max.tea.core.Env
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.debug.component.DebugEnv
 import com.oliynick.max.tea.core.debug.component.ServerSettings
-import com.oliynick.max.tea.core.debug.component.URL
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.JsonConverter
+import com.oliynick.max.tea.core.debug.session.Localhost
 import com.oliynick.max.tea.core.debug.session.SessionBuilder
 import core.misc.messageAsStateUpdate
 import core.misc.throwingResolver
 import core.scope.coroutineDispatcher
+import io.ktor.http.*
 import kotlinx.coroutines.test.TestCoroutineScope
-import java.net.URL
 
 val TestComponentId = ComponentId("test")
 
@@ -49,7 +49,7 @@ val TestSerializer = GsonSerializer()
 fun <M, S> TestServerSettings(
     componentId: ComponentId = TestComponentId,
     converter: JsonConverter<JsonElement> = GsonSerializer(),
-    url: URL = URL(),
+    url: Url = Localhost,
     sessionBuilder: SessionBuilder<M, S, JsonElement> = { _, block ->
         TestDebugSession<M, S>().apply { block() }
     }

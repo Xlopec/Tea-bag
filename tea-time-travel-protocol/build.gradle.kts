@@ -30,7 +30,10 @@ plugins {
     signing
     id("org.jetbrains.dokka")
     kotlin("multiplatform")
+    kotlin("native.cocoapods")
 }
+
+version = "1.0.0"
 
 kotlin {
 
@@ -39,6 +42,8 @@ kotlin {
     jvm {
         withJava()
     }
+
+    ios()
 
     sourceSets {
         val commonMain by getting {
@@ -62,5 +67,9 @@ kotlin {
                 implementation(project(":tea-test"))
             }
         }
+
+        val iosMain by getting
+
+        val iosTest by getting
     }
 }
