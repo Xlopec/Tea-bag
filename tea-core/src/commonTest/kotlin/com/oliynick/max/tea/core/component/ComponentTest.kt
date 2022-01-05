@@ -23,12 +23,12 @@
  */
 
 @file:Suppress("FunctionName", "TestFunctionName")
-@file:OptIn(
+/*@file:OptIn(
     ExperimentalCoroutinesApi::class,
     InternalCoroutinesApi::class,
     UnstableApi::class,
     ExperimentalStdlibApi::class
-)
+)*/
 
 package com.oliynick.max.tea.core.component
 

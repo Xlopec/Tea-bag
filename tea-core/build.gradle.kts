@@ -35,14 +35,8 @@ import TestLibraries.kotlinTest
  */
 
 plugins {
-    `maven-publish`
-    signing
-    id("org.jetbrains.dokka")
-    kotlin("multiplatform")
-    kotlin("native.cocoapods")
+    publishedMultiplatformLibrary()
 }
-
-version = "1.0.0"
 
 kotlin {
 
@@ -70,13 +64,13 @@ kotlin {
 
     sourceSets {
 
-        all {
+        /*all {
             languageSettings {
                 optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
                 optIn("kotlin.RequiresOptIn")
                 optIn("kotlinx.coroutines.FlowPreview")
             }
-        }
+        }*/
 
         val commonMain by getting {
             dependencies {

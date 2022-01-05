@@ -56,7 +56,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
     implementation("com.android.tools.build:gradle:7.0.4")
     implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.1.4")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.6.10")
     implementation("org.jetbrains.kotlin:kotlin-serialization:1.6.10")
     implementation("com.squareup.sqldelight:gradle-plugin:1.5.3")
     implementation("org.jetbrains.compose:compose-gradle-plugin:1.0.1")
