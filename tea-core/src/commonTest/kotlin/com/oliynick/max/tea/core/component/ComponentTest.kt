@@ -410,7 +410,8 @@ class ComponentTest {
         runTestCancellingChildren {
             // All test schedulers use 'Test worker' as prefix, so to workaround this issue we use
             // custom dispatcher with different thread naming strategy
-            val computation = Default.limitedParallelism(1)
+            println("Current ${currentThreadName()}")
+            val computation = Default
             val mainThreadNamePrefix = async { currentThreadName() }
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),

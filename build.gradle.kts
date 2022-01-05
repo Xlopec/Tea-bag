@@ -61,7 +61,8 @@ allprojects {
                 "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
                 "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
                 "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
-                "-Xuse-experimental=kotlin.ExperimentalStdlibApi"
+                "-Xuse-experimental=kotlin.ExperimentalStdlibApi",
+                "-opt-in=kotlin.RequiresOptIn"
             )
         }
     }

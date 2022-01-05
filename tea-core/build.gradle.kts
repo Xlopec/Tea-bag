@@ -62,11 +62,22 @@ kotlin {
         summary = "Tea core library"
         homepage = "Link to the Tea library Module homepage"
         ios.deploymentTarget = "14.0"
-        frameworkName = "TeaCore"
+        framework {
+            baseName = "TeaCore"
+        }
         podfile = project.file("../iosApp/Podfile")
     }
 
     sourceSets {
+
+        all {
+            languageSettings {
+                optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+                optIn("kotlin.RequiresOptIn")
+                optIn("kotlinx.coroutines.FlowPreview")
+            }
+        }
+
         val commonMain by getting {
             dependencies {
                 api(project.enforcedPlatform(coroutinesBom))
