@@ -2,10 +2,10 @@
 
 package com.oliynick.max.entities.shared
 
-actual typealias Url = java.net.URL
+public actual typealias Url = java.net.URL
 
-actual fun UrlFor(
+public actual fun UrlFor(
     s: String
 ): Url = java.net.URL(s)
 
-actual fun Url.toExternalValue(): String = toExternalForm()
+public actual fun Url.toExternalValue(): String = toExternalForm()

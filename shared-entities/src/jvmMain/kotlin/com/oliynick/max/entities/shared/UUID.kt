@@ -2,12 +2,12 @@ package com.oliynick.max.entities.shared
 
 import java.util.UUID as JavaUUID
 
-actual typealias UUID = java.util.UUID
+public actual typealias UUID = java.util.UUID
 
-actual fun randomUUID(): UUID =
+public actual fun randomUUID(): UUID =
     JavaUUID.randomUUID()
 
-actual fun String.toUUID(): UUID =
+public actual fun String.toUUID(): UUID =
     JavaUUID.fromString(this)
 
-actual fun UUID.toHumanReadable(): String = toString()
+public actual fun UUID.toHumanReadable(): String = toString()

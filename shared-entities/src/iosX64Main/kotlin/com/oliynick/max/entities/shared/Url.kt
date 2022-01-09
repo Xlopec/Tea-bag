@@ -5,10 +5,10 @@ package com.oliynick.max.entities.shared
 import platform.Foundation.NSURL
 
 @Suppress("CONFLICTING_OVERLOADS")
-actual typealias Url = NSURL
+public actual typealias Url = NSURL
 
-actual fun UrlFor(
+public actual fun UrlFor(
     s: String
 ): Url = NSURL(string = s)
 
-actual fun Url.toExternalValue(): String = toString()
+public actual fun Url.toExternalValue(): String = toString()

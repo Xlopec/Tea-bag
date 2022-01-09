@@ -2,24 +2,24 @@
 
 package com.oliynick.max.entities.shared.datatypes
 
-sealed interface Either<out L, out R>
+public sealed interface Either<out L, out R>
 
-data class Left<L>(
+public data class Left<L>(
     val value: L
 ) : Either<L, Nothing>
 
-data class Right<R>(
+public data class Right<R>(
     val value: R
 ) : Either<Nothing, R>
 
-inline fun <L, R> Either(
+public inline fun <L, R> Either(
     ifSuccess: () -> L,
     ifFailure: (th: Throwable) -> R
 ): Either<L, R> =
     runCatching { Left(ifSuccess()) }
         .getOrElse { th -> Right(ifFailure(th)) }
 
-inline fun <L, R, T> Either<L, R>.fold(
+public inline fun <L, R, T> Either<L, R>.fold(
     left: (L) -> T,
     right: (R) -> T
 ): T =
@@ -29,7 +29,7 @@ inline fun <L, R, T> Either<L, R>.fold(
     }
 
 //@OptIn(ExperimentalContracts::class)
-operator fun <L> Either<L, *>.component1(): L? {
+public operator fun <L> Either<L, *>.component1(): L? {
     // contracts aren't supported for operator functions,
     // check for more info https://youtrack.jetbrains.com/issue/KT-32313
     /*contract {
@@ -40,7 +40,7 @@ operator fun <L> Either<L, *>.component1(): L? {
 }
 
 //@OptIn(ExperimentalContracts::class)
-operator fun <R> Either<*, R>.component2(): R? {
+public operator fun <R> Either<*, R>.component2(): R? {
     // contracts aren't supported for operator functions,
     // check for more info https://youtrack.jetbrains.com/issue/KT-32313
     /*contract {

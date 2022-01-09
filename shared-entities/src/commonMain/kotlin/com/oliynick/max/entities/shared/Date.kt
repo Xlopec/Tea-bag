@@ -1,11 +1,11 @@
 package com.oliynick.max.entities.shared
 
-expect class Date
+public expect class Date
 
-expect fun now(): Date
+public expect fun now(): Date
 
-expect fun fromMillis(
+public expect fun fromMillis(
     millis: Long
 ): Date
 
-expect fun Date.toMillis(): Long
+public expect fun Date.toMillis(): Long

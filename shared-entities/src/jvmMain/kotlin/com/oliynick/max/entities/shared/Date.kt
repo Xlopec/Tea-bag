@@ -1,11 +1,11 @@
 package com.oliynick.max.entities.shared
 
-actual typealias Date = java.util.Date
+public actual typealias Date = java.util.Date
 
-actual fun now(): Date = java.util.Date()
+public actual fun now(): Date = java.util.Date()
 
-actual fun fromMillis(
+public actual fun fromMillis(
     millis: Long
 ): Date = java.util.Date(millis)
 
-actual fun Date.toMillis(): Long = time
+public actual fun Date.toMillis(): Long = time

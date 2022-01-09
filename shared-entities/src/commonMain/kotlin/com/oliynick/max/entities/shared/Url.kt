@@ -2,10 +2,10 @@
 
 package com.oliynick.max.entities.shared
 
-expect class Url
+public expect class Url
 
-expect fun UrlFor(
+public expect fun UrlFor(
     s: String
 ): Url
 
-expect fun Url.toExternalValue(): String
+public expect fun Url.toExternalValue(): String
