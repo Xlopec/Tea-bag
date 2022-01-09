@@ -28,29 +28,11 @@ import Libraries.kotlinStdLib
 import Libraries.kotlinStdLibBom
 import TestLibraries.kotlinTest
 
-/**
- * in case of shit, add this back to xcode -> .xcodeproj -> Build Phases -> Run Script
- * cd "$SRCROOT/.."
-./gradlew :tea-core:packForXCode :shared-app-lib:packForXCode -PXCODE_CONFIGURATION=${CONFIGURATION}
- */
-
 plugins {
     publishedMultiplatformLibrary()
 }
 
 kotlin {
-
-    explicitApi()
-
-    jvm {
-        withJava()
-
-        testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
-        }
-    }
-
-    ios()
 
     cocoapods {
         summary = "Tea core library"
@@ -63,14 +45,6 @@ kotlin {
     }
 
     sourceSets {
-
-        /*all {
-            languageSettings {
-                optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
-                optIn("kotlin.RequiresOptIn")
-                optIn("kotlinx.coroutines.FlowPreview")
-            }
-        }*/
 
         val commonMain by getting {
             dependencies {
