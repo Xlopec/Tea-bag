@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'tea_time_travel'
-    spec.version                  = '1.0.0'
+    spec.version                  = 'SNAPSHOT'
     spec.homepage                 = 'Link to the Tea library Module homepage'
     spec.source                   = { :git => "Not Published", :tag => "Cocoapods/#{spec.name}/#{spec.version}" }
     spec.authors                  = ''

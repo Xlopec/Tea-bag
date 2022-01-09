@@ -30,28 +30,10 @@ import Libraries.ktorClientWebsockets
 import TestLibraries.ktorMockJvm
 
 plugins {
-    `maven-publish`
-    signing
-    id("org.jetbrains.dokka")
-    kotlin("multiplatform")
-    kotlin("native.cocoapods")
+    `published-multiplatform-library`
 }
 
-version = "1.0.0"
-
 kotlin {
-
-    explicitApi()
-
-    jvm {
-        withJava()
-
-        testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
-        }
-    }
-
-    ios()
 
     cocoapods {
         summary = "Tea time travel library"
@@ -96,21 +78,3 @@ kotlin {
         val iosTest by getting
     }
 }
-
-
-/*dependencies {
-
-    implementation(project(":tea-core"))
-    api(project(":tea-time-travel-protocol"))
-
-    implementation(kotlinStdLib)
-implementation(project.enforcedPlatform(kotlinStdLibBom))
-
-    implementation(ktorClientWebsockets)
-    implementation(ktorClientCio)
-
-    testImplementation(project(":tea-test"))
-    testImplementation(project(":tea-time-travel-adapter-gson"))
-    testImplementation(ktorMockJvm)
-
-}*/
