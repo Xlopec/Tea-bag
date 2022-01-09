@@ -29,7 +29,7 @@ import Libraries.kotlinStdLibBom
 import TestLibraries.kotlinTest
 
 plugins {
-    publishedMultiplatformLibrary()
+    `published-multiplatform-library`
 }
 
 kotlin {

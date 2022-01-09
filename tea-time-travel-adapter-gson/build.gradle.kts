@@ -29,7 +29,7 @@ import Libraries.kotlinStdLib
 import Libraries.kotlinStdLibReflect
 
 plugins {
-    publishedLibrary()
+    `published-library`
 }
 
 tasks.test {

@@ -1,17 +1,17 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'tea_time_travel_protocol'
-    spec.version                  = '1.0.0'
-    spec.homepage                 = ''
+    spec.version                  = 'SNAPSHOT'
+    spec.homepage                 = 'Link to the Tea library Module homepage'
     spec.source                   = { :git => "Not Published", :tag => "Cocoapods/#{spec.name}/#{spec.version}" }
     spec.authors                  = ''
     spec.license                  = ''
-    spec.summary                  = ''
+    spec.summary                  = 'Tea time travel protocol library'
 
-    spec.vendored_frameworks      = "build/cocoapods/framework/tea_time_travel_protocol.framework"
+    spec.vendored_frameworks      = "build/cocoapods/framework/TeaProtocol.framework"
     spec.libraries                = "c++"
     spec.module_name              = "#{spec.name}_umbrella"
 
-                
+    spec.ios.deployment_target = '14.0'
 
                 
 

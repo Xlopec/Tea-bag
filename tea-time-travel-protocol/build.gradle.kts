@@ -26,24 +26,20 @@ import Libraries.kotlinStdLib
 import Libraries.kotlinStdLibBom
 
 plugins {
-    `maven-publish`
-    signing
-    id("org.jetbrains.dokka")
-    kotlin("multiplatform")
-    kotlin("native.cocoapods")
+    `published-multiplatform-library`
 }
-
-version = "1.0.0"
 
 kotlin {
 
-    explicitApi()
-
-    jvm {
-        withJava()
+    cocoapods {
+        summary = "Tea time travel protocol library"
+        homepage = "Link to the Tea library Module homepage"
+        ios.deploymentTarget = "14.0"
+        framework {
+            baseName = "TeaProtocol"
+        }
+        podfile = project.file("../iosApp/Podfile")
     }
-
-    ios()
 
     sourceSets {
         val commonMain by getting {
