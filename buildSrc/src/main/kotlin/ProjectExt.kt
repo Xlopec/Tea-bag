@@ -95,6 +95,9 @@ val Project.signingPassword: String?
 val Project.projectSourceSets: SourceSetContainer
     get() = extensions["sourceSets"] as SourceSetContainer
 
+val Project.documentationDir: File
+    get() = buildDir.resolve("documentation")
+
 fun Project.installGitHooks() = afterEvaluate {
     projectHooksDir.listFiles { f -> f.extension == "sh" }
         ?.forEach { f ->

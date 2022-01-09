@@ -1,5 +1,6 @@
 import gradle.kotlin.dsl.accessors._4912aece6b5b5be71917a8f507c3c7eb.archives
-import gradle.kotlin.dsl.accessors._4912aece6b5b5be71917a8f507c3c7eb.classes
+import gradle.kotlin.dsl.accessors._4912aece6b5b5be71917a8f507c3c7eb.publishing
+import gradle.kotlin.dsl.accessors._4912aece6b5b5be71917a8f507c3c7eb.signing
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.dokka.gradle.GradleDokkaSourceSetBuilder
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
@@ -13,7 +14,8 @@ plugins {
     kotlin("native.cocoapods")
 }
 
-version = "1.0.0"
+version = libraryVersion.toVersionName()
+group = "io.github.xlopec"
 
 kotlin {
     explicitApi()
@@ -48,9 +50,9 @@ kotlin {
 val sourcesJar by tasks.named("sourcesJar")
 
 val javadocJar by tasks.registering(Jar::class) {
-    dependsOn(tasks.named("dokkaJavadoc"))
+    dependsOn(tasks.named("dokkaHtml"))
     archiveClassifier.set("javadoc")
-    from("$buildDir/javadoc")
+    from(documentationDir)
 }
 
 val copyArtifacts by tasks.registering(Copy::class) {
@@ -62,7 +64,7 @@ val copyArtifacts by tasks.registering(Copy::class) {
 
 tasks.withType<DokkaTask>().configureEach {
 
-    outputDirectory.set(buildDir.resolve("documentation"))
+    outputDirectory.set(documentationDir)
 
     dokkaSourceSets {
 
@@ -86,9 +88,70 @@ tasks.withType<DokkaTask>().configureEach {
     }
 }
 
+publishing {
+    publications {
+
+        val projectName = name
+
+        create<MavenPublication>(projectName) {
+            artifact(sourcesJar)
+            artifact(javadocJar)
+
+            pom {
+                name.set(projectName)
+                description.set("TEA Bag is simple implementation of TEA written in Kotlin. " +
+                        "${projectName.capitalize()} is part of this project")
+                url.set("https://github.com/Xlopec/Tea-bag.git")
+
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("Maxxx")
+                        name.set("Maksym Oliinyk")
+                        url.set("https://github.com/Xlopec")
+                        organizationUrl.set("https://github.com/Xlopec")
+                    }
+                }
+
+                scm {
+                    connection.set("scm:git:git://github.com/Xlopec/Tea-bag.git")
+                    developerConnection.set("scm:git:ssh://github.com:Xlopec/Tea-bag.git")
+                    url.set("https://github.com/Xlopec/Tea-bag/tree/master")
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        maven {
+            name = "OSSRH"
+            url = libraryVersion.toOssrhDeploymentUri()
+            credentials {
+                username = ossrhUser
+                password = ossrhPassword
+            }
+        }
+    }
+}
+
+signing {
+    useInMemoryPgpKeys(signingKey, signingPassword)
+
+    val publishing: PublishingExtension by project
+
+    sign(publishing.publications)
+}
+
 artifacts {
     archives(sourcesJar)
-    //archives(javadocJar)
+    archives(javadocJar)
 }
 
 fun LanguageSettingsBuilder.optIn(
