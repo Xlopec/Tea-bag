@@ -46,23 +46,15 @@ kotlin {
             dependencies {
                 api(project(":shared-entities"))
                 implementation(kotlinStdLib)
-                implementation(project.enforcedPlatform(kotlinStdLibBom))
+                implementation(project.platform(kotlinStdLibBom))
             }
         }
 
         val commonTest by getting
 
-        val jvmMain by getting {
-            dependencies {
+        val jvmMain by getting
 
-            }
-        }
-
-        val jvmTest by getting {
-            dependencies {
-                implementation(project(":tea-test"))
-            }
-        }
+        val jvmTest by getting
 
         val iosMain by getting
 

@@ -51,7 +51,7 @@ kotlin {
                 api(project(":tea-time-travel-protocol"))
 
                 implementation(kotlinStdLib)
-                implementation(project.enforcedPlatform(kotlinStdLibBom))
+                implementation(project.platform(kotlinStdLibBom))
                 implementation(ktorClientWebsockets)
                 implementation(ktorClientCore)
             }
@@ -67,6 +67,7 @@ kotlin {
 
         val jvmTest by getting {
             dependencies {
+                implementation("junit:junit:4.13.2")
                 implementation(project(":tea-test"))
                 implementation(project(":tea-time-travel-adapter-gson"))
                 implementation(ktorMockJvm)

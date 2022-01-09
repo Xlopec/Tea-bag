@@ -53,6 +53,10 @@ plugins {
     id("kotlin-android")
 }
 
+tasks.withType<Test>().whenTaskAdded {
+    onlyIf { isCiEnv }
+}
+
 android {
     signingConfigs {
         create("release") {
@@ -145,7 +149,7 @@ dependencies {
     implementation(project(":tea-core"))
     implementation(project(":shared-app-lib"))
 
-    implementation(project.enforcedPlatform(kotlinStdLibBom))
+    implementation(project.platform(kotlinStdLibBom))
     implementation(kotlinStdLib)
     implementation(kotlinStdLibReflect)
 

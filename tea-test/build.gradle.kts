@@ -62,9 +62,9 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(kotlinStdLib)
-                api(project.enforcedPlatform(kotlinStdLibBom))
+                api(project.platform(kotlinStdLibBom))
                 api(atomicfu)
-                api(project.enforcedPlatform(coroutinesBom))
+                api(project.platform(coroutinesBom))
                 api(coroutinesCore)
                 api(coroutinesTest)
                 api(kotlinTest)

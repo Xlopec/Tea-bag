@@ -49,6 +49,10 @@ plugins {
 
 version = "1.0.0"
 
+tasks.withType<Test>().whenTaskAdded {
+    onlyIf { isCiEnv }
+}
+
 kotlin {
 
     android()
@@ -69,11 +73,11 @@ kotlin {
             dependencies {
                 api(project(":shared-entities"))
                 api(immutableCollections)
-                api(project.enforcedPlatform(coroutinesBom))
+                api(project.platform(coroutinesBom))
                 api(coroutinesCore)
                 api(project(":tea-core"))
                 implementation(kotlinStdLib)
-                implementation(project.enforcedPlatform(kotlinStdLibBom))
+                implementation(project.platform(kotlinStdLibBom))
                 implementation(ktorClientCore)
                 implementation(ktorClientLogging)
                 implementation(ktorClientJson)

@@ -22,14 +22,13 @@
  * SOFTWARE.
  */
 
-
 import Libraries.gson
 import Libraries.immutableCollections
 import Libraries.kotlinStdLib
 import Libraries.kotlinStdLibReflect
 
 plugins {
-    `published-library`
+    `published-jvm-library`
 }
 
 tasks.test {

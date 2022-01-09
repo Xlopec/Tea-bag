@@ -48,10 +48,10 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
-                api(project.enforcedPlatform(coroutinesBom))
+                api(project.platform(coroutinesBom))
                 api(coroutinesCore)
                 implementation(kotlinStdLib)
-                implementation(project.enforcedPlatform(kotlinStdLibBom))
+                implementation(project.platform(kotlinStdLibBom))
             }
         }
 

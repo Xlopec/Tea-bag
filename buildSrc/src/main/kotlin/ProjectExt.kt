@@ -98,6 +98,23 @@ val Project.projectSourceSets: SourceSetContainer
 val Project.documentationDir: File
     get() = buildDir.resolve("documentation")
 
+val Project.libsDir: File
+    get() = buildDir.resolve("libs")
+
+val Project.distributionsDir: File
+    get() = buildDir.resolve("distributions")
+
+val Project.artifactsDir: File
+    get() {
+        var root = this
+
+        while (root != root.rootProject) {
+            root = root.rootProject
+        }
+
+        return root.buildDir.resolve("artifacts/${name}")
+    }
+
 fun Project.installGitHooks() = afterEvaluate {
     projectHooksDir.listFiles { f -> f.extension == "sh" }
         ?.forEach { f ->
@@ -124,7 +141,7 @@ fun Project.ciVariable(
     name: String,
 ): String? = getenvSafe(name) ?: getPropertySafe(name)
 
-fun Project.enforcedPlatform(
+fun Project.platform(
     dependencyNotation: String
 ): Dependency = dependencies.platform(dependencyNotation)
 

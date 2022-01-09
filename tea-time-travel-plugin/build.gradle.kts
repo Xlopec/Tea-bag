@@ -68,24 +68,19 @@ tasks.named<PublishPluginTask>("publishPlugin") {
 }
 
 val copyArtifacts by tasks.registering(Copy::class) {
+    from(libsDir, distributionsDir)
+    into(artifactsDir)
+
     group = "release"
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
-    from("$buildDir/libs/", "$buildDir/distributions/")
-    into("${rootProject.buildDir}/artifacts/${project.name}")
 }
 
 val releasePlugin by tasks.creating(Task::class) {
-    group = "release"
-    description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
     dependsOn("publishPlugin")
     finalizedBy(copyArtifacts)
-}
 
-val ciTests by tasks.registering(Test::class) {
-    group = "verification"
-    description = "Prepares and runs tests relevant for CI build"
-
-    dependsOn(tasks.test.get())
+    group = "release"
+    description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
@@ -121,7 +116,7 @@ dependencies {
     implementation(project(":tea-time-travel-adapter-gson"))
 
     implementation(kotlinStdLib)
-    implementation(project.enforcedPlatform(kotlinStdLibBom))
+    implementation(project.platform(kotlinStdLibBom))
     implementation(kotlinStdLibReflect)
 
     implementation(compose.desktop.currentOs)
@@ -132,7 +127,7 @@ dependencies {
     implementation(ktorServerWebsockets)
     implementation(ktorServerConditionalHeaders)
     implementation(ktorServerCallLoggingJvm)
-    implementation(project.enforcedPlatform(coroutinesBom))
+    implementation(project.platform(coroutinesBom))
     implementation(coroutinesCore)
     implementation(coroutinesSwing)
     implementation(immutableCollections)
