@@ -15,7 +15,7 @@ kotlin {
         withJava()
 
         testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
+            useJUnit()
         }
     }
 

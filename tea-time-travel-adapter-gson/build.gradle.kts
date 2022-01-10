@@ -32,7 +32,7 @@ plugins {
 }
 
 tasks.test {
-    useJUnitPlatform()
+    useJUnit()
 }
 
 dependencies {
