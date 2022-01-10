@@ -40,7 +40,7 @@ kotlin {
         homepage = "Link to the Tea library Module homepage"
         ios.deploymentTarget = "14.0"
         frameworkName = "TeaTimeTravel"
-        podfile = project.file("../iosApp/Podfile")
+        podfile = project.file("../samples/iosApp/Podfile")
     }
 
     sourceSets {

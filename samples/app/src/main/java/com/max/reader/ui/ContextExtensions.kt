@@ -22,42 +22,18 @@
  * SOFTWARE.
  */
 
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibBom
+package com.max.reader.ui
 
-plugins {
-    `published-multiplatform-library`
-}
+import android.app.Activity
+import android.content.Context
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 
-kotlin {
-
-    cocoapods {
-        summary = "Tea time travel protocol library"
-        homepage = "Link to the Tea library Module homepage"
-        ios.deploymentTarget = "14.0"
-        framework {
-            baseName = "TeaProtocol"
-        }
-        podfile = project.file("../samples/iosApp/Podfile")
-    }
-
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api(project(":shared-entities"))
-                implementation(kotlinStdLib)
-                implementation(project.platform(kotlinStdLibBom))
-            }
-        }
-
-        val commonTest by getting
-
-        val jvmMain by getting
-
-        val jvmTest by getting
-
-        val iosMain by getting
-
-        val iosTest by getting
-    }
+fun hideKeyboardFrom(
+    context: Context,
+    view: View,
+) {
+    val imm: InputMethodManager =
+        context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(view.windowToken, 0)
 }

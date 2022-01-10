@@ -22,52 +22,40 @@
  * SOFTWARE.
  */
 
-import Libraries.coroutinesBom
-import Libraries.coroutinesCore
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibBom
-import TestLibraries.kotlinTest
+@file:Suppress("FunctionName")
 
-plugins {
-    `published-multiplatform-library`
-}
+package com.oliynick.max.reader.article.details
 
-kotlin {
+import android.app.Application
+import android.content.Intent
+import android.net.Uri
+import com.oliynick.max.reader.app.command.ArticleDetailsCommand
+import com.oliynick.max.reader.app.command.DoOpenArticle
+import com.oliynick.max.reader.app.message.Message
+import com.oliynick.max.reader.app.message.ScreenMessage
+import com.oliynick.max.tea.core.component.sideEffect
 
-    cocoapods {
-        summary = "Tea core library"
-        homepage = "Link to the Tea library Module homepage"
-        ios.deploymentTarget = "14.0"
-        framework {
-            baseName = "TeaCore"
-        }
-        podfile = project.file("../samples/iosApp/Podfile")
-    }
+fun ArticleDetailsResolver(
+    application: Application
+): ArticleDetailsResolver =
+    object : ArticleDetailsResolver {
 
-    sourceSets {
+        override suspend fun resolve(
+            command: ArticleDetailsCommand
+        ): Set<Message> =
+            when (command) {
+                is DoOpenArticle -> openArticle(command)
+            }
 
-        val commonMain by getting {
-            dependencies {
-                api(project.platform(coroutinesBom))
-                api(coroutinesCore)
-                implementation(kotlinStdLib)
-                implementation(project.platform(kotlinStdLibBom))
+        suspend fun openArticle(
+            command: DoOpenArticle
+        ): Set<ScreenMessage> = command.sideEffect {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url.toString()))
+                .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
+
+            if (intent.resolveActivity(application.packageManager) != null) {
+                application.startActivity(intent)
             }
         }
 
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlinTest)
-                implementation(project(":tea-test"))
-            }
-        }
-
-        val jvmMain by getting
-
-        val jvmTest by getting
-
-        val iosMain by getting
-
-        val iosTest by getting
     }
-}

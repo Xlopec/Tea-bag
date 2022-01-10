@@ -55,7 +55,7 @@ kotlin {
         homepage = "Link to the Tea test library Module homepage"
         ios.deploymentTarget = "14.0"
         frameworkName = "TeaTest"
-        podfile = project.file("../iosApp/Podfile")
+        podfile = project.file("../samples/iosApp/Podfile")
     }
 
     sourceSets {

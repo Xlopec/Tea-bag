@@ -22,42 +22,29 @@
  * SOFTWARE.
  */
 
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibBom
+@file:Suppress("FunctionName")
 
-plugins {
-    `published-multiplatform-library`
-}
+package com.oliynick.max.reader.app
 
-kotlin {
+import com.oliynick.max.reader.app.command.Command
+import com.oliynick.max.reader.app.message.Message
+import com.oliynick.max.tea.core.Initializer
+import com.oliynick.max.tea.core.component.Component
+import com.oliynick.max.tea.core.component.states
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 
-    cocoapods {
-        summary = "Tea time travel protocol library"
-        homepage = "Link to the Tea library Module homepage"
-        ios.deploymentTarget = "14.0"
-        framework {
-            baseName = "TeaProtocol"
-        }
-        podfile = project.file("../samples/iosApp/Podfile")
-    }
-
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api(project(":shared-entities"))
-                implementation(kotlinStdLib)
-                implementation(project.platform(kotlinStdLibBom))
-            }
-        }
-
-        val commonTest by getting
-
-        val jvmMain by getting
-
-        val jvmTest by getting
-
-        val iosMain by getting
-
-        val iosTest by getting
-    }
-}
+@OptIn(ExperimentalStdlibApi::class)
+fun AppComponent(
+    environment: Environment,
+    initializer: Initializer<AppState, Command>,
+): (Flow<Message>) -> Flow<AppState> =
+    Component(
+        initializer = initializer,
+        resolver = { c -> with(environment) { resolve(c) } },
+        updater = { m, s -> with(environment) { update(m, s) } },
+        scope = environment,
+        io = Dispatchers.Unconfined,//IO,
+        computation = environment.coroutineContext[CoroutineDispatcher.Key] ?: Dispatchers.Default,
+    ).states()
