@@ -22,10 +22,6 @@
  * SOFTWARE.
  */
 
-import Libraries.coroutinesBom
-import Libraries.coroutinesCore
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibBom
 import TestLibraries.kotlinTest
 
 plugins {
@@ -48,10 +44,8 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
-                api(project.platform(coroutinesBom))
-                api(coroutinesCore)
-                implementation(kotlinStdLib)
-                implementation(project.platform(kotlinStdLibBom))
+                api(libs.coroutines.core)
+                implementation(libs.stdlib)
             }
         }
 

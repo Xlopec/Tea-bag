@@ -36,11 +36,7 @@ import Libraries.composeMaterialIconsExtended
 import Libraries.composeRuntime
 import Libraries.composeUi
 import Libraries.composeUiTooling
-import Libraries.coroutinesAndroid
 import Libraries.gson
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibBom
-import Libraries.kotlinStdLibReflect
 import Libraries.ktorClientCio
 import Libraries.ktorClientGson
 import Libraries.ktorClientLogging
@@ -149,11 +145,11 @@ dependencies {
     implementation(project(":tea-core"))
     implementation(project(":samples:shared-app-lib"))
 
-    implementation(project.platform(kotlinStdLibBom))
-    implementation(kotlinStdLib)
-    implementation(kotlinStdLibReflect)
+    //implementation(project.platform(kotlinStdLibBom))
+    implementation(libs.stdlib)
+    implementation(libs.stdlib.reflect)
 
-    implementation(coroutinesAndroid)
+    implementation(libs.coroutines.android)
 
     implementation(composeUi)
     implementation(composeFoundation)

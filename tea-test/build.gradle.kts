@@ -24,11 +24,6 @@
 
 
 import Libraries.atomicfu
-import Libraries.coroutinesBom
-import Libraries.coroutinesCore
-import Libraries.coroutinesTest
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibBom
 import TestLibraries.kotlinTest
 
 plugins {
@@ -61,12 +56,10 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(kotlinStdLib)
-                api(project.platform(kotlinStdLibBom))
+                api(libs.stdlib)
                 api(atomicfu)
-                api(project.platform(coroutinesBom))
-                api(coroutinesCore)
-                api(coroutinesTest)
+                api(libs.coroutines.core)
+                api(libs.coroutines.test)
                 api(kotlinTest)
                 api("org.jetbrains.kotlin:kotlin-test-annotations-common:1.6.10")
                 implementation(project(":tea-core"))

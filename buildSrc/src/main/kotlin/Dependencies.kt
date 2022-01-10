@@ -27,6 +27,7 @@ import Libraries.Versions.compose
 import Libraries.Versions.coroutines
 import Libraries.Versions.ktor
 
+@Deprecated("use version catalogs feature instead")
 object Libraries {
     object Versions {
         const val coroutines = "1.6.0"
@@ -36,10 +37,10 @@ object Libraries {
     }
 
     const val coroutinesBom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:$coroutines"
-    const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core"
-    const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android"
-    const val coroutinesSwing = "org.jetbrains.kotlinx:kotlinx-coroutines-swing"
-    const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test"
+    const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
+    const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
+    const val coroutinesSwing = "org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.0"
+    const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
     const val kotlinStdLibBom = "org.jetbrains.kotlin:kotlin-bom"
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib"
     const val kotlinStdLibReflect = "org.jetbrains.kotlin:kotlin-reflect"
@@ -87,6 +88,7 @@ object Libraries {
     const val sqlDelightNativeDriver = "com.squareup.sqldelight:native-driver:1.5.3"
 }
 
+@Deprecated("use version catalogs feature instead")
 object TestLibraries {
     private object Versions {
         const val ktor = "2.0.0-beta-1"

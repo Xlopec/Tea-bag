@@ -23,12 +23,8 @@
  */
 
 import Libraries.composeRuntime
-import Libraries.coroutinesBom
-import Libraries.coroutinesCore
 import Libraries.gson
 import Libraries.immutableCollections
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibBom
 import Libraries.ktorClientCio
 import Libraries.ktorClientCore
 import Libraries.ktorClientGson
@@ -72,11 +68,9 @@ kotlin {
             dependencies {
                 api(project(":shared-entities"))
                 api(immutableCollections)
-                api(project.platform(coroutinesBom))
-                api(coroutinesCore)
+                api(libs.coroutines.core)
                 api(project(":tea-core"))
-                implementation(kotlinStdLib)
-                implementation(project.platform(kotlinStdLibBom))
+                implementation(libs.stdlib)
                 implementation(ktorClientCore)
                 implementation(ktorClientLogging)
                 implementation(ktorClientJson)
@@ -106,7 +100,7 @@ kotlin {
         val androidTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
-                implementation("junit:junit:4.13.2")
+                implementation(test.junit)
             }
         }
         val iosMain by getting {

@@ -23,13 +23,7 @@
  */
 
 
-import Libraries.coroutinesBom
-import Libraries.coroutinesCore
-import Libraries.coroutinesSwing
 import Libraries.immutableCollections
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibBom
-import Libraries.kotlinStdLibReflect
 import Libraries.ktorServerCallLoggingJvm
 import Libraries.ktorServerConditionalHeaders
 import Libraries.ktorServerCore
@@ -115,9 +109,8 @@ dependencies {
     implementation(project(":tea-time-travel-protocol"))
     implementation(project(":tea-time-travel-adapter-gson"))
 
-    implementation(kotlinStdLib)
-    implementation(project.platform(kotlinStdLibBom))
-    implementation(kotlinStdLibReflect)
+    implementation(libs.stdlib)
+    implementation(libs.stdlib.reflect)
 
     implementation(compose.desktop.currentOs)
     implementation(logback)
@@ -127,9 +120,8 @@ dependencies {
     implementation(ktorServerWebsockets)
     implementation(ktorServerConditionalHeaders)
     implementation(ktorServerCallLoggingJvm)
-    implementation(project.platform(coroutinesBom))
-    implementation(coroutinesCore)
-    implementation(coroutinesSwing)
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.swing)
     implementation(immutableCollections)
 
     testImplementation(ktorServerTests)

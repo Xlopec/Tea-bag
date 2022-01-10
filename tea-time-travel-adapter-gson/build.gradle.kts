@@ -24,8 +24,6 @@
 
 import Libraries.gson
 import Libraries.immutableCollections
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibReflect
 
 plugins {
     `published-jvm-library`
@@ -39,13 +37,13 @@ dependencies {
 
     api(project(":tea-time-travel-protocol"))
     api(project(":shared-entities"))
-    api(kotlinStdLibReflect)
+    api(libs.stdlib.reflect)
     api(gson)
 
-    implementation(kotlinStdLib)
+    implementation(libs.stdlib)
 
     testImplementation(project(":tea-test"))
     testImplementation(project(":tea-time-travel-protocol"))
     testImplementation(immutableCollections)
-    testImplementation("junit:junit:4.13")
+    testImplementation(test.junit)
 }

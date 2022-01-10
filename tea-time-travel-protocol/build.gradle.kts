@@ -22,9 +22,6 @@
  * SOFTWARE.
  */
 
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibBom
-
 plugins {
     `published-multiplatform-library`
 }
@@ -45,8 +42,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project(":shared-entities"))
-                implementation(kotlinStdLib)
-                implementation(project.platform(kotlinStdLibBom))
+                implementation(libs.stdlib)
             }
         }
 
