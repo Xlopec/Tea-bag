@@ -54,7 +54,7 @@ plugins {
 }
 
 tasks.withType<Test>().whenTaskAdded {
-    onlyIf { isCiEnv }
+    onlyIf { !isCiEnv }
 }
 
 android {

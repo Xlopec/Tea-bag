@@ -50,7 +50,7 @@ plugins {
 version = "1.0.0"
 
 tasks.withType<Test>().whenTaskAdded {
-    onlyIf { isCiEnv }
+    onlyIf { !isCiEnv }
 }
 
 kotlin {
