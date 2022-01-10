@@ -174,13 +174,15 @@ internal class DefaultGsonSerializersTest {
     }
 
     @Test
-    fun `test singleton gets serialized properly`() = with(gsonSerializer) {
+    fun `test singleton gets serialized properly`() {
+        with(gsonSerializer) {
 
-        val json = toJson(Singleton)
-        val fromJson = fromJson(json, Singleton::class.java)
+            val json = toJson(Singleton)
+            val fromJson = fromJson(json, Singleton::class.java)
 
-        assertIs<Singleton>(fromJson)
-        //fromJson should beInstanceOf(Singleton::class)
+            assertIs<Singleton>(fromJson)
+            //fromJson should beInstanceOf(Singleton::class)
+        }
     }
 
     @Test

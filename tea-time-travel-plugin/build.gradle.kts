@@ -134,4 +134,5 @@ dependencies {
 
     testImplementation(ktorServerTests)
     testImplementation(project(":tea-test"))
+    testImplementation("io.kotlintest:kotlintest-assertions:3.4.2")
 }
