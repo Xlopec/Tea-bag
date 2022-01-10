@@ -92,14 +92,13 @@ val detektAll by tasks.registering(Detekt::class) {
     exclude("resources/", "**/build/**", "**/test/java/**")
 
     reports {
-        xml.enabled = false
-        txt.enabled = false
-        html.enabled = true
+        xml.required.set(false)
+        txt.required.set(false)
+        html.required.set(true)
     }
 }
 
 val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) {
-    buildUponDefaultConfig.set(true)
     ignoreFailures.set(true)
     parallel.set(true)
     setSource(files(rootDir))
@@ -112,8 +111,6 @@ val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) 
 val detektFormat by tasks.registering(Detekt::class) {
     parallel = true
     autoCorrect = true
-    buildUponDefaultConfig = true
-    failFast = false
     ignoreFailures = false
     setSource(files(projectDir))
 
