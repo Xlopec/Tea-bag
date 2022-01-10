@@ -95,42 +95,46 @@ internal class DefaultGsonSerializersTest {
     }
 
     @Test
-    fun `test ApplyMessage gets serialized properly`() = with(gsonSerializer) {
+    fun `test ApplyMessage gets serialized properly`() {
+        with(gsonSerializer) {
 
-        val applyMessage =
-            NotifyClient(
+            val applyMessage =
+                NotifyClient(
                     ApplyMessage(toJsonTree(testUser))
-            )
+                )
 
-        val json = gsonSerializer.toJson(applyMessage)
-        val fromJson = gsonSerializer.fromJson(json, NotifyClient::class.java)
+            val json = gsonSerializer.toJson(applyMessage)
+            val fromJson = gsonSerializer.fromJson(json, NotifyClient::class.java)
 
-        assertEquals(applyMessage, fromJson)
-       // fromJson shouldBe applyMessage
+            assertEquals(applyMessage, fromJson)
+            // fromJson shouldBe applyMessage
+        }
     }
 
     @Test
-    fun `test ApplyMessage with NullableListWrapper gets serialized properly`() = with(gsonSerializer) {
+    fun `test ApplyMessage with NullableListWrapper gets serialized properly`() {
+        with(gsonSerializer) {
 
-        val applyMessage = ApplyMessage(
+            val applyMessage = ApplyMessage(
                 toJsonTree(
-                        NullableListWrapper(
-                                listOf(
-                                        Photo("https://www.google.com"),
-                                        null,
-                                        Photo("https://www.google.com1"),
-                                        Photo("https://www.google.com2"),
-                                        null
-                                )
+                    NullableListWrapper(
+                        listOf(
+                            Photo("https://www.google.com"),
+                            null,
+                            Photo("https://www.google.com1"),
+                            Photo("https://www.google.com2"),
+                            null
                         )
+                    )
                 )
-        )
+            )
 
-        val json = toJson(applyMessage)
-        val fromJson = fromJson(json, ClientMessage::class.java)
+            val json = toJson(applyMessage)
+            val fromJson = fromJson(json, ClientMessage::class.java)
 
-        assertEquals(applyMessage, fromJson)
-        //fromJson shouldBe applyMessage
+            assertEquals(applyMessage, fromJson)
+            //fromJson shouldBe applyMessage
+        }
     }
 
     @Test
@@ -162,15 +166,17 @@ internal class DefaultGsonSerializersTest {
     }
 
     @Test
-    fun `test ApplyState gets serialized properly`() = with(gsonSerializer) {
+    fun `test ApplyState gets serialized properly`() {
+        with(gsonSerializer) {
 
-        val applyMessage = ApplyState(toJsonTree(testUser))
+            val applyMessage = ApplyState(toJsonTree(testUser))
 
-        val json = toJson(applyMessage)
-        val fromJson = fromJson(json, ClientMessage::class.java)
+            val json = toJson(applyMessage)
+            val fromJson = fromJson(json, ClientMessage::class.java)
 
-        assertEquals(applyMessage, fromJson)
-        //fromJson shouldBe applyMessage
+            assertEquals(applyMessage, fromJson)
+            //fromJson shouldBe applyMessage
+        }
     }
 
     @Test
