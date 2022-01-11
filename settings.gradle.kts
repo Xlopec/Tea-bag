@@ -60,7 +60,49 @@ dependencyResolutionManagement {
                 .to("org.jetbrains.kotlin", "kotlin-reflect")
                 .withoutVersion()
 
+            alias("kotlin-test")
+                .to("org.jetbrains.kotlin", "kotlin-test")
+                .withoutVersion()
 
+            version("ktor", "2.0.0-beta-1")
+
+            alias("ktor-server-core")
+                .to("io.ktor", "ktor-server-core")
+                .versionRef("ktor")
+
+            alias("ktor-server-netty")
+                .to("io.ktor", "ktor-server-netty")
+                .versionRef("ktor")
+
+            alias("ktor-server-websockets")
+                .to("io.ktor", "ktor-server-websockets")
+                .versionRef("ktor")
+
+            alias("ktor-server-headers")
+                .to("io.ktor", "ktor-server-conditional-headers")
+                .versionRef("ktor")
+
+            alias("ktor-server-logging-jvm")
+                .to("io.ktor", "ktor-server-call-logging-jvm")
+                .versionRef("ktor")
+
+            alias("ktor-server-tests")
+                .to("io.ktor", "ktor-server-tests")
+                .versionRef("ktor")
+
+            alias("ktor-client-mock-jvm")
+                .to("io.ktor", "ktor-client-mock-jvm")
+                .versionRef("ktor")
+
+            bundle("ktor-server",
+                listOf(
+                    "ktor-server-core",
+                    "ktor-server-netty",
+                    "ktor-server-websockets",
+                    "ktor-server-headers",
+                    "ktor-server-logging-jvm"
+                )
+            )
         }
     }
 }

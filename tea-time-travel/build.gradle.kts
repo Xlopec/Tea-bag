@@ -25,7 +25,6 @@
 import Libraries.ktorClientCio
 import Libraries.ktorClientCore
 import Libraries.ktorClientWebsockets
-import TestLibraries.ktorMockJvm
 
 plugins {
     `published-multiplatform-library`
@@ -67,7 +66,7 @@ kotlin {
                 implementation(test.junit)
                 implementation(project(":tea-test"))
                 implementation(project(":tea-time-travel-adapter-gson"))
-                implementation(ktorMockJvm)
+                implementation(libs.ktor.client.mock.jvm)
             }
         }
 

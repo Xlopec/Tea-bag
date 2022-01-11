@@ -24,13 +24,7 @@
 
 
 import Libraries.immutableCollections
-import Libraries.ktorServerCallLoggingJvm
-import Libraries.ktorServerConditionalHeaders
-import Libraries.ktorServerCore
-import Libraries.ktorServerNetty
-import Libraries.ktorServerWebsockets
 import Libraries.logback
-import TestLibraries.ktorServerTests
 import org.jetbrains.compose.compose
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PublishPluginTask
@@ -115,16 +109,12 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(logback)
 
-    implementation(ktorServerCore)
-    implementation(ktorServerNetty)
-    implementation(ktorServerWebsockets)
-    implementation(ktorServerConditionalHeaders)
-    implementation(ktorServerCallLoggingJvm)
+    implementation(libs.bundles.ktor.server)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.swing)
     implementation(immutableCollections)
 
-    testImplementation(ktorServerTests)
+    testImplementation(libs.ktor.server.tests)
     testImplementation(project(":tea-test"))
     testImplementation("io.kotlintest:kotlintest-assertions:3.4.2")
 }

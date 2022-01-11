@@ -24,7 +24,6 @@
 
 
 import Libraries.atomicfu
-import TestLibraries.kotlinTest
 
 plugins {
     kotlin("multiplatform")
@@ -60,7 +59,7 @@ kotlin {
                 api(atomicfu)
                 api(libs.coroutines.core)
                 api(libs.coroutines.test)
-                api(kotlinTest)
+                api(libs.kotlin.test)
                 api("org.jetbrains.kotlin:kotlin-test-annotations-common:1.6.10")
                 implementation(project(":tea-core"))
                 api(project(":shared-entities"))

@@ -22,8 +22,6 @@
  * SOFTWARE.
  */
 
-import TestLibraries.kotlinTest
-
 plugins {
     `published-multiplatform-library`
 }
@@ -51,7 +49,7 @@ kotlin {
 
         val commonTest by getting {
             dependencies {
-                implementation(kotlinTest)
+                implementation(libs.kotlin.test)
                 implementation(project(":tea-test"))
             }
         }
