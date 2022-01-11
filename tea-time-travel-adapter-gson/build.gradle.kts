@@ -22,9 +22,6 @@
  * SOFTWARE.
  */
 
-import Libraries.gson
-import Libraries.immutableCollections
-
 plugins {
     `published-jvm-library`
 }
@@ -38,12 +35,12 @@ dependencies {
     api(project(":tea-time-travel-protocol"))
     api(project(":shared-entities"))
     api(libs.stdlib.reflect)
-    api(gson)
+    api(libs.gson)
 
     implementation(libs.stdlib)
 
     testImplementation(project(":tea-test"))
     testImplementation(project(":tea-time-travel-protocol"))
-    testImplementation(immutableCollections)
+    testImplementation(libs.collections.immutable)
     testImplementation(libs.junit)
 }

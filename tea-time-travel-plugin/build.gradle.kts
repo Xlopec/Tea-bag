@@ -23,8 +23,6 @@
  */
 
 
-import Libraries.immutableCollections
-import Libraries.logback
 import org.jetbrains.compose.compose
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PublishPluginTask
@@ -107,12 +105,12 @@ dependencies {
     implementation(libs.stdlib.reflect)
 
     implementation(compose.desktop.currentOs)
-    implementation(logback)
+    implementation(libs.logging)
 
     implementation(libs.bundles.ktor.server)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.swing)
-    implementation(immutableCollections)
+    implementation(libs.collections.immutable)
 
     testImplementation(libs.ktor.server.tests)
     testImplementation(project(":tea-test"))

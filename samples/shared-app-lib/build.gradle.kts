@@ -22,18 +22,6 @@
  * SOFTWARE.
  */
 
-import Libraries.gson
-import Libraries.immutableCollections
-import Libraries.ktorClientCio
-import Libraries.ktorClientCore
-import Libraries.ktorClientGson
-import Libraries.ktorClientIos
-import Libraries.ktorClientJson
-import Libraries.ktorClientLogging
-import Libraries.ktorClientSerialization
-import Libraries.sqlDelightAndroidDriver
-import Libraries.sqlDelightNativeDriver
-
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -66,14 +54,14 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project(":shared-entities"))
-                api(immutableCollections)
+                api(libs.collections.immutable)
                 api(libs.coroutines.core)
                 api(project(":tea-core"))
                 implementation(libs.stdlib)
-                implementation(ktorClientCore)
-                implementation(ktorClientLogging)
-                implementation(ktorClientJson)
-                implementation(ktorClientSerialization)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.ktor.client.json)
+                implementation(libs.ktor.client.serialization)
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2")
                 implementation("com.russhwolf:multiplatform-settings-no-arg:0.8.1")
                 implementation("com.squareup.sqldelight:runtime:1.5.3")
@@ -87,11 +75,11 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation(ktorClientCio)
-                implementation(ktorClientGson)
-                implementation(gson)
+                implementation(libs.ktor.client.cio)
+                implementation(libs.ktor.client.gson)
+                implementation(libs.gson)
                 implementation(libs.compose.runtime)
-                implementation(sqlDelightAndroidDriver)
+                implementation(libs.sqldelight.driver.android)
                 api(project(":tea-time-travel"))
                 api(project(":tea-time-travel-adapter-gson"))
             }
@@ -104,8 +92,8 @@ kotlin {
         }
         val iosMain by getting {
             dependencies {
-                implementation(ktorClientIos)
-                implementation(sqlDelightNativeDriver)
+                implementation(libs.ktor.client.ios)
+                implementation(libs.sqldelight.driver.native)
             }
         }
         val iosTest by getting

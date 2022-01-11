@@ -32,6 +32,12 @@ dependencyResolutionManagement {
 
         create("libs") {
 
+            version("ktor", "2.0.0-beta-1")
+            version("coroutines", "1.6.0")
+            version("compose", "1.1.0-beta04")
+            version("accompanist", "0.21.4-beta")
+            version("sqldelight", "1.5.3")
+
             // Testing
 
             alias("junit").to("junit:junit:4.13.2")
@@ -39,6 +45,19 @@ dependencyResolutionManagement {
             alias("kotlin-test")
                 .to("org.jetbrains.kotlin", "kotlin-test")
                 .withoutVersion()
+
+            alias("compose-test-junit")
+                .to("androidx.compose.ui", "ui-test-junit4")
+                .versionRef("compose")
+
+            alias("compose-test-manifest")
+                .to("androidx.compose.ui", "ui-test-manifest")
+                .versionRef("compose")
+
+            alias("android-test-orchestrator")
+                .to("androidx.test:orchestrator:1.4.1")
+
+            alias("android-test-runner").to("androidx.test:orchestrator:1.4.0")
 
             // Coroutines
 
@@ -58,8 +77,6 @@ dependencyResolutionManagement {
                 .to("org.jetbrains.kotlinx", "kotlinx-coroutines-test")
                 .versionRef("coroutines")
 
-            version("coroutines", "1.6.0")
-
             // Standard library
 
             alias("stdlib")
@@ -71,8 +88,6 @@ dependencyResolutionManagement {
                 .withoutVersion()
 
             // Ktor server
-
-            version("ktor", "2.0.0-beta-1")
 
             alias("ktor-server-core")
                 .to("io.ktor", "ktor-server-core")
@@ -113,9 +128,41 @@ dependencyResolutionManagement {
                 )
             )
 
-            // Compose
+            // Ktor client
 
-            version("compose", "1.1.0-beta04")
+            alias("ktor-client-core")
+                .to("io.ktor", "ktor-client-core")
+                .versionRef("ktor")
+
+            alias("ktor-client-ios")
+                .to("io.ktor", "ktor-client-ios")
+                .versionRef("ktor")
+
+            alias("ktor-client-websockets")
+                .to("io.ktor", "ktor-client-websockets")
+                .versionRef("ktor")
+
+            alias("ktor-client-cio")
+                .to("io.ktor", "ktor-client-cio")
+                .versionRef("ktor")
+
+            alias("ktor-client-logging")
+                .to("io.ktor", "ktor-client-logging")
+                .versionRef("ktor")
+
+            alias("ktor-client-gson")
+                .to("io.ktor", "ktor-client-gson")
+                .versionRef("ktor")
+
+            alias("ktor-client-json")
+                .to("io.ktor", "ktor-client-json")
+                .versionRef("ktor")
+
+            alias("ktor-client-serialization")
+                .to("io.ktor", "ktor-client-serialization")
+                .versionRef("ktor")
+
+            // Compose
 
             alias("compose-ui")
                 .to("androidx.compose.ui", "ui")
@@ -172,8 +219,6 @@ dependencyResolutionManagement {
 
             // Accompanist
 
-            version("accompanist", "0.21.4-beta")
-
             alias("accompanist-insets")
                 .to("com.google.accompanist", "accompanist-insets")
                 .versionRef("accompanist")
@@ -191,6 +236,32 @@ dependencyResolutionManagement {
             // App compat
 
             alias("appcompat").to("androidx.appcompat:appcompat:1.4.0")
+
+            // Collections
+
+            alias("collections-immutable").to("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.4")
+
+            // Atomicfu
+
+            alias("atomicfu").to("org.jetbrains.kotlinx:atomicfu:0.17.0")
+
+            // Logging
+
+            alias("logging").to("ch.qos.logback:logback-classic:1.2.3")
+
+            // Gson
+
+            alias("gson").to("com.google.code.gson:gson:2.8.9")
+
+            // Sqldelight
+
+            alias("sqldelight-driver-android")
+                .to("com.squareup.sqldelight", "android-driver")
+                .versionRef("sqldelight")
+
+            alias("sqldelight-driver-native")
+                .to("com.squareup.sqldelight", "native-driver")
+                .versionRef("sqldelight")
         }
     }
 }

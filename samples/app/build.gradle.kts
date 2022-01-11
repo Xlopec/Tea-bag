@@ -22,14 +22,6 @@
  * SOFTWARE.
  */
 
-import Libraries.gson
-import Libraries.ktorClientCio
-import Libraries.ktorClientGson
-import Libraries.ktorClientLogging
-import Libraries.logback
-import TestLibraries.composeJunit
-import TestLibraries.composeTestManifest
-
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -98,7 +90,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.1.0-rc02"
+        kotlinCompilerExtensionVersion = libs.compose.compiler.get().versionConstraint.requiredVersion
         //kotlinCompilerExtensionVersion = compose
     }
 
@@ -131,7 +123,6 @@ dependencies {
     implementation(project(":tea-core"))
     implementation(project(":samples:shared-app-lib"))
 
-    //implementation(project.platform(kotlinStdLibBom))
     implementation(libs.stdlib)
     implementation(libs.stdlib.reflect)
 
@@ -144,18 +135,18 @@ dependencies {
 
     implementation(libs.appcompat)
 
-    implementation(gson)
-    implementation(ktorClientCio)
-    implementation(ktorClientGson)
-    implementation(ktorClientLogging)
-    implementation(logback)
+    implementation(libs.gson)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.gson)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.logging)
 
     //testImplementation(project(":tea-test"))
     //testImplementation(project(":tea-time-travel"))
     //testImplementation(project(":tea-time-travel-adapter-gson"))
 
-    androidTestImplementation("androidx.test:runner:1.4.0")
-    androidTestUtil("androidx.test:orchestrator:1.4.0")
-    androidTestImplementation(composeJunit)
-    debugImplementation(composeTestManifest)
+    androidTestImplementation(libs.android.test.runner)
+    androidTestUtil(libs.android.test.orchestrator)
+    androidTestImplementation(libs.compose.test.junit)
+    debugImplementation(libs.compose.test.manifest)
 }

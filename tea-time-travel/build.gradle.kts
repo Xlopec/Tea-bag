@@ -22,10 +22,6 @@
  * SOFTWARE.
  */
 
-import Libraries.ktorClientCio
-import Libraries.ktorClientCore
-import Libraries.ktorClientWebsockets
-
 plugins {
     `published-multiplatform-library`
 }
@@ -48,8 +44,8 @@ kotlin {
                 api(project(":tea-time-travel-protocol"))
 
                 implementation(libs.stdlib)
-                implementation(ktorClientWebsockets)
-                implementation(ktorClientCore)
+                implementation(libs.ktor.client.websockets)
+                implementation(libs.ktor.client.core)
             }
         }
 
@@ -57,7 +53,7 @@ kotlin {
 
         val jvmMain by getting {
             dependencies {
-                implementation(ktorClientCio)
+                implementation(libs.ktor.client.cio)
             }
         }
 
