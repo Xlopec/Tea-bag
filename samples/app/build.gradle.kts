@@ -22,20 +22,6 @@
  * SOFTWARE.
  */
 
-import Libraries.accompaniestCoil
-import Libraries.accompaniestInsets
-import Libraries.accompaniestSwipeRefresh
-import Libraries.appCompat
-import Libraries.composeActivity
-import Libraries.composeAnimation
-import Libraries.composeCompiler
-import Libraries.composeFoundation
-import Libraries.composeFoundationLayout
-import Libraries.composeMaterial
-import Libraries.composeMaterialIconsExtended
-import Libraries.composeRuntime
-import Libraries.composeUi
-import Libraries.composeUiTooling
 import Libraries.gson
 import Libraries.ktorClientCio
 import Libraries.ktorClientGson
@@ -151,22 +137,12 @@ dependencies {
 
     implementation(libs.coroutines.android)
 
-    implementation(composeUi)
-    implementation(composeFoundation)
-    implementation(composeFoundationLayout)
-    implementation(composeMaterial)
-    implementation(composeMaterialIconsExtended)
-    implementation(composeUiTooling)
-    implementation(composeRuntime)
-    implementation(composeAnimation)
-    implementation(composeCompiler)
-    implementation(composeActivity)
+    implementation(libs.bundles.compose)
 
-    implementation(accompaniestInsets)
-    implementation(accompaniestCoil)
-    implementation(accompaniestSwipeRefresh)
+    implementation(libs.bundles.accompanist)
+    implementation(libs.coil)
 
-    implementation(appCompat)
+    implementation(libs.appcompat)
 
     implementation(gson)
     implementation(ktorClientCio)

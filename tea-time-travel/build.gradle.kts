@@ -63,7 +63,7 @@ kotlin {
 
         val jvmTest by getting {
             dependencies {
-                implementation(test.junit)
+                implementation(libs.junit)
                 implementation(project(":tea-test"))
                 implementation(project(":tea-time-travel-adapter-gson"))
                 implementation(libs.ktor.client.mock.jvm)

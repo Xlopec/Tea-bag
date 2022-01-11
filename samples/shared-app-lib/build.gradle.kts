@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import Libraries.composeRuntime
 import Libraries.gson
 import Libraries.immutableCollections
 import Libraries.ktorClientCio
@@ -91,7 +90,7 @@ kotlin {
                 implementation(ktorClientCio)
                 implementation(ktorClientGson)
                 implementation(gson)
-                implementation(composeRuntime)
+                implementation(libs.compose.runtime)
                 implementation(sqlDelightAndroidDriver)
                 api(project(":tea-time-travel"))
                 api(project(":tea-time-travel-adapter-gson"))
@@ -100,7 +99,7 @@ kotlin {
         val androidTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
-                implementation(test.junit)
+                implementation(libs.junit)
             }
         }
         val iosMain by getting {

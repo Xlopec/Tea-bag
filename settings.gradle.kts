@@ -25,14 +25,22 @@ include(
 
 dependencyResolutionManagement {
     versionCatalogs {
-        create("test") {
-            alias("junit").to("junit:junit:4.13.2")
-        }
+
         create("tea") {
             alias("core").to("io.github.xlopec", "tea-core").withoutVersion()
         }
 
         create("libs") {
+
+            // Testing
+
+            alias("junit").to("junit:junit:4.13.2")
+
+            alias("kotlin-test")
+                .to("org.jetbrains.kotlin", "kotlin-test")
+                .withoutVersion()
+
+            // Coroutines
 
             alias("coroutines-core")
                 .to("org.jetbrains.kotlinx", "kotlinx-coroutines-core")
@@ -52,6 +60,8 @@ dependencyResolutionManagement {
 
             version("coroutines", "1.6.0")
 
+            // Standard library
+
             alias("stdlib")
                 .to("org.jetbrains.kotlin", "kotlin-stdlib")
                 .withoutVersion()
@@ -60,9 +70,7 @@ dependencyResolutionManagement {
                 .to("org.jetbrains.kotlin", "kotlin-reflect")
                 .withoutVersion()
 
-            alias("kotlin-test")
-                .to("org.jetbrains.kotlin", "kotlin-test")
-                .withoutVersion()
+            // Ktor server
 
             version("ktor", "2.0.0-beta-1")
 
@@ -94,7 +102,8 @@ dependencyResolutionManagement {
                 .to("io.ktor", "ktor-client-mock-jvm")
                 .versionRef("ktor")
 
-            bundle("ktor-server",
+            bundle(
+                "ktor-server",
                 listOf(
                     "ktor-server-core",
                     "ktor-server-netty",
@@ -103,6 +112,85 @@ dependencyResolutionManagement {
                     "ktor-server-logging-jvm"
                 )
             )
+
+            // Compose
+
+            version("compose", "1.1.0-beta04")
+
+            alias("compose-ui")
+                .to("androidx.compose.ui", "ui")
+                .versionRef("compose")
+
+            alias("compose-foundation")
+                .to("androidx.compose.foundation", "foundation")
+                .versionRef("compose")
+
+            alias("compose-foundation-layout")
+                .to("androidx.compose.foundation", "foundation-layout")
+                .versionRef("compose")
+
+            alias("compose-material")
+                .to("androidx.compose.material", "material")
+                .versionRef("compose")
+
+            alias("compose-icons")
+                .to("androidx.compose.material", "material-icons-extended")
+                .versionRef("compose")
+
+            alias("compose-tooling")
+                .to("androidx.compose.ui", "ui-tooling")
+                .versionRef("compose")
+
+            alias("compose-runtime")
+                .to("androidx.compose.runtime", "runtime")
+                .versionRef("compose")
+
+            alias("compose-animation")
+                .to("androidx.compose.animation", "animation")
+                .versionRef("compose")
+
+            // compatible with kotlin 1.6.10
+            alias("compose-compiler").to("androidx.compose.compiler:compiler:1.1.0-rc02")
+
+            alias("compose-activity").to("androidx.activity:activity-compose:1.4.0")
+
+            bundle(
+                "compose",
+                listOf(
+                    "compose-ui",
+                    "compose-foundation",
+                    "compose-foundation-layout",
+                    "compose-material",
+                    "compose-icons",
+                    "compose-tooling",
+                    "compose-runtime",
+                    "compose-animation",
+                    "compose-compiler",
+                    "compose-activity",
+                )
+            )
+
+            // Accompanist
+
+            version("accompanist", "0.21.4-beta")
+
+            alias("accompanist-insets")
+                .to("com.google.accompanist", "accompanist-insets")
+                .versionRef("accompanist")
+
+            alias("accompanist-swiperefresh")
+                .to("com.google.accompanist", "accompanist-swiperefresh")
+                .versionRef("accompanist")
+
+            bundle("accompanist", listOf("accompanist-insets", "accompanist-swiperefresh"))
+
+            // Coil
+
+            alias("coil").to("io.coil-kt:coil-compose:1.4.0")
+
+            // App compat
+
+            alias("appcompat").to("androidx.appcompat:appcompat:1.4.0")
         }
     }
 }

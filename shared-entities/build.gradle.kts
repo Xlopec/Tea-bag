@@ -25,7 +25,7 @@ kotlin {
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
-                implementation(test.junit)
+                implementation(libs.junit)
             }
         }
         val iosMain by getting

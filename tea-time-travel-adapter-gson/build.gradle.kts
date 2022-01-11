@@ -45,5 +45,5 @@ dependencies {
     testImplementation(project(":tea-test"))
     testImplementation(project(":tea-time-travel-protocol"))
     testImplementation(immutableCollections)
-    testImplementation(test.junit)
+    testImplementation(libs.junit)
 }
