@@ -35,10 +35,6 @@ plugins {
     id("org.jetbrains.compose")
 }
 
-repositories {
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-}
-
 intellij {
     version.set("2020.3")
     plugins.add("com.intellij.java")

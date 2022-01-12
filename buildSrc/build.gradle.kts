@@ -25,11 +25,8 @@
 repositories {
     mavenCentral()
     maven("https://plugins.gradle.org/m2/")
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     google()
     mavenLocal()
-    maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-coroutines/maven")
-    maven("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
 }
 
 plugins {
