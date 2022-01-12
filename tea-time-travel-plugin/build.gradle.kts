@@ -71,7 +71,6 @@ val releasePlugin by tasks.creating(Task::class) {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     kotlinOptions {
-        jvmTarget = "11"
 
         freeCompilerArgs += listOf(
             "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",

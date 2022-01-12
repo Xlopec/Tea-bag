@@ -51,7 +51,6 @@ allprojects {
 
     tasks.withType<KotlinCompile>().all {
         kotlinOptions {
-            jvmTarget = "1.8"
             // disables warning about usage of experimental Kotlin features
             @Suppress("SuspiciousCollectionReassignment")
             freeCompilerArgs += listOf(
