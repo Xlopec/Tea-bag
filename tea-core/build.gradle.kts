@@ -28,7 +28,11 @@ plugins {
 
 kotlin {
 
-    optIn("kotlinx.coroutines.ExperimentalCoroutinesApi", "kotlinx.coroutines.FlowPreview")
+    optIn(
+        "kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "kotlinx.coroutines.FlowPreview",
+        "kotlinx.coroutines.InternalCoroutinesApi"
+    )
 
     cocoapods {
         summary = "Tea core library"

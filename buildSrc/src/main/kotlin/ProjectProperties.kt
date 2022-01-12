@@ -112,4 +112,3 @@ private fun Project.getPropertySafe(
     name: String,
 ): String? =
     properties[name]?.toString().takeUnless(CharSequence?::isNullOrEmpty)
-
