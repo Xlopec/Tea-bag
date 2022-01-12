@@ -69,7 +69,9 @@ private fun htmlDescription(
 
     return """<html>
         <p>An exception occurred${message?.let { ", $it" } ?: ""}</p>
-        ${cause.message?.decapitalize(Locale.ENGLISH)?.let { causeMessage -> """<p>Reason: $causeMessage</p>""" }}
+        ${
+        cause.message?.replaceFirstChar { it.lowercase(Locale.ENGLISH) }?.let { causeMessage -> """<p>Reason: $causeMessage</p>""" }
+    }
         </html>
     """.trimMargin()
 }

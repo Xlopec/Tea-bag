@@ -24,7 +24,6 @@
 
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
@@ -47,22 +46,7 @@ allprojects {
         plugin("io.gitlab.arturbosch.detekt")
     }
 
-    tasks.withType<KotlinCompile>().all {
-        kotlinOptions {
-            // disables warning about usage of experimental Kotlin features
-            @Suppress("SuspiciousCollectionReassignment")
-            freeCompilerArgs += listOf(
-                // todo: cleanup after migration to kotlin 1.5
-                "-Xuse-experimental=kotlin.Experimental",
-                "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
-                "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
-                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
-                "-Xuse-experimental=kotlin.ExperimentalStdlibApi",
-                "-opt-in=kotlin.RequiresOptIn"
-            )
-        }
-    }
+    optIn(DefaultOptIns)
 
     tasks.withType<Test>().all {
         reports {

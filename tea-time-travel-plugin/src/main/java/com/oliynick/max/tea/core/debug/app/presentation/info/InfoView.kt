@@ -77,7 +77,7 @@ private fun Stopped.toDescription() =
     else "Can't start debug server: ${
         listOf(settings.port, settings.host)
             .filterIsInstance<Invalid>()
-            .joinToString(postfix = "\n") { v -> v.message.decapitalize(Locale.getDefault()) }
+            .joinToString(postfix = "\n") { v -> v.message.replaceFirstChar { it.lowercase(Locale.getDefault()) } }
     }"
 
 private fun Stopping.toDescription() = "Debug server is stopping on " +

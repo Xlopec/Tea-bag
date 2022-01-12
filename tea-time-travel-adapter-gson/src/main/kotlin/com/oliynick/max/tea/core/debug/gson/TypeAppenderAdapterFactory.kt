@@ -30,6 +30,7 @@ import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
+import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 /**
@@ -129,6 +130,7 @@ private val typeTokenCache = mutableMapOf<String, TypeToken<*>>()
 
 private fun <T> JsonObject.type(): TypeToken<T>? = get("@type")?.asString?.let(::TypeToken)
 
+@OptIn(ExperimentalContracts::class)
 private fun shouldAddTypeLabel(
     src: Any?,
     srcAsJson: JsonElement

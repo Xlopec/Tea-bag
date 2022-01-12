@@ -65,22 +65,7 @@ val releasePlugin by tasks.creating(Task::class) {
     description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
-    kotlinOptions {
-
-        freeCompilerArgs += listOf(
-            "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
-            "-Xuse-experimental=kotlin.Experimental",
-            "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
-            "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
-            "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-            "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
-            "-Xuse-experimental=kotlin.ExperimentalStdlibApi",
-            "-XXLanguage:+NewInference",
-            "-XXLanguage:+InlineClasses"
-        )
-    }
-}
+optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
 
 sourceSets {
     main {

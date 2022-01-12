@@ -38,6 +38,8 @@ tasks.withType<Test>().whenTaskAdded {
 
 kotlin {
 
+    optIn("kotlinx.serialization.ExperimentalSerializationApi", "com.oliynick.max.tea.core.UnstableApi")
+
     android()
 
     ios()

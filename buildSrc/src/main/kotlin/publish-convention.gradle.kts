@@ -11,9 +11,9 @@ version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
 
 val packSourcesJar by tasks.creating(Jar::class) {
-    if (plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
+    if (project.hasKotlinMultiplatformPlugin) {
         dependsOn(tasks["sourcesJar"])
-    } else if (plugins.hasPlugin("org.jetbrains.kotlin.jvm")) {
+    } else if (project.hasKotlinJvmPlugin) {
         dependsOn(tasks.classes)
         archiveClassifier.set("sources")
         from(projectSourceSets["main"].allSource)

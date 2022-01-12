@@ -28,6 +28,8 @@ plugins {
 
 kotlin {
 
+    optIn("kotlinx.coroutines.ExperimentalCoroutinesApi", "kotlinx.coroutines.FlowPreview")
+
     cocoapods {
         summary = "Tea core library"
         homepage = "Link to the Tea library Module homepage"
