@@ -37,9 +37,9 @@ import com.max.reader.screens.main.Application
 import com.max.reader.test.invoke
 import com.max.reader.test.setTestContent
 import com.max.reader.ui.theme.AppTheme
+import com.oliynick.max.entities.shared.randomUUID
 import com.oliynick.max.reader.app.AppComponent
 import com.oliynick.max.reader.app.AppInitializer
-import com.oliynick.max.reader.app.randomUUID
 import com.oliynick.max.reader.article.list.ArticlesState
 import com.oliynick.max.reader.article.list.Query
 import com.oliynick.max.reader.article.list.QueryType.Regular

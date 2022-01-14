@@ -23,12 +23,6 @@
  */
 
 @file:Suppress("FunctionName", "TestFunctionName")
-/*@file:OptIn(
-    ExperimentalCoroutinesApi::class,
-    InternalCoroutinesApi::class,
-    UnstableApi::class,
-    ExperimentalStdlibApi::class
-)*/
 
 package com.oliynick.max.tea.core.component
 
@@ -42,10 +36,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
 import kotlinx.coroutines.test.*
 import kotlin.Long.Companion.MAX_VALUE
-import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.coroutines.coroutineContext
 import kotlin.math.abs
 import kotlin.test.*
 
@@ -349,7 +341,6 @@ class ComponentTest {
             ::throwingResolver,
             ::throwingUpdater,
             scope,
-            scope.coroutineDispatcher,
             scope.coroutineDispatcher
         )
 
@@ -374,7 +365,6 @@ class ComponentTest {
             ::throwingResolver,
             ::throwingUpdater,
             scope,
-            scope.coroutineDispatcher,
             scope.coroutineDispatcher
         )
 
@@ -389,21 +379,6 @@ class ComponentTest {
         }
         assertTrue(!scope.isActive)
     }
-
-    @Test
-    fun `when collecting component with specific dispatcher, then initializer runs on this dispatcher`() =
-        runTestCancellingChildren {
-            val io = StandardTestDispatcher(testScheduler, "IO dispatcher")
-            val env = TestEnv<Char, String, Char>(
-                CheckingInitializer(io),
-                ::throwingResolver,
-                { m, _ -> m.toString().noCommand() },
-                io,
-                StandardTestDispatcher(testScheduler, "Computation dispatcher")
-            )
-
-            Component(env)('a'..'d').take('d' - 'a').collect()
-        }
 
     @Test
     fun `when collecting component with specific dispatcher, then updater runs on this dispatcher`() =
@@ -424,40 +399,10 @@ class ComponentTest {
             Component(env)('a'..'d').take('d' - 'a').collect()
         }
 
-    @Test
-    fun `when collecting component with specific dispatcher, then resolver runs on this dispatcher`() =
-        runTestCancellingChildren {
-            val io = StandardTestDispatcher(testScheduler, "IO dispatcher")
-            val env = TestEnv<Char, String, Char>(
-                Initializer(""),
-                CheckingResolver(io),
-                ::messageAsCommand,
-                io,
-                StandardTestDispatcher(testScheduler, "Computation dispatcher")
-            )
-
-            Component(env)('a'..'d')
-                .take('d' - 'a').collect()
-        }
-
 }
 
 @Suppress("UNUSED_PARAMETER")
 private fun <T> noOpSink(t: T) = Unit
-
-private fun CheckingInitializer(
-    expectedDispatcher: CoroutineDispatcher,
-): Initializer<String, Nothing> = {
-    assertSame(expectedDispatcher, coroutineContext[ContinuationInterceptor])
-    Initial("", setOf())
-}
-
-private fun CheckingResolver(
-    expectedDispatcher: CoroutineDispatcher,
-): Resolver<Any?, Nothing> = {
-    assertSame(expectedDispatcher, coroutineContext[CoroutineDispatcher.Key])
-    setOf()
-}
 
 fun ThrowingInitializer(
     th: Throwable,

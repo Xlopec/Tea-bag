@@ -44,7 +44,6 @@ fun <M, S, C> TestScope.TestEnv(
     resolver,
     updater,
     this,
-    io,
     computation,
     shareOptions
 )

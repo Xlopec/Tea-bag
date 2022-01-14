@@ -30,6 +30,7 @@ package com.oliynick.max.tea.core.component
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.internal.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.Unconfined
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
@@ -120,6 +121,7 @@ public typealias Sink<T> = suspend (T) -> Unit
  * @param S state of the application
  * @param C commands to be executed
  */
+@Deprecated("io dispatcher is going to be removed")
 public fun <M, C, S> Component(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
@@ -127,10 +129,34 @@ public fun <M, C, S> Component(
     // todo: group to reduce number of arguments
     scope: CoroutineScope,
     io: CoroutineDispatcher = IO,
-    computation: CoroutineDispatcher = Dispatchers.Unconfined,
+    computation: CoroutineDispatcher = Unconfined,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ): Component<M, S, C> =
-    Component(Env(initializer, resolver, updater, scope, io, computation, shareOptions))
+    Component(Env(initializer, resolver, updater, scope, computation, shareOptions))
+
+/**
+ * Creates new component using supplied values
+ *
+ * @param initializer initializer that provides initial values
+ * @param resolver resolver that resolves messages to commands and performs side effects
+ * @param updater updater that computes new states and commands to be executed
+ * @param scope scope in which the sharing coroutine is started
+ * @param computation coroutine dispatcher which is used to wrap [updater]'s computations
+ * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
+ * @param M incoming messages
+ * @param S state of the application
+ * @param C commands to be executed
+ */
+public fun <M, C, S> Component(
+    initializer: Initializer<S, C>,
+    resolver: Resolver<C, M>,
+    updater: Updater<M, S, C>,
+    // todo: group to reduce number of arguments
+    scope: CoroutineScope,
+    computation: CoroutineDispatcher = Unconfined,
+    shareOptions: ShareOptions = ShareStateWhileSubscribed,
+): Component<M, S, C> =
+    Component(Env(initializer, resolver, updater, scope, computation, shareOptions))
 
 /**
  * Creates new component using preconfigured environment
@@ -179,7 +205,7 @@ public fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
 
 @ExperimentalTeaApi
 public fun <S, C> Env<*, S, C>.init(): Flow<Initial<S, C>> =
-    channelFlow { withContext(io) { send(initializer()) } }
+    channelFlow { send(initializer()) }
 
 @ExperimentalTeaApi
 public fun <M, S, C> Env<M, S, C>.compute(
@@ -231,7 +257,7 @@ private fun <M, S, C> Env<M, S, C>.resolveAll(
 // in 'launch and forget' fashion so that
 // updater can process new portion of messages
     commands.forEach { command ->
-        coroutineScope.launch(io + CoroutineName("Resolver coroutine: $command")) {
+        coroutineScope.launch(CoroutineName("Resolver coroutine: $command")) {
             sink(resolver(command))
         }
     }
@@ -250,5 +276,5 @@ private suspend fun <M, C> Env<M, *, C>.resolve(
     commands: Collection<C>,
 ): Iterable<M> =
     commands
-        .parMapTo(io, resolver::invoke)
+        .parMapTo(Unconfined, resolver::invoke)
         .flatten()

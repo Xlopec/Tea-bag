@@ -26,6 +26,10 @@
 
 package com.oliynick.max.tea.core
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.withContext
+
 /**
  * Initializer is an **impure** function that computes [initial][Initial] snapshot
  *
@@ -57,3 +61,16 @@ public fun <S, C> Initializer(
     state: S,
     vararg commands: C
 ): Initializer<S, C> = Initializer(state, setOf(*commands))
+
+/**
+ * Constructs initializer using [block] that will be run on specified [dispatcher]
+ *
+ * @param S state
+ * @param C command
+ * @param dispatcher coroutine dispatcher to run block on
+ * @param block initializer block to run
+ */
+public fun <S, C> Initializer(
+    dispatcher: CoroutineDispatcher,
+    block: suspend CoroutineScope.() -> Initial<S, C>
+): Initializer<S, C> = { withContext(dispatcher, block) }
