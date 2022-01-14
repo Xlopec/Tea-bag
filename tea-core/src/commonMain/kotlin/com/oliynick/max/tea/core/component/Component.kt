@@ -148,19 +148,28 @@ public fun <M, S, C> Component(
         startFrom: Initial<S, C>,
     ) = toMessagesFlow(startFrom.commands, input.receiveAsFlow())
 
-    val componentFlow = toSnapshotsFlow(initial(), input::send, ::messagesForSnapshot)
+    val componentFlow = toComponentFlow(initial(), input::send, ::messagesForSnapshot)
         .shareIn(scope, shareOptions)
 
     return { messages -> componentFlow.withMessageCollector(messages, input::send) }
 }
 
+/**
+ * Creates flow that for each [initial snapshot][Initial] computes flow of [snapshots][Snapshot]
+ *
+ * @param snapshots initial snapshots. Such snapshots usually come from initializer, so it means that there will be no
+ * more than one initial snapshot. For each new initial snapshot new computation flow is started and the old one is
+ * disposed
+ * @param sink sink that consumes resolved messages
+ * @param input function that will transform each [initial snapshot][Initial] into flow of messages
+ */
 @InternalTeaApi
-public fun <M, S, C> Env<M, S, C>.toSnapshotsFlow(
+public fun <M, S, C> Env<M, S, C>.toComponentFlow(
     snapshots: Flow<Initial<S, C>>,
     sink: Sink<M>,
     input: (Initial<S, C>) -> Flow<M>,
 ): Flow<Snapshot<M, S, C>> =
-    snapshots.flatMapLatest { startFrom -> compute(input(startFrom), startFrom, sink) }
+    snapshots.flatMapLatest { startFrom -> toComputationFlow(input(startFrom), startFrom, sink) }
 
 /**
  * Emits snapshots emitted by receiver flow without any transformation
@@ -178,48 +187,69 @@ public fun <M, S, C> Flow<Snapshot<M, S, C>>.withMessageCollector(
     collect(::send)
 }
 
+/**
+ * Calculates initial snapshot by invoking initializer inside app environment
+ */
 @InternalTeaApi
 public fun <S, C> Env<*, S, C>.initial(): Flow<Initial<S, C>> =
+    // channel flow is for parallel decomposition
     channelFlow { send(initializer()) }
 
+/**
+ * For each new message from [input] calculates next [application state, message and commands][Regular].
+ * This function resolves messages from commands. Sink is fed with resolved messages. Flow emission starts
+ * from [startFrom] snapshot
+ */
 @InternalTeaApi
-public fun <M, S, C> Env<M, S, C>.compute(
+public fun <M, S, C> Env<M, S, C>.toComputationFlow(
     input: Flow<M>,
     startFrom: Initial<S, C>,
     sink: Sink<M>,
-): Flow<Snapshot<M, S, C>> {
-
-    suspend fun newState(
-        current: Snapshot<M, S, C>,
-        message: M,
-    ): Regular<M, S, C> {
-        val (newState, commands) = update(message, current.currentState)
-
-        return Regular(newState, commands, current.currentState, message)
-    }
-
-    return channelFlow {
-
+): Flow<Snapshot<M, S, C>> =
+    // channel flow is for parallel decomposition
+    channelFlow {
         var current: Snapshot<M, S, C> = startFrom
 
         input
-            .map { message -> newState(current, message) }
+            .map { message -> nextSnapshot(current, message) }
             .onEach { regular -> current = regular }
             .onEach { regular -> resolveAll(this@channelFlow, sink, regular.commands) }
             .collect(::send)
 
     }.startFrom(startFrom)
+
+/**
+ * Calculates next snapshot for given arguments on [Env.computation] dispatcher
+ */
+@InternalTeaApi
+public suspend fun <M, S, C> Env<M, S, C>.nextSnapshot(
+    current: Snapshot<M, S, C>,
+    message: M,
+): Regular<M, S, C> {
+    val (newState, commands) = update(message, current.currentState)
+
+    return Regular(newState, commands, current.currentState, message)
 }
 
+/**
+ * Shorthand for
+ *
+ * ```kotlin
+ * flow.shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
+ * ```
+ */
 @InternalTeaApi
 public fun <T> Flow<T>.shareIn(
     scope: CoroutineScope,
     shareOptions: ShareOptions,
 ): SharedFlow<T> = shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
 
+/**
+ * Resolves [commands] to message flow
+ */
 @InternalTeaApi
 public fun <M, S, C> Env<M, S, C>.resolveAsFlow(
-    commands: Collection<C>,
+    commands: Iterable<C>,
 ): Flow<M> =
     flow { emitAll(resolve(commands)) }
 
@@ -256,7 +286,7 @@ private suspend fun <M, S, C> Env<M, S, C>.update(
     withContext(computation) { updater(message, state) }
 
 private suspend fun <M, C> Env<M, *, C>.resolve(
-    commands: Collection<C>,
+    commands: Iterable<C>,
 ): Iterable<M> =
     commands
         .parMapTo(Unconfined, resolver::invoke)

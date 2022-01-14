@@ -91,7 +91,7 @@ class ComponentTest {
                     }
                 }
 
-            val actualStates = env.toSnapshotsFlow(initialStates.asFlow(), ::noOpSink, ::testInput)
+            val actualStates = env.toComponentFlow(initialStates.asFlow(), ::noOpSink, ::testInput)
                 .toList()
 
             val (state, commands) = lastInitial

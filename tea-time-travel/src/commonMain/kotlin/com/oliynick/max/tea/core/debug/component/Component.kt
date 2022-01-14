@@ -112,7 +112,7 @@ private fun <M, S, C, J> DebugEnv<M, S, C, J>.upstream(
     }
 
     fun DebugSession<M, S, J>.debugUpstream() =
-        componentEnv.toSnapshotsFlow(initial().mergeWith(states.asSnapshots()), input::send, inputFlow())
+        componentEnv.toComponentFlow(initial().mergeWith(states.asSnapshots()), input::send, inputFlow())
             .onEach { snapshot -> notifyServer(this, snapshot) }
 
     return session { inputChan -> debugUpstream().into(inputChan) }
