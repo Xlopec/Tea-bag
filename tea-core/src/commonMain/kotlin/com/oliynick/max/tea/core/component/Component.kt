@@ -157,7 +157,7 @@ public fun <M, S, C> Component(
 /**
  * Creates flow that for each [initial snapshot][Initial] computes flow of [snapshots][Snapshot]
  *
- * @param snapshots initial snapshots. Such snapshots usually come from initializer, so it means that there will be no
+ * @param initialSnapshots initial snapshots. Such snapshots usually come from initializer, so it means that there will be no
  * more than one initial snapshot. For each new initial snapshot new computation flow is started and the old one is
  * disposed
  * @param sink sink that consumes resolved messages
@@ -165,11 +165,11 @@ public fun <M, S, C> Component(
  */
 @InternalTeaApi
 public fun <M, S, C> Env<M, S, C>.toComponentFlow(
-    snapshots: Flow<Initial<S, C>>,
+    initialSnapshots: Flow<Initial<S, C>>,
     sink: Sink<M>,
     input: (Initial<S, C>) -> Flow<M>,
 ): Flow<Snapshot<M, S, C>> =
-    snapshots.flatMapLatest { startFrom -> toComputationFlow(input(startFrom), startFrom, sink) }
+    initialSnapshots.flatMapLatest { startFrom -> toComputationFlow(input(startFrom), startFrom, sink) }
 
 /**
  * Emits snapshots emitted by receiver flow without any transformation

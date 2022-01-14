@@ -104,12 +104,13 @@ private fun <M, S, C, J> DebugEnv<M, S, C, J>.toComponentFlow(
     input: Channel<M>,
 ): Flow<Snapshot<M, S, C>> =
     debugSession { sink ->
-        componentEnv.toComponentFlow(
-            mergeInitialSnapshots(this@toComponentFlow, this@debugSession),
-            input::send,
+
+        val initialSnapshots = mergeInitialSnapshots(this@toComponentFlow, this@debugSession)
+        val messagesForSnapshot =
             messagesForInitialSnapshot(input.receiveAsFlow(), this@toComponentFlow, this@debugSession)
-        )
-            .onEach { snapshot -> notifyServer(this@debugSession, snapshot) }
+
+        componentEnv.toComponentFlow(initialSnapshots, input::send, messagesForSnapshot)
+            .onEach { snapshot -> notifyServer(this@toComponentFlow, snapshot) }
             .collect(sink::invoke)
     }
 
@@ -117,7 +118,7 @@ private fun <M, S, C, J> DebugEnv<M, S, C, J>.toComponentFlow(
 private fun <M, S, C, J> mergeInitialSnapshots(
     env: DebugEnv<M, S, C, J>,
     session: DebugSession<M, S, J>,
-) = env.componentEnv.initial().mergeWith(session.states.asSnapshots())
+) = env.componentEnv.initial().mergeWith(session.states.toSnapshots())
 
 // todo refactor when multi-receivers KEEP is ready
 private fun <M, S, C, J> messagesForInitialSnapshot(
@@ -130,30 +131,23 @@ private fun <M, S, C, J> messagesForInitialSnapshot(
         .mergeWith(session.messages)
 }
 
-@Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
 private fun <M, S, C, J> DebugEnv<M, S, C, J>.debugSession(
     block: suspend DebugSession<M, S, J>.(input: Sink<Snapshot<M, S, C>>) -> Unit,
 ): Flow<Snapshot<M, S, C>> =
     channelFlow { serverSettings.sessionBuilder(serverSettings) { block(channel::send) } }
 
-private fun <S> Flow<S>.asSnapshots(): Flow<Initial<S, Nothing>> =
+private fun <S> Flow<S>.toSnapshots(): Flow<Initial<S, Nothing>> =
     // TODO what if we want to start from Regular snapshot?
     map { s -> Initial(s, emptySet()) }
 
 /**
  * Notifies server about state changes
  */
-private suspend fun <M, S, C, J> DebugEnv<M, S, C, J>.notifyServer(
-    session: DebugSession<M, S, J>,
+private suspend fun <M, S, C, J> DebugSession<M, S, J>.notifyServer(
+    env: DebugEnv<M, S, C, J>,
     snapshot: Snapshot<M, S, C>,
-) = with(serverSettings) {
-    session(
-        NotifyServer(
-            randomUUID(),
-            id,
-            serializer.toServerMessage(snapshot)
-        )
-    )
+) = with(env.serverSettings) {
+    invoke(NotifyServer(randomUUID(), id, serializer.toServerMessage(snapshot)))
 }
 
 private fun <M, S, C, J> JsonConverter<J>.toServerMessage(
