@@ -24,10 +24,13 @@
 
 package com.oliynick.max.tea.core.debug.session
 
+import com.oliynick.max.entities.shared.datatypes.Either
+import com.oliynick.max.entities.shared.datatypes.Left
+import com.oliynick.max.entities.shared.datatypes.Right
 import com.oliynick.max.tea.core.debug.component.ServerSettings
 import com.oliynick.max.tea.core.debug.protocol.*
-import io.ktor.client.features.websocket.*
-import io.ktor.http.cio.websocket.*
+import io.ktor.client.plugins.websocket.*
+import io.ktor.websocket.*
 import kotlinx.coroutines.channels.broadcast
 import kotlinx.coroutines.flow.*
 import kotlin.reflect.KClass
@@ -63,16 +66,6 @@ internal class DebugWebSocketSession<M : Any, S : Any, J>(
     }
 
 }
-
-private sealed class Either<out L, out R>
-
-private data class Left<L>(
-    val l: L
-) : Either<L, Nothing>()
-
-private data class Right<R>(
-    val r: R
-) : Either<Nothing, R>()
 
 private fun <S> Flow<Either<*, S>>.externalStates(): Flow<S> =
     filterIsInstance<Right<S>>().map { (s) -> s }

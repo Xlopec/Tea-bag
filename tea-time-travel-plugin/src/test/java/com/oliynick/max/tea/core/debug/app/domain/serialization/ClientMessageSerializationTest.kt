@@ -17,6 +17,7 @@
 package com.oliynick.max.tea.core.debug.app.domain.serialization
 
 import com.google.gson.JsonElement
+import com.oliynick.max.tea.core.data.*
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
@@ -25,7 +26,6 @@ import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
 import com.oliynick.max.tea.core.debug.protocol.ClientMessage
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.NotifyClient
-import core.data.*
 import io.kotlintest.shouldBe
 import org.junit.Ignore
 import org.junit.Test

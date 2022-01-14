@@ -22,70 +22,50 @@
  * SOFTWARE.
  */
 
-import Libraries.coroutinesCore
-import Libraries.kotlinStdLib
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-
-/**
- * in case of shit, add this back to xcode -> .xcodeproj -> Build Phases -> Run Script
- * cd "$SRCROOT/.."
-./gradlew :tea-core:packForXCode :shared-app-lib:packForXCode -PXCODE_CONFIGURATION=${CONFIGURATION}
- */
-
 plugins {
-    `maven-publish`
-    signing
-    id("org.jetbrains.dokka")
-    kotlin("multiplatform")
-    kotlin("native.cocoapods")
+    `published-multiplatform-library`
 }
-
-version = "1.0.0"
 
 kotlin {
 
-    explicitApi()
-
-    jvm {
-        withJava()
-    }
-
-    ios()
+    optIn(
+        "kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "kotlinx.coroutines.FlowPreview",
+        "kotlinx.coroutines.InternalCoroutinesApi"
+    )
 
     cocoapods {
         summary = "Tea core library"
         homepage = "Link to the Tea library Module homepage"
         ios.deploymentTarget = "14.0"
-        frameworkName = "TeaCore"
-        podfile = project.file("../iosApp/Podfile")
+        framework {
+            baseName = "TeaCore"
+        }
+        podfile = project.file("../samples/iosApp/Podfile")
     }
 
     sourceSets {
+
         val commonMain by getting {
             dependencies {
-                api(coroutinesCore)
-                implementation(kotlinStdLib)
+                api(libs.coroutines.core)
+                implementation(libs.stdlib)
             }
         }
 
-        val commonTest by getting
-
-        val jvmMain by getting
-
-        val jvmTest by getting {
+        val commonTest by getting {
             dependencies {
+                implementation(libs.kotlin.test)
                 implementation(project(":tea-test"))
             }
         }
 
-        val iosMain by getting {
-            dependencies {
-                //implementation(kotlinStdLib)
-                //dependsOn(commonMain)
-                //org.jetbrains.kotlinx:kotlinx-coroutines-core-iosx64:1.5.0-native-mt'
-                //api("org.jetbrains.kotlinx:kotlinx-coroutines-core-iosx64:1.5.0")
-            }
-        }
+        val jvmMain by getting
+
+        val jvmTest by getting
+
+        val iosMain by getting
+
         val iosTest by getting
     }
 }

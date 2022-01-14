@@ -43,4 +43,4 @@ public annotation class ObsoleteComponentApi
 @Retention(value = AnnotationRetention.BINARY)
 @RequiresOptIn(level = RequiresOptIn.Level.WARNING)
 @Target(AnnotationTarget.TYPEALIAS, AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION)
-public annotation class UnstableApi
+public annotation class ExperimentalTeaApi

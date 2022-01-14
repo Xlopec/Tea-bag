@@ -20,10 +20,10 @@ package com.oliynick.max.tea.core.debug.app.domain.cms
 
 import com.google.gson.internal.LazilyParsedNumber
 import com.oliynick.max.tea.core.debug.app.domain.*
-import io.kotlintest.shouldBe
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import kotlin.test.assertEquals
 
 @RunWith(JUnit4::class)
 internal class FiltersTest {
@@ -55,7 +55,8 @@ internal class FiltersTest {
 
         val filtered = applyTo(ref, (RegexPredicate("com\\.example\\.Test", false) as Valid).t)
 
-        filtered shouldBe ref
+        assertEquals(ref, filtered)
+        //filtered shouldBe ref
     }
 
     @Test
@@ -68,10 +69,15 @@ internal class FiltersTest {
 
         val filtered = applyTo(ref, UnsafeRegexPredicate("com\\.example\\.another.*"))
 
-        filtered shouldBe Ref(
+        /*filtered shouldBe Ref(
             Type.of("com.example.Test"),
             setOf(testProperties.first())
-        )
+        )*/
+
+        assertEquals(Ref(
+            Type.of("com.example.Test"),
+            setOf(testProperties.first())
+        ), filtered)
     }
 
     @Test
@@ -84,9 +90,17 @@ internal class FiltersTest {
 
         val filtered = applyTo(ref, UnsafeRegexPredicate(testProperties.first().name))
 
-        filtered shouldBe Ref(
+        /*filtered shouldBe Ref(
             Type.of("com.example.Test"),
             setOf(testProperties.first())
+        )*/
+
+        assertEquals(
+            Ref(
+                Type.of("com.example.Test"),
+                setOf(testProperties.first())
+            ),
+            filtered
         )
     }
 
@@ -102,9 +116,18 @@ internal class FiltersTest {
 
         val filtered = applyTo(ref, UnsafeRegexPredicate("number"))
 
-        filtered shouldBe Ref(
+        /*filtered shouldBe Ref(
             Type.of("com.example.Test"),
             setOf(promitiveProperty)
+        )*/
+
+        assertEquals(
+            Ref(
+                Type.of("com.example.Test"),
+                setOf(promitiveProperty)
+            ),
+
+            filtered
         )
     }
 
@@ -120,10 +143,17 @@ internal class FiltersTest {
 
         val filtered = applyTo(ref, UnsafeRegexPredicate("java.lang.Integer"))
 
-        filtered shouldBe Ref(
+        assertEquals(
+            Ref(
+                Type.of("com.example.Test"),
+                setOf(promitiveProperty)
+            ),
+            filtered
+        )
+       /* filtered shouldBe Ref(
             Type.of("com.example.Test"),
             setOf(promitiveProperty)
-        )
+        )*/
     }
 
 

@@ -22,42 +22,38 @@
  * SOFTWARE.
  */
 
-import Libraries.kotlinStdLib
-
 plugins {
-    `maven-publish`
-    signing
-    id("org.jetbrains.dokka")
-    kotlin("multiplatform")
+    `published-multiplatform-library`
 }
 
 kotlin {
 
-    explicitApi()
-
-    jvm {
-        withJava()
+    cocoapods {
+        summary = "Tea time travel protocol library"
+        homepage = "Link to the Tea library Module homepage"
+        ios.deploymentTarget = "14.0"
+        framework {
+            baseName = "TeaProtocol"
+        }
+        podfile = project.file("../samples/iosApp/Podfile")
     }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(kotlinStdLib)
+                api(project(":shared-entities"))
+                implementation(libs.stdlib)
             }
         }
 
         val commonTest by getting
 
-        val jvmMain by getting {
-            dependencies {
+        val jvmMain by getting
 
-            }
-        }
+        val jvmTest by getting
 
-        val jvmTest by getting {
-            dependencies {
-                implementation(project(":tea-test"))
-            }
-        }
+        val iosMain by getting
+
+        val iosTest by getting
     }
 }

@@ -23,7 +23,6 @@ import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.*
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import core.misc.shouldForEach
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.matchers.collections.shouldContainExactly
@@ -39,6 +38,7 @@ import kotlinx.collections.immutable.toPersistentList
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import kotlin.test.assertEquals
 
 @RunWith(JUnit4::class)
 internal class LiveUiUpdaterTest {
@@ -227,11 +227,22 @@ internal class LiveUiUpdaterTest {
                 filter.predicate.shouldBeNull()
             }
 
-            snapshots.shouldForEach(filteredSnapshots) { s, fs ->
+            assertEquals(snapshots.size, filteredSnapshots.size)
+
+            snapshots.indices.forEach { i ->
+                val s = snapshots[i]
+                val fs = filteredSnapshots[i]
+
                 fs.state shouldBe s.state
                 fs.message shouldBe s.message
                 fs.meta shouldBe s.meta
             }
+
+            /*snapshots.shouldForEach(filteredSnapshots) { s, fs ->
+                fs.state shouldBe s.state
+                fs.message shouldBe s.message
+                fs.meta shouldBe s.meta
+            }*/
         }
     }
 

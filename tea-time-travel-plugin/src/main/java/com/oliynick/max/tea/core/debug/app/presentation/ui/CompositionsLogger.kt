@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.tea.core.debug.app.presentation.ui
 
 import androidx.compose.runtime.Composable
@@ -32,6 +34,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 val LogCompositions = compositionLocalOf { false }
 
+@Suppress("NOTHING_TO_INLINE")
 @Composable
 inline fun LogCompositions(
     tag: String

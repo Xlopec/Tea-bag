@@ -23,19 +23,9 @@
  */
 
 
-import Libraries.coroutinesCore
-import Libraries.coroutinesSwing
-import Libraries.immutableCollections
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibReflect
-import Libraries.ktorServerCore
-import Libraries.ktorServerNetty
-import Libraries.ktorServerWebsockets
-import Libraries.logback
-import TestLibraries.ktorServerTests
+import org.jetbrains.compose.compose
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PublishPluginTask
-import org.jetbrains.compose.compose
 
 plugins {
     `maven-publish`
@@ -43,10 +33,6 @@ plugins {
     kotlin("jvm")
     intellij()
     id("org.jetbrains.compose")
-}
-
-repositories {
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
 intellij {
@@ -64,43 +50,22 @@ tasks.named<PublishPluginTask>("publishPlugin") {
 }
 
 val copyArtifacts by tasks.registering(Copy::class) {
+    from(libsDir, distributionsDir)
+    into(artifactsDir)
+
     group = "release"
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
-    from("$buildDir/libs/", "$buildDir/distributions/")
-    into("${rootProject.buildDir}/artifacts/${project.name}")
 }
 
 val releasePlugin by tasks.creating(Task::class) {
-    group = "release"
-    description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
     dependsOn("publishPlugin")
     finalizedBy(copyArtifacts)
+
+    group = "release"
+    description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
 }
 
-val ciTests by tasks.registering(Test::class) {
-    group = "verification"
-    description = "Prepares and runs tests relevant for CI build"
-
-    dependsOn(tasks.test.get())
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
-    kotlinOptions {
-        jvmTarget = "11"
-
-        freeCompilerArgs += listOf(
-            "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
-            "-Xuse-experimental=kotlin.Experimental",
-            "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
-            "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
-            "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-            "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
-            "-Xuse-experimental=kotlin.ExperimentalStdlibApi",
-            "-XXLanguage:+NewInference",
-            "-XXLanguage:+InlineClasses"
-        )
-    }
-}
+optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
 
 sourceSets {
     main {
@@ -116,19 +81,18 @@ dependencies {
     implementation(project(":tea-time-travel-protocol"))
     implementation(project(":tea-time-travel-adapter-gson"))
 
-    implementation(kotlinStdLib)
-    implementation(kotlinStdLibReflect)
+    implementation(libs.stdlib)
+    implementation(libs.stdlib.reflect)
 
     implementation(compose.desktop.currentOs)
-    implementation(logback)
+    implementation(libs.logging)
 
-    implementation(ktorServerCore)
-    implementation(ktorServerNetty)
-    implementation(ktorServerWebsockets)
-    implementation(coroutinesCore)
-    implementation(coroutinesSwing)
-    implementation(immutableCollections)
+    implementation(libs.bundles.ktor.server)
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.swing)
+    implementation(libs.collections.immutable)
 
-    testImplementation(ktorServerTests)
+    testImplementation(libs.ktor.server.tests)
     testImplementation(project(":tea-test"))
+    testImplementation("io.kotlintest:kotlintest-assertions:3.4.2")
 }

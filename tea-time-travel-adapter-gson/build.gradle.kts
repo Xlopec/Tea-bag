@@ -22,25 +22,25 @@
  * SOFTWARE.
  */
 
-
-import Libraries.gson
-import Libraries.immutableCollections
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibReflect
-
 plugins {
-    publishedLibrary()
+    `published-jvm-library`
+}
+
+tasks.test {
+    useJUnit()
 }
 
 dependencies {
 
     api(project(":tea-time-travel-protocol"))
-    api(kotlinStdLibReflect)
-    api(gson)
+    api(project(":shared-entities"))
+    api(libs.stdlib.reflect)
+    api(libs.gson)
 
-    implementation(kotlinStdLib)
+    implementation(libs.stdlib)
 
     testImplementation(project(":tea-test"))
-    testImplementation(immutableCollections)
-
+    testImplementation(project(":tea-time-travel-protocol"))
+    testImplementation(libs.collections.immutable)
+    testImplementation(libs.junit)
 }

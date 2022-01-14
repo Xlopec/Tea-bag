@@ -29,9 +29,6 @@ import org.gradle.plugin.use.PluginDependencySpec
 fun PluginDependenciesSpec.intellij(): PluginDependencySpec =
     id("org.jetbrains.intellij")
 
-fun PluginDependenciesSpec.publishedLibrary(): PluginDependencySpec =
-    id("published-library")
-
 fun DependencyHandlerScope.remoteImplementation(dependencyNotation: Any) {
     add("remoteImplementation", dependencyNotation)
 }

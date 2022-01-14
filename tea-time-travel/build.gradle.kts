@@ -22,24 +22,18 @@
  * SOFTWARE.
  */
 
-import Libraries.kotlinStdLib
-import Libraries.ktorClientCio
-import Libraries.ktorClientWebsockets
-import TestLibraries.ktorMockJvm
-
 plugins {
-    `maven-publish`
-    signing
-    id("org.jetbrains.dokka")
-    kotlin("multiplatform")
+    `published-multiplatform-library`
 }
 
 kotlin {
 
-    explicitApi()
-
-    jvm {
-        withJava()
+    cocoapods {
+        summary = "Tea time travel library"
+        homepage = "Link to the Tea library Module homepage"
+        ios.deploymentTarget = "14.0"
+        frameworkName = "TeaTimeTravel"
+        podfile = project.file("../samples/iosApp/Podfile")
     }
 
     sourceSets {
@@ -47,41 +41,33 @@ kotlin {
             dependencies {
                 implementation(project(":tea-core"))
                 api(project(":tea-time-travel-protocol"))
+                api(project(":tea-time-travel-protocol"))
 
-                implementation(kotlinStdLib)
-
-                implementation(ktorClientWebsockets)
-                implementation(ktorClientCio)
+                implementation(libs.stdlib)
+                implementation(libs.ktor.client.websockets)
+                implementation(libs.ktor.client.core)
             }
         }
 
         val commonTest by getting
 
-        val jvmMain by getting
+        val jvmMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.cio)
+            }
+        }
 
         val jvmTest by getting {
             dependencies {
+                implementation(libs.junit)
                 implementation(project(":tea-test"))
                 implementation(project(":tea-time-travel-adapter-gson"))
-                implementation(ktorMockJvm)
+                implementation(libs.ktor.client.mock.jvm)
             }
         }
+
+        val iosMain by getting
+
+        val iosTest by getting
     }
 }
-
-
-/*dependencies {
-
-    implementation(project(":tea-core"))
-    api(project(":tea-time-travel-protocol"))
-
-    implementation(kotlinStdLib)
-
-    implementation(ktorClientWebsockets)
-    implementation(ktorClientCio)
-
-    testImplementation(project(":tea-test"))
-    testImplementation(project(":tea-time-travel-adapter-gson"))
-    testImplementation(ktorMockJvm)
-
-}*/

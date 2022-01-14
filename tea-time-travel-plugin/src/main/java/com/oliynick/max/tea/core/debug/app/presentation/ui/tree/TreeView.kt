@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+@file:OptIn(ExperimentalFoundationApi::class)
 @file:Suppress("FunctionName")
 
 package com.oliynick.max.tea.core.debug.app.presentation.ui.tree
@@ -42,6 +43,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.input.pointer.isPrimaryPressed
+import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -203,7 +206,6 @@ private fun LazyListScope.leaf(
 }
 
 // todo: refactor LeafNode & ExpandableNode as they duplicate each other
-@OptIn(ExperimentalDesktopApi::class)
 @Composable
 private fun LeafNode(
     level: Int,
@@ -237,7 +239,6 @@ private fun LeafNode(
     }
 }
 
-@OptIn(ExperimentalDesktopApi::class)
 @Composable
 private fun ExpandableNode(
     level: Int,

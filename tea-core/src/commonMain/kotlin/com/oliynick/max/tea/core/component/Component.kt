@@ -23,7 +23,7 @@
  */
 
 @file:Suppress("unused", "MemberVisibilityCanBePrivate", "FunctionName")
-@file:OptIn(UnstableApi::class)
+@file:OptIn(ExperimentalTeaApi::class)
 
 package com.oliynick.max.tea.core.component
 
@@ -103,7 +103,7 @@ public typealias Resolver<C, M> = suspend (command: C) -> Set<M>
  *
  * @param T incoming values
  */
-@UnstableApi
+@ExperimentalTeaApi
 public typealias Sink<T> = suspend (T) -> Unit
 
 /**
@@ -140,7 +140,7 @@ public fun <M, C, S> Component(
  * @param S state of the application
  * @param C commands to be executed
  */
-@OptIn(UnstableApi::class)
+@OptIn(ExperimentalTeaApi::class)
 public fun <M, S, C> Component(
     env: Env<M, S, C>,
 ): Component<M, S, C> {
@@ -158,7 +158,7 @@ public fun <M, S, C> Component(
     return { messages -> upstream.downstream(messages, input) }
 }
 
-@UnstableApi
+@ExperimentalTeaApi
 public fun <M, S, C> Env<M, S, C>.upstream(
     snapshots: Flow<Initial<S, C>>,
     sink: Sink<M>,
@@ -166,7 +166,7 @@ public fun <M, S, C> Env<M, S, C>.upstream(
 ): Flow<Snapshot<M, S, C>> =
     snapshots.flatMapLatest { startFrom -> compute(input(startFrom), startFrom, sink) }
 
-@UnstableApi
+@ExperimentalTeaApi
 public fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
     input: Flow<M>,
     upstreamInput: SendChannel<M>,
@@ -177,11 +177,11 @@ public fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
             .into(channel)
     }
 
-@UnstableApi
+@ExperimentalTeaApi
 public fun <S, C> Env<*, S, C>.init(): Flow<Initial<S, C>> =
     channelFlow { withContext(io) { send(initializer()) } }
 
-@UnstableApi
+@ExperimentalTeaApi
 public fun <M, S, C> Env<M, S, C>.compute(
     input: Flow<M>,
     startFrom: Initial<S, C>,
@@ -210,13 +210,13 @@ public fun <M, S, C> Env<M, S, C>.compute(
     }.startFrom(startFrom)
 }
 
-@UnstableApi
+@ExperimentalTeaApi
 public fun <T> Flow<T>.shareIn(
     scope: CoroutineScope,
     shareOptions: ShareOptions,
 ): SharedFlow<T> = shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
 
-@UnstableApi
+@ExperimentalTeaApi
 public fun <M, S, C> Env<M, S, C>.resolveAsFlow(
     commands: Collection<C>,
 ): Flow<M> =
