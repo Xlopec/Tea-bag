@@ -31,16 +31,16 @@ package com.oliynick.max.tea.core
  * @param S state
  * @param C command
  */
-public sealed class Snapshot<out M, out S, out C> {
+public sealed interface Snapshot<out M, out S, out C> {
     /**
      * Current state of a component
      */
-    public abstract val currentState: S
+    public val currentState: S
 
     /**
      * Set of commands to be resolved and executed
      */
-    public abstract val commands: Set<C>
+    public val commands: Set<C>
 }
 
 /**
@@ -52,7 +52,7 @@ public sealed class Snapshot<out M, out S, out C> {
 public data class Initial<out S, out C>(
     override val currentState: S,
     override val commands: Set<C>
-) : Snapshot<Nothing, S, C>()
+) : Snapshot<Nothing, S, C>
 
 /**
  * [Snapshot] that describes component's state
@@ -72,4 +72,4 @@ public data class Regular<out M, out S, out C>(
      * Message that triggered state update
      */
     val message: M
-) : Snapshot<M, S, C>()
+) : Snapshot<M, S, C>
