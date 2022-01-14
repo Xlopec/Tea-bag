@@ -38,7 +38,6 @@ fun <M, S, C> TestScope.TestEnv(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     updater: Updater<M, S, C>,
-    io: CoroutineDispatcher = coroutineDispatcher,
     computation: CoroutineDispatcher = coroutineDispatcher,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ) = Env(

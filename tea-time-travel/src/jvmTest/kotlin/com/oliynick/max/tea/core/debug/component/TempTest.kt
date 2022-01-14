@@ -1,47 +1,27 @@
-/*
- * MIT License
- *
- * Copyright (c) 2021. Maksym Oliinyk.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
-@file:Suppress("FunctionName", "TestFunctionName")
-
-package com.oliynick.max.tea.core.component
+package com.oliynick.max.tea.core.debug.component
 
 import com.oliynick.max.tea.core.*
-import com.oliynick.max.tea.core.misc.*
+import com.oliynick.max.tea.core.component.*
+import com.oliynick.max.tea.core.debug.misc.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
 import kotlinx.coroutines.test.*
+import org.junit.Ignore
+import org.junit.Test
 import kotlin.Long.Companion.MAX_VALUE
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.abs
-import kotlin.test.*
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
-class ComponentTest {
+class TempTest {
+
+    private val factory: (Env<Char, String, Char>) -> Component<Char, String, Char> = { Component(TestDebugEnv(it)) }
 
     @Test
     fun `when subscriber disconnects, then component initializer is re-invoked`() =
@@ -55,7 +35,7 @@ class ComponentTest {
                 { m, str -> (str + m).command(m) },
             )
 
-            val component = Component(env)
+            val component = factory(env)
 
             component.collectRanged('a'..'f')
             component.collectRanged('g'..'k')
@@ -111,7 +91,7 @@ class ComponentTest {
             )
 
             val messages = arrayOf('a', 'b', 'c')
-            val actualSnapshots = Component(env)(*messages).take(messages.size + 1).toList()
+            val actualSnapshots = factory(env)(*messages).take(messages.size + 1).toList()
             val expectedSnapshots = listOf<Snapshot<Char, String, Char>>(
                 Initial("", setOf()),
                 Regular("a", setOf(), "", 'a'),
@@ -135,7 +115,7 @@ class ComponentTest {
                 { m, str -> (str + m).command(m) }
             )
 
-            val actualSnapshots = Component(env)('a').take(3).toList()
+            val actualSnapshots = factory(env)('a').take(3).toList()
             val expectedSnapshots = listOf(
                 Initial("", setOf()),
                 Regular("a", setOf('a'), "", 'a'),
@@ -156,7 +136,7 @@ class ComponentTest {
             )
 
             val sink = mutableListOf<Snapshot<Char, String, Char>>()
-            val component = Component(env) with sink::add
+            val component = factory(env) with sink::add
             val messages = arrayOf('a', 'b', 'c')
             val snapshots =
                 component(*messages).take(messages.size + 1).toList()
@@ -181,7 +161,7 @@ class ComponentTest {
             )
 
             val take = 3
-            val component = Component(env)
+            val component = factory(env)
             val snapshots2Deferred = async { component(emptyFlow()).take(take).toList() }
             val snapshots1Deferred = async { component('a').take(take).toList() }
 
@@ -217,7 +197,7 @@ class ComponentTest {
                 shareOptions = ShareOptions(Lazily, 1U)
             )
 
-            val component = Component(env)
+            val component = factory(env)
             // Ensure component builder won't invoke initializer before first consumer arrives
             assertEquals(0, invocations)
 
@@ -244,7 +224,7 @@ class ComponentTest {
 
             val messages = 'a'..'z'
 
-            Component(env)(messages).take(messages.size + 1 /*plus initial snapshot*/).collect()
+            factory(env)(messages).take(messages.size + 1 /*plus initial snapshot*/).collect()
 
             val canceled = resolver.messages
                 .consumeAsFlow()
@@ -265,7 +245,7 @@ class ComponentTest {
             )
 
             val range = 'a'..'h'
-            val component = Component(env)
+            val component = factory(env)
 
             val chan1 = Channel<Char>()
             val chan2 = Channel<Char>()
@@ -336,13 +316,13 @@ class ComponentTest {
     fun `when collecting component, given updater throws exception, then it's handled by coroutine scope`() {
         val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
 
-        val component = Component<String, String, String>(
+        val testEnv = scope.TestEnv<String, String, String>(
             Initializer("", "a"),
             ::throwingResolver,
             ::throwingUpdater,
-            scope,
-            scope.coroutineDispatcher
         )
+
+        val component = Component(TestDebugEnv(testEnv))
 
         val job = scope.launch { component("").collect() }
 
@@ -360,13 +340,14 @@ class ComponentTest {
         val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
 
         val expectedException = RuntimeException("hello")
-        val component = Component<String, String, String>(
+
+        val testEnv = scope.TestEnv<String, String, String>(
             ThrowingInitializer(expectedException),
             ::throwingResolver,
             ::throwingUpdater,
-            scope,
-            scope.coroutineDispatcher
         )
+
+        val component = Component(TestDebugEnv(testEnv))
 
         val job = scope.launch { component("").collect() }
 
@@ -380,24 +361,6 @@ class ComponentTest {
         assertTrue(!scope.isActive)
     }
 
-    @Test
-    fun `when collecting component with specific dispatcher, then updater runs on this dispatcher`() =
-        runTestCancellingChildren {
-            // All test schedulers use 'Test worker' as prefix, so to workaround this issue we use
-            // custom dispatcher with different thread naming strategy
-            println("Current ${currentThreadName()}")
-            val computation = Default
-            val mainThreadNamePrefix = async { currentThreadName() }
-            val env = TestEnv<Char, String, Char>(
-                Initializer(""),
-                ::throwingResolver,
-                CheckingUpdater(mainThreadNamePrefix.await()),
-                computation
-            )
-
-            Component(env)('a'..'d').take('d' - 'a').collect()
-        }
-
 }
 
 @Suppress("UNUSED_PARAMETER")
@@ -407,7 +370,7 @@ fun ThrowingInitializer(
     th: Throwable,
 ): Initializer<Nothing, Nothing> = { throw th }
 
-private fun <M, S> CheckingUpdater(
+/*private fun <M, S> CheckingUpdater(
     mainThreadName: String,
 ): Updater<M, S, Nothing> = { _, s ->
 
@@ -417,7 +380,7 @@ private fun <M, S> CheckingUpdater(
     assertNotEquals(mainThreadNamePrefix, actualThreadNamePrefix)
 
     s.noCommand()
-}
+}*/
 
 @Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
 private suspend fun <T> noOpResolver(

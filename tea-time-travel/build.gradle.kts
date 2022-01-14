@@ -49,7 +49,6 @@ kotlin {
             dependencies {
                 implementation(project(":tea-core"))
                 api(project(":tea-time-travel-protocol"))
-                api(project(":tea-time-travel-protocol"))
 
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.websockets)

@@ -26,10 +26,13 @@
 
 package com.oliynick.max.tea.core.debug.misc
 
-/*
 import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.Env
 import com.oliynick.max.tea.core.Initializer
+import com.oliynick.max.tea.core.ShareOptions
+import com.oliynick.max.tea.core.ShareStateWhileSubscribed
+import com.oliynick.max.tea.core.component.*
+import com.oliynick.max.tea.core.debug.component.ComponentException
 import com.oliynick.max.tea.core.debug.component.DebugEnv
 import com.oliynick.max.tea.core.debug.component.ServerSettings
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
@@ -37,11 +40,9 @@ import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.JsonConverter
 import com.oliynick.max.tea.core.debug.session.Localhost
 import com.oliynick.max.tea.core.debug.session.SessionBuilder
-import core.misc.messageAsStateUpdate
-import core.misc.throwingResolver
-import core.scope.coroutineDispatcher
 import io.ktor.http.*
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.test.TestScope
 
 val TestComponentId = ComponentId("test")
 
@@ -55,28 +56,66 @@ fun <M, S> TestServerSettings(
         TestDebugSession<M, S>().apply { block() }
     }
 ) = ServerSettings(
-        componentId,
-        converter,
-        url,
-        sessionBuilder
+    componentId,
+    converter,
+    url,
+    sessionBuilder
 )
 
-fun TestCoroutineScope.TestEnv(
-    initializer: Initializer<String, String> = Initializer("")
+fun <M, S, C> TestScope.TestEnv(
+    initializer: Initializer<S, C>,
+    resolver: Resolver<C, M>,
+    updater: Updater<M, S, C>,
+    computation: CoroutineDispatcher = coroutineDispatcher,
+    shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ) = Env(
     initializer,
-    ::throwingResolver,
-    ::messageAsStateUpdate,
+    resolver,
+    updater,
     this,
-    coroutineDispatcher,
-    coroutineDispatcher
+    computation,
+    shareOptions
 )
 
 fun <M, S, C> TestDebugEnv(
     env: Env<M, S, C>,
     serverSettings: ServerSettings<M, S, JsonElement> = TestServerSettings()
 ) = DebugEnv(
-        env,
-        serverSettings
+    env,
+    serverSettings
 )
-*/
+
+@OptIn(ExperimentalStdlibApi::class)
+val TestScope.coroutineDispatcher: CoroutineDispatcher
+    get() = coroutineContext[CoroutineDispatcher.Key]!!
+
+@Suppress("RedundantSuspendModifier")
+suspend fun <C> throwingResolver(
+    c: C,
+): Nothing =
+    throw ComponentException("Unexpected command $c")
+
+fun <M, S> throwingUpdater(
+    m: M,
+    s: S,
+): Nothing =
+    throw ComponentException("message=$m, state=$s")
+
+fun <S> messageAsStateUpdate(
+    message: S,
+    @Suppress("UNUSED_PARAMETER") state: S,
+): UpdateWith<S, S> =
+    message.noCommand()
+
+fun <M, S> messageAsCommand(
+    message: M,
+    @Suppress("UNUSED_PARAMETER") state: S,
+): UpdateWith<S, M> =
+    state command message
+
+fun <M, S> ignoringMessageAsStateUpdate(
+    message: M,
+    @Suppress("UNUSED_PARAMETER") state: S,
+): UpdateWith<M, S> =
+    message.noCommand()
+
