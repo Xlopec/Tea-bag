@@ -27,7 +27,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     needs: Check
-    runs-on: ubuntu-latest
+    runs-on: macos-11
     steps:
       - uses: actions/checkout@v2
       - name: set up JDK 11
@@ -52,7 +52,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     needs: Test
-    runs-on: ubuntu-latest
+    runs-on: macos-11
     # tags should be of the form:
     # <no-value> -> dev build
     # v1.2.3-alpha1 -> alpha build
