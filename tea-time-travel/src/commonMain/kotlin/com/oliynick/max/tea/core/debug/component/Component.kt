@@ -29,7 +29,6 @@ package com.oliynick.max.tea.core.debug.component
 import com.oliynick.max.entities.shared.randomUUID
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
-import com.oliynick.max.tea.core.component.internal.into
 import com.oliynick.max.tea.core.debug.component.internal.mergeWith
 import com.oliynick.max.tea.core.debug.protocol.*
 import com.oliynick.max.tea.core.debug.session.DebugSession
@@ -41,7 +40,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.Channel.Factory.RENDEZVOUS
 import kotlinx.coroutines.flow.*
 
 /**
@@ -78,7 +77,8 @@ public inline fun <reified M : Any, reified C, reified S : Any, J> Component(
     Component(
         DebugEnv(
             Env(initializer, resolver, updater, scope, computation, shareOptions),
-            ServerSettings(id, jsonConverter, url, sessionBuilder))
+            ServerSettings(id, jsonConverter, url, sessionBuilder)
+        )
     )
 
 /**
@@ -93,35 +93,48 @@ public fun <M, S, C, J> Component(
     env: DebugEnv<M, S, C, J>,
 ): Component<M, S, C> {
 
-    val input = Channel<M>(Channel.RENDEZVOUS)
-    val upstream = env.upstream(input)
+    val input = Channel<M>(RENDEZVOUS)
+    val upstream = env.toComponentFlow(input)
         .shareIn(env.componentEnv.scope, env.componentEnv.shareOptions)
 
     return { messages -> upstream.withMessageCollector(messages, input::send) }
 }
 
-private fun <M, S, C, J> DebugEnv<M, S, C, J>.upstream(
+private fun <M, S, C, J> DebugEnv<M, S, C, J>.toComponentFlow(
     input: Channel<M>,
-): Flow<Snapshot<M, S, C>> {
-
-    fun DebugSession<M, S, J>.inputFlow(): (Initial<S, C>) -> Flow<M> = { initial ->
-        componentEnv.resolveAsFlow(initial.commands)
-            .mergeWith(input.receiveAsFlow())
-            .mergeWith(messages)
+): Flow<Snapshot<M, S, C>> =
+    debugSession { sink ->
+        componentEnv.toComponentFlow(
+            mergeInitialSnapshots(this@toComponentFlow, this@debugSession),
+            input::send,
+            messagesForInitialSnapshot(input.receiveAsFlow(), this@toComponentFlow, this@debugSession)
+        )
+            .onEach { snapshot -> notifyServer(this@debugSession, snapshot) }
+            .collect(sink::invoke)
     }
 
-    fun DebugSession<M, S, J>.debugUpstream() =
-        componentEnv.toComponentFlow(initial().mergeWith(states.asSnapshots()), input::send, inputFlow())
-            .onEach { snapshot -> notifyServer(this, snapshot) }
+// todo refactor when multi-receivers KEEP is ready
+private fun <M, S, C, J> mergeInitialSnapshots(
+    env: DebugEnv<M, S, C, J>,
+    session: DebugSession<M, S, J>,
+) = env.componentEnv.initial().mergeWith(session.states.asSnapshots())
 
-    return session { inputChan -> debugUpstream().into(inputChan) }
+// todo refactor when multi-receivers KEEP is ready
+private fun <M, S, C, J> messagesForInitialSnapshot(
+    input: Flow<M>,
+    env: DebugEnv<M, S, C, J>,
+    session: DebugSession<M, S, J>,
+): (Initial<S, C>) -> Flow<M> = { initial ->
+    env.componentEnv.resolveAsFlow(initial.commands)
+        .mergeWith(input)
+        .mergeWith(session.messages)
 }
 
 @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
-private fun <M, S, C, J> DebugEnv<M, S, C, J>.session(
-    block: suspend DebugSession<M, S, J>.(input: SendChannel<Snapshot<M, S, C>>) -> Unit,
+private fun <M, S, C, J> DebugEnv<M, S, C, J>.debugSession(
+    block: suspend DebugSession<M, S, J>.(input: Sink<Snapshot<M, S, C>>) -> Unit,
 ): Flow<Snapshot<M, S, C>> =
-    channelFlow { serverSettings.sessionBuilder(serverSettings) { block(channel) } }
+    channelFlow { serverSettings.sessionBuilder(serverSettings) { block(channel::send) } }
 
 private fun <S> Flow<S>.asSnapshots(): Flow<Initial<S, Nothing>> =
     // TODO what if we want to start from Regular snapshot?
@@ -153,5 +166,3 @@ private fun <M, S, C, J> JsonConverter<J>.toServerMessage(
         toJsonTree(snapshot.currentState)
     )
 }
-
-private fun <S, C> DebugEnv<*, S, C, *>.initial(): Flow<Initial<S, C>> = componentEnv.initial()

@@ -18,6 +18,10 @@
     <ID>FunctionNaming:NavigationExtensionsTest.kt$private fun GenerateNestedScreens( groupId: ScreenId, times: UInt )</ID>
     <ID>FunctionNaming:NavigationExtensionsTest.kt$private fun Group( groupId: ScreenId, nestedItemsCount: UInt = 1U )</ID>
     <ID>FunctionNaming:SettingsScreen.kt$@Composable fun SettingsScreen( innerPadding: PaddingValues, state: AppState, onMessage: (Message) -> Unit, )</ID>
+    <ID>FunctionNaming:TempTest.kt$fun ThrowingInitializer( th: Throwable, ): Initializer&lt;Nothing, Nothing></ID>
+    <ID>FunctionNaming:TestEnv.kt$fun &lt;M, S, C> TestDebugEnv( env: Env&lt;M, S, C>, serverSettings: ServerSettings&lt;M, S, JsonElement> = TestServerSettings() )</ID>
+    <ID>FunctionNaming:TestEnv.kt$fun &lt;M, S, C> TestScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, computation: CoroutineDispatcher = coroutineDispatcher, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
+    <ID>FunctionNaming:TestEnv.kt$fun &lt;M, S> TestServerSettings( componentId: ComponentId = TestComponentId, converter: JsonConverter&lt;JsonElement> = GsonSerializer(), url: Url = Localhost, sessionBuilder: SessionBuilder&lt;M, S, JsonElement> = { _, block -> TestDebugSession&lt;M, S>().apply { block() } } )</ID>
     <ID>FunctionNaming:ToolWindowView.kt$@Composable @Preview fun SettingsInputFieldPreview()</ID>
     <ID>FunctionNaming:ToolWindowView.kt$@Composable private fun SettingsInputField( setting: Validated&lt;*>, label: String, placeholder: String, enabled: Boolean, modifier: Modifier = Modifier, onValueChange: (newValue: String) -> Unit, )</ID>
     <ID>FunctionNaming:ToolWindowView.kt$ToolWindowView$@Composable private fun BottomActionMenu( state: PluginState, events: (PluginMessage) -> Unit, )</ID>
@@ -27,6 +31,7 @@
     <ID>FunctionNaming:WidgetTheme.kt$@Composable fun WidgetTheme( content: @Composable () -> Unit, )</ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") internal fun Null.toReadableString(): String</ID>
     <ID>LongMethod:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
+    <ID>LongMethod:TempTest.kt$TempTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
     <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C>, noinline resolver: Resolver&lt;C, M>, noinline updater: Updater&lt;M, S, C>, jsonConverter: JsonConverter&lt;J>, // todo: group to reduce number of arguments scope: CoroutineScope, url: Url = Localhost, computation: CoroutineDispatcher = Dispatchers.Unconfined, shareOptions: ShareOptions = ShareStateWhileSubscribed, noinline sessionBuilder: SessionBuilder&lt;M, S, J> = ::WebSocketSession, )</ID>
     <ID>LongParameterList:LocalStorageImpl.kt$( url: String, title: String, author: String?, description: String?, urlToImage: String?, published: Long, // this unused arg is needed just to make function signatures match @Suppress("UNUSED_PARAMETER") savedOn: Long, isFavorite: Boolean )</ID>
     <ID>LongParameterList:TreeView.kt$( level: Int, text: String, formatter: TreeFormatter, node: SnapshotINode, state: TreeState, handler: (PluginMessage) -> Unit )</ID>
@@ -50,6 +55,8 @@
     <ID>MagicNumber:LocalStorageImpl.kt$6</ID>
     <ID>MagicNumber:ServerImpl.kt$10</ID>
     <ID>MagicNumber:ServerImpl.kt$5</ID>
+    <ID>MagicNumber:TempTest.kt$TempTest$1_000</ID>
+    <ID>MagicNumber:TempTest.kt$TempTest$3</ID>
     <ID>MaxLineLength:AppTheme.kt$val secondaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant)</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
     <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>
@@ -115,9 +122,11 @@
     <ID>SpreadOperator:NavigationExtensionsTest.kt$NavigationExtensionsTest$(*Group(randomUUID()))</ID>
     <ID>SpreadOperator:NavigationExtensionsTest.kt$NavigationExtensionsTest$(*group1, *group2, *group3)</ID>
     <ID>SpreadOperator:NavigationExtensionsTest.kt$NavigationExtensionsTest$(*group2, *group1, *group3)</ID>
+    <ID>SpreadOperator:TempTest.kt$TempTest$(*messages)</ID>
     <ID>TooGenericExceptionCaught:ServerImpl.kt$e: Throwable</ID>
     <ID>TooManyFunctions:ComponentTest.kt$ComponentTest</ID>
     <ID>TooManyFunctions:RenderExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.RenderExtensions.kt</ID>
+    <ID>TooManyFunctions:TempTest.kt$TempTest</ID>
     <ID>UndocumentedPublicClass:Adapters.kt$AuthorSerializer : KSerializer</ID>
     <ID>UndocumentedPublicClass:Adapters.kt$CommonDateSerializer : KSerializer</ID>
     <ID>UndocumentedPublicClass:Adapters.kt$DescriptionSerializer : KSerializer</ID>
@@ -182,6 +191,8 @@
     <ID>UndocumentedPublicClass:SettingsMessage.kt$OnToggleDarkMode : SettingsMessage</ID>
     <ID>UndocumentedPublicClass:SettingsMessage.kt$SettingsMessage : ScreenMessage</ID>
     <ID>UndocumentedPublicClass:SettingsState.kt$SettingsState : TabScreen</ID>
+    <ID>UndocumentedPublicClass:TempTest.kt$ForeverWaitingResolver&lt;T></ID>
+    <ID>UndocumentedPublicClass:TempTest.kt$TempTest</ID>
     <ID>UndocumentedPublicClass:UUID.kt$UUID</ID>
     <ID>UndocumentedPublicClass:Url.kt$Url</ID>
     <ID>UndocumentedPublicFunction:Adapters.kt$expect fun Date.toJson(): String</ID>
@@ -213,13 +224,8 @@
     <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.toRefreshing()</ID>
     <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.updateArticle( new: Article, ): ArticlesState</ID>
     <ID>UndocumentedPublicFunction:ArticlesUpdater.kt$ArticlesUpdater$fun updateArticles( message: ArticlesMessage, state: ArticlesState ): UpdateWith&lt;ArticlesState, Command></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@InternalTeaApi public fun &lt;M, S, C> Env&lt;M, S, C>.compute( input: Flow&lt;M>, startFrom: Initial&lt;S, C>, sink: Sink&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@InternalTeaApi public fun &lt;M, S, C> Env&lt;M, S, C>.resolveAsFlow( commands: Collection&lt;C>, ): Flow&lt;M></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@InternalTeaApi public fun &lt;M, S, C> Env&lt;M, S, C>.toSnapshotsFlow( snapshots: Flow&lt;Initial&lt;S, C>>, sink: Sink&lt;M>, input: (Initial&lt;S, C>) -> Flow&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@InternalTeaApi public fun &lt;S, C> Env&lt;*, S, C>.initial(): Flow&lt;Initial&lt;S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@InternalTeaApi public fun &lt;T> Flow&lt;T>.shareIn( scope: CoroutineScope, shareOptions: ShareOptions, ): SharedFlow&lt;T></ID>
     <ID>UndocumentedPublicFunction:Component.kt$@Suppress("RedundantSuspendModifier") suspend fun &lt;C> throwingResolver( c: C, ): Nothing</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C> TestScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, io: CoroutineDispatcher = coroutineDispatcher, computation: CoroutineDispatcher = coroutineDispatcher, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C> TestScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, computation: CoroutineDispatcher = coroutineDispatcher, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> ignoringMessageAsStateUpdate( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;M, S></ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> messageAsCommand( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, M></ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> throwingUpdater( m: M, s: S, ): Nothing</ID>
@@ -266,6 +272,26 @@
     <ID>UndocumentedPublicFunction:NewsApi.kt$fun NewsApi( application: Application ): NewsApi</ID>
     <ID>UndocumentedPublicFunction:NewsApi.kt$fun NewsApi(): NewsApi</ID>
     <ID>UndocumentedPublicFunction:Page.kt$fun ArticlesState.nextPage( resultsPerPage: Int = ArticlesPerPage )</ID>
+    <ID>UndocumentedPublicFunction:TempTest.kt$ForeverWaitingResolver$suspend fun resolveForever( t: T, ): Nothing</ID>
+    <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when attaching interceptor to component, then original sequence of snapshots pipes through it`()</ID>
+    <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when collecting component, given initializer throws exception, then it's handled by coroutine scope`()</ID>
+    <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when collecting component, given updater throws exception, then it's handled by coroutine scope`()</ID>
+    <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when component has multiple consumers, then component is initialized only once`()</ID>
+    <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
+    <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when component has multiple consumers, then snapshots are shared among them`()</ID>
+    <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when component receives input, given recursive calculations, then it emits correct sequence of snapshots`()</ID>
+    <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when component receives input, then it emits correct sequence of snapshots`()</ID>
+    <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when subscriber disconnects, then component initializer is re-invoked`()</ID>
+    <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when upstream receives new input, then previous downstream is canceled`()</ID>
+    <ID>UndocumentedPublicFunction:TempTest.kt$fun ThrowingInitializer( th: Throwable, ): Initializer&lt;Nothing, Nothing></ID>
+    <ID>UndocumentedPublicFunction:TestEnv.kt$@Suppress("RedundantSuspendModifier") suspend fun &lt;C> throwingResolver( c: C, ): Nothing</ID>
+    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S, C> TestDebugEnv( env: Env&lt;M, S, C>, serverSettings: ServerSettings&lt;M, S, JsonElement> = TestServerSettings() )</ID>
+    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S, C> TestScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, computation: CoroutineDispatcher = coroutineDispatcher, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
+    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> TestServerSettings( componentId: ComponentId = TestComponentId, converter: JsonConverter&lt;JsonElement> = GsonSerializer(), url: Url = Localhost, sessionBuilder: SessionBuilder&lt;M, S, JsonElement> = { _, block -> TestDebugSession&lt;M, S>().apply { block() } } )</ID>
+    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> ignoringMessageAsStateUpdate( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;M, S></ID>
+    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> messageAsCommand( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, M></ID>
+    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> throwingUpdater( m: M, s: S, ): Nothing</ID>
+    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;S> messageAsStateUpdate( message: S, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, S></ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public actual fun String.toUUID(): UUID</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public actual fun UUID.toHumanReadable(): String</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public actual fun randomUUID(): UUID</ID>
@@ -338,5 +364,11 @@
     <ID>UndocumentedPublicProperty:Page.kt$Paging$val currentSize: Int</ID>
     <ID>UndocumentedPublicProperty:Page.kt$Paging$val resultsPerPage: Int = ArticlesPerPage</ID>
     <ID>UndocumentedPublicProperty:Page.kt$Paging.Companion$val FirstPage = Paging(currentSize = 0)</ID>
+    <ID>UndocumentedPublicProperty:TempTest.kt$ForeverWaitingResolver$val messages: ReceiveChannel&lt;T> = _messages</ID>
+    <ID>UndocumentedPublicProperty:TempTest.kt$const val TestTimeoutMillis = 10 * 1000L</ID>
+    <ID>UndocumentedPublicProperty:TempTest.kt$inline val CoroutineScope.job: Job get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")</ID>
+    <ID>UndocumentedPublicProperty:TestEnv.kt$@OptIn(ExperimentalStdlibApi::class) val TestScope.coroutineDispatcher: CoroutineDispatcher get() = coroutineContext[CoroutineDispatcher.Key]!!</ID>
+    <ID>UndocumentedPublicProperty:TestEnv.kt$val TestComponentId = ComponentId("test")</ID>
+    <ID>UndocumentedPublicProperty:TestEnv.kt$val TestSerializer = GsonSerializer()</ID>
   </CurrentIssues>
 </SmellBaseline>
