@@ -71,15 +71,15 @@ fun Project.optIn(
 fun Project.optIn(
     annotationNames: Iterable<String>
 ) = afterEvaluate {
-    if (hasKotlinJvmPlugin) {
+    if (hasKotlinMultiplatformPlugin) {
+        extensions.findByType<KotlinMultiplatformExtension>()?.optIn(annotationNames)
+    } else {
         tasks.withType<KotlinCompile>().all {
             kotlinOptions {
                 @Suppress("SuspiciousCollectionReassignment")
                 freeCompilerArgs += annotationNames.map { "-opt-in=$it" }
             }
         }
-    } else {
-        extensions.findByType<KotlinMultiplatformExtension>()?.optIn(annotationNames)
     }
 }
 

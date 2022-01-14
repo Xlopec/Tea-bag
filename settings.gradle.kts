@@ -33,7 +33,7 @@ dependencyResolutionManagement {
 
             version("ktor", "2.0.0-beta-1")
             version("coroutines", "1.6.0")
-            version("compose", "1.1.0-beta04")
+            version("compose", "1.2.0-alpha01")
             version("accompanist", "0.21.4-beta")
             version("sqldelight", "1.5.3")
 
@@ -195,8 +195,9 @@ dependencyResolutionManagement {
                 .to("androidx.compose.animation", "animation")
                 .versionRef("compose")
 
-            // compatible with kotlin 1.6.10
-            alias("compose-compiler").to("androidx.compose.compiler:compiler:1.1.0-rc02")
+            alias("compose-compiler")
+                .to("androidx.compose.compiler", "compiler")
+                .versionRef("compose")
 
             alias("compose-activity").to("androidx.activity:activity-compose:1.4.0")
 

@@ -31,13 +31,15 @@ tasks.withType<Test>().whenTaskAdded {
     onlyIf { !isCiEnv }
 }
 
+optIn(DefaultOptIns)
+
 android {
     signingConfigs {
         create("release") {
-            storeFile = file(getenvSafe("STORE_FILE") ?: "../test.jks")
-            storePassword = getenvSafe("STORE_PASSWORD") ?: "qwerty"
-            keyPassword = getenvSafe("KEY_PASSWORD") ?: "qwerty"
-            keyAlias = getenvSafe("KEY_ALIAS") ?: "test"
+            storeFile = file(getenvSafe("STORE_FILE") ?: "release.keystore")
+            storePassword = getenvSafe("STORE_PASSWORD")
+            keyPassword = getenvSafe("KEY_PASSWORD")
+            keyAlias = getenvSafe("KEY_ALIAS")
         }
     }
     compileSdk = 31
@@ -81,6 +83,7 @@ android {
     }
 
     composeOptions {
+        @Suppress("UnstableApiUsage")
         kotlinCompilerExtensionVersion = libs.compose.compiler.get().versionConstraint.requiredVersion
     }
 
