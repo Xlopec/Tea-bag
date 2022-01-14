@@ -42,7 +42,7 @@ val copyArtifacts by tasks.registering(Copy::class) {
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
 }
 
-val releaseLibrary by tasks.registering {
+val release by tasks.registering {
     dependsOn(tasks[if (isCiEnv) "publish" else "publishToMavenLocal"])
     finalizedBy(tasks.named("copyArtifacts"))
 

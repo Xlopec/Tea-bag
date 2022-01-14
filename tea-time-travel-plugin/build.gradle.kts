@@ -57,7 +57,7 @@ val copyArtifacts by tasks.registering(Copy::class) {
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
 }
 
-val releasePlugin by tasks.creating(Task::class) {
+val release by tasks.creating(Task::class) {
     dependsOn("publishPlugin")
     finalizedBy(copyArtifacts)
 
