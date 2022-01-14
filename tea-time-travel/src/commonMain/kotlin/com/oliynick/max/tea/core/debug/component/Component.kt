@@ -23,7 +23,6 @@
  */
 
 @file:Suppress("FunctionName")
-@file:OptIn(ExperimentalTeaApi::class)
 
 package com.oliynick.max.tea.core.debug.component
 
@@ -99,7 +98,7 @@ public fun <M, S, C, J> Component(
     val upstream = env.upstream(input)
         .shareIn(env.componentEnv.scope, env.componentEnv.shareOptions)
 
-    return { messages -> upstream.downstream(messages, input) }
+    return { messages -> upstream.withMessageCollector(messages, input::send) }
 }
 
 private fun <M, S, C, J> DebugEnv<M, S, C, J>.upstream(
@@ -113,7 +112,7 @@ private fun <M, S, C, J> DebugEnv<M, S, C, J>.upstream(
     }
 
     fun DebugSession<M, S, J>.debugUpstream() =
-        componentEnv.upstream(init().mergeWith(states.asSnapshots()), input::send, inputFlow())
+        componentEnv.toSnapshotsFlow(initial().mergeWith(states.asSnapshots()), input::send, inputFlow())
             .onEach { snapshot -> notifyServer(this, snapshot) }
 
     return session { inputChan -> debugUpstream().into(inputChan) }
@@ -156,4 +155,4 @@ private fun <M, S, C, J> JsonConverter<J>.toServerMessage(
     )
 }
 
-private fun <S, C> DebugEnv<*, S, C, *>.init(): Flow<Initial<S, C>> = componentEnv.init()
+private fun <S, C> DebugEnv<*, S, C, *>.initial(): Flow<Initial<S, C>> = componentEnv.initial()

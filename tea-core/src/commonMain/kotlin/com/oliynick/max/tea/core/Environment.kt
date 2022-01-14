@@ -23,7 +23,6 @@
  */
 
 @file:Suppress("FunctionName")
-@file:OptIn(ExperimentalTeaApi::class)
 
 package com.oliynick.max.tea.core
 
@@ -41,7 +40,6 @@ import kotlinx.coroutines.flow.SharingStarted
  * @param resolver resolver to be used to resolve messages from commands
  * @param updater updater to be used to compute a new state with set of commands to execute
  * @param scope scope in which the sharing coroutine is started
- * @param io coroutine dispatcher which is used to execute side effects by [resolver]
  * @param computation coroutine dispatcher which is used to wrap [updater]'s computations
  * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
  * @param M message type

@@ -75,15 +75,12 @@
     <ID>NewLineAtEndOfFile:Date.kt$com.oliynick.max.entities.shared.Date.kt</ID>
     <ID>NewLineAtEndOfFile:DebuggableComponentTest.kt$com.oliynick.max.tea.core.debug.component.DebuggableComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:Dimensions.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.Dimensions.kt</ID>
-    <ID>NewLineAtEndOfFile:DokkaExtensions.kt$.DokkaExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:Either.kt$com.oliynick.max.entities.shared.datatypes.Either.kt</ID>
     <ID>NewLineAtEndOfFile:Environment.kt$com.oliynick.max.reader.app.Environment.kt</ID>
     <ID>NewLineAtEndOfFile:HasEnvironment.kt$com.max.reader.app.HasEnvironment.kt</ID>
-    <ID>NewLineAtEndOfFile:IO.kt$com.oliynick.max.tea.core.IO.kt</ID>
     <ID>NewLineAtEndOfFile:Icons.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.Icons.kt</ID>
     <ID>NewLineAtEndOfFile:IosAnnotations.kt$com.oliynick.max.reader.app.IosAnnotations.kt</ID>
     <ID>NewLineAtEndOfFile:IosComponent.kt$com.oliynick.max.reader.app.IosComponent.kt</ID>
-    <ID>NewLineAtEndOfFile:LanguageSettingsBuilderExtensions.kt$.LanguageSettingsBuilderExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:LiveAppResolver.kt$com.oliynick.max.tea.core.debug.app.component.resolver.LiveAppResolver.kt</ID>
     <ID>NewLineAtEndOfFile:LiveArticleDetailsResolver.kt$com.oliynick.max.reader.article.details.LiveArticleDetailsResolver.kt</ID>
     <ID>NewLineAtEndOfFile:LocalStorage.kt$com.oliynick.max.reader.app.LocalStorage.kt</ID>
@@ -216,14 +213,13 @@
     <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.toRefreshing()</ID>
     <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.updateArticle( new: Article, ): ArticlesState</ID>
     <ID>UndocumentedPublicFunction:ArticlesUpdater.kt$ArticlesUpdater$fun updateArticles( message: ArticlesMessage, state: ArticlesState ): UpdateWith&lt;ArticlesState, Command></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@OptIn(ExperimentalTeaApi::class) fun &lt;M, S, C> TestScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, io: CoroutineDispatcher = coroutineDispatcher, computation: CoroutineDispatcher = coroutineDispatcher, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@InternalTeaApi public fun &lt;M, S, C> Env&lt;M, S, C>.compute( input: Flow&lt;M>, startFrom: Initial&lt;S, C>, sink: Sink&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@InternalTeaApi public fun &lt;M, S, C> Env&lt;M, S, C>.resolveAsFlow( commands: Collection&lt;C>, ): Flow&lt;M></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@InternalTeaApi public fun &lt;M, S, C> Env&lt;M, S, C>.toSnapshotsFlow( snapshots: Flow&lt;Initial&lt;S, C>>, sink: Sink&lt;M>, input: (Initial&lt;S, C>) -> Flow&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@InternalTeaApi public fun &lt;S, C> Env&lt;*, S, C>.initial(): Flow&lt;Initial&lt;S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@InternalTeaApi public fun &lt;T> Flow&lt;T>.shareIn( scope: CoroutineScope, shareOptions: ShareOptions, ): SharedFlow&lt;T></ID>
     <ID>UndocumentedPublicFunction:Component.kt$@Suppress("RedundantSuspendModifier") suspend fun &lt;C> throwingResolver( c: C, ): Nothing</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@ExperimentalTeaApi public fun &lt;M, S, C> Env&lt;M, S, C>.compute( input: Flow&lt;M>, startFrom: Initial&lt;S, C>, sink: Sink&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@ExperimentalTeaApi public fun &lt;M, S, C> Env&lt;M, S, C>.resolveAsFlow( commands: Collection&lt;C>, ): Flow&lt;M></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@ExperimentalTeaApi public fun &lt;M, S, C> Env&lt;M, S, C>.upstream( snapshots: Flow&lt;Initial&lt;S, C>>, sink: Sink&lt;M>, input: (Initial&lt;S, C>) -> Flow&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@ExperimentalTeaApi public fun &lt;M, S, C> Flow&lt;Snapshot&lt;M, S, C>>.downstream( input: Flow&lt;M>, upstreamInput: SendChannel&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@ExperimentalTeaApi public fun &lt;S, C> Env&lt;*, S, C>.init(): Flow&lt;Initial&lt;S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@ExperimentalTeaApi public fun &lt;T> Flow&lt;T>.shareIn( scope: CoroutineScope, shareOptions: ShareOptions, ): SharedFlow&lt;T></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C> TestScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, io: CoroutineDispatcher = coroutineDispatcher, computation: CoroutineDispatcher = coroutineDispatcher, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> ignoringMessageAsStateUpdate( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;M, S></ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> messageAsCommand( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, M></ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> throwingUpdater( m: M, s: S, ): Nothing</ID>
@@ -231,8 +227,6 @@
     <ID>UndocumentedPublicFunction:ComponentLogic.kt$fun testUpdate(message: Message, state: TodoState): UpdateWith&lt;TodoState, Command></ID>
     <ID>UndocumentedPublicFunction:ComponentLogic.kt$suspend fun testResolver(cmd: Command): Set&lt;Message></ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when attaching interceptor to component, then original sequence of snapshots pipes through it`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component with specific dispatcher, then initializer runs on this dispatcher`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component with specific dispatcher, then resolver runs on this dispatcher`()</ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component with specific dispatcher, then updater runs on this dispatcher`()</ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component, given initializer throws exception, then it's handled by coroutine scope`()</ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component, given updater throws exception, then it's handled by coroutine scope`()</ID>
@@ -255,7 +249,7 @@
     <ID>UndocumentedPublicFunction:Either.kt$//@OptIn(ExperimentalContracts::class) public operator fun &lt;R> Either&lt;*, R>.component2(): R?</ID>
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R, T> Either&lt;L, R>.fold( left: (L) -> T, right: (R) -> T ): T</ID>
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R> Either( ifSuccess: () -> L, ifFailure: (th: Throwable) -> R ): Either&lt;L, R></ID>
-    <ID>UndocumentedPublicFunction:FlowExtensions.kt$@ExperimentalTeaApi public suspend fun &lt;T> Flow&lt;T>.into( sendChannel: SendChannel&lt;T> )</ID>
+    <ID>UndocumentedPublicFunction:FlowExtensions.kt$@Deprecated("Bad api") @InternalTeaApi public suspend fun &lt;T> Flow&lt;T>.into( sendChannel: SendChannel&lt;T> )</ID>
     <ID>UndocumentedPublicFunction:LiveArticleDetailsResolver.kt$fun ArticleDetailsResolver(): ArticleDetailsResolver</ID>
     <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$// fixme inline fun ArticlesState.updateQuery( input: String )</ID>
     <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$fun Article.storeCommand()</ID>

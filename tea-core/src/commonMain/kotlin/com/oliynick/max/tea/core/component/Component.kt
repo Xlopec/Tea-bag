@@ -23,7 +23,6 @@
  */
 
 @file:Suppress("unused", "MemberVisibilityCanBePrivate", "FunctionName")
-@file:OptIn(ExperimentalTeaApi::class)
 
 package com.oliynick.max.tea.core.component
 
@@ -32,7 +31,7 @@ import com.oliynick.max.tea.core.component.internal.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Unconfined
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.Channel.Factory.RENDEZVOUS
 import kotlinx.coroutines.flow.*
 
 /**
@@ -104,7 +103,7 @@ public typealias Resolver<C, M> = suspend (command: C) -> Set<M>
  *
  * @param T incoming values
  */
-@ExperimentalTeaApi
+@InternalTeaApi
 public typealias Sink<T> = suspend (T) -> Unit
 
 /**
@@ -139,48 +138,51 @@ public fun <M, C, S> Component(
  * @param S state of the application
  * @param C commands to be executed
  */
-@OptIn(ExperimentalTeaApi::class)
 public fun <M, S, C> Component(
     env: Env<M, S, C>,
-): Component<M, S, C> {
+): Component<M, S, C> = with(env) {
 
-    val input = Channel<M>(Channel.RENDEZVOUS)
+    val input = Channel<M>(RENDEZVOUS)
 
-    fun input(
+    fun messagesForSnapshot(
         startFrom: Initial<S, C>,
-    ) = env.resolveAsFlow(startFrom.commands)
-        .mergeWith(input.receiveAsFlow())
+    ) = toMessagesFlow(startFrom.commands, input.receiveAsFlow())
 
-    val upstream = env.upstream(env.init(), input::send, ::input)
-        .shareIn(env.scope, env.shareOptions)
+    val componentFlow = toSnapshotsFlow(initial(), input::send, ::messagesForSnapshot)
+        .shareIn(scope, shareOptions)
 
-    return { messages -> upstream.downstream(messages, input) }
+    return { messages -> componentFlow.withMessageCollector(messages, input::send) }
 }
 
-@ExperimentalTeaApi
-public fun <M, S, C> Env<M, S, C>.upstream(
+@InternalTeaApi
+public fun <M, S, C> Env<M, S, C>.toSnapshotsFlow(
     snapshots: Flow<Initial<S, C>>,
     sink: Sink<M>,
     input: (Initial<S, C>) -> Flow<M>,
 ): Flow<Snapshot<M, S, C>> =
     snapshots.flatMapLatest { startFrom -> compute(input(startFrom), startFrom, sink) }
 
-@ExperimentalTeaApi
-public fun <M, S, C> Flow<Snapshot<M, S, C>>.downstream(
-    input: Flow<M>,
-    upstreamInput: SendChannel<M>,
-): Flow<Snapshot<M, S, C>> =
-    channelFlow {
-        @Suppress("NON_APPLICABLE_CALL_FOR_BUILDER_INFERENCE")
-        onStart { launch { input.into(upstreamInput) } }
-            .into(channel)
+/**
+ * Emits snapshots emitted by receiver flow without any transformation
+ * while collecting messages input
+ */
+@InternalTeaApi
+public fun <M, S, C> Flow<Snapshot<M, S, C>>.withMessageCollector(
+    messages: Flow<M>,
+    sink: Sink<M>,
+): Flow<Snapshot<M, S, C>> = channelFlow {
+    launch {
+        // redirects input to sink
+        messages.collect(sink::invoke)
     }
+    collect(::send)
+}
 
-@ExperimentalTeaApi
-public fun <S, C> Env<*, S, C>.init(): Flow<Initial<S, C>> =
+@InternalTeaApi
+public fun <S, C> Env<*, S, C>.initial(): Flow<Initial<S, C>> =
     channelFlow { send(initializer()) }
 
-@ExperimentalTeaApi
+@InternalTeaApi
 public fun <M, S, C> Env<M, S, C>.compute(
     input: Flow<M>,
     startFrom: Initial<S, C>,
@@ -209,17 +211,25 @@ public fun <M, S, C> Env<M, S, C>.compute(
     }.startFrom(startFrom)
 }
 
-@ExperimentalTeaApi
+@InternalTeaApi
 public fun <T> Flow<T>.shareIn(
     scope: CoroutineScope,
     shareOptions: ShareOptions,
 ): SharedFlow<T> = shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
 
-@ExperimentalTeaApi
+@InternalTeaApi
 public fun <M, S, C> Env<M, S, C>.resolveAsFlow(
     commands: Collection<C>,
 ): Flow<M> =
     flow { emitAll(resolve(commands)) }
+
+/**
+ * Merges messages flow produced by [initialCommands] and [messages] into single messages flow
+ */
+private fun <M, S, C> Env<M, S, C>.toMessagesFlow(
+    initialCommands: Collection<C>,
+    messages: Flow<M>,
+): Flow<M> = resolveAsFlow(initialCommands).mergeWith(messages)
 
 private fun <M, S, C> Env<M, S, C>.resolveAll(
     coroutineScope: CoroutineScope,

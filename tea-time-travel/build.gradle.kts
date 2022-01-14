@@ -28,6 +28,14 @@ plugins {
 
 kotlin {
 
+    optIn(
+        "kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "kotlinx.coroutines.FlowPreview",
+        "kotlinx.coroutines.InternalCoroutinesApi",
+        "com.oliynick.max.tea.core.InternalTeaApi",
+        "com.oliynick.max.tea.core.ExperimentalTeaApi"
+    )
+
     cocoapods {
         summary = "Tea time travel library"
         homepage = "Link to the Tea library Module homepage"

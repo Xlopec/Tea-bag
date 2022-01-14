@@ -44,3 +44,12 @@ public annotation class ObsoleteComponentApi
 @RequiresOptIn(level = RequiresOptIn.Level.WARNING)
 @Target(AnnotationTarget.TYPEALIAS, AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION)
 public annotation class ExperimentalTeaApi
+
+/**
+ * Marks declarations that shouldn't be used outside of Tea library
+ */
+@MustBeDocumented
+@Retention(value = AnnotationRetention.BINARY)
+@RequiresOptIn(level = RequiresOptIn.Level.ERROR)
+@Target(AnnotationTarget.TYPEALIAS, AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION)
+public annotation class InternalTeaApi

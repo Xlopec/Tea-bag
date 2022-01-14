@@ -31,7 +31,9 @@ kotlin {
     optIn(
         "kotlinx.coroutines.ExperimentalCoroutinesApi",
         "kotlinx.coroutines.FlowPreview",
-        "kotlinx.coroutines.InternalCoroutinesApi"
+        "kotlinx.coroutines.InternalCoroutinesApi",
+        "com.oliynick.max.tea.core.InternalTeaApi",
+        "com.oliynick.max.tea.core.ExperimentalTeaApi"
     )
 
     cocoapods {

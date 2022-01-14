@@ -24,12 +24,13 @@
 
 package com.oliynick.max.tea.core.component.internal
 
-import com.oliynick.max.tea.core.ExperimentalTeaApi
+import com.oliynick.max.tea.core.InternalTeaApi
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-@ExperimentalTeaApi
+@Deprecated("Bad api")
+@InternalTeaApi
 public suspend fun <T> Flow<T>.into(
     sendChannel: SendChannel<T>
 ) {

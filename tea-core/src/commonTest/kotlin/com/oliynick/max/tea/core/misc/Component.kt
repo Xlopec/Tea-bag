@@ -26,12 +26,14 @@
 
 package com.oliynick.max.tea.core.misc
 
-import com.oliynick.max.tea.core.*
+import com.oliynick.max.tea.core.Env
+import com.oliynick.max.tea.core.Initializer
+import com.oliynick.max.tea.core.ShareOptions
+import com.oliynick.max.tea.core.ShareStateWhileSubscribed
 import com.oliynick.max.tea.core.component.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.test.TestScope
 
-@OptIn(ExperimentalTeaApi::class)
 fun <M, S, C> TestScope.TestEnv(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
