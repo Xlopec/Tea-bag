@@ -23,12 +23,12 @@
  */
 
 @file:Suppress("FunctionName")
-@file:OptIn(UnstableApi::class)
+@file:OptIn(ExperimentalTeaApi::class)
 
 package com.oliynick.max.tea.core.debug.component
 
 import com.oliynick.max.tea.core.Env
-import com.oliynick.max.tea.core.UnstableApi
+import com.oliynick.max.tea.core.ExperimentalTeaApi
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.JsonConverter
 import com.oliynick.max.tea.core.debug.session.DebugSession

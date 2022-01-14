@@ -23,7 +23,7 @@
  */
 
 @file:Suppress("FunctionName")
-@file:OptIn(UnstableApi::class)
+@file:OptIn(ExperimentalTeaApi::class)
 
 package com.oliynick.max.tea.core
 
@@ -76,6 +76,6 @@ public data class ShareOptions(
  */
 public expect val IO: CoroutineDispatcher
 
-@UnstableApi
+@ExperimentalTeaApi
 public val ShareStateWhileSubscribed: ShareOptions =
     ShareOptions(SharingStarted.WhileSubscribed(), 1U)

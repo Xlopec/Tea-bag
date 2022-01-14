@@ -31,7 +31,7 @@ import com.oliynick.max.tea.core.component.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.test.TestScope
 
-@OptIn(UnstableApi::class)
+@OptIn(ExperimentalTeaApi::class)
 fun <M, S, C> TestScope.TestEnv(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,

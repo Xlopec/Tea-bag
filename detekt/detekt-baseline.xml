@@ -216,14 +216,14 @@
     <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.toRefreshing()</ID>
     <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.updateArticle( new: Article, ): ArticlesState</ID>
     <ID>UndocumentedPublicFunction:ArticlesUpdater.kt$ArticlesUpdater$fun updateArticles( message: ArticlesMessage, state: ArticlesState ): UpdateWith&lt;ArticlesState, Command></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@OptIn(UnstableApi::class) fun &lt;M, S, C> TestScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, io: CoroutineDispatcher = coroutineDispatcher, computation: CoroutineDispatcher = coroutineDispatcher, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@OptIn(ExperimentalTeaApi::class) fun &lt;M, S, C> TestScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, io: CoroutineDispatcher = coroutineDispatcher, computation: CoroutineDispatcher = coroutineDispatcher, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
     <ID>UndocumentedPublicFunction:Component.kt$@Suppress("RedundantSuspendModifier") suspend fun &lt;C> throwingResolver( c: C, ): Nothing</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;M, S, C> Env&lt;M, S, C>.compute( input: Flow&lt;M>, startFrom: Initial&lt;S, C>, sink: Sink&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;M, S, C> Env&lt;M, S, C>.resolveAsFlow( commands: Collection&lt;C>, ): Flow&lt;M></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;M, S, C> Env&lt;M, S, C>.upstream( snapshots: Flow&lt;Initial&lt;S, C>>, sink: Sink&lt;M>, input: (Initial&lt;S, C>) -> Flow&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;M, S, C> Flow&lt;Snapshot&lt;M, S, C>>.downstream( input: Flow&lt;M>, upstreamInput: SendChannel&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;S, C> Env&lt;*, S, C>.init(): Flow&lt;Initial&lt;S, C>></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@UnstableApi public fun &lt;T> Flow&lt;T>.shareIn( scope: CoroutineScope, shareOptions: ShareOptions, ): SharedFlow&lt;T></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@ExperimentalTeaApi public fun &lt;M, S, C> Env&lt;M, S, C>.compute( input: Flow&lt;M>, startFrom: Initial&lt;S, C>, sink: Sink&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@ExperimentalTeaApi public fun &lt;M, S, C> Env&lt;M, S, C>.resolveAsFlow( commands: Collection&lt;C>, ): Flow&lt;M></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@ExperimentalTeaApi public fun &lt;M, S, C> Env&lt;M, S, C>.upstream( snapshots: Flow&lt;Initial&lt;S, C>>, sink: Sink&lt;M>, input: (Initial&lt;S, C>) -> Flow&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@ExperimentalTeaApi public fun &lt;M, S, C> Flow&lt;Snapshot&lt;M, S, C>>.downstream( input: Flow&lt;M>, upstreamInput: SendChannel&lt;M>, ): Flow&lt;Snapshot&lt;M, S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@ExperimentalTeaApi public fun &lt;S, C> Env&lt;*, S, C>.init(): Flow&lt;Initial&lt;S, C>></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$@ExperimentalTeaApi public fun &lt;T> Flow&lt;T>.shareIn( scope: CoroutineScope, shareOptions: ShareOptions, ): SharedFlow&lt;T></ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> ignoringMessageAsStateUpdate( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;M, S></ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> messageAsCommand( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, M></ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> throwingUpdater( m: M, s: S, ): Nothing</ID>
@@ -255,7 +255,7 @@
     <ID>UndocumentedPublicFunction:Either.kt$//@OptIn(ExperimentalContracts::class) public operator fun &lt;R> Either&lt;*, R>.component2(): R?</ID>
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R, T> Either&lt;L, R>.fold( left: (L) -> T, right: (R) -> T ): T</ID>
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R> Either( ifSuccess: () -> L, ifFailure: (th: Throwable) -> R ): Either&lt;L, R></ID>
-    <ID>UndocumentedPublicFunction:FlowExtensions.kt$@UnstableApi public suspend fun &lt;T> Flow&lt;T>.into( sendChannel: SendChannel&lt;T> )</ID>
+    <ID>UndocumentedPublicFunction:FlowExtensions.kt$@ExperimentalTeaApi public suspend fun &lt;T> Flow&lt;T>.into( sendChannel: SendChannel&lt;T> )</ID>
     <ID>UndocumentedPublicFunction:LiveArticleDetailsResolver.kt$fun ArticleDetailsResolver(): ArticleDetailsResolver</ID>
     <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$// fixme inline fun ArticlesState.updateQuery( input: String )</ID>
     <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$fun Article.storeCommand()</ID>
@@ -323,7 +323,7 @@
     <ID>UndocumentedPublicProperty:ComponentTest.kt$inline val CoroutineScope.job: Job get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")</ID>
     <ID>UndocumentedPublicProperty:Either.kt$Left$val value: L</ID>
     <ID>UndocumentedPublicProperty:Either.kt$Right$val value: R</ID>
-    <ID>UndocumentedPublicProperty:Environment.kt$@UnstableApi public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
+    <ID>UndocumentedPublicProperty:Environment.kt$@ExperimentalTeaApi public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
     <ID>UndocumentedPublicProperty:Message.kt$ArticlesLoaded$val page: Page</ID>
     <ID>UndocumentedPublicProperty:Message.kt$ArticlesMessage$val id: ScreenId?</ID>
     <ID>UndocumentedPublicProperty:Message.kt$ArticlesOperationException$val cause: AppException</ID>
