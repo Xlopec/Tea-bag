@@ -34,7 +34,7 @@ dependencyResolutionManagement {
             version("ktor", "2.0.0-beta-1")
             version("coroutines", "1.6.0")
             version("compose", "1.2.0-alpha01")
-            version("accompanist", "0.21.4-beta")
+            version("accompanist", "0.22.0-rc")
             version("sqldelight", "1.5.3")
 
             // Testing
@@ -56,7 +56,7 @@ dependencyResolutionManagement {
             alias("android-test-orchestrator")
                 .to("androidx.test:orchestrator:1.4.1")
 
-            alias("android-test-runner").to("androidx.test:orchestrator:1.4.0")
+            alias("android-test-runner").to("androidx.test:orchestrator:1.4.1")
 
             // Coroutines
 
@@ -235,11 +235,11 @@ dependencyResolutionManagement {
 
             // App compat
 
-            alias("appcompat").to("androidx.appcompat:appcompat:1.4.0")
+            alias("appcompat").to("androidx.appcompat:appcompat:1.4.1")
 
             // Collections
 
-            alias("collections-immutable").to("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.4")
+            alias("collections-immutable").to("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 
             // Atomicfu
 
