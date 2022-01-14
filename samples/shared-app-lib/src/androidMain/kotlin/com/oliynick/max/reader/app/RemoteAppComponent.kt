@@ -52,7 +52,8 @@ fun RemoteAppComponent(
         scope = environment,
         url = Url("http://10.0.2.2:8080"),
         computation = environment.coroutineContext[CoroutineDispatcher.Key] ?: Dispatchers.Default,
-        shareOptions = ShareStateWhileSubscribed
+        shareOptions = ShareStateWhileSubscribed,
+        sessionBuilder = OkHttpWebSocketSessionBuilder()
     ).states()
 }
 

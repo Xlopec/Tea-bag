@@ -43,12 +43,12 @@ internal class DebugWebSocketSession<M : Any, S : Any, J>(
     private val socketSession: DefaultClientWebSocketSession
 ) : DebugSession<M, S, J> {
 
-    private val incomingPackets: Flow<Either<M, S>> by lazy(LazyThreadSafetyMode.NONE) {
+    private val incomingPackets: Flow<Either<M, S>> by lazy {
         settings.incomingCommands(socketSession)
     }
 
-    override val messages: Flow<M> by lazy(LazyThreadSafetyMode.NONE) { incomingPackets.externalMessages() }
-    override val states: Flow<S> by lazy(LazyThreadSafetyMode.NONE) { incomingPackets.externalStates() }
+    override val messages: Flow<M> by lazy { incomingPackets.externalMessages() }
+    override val states: Flow<S> by lazy { incomingPackets.externalStates() }
 
     override suspend fun invoke(packet: NotifyServer<J>) =
         socketSession.send(settings.serializer.toJson(packet))

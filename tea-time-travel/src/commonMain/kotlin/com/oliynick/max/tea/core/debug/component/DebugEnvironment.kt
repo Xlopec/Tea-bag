@@ -44,8 +44,8 @@ import io.ktor.http.*
  * @param J json tree type
  */
 public data class DebugEnv<M, S, C, J>(
-    inline val componentEnv: Env<M, S, C>,
-    inline val serverSettings: ServerSettings<M, S, J>
+    val componentEnv: Env<M, S, C>,
+    val serverSettings: ServerSettings<M, S, J>
 )
 
 /**

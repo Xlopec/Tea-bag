@@ -28,8 +28,6 @@ import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
 import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
 import com.oliynick.max.tea.core.debug.protocol.ApplyState
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import java.time.LocalDateTime
-import java.util.*
 
 fun <Env> LiveAppResolver() where Env : HasMessageChannel,
                                   Env : HasProject,
@@ -53,7 +51,8 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
         when (command) {
             is DoStoreSettings -> command sideEffect { properties.settings = settings }
             // fixme remove later
-            is DoStartServer -> setOf(with(command) { NotifyStarted(newServer(address, events)); },
+            is DoStartServer -> command effect { NotifyStarted(newServer(address, events)) }
+            /*is DoStartServer -> setOf(with(command) { NotifyStarted(newServer(address, events)); },
                 ComponentAttached(
                     componentId,
                     appState
@@ -89,7 +88,7 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
                     appState
                 )
             // fixme end of removal section
-            )
+            )*/
             is DoStopServer -> command effect { server.stop(); NotifyStopped }
             is DoApplyMessage -> command sideEffect {
                 server(id,

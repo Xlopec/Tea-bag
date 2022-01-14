@@ -54,7 +54,6 @@ import kotlinx.coroutines.flow.*
  * @param jsonConverter json converter
  * @param scope scope in which the sharing coroutine is started
  * @param url url used to connect to debug server
- * @param io coroutine dispatcher which is used to execute side effects
  * @param computation coroutine dispatcher which is used to wrap [updater]'s computations
  * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
  * @param sessionBuilder function that for a given server settings creates a new connection
