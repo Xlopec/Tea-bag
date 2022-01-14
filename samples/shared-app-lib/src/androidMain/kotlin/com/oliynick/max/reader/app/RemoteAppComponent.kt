@@ -23,7 +23,6 @@ import com.google.gson.JsonElement
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.message.Message
 import com.oliynick.max.reader.app.serialization.PersistentListSerializer
-import com.oliynick.max.tea.core.IO
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.ShareStateWhileSubscribed
 import com.oliynick.max.tea.core.component.states
@@ -51,7 +50,6 @@ fun RemoteAppComponent(
         updater = { m, s -> with(environment) { update(m, s) } },
         jsonConverter = AppGsonSerializer(),
         scope = environment,
-        io = IO,
         url = Url("http://10.0.2.2:8080"),
         computation = environment.coroutineContext[CoroutineDispatcher.Key] ?: Dispatchers.Default,
         shareOptions = ShareStateWhileSubscribed

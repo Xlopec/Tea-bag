@@ -73,7 +73,6 @@ public inline fun <reified M : Any, reified C, reified S : Any, J> Component(
     // todo: group to reduce number of arguments
     scope: CoroutineScope,
     url: Url = Localhost,
-    io: CoroutineDispatcher /*= IO*/,
     computation: CoroutineDispatcher = Dispatchers.Unconfined,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
     noinline sessionBuilder: SessionBuilder<M, S, J> = ::WebSocketSession,

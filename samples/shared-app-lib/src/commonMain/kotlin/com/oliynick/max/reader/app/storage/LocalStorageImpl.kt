@@ -1,12 +1,12 @@
 package com.oliynick.max.reader.app.storage
 
 import com.oliynick.max.entities.shared.*
+import com.oliynick.max.reader.app.IO
 import com.oliynick.max.reader.article.list.Page
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.domain.Author
 import com.oliynick.max.reader.domain.Description
 import com.oliynick.max.reader.domain.Title
-import com.oliynick.max.tea.core.IO
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set

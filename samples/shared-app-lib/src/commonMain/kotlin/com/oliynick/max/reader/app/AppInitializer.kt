@@ -33,7 +33,6 @@ import com.oliynick.max.reader.article.list.ArticlesState
 import com.oliynick.max.reader.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.article.list.Query
 import com.oliynick.max.reader.article.list.QueryType.Regular
-import com.oliynick.max.tea.core.IO
 import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Initializer
 

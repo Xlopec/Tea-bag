@@ -114,33 +114,6 @@ public typealias Sink<T> = suspend (T) -> Unit
  * @param resolver resolver that resolves messages to commands and performs side effects
  * @param updater updater that computes new states and commands to be executed
  * @param scope scope in which the sharing coroutine is started
- * @param io coroutine dispatcher which is used to execute side effects
- * @param computation coroutine dispatcher which is used to wrap [updater]'s computations
- * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
- * @param M incoming messages
- * @param S state of the application
- * @param C commands to be executed
- */
-@Deprecated("io dispatcher is going to be removed")
-public fun <M, C, S> Component(
-    initializer: Initializer<S, C>,
-    resolver: Resolver<C, M>,
-    updater: Updater<M, S, C>,
-    // todo: group to reduce number of arguments
-    scope: CoroutineScope,
-    io: CoroutineDispatcher = IO,
-    computation: CoroutineDispatcher = Unconfined,
-    shareOptions: ShareOptions = ShareStateWhileSubscribed,
-): Component<M, S, C> =
-    Component(Env(initializer, resolver, updater, scope, computation, shareOptions))
-
-/**
- * Creates new component using supplied values
- *
- * @param initializer initializer that provides initial values
- * @param resolver resolver that resolves messages to commands and performs side effects
- * @param updater updater that computes new states and commands to be executed
- * @param scope scope in which the sharing coroutine is started
  * @param computation coroutine dispatcher which is used to wrap [updater]'s computations
  * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
  * @param M incoming messages

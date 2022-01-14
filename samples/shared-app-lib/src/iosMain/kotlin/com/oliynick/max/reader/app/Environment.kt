@@ -5,6 +5,9 @@ import com.oliynick.max.reader.article.details.ArticleDetailsModule
 import com.oliynick.max.reader.article.list.ArticlesModule
 import com.oliynick.max.reader.article.list.NewsApi
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+
+actual val IO = Dispatchers.Default
 
 fun Environment(
     scope: CoroutineScope,

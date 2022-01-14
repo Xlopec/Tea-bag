@@ -70,12 +70,6 @@ public data class ShareOptions(
     val replay: UInt,
 )
 
-/**
- * Platform-specific IO dispatcher implementation
- */
-@Deprecated("replace with your implementation")
-public expect val IO: CoroutineDispatcher
-
 @ExperimentalTeaApi
 public val ShareStateWhileSubscribed: ShareOptions =
     ShareOptions(SharingStarted.WhileSubscribed(), 1U)
