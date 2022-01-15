@@ -1,11 +1,10 @@
 package com.oliynick.max.tea.core.debug.app.presentation.screens.component
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Checkbox
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -23,20 +22,61 @@ import com.oliynick.max.tea.core.debug.app.presentation.ui.ValidatedTextField
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.Tree
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.TreeItemFormatterImpl
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.toRenderTree
+import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
+import org.jetbrains.compose.splitpane.VerticalSplitPane
+import org.jetbrains.compose.splitpane.rememberSplitPaneState
 
+private val SplitPaneMinContentHeight = 100.dp
+
+@OptIn(ExperimentalSplitPaneApi::class)
 @Composable
 fun Component(
     project: Project,
     state: ComponentDebugState,
     events: (PluginMessage) -> Unit,
 ) {
+    Column {
 
-    ComponentFilterHeader(state, events)
+        ComponentFilterHeader(state, events)
 
-    val treeState by derivedStateOf { state.filteredSnapshots.toRenderTree() }
+        val splitterState = rememberSplitPaneState()
 
-    Tree(treeState, TreeItemFormatterImpl) { message ->
-        println("Event $message")
+        VerticalSplitPane(splitPaneState = splitterState) {
+            first(SplitPaneMinContentHeight) {
+                val snapshotsTree by derivedStateOf { state.filteredSnapshots.toRenderTree() }
+
+                Tree(
+                    modifier = Modifier.fillMaxSize().border(1.dp, Color.Black.copy(alpha = 0.60f)),
+                    roots = snapshotsTree,
+                    formatter = TreeItemFormatterImpl
+                ) { message ->
+                    println("Event $message")
+                }
+            }
+
+            second(SplitPaneMinContentHeight) {
+                val stateTree by derivedStateOf { state.state.toRenderTree() }
+
+                Tree(
+                    modifier = Modifier.fillMaxSize().border(1.dp, Color.Black.copy(alpha = 0.60f)),
+                    root = stateTree,
+                    formatter = TreeItemFormatterImpl
+                ) { message ->
+                    println("Event $message")
+                }
+            }
+
+            splitter {
+                visiblePart {
+                    Box(
+                        Modifier
+                            .width(1.dp)
+                            .fillMaxHeight()
+                            .background(MaterialTheme.colors.background)
+                    )
+                }
+            }
+        }
     }
 }
 

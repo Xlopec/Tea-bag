@@ -83,34 +83,37 @@ object TreeItemFormatterImpl : TreeFormatter {
 
 @Composable
 fun Tree(
+    modifier: Modifier = Modifier,
     roots: List<Node>,
     formatter: TreeFormatter,
-    handler: (PluginMessage) -> Unit
+    handler: (PluginMessage) -> Unit,
 ) {
     val state = remember(roots) { TreeState(roots) }
 
-    Tree(state, formatter, handler)
+    Tree(modifier, state, formatter, handler)
 }
 
 @Composable
 fun Tree(
+    modifier: Modifier = Modifier,
     root: Node,
     formatter: TreeFormatter,
-    handler: (PluginMessage) -> Unit
+    handler: (PluginMessage) -> Unit,
 ) {
     val state = remember(root) { TreeState(root) }
 
-    Tree(state, formatter, handler)
+    Tree(modifier, state, formatter, handler)
 }
 
 @Composable
 fun Tree(
+    modifier: Modifier = Modifier,
     tree: TreeState,
     formatter: TreeFormatter,
-    handler: (PluginMessage) -> Unit
+    handler: (PluginMessage) -> Unit,
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
     ) {
         val state = rememberLazyListState()
 
@@ -368,7 +371,7 @@ private fun Modifier.indentLevel(
 fun ValueTreePreviewExpanded() {
     Surface(color = Color.Unspecified) {
         CompositionLocalProvider(PreviewMode provides true) {
-            Tree(appState.toRenderTree(expanded = true), TreeItemFormatterImpl) {}
+            Tree(root = appState.toRenderTree(expanded = true), formatter = TreeItemFormatterImpl) {}
         }
     }
 }

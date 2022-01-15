@@ -85,6 +85,8 @@ dependencies {
     implementation(libs.stdlib.reflect)
 
     implementation(compose.desktop.currentOs)
+    @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+    implementation(compose.desktop.components.splitPane)
     implementation(libs.logging)
 
     implementation(libs.bundles.ktor.server)
