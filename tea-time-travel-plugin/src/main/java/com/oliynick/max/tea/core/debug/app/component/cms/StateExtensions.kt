@@ -17,7 +17,6 @@
 package com.oliynick.max.tea.core.debug.app.component.cms
 
 import com.oliynick.max.tea.core.debug.app.domain.*
-import com.oliynick.max.tea.core.debug.app.misc.map
 import com.oliynick.max.tea.core.debug.app.misc.mapNotNull
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.collections.immutable.ImmutableSet
@@ -95,7 +94,7 @@ fun ComponentDebugState.appendSnapshot(
 
     val filtered = when (val validatedPredicate = filter.predicate) {
         is Valid -> snapshot.filteredBy(validatedPredicate.t)
-        is Invalid, null -> snapshot.toFiltered()
+        is Invalid -> snapshot.toFiltered()
     }
 
     return copy(
@@ -151,7 +150,6 @@ fun Started.updateFilter(
     val filtered = when (val validatedPredicate = filter.predicate) {
         is Valid -> s.snapshots.filteredBy(validatedPredicate.t)
         is Invalid -> s.filteredSnapshots
-        null -> s.snapshots.toFiltered()
     }
 
     s.copy(filter = filter, filteredSnapshots = filtered)
@@ -161,9 +159,6 @@ fun PersistentList<OriginalSnapshot>.filteredBy(
     predicate: Predicate
 ): PersistentList<FilteredSnapshot> =
     mapNotNull { o -> o.filteredBy(predicate) }
-
-private fun PersistentList<OriginalSnapshot>.toFiltered(): PersistentList<FilteredSnapshot> =
-    map { o -> o.toFiltered() }
 
 private fun OriginalSnapshot.toFiltered() =
     FilteredSnapshot.ofBoth(

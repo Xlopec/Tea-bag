@@ -4,31 +4,6 @@
   <CurrentIssues>
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
     <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$override fun update( message: UIMessage, state: PluginState ): UpdateWith&lt;PluginState, PluginCommand></ID>
-    <ID>FunctionNaming:AppTheme.kt$@Composable fun AppTheme( isDarkModeEnabled: Boolean, content: @Composable () -> Unit, )</ID>
-    <ID>FunctionNaming:AppTheme.kt$@Composable fun ThemedPreview( content: @Composable () -> Unit, )</ID>
-    <ID>FunctionNaming:CompositionsLogger.kt$@Composable inline fun LogCompositions( tag: String )</ID>
-    <ID>FunctionNaming:InfoView.kt$@Composable fun InfoView( state: PluginState, uiEvents: (PluginMessage) -> Unit, )</ID>
-    <ID>FunctionNaming:InfoView.kt$@Composable private fun InfoViewMessage( description: String, messages: ((PluginMessage) -> Unit)? = null, )</ID>
-    <ID>FunctionNaming:InsetAwareTopAppBar.kt$@Composable fun InsetAwareTopAppBar( title: @Composable () -> Unit, modifier: Modifier = Modifier, navigationIcon: @Composable (() -> Unit)? = null, actions: @Composable RowScope.() -> Unit = {}, backgroundColor: Color = MaterialTheme.colors.primarySurface, contentColor: Color = contentColorFor(backgroundColor), elevation: Dp = 4.dp, )</ID>
-    <ID>FunctionNaming:InsetAwareTopAppBar.kt$@Composable fun ProgressInsetAwareTopAppBar( progress: Int, title: @Composable () -> Unit, modifier: Modifier = Modifier, navigationIcon: @Composable (() -> Unit)? = null, actions: @Composable RowScope.() -> Unit = {}, backgroundColor: Color = MaterialTheme.colors.primarySurface, contentColor: Color = contentColorFor(backgroundColor), elevation: Dp = 4.dp, )</ID>
-    <ID>FunctionNaming:MainActivity.kt$@Composable fun Application( appState: AppState, onMessage: (Message) -> Unit, )</ID>
-    <ID>FunctionNaming:MainActivity.kt$@Composable fun Application( component: (Flow&lt;Message>) -> Flow&lt;AppState> )</ID>
-    <ID>FunctionNaming:MainActivity.kt$@Composable private fun FullScreen( screen: FullScreen, onMessage: (Message) -> Unit, )</ID>
-    <ID>FunctionNaming:MainActivity.kt$@Composable private fun TabScreen( appState: AppState, screen: TabScreen, onMessage: (Message) -> Unit, content: (@Composable (innerPadding: PaddingValues) -> Unit)? = null )</ID>
-    <ID>FunctionNaming:NavigationExtensionsTest.kt$private fun GenerateNestedScreens( groupId: ScreenId, times: UInt )</ID>
-    <ID>FunctionNaming:NavigationExtensionsTest.kt$private fun Group( groupId: ScreenId, nestedItemsCount: UInt = 1U )</ID>
-    <ID>FunctionNaming:SettingsScreen.kt$@Composable fun SettingsScreen( innerPadding: PaddingValues, state: AppState, onMessage: (Message) -> Unit, )</ID>
-    <ID>FunctionNaming:TempTest.kt$fun ThrowingInitializer( th: Throwable, ): Initializer&lt;Nothing, Nothing></ID>
-    <ID>FunctionNaming:TestEnv.kt$fun &lt;M, S, C> TestDebugEnv( env: Env&lt;M, S, C>, serverSettings: ServerSettings&lt;M, S, JsonElement> = TestServerSettings() )</ID>
-    <ID>FunctionNaming:TestEnv.kt$fun &lt;M, S, C> TestScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, computation: CoroutineDispatcher = coroutineDispatcher, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
-    <ID>FunctionNaming:TestEnv.kt$fun &lt;M, S> TestServerSettings( componentId: ComponentId = TestComponentId, converter: JsonConverter&lt;JsonElement> = GsonSerializer(), url: Url = Localhost, sessionBuilder: SessionBuilder&lt;M, S, JsonElement> = { _, block -> TestDebugSession&lt;M, S>().apply { block() } } )</ID>
-    <ID>FunctionNaming:ToolWindowView.kt$@Composable @Preview fun SettingsInputFieldPreview()</ID>
-    <ID>FunctionNaming:ToolWindowView.kt$@Composable private fun SettingsInputField( setting: Validated&lt;*>, label: String, placeholder: String, enabled: Boolean, modifier: Modifier = Modifier, onValueChange: (newValue: String) -> Unit, )</ID>
-    <ID>FunctionNaming:ToolWindowView.kt$ToolWindowView$@Composable private fun BottomActionMenu( state: PluginState, events: (PluginMessage) -> Unit, )</ID>
-    <ID>FunctionNaming:ToolWindowView.kt$ToolWindowView$@Composable private fun SettingsFields( pluginState: PluginState, events: (PluginMessage) -> Unit, )</ID>
-    <ID>FunctionNaming:ToolWindowView.kt$private fun JBEditorTabs( project: Project, )</ID>
-    <ID>FunctionNaming:ToolWindowView.kt$private fun TabInfo( id: ComponentId, content: JComponent, group: ActionGroup, )</ID>
-    <ID>FunctionNaming:WidgetTheme.kt$@Composable fun WidgetTheme( content: @Composable () -> Unit, )</ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") internal fun Null.toReadableString(): String</ID>
     <ID>LongMethod:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
     <ID>LongMethod:TempTest.kt$TempTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
@@ -126,6 +101,7 @@
     <ID>TooGenericExceptionCaught:ServerImpl.kt$e: Throwable</ID>
     <ID>TooManyFunctions:ComponentTest.kt$ComponentTest</ID>
     <ID>TooManyFunctions:RenderExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.RenderExtensions.kt</ID>
+    <ID>TooManyFunctions:StateExtensions.kt$com.oliynick.max.tea.core.debug.app.component.cms.StateExtensions.kt</ID>
     <ID>TooManyFunctions:TempTest.kt$TempTest</ID>
     <ID>UndocumentedPublicClass:Adapters.kt$AuthorSerializer : KSerializer</ID>
     <ID>UndocumentedPublicClass:Adapters.kt$CommonDateSerializer : KSerializer</ID>

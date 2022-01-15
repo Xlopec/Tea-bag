@@ -18,7 +18,6 @@
 
 package com.oliynick.max.tea.core.debug.app.env
 
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.debug
 import com.intellij.openapi.diagnostic.trace
 import com.oliynick.max.tea.core.Initial
@@ -34,6 +33,7 @@ import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
 import com.oliynick.max.tea.core.debug.app.component.cms.Stopped
 import com.oliynick.max.tea.core.debug.app.misc.PluginId
 import com.oliynick.max.tea.core.debug.app.misc.settings
+import com.intellij.openapi.diagnostic.Logger as PlatformLogger
 
 fun PluginComponent(
     environment: Environment
@@ -49,25 +49,25 @@ fun PluginComponent(
     ) = with(environment) { update(message, state) }
 
     return Component(AppInitializer(environment), ::doResolve, ::doUpdate, environment)
-        .with(com.oliynick.max.tea.core.debug.app.env.Logger())
+        .with(Logger(PlatformLogger.getInstance(PluginId)))
 }
 
 private fun AppInitializer(
     environment: Environment
-) : Initializer<Stopped, Nothing> =
+): Initializer<Stopped, Nothing> =
     { Initial(Stopped(environment.properties.settings), emptySet()) }
 
 private fun Logger(
-    logger: Logger = Logger.getInstance(PluginId)
+    logger: PlatformLogger
 ): Interceptor<PluginMessage, PluginState, PluginCommand> =
     { snapshot ->
-        logger.info(snapshot.infoMessage())
-        logger.debug { snapshot.debugMessage() }
-        logger.trace { snapshot.traceMessage() }
+        logger.info(snapshot.infoMessage)
+        logger.debug { snapshot.debugMessage }
+        logger.trace { snapshot.traceMessage }
     }
 
-private fun Snapshot<*, *, *>.infoMessage(): String =
-    when (this) {
+private val Snapshot<*, *, *>.infoMessage: String
+    get() = when (this) {
         is Initial -> "Init class=${currentState?.javaClass}, commands=${commands.size}"
         is Regular -> """
         Regular with new state=${currentState?.javaClass},
@@ -77,8 +77,8 @@ private fun Snapshot<*, *, *>.infoMessage(): String =
     """.trimIndent()
     }
 
-private fun Snapshot<*, *, *>.debugMessage(): String =
-    when (this) {
+private val Snapshot<*, *, *>.debugMessage: String
+    get() = when (this) {
         is Initial -> "Init class=${currentState?.javaClass}" +
                 if (commands.isEmpty()) "" else ", commands=${commands.joinToString { it?.javaClass.toString() }}"
         is Regular -> """
@@ -89,8 +89,8 @@ private fun Snapshot<*, *, *>.debugMessage(): String =
     """.trimIndent()
     }
 
-private fun Snapshot<*, *, *>.traceMessage(): String =
-    when (this) {
+private val Snapshot<*, *, *>.traceMessage: String
+    get() = when (this) {
         is Initial -> "Init with state=$currentState" +
                 if (commands.isEmpty()) "" else ", commands=$commands"
         is Regular -> """

@@ -20,7 +20,6 @@ package com.oliynick.max.tea.core.debug.app.domain
 
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption.*
 import java.util.*
-import kotlin.collections.HashSet
 
 typealias Predicate = (String) -> Boolean
 
@@ -30,15 +29,17 @@ enum class FilterOption {
     WORDS
 }
 
+private val MatchAllValidatedPredicate: Validated<Predicate> = Valid("") { true }
+
 class Filter private constructor(
     val option: FilterOption,
     val ignoreCase: Boolean,
-    val predicate: Validated<Predicate>? = null
+    val predicate: Validated<Predicate>
 ) {
 
     companion object {
 
-        private val EMPTY = Filter(option = SUBSTRING, ignoreCase = true)
+        private val EMPTY = Filter(option = SUBSTRING, ignoreCase = true, predicate = MatchAllValidatedPredicate)
 
         fun empty() = EMPTY
 
@@ -49,7 +50,7 @@ class Filter private constructor(
         ): Filter {
 
             if (filter.isEmpty()) {
-                return Filter(option, ignoreCase)
+                return Filter(option, ignoreCase, MatchAllValidatedPredicate)
             }
 
             return when (option) {
@@ -68,8 +69,27 @@ class Filter private constructor(
         }
     }
 
-    val isEmpty: Boolean = predicate == null
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
+        other as Filter
+
+        if (option != other.option) return false
+        if (ignoreCase != other.ignoreCase) return false
+        if (predicate != other.predicate) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = option.hashCode()
+        result = 31 * result + ignoreCase.hashCode()
+        result = 31 * result + predicate.hashCode()
+        return result
+    }
+
+    override fun toString(): String = "Filter(option=$option, ignoreCase=$ignoreCase, predicate=$predicate)"
 }
 
 fun SubstringPredicate(

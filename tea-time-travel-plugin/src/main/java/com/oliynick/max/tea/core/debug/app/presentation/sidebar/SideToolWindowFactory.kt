@@ -31,6 +31,7 @@ import com.oliynick.max.tea.core.debug.app.component.cms.UpdateDebugSettings
 import com.oliynick.max.tea.core.debug.app.env.Environment
 import com.oliynick.max.tea.core.debug.app.env.PluginComponent
 import com.oliynick.max.tea.core.debug.app.misc.properties
+import com.oliynick.max.tea.core.debug.app.presentation.Plugin
 import com.oliynick.max.tea.core.debug.app.presentation.settings.PluginSettingsNotifier
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.mergeWith
 import kotlinx.coroutines.channels.awaitClose
@@ -77,10 +78,5 @@ private fun Project.settingsMessages(): Flow<UpdateDebugSettings> =
 private fun createToolWindowContent(
     project: Project,
     component: Component<PluginMessage, PluginState, PluginCommand>
-): Content {
-
-    val myToolWindow = ToolWindowView.new(project, component.states())
-    val contentFactory = ContentFactory.SERVICE.getInstance()
-
-    return contentFactory.createContent(myToolWindow, null, false)
-}
+): Content =
+    ContentFactory.SERVICE.getInstance().createContent(Plugin(project, component.states()), null, false)
