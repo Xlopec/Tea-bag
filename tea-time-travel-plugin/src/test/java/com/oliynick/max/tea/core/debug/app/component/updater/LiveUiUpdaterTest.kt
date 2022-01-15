@@ -27,7 +27,6 @@ import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.types.shouldBeInstanceOf
-import io.kotlintest.matchers.types.shouldBeNull
 import io.kotlintest.matchers.types.shouldBeSameInstanceAs
 import io.kotlintest.matchers.types.shouldNotBeNull
 import io.kotlintest.properties.forAll
@@ -224,7 +223,8 @@ internal class LiveUiUpdaterTest {
             filter.should { filter ->
                 filter.ignoreCase.shouldBeFalse()
                 filter.option shouldBeSameInstanceAs FilterOption.SUBSTRING
-                filter.predicate.shouldBeNull()
+                filter.predicate.shouldBeInstanceOf<Valid<String>>()
+                filter.predicate.input shouldBe ""
             }
 
             assertEquals(snapshots.size, filteredSnapshots.size)
