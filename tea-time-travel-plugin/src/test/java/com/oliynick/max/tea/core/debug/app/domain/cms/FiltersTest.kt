@@ -53,7 +53,7 @@ internal class FiltersTest {
             testProperties
         )
 
-        val filtered = applyTo(ref, (RegexPredicate("com\\.example\\.Test", false) as Valid).t)
+        val filtered = (RegexPredicate("com\\.example\\.Test", false) as Valid).t.applyTo(ref)
 
         assertEquals(ref, filtered)
         //filtered shouldBe ref
@@ -67,7 +67,7 @@ internal class FiltersTest {
             testProperties
         )
 
-        val filtered = applyTo(ref, UnsafeRegexPredicate("com\\.example\\.another.*"))
+        val filtered = UnsafeRegexPredicate("com\\.example\\.another.*").applyTo(ref)
 
         /*filtered shouldBe Ref(
             Type.of("com.example.Test"),
@@ -88,7 +88,7 @@ internal class FiltersTest {
             testProperties
         )
 
-        val filtered = applyTo(ref, UnsafeRegexPredicate(testProperties.first().name))
+        val filtered = UnsafeRegexPredicate(testProperties.first().name).applyTo(ref)
 
         /*filtered shouldBe Ref(
             Type.of("com.example.Test"),
@@ -114,7 +114,7 @@ internal class FiltersTest {
             testProperties + promitiveProperty
         )
 
-        val filtered = applyTo(ref, UnsafeRegexPredicate("number"))
+        val filtered = UnsafeRegexPredicate("number").applyTo(ref)
 
         /*filtered shouldBe Ref(
             Type.of("com.example.Test"),
@@ -141,7 +141,7 @@ internal class FiltersTest {
             testProperties + promitiveProperty
         )
 
-        val filtered = applyTo(ref, UnsafeRegexPredicate("java.lang.Integer"))
+        val filtered = UnsafeRegexPredicate("java.lang.Integer").applyTo(ref)
 
         assertEquals(
             Ref(

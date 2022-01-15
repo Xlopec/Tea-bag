@@ -171,8 +171,8 @@ private fun OriginalSnapshot.filteredBy(
     predicate: Predicate
 ): FilteredSnapshot? {
 
-    val m = applyTo(message, predicate)
-    val s = applyTo(state, predicate)
+    val m = predicate.applyTo(message)
+    val s = predicate.applyTo(state)
 
     return when {
         m != null && s != null -> FilteredSnapshot.ofBoth(meta, m, s)

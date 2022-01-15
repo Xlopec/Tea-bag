@@ -136,27 +136,25 @@ fun RegexPredicate(
  * or any its child value matches regex.
  * Any non-matching siblings of the current value will be filtered out
  */
-fun applyTo(
-    value: Value,
-    predicate: Predicate
+fun Predicate.applyTo(
+    value: Value
 ): Value? =
     when {
-        value.primitiveTypeName?.let(predicate) == true || (value is Null && predicate(null.toString())) -> value
-        value is CollectionWrapper -> applyToWrapper(value, predicate)
-        value is Ref -> applyToRef(value, predicate)
+        value.primitiveTypeName?.let(this) == true || (value is Null && this(null.toString())) -> value
+        value is CollectionWrapper -> applyToWrapper(value)
+        value is Ref -> applyToRef(value)
         else -> null
     }
 
-private fun applyToRef(
-    ref: Ref,
-    predicate: Predicate
+private fun Predicate.applyToRef(
+    ref: Ref
 ): Ref? {
 
     fun applyToProp(
         property: Property
     ): Property? =
-        if (predicate(property.name)) property
-        else applyTo(property.v, predicate)
+        if (this(property.name)) property
+        else applyTo(property.v)
             ?.let { filteredValue ->
                 Property(
                     property.name,
@@ -164,17 +162,16 @@ private fun applyToRef(
                 )
             }
 
-    return if (predicate(ref.type.name)) ref
+    return if (this(ref.type.name)) ref
     else ref.properties.mapNotNullTo(HashSet(ref.properties.size), ::applyToProp)
         .takeIf { filteredProps -> filteredProps.isNotEmpty() }
         ?.let { ref.copy(properties = it) }
 }
 
-private fun applyToWrapper(
-    wrapper: CollectionWrapper,
-    predicate: Predicate
+private fun Predicate.applyToWrapper(
+    wrapper: CollectionWrapper
 ): CollectionWrapper? =
     wrapper.items
-        .mapNotNull { v -> applyTo(v, predicate) }
+        .mapNotNull(::applyTo)
         .takeIf { filtered -> filtered.isNotEmpty() }
         ?.let(::CollectionWrapper)
