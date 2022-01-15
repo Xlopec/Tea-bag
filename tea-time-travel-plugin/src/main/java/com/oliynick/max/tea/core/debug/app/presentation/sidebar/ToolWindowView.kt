@@ -16,7 +16,6 @@
 
 package com.oliynick.max.tea.core.debug.app.presentation.sidebar
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -24,6 +23,7 @@ import androidx.compose.material.TextFieldDefaults.MinHeight
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
+import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.unit.dp
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionPlaces
@@ -32,31 +32,30 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.ui.tabs.TabInfo
 import com.intellij.ui.tabs.impl.JBEditorTabs
-import com.jetbrains.rd.util.first
 import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.domain.Validated
 import com.oliynick.max.tea.core.debug.app.domain.isValid
 import com.oliynick.max.tea.core.debug.app.misc.childScope
-import com.oliynick.max.tea.core.debug.app.presentation.component.*
+import com.oliynick.max.tea.core.debug.app.presentation.component.ComponentView
+import com.oliynick.max.tea.core.debug.app.presentation.dispatcher
 import com.oliynick.max.tea.core.debug.app.presentation.info.InfoView
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RunDefaultIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RunDisabledIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.SuspendDefaultIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.SuspendDisabledIconC
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.*
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.NoOpDisposable
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tabs.CloseableTab
+import com.oliynick.max.tea.core.debug.app.presentation.ui.tabs.ComponentTab
 import com.oliynick.max.tea.core.debug.app.presentation.ui.theme.WidgetTheme
-import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.SnapshotINode
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.Tree
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.TreeItemFormatterImpl
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.toRenderTree
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import javax.swing.*
+import javax.swing.JComponent
 
 class ToolWindowView private constructor(
     private val project: Project,
@@ -77,18 +76,19 @@ class ToolWindowView private constructor(
 
     init {
 
-        val uiEvents = Channel<PluginMessage>()
-
-        val events: (PluginMessage) -> Unit = { uiEvents.offer(it) }
-
         composePanel.setContent {
             WidgetTheme {
+
+                val messages = remember { MutableSharedFlow<PluginMessage>() }
+                val scope = rememberCoroutineScope()
+                val messageHandler = remember { scope.dispatcher(messages) }
+
                 Surface(modifier = Modifier.fillMaxSize()) {
 
-                    val stateFlow = remember { component(uiEvents.consumeAsFlow()) }
-                    val state = stateFlow.collectAsState(context = Dispatchers.Main, initial = null)
+                    val stateFlow = remember { component(messages) }
+                    val state = stateFlow.collectAsState(context = Main, initial = null)
 
-                    state.value?.also { println("new state $it") }?.render1(events)
+                    state.value?.also { println("new state $it") }?.render1(messageHandler)
                 }
             }
         }
@@ -108,27 +108,34 @@ class ToolWindowView private constructor(
                 modifier = Modifier.weight(2f)
             ) {
 
-                val t = remember("loh") { JBEditorTabs(project) }
-                val scope = rememberCoroutineScope()
-
                 if (this@render1 is Started && debugState.components.isNotEmpty()) {
 
-                    val (id, state) = debugState.components.first()
+                    val selectedId = remember { mutableStateOf(debugState.components.keys.first()) }
+                    val selectedIndex by derivedStateOf { debugState.components.keys.indexOf(selectedId.value) }
+
+                    require(selectedIndex >= 0) {
+                        """Inconsistency in tab indexing detected, 
+                            |selected id: ${selectedId.value}, 
+                            |selected index: $selectedIndex
+                            |component ids: ${debugState.componentIds}"""".trimMargin()
+                    }
+
+                    TabRow(
+                        selectedTabIndex = selectedIndex,
+                        backgroundColor = Unspecified
+                    ) {
+                        debugState.componentIds.forEachIndexed { index, id ->
+                            ComponentTab(id, selectedId, debugState, index, events)
+                        }
+                    }
+
+                    val state = debugState.component(selectedId.value)
 
                     val treeState by derivedStateOf { state.filteredSnapshots.toRenderTree() }
 
-                    Tree(treeState, TreeItemFormatterImpl) { println("Event $it") }
-
-                    /*SwingPanel(
-                        background = Unspecified,
-                        modifier = Modifier.fillMaxSize(),
-                        factory = { t },
-                        update = { tabs ->
-
-                           tabs.update(this@render1, scope, events)
-
-                        }
-                    )*/
+                    Tree(treeState, TreeItemFormatterImpl) {
+                        println("Event $it")
+                    }
 
                 } else {
                     InfoView(this@render1, events)
@@ -298,15 +305,3 @@ private fun SettingsInputField(
     )
 }
 
-@Composable
-@Preview
-fun SettingsInputFieldPreview() {
-    TextField(
-        value = "abc",
-        enabled = true,
-        placeholder = { Text(text = "placeholder") },
-        isError = false,
-        singleLine = true,
-        onValueChange = {}
-    )
-}

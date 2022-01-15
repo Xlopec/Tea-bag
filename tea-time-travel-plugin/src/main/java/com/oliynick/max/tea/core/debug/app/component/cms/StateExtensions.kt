@@ -20,6 +20,7 @@ import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.map
 import com.oliynick.max.tea.core.debug.app.misc.mapNotNull
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -98,9 +99,9 @@ fun ComponentDebugState.appendSnapshot(
     }
 
     return copy(
-            snapshots = snapshots.add(snapshot),
-            filteredSnapshots = filtered?.let(filteredSnapshots::add) ?: filteredSnapshots,
-            state = state
+        snapshots = snapshots.add(snapshot),
+        filteredSnapshots = filtered?.let(filteredSnapshots::add) ?: filteredSnapshots,
+        state = state
     )
 }
 
@@ -108,15 +109,22 @@ fun ComponentDebugState.removeSnapshots(
     ids: Set<SnapshotId>
 ): ComponentDebugState =
     copy(
-            snapshots = snapshots.removeAll { s -> s.meta.id in ids },
-            filteredSnapshots = filteredSnapshots.removeAll { s -> s.meta.id in ids }
+        snapshots = snapshots.removeAll { s -> s.meta.id in ids },
+        filteredSnapshots = filteredSnapshots.removeAll { s -> s.meta.id in ids }
     )
 
 fun ComponentDebugState.removeSnapshots(): ComponentDebugState =
     copy(
-            snapshots = persistentListOf(),
-            filteredSnapshots = persistentListOf()
+        snapshots = persistentListOf(),
+        filteredSnapshots = persistentListOf()
     )
+
+inline val DebugState.componentIds: ImmutableSet<ComponentId>
+    get() = components.keys
+
+fun DebugState.componentOrNull(
+    id: ComponentId
+) = components[id]
 
 fun DebugState.component(
     id: ComponentId
@@ -159,9 +167,9 @@ private fun PersistentList<OriginalSnapshot>.toFiltered(): PersistentList<Filter
 
 private fun OriginalSnapshot.toFiltered() =
     FilteredSnapshot.ofBoth(
-            meta,
-            message,
-            state
+        meta,
+        message,
+        state
     )
 
 private fun OriginalSnapshot.filteredBy(

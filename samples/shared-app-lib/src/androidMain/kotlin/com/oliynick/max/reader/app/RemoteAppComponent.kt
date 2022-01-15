@@ -18,8 +18,8 @@
 
 package com.oliynick.max.reader.app
 
-import android.os.Build
 import com.google.gson.JsonElement
+import com.oliynick.max.entities.shared.randomUUID
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.message.Message
 import com.oliynick.max.reader.app.serialization.PersistentListSerializer
@@ -44,7 +44,7 @@ fun RemoteAppComponent(
     // todo state persistence
 
     return Component(
-        id = ComponentId("News Reader App: ${Build.MANUFACTURER} ${Build.MODEL}"),
+        id = ComponentId("News Reader App: ${randomUUID()}"),
         initializer = initializer,
         resolver = { c -> with(environment) { resolve(c) } },
         updater = { m, s -> with(environment) { update(m, s) } },

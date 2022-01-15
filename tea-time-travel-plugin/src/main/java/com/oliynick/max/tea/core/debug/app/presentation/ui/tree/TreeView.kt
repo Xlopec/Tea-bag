@@ -32,7 +32,9 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -107,10 +109,23 @@ fun Tree(
     formatter: TreeFormatter,
     handler: (PluginMessage) -> Unit
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        tree.roots.forEach { root ->
-            subTree(root, 0, formatter, formatter(root), tree, handler)
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val state = rememberLazyListState()
+
+        LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
+            tree.roots.forEach { root ->
+                subTree(root, 0, formatter, formatter(root), tree, handler)
+            }
         }
+
+        VerticalScrollbar(
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+            adapter = rememberScrollbarAdapter(
+                scrollState = state
+            )
+        )
     }
 }
 
@@ -333,9 +348,10 @@ fun PopupItem(
 
 private val IndentPadding = 12.dp
 
+@Composable
 private fun Modifier.selected(
     isSelected: Boolean
-) = background(if (isSelected) Color.Red else Color.Unspecified)
+) = background(if (isSelected) LocalContentColor.current.copy(alpha = 0.60f) else Color.Unspecified)
 
 private fun Modifier.indentLevel(
     level: Int,
