@@ -23,37 +23,37 @@ import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
-sealed class PluginMessage
+sealed interface PluginMessage
 
 /*
  * UI messages
  */
-sealed class UIMessage : PluginMessage()
+sealed interface UIMessage : PluginMessage
 
 data class UpdateDebugSettings(
     val isDetailedToStringEnabled: Boolean
-) : UIMessage()
+) : UIMessage
 
 data class UpdateServerSettings(
     val host: String,
     val port: String
-) : UIMessage()
+) : UIMessage
 
 data class UpdateFilter(
     val id: ComponentId,
     val input: String,
     val ignoreCase: Boolean,
     val option: FilterOption
-) : UIMessage()
+) : UIMessage
 
-object StartServer : UIMessage()
+object StartServer : UIMessage
 
-object StopServer : UIMessage()
+object StopServer : UIMessage
 
 data class RemoveSnapshots(
     val componentId: ComponentId,
     val ids: Set<SnapshotId>
-) : UIMessage() {
+) : UIMessage {
 
     constructor(
         componentId: ComponentId,
@@ -64,31 +64,31 @@ data class RemoveSnapshots(
 
 data class RemoveAllSnapshots(
     val componentId: ComponentId
-) : UIMessage()
+) : UIMessage
 
 data class ApplyMessage(
     val componentId: ComponentId,
     val snapshotId: SnapshotId
-) : UIMessage()
+) : UIMessage
 
 data class ApplyState(
     val componentId: ComponentId,
     val snapshotId: SnapshotId
-) : UIMessage()
+) : UIMessage
 
 data class RemoveComponent(
     val componentId: ComponentId
-) : UIMessage()
+) : UIMessage
 
 /*
  * Notifications
  */
-sealed class NotificationMessage : PluginMessage()
+sealed interface NotificationMessage : PluginMessage
 
 data class NotifyOperationException(
     val exception: PluginException,
     val operation: PluginCommand? = null
-) : NotificationMessage() {
+) : NotificationMessage {
     constructor(
         raw: Throwable,
         operation: PluginCommand? = null
@@ -97,9 +97,9 @@ data class NotifyOperationException(
 
 data class NotifyStarted(
     val server: Server
-) : NotificationMessage()
+) : NotificationMessage
 
-object NotifyStopped : NotificationMessage()
+object NotifyStopped : NotificationMessage
 
 data class AppendSnapshot(
     val componentId: ComponentId,
@@ -107,14 +107,14 @@ data class AppendSnapshot(
     val message: Value,
     val oldState: Value,
     val newState: Value
-) : NotificationMessage()
+) : NotificationMessage
 
 data class StateApplied(
     val componentId: ComponentId,
     val state: Value
-) : NotificationMessage()
+) : NotificationMessage
 
 data class ComponentAttached(
     val componentId: ComponentId,
     val state: Value
-) : NotificationMessage()
+) : NotificationMessage

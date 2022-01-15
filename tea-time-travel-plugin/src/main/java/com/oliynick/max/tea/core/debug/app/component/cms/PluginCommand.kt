@@ -22,42 +22,42 @@ import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
-sealed class PluginCommand
+sealed interface PluginCommand
 
 data class DoStoreSettings(
     val settings: Settings
-) : PluginCommand()
+) : PluginCommand
 
 data class DoStartServer(
     val address: ServerAddress
-) : PluginCommand()
+) : PluginCommand
 
 data class DoStopServer(
     val server: Server
-) : PluginCommand()
+) : PluginCommand
 
 data class DoApplyMessage(
     val id: ComponentId,
     val command: Value,
     val server: Server
-) : PluginCommand()
+) : PluginCommand
 
 data class DoApplyState(
     val id: ComponentId,
     val state: Value,
     val server: Server
-) : PluginCommand()
+) : PluginCommand
 
 data class DoNotifyOperationException(
     val exception: PluginException,
     val operation: PluginCommand?
-) : PluginCommand()
+) : PluginCommand
 
 data class DoWarnUnacceptableMessage(
     val message: PluginMessage,
     val state: PluginState
-) : PluginCommand()
+) : PluginCommand
 
 data class DoNotifyComponentAttached(
     val componentId: ComponentId
-) : PluginCommand()
+) : PluginCommand

@@ -29,7 +29,7 @@ package com.oliynick.max.tea.core.debug.protocol
  *
  * @param J implementation specific json type
  */
-public sealed class ClientMessage<out J>
+public sealed interface ClientMessage<out J>
 
 /**
  * Represents commands that tells client to apply debug [message] as if it was just
@@ -40,7 +40,7 @@ public sealed class ClientMessage<out J>
  */
 public data class ApplyMessage<out J>(
     val message: J,
-) : ClientMessage<J>()
+) : ClientMessage<J>
 
 /**
  * Represents commands that tells client to apply debug [state] as if it was just
@@ -51,4 +51,4 @@ public data class ApplyMessage<out J>(
  */
 public data class ApplyState<J>(
     val state: J,
-) : ClientMessage<J>()
+) : ClientMessage<J>

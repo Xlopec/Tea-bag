@@ -39,27 +39,27 @@ data class Property(
     val v: Value
 )
 
-sealed class Value
+sealed interface Value
 
-object Null : Value()
+object Null : Value
 
 //todo replace by overloaded factory function
 
 data class NumberWrapper(
     val value: Number
-) : Value()
+) : Value
 
 data class CharWrapper(
     val value: Char
-) : Value()
+) : Value
 
 data class StringWrapper(
     val value: String
-) : Value()
+) : Value
 
 class BooleanWrapper private constructor(
     val value: Boolean
-) : Value() {
+) : Value {
 
     companion object {
         private val TRUE by lazy(LazyThreadSafetyMode.NONE) {
@@ -101,12 +101,12 @@ class BooleanWrapper private constructor(
 
 data class CollectionWrapper(
     val items: List<Value>
-) : Value()
+) : Value
 
 data class Ref(
     val type: Type,
     val properties: Set<Property>
-) : Value()
+) : Value
 
 inline val Value.isPrimitive: Boolean
     get() = when (this) {

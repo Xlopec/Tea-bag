@@ -21,13 +21,13 @@ import com.oliynick.max.tea.core.debug.app.domain.Settings
 import com.oliynick.max.tea.core.debug.app.domain.isValid
 import com.oliynick.max.tea.core.debug.app.transport.Server
 
-sealed class PluginState {
-    abstract val settings: Settings
+sealed interface PluginState {
+    val settings: Settings
 }
 
 data class Stopped(
     override val settings: Settings
-) : PluginState() {
+) : PluginState {
     companion object
 
     val canStart: Boolean = settings.host.isValid() && settings.port.isValid()
@@ -35,14 +35,14 @@ data class Stopped(
 
 data class Starting(
     override val settings: Settings
-) : PluginState()
+) : PluginState
 
 data class Started(
     override val settings: Settings,
     val debugState: DebugState,
     val server: Server
-) : PluginState()
+) : PluginState
 
 data class Stopping(
     override val settings: Settings
-) : PluginState()
+) : PluginState
