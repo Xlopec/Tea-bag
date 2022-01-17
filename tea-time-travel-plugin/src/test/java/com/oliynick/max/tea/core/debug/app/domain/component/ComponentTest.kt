@@ -16,9 +16,9 @@
 
 package com.oliynick.max.tea.core.debug.app.domain.component
 
-import com.oliynick.max.tea.core.debug.app.component.resolver.AppResolver
-import com.oliynick.max.tea.core.debug.app.component.resolver.HasMessageChannel
-import com.oliynick.max.tea.core.debug.app.component.resolver.HasMessagesChannel
+import com.oliynick.max.tea.core.debug.app.component.cms.AppResolver
+import com.oliynick.max.tea.core.debug.app.component.cms.HasMessageChannel
+import com.oliynick.max.tea.core.debug.app.component.cms.HasMessagesChannel
 import com.oliynick.max.tea.core.debug.app.component.updater.*
 
 interface TestEnvironment :

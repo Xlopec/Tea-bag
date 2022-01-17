@@ -18,22 +18,22 @@ package com.oliynick.max.tea.core.debug.app.env
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
-import com.oliynick.max.tea.core.debug.app.component.resolver.*
+import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.component.updater.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
 interface Environment :
-        Updater<Environment>,
-        NotificationUpdater,
-        UiUpdater,
-        AppResolver<Environment>,
-        HasMessageChannel,
-        HasSystemProperties,
-        HasProject,
-        HasServer,
-        CoroutineScope
+    Updater<Environment>,
+    NotificationUpdater,
+    UiUpdater,
+    AppResolver<Environment>,
+    HasMessageChannel,
+    HasSystemProperties,
+    HasProject,
+    HasServer,
+    CoroutineScope
 
 @Suppress("FunctionName")
 fun Environment(
@@ -41,12 +41,12 @@ fun Environment(
     project: Project
 ): Environment =
     object : Environment,
-            Updater<Environment> by LiveUpdater(),
-            NotificationUpdater by LiveNotificationUpdater,
-            UiUpdater by LiveUiUpdater,
-            AppResolver<Environment> by LiveAppResolver(),
-            HasMessageChannel by HasMessagesChannel(),
-            HasSystemProperties by HasSystemProperties(properties),
-            HasProject by HasProject(project),
-            HasServer by HasServer(),
-            CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.Main) {}
+        Updater<Environment> by LiveUpdater(),
+        NotificationUpdater by LiveNotificationUpdater,
+        UiUpdater by LiveUiUpdater,
+        AppResolver<Environment> by LiveAppResolver(project),
+        HasMessageChannel by HasMessagesChannel(),
+        HasSystemProperties by HasSystemProperties(properties),
+        HasProject by HasProject(project),
+        HasServer by HasServer(),
+        CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.Main) {}

@@ -108,8 +108,6 @@ private fun Server(
 
         install(Routing)
         install(ConditionalHeaders)
-        //install(DataConversion)
-        //install(DefaultHeaders) { header("X-Engine", "Ktor") }
 
         install(io.ktor.server.websocket.WebSockets) {
             pingPeriod = Duration.ofSeconds(10)

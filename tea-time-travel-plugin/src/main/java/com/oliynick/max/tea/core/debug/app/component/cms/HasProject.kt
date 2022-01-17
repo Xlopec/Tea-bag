@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.component.resolver
+@file:Suppress("FunctionName")
 
-import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
-import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+package com.oliynick.max.tea.core.debug.app.component.cms
 
-interface AppResolver<Env> {
+import com.intellij.openapi.project.Project
 
-    suspend fun Env.resolve(
-        command: Command
-    ): Set<Message>
+@Deprecated("will remove")
+interface HasProject {
+    val project: Project
+}
 
+fun HasProject(
+    project: Project
+) = object : HasProject {
+    override val project: Project = project
 }

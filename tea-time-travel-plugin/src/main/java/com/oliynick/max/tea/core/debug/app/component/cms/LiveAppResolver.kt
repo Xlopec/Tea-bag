@@ -16,8 +16,9 @@
 
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.app.component.resolver
+package com.oliynick.max.tea.core.debug.app.component.cms
 
+import com.intellij.openapi.project.Project
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
 import com.oliynick.max.tea.core.debug.app.component.cms.command.*
@@ -30,15 +31,18 @@ import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
 import com.oliynick.max.tea.core.debug.protocol.ApplyState
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
-fun <Env> LiveAppResolver() where Env : HasMessageChannel,
-                                  Env : HasProject,
-                                  Env : HasSystemProperties,
-                                  Env : HasServer = object : LiveAppResolver<Env> {}
+fun <Env> LiveAppResolver(
+    project: Project
+): AppResolver<Env>
+        where Env : HasMessageChannel,
+              Env : HasSystemProperties,
+              Env : HasServer = LiveAppResolverImpl(project)
 
-interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
-                                                        Env : HasProject,
-                                                        Env : HasSystemProperties,
-                                                        Env : HasServer {
+private class LiveAppResolverImpl<Env>(
+    private val project: Project
+) : AppResolver<Env> where Env : HasMessageChannel,
+                           Env : HasSystemProperties,
+                           Env : HasServer {
 
     override suspend fun Env.resolve(
         command: Command,
@@ -117,26 +121,28 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
 }
 
 
-
 val user = Ref(
     Type.of("com.max.oliynick.Test"),
     setOf(
         Property("name", StringWrapper("Max")),
         Property("surname", StringWrapper("Oliynick")),
-        Property("contacts", Ref(
-            Type.of("com.max.oliynick.Contact"),
-            setOf(
-                Property("site", Ref(
-                    Type.of("java.util.URL"),
-                    setOf(
-                        Property("domain", StringWrapper("google")),
-                        Property("port", NumberWrapper(8080)),
-                        Property("protocol", StringWrapper("https"))
+        Property(
+            "contacts", Ref(
+                Type.of("com.max.oliynick.Contact"),
+                setOf(
+                    Property(
+                        "site", Ref(
+                            Type.of("java.util.URL"),
+                            setOf(
+                                Property("domain", StringWrapper("google")),
+                                Property("port", NumberWrapper(8080)),
+                                Property("protocol", StringWrapper("https"))
+                            ),
+                        )
                     ),
                 )
-                ),
             )
-        )),
+        ),
         Property("position", StringWrapper("Developer")),
     )
 )

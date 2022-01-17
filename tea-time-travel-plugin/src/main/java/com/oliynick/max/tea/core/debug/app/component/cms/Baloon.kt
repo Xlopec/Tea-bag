@@ -16,12 +16,9 @@
 
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.app.component.resolver
+package com.oliynick.max.tea.core.debug.app.component.cms
 
 import com.intellij.openapi.ui.popup.Balloon
-import com.oliynick.max.tea.core.debug.app.component.cms.MissingDependenciesException
-import com.oliynick.max.tea.core.debug.app.component.cms.NetworkException
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginException
 import com.oliynick.max.tea.core.debug.app.component.cms.command.*
 import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
 import com.oliynick.max.tea.core.debug.app.component.cms.state.State

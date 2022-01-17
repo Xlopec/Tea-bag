@@ -73,7 +73,9 @@ fun Throwable.toPluginException(): PluginException {
     }
 }
 
-private inline fun Throwable.findCause(crossinline predicate: (Throwable) -> Boolean): Throwable? {
+private inline fun Throwable.findCause(
+    crossinline predicate: (Throwable) -> Boolean
+): Throwable? {
     var cause: Throwable? = this
 
     while (cause != null) {

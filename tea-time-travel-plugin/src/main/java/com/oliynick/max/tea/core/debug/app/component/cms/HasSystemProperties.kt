@@ -16,17 +16,15 @@
 
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.app.component.resolver
+package com.oliynick.max.tea.core.debug.app.component.cms
 
-import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
-import kotlinx.coroutines.channels.BroadcastChannel
+import com.intellij.ide.util.PropertiesComponent
 
-fun HasMessagesChannel(
-    events: BroadcastChannel<Message> = BroadcastChannel(1)
-) = object : HasMessageChannel {
-    override val events = events
-}
+fun HasSystemProperties(properties: PropertiesComponent) =
+    object : HasSystemProperties {
+        override val properties: PropertiesComponent = properties
+    }
 
-interface HasMessageChannel {
-    val events: BroadcastChannel<Message>
+interface HasSystemProperties {
+    val properties: PropertiesComponent
 }

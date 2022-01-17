@@ -16,16 +16,17 @@
 
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.app.component.resolver
+package com.oliynick.max.tea.core.debug.app.component.cms
 
-import com.intellij.openapi.project.Project
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+import kotlinx.coroutines.channels.BroadcastChannel
 
-interface HasProject {
-    val project: Project
+fun HasMessagesChannel(
+    events: BroadcastChannel<Message> = BroadcastChannel(1)
+) = object : HasMessageChannel {
+    override val events = events
 }
 
-fun HasProject(
-    project: Project
-) = object : HasProject {
-    override val project: Project = project
+interface HasMessageChannel {
+    val events: BroadcastChannel<Message>
 }

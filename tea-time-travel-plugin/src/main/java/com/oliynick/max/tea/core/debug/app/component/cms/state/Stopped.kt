@@ -10,7 +10,3 @@ data class Stopped(
 
     val canStart: Boolean = settings.host.isValid() && settings.port.isValid()
 }
-
-fun Stopped.update(
-    settings: Settings
-) = copy(settings = settings)

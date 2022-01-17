@@ -54,8 +54,8 @@ import androidx.compose.ui.window.Popup
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PsiNavigateUtil
+import com.oliynick.max.tea.core.debug.app.component.cms.appState
 import com.oliynick.max.tea.core.debug.app.component.cms.message.*
-import com.oliynick.max.tea.core.debug.app.component.resolver.appState
 import com.oliynick.max.tea.core.debug.app.domain.Type
 import com.oliynick.max.tea.core.debug.app.misc.javaPsiFacade
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RemoveIconC

@@ -16,7 +16,7 @@
 
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.app.component.resolver
+package com.oliynick.max.tea.core.debug.app.component.cms
 
 import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
 import com.oliynick.max.tea.core.debug.app.domain.ServerAddress

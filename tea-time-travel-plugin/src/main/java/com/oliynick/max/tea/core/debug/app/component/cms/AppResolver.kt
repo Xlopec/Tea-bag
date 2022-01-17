@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-@file:Suppress("FunctionName")
+package com.oliynick.max.tea.core.debug.app.component.cms
 
-package com.oliynick.max.tea.core.debug.app.component.resolver
+import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
 
-import com.intellij.ide.util.PropertiesComponent
+interface AppResolver<Env> {
 
-fun HasSystemProperties(properties: PropertiesComponent) =
-    object : HasSystemProperties {
-        override val properties: PropertiesComponent = properties
-    }
+    suspend fun Env.resolve(
+        command: Command
+    ): Set<Message>
 
-interface HasSystemProperties {
-    val properties: PropertiesComponent
 }
