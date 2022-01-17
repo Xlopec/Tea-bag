@@ -27,25 +27,25 @@ import com.oliynick.max.tea.core.Snapshot
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.Interceptor
 import com.oliynick.max.tea.core.component.with
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.component.cms.Stopped
+import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+import com.oliynick.max.tea.core.debug.app.component.cms.state.State
+import com.oliynick.max.tea.core.debug.app.component.cms.state.Stopped
 import com.oliynick.max.tea.core.debug.app.misc.PluginId
 import com.oliynick.max.tea.core.debug.app.misc.settings
 import com.intellij.openapi.diagnostic.Logger as PlatformLogger
 
 fun PluginComponent(
     environment: Environment
-): Component<PluginMessage, PluginState, PluginCommand> {
+): Component<Message, State, Command> {
 
     suspend fun doResolve(
-        c: PluginCommand
-    ): Set<PluginMessage> = with(environment) { resolve(c) }
+        c: Command
+    ): Set<Message> = with(environment) { resolve(c) }
 
     fun doUpdate(
-        message: PluginMessage,
-        state: PluginState
+        message: Message,
+        state: State
     ) = with(environment) { update(message, state) }
 
     return Component(AppInitializer(environment), ::doResolve, ::doUpdate, environment)
@@ -59,7 +59,7 @@ private fun AppInitializer(
 
 private fun Logger(
     logger: PlatformLogger
-): Interceptor<PluginMessage, PluginState, PluginCommand> =
+): Interceptor<Message, State, Command> =
     { snapshot ->
         logger.info(snapshot.infoMessage)
         logger.debug { snapshot.debugMessage }

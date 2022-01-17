@@ -19,7 +19,12 @@
 package com.oliynick.max.tea.core.debug.app.component.resolver
 
 import com.intellij.openapi.ui.popup.Balloon
-import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.component.cms.MissingDependenciesException
+import com.oliynick.max.tea.core.debug.app.component.cms.NetworkException
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginException
+import com.oliynick.max.tea.core.debug.app.component.cms.command.*
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+import com.oliynick.max.tea.core.debug.app.component.cms.state.State
 import com.oliynick.max.tea.core.debug.app.presentation.ui.balloon.createErrorBalloon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.balloon.createNotificationBalloon
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
@@ -27,7 +32,7 @@ import java.util.*
 
 fun ExceptionBalloon(
     cause: PluginException,
-    operation: PluginCommand?
+    operation: Command?
 ): Balloon =
     createErrorBalloon(htmlDescription(cause, operation))
 
@@ -44,8 +49,8 @@ fun ComponentAttachedBalloon(componentId: ComponentId): Balloon =
     """.trimIndent())
 
 fun UnacceptableMessageBalloon(
-    message: PluginMessage,
-    state: PluginState
+    message: Message,
+    state: State
 ): Balloon =
     createErrorBalloon("""<html>
     |<p>Message $message can't be applied to 
@@ -55,7 +60,7 @@ fun UnacceptableMessageBalloon(
 
 private fun htmlDescription(
     cause: PluginException,
-    operation: PluginCommand?
+    operation: Command?
 ): String {
     val message: String? = when (operation) {
         is DoStoreSettings -> "plugin failed to store settings"

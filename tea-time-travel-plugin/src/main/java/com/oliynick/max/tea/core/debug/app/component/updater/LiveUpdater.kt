@@ -20,7 +20,12 @@ package com.oliynick.max.tea.core.debug.app.component.updater
 
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
+import com.oliynick.max.tea.core.debug.app.component.cms.command.DoWarnUnacceptableMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+import com.oliynick.max.tea.core.debug.app.component.cms.message.NotificationMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.message.UIMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.state.State
 
 fun <Env> LiveUpdater() where Env : NotificationUpdater,
                               Env : UiUpdater =
@@ -30,9 +35,9 @@ interface LiveUpdater<Env> : Updater<Env> where Env : NotificationUpdater,
                                                 Env : UiUpdater {
 
     override fun Env.update(
-        message: PluginMessage,
-        state: PluginState
-    ): UpdateWith<PluginState, PluginCommand> =
+        message: Message,
+        state: State
+    ): UpdateWith<State, Command> =
         when (message) {
             is UIMessage -> update(message, state)
             is NotificationMessage -> update(message, state)
@@ -41,7 +46,7 @@ interface LiveUpdater<Env> : Updater<Env> where Env : NotificationUpdater,
 }
 
 fun warnUnacceptableMessage(
-    message: PluginMessage,
-    state: PluginState
-): UpdateWith<PluginState, PluginCommand> =
+    message: Message,
+    state: State
+): UpdateWith<State, Command> =
     state command DoWarnUnacceptableMessage(message, state)

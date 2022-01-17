@@ -18,10 +18,10 @@
 
 package com.oliynick.max.tea.core.debug.app.transport
 
-import com.oliynick.max.tea.core.debug.app.component.cms.AppendSnapshot
-import com.oliynick.max.tea.core.debug.app.component.cms.ComponentAttached
-import com.oliynick.max.tea.core.debug.app.component.cms.NotifyOperationException
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.message.AppendSnapshot
+import com.oliynick.max.tea.core.debug.app.component.cms.message.ComponentAttached
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+import com.oliynick.max.tea.core.debug.app.component.cms.message.NotifyOperationException
 import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotMeta
@@ -57,7 +57,7 @@ import java.util.UUID.randomUUID
 
 class ServerImpl private constructor(
     private val address: ServerAddress,
-    private val events: BroadcastChannel<PluginMessage>,
+    private val events: BroadcastChannel<Message>,
     private val calls: BroadcastChannel<RemoteCallArgs>
 ) : ApplicationEngine by Server(address, events, calls), Server {
 
@@ -65,7 +65,7 @@ class ServerImpl private constructor(
 
         fun newInstance(
             address: ServerAddress,
-            events: BroadcastChannel<PluginMessage>
+            events: BroadcastChannel<Message>
         ): ServerImpl = ServerImpl(address, events, BroadcastChannel(1))
 
     }
@@ -92,7 +92,7 @@ private data class RemoteCallArgs(
 
 private fun Server(
     address: ServerAddress,
-    events: BroadcastChannel<PluginMessage>,
+    events: BroadcastChannel<Message>,
     calls: BroadcastChannel<RemoteCallArgs>
 ): NettyApplicationEngine =
     embeddedServer(
@@ -121,7 +121,7 @@ private fun Server(
 
 private fun Application.configureWebSocketRouting(
     calls: Flow<RemoteCallArgs>,
-    events: BroadcastChannel<PluginMessage>
+    events: BroadcastChannel<Message>
 ) {
     routing {
 
@@ -147,7 +147,7 @@ private suspend fun installPacketSender(
 }
 
 private suspend fun installPacketReceiver(
-    events: BroadcastChannel<PluginMessage>,
+    events: BroadcastChannel<Message>,
     incoming: Flow<Frame.Text>
 ) {
     incoming.collect { frame -> processPacket(frame, events) }
@@ -155,7 +155,7 @@ private suspend fun installPacketReceiver(
 
 private suspend fun processPacket(
     frame: Frame.Text,
-    events: BroadcastChannel<PluginMessage>
+    events: BroadcastChannel<Message>
 ) =
     withContext(Dispatchers.IO) {
         try {

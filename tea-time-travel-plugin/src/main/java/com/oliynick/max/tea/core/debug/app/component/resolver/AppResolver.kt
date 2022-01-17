@@ -16,13 +16,13 @@
 
 package com.oliynick.max.tea.core.debug.app.component.resolver
 
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
 
 interface AppResolver<Env> {
 
     suspend fun Env.resolve(
-        command: PluginCommand
-    ): Set<PluginMessage>
+        command: Command
+    ): Set<Message>
 
 }

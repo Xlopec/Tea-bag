@@ -30,7 +30,12 @@ import androidx.compose.ui.awt.ComposePanel
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.unit.dp
 import com.intellij.openapi.project.Project
-import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+import com.oliynick.max.tea.core.debug.app.component.cms.message.StartServer
+import com.oliynick.max.tea.core.debug.app.component.cms.message.StopServer
+import com.oliynick.max.tea.core.debug.app.component.cms.message.UpdateServerSettings
+import com.oliynick.max.tea.core.debug.app.component.cms.state.*
+import com.oliynick.max.tea.core.debug.app.component.cms.state.State
 import com.oliynick.max.tea.core.debug.app.presentation.info.InfoView
 import com.oliynick.max.tea.core.debug.app.presentation.screens.component.Component
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RunDefaultIconC
@@ -49,14 +54,14 @@ import kotlinx.coroutines.launch
 
 fun Plugin(
     project: Project,
-    component: (Flow<PluginMessage>) -> Flow<PluginState>,
+    component: (Flow<Message>) -> Flow<State>,
 ) = ComposePanel()
     .apply {
         background = null
         setContent {
             WidgetTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    val messages = remember { MutableSharedFlow<PluginMessage>() }
+                    val messages = remember { MutableSharedFlow<Message>() }
                     val stateFlow = remember { component(messages) }
                     val state = stateFlow.collectAsState(context = Main, initial = null).value
 
@@ -72,15 +77,15 @@ fun Plugin(
     }
 
 fun CoroutineScope.dispatcher(
-    messages: FlowCollector<PluginMessage>,
-): (PluginMessage) -> Unit =
+    messages: FlowCollector<Message>,
+): (Message) -> Unit =
     { message -> launch { messages.emit(message) } }
 
 @Composable
 private fun Plugin(
     project: Project,
-    pluginState: PluginState,
-    events: (PluginMessage) -> Unit,
+    state: State,
+    events: (Message) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -90,10 +95,10 @@ private fun Plugin(
         Column(
             modifier = Modifier.weight(2f)
         ) {
-            if (pluginState is Started && pluginState.debugState.components.isNotEmpty()) {
-                ComponentsView(project, pluginState, events)
+            if (state is Started && state.debugState.components.isNotEmpty()) {
+                ComponentsView(project, state, events)
             } else {
-                InfoView(pluginState, events)
+                InfoView(state, events)
             }
         }
 
@@ -103,8 +108,8 @@ private fun Plugin(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            SettingsFields(pluginState, events)
-            BottomActionMenu(pluginState, events)
+            SettingsFields(state, events)
+            BottomActionMenu(state, events)
         }
     }
 }
@@ -113,7 +118,7 @@ private fun Plugin(
 private fun ComponentsView(
     project: Project,
     pluginState: Started,
-    events: (PluginMessage) -> Unit
+    events: (Message) -> Unit
 ) {
     require(pluginState.debugState.components.isNotEmpty())
 
@@ -141,38 +146,38 @@ private fun ComponentsView(
 
 @Composable
 private fun SettingsFields(
-    pluginState: PluginState,
-    events: (PluginMessage) -> Unit,
+    state: State,
+    events: (Message) -> Unit,
 ) {
     ValidatedTextField(
-        validated = pluginState.settings.host,
+        validated = state.settings.host,
         label = "Host:",
         placeholder = "provide host",
         modifier = Modifier.fillMaxWidth().heightIn(28.dp, MinHeight),
         onValueChange = { s ->
-            events(UpdateServerSettings(host = s, port = pluginState.settings.port.input))
+            events(UpdateServerSettings(host = s, port = state.settings.port.input))
         },
-        enabled = pluginState.canModifySettings
+        enabled = state.canModifySettings
     )
 
     Spacer(Modifier.height(12.dp))
 
     ValidatedTextField(
-        validated = pluginState.settings.port,
+        validated = state.settings.port,
         label = "Port:",
         placeholder = "provide port",
         modifier = Modifier.fillMaxWidth(),
         onValueChange = { s ->
-            events(UpdateServerSettings(host = pluginState.settings.host.input, port = s))
+            events(UpdateServerSettings(host = state.settings.host.input, port = s))
         },
-        enabled = pluginState.canModifySettings
+        enabled = state.canModifySettings
     )
 }
 
 @Composable
 private fun BottomActionMenu(
-    state: PluginState,
-    events: (PluginMessage) -> Unit,
+    state: State,
+    events: (Message) -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -192,7 +197,7 @@ private fun BottomActionMenu(
 }
 
 @Composable
-private fun PluginState.toBottomActionIcon() =
+private fun State.toBottomActionIcon() =
     when (this) {
         is Stopped -> if (canStart) RunDefaultIconC else RunDisabledIconC
         is Starting -> RunDisabledIconC
@@ -200,5 +205,5 @@ private fun PluginState.toBottomActionIcon() =
         is Stopping -> SuspendDisabledIconC
     }
 
-private val PluginState.canModifySettings
+private val State.canModifySettings
     get() = this is Stopped

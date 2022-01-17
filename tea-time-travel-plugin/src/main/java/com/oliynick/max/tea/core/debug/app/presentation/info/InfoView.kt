@@ -24,7 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign.Companion.Justify
-import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+import com.oliynick.max.tea.core.debug.app.component.cms.message.StartServer
+import com.oliynick.max.tea.core.debug.app.component.cms.state.*
 import com.oliynick.max.tea.core.debug.app.domain.Invalid
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.safe
 import com.oliynick.max.tea.core.debug.app.presentation.ui.modifier.noIndicationClickable
@@ -32,8 +34,8 @@ import java.util.*
 
 @Composable
 fun InfoView(
-    state: PluginState,
-    uiEvents: (PluginMessage) -> Unit,
+    state: State,
+    uiEvents: (Message) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -53,7 +55,7 @@ fun InfoView(
 @Composable
 private fun InfoViewMessage(
     description: String,
-    messages: ((PluginMessage) -> Unit)? = null,
+    messages: ((Message) -> Unit)? = null,
 ) {
     Text(
         text = description,

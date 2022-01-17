@@ -1,27 +1,18 @@
-/*
- * Copyright (C) 2021. Maksym Oliinyk.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package com.oliynick.max.tea.core.debug.app.component.cms
+package com.oliynick.max.tea.core.debug.app.component.cms.state
 
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.mapNotNull
+import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+
+data class Started(
+    override val settings: Settings,
+    val debugState: DebugState,
+    val server: Server
+) : State
 
 fun Started.update(
     debugState: DebugState
@@ -36,34 +27,6 @@ fun Started.removeSnapshots(
     id: ComponentId
 ) = updateComponents { mapping -> mapping.put(id, debugState.component(id).removeSnapshots()) }
 
-fun PluginState.updateSettings(
-    how: Settings.() -> Settings
-) = when (this) {
-    is Stopped -> copy(settings = settings.run(how))
-    is Starting -> copy(settings = settings.run(how))
-    is Started -> copy(settings = settings.run(how))
-    is Stopping -> copy(settings = settings.run(how))
-}
-
-fun Stopped.update(
-    settings: Settings
-) = copy(settings = settings)
-
-fun PluginState.updateServerSettings(
-    settings: Settings
-) =
-    when (this) {
-        is Stopped -> copy(settings = settings)
-        is Starting -> copy(settings = settings)
-        is Started -> copy(settings = settings)
-        is Stopping -> copy(settings = settings)
-    }
-
-inline fun Stopped.updateServerSettings(
-    how: Settings.() -> Settings
-): Settings =
-    settings.run(how)
-
 inline fun Started.updateComponents(
     how: (mapping: ComponentMapping) -> ComponentMapping
 ) =
@@ -74,12 +37,6 @@ fun Started.updateComponent(
     how: (mapping: ComponentDebugState) -> ComponentDebugState?
 ) =
     update(debugState.updateComponent(id, how))
-
-inline fun DebugState.updateComponent(
-    id: ComponentId,
-    crossinline how: (mapping: ComponentDebugState) -> ComponentDebugState?
-) =
-    copy(components = components.builder().also { m -> m.computeIfPresent(id) { _, s -> how(s) } }.build())
 
 fun Started.snapshot(
     componentId: ComponentId,
@@ -155,19 +112,14 @@ fun Started.updateFilter(
     s.copy(filter = filter, filteredSnapshots = filtered)
 }
 
-fun PersistentList<OriginalSnapshot>.filteredBy(
-    predicate: Predicate
-): PersistentList<FilteredSnapshot> =
-    mapNotNull { o -> o.filteredBy(predicate) }
-
-private fun OriginalSnapshot.toFiltered() =
+fun OriginalSnapshot.toFiltered() =
     FilteredSnapshot(
         meta,
         message,
         state
     )
 
-private fun OriginalSnapshot.filteredBy(
+fun OriginalSnapshot.filteredBy(
     predicate: Predicate
 ): FilteredSnapshot? {
 
@@ -186,3 +138,14 @@ private fun notifyUnknownComponent(
     id: ComponentId
 ): Nothing =
     throw IllegalArgumentException("Unknown component $id")
+
+inline fun DebugState.updateComponent(
+    id: ComponentId,
+    crossinline how: (mapping: ComponentDebugState) -> ComponentDebugState?
+) =
+    copy(components = components.builder().also { m -> m.computeIfPresent(id) { _, s -> how(s) } }.build())
+
+fun PersistentList<OriginalSnapshot>.filteredBy(
+    predicate: Predicate
+): PersistentList<FilteredSnapshot> =
+    mapNotNull { o -> o.filteredBy(predicate) }

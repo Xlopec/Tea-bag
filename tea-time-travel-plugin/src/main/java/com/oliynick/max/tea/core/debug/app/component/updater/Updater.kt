@@ -17,15 +17,15 @@
 package com.oliynick.max.tea.core.debug.app.component.updater
 
 import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
+import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+import com.oliynick.max.tea.core.debug.app.component.cms.state.State
 
 interface Updater<Env> {
 
     fun Env.update(
-        message: PluginMessage,
-        state: PluginState
-    ): UpdateWith<PluginState, PluginCommand>
+        message: Message,
+        state: State
+    ): UpdateWith<State, Command>
 
 }

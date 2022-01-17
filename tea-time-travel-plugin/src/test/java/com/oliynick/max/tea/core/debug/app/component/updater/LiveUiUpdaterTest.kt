@@ -19,7 +19,9 @@
 package com.oliynick.max.tea.core.debug.app.component.updater
 
 import com.oliynick.max.tea.core.component.Updater
-import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.component.cms.command.*
+import com.oliynick.max.tea.core.debug.app.component.cms.message.*
+import com.oliynick.max.tea.core.debug.app.component.cms.state.*
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.*
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
@@ -42,7 +44,7 @@ import kotlin.test.assertEquals
 @RunWith(JUnit4::class)
 internal class LiveUiUpdaterTest {
 
-    private val updater: Updater<UIMessage, PluginState, PluginCommand> = LiveUiUpdater::update
+    private val updater: Updater<UIMessage, State, Command> = LiveUiUpdater::update
 
     @Test
     fun `test the result is calculated properly given plugin state is Stopped and message is StartServer`() =

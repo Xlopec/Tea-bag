@@ -13,9 +13,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.RemoveComponent
-import com.oliynick.max.tea.core.debug.app.component.cms.componentIds
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+import com.oliynick.max.tea.core.debug.app.component.cms.message.RemoveComponent
+import com.oliynick.max.tea.core.debug.app.component.cms.state.componentIds
 import com.oliynick.max.tea.core.debug.app.domain.DebugState
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
@@ -26,7 +26,7 @@ fun ComponentTab(
     selectedId: MutableState<ComponentId>,
     state: DebugState,
     tabIndex: Int,
-    events: (PluginMessage) -> Unit
+    events: (Message) -> Unit
 ) {
     Tab(
         selected = id == selectedId.value,

@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.intellij.openapi.project.Project
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.UpdateFilter
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+import com.oliynick.max.tea.core.debug.app.component.cms.message.UpdateFilter
 import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption.*
@@ -39,7 +39,7 @@ fun Component(
     project: Project,
     settings: Settings,
     state: ComponentDebugState,
-    events: (PluginMessage) -> Unit,
+    events: (Message) -> Unit,
 ) {
     Column {
 
@@ -94,7 +94,7 @@ fun Component(
 @Composable
 private fun ComponentFilterHeader(
     state: ComponentDebugState,
-    events: (PluginMessage) -> Unit
+    events: (Message) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
         ValidatedTextField(

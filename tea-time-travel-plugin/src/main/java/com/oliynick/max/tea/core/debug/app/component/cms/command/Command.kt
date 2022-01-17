@@ -14,50 +14,57 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.component.cms
+package com.oliynick.max.tea.core.debug.app.component.cms.command
 
+import com.oliynick.max.tea.core.debug.app.component.cms.PluginException
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+import com.oliynick.max.tea.core.debug.app.component.cms.state.State
 import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
 import com.oliynick.max.tea.core.debug.app.domain.Settings
 import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
-sealed interface PluginCommand
+sealed interface Command
 
-data class DoStoreSettings(
+@JvmInline
+value class DoStoreSettings(
     val settings: Settings
-) : PluginCommand
+) : Command
 
-data class DoStartServer(
+@JvmInline
+value class DoStartServer(
     val address: ServerAddress
-) : PluginCommand
+) : Command
 
-data class DoStopServer(
+@JvmInline
+value class DoStopServer(
     val server: Server
-) : PluginCommand
+) : Command
 
 data class DoApplyMessage(
     val id: ComponentId,
     val command: Value,
     val server: Server
-) : PluginCommand
+) : Command
 
 data class DoApplyState(
     val id: ComponentId,
     val state: Value,
     val server: Server
-) : PluginCommand
+) : Command
 
 data class DoNotifyOperationException(
     val exception: PluginException,
-    val operation: PluginCommand?
-) : PluginCommand
+    val operation: Command?
+) : Command
 
 data class DoWarnUnacceptableMessage(
-    val message: PluginMessage,
-    val state: PluginState
-) : PluginCommand
+    val message: Message,
+    val state: State
+) : Command
 
-data class DoNotifyComponentAttached(
+@JvmInline
+value class DoNotifyComponentAttached(
     val componentId: ComponentId
-) : PluginCommand
+) : Command

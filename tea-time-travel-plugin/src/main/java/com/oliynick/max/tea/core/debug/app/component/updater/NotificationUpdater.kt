@@ -17,16 +17,16 @@
 package com.oliynick.max.tea.core.debug.app.component.updater
 
 import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.debug.app.component.cms.NotificationMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
+import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
+import com.oliynick.max.tea.core.debug.app.component.cms.message.NotificationMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.state.State
 
 interface NotificationUpdater {
 
     fun update(
         message: NotificationMessage,
-        state: PluginState
-    ): UpdateWith<PluginState, PluginCommand>
+        state: State
+    ): UpdateWith<State, Command>
 
 }
 

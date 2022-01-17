@@ -19,7 +19,12 @@
 package com.oliynick.max.tea.core.debug.app.component.updater
 
 import com.oliynick.max.tea.core.component.Updater
-import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
+import com.oliynick.max.tea.core.debug.app.component.cms.command.DoNotifyComponentAttached
+import com.oliynick.max.tea.core.debug.app.component.cms.command.DoWarnUnacceptableMessage
+import com.oliynick.max.tea.core.debug.app.component.cms.message.*
+import com.oliynick.max.tea.core.debug.app.component.cms.state.State
+import com.oliynick.max.tea.core.debug.app.component.cms.state.Stopped
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.*
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
@@ -35,21 +40,32 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 internal class LiveNotificationUpdaterTest {
 
-    private val updater: Updater<NotificationMessage, PluginState, PluginCommand> = LiveNotificationUpdater::update
+    private val updater: Updater<NotificationMessage, State, Command> = LiveNotificationUpdater::update
 
     @Test
     fun `test when message is NotifyStarted then plugin goes to a Started state`() {
 
         val (nextState, commands) = updater(NotifyStarted(StartedTestServerStub), Stopped(TestSettings))
 
-        nextState shouldBe Started(TestSettings, DebugState(), StartedTestServerStub)
+        nextState shouldBe com.oliynick.max.tea.core.debug.app.component.cms.state.Started(
+            TestSettings,
+            DebugState(),
+            StartedTestServerStub
+        )
         commands.shouldBeEmpty()
     }
 
     @Test
     fun `test when message is NotifyStopped then plugin goes to a Stopped state`() {
 
-        val (nextState, commands) = updater(NotifyStopped, Started(TestSettings, DebugState(), StartedTestServerStub))
+        val (nextState, commands) = updater(
+            NotifyStopped,
+            com.oliynick.max.tea.core.debug.app.component.cms.state.Started(
+                TestSettings,
+                DebugState(),
+                StartedTestServerStub
+            )
+        )
 
         nextState shouldBe Stopped(TestSettings)
         commands.shouldBeEmpty()

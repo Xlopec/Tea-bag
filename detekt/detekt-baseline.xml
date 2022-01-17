@@ -3,18 +3,18 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
-    <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$override fun update( message: UIMessage, state: PluginState ): UpdateWith&lt;PluginState, PluginCommand></ID>
+    <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$override fun update( message: UIMessage, state: State ): UpdateWith&lt;State, Command></ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") internal fun Null.toReadableString(): String</ID>
     <ID>LongMethod:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
     <ID>LongMethod:TempTest.kt$TempTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
     <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C>, noinline resolver: Resolver&lt;C, M>, noinline updater: Updater&lt;M, S, C>, jsonConverter: JsonConverter&lt;J>, // todo: group to reduce number of arguments scope: CoroutineScope, url: Url = Localhost, computation: CoroutineDispatcher = Dispatchers.Unconfined, shareOptions: ShareOptions = ShareStateWhileSubscribed, noinline sessionBuilder: SessionBuilder&lt;M, S, J> = ::WebSocketSession, )</ID>
     <ID>LongParameterList:LocalStorageImpl.kt$( url: String, title: String, author: String?, description: String?, urlToImage: String?, published: Long, // this unused arg is needed just to make function signatures match @Suppress("UNUSED_PARAMETER") savedOn: Long, isFavorite: Boolean )</ID>
-    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, formatter: TreeFormatter, node: SnapshotINode, state: TreeState, handler: (PluginMessage) -> Unit )</ID>
+    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, formatter: TreeFormatter, node: SnapshotINode, state: TreeState, handler: (Message) -> Unit )</ID>
     <ID>LongParameterList:TreeView.kt$( level: Int, text: String, image: ImageBitmap, leaf: Node, state: TreeState, onClick: () -> Unit, )</ID>
-    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, image: ImageBitmap, node: INode, state: TreeState, handler: (PluginMessage) -> Unit )</ID>
-    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, node: RefNode, formatter: TreeFormatter, state: TreeState, handler: (PluginMessage) -> Unit, )</ID>
-    <ID>LongParameterList:TreeView.kt$( node: CollectionNode, level: Int, text: String, formatter: TreeFormatter, state: TreeState, handler: (PluginMessage) -> Unit )</ID>
-    <ID>LongParameterList:TreeView.kt$( node: Node, level: Int, formatter: TreeFormatter, text: String, state: TreeState, handler: (PluginMessage) -> Unit )</ID>
+    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, image: ImageBitmap, node: INode, state: TreeState, handler: (Message) -> Unit )</ID>
+    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, node: RefNode, formatter: TreeFormatter, state: TreeState, handler: (Message) -> Unit, )</ID>
+    <ID>LongParameterList:TreeView.kt$( node: CollectionNode, level: Int, text: String, formatter: TreeFormatter, state: TreeState, handler: (Message) -> Unit )</ID>
+    <ID>LongParameterList:TreeView.kt$( node: Node, level: Int, formatter: TreeFormatter, text: String, state: TreeState, handler: (Message) -> Unit )</ID>
     <ID>MagicNumber:Balloon.kt$15</ID>
     <ID>MagicNumber:Balloon.kt$15_000L</ID>
     <ID>MagicNumber:Balloon.kt$30</ID>
@@ -101,7 +101,6 @@
     <ID>TooGenericExceptionCaught:ServerImpl.kt$e: Throwable</ID>
     <ID>TooManyFunctions:ComponentTest.kt$ComponentTest</ID>
     <ID>TooManyFunctions:RenderExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.RenderExtensions.kt</ID>
-    <ID>TooManyFunctions:StateExtensions.kt$com.oliynick.max.tea.core.debug.app.component.cms.StateExtensions.kt</ID>
     <ID>TooManyFunctions:TempTest.kt$TempTest</ID>
     <ID>UndocumentedPublicClass:Adapters.kt$AuthorSerializer : KSerializer</ID>
     <ID>UndocumentedPublicClass:Adapters.kt$CommonDateSerializer : KSerializer</ID>

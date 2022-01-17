@@ -24,10 +24,10 @@ import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.states
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginState
-import com.oliynick.max.tea.core.debug.app.component.cms.UpdateDebugSettings
+import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
+import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+import com.oliynick.max.tea.core.debug.app.component.cms.message.UpdateDebugSettings
+import com.oliynick.max.tea.core.debug.app.component.cms.state.State
 import com.oliynick.max.tea.core.debug.app.env.Environment
 import com.oliynick.max.tea.core.debug.app.env.PluginComponent
 import com.oliynick.max.tea.core.debug.app.misc.properties
@@ -77,6 +77,6 @@ private fun Project.settingsMessages(): Flow<UpdateDebugSettings> =
 
 private fun createToolWindowContent(
     project: Project,
-    component: Component<PluginMessage, PluginState, PluginCommand>
+    component: Component<Message, State, Command>
 ): Content =
     ContentFactory.SERVICE.getInstance().createContent(Plugin(project, component.states()), null, false)

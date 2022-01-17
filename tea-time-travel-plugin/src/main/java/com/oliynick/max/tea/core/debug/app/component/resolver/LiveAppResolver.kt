@@ -20,7 +20,8 @@ package com.oliynick.max.tea.core.debug.app.component.resolver
 
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
-import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.component.cms.command.*
+import com.oliynick.max.tea.core.debug.app.component.cms.message.*
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.settings
 import com.oliynick.max.tea.core.debug.app.presentation.ui.balloon.showBalloon
@@ -40,13 +41,13 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
                                                         Env : HasServer {
 
     override suspend fun Env.resolve(
-        command: PluginCommand,
-    ): Set<PluginMessage> =
+        command: Command,
+    ): Set<Message> =
         runCatching { doResolve(command) }
             .getOrElse { th -> setOf(NotifyOperationException(th, command)) }
 
     suspend fun Env.doResolve(
-        command: PluginCommand,
+        command: Command,
     ): Set<NotificationMessage> =
         when (command) {
             is DoStoreSettings -> command sideEffect { properties.settings = settings }

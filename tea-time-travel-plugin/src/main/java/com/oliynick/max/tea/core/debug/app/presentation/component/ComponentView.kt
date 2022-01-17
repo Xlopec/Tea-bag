@@ -23,7 +23,9 @@ import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PsiNavigateUtil
-import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.component.cms.message.*
+import com.oliynick.max.tea.core.debug.app.component.cms.state.Started
+import com.oliynick.max.tea.core.debug.app.component.cms.state.component
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.javaPsiFacade
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RemoveIcon
@@ -46,7 +48,7 @@ class ComponentView private constructor(
     private val initial: ComponentViewState,
     private val id: ComponentId,
     private val project: Project,
-    private val component: (Flow<PluginMessage>) -> Flow<Started>,
+    private val component: (Flow<Message>) -> Flow<Started>,
     scope: CoroutineScope
 ) : CoroutineScope by scope {
 
@@ -56,7 +58,7 @@ class ComponentView private constructor(
             scope: CoroutineScope,
             id: ComponentId,
             project: Project,
-            component: (Flow<PluginMessage>) -> Flow<Started>,
+            component: (Flow<Message>) -> Flow<Started>,
             state: Started
         ): ComponentView {
 
@@ -105,7 +107,7 @@ class ComponentView private constructor(
 
     private suspend fun render(
         id: ComponentId,
-        component: (Flow<PluginMessage>) -> Flow<Started>
+        component: (Flow<Message>) -> Flow<Started>
     ) = component(messages())
         .map { pluginState -> pluginState.toViewState(id) }
         .collect { componentState -> render(componentState) }
@@ -212,7 +214,7 @@ private fun substringFlow(
 private fun JTree.asOptionMenuUpdates(
     id: ComponentId,
     project: Project
-): Flow<PluginMessage> =
+): Flow<Message> =
     callbackFlow {
 
         val l = object : DefaultMouseListener {
@@ -258,7 +260,7 @@ private fun JTree.showActionPopup(
     e: MouseEvent,
     id: ComponentId,
     project: Project,
-    onAction: (PluginMessage) -> Unit
+    onAction: (Message) -> Unit
 ) {
     val row = getClosestRowForLocation(e.x, e.y)
 
@@ -300,7 +302,7 @@ private fun ValuePopup(
 
 private fun SnapshotsPopup(
     id: ComponentId,
-    onAction: (PluginMessage) -> Unit
+    onAction: (Message) -> Unit
 ): JPopupMenu = JBPopupMenu("Snapshots").apply {
     add(JBMenuItem("Delete all", RemoveIcon).apply {
         addActionListener {
@@ -312,7 +314,7 @@ private fun SnapshotsPopup(
 private fun SnapshotPopup(
     component: ComponentId,
     snapshot: FilteredSnapshot,
-    onAction: (PluginMessage) -> Unit
+    onAction: (Message) -> Unit
 ): JPopupMenu =
     JBPopupMenu("Snapshot ${snapshot.meta.id.value}").apply {
         add(JBMenuItem(
@@ -334,7 +336,7 @@ private fun SnapshotPopup(
 private fun MessagePopup(
     componentId: ComponentId,
     snapshotId: SnapshotId,
-    onAction: (PluginMessage) -> Unit
+    onAction: (Message) -> Unit
 ): JPopupMenu =
     JBPopupMenu().apply {
         add(JBMenuItem("Apply this message", UpdateRunningAppIcon).apply {
@@ -347,7 +349,7 @@ private fun MessagePopup(
 private fun StatePopup(
     componentId: ComponentId,
     snapshotId: SnapshotId,
-    onAction: (PluginMessage) -> Unit
+    onAction: (Message) -> Unit
 ): JPopupMenu =
     JBPopupMenu().apply {
         add(JBMenuItem("Apply this state", UpdateRunningAppIcon).apply {

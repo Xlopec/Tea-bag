@@ -19,7 +19,9 @@ package com.oliynick.max.tea.core.debug.app.component.updater
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.component.cms.command.*
+import com.oliynick.max.tea.core.debug.app.component.cms.message.*
+import com.oliynick.max.tea.core.debug.app.component.cms.state.*
 import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
 import com.oliynick.max.tea.core.debug.app.domain.Settings
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
@@ -32,8 +34,8 @@ object LiveUiUpdater : UiUpdater {
 
     override fun update(
         message: UIMessage,
-        state: PluginState
-    ): UpdateWith<PluginState, PluginCommand> =
+        state: State
+    ): UpdateWith<State, Command> =
         when {
             message is UpdateDebugSettings -> updateDebugSettings(message.isDetailedToStringEnabled, state)
             message is UpdateServerSettings && state is Stopped -> updateServerSettings(message, state)
@@ -50,14 +52,14 @@ object LiveUiUpdater : UiUpdater {
 
     fun updateDebugSettings(
         isDetailedToStringEnabled: Boolean,
-        state: PluginState
-    ): UpdateWith<PluginState, DoStoreSettings> =
+        state: State
+    ): UpdateWith<State, DoStoreSettings> =
         state.updateSettings { copy(isDetailedOutput = isDetailedToStringEnabled) } command { DoStoreSettings(settings) }
 
     fun updateServerSettings(
         message: UpdateServerSettings,
-        state: PluginState
-    ): UpdateWith<PluginState, DoStoreSettings> {
+        state: State
+    ): UpdateWith<State, DoStoreSettings> {
         val settings = Settings.of(message.host, message.port, state.settings.isDetailedOutput)
 
         return state.updateServerSettings(settings) command { DoStoreSettings(settings) }
@@ -65,7 +67,7 @@ object LiveUiUpdater : UiUpdater {
 
     fun startServer(
         state: Stopped
-    ): UpdateWith<PluginState, PluginCommand> {
+    ): UpdateWith<State, Command> {
 
         val host = state.settings.host
         val port = state.settings.port
@@ -83,13 +85,13 @@ object LiveUiUpdater : UiUpdater {
     fun applyState(
         message: ApplyState,
         state: Started
-    ): UpdateWith<PluginState, PluginCommand> =
+    ): UpdateWith<State, Command> =
         state command DoApplyState(message.componentId, state.state(message), state.server)
 
     fun applyMessage(
         message: ApplyMessage,
         state: Started
-    ): UpdateWith<PluginState, PluginCommand> {
+    ): UpdateWith<State, Command> {
         val m = state.messageFor(message) ?: return state.noCommand()
 
         return state command DoApplyMessage(message.componentId, m, state.server)
@@ -100,26 +102,26 @@ object LiveUiUpdater : UiUpdater {
         componentId: ComponentId,
         ids: Set<SnapshotId>,
         state: Started
-    ): UpdateWith<PluginState, Nothing> =
+    ): UpdateWith<State, Nothing> =
         state.removeSnapshots(componentId, ids).noCommand()
 
     fun removeSnapshots(
         componentId: ComponentId,
         state: Started
-    ): UpdateWith<PluginState, Nothing> =
+    ): UpdateWith<State, Nothing> =
         state.removeSnapshots(componentId).noCommand()
 
     fun removeComponent(
         message: RemoveComponent,
         state: Started
-    ): UpdateWith<PluginState, Nothing> =
+    ): UpdateWith<State, Nothing> =
         state.updateComponents { mapping -> mapping.remove(message.componentId) }
             .noCommand()
 
     fun updateFilter(
         message: UpdateFilter,
         state: Started
-    ): UpdateWith<PluginState, Nothing> =
+    ): UpdateWith<State, Nothing> =
         state.updateFilter(message.id, message.input, message.ignoreCase, message.option).noCommand()
 
     fun Started.state(

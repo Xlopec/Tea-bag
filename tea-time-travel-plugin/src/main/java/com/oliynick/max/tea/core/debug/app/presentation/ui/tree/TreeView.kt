@@ -54,7 +54,7 @@ import androidx.compose.ui.window.Popup
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PsiNavigateUtil
-import com.oliynick.max.tea.core.debug.app.component.cms.*
+import com.oliynick.max.tea.core.debug.app.component.cms.message.*
 import com.oliynick.max.tea.core.debug.app.component.resolver.appState
 import com.oliynick.max.tea.core.debug.app.domain.Type
 import com.oliynick.max.tea.core.debug.app.misc.javaPsiFacade
@@ -78,7 +78,7 @@ fun Tree(
     id: ComponentId,
     roots: List<Node>,
     formatter: TreeFormatter,
-    handler: (PluginMessage) -> Unit,
+    handler: (Message) -> Unit,
 ) {
     val state = remember(roots) { TreeState(id, roots) }
 
@@ -91,7 +91,7 @@ fun Tree(
     id: ComponentId,
     root: Node,
     formatter: TreeFormatter,
-    handler: (PluginMessage) -> Unit,
+    handler: (Message) -> Unit,
 ) {
     val state = remember(root) { TreeState(id, root) }
 
@@ -103,7 +103,7 @@ fun Tree(
     modifier: Modifier = Modifier,
     tree: TreeState,
     formatter: TreeFormatter,
-    handler: (PluginMessage) -> Unit,
+    handler: (Message) -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -131,7 +131,7 @@ private fun LazyListScope.subTree(
     formatter: TreeFormatter,
     text: String,
     state: TreeState,
-    handler: (PluginMessage) -> Unit
+    handler: (Message) -> Unit
 ) =
     when (node) {
         is SnapshotINode -> snapshotSubTree(level, formatter(node), formatter, node, state, handler)
@@ -146,7 +146,7 @@ private fun LazyListScope.snapshotSubTree(
     formatter: TreeFormatter,
     node: SnapshotINode,
     state: TreeState,
-    handler: (PluginMessage) -> Unit
+    handler: (Message) -> Unit
 ) {
     item {
         if (node.message == null && node.state == null) {
@@ -199,7 +199,7 @@ private fun LazyListScope.referenceSubTree(
     node: RefNode,
     formatter: TreeFormatter,
     state: TreeState,
-    handler: (PluginMessage) -> Unit,
+    handler: (Message) -> Unit,
 ) {
     item {
         ExpandableNode(level, text, ClassIconC, node, state, handler)
@@ -218,7 +218,7 @@ private fun LazyListScope.collectionSubTree(
     text: String,
     formatter: TreeFormatter,
     state: TreeState,
-    handler: (PluginMessage) -> Unit
+    handler: (Message) -> Unit
 ) {
     item {
         ExpandableNode(level, text, PropertyIconC, node, state, handler)
@@ -283,7 +283,7 @@ private fun ExpandableNode(
     image: ImageBitmap,
     node: INode,
     state: TreeState,
-    handler: (PluginMessage) -> Unit
+    handler: (Message) -> Unit
 ) {
     val showPopup = remember { mutableStateOf(false) }
 
@@ -333,7 +333,7 @@ private fun ActionsPopup(
     state: TreeState,
     node: Node,
     onDismiss: () -> Unit,
-    handler: (PluginMessage) -> Unit
+    handler: (Message) -> Unit
 ) {
 
     Popup(onDismissRequest = onDismiss) {
@@ -367,7 +367,7 @@ private fun JumpToSourceActionItem(
 private fun SnapshotActionItems(
     id: ComponentId,
     node: SnapshotINode,
-    handler: (PluginMessage) -> Unit
+    handler: (Message) -> Unit
 ) {
     Column {
         PopupItem(RemoveIconC, "Delete all") {
