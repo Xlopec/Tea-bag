@@ -1,13 +1,12 @@
 package com.oliynick.max.reader.app
 
 import com.google.gson.JsonElement
+import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.entities.shared.datatypes.Left
 import com.oliynick.max.entities.shared.datatypes.Right
 import com.oliynick.max.reader.app.message.Message
 import com.oliynick.max.tea.core.debug.component.ServerSettings
-import com.oliynick.max.tea.core.debug.protocol.JsonConverter
-import com.oliynick.max.tea.core.debug.protocol.NotifyClient
-import com.oliynick.max.tea.core.debug.protocol.NotifyServer
+import com.oliynick.max.tea.core.debug.protocol.*
 import com.oliynick.max.tea.core.debug.session.DebugSession
 import com.oliynick.max.tea.core.debug.session.SessionBuilder
 import kotlinx.coroutines.channels.Channel
@@ -38,7 +37,6 @@ class OkHttpWebSocketSessionBuilder : SessionBuilder<Message, AppState, JsonElem
 
         session.invoke(OkHttpWebSocketSession(adapter.packets, ws, settings))
         adapter.packets.collect()
-        println("End of session")
     }
 }
 
@@ -83,9 +81,10 @@ internal class OkHttpWebSocketSession(
     private val settings: ServerSettings<Message, AppState, JsonElement>,
 ) : DebugSession<Message, AppState, JsonElement> {
 
-    private val packets = frames
+    private val packets: Flow<Either<Message, AppState>> = frames
         .map { json -> settings.serializer.asNotifyClientPacket(json) }
         .filter { packet -> packet.component == settings.id }
+        .map { settings.serializer.toCommand(it) }
 
     override val messages: Flow<Message> = packets.filterIsInstance<Left<Message>>()
         .map { (m) -> m }
@@ -93,8 +92,14 @@ internal class OkHttpWebSocketSession(
         .map { (s) -> s }
 
     override suspend fun invoke(packet: NotifyServer<JsonElement>) {
-        println("Sending packet $packet")
         webSocket.send(settings.serializer.toJson(packet))
+    }
+
+    private fun <J> JsonConverter<J>.toCommand(
+        packet: NotifyClient<J>
+    ) = when (val message = packet.message) {
+        is ApplyMessage<J> -> Left(fromJsonTree(message.message, Message::class))
+        is ApplyState<J> -> Right(fromJsonTree(message.state, AppState::class))
     }
 
 }
