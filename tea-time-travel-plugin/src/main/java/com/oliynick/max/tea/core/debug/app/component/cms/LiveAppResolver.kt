@@ -111,7 +111,7 @@ private class LiveAppResolverImpl<Env>(
             }
         }
 
-    suspend fun Env.reApplyState(
+    private suspend fun reApplyState(
         command: DoApplyState,
     ) = command effect {
         server(id, ApplyState(state.toJsonElement()))

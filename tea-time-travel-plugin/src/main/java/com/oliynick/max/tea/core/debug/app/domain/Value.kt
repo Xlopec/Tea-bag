@@ -23,14 +23,15 @@ value class Type private constructor(
     companion object {
         fun of(
             name: String
-        ): Type {
-            require(name.isNotEmpty())
-            return Type(name)
-        }
+        ) = Type(name)
 
         fun of(
             any: Any
         ) = of(any::class.java.name)
+    }
+
+    init {
+        require(name.isNotEmpty())
     }
 }
 
@@ -43,21 +44,23 @@ sealed interface Value
 
 object Null : Value
 
-//todo replace by overloaded factory function
-
-data class NumberWrapper(
+@JvmInline
+value class NumberWrapper(
     val value: Number
 ) : Value
 
-data class CharWrapper(
+@JvmInline
+value class CharWrapper(
     val value: Char
 ) : Value
 
-data class StringWrapper(
+@JvmInline
+value class StringWrapper(
     val value: String
 ) : Value
 
-class BooleanWrapper private constructor(
+@JvmInline
+value class BooleanWrapper private constructor(
     val value: Boolean
 ) : Value {
 
@@ -69,29 +72,10 @@ class BooleanWrapper private constructor(
             value: Boolean
         ) = if (value) TRUE else FALSE
     }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as BooleanWrapper
-
-        if (value != other.value) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return value.hashCode()
-    }
-
-    override fun toString(): String {
-        return "BooleanWrapper(value=$value)"
-    }
-
 }
 
-data class CollectionWrapper(
+@JvmInline
+value class CollectionWrapper(
     val items: List<Value>
 ) : Value
 
