@@ -29,6 +29,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.oliynick.max.tea.core.debug.app.domain.*
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 // todo: consider bottom-up value tree modification
 // assumption TreeState <-> Value (isomorphic)
@@ -36,11 +37,12 @@ import com.oliynick.max.tea.core.debug.app.domain.*
 
 @Stable
 data class TreeState(
+    val id: ComponentId,
     val roots: List<Node>,
     val selected: MutableState<Node?> = mutableStateOf(null),
 ) {
-    constructor(root: Node, selected: MutableState<Node?> = mutableStateOf(null)) :
-            this(listOf(root), selected)
+    constructor(id: ComponentId, root: Node, selected: MutableState<Node?> = mutableStateOf(null)) :
+            this(id, listOf(root), selected)
 }
 
 @Stable
@@ -108,7 +110,7 @@ private fun CollectionWrapper.toRenderTree(
 
 fun Iterable<FilteredSnapshot>.toRenderTree(
     expanded: Boolean = false,
-): List<INode> {
+): List<SnapshotINode> {
 
     var i = 0
 

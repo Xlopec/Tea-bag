@@ -37,10 +37,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,9 +47,14 @@ import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginMessage
+import com.intellij.openapi.project.Project
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.util.PsiNavigateUtil
+import com.oliynick.max.tea.core.debug.app.component.cms.*
 import com.oliynick.max.tea.core.debug.app.component.resolver.appState
-import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.CloseDefaultIconC
+import com.oliynick.max.tea.core.debug.app.domain.Type
+import com.oliynick.max.tea.core.debug.app.misc.javaPsiFacade
+import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RemoveIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.UpdateRunningAppIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ImageSmall
 import com.oliynick.max.tea.core.debug.app.presentation.ui.PaddingSmall
@@ -63,6 +65,7 @@ import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.PropertyIco
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.WatchIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.DATE_TIME_FORMATTER
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.toReadableStringShort
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 typealias TreeFormatter = (Node) -> String
 
@@ -84,11 +87,12 @@ object TreeItemFormatterImpl : TreeFormatter {
 @Composable
 fun Tree(
     modifier: Modifier = Modifier,
+    id: ComponentId,
     roots: List<Node>,
     formatter: TreeFormatter,
     handler: (PluginMessage) -> Unit,
 ) {
-    val state = remember(roots) { TreeState(roots) }
+    val state = remember(roots) { TreeState(id, roots) }
 
     Tree(modifier, state, formatter, handler)
 }
@@ -96,11 +100,12 @@ fun Tree(
 @Composable
 fun Tree(
     modifier: Modifier = Modifier,
+    id: ComponentId,
     root: Node,
     formatter: TreeFormatter,
     handler: (PluginMessage) -> Unit,
 ) {
-    val state = remember(root) { TreeState(root) }
+    val state = remember(root) { TreeState(id, root) }
 
     Tree(modifier, state, formatter, handler)
 }
@@ -297,30 +302,71 @@ private fun ExpandableNode(
         if (showPopup.value) {
             // fixme move popup to a separate file, add slot API for it. Do just the same for clicks and etc.
             ActionsPopup(
+                state = state,
+                node = node,
                 onDismiss = { showPopup.value = false },
-                handler = handler
+                handler = handler,
             )
         }
     }
 }
 
+val ProjectLocal = compositionLocalOf<Project> { error("Nothing") }
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ActionsPopup(
+    state: TreeState,
+    node: Node,
     onDismiss: () -> Unit,
     handler: (PluginMessage) -> Unit
 ) {
+
     Popup(onDismissRequest = onDismiss) {
         Surface(elevation = 8.dp) {
-            Column {
-                PopupItem(CloseDefaultIconC, "Delete All") { }
-                PopupItem(UpdateRunningAppIconC, "Reset to This") {
-                }
-                PopupItem(UpdateRunningAppIconC, "Apply this message") {
-                }
-                PopupItem(UpdateRunningAppIconC, "Apply this state") {
-                }
+            when (node) {
+                is CollectionNode, is Leaf -> Unit
+                is RefNode -> JumpToSourceActionItem(node.type)
+                is SnapshotINode -> SnapshotActionItems(state.id, node, handler)
             }
+        }
+    }
+}
+
+@Composable
+private fun JumpToSourceActionItem(
+    type: Type
+) {
+    val project = ProjectLocal.current
+    val facade = project.javaPsiFacade
+
+    val psiClass = facade.findClass(type.name, GlobalSearchScope.projectScope(project)) ?: return
+
+    Column {
+        PopupItem(ClassIconC, "Jump to sources") {
+            PsiNavigateUtil.navigate(psiClass)
+        }
+    }
+}
+
+@Composable
+private fun SnapshotActionItems(
+    id: ComponentId,
+    node: SnapshotINode,
+    handler: (PluginMessage) -> Unit
+) {
+    Column {
+        PopupItem(RemoveIconC, "Delete all") {
+            handler(RemoveAllSnapshots(id))
+        }
+        PopupItem(RemoveIconC, "Delete") {
+            handler(RemoveSnapshots(id, node.meta.id))
+        }
+        PopupItem(UpdateRunningAppIconC, "Reset to this") {
+            handler(ApplyState(id, node.meta.id))
+        }
+        PopupItem(UpdateRunningAppIconC, "Apply message") {
+            handler(ApplyMessage(id, node.meta.id))
         }
     }
 }
@@ -371,7 +417,11 @@ private fun Modifier.indentLevel(
 fun ValueTreePreviewExpanded() {
     Surface(color = Color.Unspecified) {
         CompositionLocalProvider(PreviewMode provides true) {
-            Tree(root = appState.toRenderTree(expanded = true), formatter = TreeItemFormatterImpl) {}
+            Tree(
+                id = ComponentId("test id"),
+                root = appState.toRenderTree(expanded = true),
+                formatter = TreeItemFormatterImpl
+            ) {}
         }
     }
 }

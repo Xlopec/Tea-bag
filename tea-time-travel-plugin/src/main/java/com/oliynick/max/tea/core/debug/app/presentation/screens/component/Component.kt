@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -19,6 +20,7 @@ import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption.*
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ValidatedTextField
+import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.ProjectLocal
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.Tree
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.TreeItemFormatterImpl
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.toRenderTree
@@ -41,39 +43,43 @@ fun Component(
 
         val splitterState = rememberSplitPaneState()
 
-        VerticalSplitPane(splitPaneState = splitterState) {
-            first(SplitPaneMinContentHeight) {
-                val snapshotsTree by derivedStateOf { state.filteredSnapshots.toRenderTree() }
+        CompositionLocalProvider(
+            ProjectLocal provides project
+        ) {
+            VerticalSplitPane(splitPaneState = splitterState) {
+                first(SplitPaneMinContentHeight) {
+                    val snapshotsTree by derivedStateOf { state.filteredSnapshots.toRenderTree() }
 
-                Tree(
-                    modifier = Modifier.fillMaxSize().border(1.dp, Color.Black.copy(alpha = 0.60f)),
-                    roots = snapshotsTree,
-                    formatter = TreeItemFormatterImpl
-                ) { message ->
-                    println("Event $message")
-                }
-            }
-
-            second(SplitPaneMinContentHeight) {
-                val stateTree by derivedStateOf { state.state.toRenderTree() }
-
-                Tree(
-                    modifier = Modifier.fillMaxSize().border(1.dp, Color.Black.copy(alpha = 0.60f)),
-                    root = stateTree,
-                    formatter = TreeItemFormatterImpl
-                ) { message ->
-                    println("Event $message")
-                }
-            }
-
-            splitter {
-                visiblePart {
-                    Box(
-                        Modifier
-                            .width(1.dp)
-                            .fillMaxHeight()
-                            .background(MaterialTheme.colors.background)
+                    Tree(
+                        id = state.id,
+                        modifier = Modifier.fillMaxSize().border(1.dp, Color.Black.copy(alpha = 0.60f)),
+                        roots = snapshotsTree,
+                        formatter = TreeItemFormatterImpl,
+                        handler = events,
                     )
+                }
+
+                second(SplitPaneMinContentHeight) {
+                    val stateTree by derivedStateOf { state.state.toRenderTree() }
+
+                    Tree(
+                        id = state.id,
+                        modifier = Modifier.fillMaxSize().border(1.dp, Color.Black.copy(alpha = 0.60f)),
+                        root = stateTree,
+                        formatter = TreeItemFormatterImpl,
+                        handler = events,
+                    )
+                }
+
+                splitter {
+                    visiblePart {
+                        Box(
+                            Modifier
+                                .width(1.dp)
+                                .fillMaxHeight()
+                                .background(MaterialTheme.colors.background)
+                        )
+                    }
                 }
             }
         }
@@ -122,21 +128,6 @@ private fun ComponentFilterHeader(
     }
 }
 
-private fun UpdateFilter(
-    state: ComponentDebugState,
-    newText: String,
-) = with(state) { UpdateFilter(id, newText, filter.ignoreCase, filter.option) }
-
-private fun UpdateFilter(
-    state: ComponentDebugState,
-    matchCase: Boolean,
-) = with(state) { UpdateFilter(id, filter.predicate.input, !matchCase, filter.option) }
-
-private fun UpdateFilter(
-    state: ComponentDebugState,
-    option: FilterOption?,
-) = with(state) { UpdateFilter(id, filter.predicate.input, filter.ignoreCase, option ?: SUBSTRING) }
-
 @Composable
 fun TextCheckbox(
     text: String,
@@ -162,3 +153,18 @@ fun CheckPreview() {
         )
     }
 }
+
+private fun UpdateFilter(
+    state: ComponentDebugState,
+    newText: String,
+) = with(state) { UpdateFilter(id, newText, filter.ignoreCase, filter.option) }
+
+private fun UpdateFilter(
+    state: ComponentDebugState,
+    matchCase: Boolean,
+) = with(state) { UpdateFilter(id, filter.predicate.input, !matchCase, filter.option) }
+
+private fun UpdateFilter(
+    state: ComponentDebugState,
+    option: FilterOption?,
+) = with(state) { UpdateFilter(id, filter.predicate.input, filter.ignoreCase, option ?: SUBSTRING) }
