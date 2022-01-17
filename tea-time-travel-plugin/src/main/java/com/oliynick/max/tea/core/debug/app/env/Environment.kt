@@ -30,8 +30,6 @@ interface Environment :
     UiUpdater,
     AppResolver<Environment>,
     HasMessageChannel,
-    HasSystemProperties,
-    HasProject,
     HasServer,
     CoroutineScope
 
@@ -44,9 +42,7 @@ fun Environment(
         Updater<Environment> by LiveUpdater(),
         NotificationUpdater by LiveNotificationUpdater,
         UiUpdater by LiveUiUpdater,
-        AppResolver<Environment> by LiveAppResolver(project),
+        AppResolver<Environment> by LiveAppResolver(project, properties),
         HasMessageChannel by HasMessagesChannel(),
-        HasSystemProperties by HasSystemProperties(properties),
-        HasProject by HasProject(project),
         HasServer by HasServer(),
         CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.Main) {}

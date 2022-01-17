@@ -18,6 +18,7 @@
 
 package com.oliynick.max.tea.core.debug.app.component.cms
 
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
@@ -32,16 +33,16 @@ import com.oliynick.max.tea.core.debug.protocol.ApplyState
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 fun <Env> LiveAppResolver(
-    project: Project
+    project: Project,
+    properties: PropertiesComponent
 ): AppResolver<Env>
         where Env : HasMessageChannel,
-              Env : HasSystemProperties,
-              Env : HasServer = LiveAppResolverImpl(project)
+              Env : HasServer = LiveAppResolverImpl(project, properties)
 
 private class LiveAppResolverImpl<Env>(
-    private val project: Project
+    private val project: Project,
+    private val properties: PropertiesComponent,
 ) : AppResolver<Env> where Env : HasMessageChannel,
-                           Env : HasSystemProperties,
                            Env : HasServer {
 
     override suspend fun Env.resolve(

@@ -26,16 +26,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.withContext
 
-interface HasServer {
+fun interface HasServer {
     suspend fun newServer(address: ServerAddress, events: BroadcastChannel<Message>): Server
 }
 
-fun HasServer() = object : HasServer {
-
-    override suspend fun newServer(address: ServerAddress, events: BroadcastChannel<Message>) =
-        withContext(Dispatchers.IO) {
-            val newServer = ServerImpl.newInstance(address, events)
-            newServer.start()
-            newServer
-        }
+fun HasServer() = HasServer { address, events ->
+    withContext(Dispatchers.IO) {
+        val newServer = ServerImpl.newInstance(address, events)
+        newServer.start()
+        newServer
+    }
 }

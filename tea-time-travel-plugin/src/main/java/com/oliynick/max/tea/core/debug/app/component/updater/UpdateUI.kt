@@ -21,7 +21,7 @@ import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
 import com.oliynick.max.tea.core.debug.app.component.cms.message.UIMessage
 import com.oliynick.max.tea.core.debug.app.component.cms.state.State
 
-interface UiUpdater {
+fun interface UiUpdater {
 
     fun update(
         message: UIMessage,

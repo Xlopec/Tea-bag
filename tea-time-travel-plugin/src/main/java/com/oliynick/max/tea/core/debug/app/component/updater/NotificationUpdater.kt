@@ -21,7 +21,7 @@ import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
 import com.oliynick.max.tea.core.debug.app.component.cms.message.NotificationMessage
 import com.oliynick.max.tea.core.debug.app.component.cms.state.State
 
-interface NotificationUpdater {
+fun interface NotificationUpdater {
 
     fun update(
         message: NotificationMessage,

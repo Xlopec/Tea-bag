@@ -62,16 +62,8 @@ class BooleanWrapper private constructor(
 ) : Value {
 
     companion object {
-        private val TRUE by lazy(LazyThreadSafetyMode.NONE) {
-            BooleanWrapper(
-                true
-            )
-        }
-        private val FALSE by lazy(LazyThreadSafetyMode.NONE) {
-            BooleanWrapper(
-                false
-            )
-        }
+        private val TRUE = BooleanWrapper(true)
+        private val FALSE = BooleanWrapper(false)
 
         fun of(
             value: Boolean

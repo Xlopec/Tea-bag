@@ -35,21 +35,10 @@ class Host private constructor(
     }
 }
 
-class Port private constructor(
+@JvmInline
+value class Port(
     val value: Int
-) {
-
-    companion object {
-
-        fun of(
-            value: Int
-        ): Port = Port(value)
-
-        fun of(
-            value: String?
-        ): Port? = value?.toIntOrNull()?.let(::of)
-    }
-}
+)
 
 //todo add remote call timeout
 data class Settings(
@@ -69,7 +58,7 @@ data class Settings(
             val host = Host.of(hostInput)?.let { host -> Valid(hostInput ?: "", host) }
                 ?: Invalid(hostInput ?: "", "Host can't be blank or empty")
 
-            val port = Port.of(portInput)?.let { port -> Valid(portInput ?: "", port) }
+            val port = portInput?.toIntOrNull()?.let(::Port)?.let { port -> Valid(portInput, port) }
                 ?: Invalid(portInput ?: "", "Invalid port")
 
             return Settings(host, port, isDetailedOutput)

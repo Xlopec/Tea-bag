@@ -21,7 +21,7 @@ import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
 import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
 import com.oliynick.max.tea.core.debug.app.component.cms.state.State
 
-interface Updater<Env> {
+fun interface Updater<Env> {
 
     fun Env.update(
         message: Message,

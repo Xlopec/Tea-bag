@@ -38,11 +38,8 @@ import kotlinx.coroutines.flow.Flow
 fun RemoteAppComponent(
     environment: Environment,
     initializer: Initializer<AppState, Command>,
-): (Flow<Message>) -> Flow<AppState> {
-
-    // todo state persistence
-
-    return Component(
+): (Flow<Message>) -> Flow<AppState> =
+    Component(
         id = ComponentId("News Reader App"),
         initializer = initializer,
         resolver = { c -> with(environment) { resolve(c) } },
@@ -54,7 +51,6 @@ fun RemoteAppComponent(
         shareOptions = ShareStateWhileSubscribed,
         sessionBuilder = OkHttpWebSocketSessionBuilder()
     ).states()
-}
 
 private fun AppGsonSerializer(): JsonConverter<JsonElement> = GsonSerializer {
     registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)

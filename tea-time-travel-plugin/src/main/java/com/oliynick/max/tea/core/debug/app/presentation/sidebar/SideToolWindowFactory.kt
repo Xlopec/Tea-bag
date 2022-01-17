@@ -48,7 +48,7 @@ class SideToolWindowFactory : ToolWindowFactory, DumbAware {
         toolWindow: ToolWindow
     ) {
         val environment = Environment(project.properties, project)
-        val component = PluginComponent(environment)
+        val component = PluginComponent(environment, project.properties)
         val content = createToolWindowContent(project, component)
 
         toolWindow.contentManager.addContent(content)
