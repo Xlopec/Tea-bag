@@ -166,8 +166,8 @@ internal class LiveUiUpdaterTest {
         val initialState = Started(
                 ComponentDebugState(
                         componentId,
-                        persistentListOf(OriginalSnapshot(meta, value, Null)),
-                        persistentListOf(FilteredSnapshot.ofState(meta, Null))
+                        persistentListOf(OriginalSnapshot(meta, value, Null, CollectionWrapper(listOf()))),
+                        persistentListOf(FilteredSnapshot(meta, Null))
                 )
         )
 
@@ -188,8 +188,8 @@ internal class LiveUiUpdaterTest {
         val initialState = Started(
                 ComponentDebugState(
                         componentId,
-                        persistentListOf(OriginalSnapshot(meta, Null, value)),
-                        persistentListOf(FilteredSnapshot.ofState(meta, value))
+                        persistentListOf(OriginalSnapshot(meta, Null, value, CollectionWrapper(listOf()))),
+                        persistentListOf(FilteredSnapshot(meta, value))
                 )
         )
 

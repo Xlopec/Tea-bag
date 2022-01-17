@@ -101,13 +101,15 @@ internal object ServerMessageAdapter : JsonSerializer<GsonServerMessage>,
             add("message", message)
             add("oldState", oldState)
             add("newState", newState)
+            add("commands", JsonArray(commands.size).apply { commands.forEach(::add) })
         }
 
     private fun JsonElement.asNotifyComponentSnapshot() =
         NotifyComponentSnapshot(
-                asJsonObject["message"],
-                asJsonObject["oldState"],
-                asJsonObject["newState"]
+            asJsonObject["message"],
+            asJsonObject["oldState"],
+            asJsonObject["newState"],
+            asJsonObject["commands"].asJsonArray.let { array -> array.mapTo(HashSet(array.size())) { it } },
         )
 
     private fun GsonNotifyComponentAttached.toJsonElement(): JsonObject = JsonObject {
@@ -128,7 +130,7 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
         context: JsonSerializationContext
     ): JsonElement {
 
-        val tree: JsonObject = when(src) {
+        val tree: JsonObject = when (src) {
             is GsonApplyMessage -> src.toJsonElement()
             is GsonApplyState -> src.toJsonElement()
         }

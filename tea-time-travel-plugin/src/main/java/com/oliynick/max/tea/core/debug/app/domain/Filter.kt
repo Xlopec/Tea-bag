@@ -166,14 +166,14 @@ private fun Predicate.applyToRef(
 
     return if (this(ref.type.name)) ref
     else ref.properties.mapNotNullTo(HashSet(ref.properties.size), ::applyToProp)
-        .takeIf { filteredProps -> filteredProps.isNotEmpty() }
+        .takeIf(Collection<*>::isNotEmpty)
         ?.let { ref.copy(properties = it) }
 }
 
-private fun Predicate.applyToWrapper(
+fun Predicate.applyToWrapper(
     wrapper: CollectionWrapper
 ): CollectionWrapper? =
     wrapper.items
         .mapNotNull(::applyTo)
-        .takeIf { filtered -> filtered.isNotEmpty() }
+        .takeIf(Collection<*>::isNotEmpty)
         ?.let(::CollectionWrapper)

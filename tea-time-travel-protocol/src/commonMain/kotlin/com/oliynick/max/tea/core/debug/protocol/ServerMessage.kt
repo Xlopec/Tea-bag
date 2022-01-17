@@ -37,12 +37,14 @@ public sealed interface ServerMessage<out J>
  * @param message message that was applied to debug component
  * @param oldState old component's state
  * @param newState new component's state
+ * @param commands commands that were calculated by component
  * @param J implementation specific json type
  */
 public data class NotifyComponentSnapshot<out J>(
     val message: J,
     val oldState: J,
     val newState: J,
+    val commands: Set<J>,
 ) : ServerMessage<J>
 
 /**

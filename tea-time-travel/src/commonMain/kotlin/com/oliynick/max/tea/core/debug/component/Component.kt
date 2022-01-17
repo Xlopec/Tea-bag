@@ -157,6 +157,7 @@ private fun <M, S, C, J> JsonConverter<J>.toServerMessage(
     is Regular -> NotifyComponentSnapshot(
         toJsonTree(snapshot.message),
         toJsonTree(snapshot.previousState),
-        toJsonTree(snapshot.currentState)
+        toJsonTree(snapshot.currentState),
+        snapshot.commands.mapTo(HashSet(snapshot.commands.size), ::toJsonTree),
     )
 }

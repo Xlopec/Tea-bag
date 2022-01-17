@@ -179,6 +179,17 @@ private fun LazyListScope.snapshotSubTree(
 
             subTree(node.state, level + 1, formatter, formatter(node.state), state, handler)
         }
+
+        if (node.commands != null) {
+            item {
+                Text(
+                    modifier = Modifier.fillMaxWidth().indentLevel(level + 1),
+                    text = "Commands"
+                )
+            }
+
+            subTree(node.commands, level + 1, formatter, formatter(node.commands), state, handler)
+        }
     }
 }
 

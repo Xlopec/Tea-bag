@@ -161,7 +161,7 @@ fun PersistentList<OriginalSnapshot>.filteredBy(
     mapNotNull { o -> o.filteredBy(predicate) }
 
 private fun OriginalSnapshot.toFiltered() =
-    FilteredSnapshot.ofBoth(
+    FilteredSnapshot(
         meta,
         message,
         state
@@ -173,12 +173,12 @@ private fun OriginalSnapshot.filteredBy(
 
     val m = predicate.applyTo(message)
     val s = predicate.applyTo(state)
+    val c = predicate.applyToWrapper(commands)
 
-    return when {
-        m != null && s != null -> FilteredSnapshot.ofBoth(meta, m, s)
-        m != null -> FilteredSnapshot.ofMessage(meta, m)
-        s != null -> FilteredSnapshot.ofState(meta, s)
-        else -> null
+    return if (m != null || s != null || c != null) {
+        FilteredSnapshot(meta, m, s, c)
+    } else {
+        null
     }
 }
 

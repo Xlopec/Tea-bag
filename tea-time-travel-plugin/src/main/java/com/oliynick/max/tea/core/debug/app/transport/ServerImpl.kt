@@ -26,6 +26,7 @@ import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotMeta
 import com.oliynick.max.tea.core.debug.app.transport.serialization.GSON
+import com.oliynick.max.tea.core.debug.app.transport.serialization.toCollectionWrapper
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
 import com.oliynick.max.tea.core.debug.gson.GsonClientMessage
 import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentAttached
@@ -94,9 +95,9 @@ private fun Server(
     calls: BroadcastChannel<RemoteCallArgs>
 ): NettyApplicationEngine =
     embeddedServer(
-            Netty,
-            host = address.host.value,
-            port = address.port.value
+        Netty,
+        host = address.host.value,
+        port = address.port.value
     ) {
 
         install(CallLogging) {
@@ -162,10 +163,10 @@ private suspend fun processPacket(
 
             when (val message = packet.payload) {
                 is GsonNotifyComponentSnapshot -> events.send(
-                        message.toNotification(
-                                packet.componentId,
-                                SnapshotMeta(SnapshotId(UUID.randomUUID()), LocalDateTime.now())
-                        )
+                    message.toNotification(
+                        packet.componentId,
+                        SnapshotMeta(SnapshotId(UUID.randomUUID()), LocalDateTime.now())
+                    )
                 )
                 is GsonNotifyComponentAttached -> events.send(message.toNotification(packet.componentId))
             }
@@ -179,11 +180,12 @@ private fun GsonNotifyComponentSnapshot.toNotification(
     componentId: ComponentId,
     meta: SnapshotMeta
 ) = AppendSnapshot(
-        componentId,
-        meta,
-        message.asJsonObject.toValue(),
-        oldState.asJsonObject.toValue(),
-        newState.asJsonObject.toValue()
+    componentId,
+    meta,
+    message.asJsonObject.toValue(),
+    oldState.asJsonObject.toValue(),
+    newState.asJsonObject.toValue(),
+    commands.toCollectionWrapper(),
 )
 
 private fun GsonNotifyComponentAttached.toNotification(

@@ -72,6 +72,7 @@ data class SnapshotINode(
     val meta: SnapshotMeta,
     val message: Node?,
     val state: Node?,
+    val commands: CollectionNode?,
     override val expanded: MutableState<Boolean> = mutableStateOf(false),
 ) : INode
 
@@ -132,7 +133,8 @@ fun FilteredSnapshot.toRenderTree(
         id,
         meta,
         message?.toRenderTree(i)?.also { i += it.childrenCount + 1 },
-        state?.toRenderTree(i),
+        state?.toRenderTree(i)?.also { i += it.childrenCount + 1 },
+        commands?.toRenderTree(i, expanded),
         mutableStateOf(expanded)
     )
 }

@@ -118,7 +118,7 @@ object LiveNotificationUpdater : NotificationUpdater {
     ): Boolean =
         op is DoStopServer || op is DoStoreSettings || th is InternalException
 
-    fun AppendSnapshot.toSnapshot() = OriginalSnapshot(meta, message, newState)
+    fun AppendSnapshot.toSnapshot() = OriginalSnapshot(meta, message, newState, commands)
 
     fun DebugState.componentOrNew(
         id: ComponentId,

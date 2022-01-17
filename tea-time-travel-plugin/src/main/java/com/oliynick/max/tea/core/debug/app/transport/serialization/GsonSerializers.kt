@@ -25,7 +25,7 @@ internal val GSON = Gson()
 fun Value.toJsonElement(): JsonElement =
     when (this) {
         is Null -> JsonNull.INSTANCE
-        is CollectionWrapper -> toJsonElement()
+        is CollectionWrapper -> toJsonArray()
         is Ref -> toJsonElement()
         is NumberWrapper -> JsonPrimitive(value)
         is CharWrapper -> JsonPrimitive(value)
@@ -36,8 +36,8 @@ fun Value.toJsonElement(): JsonElement =
 fun JsonElement.toValue(): Value =
     when {
         isJsonPrimitive -> asJsonPrimitive.toValue()
-        isJsonArray -> asJsonArray.toValue()
-        isJsonObject -> asJsonObject.toValue()
+        isJsonArray -> asJsonArray.toCollectionWrapper()
+        isJsonObject -> asJsonObject.toRef()
         isJsonNull -> Null
         else -> error("Don't know how to deserialize $this")
     }
@@ -50,13 +50,13 @@ private fun Ref.toJsonElement(): JsonElement = JsonObject().apply {
     }
 }
 
-private fun CollectionWrapper.toJsonElement(): JsonArray =
+private fun CollectionWrapper.toJsonArray(): JsonArray =
     items.fold(JsonArray(items.size)) { acc, v ->
         acc.add(v.toJsonElement())
         acc
     }
 
-private fun JsonObject.toValue(): Ref {
+private fun JsonObject.toRef(): Ref {
 
     val entrySet = entrySet().filter { e -> e.key != "@type" }
 
@@ -77,8 +77,8 @@ private fun JsonPrimitive.toValue(): Value = when {
     else -> error("Don't know how to wrap $this")
 }
 
-private fun JsonPrimitive.toNumberValue(): Value = NumberWrapper(asNumber)
+private fun JsonPrimitive.toNumberValue(): NumberWrapper = NumberWrapper(asNumber)
 
-private fun JsonArray.toValue(): Value =
-    CollectionWrapper(map { it.asJsonObject.toValue() })
+fun Iterable<JsonElement>.toCollectionWrapper(): CollectionWrapper =
+    CollectionWrapper(map { it.asJsonObject.toRef() })
 

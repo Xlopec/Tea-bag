@@ -24,6 +24,8 @@
 
 package com.oliynick.max.tea.core.debug.gson.serialization.test
 
+import com.google.gson.JsonNull
+import com.google.gson.JsonPrimitive
 import com.google.gson.reflect.TypeToken
 import com.oliynick.max.entities.shared.UUID
 import com.oliynick.max.tea.core.data.Id
@@ -76,22 +78,23 @@ internal class DefaultGsonSerializersTest {
     fun `test NotifyComponentSnapshot gets serialized correctly`() {
 
         val message = NotifyComponentSnapshot(
-                gsonSerializer.toJsonTree("Message"),
-                gsonSerializer.toJsonTree(testUser),
-                gsonSerializer.toJsonTree(
-                        listOf(
-                                Photo("https://www.google.com"),
-                                Photo("https://www.google.com1"),
-                                Photo("https://www.google.com2")
-                        )
+            gsonSerializer.toJsonTree("Message"),
+            gsonSerializer.toJsonTree(testUser),
+            gsonSerializer.toJsonTree(
+                listOf(
+                    Photo("https://www.google.com"),
+                    Photo("https://www.google.com1"),
+                    Photo("https://www.google.com2")
                 )
+            ),
+            setOf(JsonNull.INSTANCE, JsonPrimitive(true), gsonSerializer.toJsonTree(testUser))
         )
 
         val json = gsonSerializer.toJson(message)
         val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
 
         assertEquals(message, fromJson)
-       // fromJson shouldBe message
+        // fromJson shouldBe message
     }
 
     @Test
@@ -149,7 +152,10 @@ internal class DefaultGsonSerializersTest {
         )
 
         val json = gsonSerializer.toJson(nullableList)
-        val fromJson = gsonSerializer.fromJson<List<Photo?>>(json, TypeToken.getParameterized(List::class.java, Photo::class.java).type)
+        val fromJson = gsonSerializer.fromJson<List<Photo?>>(
+            json,
+            TypeToken.getParameterized(List::class.java, Photo::class.java).type
+        )
 
         assertEquals(nullableList, fromJson)
         //fromJson shouldBe nullableList
@@ -195,9 +201,9 @@ internal class DefaultGsonSerializersTest {
     fun `test NotifyServer gets serialized correctly`() = with(gsonSerializer) {
 
         val message = NotifyServer(
-                UUID.randomUUID(),
-                ComponentId("some"),
-                NotifyComponentAttached(toJsonTree(testUser))
+            UUID.randomUUID(),
+            ComponentId("some"),
+            NotifyComponentAttached(toJsonTree(testUser))
         )
         val json = toJson(message)
         val fromJson = fromJson(json, NotifyServer::class.java)
@@ -212,8 +218,8 @@ internal class DefaultGsonSerializersTest {
 private fun NotifyClient(
     message: GsonClientMessage
 ) = NotifyClient(
-        UUID.randomUUID(),
-        ComponentId("test"),
-        message
+    UUID.randomUUID(),
+    ComponentId("test"),
+    message
 )
 

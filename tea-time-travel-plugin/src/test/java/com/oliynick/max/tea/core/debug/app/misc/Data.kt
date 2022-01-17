@@ -51,19 +51,19 @@ inline fun ComponentDebugStates(
 
 fun EmptyOriginalSnapshot(
     m: SnapshotMeta
-) = OriginalSnapshot(m, Null, Null)
+) = OriginalSnapshot(m, Null, Null, CollectionWrapper(listOf()))
 
 fun EmptyFilteredSnapshot(
     m: SnapshotMeta
-) = FilteredSnapshot.ofBoth(m, Null, Null)
+) = FilteredSnapshot(m, Null, Null)
 
 fun NonEmptyComponentDebugState(
     componentId: ComponentId,
     meta: SnapshotMeta
 ) = ComponentDebugState(
         componentId,
-        persistentListOf(OriginalSnapshot(meta, Null, Null)),
-        persistentListOf(FilteredSnapshot.ofBoth(meta, Null, Null))
+        persistentListOf(OriginalSnapshot(meta, Null, Null, CollectionWrapper(listOf()))),
+        persistentListOf(FilteredSnapshot(meta, Null, Null))
 )
 
 fun ComponentDebugState(

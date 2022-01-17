@@ -62,19 +62,20 @@ internal class LiveNotificationUpdaterTest {
         val message = StringWrapper("b")
         val oldState = StringWrapper("c")
         val newState = StringWrapper("d")
+        val commandsWrapper = CollectionWrapper(listOf(message))
         val otherStates = ComponentDebugStates('b'..'z')
         val meta = SnapshotMeta(TestSnapshotId, TestTimestamp)
 
         val (nextState, commands) = updater(
-                AppendSnapshot(componentId, meta, message, oldState, newState),
+                AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper),
                 Started(otherStates)
         )
 
         val expectedDebugState = ComponentDebugState(
                 componentId,
                 newState,
-                snapshots = persistentListOf(OriginalSnapshot(meta, message, newState)),
-                filteredSnapshots = persistentListOf(FilteredSnapshot.ofBoth(meta, message, newState))
+                snapshots = persistentListOf(OriginalSnapshot(meta, message, newState, commandsWrapper)),
+                filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState, commandsWrapper))
         )
 
         nextState shouldBe Started(otherStates + (componentId to expectedDebugState))
@@ -97,17 +98,18 @@ internal class LiveNotificationUpdaterTest {
         val message = StringWrapper("b")
         val oldState = StringWrapper("c")
         val newState = StringWrapper("d")
+        val commandsWrapper = CollectionWrapper(listOf())
 
         val (nextState, commands) = updater(
-                AppendSnapshot(componentId, meta, message, oldState, newState),
+                AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper),
                 Started(otherStates)
         )
 
         val expectedDebugState = ComponentDebugState(
                 componentId,
                 newState,
-                snapshots = persistentListOf(OriginalSnapshot(meta, message, newState)),
-                filteredSnapshots = persistentListOf(FilteredSnapshot.ofBoth(meta, message, newState))
+                snapshots = persistentListOf(OriginalSnapshot(meta, message, newState, commandsWrapper)),
+                filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState))
         )
 
         nextState shouldBe Started(otherStates + (componentId to expectedDebugState))
