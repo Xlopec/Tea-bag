@@ -24,6 +24,7 @@ import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.states
+import com.oliynick.max.tea.core.component.subscribeIn
 import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
 import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
 import com.oliynick.max.tea.core.debug.app.component.cms.message.UpdateDebugSettings
@@ -38,8 +39,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 class SideToolWindowFactory : ToolWindowFactory, DumbAware {
 
@@ -52,18 +51,15 @@ class SideToolWindowFactory : ToolWindowFactory, DumbAware {
         val content = createToolWindowContent(project, component)
 
         toolWindow.contentManager.addContent(content)
-        // todo: find a better approach
-        environment.launch {
-            component(environment.events.asFlow().mergeWith(project.settingsMessages())).collect()
-        }
+
+        component.subscribeIn(environment.events.asFlow().mergeWith(project.settingsMessages), environment)
     }
 
     override fun shouldBeAvailable(project: Project): Boolean = true
 }
 
-private fun Project.settingsMessages(): Flow<UpdateDebugSettings> =
-    callbackFlow {
-
+private val Project.settingsMessages: Flow<UpdateDebugSettings>
+    get() = callbackFlow {
         val connection = messageBus.connect()
 
         connection.subscribe(PluginSettingsNotifier.TOPIC, object : PluginSettingsNotifier {

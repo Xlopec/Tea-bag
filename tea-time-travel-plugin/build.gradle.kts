@@ -65,7 +65,7 @@ val release by tasks.creating(Task::class) {
     description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
 }
 
-optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+optIn("kotlinx.coroutines.ExperimentalCoroutinesApi", "com.oliynick.max.tea.core.ExperimentalTeaApi")
 
 sourceSets {
     main {

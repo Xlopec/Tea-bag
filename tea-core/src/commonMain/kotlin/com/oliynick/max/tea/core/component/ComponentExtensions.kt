@@ -24,8 +24,12 @@
 
 package com.oliynick.max.tea.core.component
 
+import com.oliynick.max.tea.core.ExperimentalTeaApi
 import com.oliynick.max.tea.core.Snapshot
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 /**
  * **Impure** function that performs some actions on snapshots
@@ -242,3 +246,17 @@ public infix fun <M, S, C> Component<M, S, C>.with(
     interceptor: Interceptor<M, S, C>,
 ): Component<M, S, C> =
     { input -> this(input).onEach(interceptor) }
+
+/**
+ * Establishes subscription in ELM's terminology. It allows component
+ * to listen to external messages
+ *
+ * @param input external messages
+ * @param scope scope that will be used to manage subscription
+ * @return [Job] if subscription needs to be managed manually
+ */
+@ExperimentalTeaApi
+public fun <M> ((Flow<M>) -> Flow<*>).subscribeIn(
+    input: Flow<M>,
+    scope: CoroutineScope
+): Job = scope.launch { invoke(input).collect() }
