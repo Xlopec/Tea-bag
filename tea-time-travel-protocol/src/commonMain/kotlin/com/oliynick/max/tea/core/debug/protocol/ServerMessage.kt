@@ -51,8 +51,10 @@ public data class NotifyComponentSnapshot<out J>(
  * Notifies that new component attached to debug server
  *
  * @param state current component's state
+ * @param commands commands that were used to initialize component
  * @param J implementation specific json type
  */
 public data class NotifyComponentAttached<out J>(
     val state: J,
+    val commands: Set<J>,
 ) : ServerMessage<J>

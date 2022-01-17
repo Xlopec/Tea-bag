@@ -67,15 +67,15 @@ internal class LiveNotificationUpdaterTest {
         val meta = SnapshotMeta(TestSnapshotId, TestTimestamp)
 
         val (nextState, commands) = updater(
-                AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper),
-                Started(otherStates)
+            AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper),
+            Started(otherStates)
         )
 
         val expectedDebugState = ComponentDebugState(
-                componentId,
-                newState,
-                snapshots = persistentListOf(OriginalSnapshot(meta, message, newState, commandsWrapper)),
-                filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState, commandsWrapper))
+            componentId,
+            newState,
+            snapshots = persistentListOf(OriginalSnapshot(meta, message, newState, commandsWrapper)),
+            filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState, commandsWrapper))
         )
 
         nextState shouldBe Started(otherStates + (componentId to expectedDebugState))
@@ -101,15 +101,15 @@ internal class LiveNotificationUpdaterTest {
         val commandsWrapper = CollectionWrapper(listOf())
 
         val (nextState, commands) = updater(
-                AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper),
-                Started(otherStates)
+            AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper),
+            Started(otherStates)
         )
 
         val expectedDebugState = ComponentDebugState(
-                componentId,
-                newState,
-                snapshots = persistentListOf(OriginalSnapshot(meta, message, newState, commandsWrapper)),
-                filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState))
+            componentId,
+            newState,
+            snapshots = persistentListOf(OriginalSnapshot(meta, message, newState, commandsWrapper)),
+            filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState))
         )
 
         nextState shouldBe Started(otherStates + (componentId to expectedDebugState))
@@ -130,8 +130,8 @@ internal class LiveNotificationUpdaterTest {
         val newState = StringWrapper("d")
 
         val (nextState, commands) = updater(
-                StateApplied(componentId, newState),
-                Started(otherStates)
+            StateApplied(componentId, newState),
+            Started(otherStates)
         )
 
         val expectedDebugState = ComponentDebugState(componentId, newState)
@@ -157,12 +157,38 @@ internal class LiveNotificationUpdaterTest {
         val otherStates = ComponentDebugStates { strId -> ComponentDebugState(ComponentId(strId)) }
         val componentId = ComponentId("a")
         val state = StringWrapper("d")
+        val meta = SnapshotMeta(TestSnapshotId, TestTimestamp)
+        val collectionWrapper = CollectionWrapper(listOf(StringWrapper("a")))
 
-        val (nextState, commands) = updater(ComponentAttached(componentId, state),
-                Started(otherStates)
+        val (nextState, commands) = updater(
+            ComponentAttached(componentId, meta, state, collectionWrapper),
+            Started(otherStates)
         )
 
-        nextState shouldBe Started(otherStates + ComponentDebugState(componentId, state = state))
+        nextState shouldBe Started(
+            otherStates +
+                    ComponentDebugState(
+                        componentId = componentId,
+                        state = state,
+                        snapshots = persistentListOf(
+                            OriginalSnapshot(
+                                meta = meta,
+                                message = null,
+                                state = state,
+                                commands = collectionWrapper
+                            )
+                        ),
+                        filteredSnapshots = persistentListOf(
+                            FilteredSnapshot(
+                                meta = meta,
+                                message = null,
+                                state = state,
+                                commands = collectionWrapper
+                            )
+                        )
+                    )
+        )
+
         commands.shouldContainExactly(DoNotifyComponentAttached(componentId))
     }
 

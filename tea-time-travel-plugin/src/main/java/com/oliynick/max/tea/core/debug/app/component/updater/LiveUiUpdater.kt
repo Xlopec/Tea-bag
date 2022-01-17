@@ -89,8 +89,12 @@ object LiveUiUpdater : UiUpdater {
     fun applyMessage(
         message: ApplyMessage,
         state: Started
-    ): UpdateWith<PluginState, PluginCommand> =
-        state command DoApplyMessage(message.componentId, state.message(message), state.server)
+    ): UpdateWith<PluginState, PluginCommand> {
+        val m = state.messageFor(message) ?: return state.noCommand()
+
+        return state command DoApplyMessage(message.componentId, m, state.server)
+    }
+
 
     fun removeSnapshots(
         componentId: ComponentId,
@@ -122,7 +126,7 @@ object LiveUiUpdater : UiUpdater {
         message: ApplyState
     ) = state(message.componentId, message.snapshotId)
 
-    fun Started.message(
+    fun Started.messageFor(
         message: ApplyMessage
     ) = snapshot(message.componentId, message.snapshotId).message
 

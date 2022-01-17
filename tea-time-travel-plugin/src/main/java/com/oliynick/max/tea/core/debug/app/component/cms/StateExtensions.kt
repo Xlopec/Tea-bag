@@ -171,7 +171,7 @@ private fun OriginalSnapshot.filteredBy(
     predicate: Predicate
 ): FilteredSnapshot? {
 
-    val m = predicate.applyTo(message)
+    val m = message?.let { predicate.applyTo(it) }
     val s = predicate.applyTo(state)
     val c = predicate.applyToWrapper(commands)
 

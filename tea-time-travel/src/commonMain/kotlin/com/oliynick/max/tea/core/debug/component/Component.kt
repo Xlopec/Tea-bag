@@ -153,11 +153,15 @@ private suspend fun <M, S, C, J> DebugSession<M, S, J>.notifyServer(
 private fun <M, S, C, J> JsonConverter<J>.toServerMessage(
     snapshot: Snapshot<M, S, C>,
 ) = when (snapshot) {
-    is Initial -> NotifyComponentAttached(toJsonTree(snapshot.currentState))
+    is Initial -> NotifyComponentAttached(toJsonTree(snapshot.currentState), toCommandSet(snapshot.commands))
     is Regular -> NotifyComponentSnapshot(
         toJsonTree(snapshot.message),
         toJsonTree(snapshot.previousState),
         toJsonTree(snapshot.currentState),
-        snapshot.commands.mapTo(HashSet(snapshot.commands.size), ::toJsonTree),
+        toCommandSet(snapshot.commands),
     )
 }
+
+private fun <C, J> JsonConverter<J>.toCommandSet(
+    s: Set<C>
+): Set<J> = s.mapTo(HashSet(s.size), ::toJsonTree)

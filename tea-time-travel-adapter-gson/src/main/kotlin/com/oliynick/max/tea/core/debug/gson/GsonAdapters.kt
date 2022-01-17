@@ -101,7 +101,7 @@ internal object ServerMessageAdapter : JsonSerializer<GsonServerMessage>,
             add("message", message)
             add("oldState", oldState)
             add("newState", newState)
-            add("commands", JsonArray(commands.size).apply { commands.forEach(::add) })
+            add("commands", commands.toJsonArray())
         }
 
     private fun JsonElement.asNotifyComponentSnapshot() =
@@ -109,15 +109,16 @@ internal object ServerMessageAdapter : JsonSerializer<GsonServerMessage>,
             asJsonObject["message"],
             asJsonObject["oldState"],
             asJsonObject["newState"],
-            asJsonObject["commands"].asJsonArray.let { array -> array.mapTo(HashSet(array.size())) { it } },
+            asJsonObject["commands"].asJsonArray.toJsonElementSet(),
         )
 
     private fun GsonNotifyComponentAttached.toJsonElement(): JsonObject = JsonObject {
         add("state", state)
+        add("commands", commands.toJsonArray())
     }
 
     private fun JsonElement.asNotifyComponentAttached() =
-        NotifyComponentAttached(asJsonObject["state"])
+        NotifyComponentAttached(asJsonObject["state"], asJsonObject["commands"].asJsonArray.toJsonElementSet())
 
 }
 
@@ -171,3 +172,7 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
 private inline fun JsonObject(
     builder: JsonObject.() -> Unit
 ): JsonObject = JsonObject().apply(builder)
+
+private fun Set<JsonElement>.toJsonArray() = JsonArray(size).apply { this@toJsonArray.forEach(::add) }
+
+private fun JsonArray.toJsonElementSet(): Set<JsonElement> = mapTo(HashSet(size())) { it }

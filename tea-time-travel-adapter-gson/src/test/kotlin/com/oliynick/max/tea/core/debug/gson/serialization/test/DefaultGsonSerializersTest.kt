@@ -65,8 +65,10 @@ internal class DefaultGsonSerializersTest {
     @Test
     fun `test NotifyComponentAttached gets serialized correctly`() {
 
-        val message =
-            NotifyComponentAttached(gsonSerializer.toJsonTree(testUser))
+        val message = NotifyComponentAttached(
+            gsonSerializer.toJsonTree(testUser),
+            setOf(JsonNull.INSTANCE, JsonPrimitive(true), gsonSerializer.toJsonTree(testUser))
+        )
         val json = gsonSerializer.toJson(message)
         val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
 
@@ -203,7 +205,7 @@ internal class DefaultGsonSerializersTest {
         val message = NotifyServer(
             UUID.randomUUID(),
             ComponentId("some"),
-            NotifyComponentAttached(toJsonTree(testUser))
+            NotifyComponentAttached(toJsonTree(testUser), setOf())
         )
         val json = toJson(message)
         val fromJson = fromJson(json, NotifyServer::class.java)

@@ -114,5 +114,7 @@ data class StateApplied(
 
 data class ComponentAttached(
     val componentId: ComponentId,
-    val state: Value
+    val meta: SnapshotMeta,
+    val state: Value,
+    val commands: CollectionWrapper,
 ) : NotificationMessage

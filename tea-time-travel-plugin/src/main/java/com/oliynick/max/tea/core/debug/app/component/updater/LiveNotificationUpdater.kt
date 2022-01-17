@@ -77,8 +77,8 @@ object LiveNotificationUpdater : NotificationUpdater {
 
         val id = message.componentId
         val currentState = message.state
-        val componentState = state.debugState.components[id]?.copy(state = currentState)
-            ?: ComponentDebugState(id, currentState)
+        val componentState = state.debugState.componentOrNew(id, currentState)
+            .appendSnapshot(message.toSnapshot(), currentState)
 
         return state.updateComponents { mapping -> mapping.put(componentState.id, componentState) } command DoNotifyComponentAttached(id)
     }
@@ -119,6 +119,8 @@ object LiveNotificationUpdater : NotificationUpdater {
         op is DoStopServer || op is DoStoreSettings || th is InternalException
 
     fun AppendSnapshot.toSnapshot() = OriginalSnapshot(meta, message, newState, commands)
+
+    fun ComponentAttached.toSnapshot() = OriginalSnapshot(meta, null, state, commands)
 
     fun DebugState.componentOrNew(
         id: ComponentId,

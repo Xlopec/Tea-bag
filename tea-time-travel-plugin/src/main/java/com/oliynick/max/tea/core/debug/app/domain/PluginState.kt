@@ -38,7 +38,7 @@ data class SnapshotMeta(
 
 data class OriginalSnapshot(
     val meta: SnapshotMeta,
-    val message: Value,
+    val message: Value?,
     val state: Value,
     val commands: CollectionWrapper,
 )

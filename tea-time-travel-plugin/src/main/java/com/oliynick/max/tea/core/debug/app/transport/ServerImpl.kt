@@ -51,8 +51,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.slf4j.event.Level
 import java.time.Duration
-import java.time.LocalDateTime
+import java.time.LocalDateTime.now
 import java.util.*
+import java.util.UUID.randomUUID
 
 class ServerImpl private constructor(
     private val address: ServerAddress,
@@ -73,7 +74,7 @@ class ServerImpl private constructor(
         component: ComponentId,
         message: GsonClientMessage
     ) = withContext(Dispatchers.IO) {
-        calls.send(RemoteCallArgs(UUID.randomUUID(), component, message))
+        calls.send(RemoteCallArgs(randomUUID(), component, message))
     }
 
     override suspend fun stop() =
@@ -163,12 +164,11 @@ private suspend fun processPacket(
 
             when (val message = packet.payload) {
                 is GsonNotifyComponentSnapshot -> events.send(
-                    message.toNotification(
-                        packet.componentId,
-                        SnapshotMeta(SnapshotId(UUID.randomUUID()), LocalDateTime.now())
-                    )
+                    message.toNotification(packet.componentId, SnapshotMeta())
                 )
-                is GsonNotifyComponentAttached -> events.send(message.toNotification(packet.componentId))
+                is GsonNotifyComponentAttached -> events.send(
+                    message.toNotification(packet.componentId, SnapshotMeta())
+                )
             }
 
         } catch (e: Throwable) {
@@ -189,5 +189,8 @@ private fun GsonNotifyComponentSnapshot.toNotification(
 )
 
 private fun GsonNotifyComponentAttached.toNotification(
-    id: ComponentId
-) = ComponentAttached(id, state.asJsonObject.toValue())
+    id: ComponentId,
+    meta: SnapshotMeta
+) = ComponentAttached(id, meta, state.asJsonObject.toValue(), commands.toCollectionWrapper())
+
+private fun SnapshotMeta() = SnapshotMeta(SnapshotId(randomUUID()), now())

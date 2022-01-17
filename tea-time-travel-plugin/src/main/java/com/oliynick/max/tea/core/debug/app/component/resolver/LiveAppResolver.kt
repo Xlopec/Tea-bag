@@ -91,8 +91,7 @@ interface LiveAppResolver<Env> : AppResolver<Env> where Env : HasMessageChannel,
             )*/
             is DoStopServer -> command effect { server.stop(); NotifyStopped }
             is DoApplyMessage -> command sideEffect {
-                server(id,
-                    ApplyMessage(command.command.toJsonElement()))
+                server(id, ApplyMessage(command.command.toJsonElement()))
             }
             is DoApplyState -> reApplyState(command)
             is DoNotifyOperationException -> command sideEffect {
