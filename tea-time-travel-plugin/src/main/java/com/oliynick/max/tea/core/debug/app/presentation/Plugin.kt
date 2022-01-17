@@ -136,7 +136,7 @@ private fun ComponentsView(
         }
     }
 
-    Component(project, pluginState.debugState.component(selectedId.value), events)
+    Component(project, pluginState.settings, pluginState.debugState.component(selectedId.value), events)
 }
 
 @Composable

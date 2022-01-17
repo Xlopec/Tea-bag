@@ -23,6 +23,7 @@ import java.util.*
 
 typealias Predicate = (String) -> Boolean
 
+// todo make a sealed interface with predicate
 enum class FilterOption {
     SUBSTRING,
     REGEX,
@@ -141,6 +142,7 @@ fun Predicate.applyTo(
 ): Value? =
     when {
         value.primitiveTypeName?.let(this) == true || (value is Null && this(null.toString())) -> value
+        value.stringValue?.let(this) == true -> value
         value is CollectionWrapper -> applyToWrapper(value)
         value is Ref -> applyToRef(value)
         else -> null

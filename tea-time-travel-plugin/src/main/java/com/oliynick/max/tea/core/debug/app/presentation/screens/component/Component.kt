@@ -19,10 +19,13 @@ import com.oliynick.max.tea.core.debug.app.component.cms.UpdateFilter
 import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption.*
+import com.oliynick.max.tea.core.debug.app.domain.Settings
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ValidatedTextField
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.toReadableStringDetailed
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.toReadableStringShort
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.ProjectLocal
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.Tree
-import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.TreeItemFormatterImpl
+import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.TreeFormatter
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.toRenderTree
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.VerticalSplitPane
@@ -34,6 +37,7 @@ private val SplitPaneMinContentHeight = 100.dp
 @Composable
 fun Component(
     project: Project,
+    settings: Settings,
     state: ComponentDebugState,
     events: (PluginMessage) -> Unit,
 ) {
@@ -42,6 +46,7 @@ fun Component(
         ComponentFilterHeader(state, events)
 
         val splitterState = rememberSplitPaneState()
+        val formatter: TreeFormatter = if (settings.isDetailedOutput) ::toReadableStringDetailed else ::toReadableStringShort
 
         CompositionLocalProvider(
             ProjectLocal provides project
@@ -54,7 +59,7 @@ fun Component(
                         id = state.id,
                         modifier = Modifier.fillMaxSize().border(1.dp, Color.Black.copy(alpha = 0.60f)),
                         roots = snapshotsTree,
-                        formatter = TreeItemFormatterImpl,
+                        formatter = formatter,
                         handler = events,
                     )
                 }
@@ -66,7 +71,7 @@ fun Component(
                         id = state.id,
                         modifier = Modifier.fillMaxSize().border(1.dp, Color.Black.copy(alpha = 0.60f)),
                         root = stateTree,
-                        formatter = TreeItemFormatterImpl,
+                        formatter = formatter,
                         handler = events,
                     )
                 }

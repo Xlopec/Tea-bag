@@ -118,3 +118,13 @@ inline val Value.isPrimitive: Boolean
         Null, is CollectionWrapper, is Ref -> false
     }
 
+inline val Value.stringValue: String?
+    get() = when (this) {
+        is BooleanWrapper -> value.toString()
+        is CharWrapper -> value.toString()
+        is StringWrapper -> value
+        is NumberWrapper -> value.toString()
+        Null -> null.toString()
+        is CollectionWrapper -> null
+        is Ref -> null
+    }

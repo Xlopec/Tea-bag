@@ -23,6 +23,7 @@ import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.ClassIcon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.PropertyIcon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.VariableIcon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.WatchIcon
+import com.oliynick.max.tea.core.debug.app.presentation.ui.tree.*
 import org.codehaus.groovy.runtime.wrappers.FloatWrapper
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -284,3 +285,26 @@ private val Value.icon: Icon?
         else -> null
     }
 
+fun toReadableStringDetailed(
+    node: Node
+): String =
+    when (node) {
+        is CollectionNode -> node.children.joinToString(
+            prefix = "[",
+            postfix = "]",
+            transform = ::toReadableStringDetailed
+        )
+        is Leaf -> toReadableStringDetailed(node.value)
+        is RefNode -> node.type.name
+        is SnapshotINode -> "${node.meta.timestamp.format(DATE_TIME_FORMATTER)}: ${node.meta.id.value}"
+    }
+
+fun toReadableStringShort(
+    node: Node
+): String =
+    when (node) {
+        is CollectionNode -> "[${node.children.size} element${if (node.children.size == 1) "" else "s"}]"
+        is Leaf -> toReadableStringShort(node.value)
+        is RefNode -> node.type.name
+        is SnapshotINode -> "${node.meta.timestamp.format(DATE_TIME_FORMATTER)}: ${node.meta.id.value}"
+    }

@@ -22,6 +22,10 @@
  * SOFTWARE.
  */
 
+/**
+ * This custom tree view implementation is a temp solution, it'll be removed
+ * when officially supported composable tree view implementation is released
+ */
 package com.oliynick.max.tea.core.debug.app.presentation.ui.tree
 
 import androidx.compose.runtime.Immutable
@@ -161,7 +165,7 @@ fun Value.toRenderTree(id: Int = 0, expanded: Boolean = true): Node =
         is Ref -> toRenderTree(id, expanded)
     }
 
-private val Node.childrenCount: Int
+val Node.childrenCount: Int
     get() =
         when (this) {
             is CollectionNode -> children.fold(children.size) { acc, p -> acc + p.childrenCount }

@@ -22,6 +22,10 @@
  * SOFTWARE.
  */
 
+/**
+ * This custom tree view implementation is a temp solution, it'll be removed
+ * when officially supported composable tree view implementation is released
+ */
 @file:OptIn(ExperimentalFoundationApi::class)
 @file:Suppress("FunctionName")
 
@@ -63,26 +67,10 @@ import com.oliynick.max.tea.core.debug.app.presentation.ui.SpaceSmall
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.ClassIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.PropertyIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.WatchIconC
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.DATE_TIME_FORMATTER
-import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.toReadableStringShort
+import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.toReadableStringDetailed
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 typealias TreeFormatter = (Node) -> String
-
-// TODO: rework
-object TreeItemFormatterImpl : TreeFormatter {
-    override fun invoke(p: Node): String =
-        when (p) {
-            is CollectionNode -> p.children.joinToString(
-                prefix = "[",
-                postfix = "]",
-                transform = TreeItemFormatterImpl::invoke
-            )
-            is Leaf -> toReadableStringShort(p.value)
-            is RefNode -> p.type.name
-            is SnapshotINode -> "${p.meta.timestamp.format(DATE_TIME_FORMATTER)}: ${p.meta.id.value}"
-        }
-}
 
 @Composable
 fun Tree(
@@ -170,11 +158,26 @@ private fun LazyListScope.snapshotSubTree(
 
     if (node.expanded.value) {
         if (node.message != null) {
-            subTree(node.message, level + 1, formatter, "Message", state, handler)
+
+            item {
+                Text(
+                    modifier = Modifier.fillMaxWidth().indentLevel(level + 1),
+                    text = "Message"
+                )
+            }
+
+            subTree(node.message, level + 1, formatter, formatter(node.message), state, handler)
         }
 
         if (node.state != null) {
-            subTree(node.state, level + 1, formatter, "State", state, handler)
+            item {
+                Text(
+                    modifier = Modifier.fillMaxWidth().indentLevel(level + 1),
+                    text = "State"
+                )
+            }
+
+            subTree(node.state, level + 1, formatter, formatter(node.state), state, handler)
         }
     }
 }
@@ -297,7 +300,7 @@ private fun ExpandableNode(
 
         Spacer(Modifier.width(SpaceSmall))
 
-        Text(text = (if (node.expanded.value) "- " else "+ ") + text)
+        Text(text = ((if (node.expanded.value) "- " else "+ ").takeIf { node.childrenCount > 0 } ?: "") + text)
 
         if (showPopup.value) {
             // fixme move popup to a separate file, add slot API for it. Do just the same for clicks and etc.
@@ -362,7 +365,7 @@ private fun SnapshotActionItems(
         PopupItem(RemoveIconC, "Delete") {
             handler(RemoveSnapshots(id, node.meta.id))
         }
-        PopupItem(UpdateRunningAppIconC, "Reset to this") {
+        PopupItem(UpdateRunningAppIconC, "Apply state") {
             handler(ApplyState(id, node.meta.id))
         }
         PopupItem(UpdateRunningAppIconC, "Apply message") {
@@ -420,7 +423,7 @@ fun ValueTreePreviewExpanded() {
             Tree(
                 id = ComponentId("test id"),
                 root = appState.toRenderTree(expanded = true),
-                formatter = TreeItemFormatterImpl
+                formatter = ::toReadableStringDetailed
             ) {}
         }
     }
