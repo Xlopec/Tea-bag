@@ -7,6 +7,7 @@ import android.os.StrictMode.*
 import com.oliynick.max.reader.app.navigation.AppNavigation
 import com.oliynick.max.reader.app.storage.LocalStorage
 import com.oliynick.max.reader.article.details.ArticleDetailsModule
+import com.oliynick.max.reader.article.list.AndroidShareArticle
 import com.oliynick.max.reader.article.list.ArticlesModule
 import com.oliynick.max.reader.article.list.NewsApi
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,7 +29,7 @@ fun Environment(
 
     return object : Environment,
         AppModule<Environment> by AppModule(closeCommands),
-        ArticlesModule<Environment> by ArticlesModule(application),
+        ArticlesModule<Environment> by ArticlesModule(AndroidShareArticle(application)),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(application),
         NewsApi by NewsApi(application),
         LocalStorage by LocalStorage(application),

@@ -72,8 +72,8 @@ value class OnArticleUpdated(
         get() = null
 }
 
-@JvmInline
-value class OnShareArticle(
+/*@JvmInline
+value*/data class OnShareArticle(
     val article: Article,
 ) : ArticlesMessage {
     override val id: Nothing?

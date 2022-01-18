@@ -1,7 +1,6 @@
 import SwiftUI
 import SharedAppLib
 import Kingfisher
-import SharedAppLib
 import CoreMIDI
 import CoreAudio
 
@@ -145,8 +144,7 @@ struct RowItem: View {
                 .clear
                 .contextMenu {
                     Button {
-                        showSharePopup()
-                        // handler(ShareArticle(article: article))
+                        handler(OnShareArticle(article: article))
                     } label: {
                         Label("Share", systemImage: "square.and.arrow.up")
                     }
@@ -167,13 +165,6 @@ struct RowItem: View {
          trailing: CGFloat(16.0)
          )
          )*/
-    }
-    
-    private func showSharePopup() {
-        // todo rework with AppResolver in mind
-        let urlShare = article.url
-        let activityVC = UIActivityViewController(activityItems: [urlShare], applicationActivities: nil)
-        UIApplication.shared.windows.first?.rootViewController?.present(activityVC, animated: true, completion: nil)
     }
 }
 

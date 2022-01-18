@@ -5,7 +5,8 @@ package com.oliynick.max.reader.article.list
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.entities.shared.datatypes.fold
 import com.oliynick.max.reader.app.AppException
-import com.oliynick.max.reader.app.command.LoadArticlesByQuery
+import com.oliynick.max.reader.app.command.*
+import com.oliynick.max.reader.app.message.Message
 import com.oliynick.max.reader.app.message.ScreenMessage
 import com.oliynick.max.reader.app.storage.LocalStorage
 import com.oliynick.max.reader.article.list.QueryType.*
@@ -13,8 +14,33 @@ import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.network.ArticleElement
 import com.oliynick.max.reader.network.ArticleResponse
 import com.oliynick.max.tea.core.component.effect
+import com.oliynick.max.tea.core.component.sideEffect
 
-internal suspend fun <Env> Env.loadArticles(
+fun interface ShareArticle {
+    fun share(
+        article: Article
+    )
+}
+
+fun <Env> ArticlesResolver(
+    shareDelegate: ShareArticle
+): ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage = LiveArticlesResolver(shareDelegate)
+
+class LiveArticlesResolver<Env>(
+    private val shareDelegate: ShareArticle
+) : ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage {
+    override suspend fun Env.resolve(
+        command: ArticlesCommand
+    ): Set<Message> =
+        when (command) {
+            is LoadArticlesByQuery -> loadArticles(command)
+            is SaveArticle -> storeArticle(command.article)
+            is RemoveArticle -> removeArticle(command.article)
+            is DoShareArticle -> command sideEffect { shareDelegate.share(article) }
+        }
+}
+
+private suspend fun <Env> Env.loadArticles(
     command: LoadArticlesByQuery
 ): Set<ArticlesMessage> where Env : LocalStorage, Env : NewsApi =
     command.effect {
@@ -28,14 +54,14 @@ internal suspend fun <Env> Env.loadArticles(
         }
     }
 
-internal suspend fun LocalStorage.storeArticle(
+private suspend fun LocalStorage.storeArticle(
     article: Article,
 ): Set<ScreenMessage> = effect {
     insertArticle(article)
     OnArticleUpdated(article)
 }
 
-internal suspend fun LocalStorage.removeArticle(
+private suspend fun LocalStorage.removeArticle(
     article: Article,
 ): Set<ScreenMessage> = effect {
     deleteArticle(article.url)
@@ -78,11 +104,11 @@ private suspend fun LocalStorage.toArticles(
 private suspend fun LocalStorage.toArticle(
     element: ArticleElement,
 ) = Article(
-        url = element.url,
-        title = element.title,
-        author = element.author,
-        description = element.description,
-        urlToImage = element.urlToImage,
-        isFavorite = isFavoriteArticle(element.url),
-        published = element.publishedAt
-    )
+    url = element.url,
+    title = element.title,
+    author = element.author,
+    description = element.description,
+    urlToImage = element.urlToImage,
+    isFavorite = isFavoriteArticle(element.url),
+    published = element.publishedAt
+)

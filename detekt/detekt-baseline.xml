@@ -47,8 +47,6 @@
     <ID>NewLineAtEndOfFile:AppTest.kt$com.max.reader.AppTest.kt</ID>
     <ID>NewLineAtEndOfFile:ArticleDetailsModule.kt$com.oliynick.max.reader.article.details.ArticleDetailsModule.kt</ID>
     <ID>NewLineAtEndOfFile:ArticlesModule.kt$com.oliynick.max.reader.article.list.ArticlesModule.kt</ID>
-    <ID>NewLineAtEndOfFile:ArticlesResolver.kt$com.oliynick.max.reader.article.list.ArticlesResolver.kt</ID>
-    <ID>NewLineAtEndOfFile:ArticlesResolvers.kt$com.oliynick.max.reader.article.list.ArticlesResolvers.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentException.kt$com.oliynick.max.tea.core.misc.ComponentException.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentTest.kt$com.oliynick.max.tea.core.component.ComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:ComposeAnnotations.kt$com.oliynick.max.reader.app.ComposeAnnotations.kt</ID>
@@ -106,6 +104,7 @@
     <ID>UndocumentedPublicClass:Adapters.kt$DescriptionSerializer : KSerializer</ID>
     <ID>UndocumentedPublicClass:Adapters.kt$TitleSerializer : KSerializer</ID>
     <ID>UndocumentedPublicClass:Adapters.kt$UrlSerializer : KSerializer</ID>
+    <ID>UndocumentedPublicClass:AndroidShareArticle.kt$AndroidShareArticle : ShareArticle</ID>
     <ID>UndocumentedPublicClass:Article.kt$Article</ID>
     <ID>UndocumentedPublicClass:Article.kt$Author</ID>
     <ID>UndocumentedPublicClass:Article.kt$Description</ID>
@@ -118,6 +117,7 @@
     <ID>UndocumentedPublicClass:ArticleDetailsUpdater.kt$ArticleDetailsUpdater</ID>
     <ID>UndocumentedPublicClass:ArticlesModule.kt$ArticlesModule&lt;Env> : ArticlesUpdaterArticlesResolver</ID>
     <ID>UndocumentedPublicClass:ArticlesResolver.kt$ArticlesResolver&lt;Env></ID>
+    <ID>UndocumentedPublicClass:ArticlesResolver.kt$IosShareArticle : ShareArticle</ID>
     <ID>UndocumentedPublicClass:ArticlesState.kt$ArticlesState : TabScreen</ID>
     <ID>UndocumentedPublicClass:ArticlesState.kt$ArticlesState$TransientState</ID>
     <ID>UndocumentedPublicClass:ArticlesState.kt$ArticlesState.TransientState$Exception : TransientState</ID>
@@ -145,6 +145,8 @@
     <ID>UndocumentedPublicClass:Either.kt$Left&lt;L> : Either</ID>
     <ID>UndocumentedPublicClass:Either.kt$Right&lt;R> : Either</ID>
     <ID>UndocumentedPublicClass:LiveArticleDetailsUpdater.kt$LiveArticleDetailsUpdater : ArticleDetailsUpdater</ID>
+    <ID>UndocumentedPublicClass:LiveArticlesResolver.kt$LiveArticlesResolver&lt;Env> : ArticlesResolver</ID>
+    <ID>UndocumentedPublicClass:LiveArticlesResolver.kt$ShareArticle</ID>
     <ID>UndocumentedPublicClass:LiveArticlesUpdater.kt$LiveArticlesUpdater : ArticlesUpdater</ID>
     <ID>UndocumentedPublicClass:Message.kt$ArticlesLoaded : ArticlesMessage</ID>
     <ID>UndocumentedPublicClass:Message.kt$ArticlesMessage : ScreenMessage</ID>
@@ -183,11 +185,8 @@
     <ID>UndocumentedPublicFunction:ArticleDetailsResolver.kt$ArticleDetailsResolver$suspend fun resolve( command: ArticleDetailsCommand ): Set&lt;Message></ID>
     <ID>UndocumentedPublicFunction:ArticleDetailsResolverImpl.kt$fun ArticleDetailsResolver( application: Application ): ArticleDetailsResolver</ID>
     <ID>UndocumentedPublicFunction:ArticleDetailsUpdater.kt$ArticleDetailsUpdater$fun updateArticleDetails( message: ArticleDetailsMessage, screen: ArticleDetailsState ): UpdateWith&lt;ArticleDetailsState, ArticleDetailsCommand></ID>
-    <ID>UndocumentedPublicFunction:ArticlesModule.kt$fun &lt;Env> ArticlesModule( application: Application, ): ArticlesModule&lt;Env></ID>
-    <ID>UndocumentedPublicFunction:ArticlesModule.kt$fun &lt;Env> ArticlesModule(): ArticlesModule&lt;Env></ID>
+    <ID>UndocumentedPublicFunction:ArticlesModule.kt$fun &lt;Env> ArticlesModule( shareArticle: ShareArticle ): ArticlesModule&lt;Env></ID>
     <ID>UndocumentedPublicFunction:ArticlesResolver.kt$ArticlesResolver$suspend fun Env.resolve( command: ArticlesCommand ): Set&lt;Message></ID>
-    <ID>UndocumentedPublicFunction:ArticlesResolver.kt$fun &lt;Env> ArticlesResolver( application: Application, ): ArticlesResolver&lt;Env></ID>
-    <ID>UndocumentedPublicFunction:ArticlesResolver.kt$fun &lt;Env> ArticlesResolver(): ArticlesResolver&lt;Env></ID>
     <ID>UndocumentedPublicFunction:ArticlesState.kt$// todo replace with immutable collection fun ArticlesState.toLoadingNext()</ID>
     <ID>UndocumentedPublicFunction:ArticlesState.kt$ArticlesState.Companion$fun newLoading( id: ScreenId, query: Query, articles: List&lt;Article> = emptyList(), )</ID>
     <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.prependArticle( new: Article, ): ArticlesState</ID>
@@ -231,6 +230,8 @@
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R> Either( ifSuccess: () -> L, ifFailure: (th: Throwable) -> R ): Either&lt;L, R></ID>
     <ID>UndocumentedPublicFunction:FlowExtensions.kt$@Deprecated("Bad api") @InternalTeaApi public suspend fun &lt;T> Flow&lt;T>.into( sendChannel: SendChannel&lt;T> )</ID>
     <ID>UndocumentedPublicFunction:LiveArticleDetailsResolver.kt$fun ArticleDetailsResolver(): ArticleDetailsResolver</ID>
+    <ID>UndocumentedPublicFunction:LiveArticlesResolver.kt$ShareArticle$fun share( article: Article )</ID>
+    <ID>UndocumentedPublicFunction:LiveArticlesResolver.kt$fun &lt;Env> ArticlesResolver( shareDelegate: ShareArticle ): ArticlesResolver&lt;Env></ID>
     <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$// fixme inline fun ArticlesState.updateQuery( input: String )</ID>
     <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$fun Article.storeCommand()</ID>
     <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$fun ArticlesState.toLoadArticlesFromScratchUpdate()</ID>
