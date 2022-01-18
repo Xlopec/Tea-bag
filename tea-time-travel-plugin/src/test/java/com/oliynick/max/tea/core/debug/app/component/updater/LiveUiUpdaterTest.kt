@@ -19,11 +19,12 @@
 package com.oliynick.max.tea.core.debug.app.component.updater
 
 import com.oliynick.max.tea.core.component.Updater
-import com.oliynick.max.tea.core.debug.app.component.cms.command.*
-import com.oliynick.max.tea.core.debug.app.component.cms.message.*
-import com.oliynick.max.tea.core.debug.app.component.cms.state.*
+import com.oliynick.max.tea.core.debug.app.command.*
 import com.oliynick.max.tea.core.debug.app.domain.*
+import com.oliynick.max.tea.core.debug.app.message.*
 import com.oliynick.max.tea.core.debug.app.misc.*
+import com.oliynick.max.tea.core.debug.app.state.*
+import com.oliynick.max.tea.core.debug.app.update.LiveUiUpdater
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.collections.shouldBeEmpty

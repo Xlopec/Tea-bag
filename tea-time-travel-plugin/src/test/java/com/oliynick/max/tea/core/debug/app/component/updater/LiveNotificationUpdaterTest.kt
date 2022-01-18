@@ -19,14 +19,15 @@
 package com.oliynick.max.tea.core.debug.app.component.updater
 
 import com.oliynick.max.tea.core.component.Updater
-import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
-import com.oliynick.max.tea.core.debug.app.component.cms.command.DoNotifyComponentAttached
-import com.oliynick.max.tea.core.debug.app.component.cms.command.DoWarnUnacceptableMessage
-import com.oliynick.max.tea.core.debug.app.component.cms.message.*
-import com.oliynick.max.tea.core.debug.app.component.cms.state.State
-import com.oliynick.max.tea.core.debug.app.component.cms.state.Stopped
+import com.oliynick.max.tea.core.debug.app.command.Command
+import com.oliynick.max.tea.core.debug.app.command.DoNotifyComponentAttached
+import com.oliynick.max.tea.core.debug.app.command.DoWarnUnacceptableMessage
 import com.oliynick.max.tea.core.debug.app.domain.*
+import com.oliynick.max.tea.core.debug.app.message.*
 import com.oliynick.max.tea.core.debug.app.misc.*
+import com.oliynick.max.tea.core.debug.app.state.State
+import com.oliynick.max.tea.core.debug.app.state.Stopped
+import com.oliynick.max.tea.core.debug.app.update.LiveNotificationUpdater
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.matchers.collections.shouldContainExactly
@@ -47,7 +48,7 @@ internal class LiveNotificationUpdaterTest {
 
         val (nextState, commands) = updater(NotifyStarted(StartedTestServerStub), Stopped(TestSettings))
 
-        nextState shouldBe com.oliynick.max.tea.core.debug.app.component.cms.state.Started(
+        nextState shouldBe com.oliynick.max.tea.core.debug.app.state.Started(
             TestSettings,
             DebugState(),
             StartedTestServerStub
@@ -60,7 +61,7 @@ internal class LiveNotificationUpdaterTest {
 
         val (nextState, commands) = updater(
             NotifyStopped,
-            com.oliynick.max.tea.core.debug.app.component.cms.state.Started(
+            com.oliynick.max.tea.core.debug.app.state.Started(
                 TestSettings,
                 DebugState(),
                 StartedTestServerStub

@@ -1,4 +1,4 @@
-package com.oliynick.max.tea.core.debug.app.component.cms.message
+package com.oliynick.max.tea.core.debug.app.message
 
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotId

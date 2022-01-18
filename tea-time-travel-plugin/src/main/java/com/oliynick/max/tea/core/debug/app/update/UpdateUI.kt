@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.component.cms
+package com.oliynick.max.tea.core.debug.app.update
 
-import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
-import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
+import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.debug.app.command.Command
+import com.oliynick.max.tea.core.debug.app.message.UIMessage
+import com.oliynick.max.tea.core.debug.app.state.State
 
-fun interface AppResolver {
+fun interface UiUpdater {
 
-    suspend fun resolve(
-        command: Command
-    ): Set<Message>
+    fun update(
+        message: UIMessage,
+        state: State
+    ): UpdateWith<State, Command>
 
 }

@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.component.updater
+package com.oliynick.max.tea.core.debug.app.update
 
 import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
-import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
-import com.oliynick.max.tea.core.debug.app.component.cms.state.State
+import com.oliynick.max.tea.core.debug.app.command.Command
+import com.oliynick.max.tea.core.debug.app.message.NotificationMessage
+import com.oliynick.max.tea.core.debug.app.state.State
 
-fun interface Updater<Env> {
+fun interface NotificationUpdater {
 
-    fun Env.update(
-        message: Message,
+    fun update(
+        message: NotificationMessage,
         state: State
     ): UpdateWith<State, Command>
 
 }
+

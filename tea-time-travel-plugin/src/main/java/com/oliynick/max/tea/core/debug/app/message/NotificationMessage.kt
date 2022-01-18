@@ -1,11 +1,11 @@
-package com.oliynick.max.tea.core.debug.app.component.cms.message
+package com.oliynick.max.tea.core.debug.app.message
 
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginException
-import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
-import com.oliynick.max.tea.core.debug.app.component.cms.toPluginException
+import com.oliynick.max.tea.core.debug.app.command.Command
 import com.oliynick.max.tea.core.debug.app.domain.CollectionWrapper
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotMeta
 import com.oliynick.max.tea.core.debug.app.domain.Value
+import com.oliynick.max.tea.core.debug.app.resolve.PluginException
+import com.oliynick.max.tea.core.debug.app.resolve.toPluginException
 import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 

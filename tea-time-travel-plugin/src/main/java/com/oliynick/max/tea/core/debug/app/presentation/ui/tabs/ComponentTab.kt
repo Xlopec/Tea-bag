@@ -13,11 +13,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
-import com.oliynick.max.tea.core.debug.app.component.cms.message.RemoveComponent
-import com.oliynick.max.tea.core.debug.app.component.cms.state.componentIds
 import com.oliynick.max.tea.core.debug.app.domain.DebugState
+import com.oliynick.max.tea.core.debug.app.message.Message
+import com.oliynick.max.tea.core.debug.app.message.RemoveComponent
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons
+import com.oliynick.max.tea.core.debug.app.state.componentIds
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 @Composable

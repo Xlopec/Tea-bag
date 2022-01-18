@@ -30,12 +30,10 @@ import androidx.compose.ui.awt.ComposePanel
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.unit.dp
 import com.intellij.openapi.project.Project
-import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
-import com.oliynick.max.tea.core.debug.app.component.cms.message.StartServer
-import com.oliynick.max.tea.core.debug.app.component.cms.message.StopServer
-import com.oliynick.max.tea.core.debug.app.component.cms.message.UpdateServerSettings
-import com.oliynick.max.tea.core.debug.app.component.cms.state.*
-import com.oliynick.max.tea.core.debug.app.component.cms.state.State
+import com.oliynick.max.tea.core.debug.app.message.Message
+import com.oliynick.max.tea.core.debug.app.message.StartServer
+import com.oliynick.max.tea.core.debug.app.message.StopServer
+import com.oliynick.max.tea.core.debug.app.message.UpdateServerSettings
 import com.oliynick.max.tea.core.debug.app.presentation.info.InfoView
 import com.oliynick.max.tea.core.debug.app.presentation.screens.component.Component
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RunDefaultIconC
@@ -45,6 +43,8 @@ import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.SuspendDi
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ValidatedTextField
 import com.oliynick.max.tea.core.debug.app.presentation.ui.tabs.ComponentTab
 import com.oliynick.max.tea.core.debug.app.presentation.ui.theme.WidgetTheme
+import com.oliynick.max.tea.core.debug.app.state.*
+import com.oliynick.max.tea.core.debug.app.state.State
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.Flow

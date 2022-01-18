@@ -16,14 +16,14 @@
 
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.app.component.cms
+package com.oliynick.max.tea.core.debug.app.resolve
 
 import com.intellij.openapi.ui.popup.Balloon
-import com.oliynick.max.tea.core.debug.app.component.cms.command.*
-import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
-import com.oliynick.max.tea.core.debug.app.component.cms.state.State
+import com.oliynick.max.tea.core.debug.app.command.*
+import com.oliynick.max.tea.core.debug.app.message.Message
 import com.oliynick.max.tea.core.debug.app.presentation.ui.balloon.createErrorBalloon
 import com.oliynick.max.tea.core.debug.app.presentation.ui.balloon.createNotificationBalloon
+import com.oliynick.max.tea.core.debug.app.state.State
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import java.util.*
 

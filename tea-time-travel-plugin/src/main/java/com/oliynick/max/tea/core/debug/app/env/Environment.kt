@@ -18,10 +18,10 @@ package com.oliynick.max.tea.core.debug.app.env
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
-import com.oliynick.max.tea.core.debug.app.component.cms.AppResolver
-import com.oliynick.max.tea.core.debug.app.component.cms.LiveAppResolver
-import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
-import com.oliynick.max.tea.core.debug.app.component.updater.*
+import com.oliynick.max.tea.core.debug.app.message.Message
+import com.oliynick.max.tea.core.debug.app.resolve.AppResolver
+import com.oliynick.max.tea.core.debug.app.resolve.LiveAppResolver
+import com.oliynick.max.tea.core.debug.app.update.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

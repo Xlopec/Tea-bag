@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.component.updater
+package com.oliynick.max.tea.core.debug.app.update
 
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
-import com.oliynick.max.tea.core.debug.app.component.cms.InternalException
-import com.oliynick.max.tea.core.debug.app.component.cms.PluginException
-import com.oliynick.max.tea.core.debug.app.component.cms.command.*
-import com.oliynick.max.tea.core.debug.app.component.cms.message.*
-import com.oliynick.max.tea.core.debug.app.component.cms.state.*
+import com.oliynick.max.tea.core.debug.app.command.*
 import com.oliynick.max.tea.core.debug.app.domain.*
+import com.oliynick.max.tea.core.debug.app.message.*
+import com.oliynick.max.tea.core.debug.app.resolve.InternalException
+import com.oliynick.max.tea.core.debug.app.resolve.PluginException
+import com.oliynick.max.tea.core.debug.app.state.*
 import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 

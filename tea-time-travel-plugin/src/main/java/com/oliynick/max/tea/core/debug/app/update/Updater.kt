@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.component.cms.message
+package com.oliynick.max.tea.core.debug.app.update
 
-sealed interface Message
+import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.debug.app.command.Command
+import com.oliynick.max.tea.core.debug.app.message.Message
+import com.oliynick.max.tea.core.debug.app.state.State
+
+fun interface Updater<Env> {
+
+    fun Env.update(
+        message: Message,
+        state: State
+    ): UpdateWith<State, Command>
+
+}

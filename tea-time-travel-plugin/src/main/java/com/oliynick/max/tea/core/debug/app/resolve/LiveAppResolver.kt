@@ -16,15 +16,15 @@
 
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.app.component.cms
+package com.oliynick.max.tea.core.debug.app.resolve
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
-import com.oliynick.max.tea.core.debug.app.component.cms.command.*
-import com.oliynick.max.tea.core.debug.app.component.cms.message.*
+import com.oliynick.max.tea.core.debug.app.command.*
 import com.oliynick.max.tea.core.debug.app.domain.*
+import com.oliynick.max.tea.core.debug.app.message.*
 import com.oliynick.max.tea.core.debug.app.misc.settings
 import com.oliynick.max.tea.core.debug.app.presentation.ui.balloon.showBalloon
 import com.oliynick.max.tea.core.debug.app.transport.Server

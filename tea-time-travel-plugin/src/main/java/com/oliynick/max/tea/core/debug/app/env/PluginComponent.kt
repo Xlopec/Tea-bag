@@ -28,12 +28,12 @@ import com.oliynick.max.tea.core.Snapshot
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.Interceptor
 import com.oliynick.max.tea.core.component.with
-import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
-import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
-import com.oliynick.max.tea.core.debug.app.component.cms.state.State
-import com.oliynick.max.tea.core.debug.app.component.cms.state.Stopped
+import com.oliynick.max.tea.core.debug.app.command.Command
+import com.oliynick.max.tea.core.debug.app.message.Message
 import com.oliynick.max.tea.core.debug.app.misc.PluginId
 import com.oliynick.max.tea.core.debug.app.misc.settings
+import com.oliynick.max.tea.core.debug.app.state.State
+import com.oliynick.max.tea.core.debug.app.state.Stopped
 import kotlinx.coroutines.Dispatchers.IO
 import com.intellij.openapi.diagnostic.Logger as PlatformLogger
 

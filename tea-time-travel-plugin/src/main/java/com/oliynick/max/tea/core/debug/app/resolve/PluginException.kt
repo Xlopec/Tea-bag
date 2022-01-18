@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.component.cms
+package com.oliynick.max.tea.core.debug.app.resolve
 
 import kotlinx.coroutines.TimeoutCancellationException
 import java.net.ProtocolException

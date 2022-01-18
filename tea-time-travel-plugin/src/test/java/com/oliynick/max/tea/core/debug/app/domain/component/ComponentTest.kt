@@ -16,8 +16,8 @@
 
 package com.oliynick.max.tea.core.debug.app.domain.component
 
-import com.oliynick.max.tea.core.debug.app.component.cms.AppResolver
-import com.oliynick.max.tea.core.debug.app.component.updater.*
+import com.oliynick.max.tea.core.debug.app.resolve.AppResolver
+import com.oliynick.max.tea.core.debug.app.update.*
 
 interface TestEnvironment :
     Updater<TestEnvironment>,

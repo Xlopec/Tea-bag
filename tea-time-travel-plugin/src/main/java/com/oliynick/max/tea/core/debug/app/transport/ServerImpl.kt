@@ -18,13 +18,13 @@
 
 package com.oliynick.max.tea.core.debug.app.transport
 
-import com.oliynick.max.tea.core.debug.app.component.cms.message.AppendSnapshot
-import com.oliynick.max.tea.core.debug.app.component.cms.message.ComponentAttached
-import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
-import com.oliynick.max.tea.core.debug.app.component.cms.message.NotifyOperationException
 import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotMeta
+import com.oliynick.max.tea.core.debug.app.message.AppendSnapshot
+import com.oliynick.max.tea.core.debug.app.message.ComponentAttached
+import com.oliynick.max.tea.core.debug.app.message.Message
+import com.oliynick.max.tea.core.debug.app.message.NotifyOperationException
 import com.oliynick.max.tea.core.debug.app.transport.serialization.GSON
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toCollectionWrapper
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue

@@ -54,9 +54,8 @@ import androidx.compose.ui.window.Popup
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PsiNavigateUtil
-import com.oliynick.max.tea.core.debug.app.component.cms.appState
-import com.oliynick.max.tea.core.debug.app.component.cms.message.*
 import com.oliynick.max.tea.core.debug.app.domain.Type
+import com.oliynick.max.tea.core.debug.app.message.*
 import com.oliynick.max.tea.core.debug.app.misc.javaPsiFacade
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.RemoveIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ActionIcons.UpdateRunningAppIconC
@@ -68,6 +67,7 @@ import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.ClassIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.PropertyIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.ValueIcon.WatchIconC
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.toReadableStringDetailed
+import com.oliynick.max.tea.core.debug.app.resolve.appState
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 typealias TreeFormatter = (Node) -> String
