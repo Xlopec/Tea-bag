@@ -37,7 +37,7 @@ import com.oliynick.max.tea.core.debug.app.presentation.settings.PluginSettingsN
 import com.oliynick.max.tea.core.debug.app.presentation.ui.misc.mergeWith
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
 
 class SideToolWindowFactory : ToolWindowFactory, DumbAware {
@@ -46,13 +46,14 @@ class SideToolWindowFactory : ToolWindowFactory, DumbAware {
         project: Project,
         toolWindow: ToolWindow
     ) {
-        val environment = Environment(project.properties, project)
+        val events = MutableSharedFlow<Message>()
+        val environment = Environment(project.properties, project, events)
         val component = PluginComponent(environment, project.properties)
         val content = createToolWindowContent(project, component)
 
         toolWindow.contentManager.addContent(content)
 
-        component.subscribeIn(environment.events.asFlow().mergeWith(project.settingsMessages), environment)
+        component.subscribeIn(events.mergeWith(project.settingsMessages), environment)
     }
 
     override fun shouldBeAvailable(project: Project): Boolean = true

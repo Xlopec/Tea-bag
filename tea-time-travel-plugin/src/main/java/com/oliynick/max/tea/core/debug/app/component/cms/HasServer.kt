@@ -23,11 +23,11 @@ import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
 import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.app.transport.ServerImpl
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.withContext
 
 fun interface HasServer {
-    suspend fun newServer(address: ServerAddress, events: BroadcastChannel<Message>): Server
+    suspend fun newServer(address: ServerAddress, events: MutableSharedFlow<Message>): Server
 }
 
 fun HasServer() = HasServer { address, events ->

@@ -57,7 +57,7 @@ import java.util.UUID.randomUUID
 
 class ServerImpl private constructor(
     private val address: ServerAddress,
-    private val events: BroadcastChannel<Message>,
+    private val events: MutableSharedFlow<Message>,
     private val calls: BroadcastChannel<RemoteCallArgs>
 ) : ApplicationEngine by Server(address, events, calls), Server {
 
@@ -65,7 +65,7 @@ class ServerImpl private constructor(
 
         fun newInstance(
             address: ServerAddress,
-            events: BroadcastChannel<Message>
+            events: MutableSharedFlow<Message>
         ): ServerImpl = ServerImpl(address, events, BroadcastChannel(1))
 
     }
@@ -92,7 +92,7 @@ private data class RemoteCallArgs(
 
 private fun Server(
     address: ServerAddress,
-    events: BroadcastChannel<Message>,
+    events: MutableSharedFlow<Message>,
     calls: BroadcastChannel<RemoteCallArgs>
 ): NettyApplicationEngine =
     embeddedServer(
@@ -119,7 +119,7 @@ private fun Server(
 
 private fun Application.configureWebSocketRouting(
     calls: Flow<RemoteCallArgs>,
-    events: BroadcastChannel<Message>
+    events: MutableSharedFlow<Message>
 ) {
     routing {
 
@@ -145,7 +145,7 @@ private suspend fun installPacketSender(
 }
 
 private suspend fun installPacketReceiver(
-    events: BroadcastChannel<Message>,
+    events: MutableSharedFlow<Message>,
     incoming: Flow<Frame.Text>
 ) {
     incoming.collect { frame -> processPacket(frame, events) }
@@ -153,7 +153,7 @@ private suspend fun installPacketReceiver(
 
 private suspend fun processPacket(
     frame: Frame.Text,
-    events: BroadcastChannel<Message>
+    events: MutableSharedFlow<Message>
 ) =
     withContext(Dispatchers.IO) {
         try {
@@ -161,16 +161,16 @@ private suspend fun processPacket(
             val packet = GSON.fromJson<GsonNotifyServer>(json, NotifyServer::class.java)
 
             when (val message = packet.payload) {
-                is GsonNotifyComponentSnapshot -> events.send(
+                is GsonNotifyComponentSnapshot -> events.emit(
                     message.toNotification(packet.componentId, SnapshotMeta())
                 )
-                is GsonNotifyComponentAttached -> events.send(
+                is GsonNotifyComponentAttached -> events.emit(
                     message.toNotification(packet.componentId, SnapshotMeta())
                 )
             }
 
         } catch (e: Throwable) {
-            events.send(NotifyOperationException(e))
+            events.emit(NotifyOperationException(e))
         }
     }
 

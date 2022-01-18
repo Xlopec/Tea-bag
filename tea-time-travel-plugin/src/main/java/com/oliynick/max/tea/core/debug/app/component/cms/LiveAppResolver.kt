@@ -31,19 +31,19 @@ import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
 import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
 import com.oliynick.max.tea.core.debug.protocol.ApplyState
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 fun <Env> LiveAppResolver(
     project: Project,
-    properties: PropertiesComponent
-): AppResolver<Env>
-        where Env : HasMessageChannel,
-              Env : HasServer = LiveAppResolverImpl(project, properties)
+    properties: PropertiesComponent,
+    events: MutableSharedFlow<Message>,
+): AppResolver<Env> where Env : HasServer = LiveAppResolverImpl(project, properties, events)
 
 private class LiveAppResolverImpl<Env>(
     private val project: Project,
     private val properties: PropertiesComponent,
-) : AppResolver<Env> where Env : HasMessageChannel,
-                           Env : HasServer {
+    private val events: MutableSharedFlow<Message>,
+) : AppResolver<Env> where Env : HasServer {
 
     override suspend fun Env.resolve(
         command: Command,
