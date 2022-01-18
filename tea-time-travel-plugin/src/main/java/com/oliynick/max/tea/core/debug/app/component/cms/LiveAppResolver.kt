@@ -27,37 +27,41 @@ import com.oliynick.max.tea.core.debug.app.component.cms.message.*
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.settings
 import com.oliynick.max.tea.core.debug.app.presentation.ui.balloon.showBalloon
+import com.oliynick.max.tea.core.debug.app.transport.Server
+import com.oliynick.max.tea.core.debug.app.transport.ServerImpl
 import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
 import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
 import com.oliynick.max.tea.core.debug.protocol.ApplyState
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.withContext
 
-fun <Env> LiveAppResolver(
+fun LiveAppResolver(
     project: Project,
     properties: PropertiesComponent,
     events: MutableSharedFlow<Message>,
-): AppResolver<Env> where Env : HasServer = LiveAppResolverImpl(project, properties, events)
+): AppResolver = LiveAppResolverImpl(project, properties, events)
 
-private class LiveAppResolverImpl<Env>(
+private class LiveAppResolverImpl(
     private val project: Project,
     private val properties: PropertiesComponent,
     private val events: MutableSharedFlow<Message>,
-) : AppResolver<Env> where Env : HasServer {
+) : AppResolver {
 
-    override suspend fun Env.resolve(
+    override suspend fun resolve(
         command: Command,
     ): Set<Message> =
         runCatching { doResolve(command) }
             .getOrElse { th -> setOf(NotifyOperationException(th, command)) }
 
-    suspend fun Env.doResolve(
+    suspend fun doResolve(
         command: Command,
     ): Set<NotificationMessage> =
         when (command) {
             is DoStoreSettings -> command sideEffect { properties.settings = settings }
             // fixme remove later
-            is DoStartServer -> command effect { NotifyStarted(newServer(address, events)) }
+            is DoStartServer -> command effect { NotifyStarted(startServer(address)) }
             /*is DoStartServer -> setOf(with(command) { NotifyStarted(newServer(address, events)); },
                 ComponentAttached(
                     componentId,
@@ -117,6 +121,14 @@ private class LiveAppResolverImpl<Env>(
         server(id, ApplyState(state.toJsonElement()))
         project.showBalloon(StateAppliedBalloon(id))
         StateApplied(id, state)
+    }
+
+    private suspend fun startServer(
+        address: ServerAddress
+    ): Server = withContext(Dispatchers.IO) {
+        val newServer = ServerImpl.newInstance(address, events)
+        newServer.start()
+        newServer
     }
 
 }

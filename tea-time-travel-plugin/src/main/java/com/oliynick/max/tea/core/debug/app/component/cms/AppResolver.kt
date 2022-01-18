@@ -19,9 +19,9 @@ package com.oliynick.max.tea.core.debug.app.component.cms
 import com.oliynick.max.tea.core.debug.app.component.cms.command.Command
 import com.oliynick.max.tea.core.debug.app.component.cms.message.Message
 
-fun interface AppResolver<Env> {
+fun interface AppResolver {
 
-    suspend fun Env.resolve(
+    suspend fun resolve(
         command: Command
     ): Set<Message>
 

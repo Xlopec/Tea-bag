@@ -17,24 +17,20 @@
 package com.oliynick.max.tea.core.debug.app.domain.component
 
 import com.oliynick.max.tea.core.debug.app.component.cms.AppResolver
-import com.oliynick.max.tea.core.debug.app.component.cms.HasMessageChannel
-import com.oliynick.max.tea.core.debug.app.component.cms.HasMessagesChannel
 import com.oliynick.max.tea.core.debug.app.component.updater.*
 
 interface TestEnvironment :
     Updater<TestEnvironment>,
     NotificationUpdater,
     UiUpdater,
-    AppResolver<TestEnvironment>,
-    HasMessageChannel
+    AppResolver
 
 @Suppress("FunctionName")
 fun TestEnvironment(
-    resolver: AppResolver<TestEnvironment>
+    resolver: AppResolver
 ): TestEnvironment =
     object : TestEnvironment,
         Updater<TestEnvironment> by LiveUpdater(),
         NotificationUpdater by LiveNotificationUpdater,
         UiUpdater by LiveUiUpdater,
-        AppResolver<TestEnvironment> by resolver,
-        HasMessageChannel by HasMessagesChannel() {}
+        AppResolver by resolver {}
