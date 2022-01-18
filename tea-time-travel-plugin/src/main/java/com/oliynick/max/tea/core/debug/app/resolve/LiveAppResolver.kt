@@ -27,9 +27,9 @@ import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.message.*
 import com.oliynick.max.tea.core.debug.app.misc.settings
 import com.oliynick.max.tea.core.debug.app.presentation.ui.balloon.showBalloon
+import com.oliynick.max.tea.core.debug.app.transport.NettyServer
 import com.oliynick.max.tea.core.debug.app.transport.Server
-import com.oliynick.max.tea.core.debug.app.transport.ServerImpl
-import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
+import com.oliynick.max.tea.core.debug.app.transport.toJsonElement
 import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
 import com.oliynick.max.tea.core.debug.protocol.ApplyState
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
@@ -126,7 +126,7 @@ private class LiveAppResolverImpl(
     private suspend fun startServer(
         address: ServerAddress
     ): Server = withContext(Dispatchers.IO) {
-        val newServer = ServerImpl.newInstance(address, events)
+        val newServer = NettyServer(address, events)
         newServer.start()
         newServer
     }

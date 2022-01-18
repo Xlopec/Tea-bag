@@ -19,8 +19,8 @@ package com.oliynick.max.tea.core.debug.app.domain.serialization
 import com.google.gson.JsonElement
 import com.oliynick.max.tea.core.data.*
 import com.oliynick.max.tea.core.debug.app.domain.*
-import com.oliynick.max.tea.core.debug.app.transport.serialization.toJsonElement
-import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
+import com.oliynick.max.tea.core.debug.app.transport.toJsonElement
+import com.oliynick.max.tea.core.debug.app.transport.toValue
 import com.oliynick.max.tea.core.debug.gson.Gson
 import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
 import com.oliynick.max.tea.core.debug.protocol.ClientMessage

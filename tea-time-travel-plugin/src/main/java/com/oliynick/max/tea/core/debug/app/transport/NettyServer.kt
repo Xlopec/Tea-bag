@@ -18,6 +18,7 @@
 
 package com.oliynick.max.tea.core.debug.app.transport
 
+import com.google.gson.Gson
 import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotMeta
@@ -25,13 +26,7 @@ import com.oliynick.max.tea.core.debug.app.message.AppendSnapshot
 import com.oliynick.max.tea.core.debug.app.message.ComponentAttached
 import com.oliynick.max.tea.core.debug.app.message.Message
 import com.oliynick.max.tea.core.debug.app.message.NotifyOperationException
-import com.oliynick.max.tea.core.debug.app.transport.serialization.GSON
-import com.oliynick.max.tea.core.debug.app.transport.serialization.toCollectionWrapper
-import com.oliynick.max.tea.core.debug.app.transport.serialization.toValue
-import com.oliynick.max.tea.core.debug.gson.GsonClientMessage
-import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentAttached
-import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentSnapshot
-import com.oliynick.max.tea.core.debug.gson.GsonNotifyServer
+import com.oliynick.max.tea.core.debug.gson.*
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.NotifyClient
 import com.oliynick.max.tea.core.debug.protocol.NotifyServer
@@ -42,57 +37,45 @@ import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
+import io.ktor.server.websocket.WebSockets
 import io.ktor.websocket.*
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.slf4j.event.Level
 import java.time.Duration
 import java.time.LocalDateTime.now
-import java.util.*
 import java.util.UUID.randomUUID
 
-class ServerImpl private constructor(
+class NettyServer(
     private val address: ServerAddress,
     private val events: MutableSharedFlow<Message>,
-    private val calls: MutableSharedFlow<RemoteCallArgs>
-) : ApplicationEngine by Server(address, events, calls), Server {
-
-    companion object {
-
-        fun newInstance(
-            address: ServerAddress,
-            events: MutableSharedFlow<Message>
-        ): ServerImpl = ServerImpl(address, events, MutableSharedFlow())
-
-    }
+    private val calls: MutableSharedFlow<RemoteCall> = MutableSharedFlow(),
+    private val gson: Gson = Gson {}
+) : ApplicationEngine by NettyAppEngine(address, events, calls, gson), Server {
 
     override suspend operator fun invoke(
         component: ComponentId,
         message: GsonClientMessage
-    ) = withContext(Dispatchers.IO) {
-        calls.emit(RemoteCallArgs(randomUUID(), component, message))
-    }
+    ) = calls.emit(RemoteCall(randomUUID(), component, message))
 
     override suspend fun stop() =
-        withContext(Dispatchers.IO) {
+        withContext(IO) {
             stop(1, 1)
         }
 
 }
 
-private data class RemoteCallArgs(
-    val callId: UUID,
-    val component: ComponentId,
-    val message: GsonClientMessage
-)
-
-private fun Server(
+private fun NettyAppEngine(
     address: ServerAddress,
     events: MutableSharedFlow<Message>,
-    calls: MutableSharedFlow<RemoteCallArgs>
+    calls: MutableSharedFlow<RemoteCall>,
+    gson: Gson
 ): NettyApplicationEngine =
     embeddedServer(
         Netty,
@@ -108,56 +91,43 @@ private fun Server(
         install(Routing)
         install(ConditionalHeaders)
 
-        install(io.ktor.server.websocket.WebSockets) {
+        install(WebSockets.Plugin) {
             pingPeriod = Duration.ofSeconds(10)
             timeout = Duration.ofSeconds(5)
         }
 
-        configureWebSocketRouting(calls, events)
-    }
+        routing {
 
-private fun Application.configureWebSocketRouting(
-    calls: Flow<RemoteCallArgs>,
-    events: MutableSharedFlow<Message>
-) {
-    routing {
+            webSocket("/") {
 
-        webSocket("/") {
+                launch {
+                    calls.collect<RemoteCall> { call -> outgoing.processOutgoingCall(call, gson) }
+                }
 
-            launch {
-                installPacketSender(calls, outgoing)
+                incoming.consumeAsFlow().filterIsInstance<Frame.Text>()
+                    .collect { frame -> processIncomingFrame(frame, events, gson) }
             }
-
-            installPacketReceiver(events, incoming.consumeAsFlow().filterIsInstance())
         }
     }
-}
 
-private suspend fun installPacketSender(
-    calls: Flow<RemoteCallArgs>,
-    outgoing: SendChannel<Frame>
-) = calls.collect { (callId, componentId, message) ->
-
-    val json = GSON.toJson(NotifyClient(callId, componentId, message))
-
-    outgoing.send(Frame.Text(json))
-}
-
-private suspend fun installPacketReceiver(
-    events: MutableSharedFlow<Message>,
-    incoming: Flow<Frame.Text>
+private suspend fun SendChannel<Frame>.processOutgoingCall(
+    remoteCall: RemoteCall,
+    gson: Gson
 ) {
-    incoming.collect { frame -> processPacket(frame, events) }
+    val json = gson.toJson(NotifyClient(remoteCall.callId, remoteCall.component, remoteCall.message))
+
+    send(Frame.Text(json))
 }
 
-private suspend fun processPacket(
+private suspend fun processIncomingFrame(
     frame: Frame.Text,
-    events: MutableSharedFlow<Message>
+    events: MutableSharedFlow<Message>,
+    gson: Gson
 ) =
-    withContext(Dispatchers.IO) {
+    withContext(IO) {
         try {
             val json = frame.readText()
-            val packet = GSON.fromJson<GsonNotifyServer>(json, NotifyServer::class.java)
+            val packet = gson.fromJson<GsonNotifyServer>(json, NotifyServer::class.java)
 
             when (val message = packet.payload) {
                 is GsonNotifyComponentSnapshot -> events.emit(

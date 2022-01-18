@@ -78,10 +78,6 @@ fun ComponentDebugState.removeSnapshots(): ComponentDebugState =
 inline val DebugState.componentIds: ImmutableSet<ComponentId>
     get() = components.keys
 
-fun DebugState.componentOrNull(
-    id: ComponentId
-) = components[id]
-
 fun DebugState.component(
     id: ComponentId
 ) = components[id] ?: notifyUnknownComponent(id)

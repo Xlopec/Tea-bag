@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package com.oliynick.max.tea.core.debug.app.transport.serialization
+package com.oliynick.max.tea.core.debug.app.transport
 
 import com.google.gson.*
 import com.oliynick.max.tea.core.debug.app.domain.*
-import com.oliynick.max.tea.core.debug.gson.Gson
-
-internal val GSON = Gson()
 
 fun Value.toJsonElement(): JsonElement =
     when (this) {

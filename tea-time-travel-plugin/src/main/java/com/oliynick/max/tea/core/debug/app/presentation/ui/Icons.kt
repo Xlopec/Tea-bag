@@ -30,10 +30,10 @@ import org.jetbrains.skia.Image.Companion.makeFromEncoded
 import javax.swing.Icon
 
 object ValueIcon {
-    val VariableIcon by unsafeLazy { getIcon("variable") }
-    val ClassIcon by unsafeLazy { getIcon("class") }
-    val PropertyIcon by unsafeLazy { getIcon("property") }
-    val WatchIcon by unsafeLazy { getIcon("watch") }
+    val VariableIcon by lazy { getIcon("variable") }
+    val ClassIcon by lazy { getIcon("class") }
+    val PropertyIcon by lazy { getIcon("property") }
+    val WatchIcon by lazy { getIcon("watch") }
 
     val VariableIconC @Composable get() = bitmap("variable")
     val ClassIconC @Composable get() = bitmap("class")
@@ -43,28 +43,27 @@ object ValueIcon {
 
 object ActionIcons {
 
-    val UpdateRunningAppIcon by unsafeLazy { getIcon("updateRunningApplication") }
+    val UpdateRunningAppIcon by lazy { getIcon("updateRunningApplication") }
     val UpdateRunningAppIconC @Composable get() = bitmap("updateRunningApplication")
-    val RemoveIcon by unsafeLazy { getIcon("remove") }
+    val RemoveIcon by lazy { getIcon("remove") }
     val RemoveIconC @Composable get() = bitmap("remove")
 
-    val RunDefaultIcon by unsafeLazy { getIcon("run") }
+    val RunDefaultIcon by lazy { getIcon("run") }
     val RunDefaultIconC @Composable get() = bitmap("run")
-    val RunDisabledIcon by unsafeLazy { getIcon("run_disabled") }
+    val RunDisabledIcon by lazy { getIcon("run_disabled") }
     val RunDisabledIconC @Composable get() = bitmap("run_disabled")
 
-    val ResumeIcon by unsafeLazy { getIcon("resume") }
+    val ResumeIcon by lazy { getIcon("resume") }
 
-    val CloseDefaultIcon by unsafeLazy { getIcon("close") }
+    val CloseDefaultIcon by lazy { getIcon("close") }
     val CloseDefaultIconC @Composable get() = bitmap("close")
-    val CloseDarkIcon by unsafeLazy { getIcon("close_dark") }
+    val CloseDarkIcon by lazy { getIcon("close_dark") }
 
-    val SuspendDefaultIcon by unsafeLazy { getIcon("suspend") }
     val SuspendDefaultIconC @Composable get() = bitmap("suspend")
-    val SuspendDisabledIcon by unsafeLazy { getIcon("suspend_disabled") }
+    val SuspendDisabledIcon by lazy { getIcon("suspend_disabled") }
     val SuspendDisabledIconC @Composable get() = bitmap("suspend_disabled")
 
-    val StoppingIcon by unsafeLazy { getIcon("killProcess") }
+    val StoppingIcon by lazy { getIcon("killProcess") }
     val StoppingIconC @Composable get() = bitmap("killProcess")
 }
 
@@ -74,7 +73,9 @@ private fun resource(
     ?: error("couldn't find resource for path $path")
 
 @Composable
-private fun bitmap(name: String): ImageBitmap =
+private fun bitmap(
+    name: String
+): ImageBitmap =
     if (PreviewMode.current) {
         ImageStub
     } else {
@@ -86,10 +87,6 @@ private fun bitmap(name: String): ImageBitmap =
 private fun getIcon(
     name: String,
 ): Icon = IconLoader.getIcon("/images/$name.png")
-
-private fun <T> unsafeLazy(
-    provider: () -> T,
-) = lazy(LazyThreadSafetyMode.NONE, provider)
 
 private const val StubImageSize = 80
 private val ImageStub = ImageBitmap(StubImageSize, StubImageSize)

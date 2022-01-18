@@ -28,8 +28,8 @@
     <ID>MagicNumber:Date.kt$1000.0</ID>
     <ID>MagicNumber:LiveAppResolver.kt$8080</ID>
     <ID>MagicNumber:LocalStorageImpl.kt$6</ID>
-    <ID>MagicNumber:ServerImpl.kt$10</ID>
-    <ID>MagicNumber:ServerImpl.kt$5</ID>
+    <ID>MagicNumber:NettyServer.kt$10</ID>
+    <ID>MagicNumber:NettyServer.kt$5</ID>
     <ID>MagicNumber:TempTest.kt$TempTest$1_000</ID>
     <ID>MagicNumber:TempTest.kt$TempTest$3</ID>
     <ID>MaxLineLength:AppTheme.kt$val secondaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant)</ID>
@@ -63,7 +63,6 @@
     <ID>NewLineAtEndOfFile:Icons.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.Icons.kt</ID>
     <ID>NewLineAtEndOfFile:IosAnnotations.kt$com.oliynick.max.reader.app.IosAnnotations.kt</ID>
     <ID>NewLineAtEndOfFile:IosComponent.kt$com.oliynick.max.reader.app.IosComponent.kt</ID>
-    <ID>NewLineAtEndOfFile:LiveAppResolver.kt$com.oliynick.max.tea.core.debug.app.component.resolver.LiveAppResolver.kt</ID>
     <ID>NewLineAtEndOfFile:LiveArticleDetailsResolver.kt$com.oliynick.max.reader.article.details.LiveArticleDetailsResolver.kt</ID>
     <ID>NewLineAtEndOfFile:LocalStorage.kt$com.oliynick.max.reader.app.LocalStorage.kt</ID>
     <ID>NewLineAtEndOfFile:LocalStorage.kt$com.oliynick.max.reader.app.storage.LocalStorage.kt</ID>
@@ -98,7 +97,7 @@
     <ID>SpreadOperator:NavigationExtensionsTest.kt$NavigationExtensionsTest$(*group1, *group2, *group3)</ID>
     <ID>SpreadOperator:NavigationExtensionsTest.kt$NavigationExtensionsTest$(*group2, *group1, *group3)</ID>
     <ID>SpreadOperator:TempTest.kt$TempTest$(*messages)</ID>
-    <ID>TooGenericExceptionCaught:ServerImpl.kt$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:NettyServer.kt$e: Throwable</ID>
     <ID>TooManyFunctions:ComponentTest.kt$ComponentTest</ID>
     <ID>TooManyFunctions:RenderExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.RenderExtensions.kt</ID>
     <ID>TooManyFunctions:TempTest.kt$TempTest</ID>
