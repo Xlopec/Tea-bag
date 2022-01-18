@@ -44,7 +44,6 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -58,7 +57,7 @@ import java.util.UUID.randomUUID
 class ServerImpl private constructor(
     private val address: ServerAddress,
     private val events: MutableSharedFlow<Message>,
-    private val calls: BroadcastChannel<RemoteCallArgs>
+    private val calls: MutableSharedFlow<RemoteCallArgs>
 ) : ApplicationEngine by Server(address, events, calls), Server {
 
     companion object {
@@ -66,7 +65,7 @@ class ServerImpl private constructor(
         fun newInstance(
             address: ServerAddress,
             events: MutableSharedFlow<Message>
-        ): ServerImpl = ServerImpl(address, events, BroadcastChannel(1))
+        ): ServerImpl = ServerImpl(address, events, MutableSharedFlow())
 
     }
 
@@ -74,7 +73,7 @@ class ServerImpl private constructor(
         component: ComponentId,
         message: GsonClientMessage
     ) = withContext(Dispatchers.IO) {
-        calls.send(RemoteCallArgs(randomUUID(), component, message))
+        calls.emit(RemoteCallArgs(randomUUID(), component, message))
     }
 
     override suspend fun stop() =
@@ -93,7 +92,7 @@ private data class RemoteCallArgs(
 private fun Server(
     address: ServerAddress,
     events: MutableSharedFlow<Message>,
-    calls: BroadcastChannel<RemoteCallArgs>
+    calls: MutableSharedFlow<RemoteCallArgs>
 ): NettyApplicationEngine =
     embeddedServer(
         Netty,
@@ -114,7 +113,7 @@ private fun Server(
             timeout = Duration.ofSeconds(5)
         }
 
-        configureWebSocketRouting(calls.asFlow(), events)
+        configureWebSocketRouting(calls, events)
     }
 
 private fun Application.configureWebSocketRouting(
