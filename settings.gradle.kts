@@ -247,7 +247,7 @@ dependencyResolutionManagement {
 
             // Logging
 
-            alias("logging").to("ch.qos.logback:logback-classic:1.2.3")
+            alias("logging").to("ch.qos.logback:logback-classic:1.2.10")
 
             // Gson
 
