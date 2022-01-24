@@ -22,64 +22,43 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.tea.core.debug.protocol
+@file:Suppress("FunctionName")
 
+package com.oliynick.max.tea.core.debug.gson
+
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
+import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
 import kotlin.reflect.KClass
 
 /**
- * Object to json converter
- *
- * @param J json tree
+ * Configures and creates a new [converter][GsonSerializer] instance
  */
-public interface JsonConverter<J> {
+public fun GsonSerializer(
+    config: GsonBuilder.() -> Unit = {}
+): JsonSerializer<JsonElement> = GsonSerializer(Gson(config))
 
-    /**
-     * Converts object instance to a json tree representation.
-     * Json representation is library specific. For example, Gson
-     * has JsonElement whereas other libraries use [Map]
-     *
-     * @param any object to convert to json tree
-     * @param T object type
-     * @return json tree
-     */
-    public fun <T> toJsonTree(
+private class GsonSerializer(
+    private val gson: Gson
+) : JsonSerializer<JsonElement> {
+
+    override fun <T> toJsonTree(
         any: T
-    ): J
+    ): JsonElement = gson.toJsonTree(any)
 
-    /**
-     * Converts json tree to object instance
-     *
-     * @param json json tree
-     * @param cl object class
-     * @param T object type
-     * @return parsed object instance
-     */
-    public fun <T : Any> fromJsonTree(
-        json: J,
+    override fun <T : Any> fromJsonTree(
+        json: JsonElement,
         cl: KClass<T>
-    ): T
+    ): T = gson.fromJson(json, cl.java)
 
-    /**
-     * Converts object instance to a json string
-     *
-     * @param any object to convert to json string
-     * @param T object type
-     * @return parsed object instance
-     */
-    public fun <T> toJson(
+    override fun <T> toJson(
         any: T
-    ): String
+    ): String = gson.toJson(any)
 
-    /**
-     * Converts json tree to object instance
-     *
-     * @param json json string
-     * @param cl object class
-     * @param T object type
-     * @return parsed object instance
-     */
-    public fun <T : Any> fromJson(
+    override fun <T : Any> fromJson(
         json: String,
         cl: KClass<T>
-    ): T
+    ): T = gson.fromJson(json, cl.java)
+
 }

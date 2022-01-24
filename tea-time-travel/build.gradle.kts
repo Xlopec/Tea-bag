@@ -48,7 +48,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":tea-core"))
-                api(project(":tea-time-travel-protocol"))
+                implementation(project(":tea-time-travel-protocol"))
 
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.websockets)
@@ -73,7 +73,11 @@ kotlin {
             }
         }
 
-        val iosMain by getting
+        val iosMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.ios)
+            }
+        }
 
         val iosTest by getting
     }

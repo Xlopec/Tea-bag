@@ -28,7 +28,7 @@ import com.oliynick.max.tea.core.component.states
 import com.oliynick.max.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import com.oliynick.max.tea.core.debug.protocol.JsonConverter
+import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
 import io.ktor.http.*
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.CoroutineDispatcher
@@ -44,14 +44,13 @@ fun RemoteAppComponent(
         initializer = initializer,
         resolver = { c -> with(environment) { resolve(c) } },
         updater = { m, s -> with(environment) { update(m, s) } },
-        jsonConverter = AppGsonSerializer(),
+        jsonSerializer = AppGsonSerializer(),
         scope = environment,
         url = Url("http://10.0.2.2:8080"),
         computation = environment.coroutineContext[CoroutineDispatcher.Key] ?: Dispatchers.Default,
         shareOptions = ShareStateWhileSubscribed,
-        sessionBuilder = OkHttpWebSocketSessionBuilder()
     ).states()
 
-private fun AppGsonSerializer(): JsonConverter<JsonElement> = GsonSerializer {
+private fun AppGsonSerializer(): JsonSerializer<JsonElement> = GsonSerializer {
     registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
 }

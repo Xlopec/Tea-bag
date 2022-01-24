@@ -34,10 +34,10 @@ import com.oliynick.max.tea.core.ShareStateWhileSubscribed
 import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.debug.component.ComponentException
 import com.oliynick.max.tea.core.debug.component.DebugEnv
-import com.oliynick.max.tea.core.debug.component.ServerSettings
+import com.oliynick.max.tea.core.debug.component.Settings
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import com.oliynick.max.tea.core.debug.protocol.JsonConverter
+import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
 import com.oliynick.max.tea.core.debug.session.Localhost
 import com.oliynick.max.tea.core.debug.session.SessionBuilder
 import io.ktor.http.*
@@ -48,14 +48,14 @@ val TestComponentId = ComponentId("test")
 
 val TestSerializer = GsonSerializer()
 
-fun <M, S> TestServerSettings(
+fun <M, S> TestSettings(
     componentId: ComponentId = TestComponentId,
-    converter: JsonConverter<JsonElement> = GsonSerializer(),
+    converter: JsonSerializer<JsonElement> = GsonSerializer(),
     url: Url = Localhost,
     sessionBuilder: SessionBuilder<M, S, JsonElement> = { _, block ->
         TestDebugSession<M, S>().apply { block() }
     }
-) = ServerSettings(
+) = Settings(
     componentId,
     converter,
     url,
@@ -79,10 +79,10 @@ fun <M, S, C> TestScope.TestEnv(
 
 fun <M, S, C> TestDebugEnv(
     env: Env<M, S, C>,
-    serverSettings: ServerSettings<M, S, JsonElement> = TestServerSettings()
+    settings: Settings<M, S, JsonElement> = TestSettings()
 ) = DebugEnv(
     env,
-    serverSettings
+    settings
 )
 
 @OptIn(ExperimentalStdlibApi::class)

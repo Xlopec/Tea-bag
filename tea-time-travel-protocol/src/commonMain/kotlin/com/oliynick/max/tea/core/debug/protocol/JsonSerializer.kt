@@ -22,43 +22,64 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+package com.oliynick.max.tea.core.debug.protocol
 
-package com.oliynick.max.tea.core.debug.gson
-
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.debug.protocol.JsonConverter
 import kotlin.reflect.KClass
 
 /**
- * Configures and creates a new [converter][GsonConverter] instance
+ * Object to json converter
+ *
+ * @param J json tree
  */
-public fun GsonSerializer(
-    config: GsonBuilder.() -> Unit = {}
-): JsonConverter<JsonElement> = GsonConverter(Gson(config))
+public interface JsonSerializer<J> {
 
-private class GsonConverter(
-    private val gson: Gson
-) : JsonConverter<JsonElement> {
-
-    override fun <T> toJsonTree(
+    /**
+     * Converts object instance to a json tree representation.
+     * Json representation is library specific. For example, Gson
+     * has JsonElement whereas other libraries use [Map]
+     *
+     * @param any object to convert to json tree
+     * @param T object type
+     * @return json tree
+     */
+    public fun <T> toJsonTree(
         any: T
-    ): JsonElement = gson.toJsonTree(any)
+    ): J
 
-    override fun <T : Any> fromJsonTree(
-        json: JsonElement,
+    /**
+     * Converts json tree to object instance
+     *
+     * @param json json tree
+     * @param cl object class
+     * @param T object type
+     * @return parsed object instance
+     */
+    public fun <T : Any> fromJsonTree(
+        json: J,
         cl: KClass<T>
-    ): T = gson.fromJson(json, cl.java)
+    ): T
 
-    override fun <T> toJson(
+    /**
+     * Converts object instance to a json string
+     *
+     * @param any object to convert to json string
+     * @param T object type
+     * @return parsed object instance
+     */
+    public fun <T> toJson(
         any: T
-    ): String = gson.toJson(any)
+    ): String
 
-    override fun <T : Any> fromJson(
+    /**
+     * Converts json tree to object instance
+     *
+     * @param json json string
+     * @param cl object class
+     * @param T object type
+     * @return parsed object instance
+     */
+    public fun <T : Any> fromJson(
         json: String,
         cl: KClass<T>
-    ): T = gson.fromJson(json, cl.java)
-
+    ): T
 }

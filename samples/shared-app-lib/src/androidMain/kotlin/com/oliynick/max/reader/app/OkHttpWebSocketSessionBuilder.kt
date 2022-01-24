@@ -5,7 +5,7 @@ import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.entities.shared.datatypes.Left
 import com.oliynick.max.entities.shared.datatypes.Right
 import com.oliynick.max.reader.app.message.Message
-import com.oliynick.max.tea.core.debug.component.ServerSettings
+import com.oliynick.max.tea.core.debug.component.Settings
 import com.oliynick.max.tea.core.debug.protocol.*
 import com.oliynick.max.tea.core.debug.session.DebugSession
 import com.oliynick.max.tea.core.debug.session.SessionBuilder
@@ -21,7 +21,7 @@ class OkHttpWebSocketSessionBuilder : SessionBuilder<Message, AppState, JsonElem
     }
 
     override suspend fun invoke(
-        settings: ServerSettings<Message, AppState, JsonElement>,
+        settings: Settings<Message, AppState, JsonElement>,
         session: suspend DebugSession<Message, AppState, JsonElement>.() -> Unit
     ) {
 
@@ -78,7 +78,7 @@ private class WebSocketListenerAdapter : WebSocketListener() {
 internal class OkHttpWebSocketSession(
     frames: Flow<String>,
     private val webSocket: WebSocket,
-    private val settings: ServerSettings<Message, AppState, JsonElement>,
+    private val settings: Settings<Message, AppState, JsonElement>,
 ) : DebugSession<Message, AppState, JsonElement> {
 
     private val packets: Flow<Either<Message, AppState>> = frames
@@ -95,7 +95,7 @@ internal class OkHttpWebSocketSession(
         webSocket.send(settings.serializer.toJson(packet))
     }
 
-    private fun <J> JsonConverter<J>.toCommand(
+    private fun <J> JsonSerializer<J>.toCommand(
         packet: NotifyClient<J>
     ) = when (val message = packet.message) {
         is ApplyMessage<J> -> Left(fromJsonTree(message.message, Message::class))
@@ -105,6 +105,6 @@ internal class OkHttpWebSocketSession(
 }
 
 @Suppress("UNCHECKED_CAST")
-private fun <J> JsonConverter<J>.asNotifyClientPacket(
+private fun <J> JsonSerializer<J>.asNotifyClientPacket(
     json: String
 ) = fromJson(json, NotifyClient::class) as NotifyClient<J>

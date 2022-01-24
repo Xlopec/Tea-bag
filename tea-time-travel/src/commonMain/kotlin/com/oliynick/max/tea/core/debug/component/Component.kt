@@ -50,7 +50,7 @@ import kotlinx.coroutines.flow.*
  * @param initializer initializer that provides initial values
  * @param resolver resolver that resolves messages to commands and performs side effects
  * @param updater updater that computes new states and commands to be executed
- * @param jsonConverter json converter
+ * @param jsonSerializer json converter
  * @param scope scope in which the sharing coroutine is started
  * @param url url used to connect to debug server
  * @param computation coroutine dispatcher which is used to wrap [updater]'s computations
@@ -66,7 +66,7 @@ public inline fun <reified M : Any, reified C, reified S : Any, J> Component(
     noinline initializer: Initializer<S, C>,
     noinline resolver: Resolver<C, M>,
     noinline updater: Updater<M, S, C>,
-    jsonConverter: JsonConverter<J>,
+    jsonSerializer: JsonSerializer<J>,
     // todo: group to reduce number of arguments
     scope: CoroutineScope,
     url: Url = Localhost,
@@ -74,12 +74,12 @@ public inline fun <reified M : Any, reified C, reified S : Any, J> Component(
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
     // see https://youtrack.jetbrains.com/issue/KT-47195
     // see https://github.com/Kotlin/kotlinx.coroutines/issues/3005#issuecomment-1014577573
-    noinline sessionBuilder: SessionBuilder<M, S, J> = { s, b -> WebSocketSession(s, b) },
+    noinline sessionBuilder: SessionBuilder<M, S, J> = { settings, block -> WebSocketSession(settings, block) },
 ): Component<M, S, C> =
     Component(
         DebugEnv(
             Env(initializer, resolver, updater, scope, computation, shareOptions),
-            ServerSettings(id, jsonConverter, url, sessionBuilder)
+            Settings(id, jsonSerializer, url, sessionBuilder)
         )
     )
 
@@ -107,9 +107,9 @@ private fun <M, S, C, J> DebugEnv<M, S, C, J>.toComponentFlow(
 ): Flow<Snapshot<M, S, C>> =
     debugSession { sink ->
 
-        val initialSnapshots = mergeInitialSnapshots(this@toComponentFlow, this@debugSession)
+        val initialSnapshots = mergeInitialSnapshots(this@toComponentFlow, states)
         val messagesForSnapshot =
-            messagesForInitialSnapshot(input.receiveAsFlow(), this@toComponentFlow, this@debugSession)
+            messagesForInitialSnapshot(input.receiveAsFlow(), this@toComponentFlow, messages)
 
         componentEnv.toComponentFlow(initialSnapshots, input::send, messagesForSnapshot)
             .onEach { snapshot -> notifyServer(this@toComponentFlow, snapshot) }
@@ -119,28 +119,29 @@ private fun <M, S, C, J> DebugEnv<M, S, C, J>.toComponentFlow(
 // todo refactor when multi-receivers KEEP is ready
 private fun <M, S, C, J> mergeInitialSnapshots(
     env: DebugEnv<M, S, C, J>,
-    session: DebugSession<M, S, J>,
-) = env.componentEnv.initial().mergeWith(session.states.toSnapshots())
+    debugStates: Flow<S>,
+) = env.componentEnv.initial().mergeWith(debugStates.toSnapshots())
 
 // todo refactor when multi-receivers KEEP is ready
 private fun <M, S, C, J> messagesForInitialSnapshot(
     input: Flow<M>,
     env: DebugEnv<M, S, C, J>,
-    session: DebugSession<M, S, J>,
+    debugMessages: Flow<M>,
 ): (Initial<S, C>) -> Flow<M> = { initial ->
     env.componentEnv.resolveAsFlow(initial.commands)
         .mergeWith(input)
-        .mergeWith(session.messages)
+        .mergeWith(debugMessages)
 }
 
+// todo refactor when multi-receivers KEEP is ready
 private fun <M, S, C, J> DebugEnv<M, S, C, J>.debugSession(
     block: suspend DebugSession<M, S, J>.(input: Sink<Snapshot<M, S, C>>) -> Unit,
 ): Flow<Snapshot<M, S, C>> =
-    channelFlow { serverSettings.sessionBuilder(serverSettings) { block(channel::send) } }
+    channelFlow { settings.sessionBuilder(settings) { block(channel::send) } }
 
 private fun <S> Flow<S>.toSnapshots(): Flow<Initial<S, Nothing>> =
     // TODO what if we want to start from Regular snapshot?
-    map { s -> Initial(s, emptySet()) }
+    map { s -> Initial(s, setOf()) }
 
 /**
  * Notifies server about state changes
@@ -148,11 +149,11 @@ private fun <S> Flow<S>.toSnapshots(): Flow<Initial<S, Nothing>> =
 private suspend fun <M, S, C, J> DebugSession<M, S, J>.notifyServer(
     env: DebugEnv<M, S, C, J>,
     snapshot: Snapshot<M, S, C>,
-) = with(env.serverSettings) {
+) = with(env.settings) {
     invoke(NotifyServer(randomUUID(), id, serializer.toServerMessage(snapshot)))
 }
 
-private fun <M, S, C, J> JsonConverter<J>.toServerMessage(
+private fun <M, S, C, J> JsonSerializer<J>.toServerMessage(
     snapshot: Snapshot<M, S, C>,
 ) = when (snapshot) {
     is Initial -> NotifyComponentAttached(toJsonTree(snapshot.currentState), toCommandSet(snapshot.commands))
@@ -164,6 +165,6 @@ private fun <M, S, C, J> JsonConverter<J>.toServerMessage(
     )
 }
 
-private fun <C, J> JsonConverter<J>.toCommandSet(
+private fun <C, J> JsonSerializer<J>.toCommandSet(
     s: Set<C>
 ): Set<J> = s.mapTo(HashSet(s.size), ::toJsonTree)

@@ -27,11 +27,9 @@ package com.oliynick.max.tea.core.debug.session
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.entities.shared.datatypes.Left
 import com.oliynick.max.entities.shared.datatypes.Right
-import com.oliynick.max.tea.core.debug.component.ServerSettings
+import com.oliynick.max.tea.core.debug.component.Settings
 import com.oliynick.max.tea.core.debug.protocol.*
-import io.ktor.client.plugins.websocket.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.channels.broadcast
 import kotlinx.coroutines.flow.*
 import kotlin.reflect.KClass
 
@@ -39,26 +37,24 @@ import kotlin.reflect.KClass
 internal class DebugWebSocketSession<M : Any, S : Any, J>(
     private val mClass: KClass<M>,
     private val sClass: KClass<S>,
-    private val settings: ServerSettings<M, S, J>,
-    private val socketSession: DefaultClientWebSocketSession
-) : DebugSession<M, S, J> {
+    private val settings: Settings<M, S, J>,
+    socketSession: WebSocketSession
+) : DebugSession<M, S, J>, WebSocketSession by socketSession {
 
-    private val incomingPackets: Flow<Either<M, S>> by lazy {
-        settings.incomingCommands(socketSession)
-    }
+    private val incomingPackets: Flow<Either<M, S>> = incomingCommands(settings)
 
-    override val messages: Flow<M> by lazy { incomingPackets.externalMessages() }
-    override val states: Flow<S> by lazy { incomingPackets.externalStates() }
+    override val messages: Flow<M> = incomingPackets.messages()
+    override val states: Flow<S> = incomingPackets.states()
 
     override suspend fun invoke(packet: NotifyServer<J>) =
-        socketSession.send(settings.serializer.toJson(packet))
+        send(settings.serializer.toJson(packet))
 
-    private fun ServerSettings<M, S, J>.incomingCommands(
-        session: ClientWebSocketSession
-    ) = incomingPackets(session)
-        .map { packet -> serializer.toCommand(packet) }
+    private fun WebSocketSession.incomingCommands(
+        settings: Settings<M, S, J>
+    ) = incomingPackets(settings)
+        .map { packet -> settings.serializer.toCommand(packet) }
 
-    private fun JsonConverter<J>.toCommand(
+    private fun JsonSerializer<J>.toCommand(
         packet: NotifyClient<J>
     ) = when (val message = packet.message) {
         is ApplyMessage<J> -> Left(fromJsonTree(message.message, mClass))
@@ -67,22 +63,22 @@ internal class DebugWebSocketSession<M : Any, S : Any, J>(
 
 }
 
-private fun <S> Flow<Either<*, S>>.externalStates(): Flow<S> =
+private fun <S> Flow<Either<*, S>>.states(): Flow<S> =
     filterIsInstance<Right<S>>().map { (s) -> s }
 
-private fun <M> Flow<Either<M, *>>.externalMessages(): Flow<M> =
+private fun <M> Flow<Either<M, *>>.messages(): Flow<M> =
     filterIsInstance<Left<M>>().map { (m) -> m }
 
-private fun <M, S, J> ServerSettings<M, S, J>.incomingPackets(
-    clientWebSocketSession: ClientWebSocketSession
+private fun <M, S, J> WebSocketSession.incomingPackets(
+    settings: Settings<M, S, J>
 ): Flow<NotifyClient<J>> =
-    clientWebSocketSession.incoming.broadcast().asFlow()
+    incoming.receiveAsFlow().shareIn(this, SharingStarted.Lazily)
         .filterIsInstance<Frame.Text>()
         .map { frame -> frame.readText() }
-        .map { json -> serializer.asNotifyClientPacket(json) }
-        .filter { packet -> packet.component == id }
+        .map { json -> settings.serializer.asNotifyClientPacket(json) }
+        .filter { packet -> packet.component == settings.id }
 
 @Suppress("UNCHECKED_CAST")
-private fun <J> JsonConverter<J>.asNotifyClientPacket(
+private fun <J> JsonSerializer<J>.asNotifyClientPacket(
     json: String
 ) = fromJson(json, NotifyClient::class) as NotifyClient<J>

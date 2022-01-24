@@ -27,6 +27,7 @@
 package com.oliynick.max.tea.core.debug.gson
 
 import com.google.gson.*
+import com.google.gson.JsonSerializer
 import com.oliynick.max.entities.shared.UUID
 import com.oliynick.max.entities.shared.toHumanReadable
 import com.oliynick.max.tea.core.debug.protocol.*

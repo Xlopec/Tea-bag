@@ -26,7 +26,7 @@
 
 package com.oliynick.max.tea.core.debug.session
 
-import com.oliynick.max.tea.core.debug.component.ServerSettings
+import com.oliynick.max.tea.core.debug.component.Settings
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
@@ -40,7 +40,7 @@ import io.ktor.http.*
  * @param J json type
  */
 public typealias SessionBuilder<M, S, J> = suspend (
-    settings: ServerSettings<M, S, J>,
+    settings: Settings<M, S, J>,
     session: suspend DebugSession<M, S, J>.() -> Unit,
 ) -> Unit
 
@@ -54,7 +54,7 @@ public typealias SessionBuilder<M, S, J> = suspend (
  * @param J json type
  */
 public suspend inline fun <reified M : Any, reified S : Any, J> WebSocketSession(
-    settings: ServerSettings<M, S, J>,
+    settings: Settings<M, S, J>,
     crossinline block: suspend DebugSession<M, S, J>.() -> Unit,
 ) {
     HttpClient.ws(// todo add timeout
@@ -62,12 +62,9 @@ public suspend inline fun <reified M : Any, reified S : Any, J> WebSocketSession
         host = settings.url.host,
         port = settings.url.port,
         block = {
-            DebugWebSocketSession(
-                M::class,
-                S::class,
-                settings,
-                this
-            ).apply { block() }
+            with(DebugWebSocketSession(M::class, S::class, settings, this)) {
+                block()
+            }
         }
     )
 }
