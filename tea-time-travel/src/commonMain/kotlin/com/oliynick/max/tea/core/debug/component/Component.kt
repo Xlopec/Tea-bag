@@ -72,7 +72,9 @@ public inline fun <reified M : Any, reified C, reified S : Any, J> Component(
     url: Url = Localhost,
     computation: CoroutineDispatcher = Dispatchers.Unconfined,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
-    noinline sessionBuilder: SessionBuilder<M, S, J> = ::WebSocketSession,
+    // see https://youtrack.jetbrains.com/issue/KT-47195
+    // see https://github.com/Kotlin/kotlinx.coroutines/issues/3005#issuecomment-1014577573
+    noinline sessionBuilder: SessionBuilder<M, S, J> = { s, b -> WebSocketSession(s, b) },
 ): Component<M, S, C> =
     Component(
         DebugEnv(
