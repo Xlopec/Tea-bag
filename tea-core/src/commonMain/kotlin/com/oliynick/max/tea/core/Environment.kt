@@ -28,9 +28,7 @@ package com.oliynick.max.tea.core
 
 import com.oliynick.max.tea.core.component.Resolver
 import com.oliynick.max.tea.core.component.Updater
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 
 /**
@@ -40,7 +38,6 @@ import kotlinx.coroutines.flow.SharingStarted
  * @param resolver resolver to be used to resolve messages from commands
  * @param updater updater to be used to compute a new state with set of commands to execute
  * @param scope scope in which the sharing coroutine is started
- * @param computation coroutine dispatcher which is used to wrap [updater]'s computations
  * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
  * @param M message type
  * @param S state type
@@ -52,7 +49,6 @@ public data class Env<M, S, C>(
     val updater: Updater<M, S, C>,
     // todo: group to reduce number of arguments
     val scope: CoroutineScope,
-    val computation: CoroutineDispatcher = Dispatchers.Unconfined,
     val shareOptions: ShareOptions = ShareStateWhileSubscribed,
 )
 

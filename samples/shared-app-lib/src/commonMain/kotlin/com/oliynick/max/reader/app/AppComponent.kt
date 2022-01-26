@@ -31,8 +31,6 @@ import com.oliynick.max.reader.app.message.Message
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.states
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -45,5 +43,4 @@ fun AppComponent(
         resolver = { c -> with(environment) { resolve(c) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment,
-        computation = environment.coroutineContext[CoroutineDispatcher.Key] ?: Dispatchers.Default,
     ).states()

@@ -31,27 +31,20 @@ import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.ShareOptions
 import com.oliynick.max.tea.core.ShareStateWhileSubscribed
 import com.oliynick.max.tea.core.component.*
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.CoroutineScope
 
-fun <M, S, C> TestScope.TestEnv(
+fun <M, S, C> CoroutineScope.TestEnv(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     updater: Updater<M, S, C>,
-    computation: CoroutineDispatcher = coroutineDispatcher,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ) = Env(
     initializer,
     resolver,
     updater,
     this,
-    computation,
     shareOptions
 )
-
-@OptIn(ExperimentalStdlibApi::class)
-val TestScope.coroutineDispatcher: CoroutineDispatcher
-    get() = coroutineContext[CoroutineDispatcher.Key]!!
 
 @Suppress("RedundantSuspendModifier")
 suspend fun <C> throwingResolver(

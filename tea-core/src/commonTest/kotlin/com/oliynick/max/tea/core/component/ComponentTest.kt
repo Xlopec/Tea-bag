@@ -340,8 +340,7 @@ class ComponentTest {
             Initializer("", "a"),
             ::throwingResolver,
             ::throwingUpdater,
-            scope,
-            scope.coroutineDispatcher
+            scope
         )
 
         val job = scope.launch { component("").collect() }
@@ -364,8 +363,7 @@ class ComponentTest {
             ThrowingInitializer(expectedException),
             ::throwingResolver,
             ::throwingUpdater,
-            scope,
-            scope.coroutineDispatcher
+            scope
         )
 
         val job = scope.launch { component("").collect() }
@@ -385,14 +383,11 @@ class ComponentTest {
         runTestCancellingChildren {
             // All test schedulers use 'Test worker' as prefix, so to workaround this issue we use
             // custom dispatcher with different thread naming strategy
-            println("Current ${currentThreadName()}")
-            val computation = Default
             val mainThreadNamePrefix = async { currentThreadName() }
-            val env = TestEnv<Char, String, Char>(
+            val env = CoroutineScope(Default).TestEnv<Char, String, Char>(
                 Initializer(""),
                 ::throwingResolver,
-                CheckingUpdater(mainThreadNamePrefix.await()),
-                computation
+                CheckingUpdater(mainThreadNamePrefix.await())
             )
 
             Component(env)('a'..'d').take('d' - 'a').collect()

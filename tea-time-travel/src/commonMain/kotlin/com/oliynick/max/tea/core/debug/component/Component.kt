@@ -78,7 +78,7 @@ public inline fun <reified M : Any, reified C, reified S : Any, J> Component(
 ): Component<M, S, C> =
     Component(
         DebugEnv(
-            Env(initializer, resolver, updater, scope, computation, shareOptions),
+            Env(initializer, resolver, updater, scope, shareOptions),
             Settings(id, jsonSerializer, url, sessionBuilder)
         )
     )

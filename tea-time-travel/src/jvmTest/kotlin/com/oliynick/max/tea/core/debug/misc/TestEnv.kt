@@ -73,7 +73,6 @@ fun <M, S, C> TestScope.TestEnv(
     resolver,
     updater,
     this,
-    computation,
     shareOptions
 )
 

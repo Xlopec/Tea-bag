@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-@file:Suppress("unused", "MemberVisibilityCanBePrivate", "FunctionName")
+@file:Suppress("FunctionName", "KDocUnresolvedReference")
 
 package com.oliynick.max.tea.core.component
 
@@ -113,7 +113,6 @@ public typealias Sink<T> = suspend (T) -> Unit
  * @param resolver resolver that resolves messages to commands and performs side effects
  * @param updater updater that computes new states and commands to be executed
  * @param scope scope in which the sharing coroutine is started
- * @param computation coroutine dispatcher which is used to wrap [updater]'s computations
  * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
  * @param M incoming messages
  * @param S state of the application
@@ -125,10 +124,9 @@ public fun <M, C, S> Component(
     updater: Updater<M, S, C>,
     // todo: group to reduce number of arguments
     scope: CoroutineScope,
-    computation: CoroutineDispatcher = Unconfined,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ): Component<M, S, C> =
-    Component(Env(initializer, resolver, updater, scope, computation, shareOptions))
+    Component(Env(initializer, resolver, updater, scope, shareOptions))
 
 /**
  * Creates new component using preconfigured environment
@@ -219,7 +217,7 @@ public fun <M, S, C> Env<M, S, C>.toComputationFlow(
     }.startFrom(startFrom)
 
 /**
- * Calculates next snapshot for given arguments on [Env.computation] dispatcher
+ * Calculates next snapshot for given arguments on [Env.scope] dispatcher
  */
 @InternalTeaApi
 public suspend fun <M, S, C> Env<M, S, C>.nextSnapshot(
@@ -283,7 +281,7 @@ private suspend fun <M, S, C> Env<M, S, C>.update(
     message: M,
     state: S,
 ): UpdateWith<S, C> =
-    withContext(computation) { updater(message, state) }
+    withContext(scope.dispatcher ?: Dispatchers.Default) { updater(message, state) }
 
 private suspend fun <M, C> Env<M, *, C>.resolve(
     commands: Iterable<C>,
@@ -291,3 +289,6 @@ private suspend fun <M, C> Env<M, *, C>.resolve(
     commands
         .parMapTo(Unconfined, resolver::invoke)
         .flatten()
+
+private inline val CoroutineScope.dispatcher: CoroutineDispatcher?
+    get() = coroutineContext[CoroutineDispatcher.Key]
