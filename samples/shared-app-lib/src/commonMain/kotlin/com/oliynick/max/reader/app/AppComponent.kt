@@ -33,7 +33,6 @@ import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.component.states
 import kotlinx.coroutines.flow.Flow
 
-@OptIn(ExperimentalStdlibApi::class)
 fun AppComponent(
     environment: Environment,
     initializer: Initializer<AppState, Command>,

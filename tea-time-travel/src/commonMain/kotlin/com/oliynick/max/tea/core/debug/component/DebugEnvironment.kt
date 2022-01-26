@@ -30,13 +30,13 @@ import com.oliynick.max.tea.core.Env
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
 import com.oliynick.max.tea.core.debug.session.DebugSession
-import com.oliynick.max.tea.core.debug.session.SessionBuilder
+import com.oliynick.max.tea.core.debug.session.SessionFactory
 import io.ktor.http.*
 
 /**
  * Same as [environment][Env] but with extra settings
  *
- * @param componentEnv see [environment][Env]
+ * @param env see [environment][Env]
  * @param settings server settings to use
  * @param M message type
  * @param S state type
@@ -44,7 +44,7 @@ import io.ktor.http.*
  * @param J json tree type
  */
 public data class DebugEnv<M, S, C, J>(
-    val componentEnv: Env<M, S, C>,
+    val env: Env<M, S, C>,
     val settings: Settings<M, S, J>
 )
 
@@ -55,7 +55,7 @@ public data class DebugEnv<M, S, C, J>(
  * @param id component identifier
  * @param url debug server url
  * @param serializer json serializer
- * @param sessionBuilder a function that for a given server settings creates a new [debug session][DebugSession]
+ * @param sessionFactory a function that for a given server settings creates a new [debug session][DebugSession]
  * @param M message type
  * @param S state type
  * @param J json tree type
@@ -64,5 +64,5 @@ public data class Settings<M, S, J>(
     val id: ComponentId,
     val serializer: JsonSerializer<J>,
     val url: Url,
-    val sessionBuilder: SessionBuilder<M, S, J>
+    val sessionFactory: SessionFactory<M, S, J>
 )

@@ -23,9 +23,9 @@ import com.oliynick.max.tea.core.debug.app.resolve.AppResolver
 import com.oliynick.max.tea.core.debug.app.resolve.LiveAppResolver
 import com.oliynick.max.tea.core.debug.app.update.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.newSingleThreadContext
 
 interface Environment :
     Updater<Environment>,
@@ -45,4 +45,4 @@ fun Environment(
         NotificationUpdater by LiveNotificationUpdater,
         UiUpdater by LiveUiUpdater,
         AppResolver by LiveAppResolver(project, properties, events),
-        CoroutineScope by CoroutineScope(SupervisorJob() + Dispatchers.Main) {}
+        CoroutineScope by CoroutineScope(SupervisorJob() + newSingleThreadContext("")) {}

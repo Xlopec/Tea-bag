@@ -84,8 +84,6 @@ kotlin {
                 implementation(libs.sqldelight.driver.android)
                 api(project(":tea-time-travel"))
                 api(project(":tea-time-travel-adapter-gson"))
-                // todo temporary workaround
-                implementation("com.squareup.okhttp3:okhttp:4.9.3")
             }
         }
         val androidTest by getting {

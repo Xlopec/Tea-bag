@@ -39,7 +39,7 @@ import com.oliynick.max.tea.core.debug.gson.GsonSerializer
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
 import com.oliynick.max.tea.core.debug.session.Localhost
-import com.oliynick.max.tea.core.debug.session.SessionBuilder
+import com.oliynick.max.tea.core.debug.session.SessionFactory
 import io.ktor.http.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -52,21 +52,20 @@ fun <M, S> TestSettings(
     componentId: ComponentId = TestComponentId,
     converter: JsonSerializer<JsonElement> = GsonSerializer(),
     url: Url = Localhost,
-    sessionBuilder: SessionBuilder<M, S, JsonElement> = { _, block ->
+    sessionFactory: SessionFactory<M, S, JsonElement> = { _, block ->
         TestDebugSession<M, S>().apply { block() }
     }
 ) = Settings(
     componentId,
     converter,
     url,
-    sessionBuilder
+    sessionFactory
 )
 
 fun <M, S, C> TestScope.TestEnv(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     updater: Updater<M, S, C>,
-    computation: CoroutineDispatcher = coroutineDispatcher,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ) = Env(
     initializer,

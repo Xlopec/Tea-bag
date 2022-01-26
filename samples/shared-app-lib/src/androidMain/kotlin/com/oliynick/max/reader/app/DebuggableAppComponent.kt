@@ -31,11 +31,9 @@ import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
 import io.ktor.http.*
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 
-fun RemoteAppComponent(
+fun DebuggableAppComponent(
     environment: Environment,
     initializer: Initializer<AppState, Command>,
 ): (Flow<Message>) -> Flow<AppState> =
@@ -44,10 +42,9 @@ fun RemoteAppComponent(
         initializer = initializer,
         resolver = { c -> with(environment) { resolve(c) } },
         updater = { m, s -> with(environment) { update(m, s) } },
-        jsonSerializer = AppGsonSerializer(),
         scope = environment,
         url = Url("http://10.0.2.2:8080"),
-        computation = environment.coroutineContext[CoroutineDispatcher.Key] ?: Dispatchers.Default,
+        jsonSerializer = AppGsonSerializer(),
         shareOptions = ShareStateWhileSubscribed,
     ).states()
 

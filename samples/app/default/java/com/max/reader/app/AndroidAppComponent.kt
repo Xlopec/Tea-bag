@@ -11,7 +11,7 @@ import com.oliynick.max.reader.app.command.CloseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 
-fun AndroidAppComponent(
+fun AppComponent(
     application: Application,
     scope: CoroutineScope,
     closeCommands: MutableSharedFlow<CloseApp>,

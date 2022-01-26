@@ -31,7 +31,7 @@ tasks.withType<Test>().whenTaskAdded {
     onlyIf { !isCiEnv }
 }
 
-optIn(DefaultOptIns)
+optIn(DefaultOptIns + "kotlinx.coroutines.ExperimentalCoroutinesApi")
 
 android {
     signingConfigs {

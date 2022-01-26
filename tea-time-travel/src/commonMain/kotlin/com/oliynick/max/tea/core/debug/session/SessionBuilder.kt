@@ -30,6 +30,7 @@ import com.oliynick.max.tea.core.debug.component.Settings
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
+import io.ktor.http.HttpMethod.Companion.Get
 
 /**
  * Function that for a given server settings creates a new connection
@@ -39,7 +40,7 @@ import io.ktor.http.*
  * @param S state type
  * @param J json type
  */
-public typealias SessionBuilder<M, S, J> = suspend (
+public typealias SessionFactory<M, S, J> = suspend (
     settings: Settings<M, S, J>,
     session: suspend DebugSession<M, S, J>.() -> Unit,
 ) -> Unit
@@ -47,26 +48,26 @@ public typealias SessionBuilder<M, S, J> = suspend (
 /**
  * Creates a new web socket session using supplied settings
  *
+ * @receiver configured [HttpClient] instance. **Web socket** feature must be installed and configured for http client
  * @param settings server settings
  * @param block lambda to interact with [session][DebugSession]
  * @param M message type
  * @param S state type
  * @param J json type
  */
-public suspend inline fun <reified M : Any, reified S : Any, J> WebSocketSession(
+public suspend inline fun <reified M : Any, reified S : Any, J> HttpClient.session(
     settings: Settings<M, S, J>,
     crossinline block: suspend DebugSession<M, S, J>.() -> Unit,
-) {
-    HttpClient.ws(// todo add timeout
-        method = HttpMethod.Get,
+) { // todo add timeout
+    ws(
+        method = Get,
         host = settings.url.host,
         port = settings.url.port,
-        block = {
-            with(DebugWebSocketSession(M::class, S::class, settings, this)) {
-                block()
-            }
+    ) {
+        with(DebugWebSocketSession(M::class, S::class, settings, this)) {
+            block()
         }
-    )
+    }
 }
 
 @PublishedApi

@@ -7,7 +7,7 @@
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") internal fun Null.toReadableString(): String</ID>
     <ID>LongMethod:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
     <ID>LongMethod:TempTest.kt$TempTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
-    <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C>, noinline resolver: Resolver&lt;C, M>, noinline updater: Updater&lt;M, S, C>, jsonSerializer: JsonSerializer&lt;J>, // todo: group to reduce number of arguments scope: CoroutineScope, url: Url = Localhost, computation: CoroutineDispatcher = Dispatchers.Unconfined, shareOptions: ShareOptions = ShareStateWhileSubscribed, // see https://youtrack.jetbrains.com/issue/KT-47195 // see https://github.com/Kotlin/kotlinx.coroutines/issues/3005#issuecomment-1014577573 noinline sessionBuilder: SessionBuilder&lt;M, S, J> = { settings, block -> WebSocketSession(settings, block) }, )</ID>
+    <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C>, noinline resolver: Resolver&lt;C, M>, noinline updater: Updater&lt;M, S, C>, scope: CoroutineScope, // todo: group to reduce number of arguments url: Url = Localhost, jsonSerializer: JsonSerializer&lt;J>, // see https://youtrack.jetbrains.com/issue/KT-47195 // see https://github.com/Kotlin/kotlinx.coroutines/issues/3005#issuecomment-1014577573 noinline sessionFactory: SessionFactory&lt;M, S, J> = { settings, block -> HttpClient.session(settings, block) }, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
     <ID>LongParameterList:LocalStorageImpl.kt$( url: String, title: String, author: String?, description: String?, urlToImage: String?, published: Long, // this unused arg is needed just to make function signatures match @Suppress("UNUSED_PARAMETER") savedOn: Long, isFavorite: Boolean )</ID>
     <ID>LongParameterList:TreeView.kt$( level: Int, text: String, formatter: TreeFormatter, node: SnapshotINode, state: TreeState, handler: (Message) -> Unit )</ID>
     <ID>LongParameterList:TreeView.kt$( level: Int, text: String, image: ImageBitmap, leaf: Node, state: TreeState, onClick: () -> Unit, )</ID>
@@ -198,7 +198,7 @@
     <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.updateArticle( new: Article, ): ArticlesState</ID>
     <ID>UndocumentedPublicFunction:ArticlesUpdater.kt$ArticlesUpdater$fun updateArticles( message: ArticlesMessage, state: ArticlesState ): UpdateWith&lt;ArticlesState, Command></ID>
     <ID>UndocumentedPublicFunction:Component.kt$@Suppress("RedundantSuspendModifier") suspend fun &lt;C> throwingResolver( c: C, ): Nothing</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C> TestScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, computation: CoroutineDispatcher = coroutineDispatcher, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
+    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C> CoroutineScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> ignoringMessageAsStateUpdate( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;M, S></ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> messageAsCommand( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, M></ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> throwingUpdater( m: M, s: S, ): Nothing</ID>
@@ -261,8 +261,8 @@
     <ID>UndocumentedPublicFunction:TempTest.kt$fun ThrowingInitializer( th: Throwable, ): Initializer&lt;Nothing, Nothing></ID>
     <ID>UndocumentedPublicFunction:TestEnv.kt$@Suppress("RedundantSuspendModifier") suspend fun &lt;C> throwingResolver( c: C, ): Nothing</ID>
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S, C> TestDebugEnv( env: Env&lt;M, S, C>, settings: Settings&lt;M, S, JsonElement> = TestSettings() )</ID>
-    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S, C> TestScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, computation: CoroutineDispatcher = coroutineDispatcher, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
-    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> TestSettings( componentId: ComponentId = TestComponentId, converter: JsonSerializer&lt;JsonElement> = GsonSerializer(), url: Url = Localhost, sessionBuilder: SessionBuilder&lt;M, S, JsonElement> = { _, block -> TestDebugSession&lt;M, S>().apply { block() } } )</ID>
+    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S, C> TestScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
+    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> TestSettings( componentId: ComponentId = TestComponentId, converter: JsonSerializer&lt;JsonElement> = GsonSerializer(), url: Url = Localhost, sessionFactory: SessionFactory&lt;M, S, JsonElement> = { _, block -> TestDebugSession&lt;M, S>().apply { block() } } )</ID>
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> ignoringMessageAsStateUpdate( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;M, S></ID>
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> messageAsCommand( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, M></ID>
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> throwingUpdater( m: M, s: S, ): Nothing</ID>
@@ -303,7 +303,6 @@
     <ID>UndocumentedPublicProperty:ArticlesState.kt$ArticlesState.TransientState.Exception$val th: AppException</ID>
     <ID>UndocumentedPublicProperty:ArticlesState.kt$Query$val input: String</ID>
     <ID>UndocumentedPublicProperty:ArticlesState.kt$Query$val type: QueryType</ID>
-    <ID>UndocumentedPublicProperty:Component.kt$@OptIn(ExperimentalStdlibApi::class) val TestScope.coroutineDispatcher: CoroutineDispatcher get() = coroutineContext[CoroutineDispatcher.Key]!!</ID>
     <ID>UndocumentedPublicProperty:ComponentLogic.kt$AddItem$val item: Item</ID>
     <ID>UndocumentedPublicProperty:ComponentLogic.kt$DoAddItem$val item: Item</ID>
     <ID>UndocumentedPublicProperty:ComponentLogic.kt$DoAddItem$val to: List&lt;Item> = emptyList()</ID>

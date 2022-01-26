@@ -33,8 +33,8 @@ tasks.test {
 dependencies {
 
     api(project(":tea-time-travel-protocol"))
-    api(project(":shared-entities"))
-    api(libs.stdlib.reflect)
+    implementation(project(":shared-entities"))
+    implementation(libs.stdlib.reflect)
     api(libs.gson)
 
     implementation(libs.stdlib)

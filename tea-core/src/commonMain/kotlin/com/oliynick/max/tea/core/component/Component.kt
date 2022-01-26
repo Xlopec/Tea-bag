@@ -122,7 +122,6 @@ public fun <M, C, S> Component(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     updater: Updater<M, S, C>,
-    // todo: group to reduce number of arguments
     scope: CoroutineScope,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ): Component<M, S, C> =

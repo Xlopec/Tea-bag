@@ -33,22 +33,16 @@ import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.command.CloseApp
 import com.oliynick.max.reader.app.message.Message
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import java.util.concurrent.Executors
-import kotlin.coroutines.CoroutineContext
 
 class AndroidApp : Application(), HasEnvironment {
     override val closeCommands = MutableSharedFlow<CloseApp>()
-    override val component by lazy { AndroidAppComponent(this, AppComponentScope, closeCommands) }
-}
-
-object AppComponentScope : CoroutineScope {
-    override val coroutineContext: CoroutineContext =
-        Job() + Executors.newSingleThreadExecutor { r -> Thread(r, "App Scheduler") }
-            .asCoroutineDispatcher()
+    override val component by lazy {
+        AppComponent(this, CoroutineScope(Job() + Default.limitedParallelism(1)), closeCommands)
+    }
 }
 
 inline val Activity.androidApp: HasEnvironment

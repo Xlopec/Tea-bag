@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+@file:Suppress("FunctionName", "KDocUnresolvedReference")
 
 package com.oliynick.max.tea.core.debug.component
 
@@ -31,14 +31,9 @@ import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.debug.component.internal.mergeWith
 import com.oliynick.max.tea.core.debug.protocol.*
-import com.oliynick.max.tea.core.debug.session.DebugSession
-import com.oliynick.max.tea.core.debug.session.Localhost
-import com.oliynick.max.tea.core.debug.session.SessionBuilder
-import com.oliynick.max.tea.core.debug.session.WebSocketSession
+import com.oliynick.max.tea.core.debug.session.*
 import io.ktor.http.*
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.RENDEZVOUS
 import kotlinx.coroutines.flow.*
@@ -53,9 +48,8 @@ import kotlinx.coroutines.flow.*
  * @param jsonSerializer json converter
  * @param scope scope in which the sharing coroutine is started
  * @param url url used to connect to debug server
- * @param computation coroutine dispatcher which is used to wrap [updater]'s computations
  * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
- * @param sessionBuilder function that for a given server settings creates a new connection
+ * @param sessionFactory function that for a given server settings creates a new connection
  * to a debug server
  * @param M incoming messages
  * @param S state of the application
@@ -66,38 +60,37 @@ public inline fun <reified M : Any, reified C, reified S : Any, J> Component(
     noinline initializer: Initializer<S, C>,
     noinline resolver: Resolver<C, M>,
     noinline updater: Updater<M, S, C>,
-    jsonSerializer: JsonSerializer<J>,
-    // todo: group to reduce number of arguments
     scope: CoroutineScope,
+    // todo: group to reduce number of arguments
     url: Url = Localhost,
-    computation: CoroutineDispatcher = Dispatchers.Unconfined,
-    shareOptions: ShareOptions = ShareStateWhileSubscribed,
+    jsonSerializer: JsonSerializer<J>,
     // see https://youtrack.jetbrains.com/issue/KT-47195
     // see https://github.com/Kotlin/kotlinx.coroutines/issues/3005#issuecomment-1014577573
-    noinline sessionBuilder: SessionBuilder<M, S, J> = { settings, block -> WebSocketSession(settings, block) },
+    noinline sessionFactory: SessionFactory<M, S, J> = { settings, block -> HttpClient.session(settings, block) },
+    shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ): Component<M, S, C> =
     Component(
         DebugEnv(
             Env(initializer, resolver, updater, scope, shareOptions),
-            Settings(id, jsonSerializer, url, sessionBuilder)
+            Settings(id, jsonSerializer, url, sessionFactory)
         )
     )
 
 /**
  * Creates new component using preconfigured debug environment
  *
- * @param env environment to be used
+ * @param debugEnv environment to be used
  * @param M incoming messages
  * @param S state of the application
  * @param C commands to be executed
  */
 public fun <M, S, C, J> Component(
-    env: DebugEnv<M, S, C, J>,
+    debugEnv: DebugEnv<M, S, C, J>,
 ): Component<M, S, C> {
 
     val input = Channel<M>(RENDEZVOUS)
-    val upstream = env.toComponentFlow(input)
-        .shareIn(env.componentEnv.scope, env.componentEnv.shareOptions)
+    val upstream = debugEnv.toComponentFlow(input)
+        .shareIn(debugEnv.env.scope, debugEnv.env.shareOptions)
 
     return { messages -> upstream.withMessageCollector(messages, input::send) }
 }
@@ -111,24 +104,24 @@ private fun <M, S, C, J> DebugEnv<M, S, C, J>.toComponentFlow(
         val messagesForSnapshot =
             messagesForInitialSnapshot(input.receiveAsFlow(), this@toComponentFlow, messages)
 
-        componentEnv.toComponentFlow(initialSnapshots, input::send, messagesForSnapshot)
+        env.toComponentFlow(initialSnapshots, input::send, messagesForSnapshot)
             .onEach { snapshot -> notifyServer(this@toComponentFlow, snapshot) }
             .collect(sink::invoke)
     }
 
 // todo refactor when multi-receivers KEEP is ready
 private fun <M, S, C, J> mergeInitialSnapshots(
-    env: DebugEnv<M, S, C, J>,
+    debugEnv: DebugEnv<M, S, C, J>,
     debugStates: Flow<S>,
-) = env.componentEnv.initial().mergeWith(debugStates.toSnapshots())
+) = debugEnv.env.initial().mergeWith(debugStates.toSnapshots())
 
 // todo refactor when multi-receivers KEEP is ready
 private fun <M, S, C, J> messagesForInitialSnapshot(
     input: Flow<M>,
-    env: DebugEnv<M, S, C, J>,
+    debugEnv: DebugEnv<M, S, C, J>,
     debugMessages: Flow<M>,
 ): (Initial<S, C>) -> Flow<M> = { initial ->
-    env.componentEnv.resolveAsFlow(initial.commands)
+    debugEnv.env.resolveAsFlow(initial.commands)
         .mergeWith(input)
         .mergeWith(debugMessages)
 }
@@ -137,7 +130,7 @@ private fun <M, S, C, J> messagesForInitialSnapshot(
 private fun <M, S, C, J> DebugEnv<M, S, C, J>.debugSession(
     block: suspend DebugSession<M, S, J>.(input: Sink<Snapshot<M, S, C>>) -> Unit,
 ): Flow<Snapshot<M, S, C>> =
-    channelFlow { settings.sessionBuilder(settings) { block(channel::send) } }
+    channelFlow { settings.sessionFactory(settings) { block(channel::send) } }
 
 private fun <S> Flow<S>.toSnapshots(): Flow<Initial<S, Nothing>> =
     // TODO what if we want to start from Regular snapshot?
