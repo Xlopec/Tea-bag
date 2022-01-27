@@ -56,7 +56,13 @@ kotlin {
             }
         }
 
-        val commonTest by getting
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test)
+                implementation(libs.atomicfu)
+                implementation(libs.coroutines.test)
+            }
+        }
 
         val jvmMain by getting {
             dependencies {
@@ -66,10 +72,7 @@ kotlin {
 
         val jvmTest by getting {
             dependencies {
-                implementation(libs.junit)
-                implementation(project(":tea-test"))
                 implementation(project(":tea-time-travel-adapter-gson"))
-                implementation(libs.ktor.client.mock.jvm)
             }
         }
 
