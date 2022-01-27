@@ -38,15 +38,15 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
-class AndroidApp : Application(), HasEnvironment {
-    override val closeCommands = MutableSharedFlow<CloseApp>()
-    override val component by lazy {
+class AndroidApp : Application() {
+    val closeCommands = MutableSharedFlow<CloseApp>()
+    val component by lazy {
         AppComponent(this, CoroutineScope(Job() + Default.limitedParallelism(1)), closeCommands)
     }
 }
 
-inline val Activity.androidApp: HasEnvironment
-    get() = application as HasEnvironment
+inline val Activity.androidApp: AndroidApp
+    get() = application as AndroidApp
 
 inline val Activity.component: (Flow<Message>) -> Flow<AppState>
     get() = androidApp.component
