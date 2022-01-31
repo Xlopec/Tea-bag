@@ -3,7 +3,7 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
-    <ID>ComplexMethod:LiveUiUpdater.kt$LiveUiUpdater$override fun update( message: UIMessage, state: State ): UpdateWith&lt;State, Command></ID>
+    <ID>ComplexMethod:Updater.kt$fun updateForUiMessage( message: UIMessage, state: State ): UpdateWith&lt;State, Command></ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") internal fun Null.toReadableString(): String</ID>
     <ID>LongMethod:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
     <ID>LongMethod:TempTest.kt$TempTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
@@ -26,7 +26,6 @@
     <ID>MagicNumber:ComponentTest.kt$ComponentTest$1_000</ID>
     <ID>MagicNumber:ComponentTest.kt$ComponentTest$3</ID>
     <ID>MagicNumber:Date.kt$1000.0</ID>
-    <ID>MagicNumber:LiveAppResolver.kt$8080</ID>
     <ID>MagicNumber:LocalStorageImpl.kt$6</ID>
     <ID>MagicNumber:NettyServer.kt$10</ID>
     <ID>MagicNumber:NettyServer.kt$5</ID>
@@ -51,14 +50,11 @@
     <ID>NewLineAtEndOfFile:ComponentTest.kt$com.oliynick.max.tea.core.component.ComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:ComposeAnnotations.kt$com.oliynick.max.reader.app.ComposeAnnotations.kt</ID>
     <ID>NewLineAtEndOfFile:CompositionsLogger.kt$com.max.reader.misc.CompositionsLogger.kt</ID>
-    <ID>NewLineAtEndOfFile:CompositionsLogger.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.CompositionsLogger.kt</ID>
     <ID>NewLineAtEndOfFile:Date.kt$com.oliynick.max.entities.shared.Date.kt</ID>
     <ID>NewLineAtEndOfFile:DebuggableComponentTest.kt$com.oliynick.max.tea.core.debug.component.DebuggableComponentTest.kt</ID>
-    <ID>NewLineAtEndOfFile:Dimensions.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.Dimensions.kt</ID>
     <ID>NewLineAtEndOfFile:Either.kt$com.oliynick.max.entities.shared.datatypes.Either.kt</ID>
     <ID>NewLineAtEndOfFile:Environment.kt$com.oliynick.max.reader.app.Environment.kt</ID>
-    <ID>NewLineAtEndOfFile:HasEnvironment.kt$com.max.reader.app.HasEnvironment.kt</ID>
-    <ID>NewLineAtEndOfFile:Icons.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.Icons.kt</ID>
+    <ID>NewLineAtEndOfFile:ExportImportTest.kt$com.oliynick.max.tea.core.debug.app.feature.storage.ExportImportTest.kt</ID>
     <ID>NewLineAtEndOfFile:IosAnnotations.kt$com.oliynick.max.reader.app.IosAnnotations.kt</ID>
     <ID>NewLineAtEndOfFile:IosComponent.kt$com.oliynick.max.reader.app.IosComponent.kt</ID>
     <ID>NewLineAtEndOfFile:LiveArticleDetailsResolver.kt$com.oliynick.max.reader.article.details.LiveArticleDetailsResolver.kt</ID>
@@ -75,8 +71,6 @@
     <ID>NewLineAtEndOfFile:PopScreen.kt$com.oliynick.max.reader.app.navigation.PopScreen.kt</ID>
     <ID>NewLineAtEndOfFile:Screens.kt$com.oliynick.max.reader.app.Screens.kt</ID>
     <ID>NewLineAtEndOfFile:Thread.kt$com.oliynick.max.tea.core.misc.Thread.kt</ID>
-    <ID>NewLineAtEndOfFile:TreeState.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.tree.TreeState.kt</ID>
-    <ID>NewLineAtEndOfFile:TreeView.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.tree.TreeView.kt</ID>
     <ID>NewLineAtEndOfFile:UUID.kt$com.oliynick.max.entities.shared.UUID.kt</ID>
     <ID>NewLineAtEndOfFile:Url.kt$com.oliynick.max.entities.shared.Url.kt</ID>
     <ID>NewLineAtEndOfFile:build.gradle.kts$.build.gradle.kts</ID>
@@ -86,18 +80,9 @@
     <ID>NewLineAtEndOfFile:published-multiplatform-library.gradle.kts$.published-multiplatform-library.gradle.kts</ID>
     <ID>NewLineAtEndOfFile:settings.gradle.kts$.settings.gradle.kts</ID>
     <ID>NewLineAtEndOfFile:toJson.kt$com.oliynick.max.reader.network.toJson.kt</ID>
-    <ID>SpreadOperator:ComponentLogic.kt$TodoState$(*items)</ID>
-    <ID>SpreadOperator:ComponentTest.kt$ComponentTest$(*messages)</ID>
-    <ID>SpreadOperator:NavigationExtensionsTest.kt$( // group *GenerateNestedScreens(groupId, nestedItemsCount).toTypedArray(), // group root TestRootScreen(groupId), )</ID>
-    <ID>SpreadOperator:NavigationExtensionsTest.kt$NavigationExtensionsTest$(*Group(group1Id))</ID>
-    <ID>SpreadOperator:NavigationExtensionsTest.kt$NavigationExtensionsTest$(*Group(group2Id))</ID>
-    <ID>SpreadOperator:NavigationExtensionsTest.kt$NavigationExtensionsTest$(*Group(randomUUID()))</ID>
-    <ID>SpreadOperator:NavigationExtensionsTest.kt$NavigationExtensionsTest$(*group1, *group2, *group3)</ID>
-    <ID>SpreadOperator:NavigationExtensionsTest.kt$NavigationExtensionsTest$(*group2, *group1, *group3)</ID>
-    <ID>SpreadOperator:TempTest.kt$TempTest$(*messages)</ID>
     <ID>TooGenericExceptionCaught:NettyServer.kt$e: Throwable</ID>
     <ID>TooManyFunctions:ComponentTest.kt$ComponentTest</ID>
-    <ID>TooManyFunctions:RenderExtensions.kt$com.oliynick.max.tea.core.debug.app.presentation.ui.misc.RenderExtensions.kt</ID>
+    <ID>TooManyFunctions:RenderExtensions.kt$com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.misc.RenderExtensions.kt</ID>
     <ID>TooManyFunctions:TempTest.kt$TempTest</ID>
     <ID>UndocumentedPublicClass:Adapters.kt$AuthorSerializer : KSerializer</ID>
     <ID>UndocumentedPublicClass:Adapters.kt$CommonDateSerializer : KSerializer</ID>
@@ -226,8 +211,14 @@
     <ID>UndocumentedPublicFunction:Date.kt$public expect fun now(): Date</ID>
     <ID>UndocumentedPublicFunction:Either.kt$//@OptIn(ExperimentalContracts::class) public operator fun &lt;L> Either&lt;L, *>.component1(): L?</ID>
     <ID>UndocumentedPublicFunction:Either.kt$//@OptIn(ExperimentalContracts::class) public operator fun &lt;R> Either&lt;*, R>.component2(): R?</ID>
+    <ID>UndocumentedPublicFunction:Either.kt$@JvmName("LeftUnit") public inline fun Left( ifSuccess: () -> Unit, ): Left&lt;Nothing?></ID>
+    <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R, T, F> Either&lt;L, R>.bimap( left: (L) -> T, right: (R) -> F ): Either&lt;T, F></ID>
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R, T> Either&lt;L, R>.fold( left: (L) -> T, right: (R) -> T ): T</ID>
+    <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R, T> Either&lt;L, R>.mapL( left: (L) -> T, ): Either&lt;T, R></ID>
+    <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R, T> Either&lt;L, R>.mapR( right: (R) -> T ): Either&lt;L, T></ID>
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R> Either( ifSuccess: () -> L, ifFailure: (th: Throwable) -> R ): Either&lt;L, R></ID>
+    <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L> Either( ifSuccess: () -> L, ): Either&lt;L, Throwable></ID>
+    <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L> Left( ifSuccess: () -> L, ): Left&lt;L></ID>
     <ID>UndocumentedPublicFunction:FlowExtensions.kt$@Deprecated("Bad api") @InternalTeaApi public suspend fun &lt;T> Flow&lt;T>.into( sendChannel: SendChannel&lt;T> )</ID>
     <ID>UndocumentedPublicFunction:LiveArticleDetailsResolver.kt$fun ArticleDetailsResolver(): ArticleDetailsResolver</ID>
     <ID>UndocumentedPublicFunction:LiveArticlesResolver.kt$ShareArticle$fun share( article: Article )</ID>

@@ -19,8 +19,8 @@
 package com.oliynick.max.tea.core.debug.app.misc
 
 import com.oliynick.max.tea.core.debug.app.domain.*
+import com.oliynick.max.tea.core.debug.app.state.Server
 import com.oliynick.max.tea.core.debug.app.state.Started
-import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.gson.GsonClientMessage
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.collections.immutable.PersistentList
@@ -36,14 +36,16 @@ val StartedTestServerStub = object : Server {
     override suspend fun invoke(component: ComponentId, message: GsonClientMessage) = Unit
 }
 
-val TestTimestamp: LocalDateTime = LocalDateTime.of(2000, 1, 1, 1, 1)
+val TestTimestamp1: LocalDateTime = LocalDateTime.of(2000, 1, 1, 1, 1)
+val TestTimestamp2: LocalDateTime = LocalDateTime.of(2001, 2, 3, 4, 5)
 
-val TestSnapshotId: SnapshotId  = SnapshotId(UUID.fromString("3853fab6-f20c-11ea-adc1-0242ac120002"))
+val TestSnapshotId1: SnapshotId = SnapshotId(UUID.fromString("3853fab6-f20c-11ea-adc1-0242ac120002"))
+val TestSnapshotId2: SnapshotId = SnapshotId(UUID.fromString("40811a0c-82ca-11ec-a8a3-0242ac120002"))
 
 inline fun ComponentDebugStates(
     range: CharRange = 'b'..'z',
     block: (strId: String) -> Pair<ComponentId, ComponentDebugState> = { strId ->
-        NonEmptyComponentDebugState(ComponentId(strId), SnapshotMeta(RandomSnapshotId(), TestTimestamp))
+        NonEmptyComponentDebugState(ComponentId(strId), SnapshotMeta(RandomSnapshotId(), TestTimestamp1))
     }
 ) = range
     .map { it.toString() }
@@ -61,9 +63,9 @@ fun NonEmptyComponentDebugState(
     componentId: ComponentId,
     meta: SnapshotMeta
 ) = ComponentDebugState(
-        componentId,
-        persistentListOf(OriginalSnapshot(meta, Null, Null, CollectionWrapper(listOf()))),
-        persistentListOf(FilteredSnapshot(meta, Null, Null))
+    componentId,
+    persistentListOf(OriginalSnapshot(meta, Null, Null, CollectionWrapper(listOf()))),
+    persistentListOf(FilteredSnapshot(meta, Null, Null))
 )
 
 fun ComponentDebugState(
@@ -76,17 +78,17 @@ fun ComponentDebugState(
 fun Started(
     states: Iterable<Pair<ComponentId, ComponentDebugState>>
 ) = Started(
-        TestSettings,
-        DebugState(states.toMap().toPersistentMap()),
-        StartedTestServerStub
+    TestSettings,
+    DebugState(states.toMap().toPersistentMap()),
+    StartedTestServerStub
 )
 
 fun Started(
     vararg states: Pair<ComponentId, ComponentDebugState>
 ) = Started(
-        TestSettings,
-        DebugState(states.toMap().toPersistentMap()),
-        StartedTestServerStub
+    TestSettings,
+    DebugState(states.toMap().toPersistentMap()),
+    StartedTestServerStub
 )
 
 fun RandomSnapshotId() = SnapshotId(UUID.randomUUID())

@@ -16,6 +16,9 @@
 
 package com.oliynick.max.tea.core.debug.app.domain
 
+import com.oliynick.max.tea.core.debug.app.misc.map
+import com.oliynick.max.tea.core.debug.app.state.filteredBy
+import com.oliynick.max.tea.core.debug.app.state.toFiltered
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
@@ -57,10 +60,48 @@ data class FilteredSnapshot(
 data class ComponentDebugState(
     val id: ComponentId,
     val state: Value,
+    // fixme we should re-model this bit, invariant checks should reside inside a dedicated entity
     val filter: Filter = Filter.empty(),
     val snapshots: PersistentList<OriginalSnapshot> = persistentListOf(),
     val filteredSnapshots: PersistentList<FilteredSnapshot> = persistentListOf()
-)
+) {
+    /**
+     * Creates already reset debug state
+     */
+    constructor(
+        id: ComponentId,
+        state: Value,
+        snapshots: PersistentList<OriginalSnapshot>,
+    ) : this(id, state, Filter.empty(), snapshots, snapshots.map(OriginalSnapshot::toFiltered))
+
+    init {
+        require(filteredSnapshots.size <= snapshots.size) {
+            """
+            filteredSnapshots.size > snapshots.size,
+            snapshots=$snapshots",
+            filtered=$filteredSnapshots
+            """.trimIndent()
+        }
+    }
+
+}
+
+fun ComponentDebugState.updateFilter(
+    filterInput: String,
+    ignoreCase: Boolean,
+    option: FilterOption
+): ComponentDebugState = updateFilter(Filter.new(filterInput, option, ignoreCase))
+
+fun ComponentDebugState.updateFilter(
+    filter: Filter
+): ComponentDebugState {
+    val filtered = when (val validatedPredicate = filter.predicate) {
+        is Valid -> snapshots.filteredBy(validatedPredicate.t)
+        is Invalid -> filteredSnapshots
+    }
+
+    return copy(filter = filter, filteredSnapshots = filtered)
+}
 
 data class DebugState(
     val components: ComponentMapping = persistentMapOf()

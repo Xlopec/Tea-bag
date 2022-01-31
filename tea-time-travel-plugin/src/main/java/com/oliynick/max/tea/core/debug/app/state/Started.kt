@@ -2,7 +2,6 @@ package com.oliynick.max.tea.core.debug.app.state
 
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.mapNotNull
-import com.oliynick.max.tea.core.debug.app.transport.Server
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentList
@@ -97,22 +96,14 @@ fun Started.updateFilter(
     filterInput: String,
     ignoreCase: Boolean,
     option: FilterOption
-) = updateComponent(id) { s ->
-
-    val filter = Filter.new(filterInput, option, ignoreCase)
-    val filtered = when (val validatedPredicate = filter.predicate) {
-        is Valid -> s.snapshots.filteredBy(validatedPredicate.t)
-        is Invalid -> s.filteredSnapshots
-    }
-
-    s.copy(filter = filter, filteredSnapshots = filtered)
-}
+) = updateComponent(id) { it.updateFilter(filterInput, ignoreCase, option) }
 
 fun OriginalSnapshot.toFiltered() =
     FilteredSnapshot(
         meta,
         message,
-        state
+        state,
+        commands
     )
 
 fun OriginalSnapshot.filteredBy(

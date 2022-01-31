@@ -30,6 +30,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlin.contracts.InvocationKind.EXACTLY_ONCE
+import kotlin.contracts.contract
 
 /**
  * **Impure** function that performs some actions on snapshots
@@ -144,8 +146,11 @@ public fun <S> S.noCommand(): UpdateWith<S, Nothing> = this to emptySet()
 public suspend inline infix fun <C, M> C.sideEffect(
     crossinline action: suspend C.() -> Unit,
 ): Set<M> {
+    contract {
+        callsInPlace(action, EXACTLY_ONCE)
+    }
     action()
-    return emptySet()
+    return setOf()
 }
 
 /**
@@ -159,7 +164,12 @@ public suspend inline infix fun <C, M> C.sideEffect(
  */
 public suspend inline infix fun <C, M> C.effect(
     crossinline action: suspend C.() -> M?,
-): Set<M> = action(this@effect)?.let { setOf(it) } ?: emptySet()
+): Set<M> {
+    contract {
+        callsInPlace(action, EXACTLY_ONCE)
+    }
+    return setOfNotNull(action(this))
+}
 
 /**
  * Transforms component into flow of snapshots

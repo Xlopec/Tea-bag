@@ -39,14 +39,14 @@ class NewsApiImpl(
     override suspend fun fetchFromEverything(
         input: String,
         paging: Paging
-    ) = Either {
+    ) = Try {
         httpClient.get(EverythingRequest(input, paging)).body()
     }
 
     override suspend fun fetchTopHeadlines(
         input: String,
         paging: Paging
-    ) = Either {
+    ) = Try {
         httpClient.get(TopHeadlinesRequest(input, paging, countryCode)).body()
     }
 }
@@ -68,7 +68,7 @@ private fun HttpClient(
     }
 }
 
-private suspend inline fun Either(
+private suspend inline fun Try(
     ifSuccess: () -> ArticleResponse
 ) = Either(ifSuccess, { it.toAppException() })
 

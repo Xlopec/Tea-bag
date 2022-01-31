@@ -2,6 +2,8 @@
 
 package com.oliynick.max.entities.shared.datatypes
 
+import kotlin.jvm.JvmName
+
 public sealed interface Either<out L, out R>
 
 public data class Left<L>(
@@ -15,9 +17,25 @@ public data class Right<R>(
 public inline fun <L, R> Either(
     ifSuccess: () -> L,
     ifFailure: (th: Throwable) -> R
-): Either<L, R> =
+): Either<L, R> = Either(ifSuccess).mapR(ifFailure)
+
+public inline fun <L> Either(
+    ifSuccess: () -> L,
+): Either<L, Throwable> =
     runCatching { Left(ifSuccess()) }
-        .getOrElse { th -> Right(ifFailure(th)) }
+        .getOrElse(::Right)
+
+public inline fun <L> Left(
+    ifSuccess: () -> L,
+): Left<L> = Left(ifSuccess())
+
+@JvmName("LeftUnit")
+public inline fun Left(
+    ifSuccess: () -> Unit,
+): Left<Nothing?> {
+    ifSuccess()
+    return Left(null)
+}
 
 public inline fun <L, R, T> Either<L, R>.fold(
     left: (L) -> T,
@@ -27,6 +45,23 @@ public inline fun <L, R, T> Either<L, R>.fold(
         is Left -> left(value)
         is Right -> right(value)
     }
+
+public inline fun <L, R, T, F> Either<L, R>.bimap(
+    left: (L) -> T,
+    right: (R) -> F
+): Either<T, F> =
+    when (this) {
+        is Left -> Left(left(value))
+        is Right -> Right(right(value))
+    }
+
+public inline fun <L, R, T> Either<L, R>.mapL(
+    left: (L) -> T,
+): Either<T, R> = bimap(left) { it }
+
+public inline fun <L, R, T> Either<L, R>.mapR(
+    right: (R) -> T
+): Either<L, T> = bimap({ it }, right)
 
 //@OptIn(ExperimentalContracts::class)
 public operator fun <L> Either<L, *>.component1(): L? {
