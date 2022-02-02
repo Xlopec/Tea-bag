@@ -11,7 +11,7 @@
     <ID>LongParameterList:LocalStorageImpl.kt$( url: String, title: String, author: String?, description: String?, urlToImage: String?, published: Long, // this unused arg is needed just to make function signatures match @Suppress("UNUSED_PARAMETER") savedOn: Long, isFavorite: Boolean )</ID>
     <ID>LongParameterList:TreeView.kt$( level: Int, text: String, formatter: TreeFormatter, node: SnapshotINode, state: TreeState, handler: (Message) -> Unit )</ID>
     <ID>LongParameterList:TreeView.kt$( level: Int, text: String, node: RefNode, formatter: TreeFormatter, state: TreeState, handler: (Message) -> Unit, )</ID>
-    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, painter: Painter, leaf: Node, state: TreeState, onClick: () -> Unit, )</ID>
+    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, painter: Painter, leaf: Node, state: TreeState, handler: (Message) -> Unit, )</ID>
     <ID>LongParameterList:TreeView.kt$( level: Int, text: String, painter: Painter, node: INode, state: TreeState, handler: (Message) -> Unit )</ID>
     <ID>LongParameterList:TreeView.kt$( node: CollectionNode, level: Int, text: String, formatter: TreeFormatter, state: TreeState, handler: (Message) -> Unit )</ID>
     <ID>LongParameterList:TreeView.kt$( node: Node, level: Int, formatter: TreeFormatter, text: String, state: TreeState, handler: (Message) -> Unit )</ID>

@@ -65,7 +65,7 @@ private val Snapshot<*, *, *>.infoMessage: String
         is Initial -> "Init class=${currentState?.javaClass}, commands=${commands.size}"
         is Regular -> """
         Regular with new state=${currentState?.javaClass},
-        prev state=${previousState?.javaClass},
+        previousState state=${previousState?.javaClass},
         caused by message=${message?.javaClass},
         commands=${commands.size}"}
     """.trimIndent()
@@ -89,7 +89,7 @@ private val Snapshot<*, *, *>.traceMessage: String
                 if (commands.isEmpty()) "" else ", commands=$commands"
         is Regular -> """
         Regular with new state=$currentState,
-        prev state=$previousState,
+        previousState state=$previousState,
         caused by message=$message
         ${if (commands.isEmpty()) "" else "\ncommands=$commands"}
     """.trimIndent()

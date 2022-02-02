@@ -32,6 +32,7 @@ import java.util.*
 val TestSettings = Settings(Valid(TestHost.value, TestHost), Valid(TestPort.value.toString(), TestPort), false)
 
 val StartedTestServerStub = object : Server {
+    override val address: ServerAddress = ServerAddress(TestHost, TestPort)
     override suspend fun stop() = Unit
     override suspend fun invoke(component: ComponentId, message: GsonClientMessage) = Unit
 }

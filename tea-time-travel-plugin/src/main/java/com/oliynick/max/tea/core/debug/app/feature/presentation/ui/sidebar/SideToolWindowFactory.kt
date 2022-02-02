@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.tea.core.debug.app.feature.presentation.ui.sidebar
 
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import com.oliynick.max.tea.core.component.Component
+import com.oliynick.max.tea.core.component.invoke
 import com.oliynick.max.tea.core.component.states
 import com.oliynick.max.tea.core.component.subscribeIn
 import com.oliynick.max.tea.core.debug.app.Command
@@ -33,12 +37,16 @@ import com.oliynick.max.tea.core.debug.app.feature.presentation.UpdateDebugSetti
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.Plugin
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.misc.mergeWith
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.settings.PluginSettingsNotifier
+import com.oliynick.max.tea.core.debug.app.feature.server.StopServer
 import com.oliynick.max.tea.core.debug.app.misc.properties
 import com.oliynick.max.tea.core.debug.app.state.State
+import com.oliynick.max.tea.core.debug.app.state.Stopped
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class SideToolWindowFactory : ToolWindowFactory, DumbAware {
 
@@ -49,15 +57,32 @@ class SideToolWindowFactory : ToolWindowFactory, DumbAware {
         val events = MutableSharedFlow<Message>()
         val environment = Environment(project.properties, project, events)
         val component = PluginComponent(environment, project.properties)
-        val content = createToolWindowContent(project, component)
 
-        toolWindow.contentManager.addContent(content)
+        toolWindow.contentManager.addContent(ToolWindowContent(project, component))
 
+        environment.installResourcesDisposer(project, component)
         component.subscribeIn(events.mergeWith(project.settingsMessages), environment)
     }
 
     override fun shouldBeAvailable(project: Project): Boolean = true
 }
+
+/**
+ * Awaits project close/plugin unload, after that it releases plugin resources, stops it
+ */
+private fun Environment.installResourcesDisposer(
+    project: Project,
+    component: Component<Message, State, Command>
+) = launch {
+    project.awaitDisposal()
+    component(StopServer).takeWhile { it.currentState !is Stopped }.collect()
+    cancel()
+}
+
+private suspend fun Project.awaitDisposal() =
+    suspendCoroutine<Unit> {
+        Disposer.register(this) { it.resume(Unit) }
+    }
 
 private val Project.settingsMessages: Flow<UpdateDebugSettings>
     get() = callbackFlow {
@@ -72,7 +97,7 @@ private val Project.settingsMessages: Flow<UpdateDebugSettings>
         awaitClose { connection.disconnect() }
     }
 
-private fun createToolWindowContent(
+private fun ToolWindowContent(
     project: Project,
     component: Component<Message, State, Command>
 ): Content =
