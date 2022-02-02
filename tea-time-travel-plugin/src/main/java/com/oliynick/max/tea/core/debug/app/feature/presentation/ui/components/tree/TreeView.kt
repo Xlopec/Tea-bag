@@ -48,20 +48,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiClass
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PsiNavigateUtil
 import com.oliynick.max.tea.core.debug.app.Message
-import com.oliynick.max.tea.core.debug.app.domain.Null
-import com.oliynick.max.tea.core.debug.app.domain.Type
+import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ApplyMessage
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ApplyState
 import com.oliynick.max.tea.core.debug.app.feature.presentation.RemoveAllSnapshots
 import com.oliynick.max.tea.core.debug.app.feature.presentation.RemoveSnapshots
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.Collapse
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.Copy
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.Expand
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.Remove
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.UpdateRunningApplication
@@ -143,7 +146,7 @@ private fun LazyListScope.subTree(
         is SnapshotINode -> snapshotSubTree(level, formatter(node), formatter, node, state, handler)
         is RefNode -> referenceSubTree(level, text, node, formatter, state, handler)
         is CollectionNode -> collectionSubTree(node, level, text, formatter, state, handler)
-        is Leaf -> leaf(level, text, node, state)
+        is Leaf -> leaf(level, text, node, state, handler)
     }
 
 private fun LazyListScope.snapshotSubTree(
@@ -242,9 +245,10 @@ private fun LazyListScope.leaf(
     text: String,
     leaf: Leaf,
     state: TreeState,
+    handler: (Message) -> Unit,
 ) {
     item {
-        LeafNode(level, text, Property, leaf, state) { }
+        LeafNode(level, text, Property, leaf, state, handler)
     }
 }
 
@@ -256,8 +260,10 @@ private fun LeafNode(
     painter: Painter,
     leaf: Node,
     state: TreeState,
-    onClick: () -> Unit,
+    handler: (Message) -> Unit,
 ) {
+    val showPopup = remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -265,7 +271,10 @@ private fun LeafNode(
             // TODO: should handle both left and right clicks
             .mouseClickable {
                 state.selected.value = leaf
-                onClick()
+
+                if (buttons.isSecondaryPressed) {
+                    showPopup.value = true
+                }
             }
             .indentLevel(level),
     ) {
@@ -279,6 +288,15 @@ private fun LeafNode(
         Spacer(Modifier.width(SpaceSmall))
 
         Text(text = text)
+
+        if (showPopup.value) {
+            ActionsPopup(
+                state = state,
+                node = leaf,
+                onDismiss = { showPopup.value = false },
+                handler = handler,
+            )
+        }
     }
 }
 
@@ -354,8 +372,9 @@ private fun ActionsPopup(
     Popup(onDismissRequest = onDismiss) {
         Surface(elevation = 8.dp) {
             when (node) {
-                is CollectionNode, is Leaf -> Unit
-                is RefNode -> JumpToSourceActionItem(node.type)
+                is CollectionNode -> Unit
+                is Leaf -> LeafActionItems(node)
+                is RefNode -> RefActionItems(node.type)
                 is SnapshotINode -> SnapshotActionItems(state.id, node, handler)
             }
         }
@@ -363,7 +382,32 @@ private fun ActionsPopup(
 }
 
 @Composable
-private fun JumpToSourceActionItem(
+private fun LeafActionItems(
+    leaf: Leaf
+) {
+
+    val clipboardValue = leaf.value.clipboardValue
+
+    if (clipboardValue != null) {
+        Column {
+            CopyActionItem(AnnotatedString(clipboardValue))
+        }
+    }
+}
+
+@Composable
+private fun CopyActionItem(
+    clipboard: AnnotatedString
+) {
+    val clipboardManager = LocalClipboardManager.current
+
+    PopupItem(Copy, "Copy value") {
+        clipboardManager.setText(clipboard)
+    }
+}
+
+@Composable
+private fun RefActionItems(
     type: Type
 ) {
     val project = ProjectLocal.current
@@ -372,9 +416,17 @@ private fun JumpToSourceActionItem(
     val psiClass = facade.findClass(type.name, GlobalSearchScope.projectScope(project)) ?: return
 
     Column {
-        PopupItem(Class, "Jump to sources") {
-            PsiNavigateUtil.navigate(psiClass)
-        }
+        CopyActionItem(AnnotatedString(type.name))
+        JumpToSourcesActionItem(psiClass)
+    }
+}
+
+@Composable
+private fun JumpToSourcesActionItem(
+    psiClass: PsiClass
+) {
+    PopupItem(Class, "Jump to sources") {
+        PsiNavigateUtil.navigate(psiClass)
     }
 }
 
@@ -440,6 +492,17 @@ private fun Modifier.indentLevel(
     end = PaddingSmall,
     bottom = PaddingSmall
 )
+
+private val Value.clipboardValue: String?
+    get() = when (this) {
+        is BooleanWrapper -> value.toString()
+        is CharWrapper -> value.toString()
+        is CollectionWrapper -> null
+        Null -> null.toString()
+        is NumberWrapper -> value.toString()
+        is Ref -> type.name
+        is StringWrapper -> value
+    }
 
 @Preview
 @Composable
