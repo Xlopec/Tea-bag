@@ -45,7 +45,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.unit.Dp
@@ -61,15 +61,15 @@ import com.oliynick.max.tea.core.debug.app.feature.presentation.ApplyMessage
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ApplyState
 import com.oliynick.max.tea.core.debug.app.feature.presentation.RemoveAllSnapshots
 import com.oliynick.max.tea.core.debug.app.feature.presentation.RemoveSnapshots
-import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.RemoveIconC
-import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.UpdateRunningAppIconC
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.Remove
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.UpdateRunningApplication
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ImageSmall
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.PaddingSmall
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.PreviewMode
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.SpaceSmall
-import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ValueIcon.ClassIconC
-import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ValueIcon.PropertyIconC
-import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ValueIcon.WatchIconC
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ValueIcon.Class
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ValueIcon.Property
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ValueIcon.Snapshot
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.misc.toReadableStringDetailed
 import com.oliynick.max.tea.core.debug.app.misc.javaPsiFacade
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
@@ -154,9 +154,9 @@ private fun LazyListScope.snapshotSubTree(
 ) {
     item {
         if (node.message == null && node.state == null) {
-            LeafNode(level, text, WatchIconC, node, state) { }
+            LeafNode(level, text, Snapshot, node, state) { }
         } else {
-            ExpandableNode(level, text, WatchIconC, node, state, handler)
+            ExpandableNode(level, text, Snapshot, node, state, handler)
         }
     }
 
@@ -206,7 +206,7 @@ private fun LazyListScope.referenceSubTree(
     handler: (Message) -> Unit,
 ) {
     item {
-        ExpandableNode(level, text, ClassIconC, node, state, handler)
+        ExpandableNode(level, text, Class, node, state, handler)
     }
 
     if (node.expanded.value) {
@@ -225,7 +225,7 @@ private fun LazyListScope.collectionSubTree(
     handler: (Message) -> Unit
 ) {
     item {
-        ExpandableNode(level, text, PropertyIconC, node, state, handler)
+        ExpandableNode(level, text, Property, node, state, handler)
     }
 
     if (node.expanded.value) {
@@ -242,7 +242,7 @@ private fun LazyListScope.leaf(
     state: TreeState,
 ) {
     item {
-        LeafNode(level, text, PropertyIconC, leaf, state) { }
+        LeafNode(level, text, Property, leaf, state) { }
     }
 }
 
@@ -251,7 +251,7 @@ private fun LazyListScope.leaf(
 private fun LeafNode(
     level: Int,
     text: String,
-    image: ImageBitmap,
+    painter: Painter,
     leaf: Node,
     state: TreeState,
     onClick: () -> Unit,
@@ -270,7 +270,7 @@ private fun LeafNode(
 
         Image(
             modifier = Modifier.size(ImageSmall),
-            bitmap = image,
+            painter = painter,
             contentDescription = "Row: $text"
         )
 
@@ -284,7 +284,7 @@ private fun LeafNode(
 private fun ExpandableNode(
     level: Int,
     text: String,
-    image: ImageBitmap,
+    painter: Painter,
     node: INode,
     state: TreeState,
     handler: (Message) -> Unit
@@ -309,7 +309,7 @@ private fun ExpandableNode(
 
         Image(
             modifier = Modifier.size(ImageSmall),
-            bitmap = image,
+            painter = painter,
             contentDescription = "Expandable row: $text"
         )
 
@@ -361,7 +361,7 @@ private fun JumpToSourceActionItem(
     val psiClass = facade.findClass(type.name, GlobalSearchScope.projectScope(project)) ?: return
 
     Column {
-        PopupItem(ClassIconC, "Jump to sources") {
+        PopupItem(Class, "Jump to sources") {
             PsiNavigateUtil.navigate(psiClass)
         }
     }
@@ -374,16 +374,16 @@ private fun SnapshotActionItems(
     handler: (Message) -> Unit
 ) {
     Column {
-        PopupItem(RemoveIconC, "Delete all") {
+        PopupItem(Remove, "Delete all") {
             handler(RemoveAllSnapshots(id))
         }
-        PopupItem(RemoveIconC, "Delete") {
+        PopupItem(Remove, "Delete") {
             handler(RemoveSnapshots(id, node.meta.id))
         }
-        PopupItem(UpdateRunningAppIconC, "Apply state") {
+        PopupItem(UpdateRunningApplication, "Apply state") {
             handler(ApplyState(id, node.meta.id))
         }
-        PopupItem(UpdateRunningAppIconC, "Apply message") {
+        PopupItem(UpdateRunningApplication, "Apply message") {
             handler(ApplyMessage(id, node.meta.id))
         }
     }
@@ -391,7 +391,7 @@ private fun SnapshotActionItems(
 
 @Composable
 fun PopupItem(
-    image: ImageBitmap,
+    painter: Painter,
     text: String,
     onClick: () -> Unit,
 ) {
@@ -403,7 +403,7 @@ fun PopupItem(
     ) {
         Image(
             modifier = Modifier.size(ImageSmall),
-            bitmap = image,
+            painter = painter,
             contentDescription = text
         )
 

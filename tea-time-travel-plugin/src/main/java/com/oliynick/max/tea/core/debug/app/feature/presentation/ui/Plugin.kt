@@ -27,8 +27,9 @@ import androidx.compose.material.TextFieldDefaults.MinHeight
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
-import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -38,12 +39,10 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.oliynick.max.tea.core.debug.app.Message
 import com.oliynick.max.tea.core.debug.app.feature.presentation.UpdateServerSettings
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.Execute
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.Export
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.Import
-import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.RunDefaultIconC
-import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.RunDisabledIconC
-import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.SuspendDefaultIconC
-import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.SuspendDisabledIconC
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.Suspend
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ValidatedTextField
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.misc.chooseFile
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.tabs.ComponentTab
@@ -216,30 +215,13 @@ private fun BottomActionMenu(
         ActionButton(
             enabled = state.isStarted() || state.canStart(),
             onClick = { events(if (state is Stopped) StartServer else StopServer) },
-            bitmap = state.toBottomActionIcon(),
+            painter = state.serverActionIcon,
             contentDescription = "Start/Stop server"
         )
     }
 }
 
-@Composable
-private fun ActionButton(
-    enabled: Boolean,
-    bitmap: ImageBitmap,
-    contentDescription: String,
-    onClick: () -> Unit,
-) {
-    IconButton(
-        enabled = enabled,
-        onClick = onClick
-    ) {
-        Image(
-            modifier = Modifier.size(16.dp),
-            bitmap = bitmap,
-            contentDescription = contentDescription
-        )
-    }
-}
+val DisabledTintColor = Color(86, 86, 86)
 
 @Composable
 private fun ActionButton(
@@ -253,6 +235,7 @@ private fun ActionButton(
         onClick = onClick
     ) {
         Image(
+            colorFilter = if (enabled) null else ColorFilter.tint(DisabledTintColor),
             modifier = Modifier.size(16.dp),
             painter = painter,
             contentDescription = contentDescription
@@ -313,13 +296,11 @@ private fun State.canStart(): Boolean {
     return this is Stopped && canStart
 }
 
-@Composable
-private fun State.toBottomActionIcon() =
-    when (this) {
-        is Stopped -> if (canStart) RunDefaultIconC else RunDisabledIconC
-        is Starting -> RunDisabledIconC
-        is Started -> SuspendDefaultIconC
-        is Stopping -> SuspendDisabledIconC
+
+private val State.serverActionIcon: Painter
+    @Composable get() = when (this) {
+        is Stopped, is Starting -> Execute
+        is Started, is Stopping -> Suspend
     }
 
 private val State.canModifySettings

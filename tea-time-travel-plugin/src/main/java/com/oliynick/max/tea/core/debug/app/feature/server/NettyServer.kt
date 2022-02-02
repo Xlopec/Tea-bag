@@ -54,7 +54,7 @@ import java.time.LocalDateTime.now
 import java.util.UUID.randomUUID
 
 class NettyServer(
-    private val address: ServerAddress,
+    override val address: ServerAddress,
     private val events: MutableSharedFlow<Message>,
     private val calls: MutableSharedFlow<RemoteCall> = MutableSharedFlow(),
     private val gson: Gson = Gson {}

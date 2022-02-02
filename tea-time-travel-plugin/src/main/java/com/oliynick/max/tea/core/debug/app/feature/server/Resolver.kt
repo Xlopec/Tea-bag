@@ -3,12 +3,10 @@ package com.oliynick.max.tea.core.debug.app.feature.server
 import com.intellij.openapi.project.Project
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.entities.shared.datatypes.mapL
-import com.oliynick.max.tea.core.debug.app.Message
-import com.oliynick.max.tea.core.debug.app.NotificationMessage
-import com.oliynick.max.tea.core.debug.app.ServerCommand
+import com.oliynick.max.tea.core.debug.app.*
+import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
 import com.oliynick.max.tea.core.debug.app.feature.notification.*
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.balloon.showBalloon
-import com.oliynick.max.tea.core.debug.app.toPluginException
 import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
 import com.oliynick.max.tea.core.debug.protocol.ApplyState
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +55,10 @@ private class ServerCommandResolverImpl(
     private suspend fun DoStopServer.stop() =
         Either(
             { server.stop(); NotifyStopped },
-            { OperationException(it.toPluginException(), this, "Plugin failed to stop server") }
+            {
+                val message = "Plugin failed to stop debug server running on ${server.address.humanReadable}"
+                OperationException(NetworkException(it.message ?: message, it), this, message)
+            }
         )
 
     private suspend fun DoStartServer.start() = Either({
@@ -67,7 +68,8 @@ private class ServerCommandResolverImpl(
             newServer
         }
     }, {
-        OperationException(it.toPluginException(), this, "Plugin failed to start server")
+        val message = "Plugin failed to start debug server on address ${address.humanReadable}"
+        OperationException(NetworkException(it.message ?: message, it), this, message)
     }).mapL(::NotifyStarted)
 
     private suspend fun DoApplyState.applyState() = Either(
@@ -80,4 +82,5 @@ private class ServerCommandResolverImpl(
         })
 }
 
-
+private val ServerAddress.humanReadable: String
+    get() = "${host.value}:${port.value}"

@@ -36,39 +36,32 @@ object ValueIcon {
     val PropertyIcon by lazy { getIcon("property") }
     val WatchIcon by lazy { getIcon("watch") }
 
-    val VariableIconC @Composable get() = bitmap("variable")
-    val ClassIconC @Composable get() = bitmap("class")
+    val Class @Composable get() = painterResource("/images/class.svg")
     val PropertyIconC @Composable get() = bitmap("property")
-    val WatchIconC @Composable get() = bitmap("watch")
+    val Property @Composable get() = painterResource("/images/property.svg")
+    val Snapshot @Composable get() = painterResource("/images/snapshotGutter.svg")
 }
 
 object ActionIcons {
 
+    @Deprecated("remove")
     val UpdateRunningAppIcon by lazy { getIcon("updateRunningApplication") }
+    @Deprecated("remove")
     val UpdateRunningAppIconC @Composable get() = bitmap("updateRunningApplication")
+    val UpdateRunningApplication @Composable get() = painterResource("/images/updateRunningApplication.svg")
+    @Deprecated("remove")
     val RemoveIcon by lazy { getIcon("remove") }
+    @Deprecated("remove")
     val RemoveIconC @Composable get() = bitmap("remove")
+    val Remove @Composable get() = painterResource("/images/remove.svg")
 
-    val RunDefaultIcon by lazy { getIcon("run") }
-    val RunDefaultIconC @Composable get() = bitmap("run")
-    val RunDisabledIcon by lazy { getIcon("run_disabled") }
-    val RunDisabledIconC @Composable get() = bitmap("run_disabled")
-
-    val ResumeIcon by lazy { getIcon("resume") }
-
-    val CloseDefaultIcon by lazy { getIcon("close") }
     val CloseDefaultIconC @Composable get() = bitmap("close")
     val CloseDarkIcon by lazy { getIcon("close_dark") }
 
-    val SuspendDefaultIconC @Composable get() = bitmap("suspend")
-    val SuspendDisabledIcon by lazy { getIcon("suspend_disabled") }
-    val SuspendDisabledIconC @Composable get() = bitmap("suspend_disabled")
-
-    val StoppingIcon by lazy { getIcon("killProcess") }
-    val StoppingIconC @Composable get() = bitmap("killProcess")
-
     val Import @Composable get() = painterResource("/images/import_dark.svg")
     val Export @Composable get() = painterResource("/images/export_dark.svg")
+    val Execute @Composable get() = painterResource("/images/execute.svg")
+    val Suspend @Composable get() = painterResource("/images/suspend.svg")
 }
 
 fun resource(

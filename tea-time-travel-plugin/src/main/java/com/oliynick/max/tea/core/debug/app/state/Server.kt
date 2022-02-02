@@ -18,10 +18,13 @@
 
 package com.oliynick.max.tea.core.debug.app.state
 
+import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
 import com.oliynick.max.tea.core.debug.gson.GsonClientMessage
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
 interface Server {
+
+    val address: ServerAddress
 
     suspend operator fun invoke(
         component: ComponentId,
