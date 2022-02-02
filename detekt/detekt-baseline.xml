@@ -10,9 +10,9 @@
     <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C>, noinline resolver: Resolver&lt;C, M>, noinline updater: Updater&lt;M, S, C>, scope: CoroutineScope, // todo: group to reduce number of arguments url: Url = Localhost, jsonSerializer: JsonSerializer&lt;J>, // see https://youtrack.jetbrains.com/issue/KT-47195 // see https://github.com/Kotlin/kotlinx.coroutines/issues/3005#issuecomment-1014577573 noinline sessionFactory: SessionFactory&lt;M, S, J> = { settings, block -> HttpClient.session(settings, block) }, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
     <ID>LongParameterList:LocalStorageImpl.kt$( url: String, title: String, author: String?, description: String?, urlToImage: String?, published: Long, // this unused arg is needed just to make function signatures match @Suppress("UNUSED_PARAMETER") savedOn: Long, isFavorite: Boolean )</ID>
     <ID>LongParameterList:TreeView.kt$( level: Int, text: String, formatter: TreeFormatter, node: SnapshotINode, state: TreeState, handler: (Message) -> Unit )</ID>
-    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, image: ImageBitmap, leaf: Node, state: TreeState, onClick: () -> Unit, )</ID>
-    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, image: ImageBitmap, node: INode, state: TreeState, handler: (Message) -> Unit )</ID>
     <ID>LongParameterList:TreeView.kt$( level: Int, text: String, node: RefNode, formatter: TreeFormatter, state: TreeState, handler: (Message) -> Unit, )</ID>
+    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, painter: Painter, leaf: Node, state: TreeState, onClick: () -> Unit, )</ID>
+    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, painter: Painter, node: INode, state: TreeState, handler: (Message) -> Unit )</ID>
     <ID>LongParameterList:TreeView.kt$( node: CollectionNode, level: Int, text: String, formatter: TreeFormatter, state: TreeState, handler: (Message) -> Unit )</ID>
     <ID>LongParameterList:TreeView.kt$( node: Node, level: Int, formatter: TreeFormatter, text: String, state: TreeState, handler: (Message) -> Unit )</ID>
     <ID>MagicNumber:Balloon.kt$15</ID>
@@ -29,8 +29,12 @@
     <ID>MagicNumber:LocalStorageImpl.kt$6</ID>
     <ID>MagicNumber:NettyServer.kt$10</ID>
     <ID>MagicNumber:NettyServer.kt$5</ID>
+    <ID>MagicNumber:Plugin.kt$86</ID>
     <ID>MagicNumber:TempTest.kt$TempTest$1_000</ID>
     <ID>MagicNumber:TempTest.kt$TempTest$3</ID>
+    <ID>MagicNumber:WidgetTheme.kt$109</ID>
+    <ID>MagicNumber:WidgetTheme.kt$148</ID>
+    <ID>MagicNumber:WidgetTheme.kt$70</ID>
     <ID>MaxLineLength:AppTheme.kt$val secondaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant)</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
     <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>

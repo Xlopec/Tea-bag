@@ -30,6 +30,7 @@ fun WidgetTheme(
 ) {
     val colors = lightColors(
         onPrimary = Color.White,
+        primary = Color(70, 109, 148),
         onSurface = Color.Black
     )
     val swingColor = SwingColor()

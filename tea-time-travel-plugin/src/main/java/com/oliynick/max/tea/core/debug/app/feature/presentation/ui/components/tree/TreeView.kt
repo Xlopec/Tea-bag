@@ -61,6 +61,8 @@ import com.oliynick.max.tea.core.debug.app.feature.presentation.ApplyMessage
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ApplyState
 import com.oliynick.max.tea.core.debug.app.feature.presentation.RemoveAllSnapshots
 import com.oliynick.max.tea.core.debug.app.feature.presentation.RemoveSnapshots
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.Collapse
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.Expand
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.Remove
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons.UpdateRunningApplication
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ImageSmall
@@ -315,7 +317,16 @@ private fun ExpandableNode(
 
         Spacer(Modifier.width(SpaceSmall))
 
-        Text(text = ((if (node.expanded.value) "- " else "+ ").takeIf { node.childrenCount > 0 } ?: "") + text)
+
+        Row {
+            if (node.childrenCount > 0) {
+                Image(
+                    painter = if (node.expanded.value) Collapse else Expand,
+                    contentDescription = null
+                )
+            }
+            Text(text = text)
+        }
 
         if (showPopup.value) {
             // fixme move popup to a separate file, add slot API for it. Do just the same for clicks and etc.
