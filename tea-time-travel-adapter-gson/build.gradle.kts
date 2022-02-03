@@ -30,6 +30,10 @@ tasks.test {
     useJUnit()
 }
 
+val allTests by tasks.creating(Task::class) {
+    dependsOn("test")
+}
+
 dependencies {
 
     api(project(":tea-time-travel-protocol"))

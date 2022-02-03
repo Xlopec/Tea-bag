@@ -40,7 +40,7 @@ jobs:
       - name: Run buildSrc tests
         run: ./gradlew -p buildSrc test
       - name: Run tests
-        run: ./gradlew test
+        run: ./gradlew allTests
       - name: Archive test reports
         if: success() || failure()
         uses: actions/upload-artifact@v2
