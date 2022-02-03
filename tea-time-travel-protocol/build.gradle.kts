@@ -28,16 +28,6 @@ plugins {
 
 kotlin {
 
-    cocoapods {
-        summary = "Tea time travel protocol library"
-        homepage = "Link to the Tea library Module homepage"
-        ios.deploymentTarget = "14.0"
-        framework {
-            baseName = "TeaProtocol"
-        }
-        podfile = project.file("../samples/iosApp/Podfile")
-    }
-
     sourceSets {
         val commonMain by getting {
             dependencies {

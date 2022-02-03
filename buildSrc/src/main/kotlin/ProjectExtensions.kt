@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import gradle.kotlin.dsl.accessors._d700622f1c449047441e85a1b16e6e65.sourceSets
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.provider.Provider
@@ -56,11 +55,9 @@ fun KotlinMultiplatformExtension.optIn(
 
 fun KotlinMultiplatformExtension.optIn(
     annotationNames: Iterable<String>
-) = sourceSets {
-    all {
-        languageSettings {
-            annotationNames.forEach(::optIn)
-        }
+) = sourceSets.all {
+    languageSettings {
+        annotationNames.forEach(::optIn)
     }
 }
 

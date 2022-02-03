@@ -24,10 +24,7 @@
 
 plugins {
     kotlin("multiplatform")
-    kotlin("native.cocoapods")
 }
-
-version = "1.0.0"
 
 kotlin {
 
@@ -40,14 +37,6 @@ kotlin {
     }
 
     ios()
-
-    cocoapods {
-        summary = "Tea test library"
-        homepage = "Link to the Tea test library Module homepage"
-        ios.deploymentTarget = "14.0"
-        frameworkName = "TeaTest"
-        podfile = project.file("../samples/iosApp/Podfile")
-    }
 
     sourceSets {
         val commonMain by getting {
@@ -63,11 +52,7 @@ kotlin {
             }
         }
 
-        val commonTest by getting {
-            dependencies {
-
-            }
-        }
+        val commonTest by getting
 
         val iosMain by getting
 

@@ -36,14 +36,6 @@ kotlin {
         "com.oliynick.max.tea.core.ExperimentalTeaApi"
     )
 
-    cocoapods {
-        summary = "Tea time travel library"
-        homepage = "Link to the Tea library Module homepage"
-        ios.deploymentTarget = "14.0"
-        frameworkName = "TeaTimeTravel"
-        podfile = project.file("../samples/iosApp/Podfile")
-    }
-
     sourceSets {
         val commonMain by getting {
             dependencies {

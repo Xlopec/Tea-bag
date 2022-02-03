@@ -48,7 +48,9 @@ kotlin {
         summary = "Shared app lib with common code"
         homepage = "Link to the Shared Module homepage"
         ios.deploymentTarget = "14.1"
-        frameworkName = "SharedAppLib"
+        framework {
+            baseName = "SharedAppLib"
+        }
         podfile = project.file("../iosApp/Podfile")
     }
 

@@ -36,16 +36,6 @@ kotlin {
         "com.oliynick.max.tea.core.ExperimentalTeaApi"
     )
 
-    cocoapods {
-        summary = "Tea core library"
-        homepage = "Link to the Tea library Module homepage"
-        ios.deploymentTarget = "14.0"
-        framework {
-            baseName = "TeaCore"
-        }
-        podfile = project.file("../samples/iosApp/Podfile")
-    }
-
     sourceSets {
 
         val commonMain by getting {
