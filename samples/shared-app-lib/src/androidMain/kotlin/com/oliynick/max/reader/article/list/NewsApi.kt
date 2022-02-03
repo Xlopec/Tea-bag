@@ -11,17 +11,6 @@ fun NewsApi(
     application: Application
 ): NewsApi = NewsApiImpl(CIO, application.countryCode)
 
-/*private class GsonSerializer(
-    private val gson: Gson,
-) : JsonSerializer {
-
-    override fun write(data: Any, contentType: ContentType): OutgoingContent =
-        TextContent(gson.toJson(data), contentType)
-
-    override fun read(type: TypeInfo, body: Input): Any =
-        gson.fromJson(body.readText(), type.reifiedType)
-}*/
-
 private inline val Application.countryCode: String
     get() = resources.configuration.countryCode
 

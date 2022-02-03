@@ -58,7 +58,7 @@ struct AppView: View {
                 switch screen {
                     // fixme refactor in truly Swift fashion
                 case let tabScreen as TabScreen:
-                    AppTabViewContent(tabScreen: tabScreen)
+                    AppTabViewContent(tabScreen: tabScreen, appState: appState)
                 case let articleDetailsState as ArticleDetailsState:
                     Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
                 default:
@@ -68,17 +68,26 @@ struct AppView: View {
                 // todo: show splash screen
                 Text("Splash screen!")
             }
+        }.onChange(of: appComponent.appState?.isInDarkMode) { newDarkMode in
+            
+            guard let darkMode = newDarkMode else {
+                return
+            }
+            
+            let window = UIApplication.shared.windows.first
+            
+            window?.overrideUserInterfaceStyle = darkMode ? .dark : .light
         }
     }
     
     @ViewBuilder
-    private func AppTabViewContent(tabScreen: TabScreen) -> some View {
+    private func AppTabViewContent(tabScreen: TabScreen, appState: AppState) -> some View {
         AppTabView(initialTab: (tabScreen as? ArticlesState)?.displayTab ?? 3, handler: handler) { tab in
             
             if let articlesState = tabScreen as? ArticlesState {
                 ArticlesView(state: articlesState, handler: handler, searchHintText: tab.searchHintText, headingText: articlesState.headingText)
             } else {
-                Text("App Settings")
+                SettingsView(state: appState, handler: handler)
             }
         }
     }

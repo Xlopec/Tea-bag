@@ -134,7 +134,7 @@ dependencyResolutionManagement {
                 .versionRef("ktor")
 
             alias("ktor-client-ios")
-                .to("io.ktor", "ktor-client-ios")
+                .to("io.ktor", "ktor-client-darwin")
                 .versionRef("ktor")
 
             alias("ktor-client-websockets")

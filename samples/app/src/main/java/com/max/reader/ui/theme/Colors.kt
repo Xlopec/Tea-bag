@@ -24,16 +24,15 @@
 
 package com.max.reader.ui.theme
 
+import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
-// todo fix colors, should be [darkColors]
-val DarkThemeColors = lightColors(
-    primary = Color(0xFF263238),
-    primaryVariant = Color(0xFF1B272C),
+
+val DarkThemeColors = darkColors(
+    primary = Color(35, 35, 36),
     secondary = Color(0xFFFFFFFF),
-    secondaryVariant = Color(0xFFFFFFFF),
-    background = Color(0xFF151B1F),
-    surface = Color(0xFF1F282E),
+    background = Color.Black,
+    surface = Color(20, 20, 20),
     error = Color(0xFFF70040),
     onPrimary = Color.White,
     onSecondary = Color.White,
@@ -43,15 +42,14 @@ val DarkThemeColors = lightColors(
 )
 
 val LightThemeColors = lightColors(
-    primary = Color(0xFF263238),
-    primaryVariant = Color(0xFF000a12),
-    secondaryVariant = Color(0xFF1c313a),
-    onPrimary = Color.White,
-    secondary = Color(0xFF455a64),
+    primary = Color.White,
+    onPrimary = Color.Black,
+    secondary = Color(18, 18, 18),
+    secondaryVariant = Color(18, 18, 18),
     onSecondary = Color.Black,
-    background = Color.White,
+    background = Color(242, 242, 242),
     onBackground = Color.Black,
-    surface = Color(0xFFffffff),
+    surface = Color.White,
     onSurface = Color.Black,
     error = Color(0xFFD00036),
     onError = Color.White

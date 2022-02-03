@@ -70,7 +70,7 @@ private fun HttpClient(
 
 private suspend inline fun Try(
     ifSuccess: () -> ArticleResponse
-) = Either(ifSuccess, { it.toAppException() })
+) = Either(ifSuccess) { it.toAppException() }
 
 private suspend fun Throwable.toAppException(): AppException =
     wrap { raw ->
