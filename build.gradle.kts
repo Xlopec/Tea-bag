@@ -24,7 +24,6 @@
 
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
@@ -32,7 +31,8 @@ installGitHooks()
 
 plugins {
     kotlin("jvm")
-    id("io.gitlab.arturbosch.detekt") version "1.17.1"
+    id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    id("com.github.ben-manes.versions")
 }
 
 allprojects {
@@ -46,22 +46,7 @@ allprojects {
         plugin("io.gitlab.arturbosch.detekt")
     }
 
-    tasks.withType<KotlinCompile>().all {
-        kotlinOptions {
-            jvmTarget = "1.8"
-            // disables warning about usage of experimental Kotlin features
-            @Suppress("SuspiciousCollectionReassignment")
-            freeCompilerArgs += listOf(
-                // todo: cleanup after migration to kotlin 1.5
-                "-Xuse-experimental=kotlin.Experimental",
-                "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
-                "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
-                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
-                "-Xuse-experimental=kotlin.ExperimentalStdlibApi"
-            )
-        }
-    }
+    optIn(DefaultOptIns)
 
     tasks.withType<Test>().all {
         reports {
@@ -88,14 +73,13 @@ val detektAll by tasks.registering(Detekt::class) {
     exclude("resources/", "**/build/**", "**/test/java/**")
 
     reports {
-        xml.enabled = false
-        txt.enabled = false
-        html.enabled = true
+        xml.required.set(false)
+        txt.required.set(false)
+        html.required.set(true)
     }
 }
 
 val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) {
-    buildUponDefaultConfig.set(true)
     ignoreFailures.set(true)
     parallel.set(true)
     setSource(files(rootDir))
@@ -108,8 +92,6 @@ val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) 
 val detektFormat by tasks.registering(Detekt::class) {
     parallel = true
     autoCorrect = true
-    buildUponDefaultConfig = true
-    failFast = false
     ignoreFailures = false
     setSource(files(projectDir))
 

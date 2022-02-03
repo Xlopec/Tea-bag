@@ -22,15 +22,28 @@
  * SOFTWARE.
  */
 
-import Libraries.kotlinStdLib
-
 plugins {
-    publishedLibrary()
+    `published-multiplatform-library`
 }
 
-dependencies {
+kotlin {
 
-    implementation(kotlinStdLib)
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                api(project(":shared-entities"))
+                implementation(libs.stdlib)
+            }
+        }
 
-    testImplementation(project(":tea-test"))
+        val commonTest by getting
+
+        val jvmMain by getting
+
+        val jvmTest by getting
+
+        val iosMain by getting
+
+        val iosTest by getting
+    }
 }

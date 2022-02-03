@@ -24,13 +24,13 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <toolWindow anchor="right" factoryClass="com.oliynick.max.tea.core.debug.app.presentation.sidebar.SideToolWindowFactory"
+        <toolWindow anchor="right" icon="/icons/toolbar_plugin_icon.svg" factoryClass="com.oliynick.max.tea.core.debug.app.feature.presentation.ui.sidebar.SideToolWindowFactory"
                     id="Time Traveller"/>
 
         <projectConfigurable id="com.oliynick.max.tea.core.plugin"
                              displayName="Time Traveller"
                              groupId="tools"
-                             instance="com.oliynick.max.tea.core.debug.app.presentation.settings.PluginSettings"/>
+                             instance="com.oliynick.max.tea.core.debug.app.feature.presentation.ui.settings.PluginSettings"/>
     </extensions>
 
     <actions>

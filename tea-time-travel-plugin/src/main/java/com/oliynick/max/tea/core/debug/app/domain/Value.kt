@@ -23,14 +23,15 @@ value class Type private constructor(
     companion object {
         fun of(
             name: String
-        ): Type {
-            require(name.isNotEmpty())
-            return Type(name)
-        }
+        ) = Type(name)
 
         fun of(
             any: Any
         ) = of(any::class.java.name)
+    }
+
+    init {
+        require(name.isNotEmpty())
     }
 }
 
@@ -39,74 +40,49 @@ data class Property(
     val v: Value
 )
 
-sealed class Value
+sealed interface Value
 
-object Null : Value()
+object Null : Value
 
-//todo replace by overloaded factory function
-
-data class NumberWrapper(
+@JvmInline
+value class NumberWrapper(
     val value: Number
-) : Value()
+) : Value
 
-data class CharWrapper(
+@JvmInline
+value class CharWrapper(
     val value: Char
-) : Value()
+) : Value
 
-data class StringWrapper(
+@JvmInline
+value class StringWrapper(
     val value: String
-) : Value()
+) : Value
 
-class BooleanWrapper private constructor(
+@JvmInline
+value class BooleanWrapper private constructor(
     val value: Boolean
-) : Value() {
+) : Value {
 
     companion object {
-        private val TRUE by lazy(LazyThreadSafetyMode.NONE) {
-            BooleanWrapper(
-                true
-            )
-        }
-        private val FALSE by lazy(LazyThreadSafetyMode.NONE) {
-            BooleanWrapper(
-                false
-            )
-        }
+        private val TRUE = BooleanWrapper(true)
+        private val FALSE = BooleanWrapper(false)
 
         fun of(
             value: Boolean
         ) = if (value) TRUE else FALSE
     }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as BooleanWrapper
-
-        if (value != other.value) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return value.hashCode()
-    }
-
-    override fun toString(): String {
-        return "BooleanWrapper(value=$value)"
-    }
-
 }
 
-data class CollectionWrapper(
-    val value: List<Value>
-) : Value()
+@JvmInline
+value class CollectionWrapper(
+    val items: List<Value>
+) : Value
 
 data class Ref(
     val type: Type,
     val properties: Set<Property>
-) : Value()
+) : Value
 
 inline val Value.isPrimitive: Boolean
     get() = when (this) {
@@ -118,3 +94,13 @@ inline val Value.isPrimitive: Boolean
         Null, is CollectionWrapper, is Ref -> false
     }
 
+inline val Value.stringValue: String?
+    get() = when (this) {
+        is BooleanWrapper -> value.toString()
+        is CharWrapper -> value.toString()
+        is StringWrapper -> value
+        is NumberWrapper -> value.toString()
+        Null -> null.toString()
+        is CollectionWrapper -> null
+        is Ref -> null
+    }

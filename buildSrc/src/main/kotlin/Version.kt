@@ -1,4 +1,7 @@
 @file:Suppress("FunctionName")
+
+import java.net.URI
+
 /*
 * MIT License
 *
@@ -150,3 +153,20 @@ private val ReleaseCandidateRegexp =
  * * 3 patch, 123
  */
 private val StableRegexp = Regex("^v(\\d+)\\.(\\d+)\\.(\\d+)$")
+
+fun Version.toVersionName(): String =
+    when (this) {
+        is Snapshot -> commit?.let { sha -> "${sha.take(CommitHashLength)}-SNAPSHOT" } ?: "SNAPSHOT"
+        is Alpha -> "${mainVersion.versionName}-alpha$alpha"
+        is ReleaseCandidate -> "${mainVersion.versionName}-${alpha?.let { "alpha$it-" } ?: ""}rc${candidate}"
+        is Stable -> mainVersion.versionName
+    }
+
+fun Version.toOssrhDeploymentUri(): URI =
+    when (this) {
+        is Snapshot -> URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        is Alpha, is Stable, is ReleaseCandidate -> URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+    }
+
+val MajorMinorPatch.versionName
+    get() = "${major}.${minor}.${patch}"

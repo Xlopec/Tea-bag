@@ -18,19 +18,19 @@ package com.oliynick.max.tea.core.debug.app.domain
 
 import kotlin.contracts.contract
 
-sealed class Validated<out T> {
-    abstract val input: String
+sealed interface Validated<out T> {
+    val input: String
 }
 
 data class Valid<out T>(
     override val input: String,
     val t: T
-) : Validated<T>()
+) : Validated<T>
 
 data class Invalid(
     override val input: String,
     val message: String
-) : Validated<Nothing>()
+) : Validated<Nothing>
 
 inline fun <T, R> Validated<T>.fold(
     valid: (Valid<T>) -> R,
