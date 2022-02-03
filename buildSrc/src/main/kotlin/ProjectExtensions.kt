@@ -49,6 +49,10 @@ fun Project.installGitHooks() = afterEvaluate {
         }
 }
 
+fun Project.sourceSetDir(
+    sourceSetName: String
+): File = file("src/$sourceSetName/kotlin")
+
 fun KotlinMultiplatformExtension.optIn(
     vararg annotationNames: String
 ) = optIn(listOf(*annotationNames))

@@ -72,7 +72,7 @@ jobs:
         run: chmod +x gradlew
       - name: Publish artifacts
         # It makes sense releasing tea-core artifact for now
-        run: ./gradlew tea-core:release
+        run: ./gradlew release
         env:
           GITHUB_TAG: ${{ steps.get_version.outputs.GITHUB_TAG }}
           OSSRH_USER: ${{ secrets.OSSRH_USER }}

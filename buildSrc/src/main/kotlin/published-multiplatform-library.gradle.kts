@@ -15,7 +15,7 @@ tasks.withType<DokkaTask>().configureEach {
             skipEmptyPackages.set(true)
         }
 
-        listOf("commonMain", "jvmMain", "iosMain").forEach { sourceSet ->
+        listOf("commonMain", "jvmMain", "iosMain").filter { project.sourceSetDir(it).exists() }.forEach { sourceSet ->
             named(sourceSet) {
                 linkSourcesForSourceSet(project, sourceSet)
             }
