@@ -58,7 +58,7 @@ struct AppView: View {
                 switch screen {
                     // fixme refactor in truly Swift fashion
                 case let tabScreen as TabScreen:
-                    AppTabViewContent(tabScreen: tabScreen, appState: appState)
+                    AppTabView(initialTab: tabScreen, appState: appState, handler: handler)
                 case let articleDetailsState as ArticleDetailsState:
                     Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
                 default:
@@ -80,82 +80,6 @@ struct AppView: View {
         }
     }
     
-    @ViewBuilder
-    private func AppTabViewContent(tabScreen: TabScreen, appState: AppState) -> some View {
-        AppTabView(initialTab: (tabScreen as? ArticlesState)?.displayTab ?? 3, handler: handler) { tab in
-            
-            if let articlesState = tabScreen as? ArticlesState {
-                ArticlesView(state: articlesState, handler: handler, searchHintText: tab.searchHintText, headingText: articlesState.headingText)
-            } else {
-                SettingsView(state: appState, handler: handler)
-            }
-        }
-    }
-    
-}
-
-private extension Int {
-    
-    var searchHintText: String {
-        var text = "Search in articles..."
-        
-        if self == 0 {
-            text = "Search in articles..."
-        } else if self == 1 {
-            text = "Search in favorite..."
-        } else if self == 2 {
-            text = "Search in trending..."
-        }
-        
-        return text
-    }
-    
-}
-
-private extension ArticlesState {
-    
-    var headingText: String {
-        var text = "Feed"
-        
-        if query.type.description() == "Regular" {
-            text = "Feed"
-        } else if query.type.description() == "Favorite" {
-            text = "Favorite"
-        } else if query.type.description() == "Trending" {
-            text = "Trending"
-        }
-        
-        return text
-    }
-    
-    var displayTab: Int {
-        
-        var initialTab = 0
-        
-        if query.type.description() == "Regular" {
-            initialTab = 0
-        } else if query.type.description() == "Favorite" {
-            initialTab = 1
-        } else if query.type.description() == "Trending" {
-            initialTab = 2
-        }
-        
-        return initialTab
-    }
-    
-    var searchHintText: String {
-        var text = "Search in articles..."
-        
-        if query.type.description() == "Regular" {
-            text = "Search in articles..."
-        } else if query.type.description() == "Favorite" {
-            text = "Search in favorite..."
-        } else if query.type.description() == "Trending" {
-            text = "Search in trending..."
-        }
-        
-        return text
-    }
 }
 
 struct AppView_Previews: PreviewProvider {
