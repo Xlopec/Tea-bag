@@ -26,13 +26,11 @@ struct SettingsView: View {
             Text("Settings")
                 .font(.title)
                 .padding()
-        Form {
-            
-            Section("Theming") {
-                Toggle("Enable dark mode", isOn: $darkModeEnabled)
+            Form {
+                Section("Theming") {
+                    Toggle("Enable dark mode", isOn: $darkModeEnabled)
+                }
             }
-            
-        }
         }
         .onChange(of: darkModeEnabled) { _ in
             handler(OnToggleDarkMode.shared)

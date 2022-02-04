@@ -20,7 +20,7 @@ struct AppTabView: View {
     private let icons = ["globe", "heart", "chart.line.uptrend.xyaxis", "gear"]
     private let titles = ["Articles", "Favorites", "Trending", "Settings"]
     
-    let handler: MessageHandler
+    private let handler: MessageHandler
     
     init(initialTab: TabScreen, appState: AppState, handler: @escaping MessageHandler) {
         self.tab = initialTab
