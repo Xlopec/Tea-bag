@@ -11,14 +11,7 @@ import SharedAppLib
 
 struct SettingsView: View {
     
-    @State private var darkModeEnabled = false
-    
-    let handler: MessageHandler
-    
-    init(state: AppState, handler: @escaping MessageHandler) {
-        self.darkModeEnabled = state.isInDarkMode
-        self.handler = handler
-    }
+    @Binding public var darkMode: Bool
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -28,18 +21,15 @@ struct SettingsView: View {
                 .padding()
             Form {
                 Section("Theming") {
-                    Toggle("Enable dark mode", isOn: $darkModeEnabled)
+                    Toggle("Enable dark mode", isOn: $darkMode)
                 }
             }
-        }
-        .onChange(of: darkModeEnabled) { _ in
-            handler(OnToggleDarkMode.shared)
         }
     }
 }
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(state: AppState(isInDarkMode: true, screens: [])) { _ in }
+        SettingsView(darkMode: Binding.constant(true))
     }
 }

@@ -69,7 +69,7 @@ struct AppView: View {
                 Text("Splash screen!")
             }
         }.onChange(of: appComponent.appState?.isInDarkMode) { newDarkMode in
-            
+
             guard let darkMode = newDarkMode else {
                 return
             }
