@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign.Companion.Justify
 import com.oliynick.max.tea.core.debug.app.Message
 import com.oliynick.max.tea.core.debug.app.domain.Invalid
-import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.misc.safe
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.modifier.noIndicationClickable
 import com.oliynick.max.tea.core.debug.app.feature.server.StartServer
 import com.oliynick.max.tea.core.debug.app.state.*
@@ -48,7 +47,7 @@ fun InfoView(
             is Started -> InfoViewMessage(state.toDescription())
             is Starting -> InfoViewMessage(state.toDescription())
             is Stopping -> InfoViewMessage(state.toDescription())
-        }.safe
+        }
     }
 }
 

@@ -36,8 +36,3 @@ inline fun Project.chooseFile(
 ) = FileChooser.chooseFile(descriptor, this, null, null) { virtualFile ->
     callback(File(virtualFile.path))
 }
-
-/** forces compiler to check `when` clause is exhaustive */
-@Deprecated("will remove")
-val <T> T.safe
-    get() = this

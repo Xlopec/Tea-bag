@@ -54,14 +54,6 @@ private fun setupStrictAppPolicies() {
     )
 }
 
-/*private fun BuildGson() =
-    AppGson {
-        setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-
-        ArticleAdapters.forEach { (cl, adapter) ->
-            registerTypeAdapter(cl.java, adapter)
-        }
-    }*/
 actual interface Environment :
     AppModule<Environment>,
     ArticlesModule<Environment>,

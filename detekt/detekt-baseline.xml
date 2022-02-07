@@ -20,12 +20,22 @@
     <ID>MagicNumber:Balloon.kt$30</ID>
     <ID>MagicNumber:Colors.kt$0x33412E</ID>
     <ID>MagicNumber:Colors.kt$0x704745</ID>
+    <ID>MagicNumber:Colors.kt$0xFFD00036</ID>
+    <ID>MagicNumber:Colors.kt$0xFFF70040</ID>
+    <ID>MagicNumber:Colors.kt$0xFFFFFFFF</ID>
     <ID>MagicNumber:Colors.kt$0xbaeeba</ID>
     <ID>MagicNumber:Colors.kt$0xffcccc</ID>
+    <ID>MagicNumber:Colors.kt$18</ID>
     <ID>MagicNumber:Colors.kt$182</ID>
+    <ID>MagicNumber:Colors.kt$20</ID>
+    <ID>MagicNumber:Colors.kt$242</ID>
+    <ID>MagicNumber:Colors.kt$35</ID>
+    <ID>MagicNumber:Colors.kt$36</ID>
     <ID>MagicNumber:ComponentTest.kt$ComponentTest$1_000</ID>
     <ID>MagicNumber:ComponentTest.kt$ComponentTest$3</ID>
     <ID>MagicNumber:Date.kt$1000.0</ID>
+    <ID>MagicNumber:InsetAwareTopAppBar.kt$100</ID>
+    <ID>MagicNumber:InsetAwareTopAppBar.kt$100f</ID>
     <ID>MagicNumber:LocalStorageImpl.kt$6</ID>
     <ID>MagicNumber:NettyServer.kt$10</ID>
     <ID>MagicNumber:NettyServer.kt$5</ID>
@@ -47,13 +57,12 @@
     <ID>NewLineAtEndOfFile:AppNavigation.kt$com.oliynick.max.reader.app.navigation.AppNavigation.kt</ID>
     <ID>NewLineAtEndOfFile:AppNavigationImpl.kt$com.oliynick.max.reader.app.navigation.AppNavigationImpl.kt</ID>
     <ID>NewLineAtEndOfFile:AppResolverImpl.kt$com.oliynick.max.reader.app.AppResolverImpl.kt</ID>
-    <ID>NewLineAtEndOfFile:AppTest.kt$com.max.reader.AppTest.kt</ID>
     <ID>NewLineAtEndOfFile:ArticleDetailsModule.kt$com.oliynick.max.reader.article.details.ArticleDetailsModule.kt</ID>
     <ID>NewLineAtEndOfFile:ArticlesModule.kt$com.oliynick.max.reader.article.list.ArticlesModule.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentException.kt$com.oliynick.max.tea.core.misc.ComponentException.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentTest.kt$com.oliynick.max.tea.core.component.ComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:ComposeAnnotations.kt$com.oliynick.max.reader.app.ComposeAnnotations.kt</ID>
-    <ID>NewLineAtEndOfFile:CompositionsLogger.kt$com.max.reader.misc.CompositionsLogger.kt</ID>
+    <ID>NewLineAtEndOfFile:CompositionsLogger.kt$com.max.reader.app.ui.misc.CompositionsLogger.kt</ID>
     <ID>NewLineAtEndOfFile:Date.kt$com.oliynick.max.entities.shared.Date.kt</ID>
     <ID>NewLineAtEndOfFile:DebuggableComponentTest.kt$com.oliynick.max.tea.core.debug.component.DebuggableComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:Either.kt$com.oliynick.max.entities.shared.datatypes.Either.kt</ID>

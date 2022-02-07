@@ -104,10 +104,10 @@ android {
     sourceSets {
 
         maybeCreate("remote")
-            .java.srcDirs("remote/java", "main/java")
+            .java.srcDirs("remote/kotlin", "main/kotlin")
 
         maybeCreate("default")
-            .java.srcDirs("default/java", "main/java")
+            .java.srcDirs("default/kotlin", "main/kotlin")
     }
 }
 
