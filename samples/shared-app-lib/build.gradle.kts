@@ -64,8 +64,13 @@ kotlin {
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.logging)
-                implementation(libs.ktor.client.json)
-                implementation(libs.ktor.client.serialization)
+
+                //implementation(libs.ktor.client.json)
+                //implementation(libs.ktor.client.serialization)
+
+                implementation(libs.ktor.client.negotiation)
+                implementation(libs.ktor.serialization.json)
+
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2")
                 implementation("com.russhwolf:multiplatform-settings-no-arg:0.8.1")
                 implementation("com.squareup.sqldelight:runtime:1.5.3")

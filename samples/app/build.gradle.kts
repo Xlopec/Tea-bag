@@ -122,6 +122,7 @@ dependencies {
     implementation(libs.coroutines.android)
 
     implementation(libs.bundles.compose)
+    debugImplementation(libs.compose.tooling)
 
     implementation(libs.bundles.accompanist)
     implementation(libs.coil)

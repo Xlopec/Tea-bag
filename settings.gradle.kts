@@ -33,8 +33,8 @@ dependencyResolutionManagement {
 
             version("ktor", "2.0.0-beta-1")
             version("coroutines", "1.6.0")
-            version("compose", "1.2.0-alpha01")
-            version("accompanist", "0.22.0-rc")
+            version("compose", "1.2.0-alpha02")
+            version("accompanist", "0.24.1-alpha")
             version("sqldelight", "1.5.3")
 
             // Testing
@@ -153,12 +153,12 @@ dependencyResolutionManagement {
                 .to("io.ktor", "ktor-client-gson")
                 .versionRef("ktor")
 
-            alias("ktor-client-json")
-                .to("io.ktor", "ktor-client-json")
+            alias("ktor-client-negotiation")
+                .to("io.ktor", "ktor-client-content-negotiation")
                 .versionRef("ktor")
 
-            alias("ktor-client-serialization")
-                .to("io.ktor", "ktor-client-serialization")
+            alias("ktor-serialization-json")
+                .to("io.ktor", "ktor-serialization-kotlinx-json")
                 .versionRef("ktor")
 
             // Compose
@@ -199,7 +199,7 @@ dependencyResolutionManagement {
                 .to("androidx.compose.compiler", "compiler")
                 .versionRef("compose")
 
-            alias("compose-activity").to("androidx.activity:activity-compose:1.4.0")
+            alias("compose-activity").to("androidx.activity:activity-compose:1.5.0-alpha01")
 
             bundle(
                 "compose",
@@ -209,7 +209,6 @@ dependencyResolutionManagement {
                     "compose-foundation-layout",
                     "compose-material",
                     "compose-icons",
-                    "compose-tooling",
                     "compose-runtime",
                     "compose-animation",
                     "compose-compiler",

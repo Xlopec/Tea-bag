@@ -15,12 +15,11 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
 import io.ktor.client.plugins.*
-import io.ktor.client.plugins.json.*
-import io.ktor.client.plugins.json.serializer.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.URLProtocol.Companion.HTTPS
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.*
 import io.ktor.util.network.*
 import kotlinx.coroutines.withContext
@@ -55,12 +54,11 @@ private fun HttpClient(
     engine: HttpClientEngineFactory<HttpClientEngineConfig>
 ) = HttpClient(engine) {
 
-    install(JsonPlugin.Plugin) {
-        val json = kotlinx.serialization.json.Json {
+    install(ContentNegotiation) {
+        json(json = Json {
             ignoreUnknownKeys = true
             useAlternativeNames = false
-        }
-        serializer = KotlinxSerializer(json)
+        })
     }
 
     Logging {
