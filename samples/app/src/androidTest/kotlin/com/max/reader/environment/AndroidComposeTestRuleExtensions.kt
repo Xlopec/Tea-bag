@@ -21,7 +21,7 @@ fun AndroidComposeTestRule<*, *>.setTestContent(
 ) = setContent {
 
     val closeCommands = remember { MutableSharedFlow<CloseApp>() }
-    val environment = remember { TestEnvironment(activity.application, closeCommands::emit) }
+    val environment = remember { TestEnvironment(activity.application) }
 
     DisposableEffect(Unit) {
         registerIdlingResource(environment)

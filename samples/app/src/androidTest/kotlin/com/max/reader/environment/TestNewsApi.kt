@@ -4,7 +4,7 @@ import androidx.compose.ui.test.IdlingResource
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.feature.article.list.Paging
-import com.oliynick.max.reader.network.ArticleResponse
+import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.withContext

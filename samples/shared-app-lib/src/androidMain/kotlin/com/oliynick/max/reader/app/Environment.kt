@@ -19,8 +19,7 @@ actual val IO: CoroutineDispatcher = Dispatchers.IO
 fun Environment(
     debug: Boolean,
     application: Application,
-    scope: CoroutineScope,
-    closeCommands: CloseCommandsSink
+    scope: CoroutineScope
 ): Environment {
 
     if (debug) {
@@ -28,7 +27,7 @@ fun Environment(
     }
 
     return object : Environment,
-        AppModule<Environment> by AppModule(closeCommands),
+        AppModule<Environment> by AppModule(),
         ArticlesModule<Environment> by ArticlesModule(AndroidShareArticle(application)),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(application),
         NewsApi by NewsApi(application),

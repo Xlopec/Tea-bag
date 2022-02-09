@@ -11,14 +11,10 @@ import com.oliynick.max.reader.app.feature.article.list.ArticlesResolver
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.tea.core.component.sideEffect
 
-@Deprecated("remove")
-typealias CloseCommandsSink = suspend (CloseApp) -> Unit
-
-fun <Env> AppResolverImpl(
-    closeCommands: CloseCommandsSink,
-): AppResolver<Env> where Env : ArticlesResolver<Env>,
-                          Env : LocalStorage,
-                          Env : ArticleDetailsResolver =
+fun <Env> AppResolver(): AppResolver<Env> where
+        Env : ArticlesResolver<Env>,
+        Env : LocalStorage,
+        Env : ArticleDetailsResolver =
     AppResolver { command ->
         when (command) {
             is CloseApp -> setOf()

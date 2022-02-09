@@ -23,19 +23,18 @@ import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.serialization.PersistentListSerializer
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.ShareStateWhileSubscribed
-import com.oliynick.max.tea.core.component.states
+import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
 import io.ktor.http.*
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.coroutines.flow.Flow
 
 fun DebuggableAppComponent(
     environment: Environment,
     initializer: Initializer<AppState, Command>,
-): (Flow<Message>) -> Flow<AppState> =
+): Component<Message, AppState, Command> =
     Component(
         id = ComponentId("News Reader App"),
         initializer = initializer,
@@ -45,7 +44,7 @@ fun DebuggableAppComponent(
         url = Url("http://10.0.2.2:8080"),
         jsonSerializer = AppGsonSerializer(),
         shareOptions = ShareStateWhileSubscribed,
-    ).states()
+    )
 
 private fun AppGsonSerializer(): JsonSerializer<JsonElement> = GsonSerializer {
     registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)

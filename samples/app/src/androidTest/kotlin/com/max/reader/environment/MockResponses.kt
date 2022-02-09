@@ -3,7 +3,8 @@
 package com.max.reader.environment
 
 import com.oliynick.max.entities.shared.datatypes.Left
-import com.oliynick.max.reader.network.ArticleElement
+import com.oliynick.max.reader.app.feature.network.ArticleElement
+import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import kotlinx.coroutines.delay
 
 fun foreverWaitingResponse(): ResponseProvider = { _, _ ->
@@ -15,9 +16,9 @@ fun anyRequest(): InputPredicate = { _, _ -> true }
 
 fun ArticleResponse(
     vararg articles: ArticleElement
-) =
+): Left<ArticleResponse> =
     Left(
-        com.oliynick.max.reader.network.ArticleResponse(
+        ArticleResponse(
             articles.size,
             articles.toList()
         )

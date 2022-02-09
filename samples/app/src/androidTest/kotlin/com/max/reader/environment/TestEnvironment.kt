@@ -7,7 +7,6 @@ import androidx.compose.ui.test.IdlingResource
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.AppModule
-import com.oliynick.max.reader.app.CloseCommandsSink
 import com.oliynick.max.reader.app.Environment
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsModule
 import com.oliynick.max.reader.app.feature.article.list.AndroidShareArticle
@@ -34,11 +33,10 @@ interface MockNewsApi : NewsApi, IdlingResource {
 
 fun TestEnvironment(
     application: Application,
-    closeCommands: CloseCommandsSink,
     dispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
 ): TestEnvironment =
     object : TestEnvironment,
-        AppModule<Environment> by AppModule(closeCommands),
+        AppModule<Environment> by AppModule(),
         ArticlesModule<Environment> by ArticlesModule(AndroidShareArticle(application)),
         ArticleDetailsModule<Environment> by ArticleDetailsModule(application),
         MockNewsApi by TestNewsApi(dispatcher),

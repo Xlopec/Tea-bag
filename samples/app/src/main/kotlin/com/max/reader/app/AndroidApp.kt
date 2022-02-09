@@ -31,18 +31,15 @@ import android.app.Activity
 import android.app.Application
 import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.Message
-import com.oliynick.max.reader.app.command.CloseApp
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.tea.core.component.Component
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
 
 class AndroidApp : Application() {
-    val closeCommands = MutableSharedFlow<CloseApp>()
     val component by lazy {
-        AppComponent(this, CoroutineScope(Job() + Default.limitedParallelism(1)), closeCommands)
+        AppComponent(this, CoroutineScope(Job() + Default.limitedParallelism(1)))
     }
 }
 
