@@ -25,7 +25,6 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.message.Message
 
 fun interface AppResolver<Env> {
 

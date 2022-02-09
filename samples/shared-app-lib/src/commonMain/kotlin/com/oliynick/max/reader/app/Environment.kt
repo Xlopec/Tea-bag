@@ -1,6 +1,6 @@
 package com.oliynick.max.reader.app
 
-import com.oliynick.max.reader.app.storage.LocalStorage
+import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 

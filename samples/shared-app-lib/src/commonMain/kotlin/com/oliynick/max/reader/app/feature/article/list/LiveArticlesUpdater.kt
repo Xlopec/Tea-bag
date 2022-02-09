@@ -25,10 +25,10 @@
 package com.oliynick.max.reader.app.feature.article.list
 
 import com.oliynick.max.reader.app.command.*
+import com.oliynick.max.reader.app.domain.Article
+import com.oliynick.max.reader.app.domain.toggleFavorite
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.app.feature.article.list.QueryType.*
-import com.oliynick.max.reader.domain.Article
-import com.oliynick.max.reader.domain.toggleFavorite
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand

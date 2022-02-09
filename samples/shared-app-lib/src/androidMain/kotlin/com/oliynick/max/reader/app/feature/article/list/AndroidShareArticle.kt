@@ -4,7 +4,7 @@ package com.oliynick.max.reader.app.feature.article.list
 
 import android.app.Application
 import android.content.Intent
-import com.oliynick.max.reader.domain.Article
+import com.oliynick.max.reader.app.domain.Article
 
 class AndroidShareArticle(
     private val application: Application

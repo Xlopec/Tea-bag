@@ -62,13 +62,13 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.statusBarsPadding
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.AppException
+import com.oliynick.max.reader.app.Message
+import com.oliynick.max.reader.app.NavigateToArticleDetails
 import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.feature.article.list.*
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState.TransientState.*
 import com.oliynick.max.reader.app.feature.article.list.QueryType.*
-import com.oliynick.max.reader.app.message.Message
-import com.oliynick.max.reader.app.message.NavigateToArticleDetails
-import com.oliynick.max.reader.domain.Article
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch

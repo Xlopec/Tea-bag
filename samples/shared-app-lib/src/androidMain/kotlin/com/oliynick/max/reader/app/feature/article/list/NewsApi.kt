@@ -3,7 +3,7 @@ package com.oliynick.max.reader.app.feature.article.list
 import android.app.Application
 import android.content.res.Configuration
 import android.os.Build
-import com.oliynick.max.reader.network.NewsApiImpl
+import com.oliynick.max.reader.app.feature.network.NewsApiImpl
 import io.ktor.client.engine.cio.*
 import java.util.Locale.ENGLISH
 

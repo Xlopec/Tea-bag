@@ -1,7 +1,7 @@
 @file:Suppress("FunctionName")
 @file:OptIn(InternalAPI::class)
 
-package com.oliynick.max.reader.network
+package com.oliynick.max.reader.app.feature.network
 
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException

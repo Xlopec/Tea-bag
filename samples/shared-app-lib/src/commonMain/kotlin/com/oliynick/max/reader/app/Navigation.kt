@@ -22,12 +22,37 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.settings
+package com.oliynick.max.reader.app
 
-import com.oliynick.max.reader.app.message.ScreenMessage
+import com.oliynick.max.entities.shared.randomUUID
+import com.oliynick.max.reader.app.domain.Article
+import com.oliynick.max.reader.app.feature.settings.SettingsState
 
-sealed interface SettingsMessage : ScreenMessage
+sealed interface Navigation : Message
 
-data class ToggleDarkMode(
-    val enable: Boolean
-) : SettingsMessage
+data class NavigateToArticleDetails(
+    val article: Article,
+    val id: ScreenId = randomUUID(),
+) : Navigation
+
+sealed interface TabNavigation : Navigation {
+    val id: ScreenId
+}
+
+object NavigateToFavorite : TabNavigation {
+    override val id: ScreenId = randomUUID()
+}
+
+object NavigateToFeed : TabNavigation {
+    override val id: ScreenId = randomUUID()
+}
+
+object NavigateToSettings : TabNavigation {
+    override val id: ScreenId = SettingsState.id
+}
+
+object NavigateToTrending : TabNavigation {
+    override val id: ScreenId = randomUUID()
+}
+
+object Pop : Navigation

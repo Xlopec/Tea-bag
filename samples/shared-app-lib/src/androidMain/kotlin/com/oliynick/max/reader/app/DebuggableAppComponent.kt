@@ -20,7 +20,6 @@ package com.oliynick.max.reader.app
 
 import com.google.gson.JsonElement
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.message.Message
 import com.oliynick.max.reader.app.serialization.PersistentListSerializer
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.ShareStateWhileSubscribed

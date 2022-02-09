@@ -4,7 +4,7 @@ import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsModule
 import com.oliynick.max.reader.app.feature.article.list.ArticlesModule
 import com.oliynick.max.reader.app.feature.article.list.IosShareArticle
 import com.oliynick.max.reader.app.feature.article.list.NewsApi
-import com.oliynick.max.reader.app.storage.LocalStorage
+import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 

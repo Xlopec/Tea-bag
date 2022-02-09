@@ -1,4 +1,4 @@
-package com.oliynick.max.reader.app.navigation
+package com.oliynick.max.reader.app.feature.navigation
 
 import com.oliynick.max.reader.app.NestedScreen
 import com.oliynick.max.reader.app.ScreenId

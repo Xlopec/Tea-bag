@@ -25,7 +25,7 @@
 package com.oliynick.max.reader.app.feature.article.details
 
 import com.oliynick.max.reader.app.ScreenId
-import com.oliynick.max.reader.app.message.ScreenMessage
+import com.oliynick.max.reader.app.ScreenMessage
 
 sealed interface ArticleDetailsMessage : ScreenMessage {
     val id: ScreenId

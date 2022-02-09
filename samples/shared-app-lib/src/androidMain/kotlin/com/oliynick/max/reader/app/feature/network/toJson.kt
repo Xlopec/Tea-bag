@@ -1,4 +1,4 @@
-package com.oliynick.max.reader.network
+package com.oliynick.max.reader.app.feature.network
 
 import java.text.SimpleDateFormat
 import java.util.*

@@ -22,12 +22,8 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.settings
+package com.oliynick.max.reader.app
 
-import com.oliynick.max.entities.shared.randomUUID
-import com.oliynick.max.reader.app.ScreenId
-import com.oliynick.max.reader.app.TabScreen
+sealed interface Message
 
-object SettingsState : TabScreen {
-    override val id: ScreenId = randomUUID()
-}
+interface ScreenMessage : Message

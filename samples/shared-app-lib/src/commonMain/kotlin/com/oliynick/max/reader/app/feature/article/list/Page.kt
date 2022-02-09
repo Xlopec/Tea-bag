@@ -24,8 +24,8 @@
 
 package com.oliynick.max.reader.app.feature.article.list
 
+import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState.Companion.ArticlesPerPage
-import com.oliynick.max.reader.domain.Article
 
 data class Page(
     val articles: List<Article>,

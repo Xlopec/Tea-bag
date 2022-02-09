@@ -2,7 +2,7 @@
 
 package com.oliynick.max.reader.app.feature.article.list
 
-import com.oliynick.max.reader.domain.Article
+import com.oliynick.max.reader.app.domain.Article
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 

@@ -3,7 +3,7 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.entities.shared.randomUUID
-import com.oliynick.max.reader.app.navigation.floatGroup
+import com.oliynick.max.reader.app.feature.navigation.floatGroup
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.test.Test
 import kotlin.test.assertEquals

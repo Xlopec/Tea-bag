@@ -26,7 +26,7 @@
 
 package com.oliynick.max.reader.app.feature.article.list
 
-import com.oliynick.max.reader.app.storage.LocalStorage
+import com.oliynick.max.reader.app.feature.storage.LocalStorage
 
 interface ArticlesModule<Env> : ArticlesUpdater, ArticlesResolver<Env>
 

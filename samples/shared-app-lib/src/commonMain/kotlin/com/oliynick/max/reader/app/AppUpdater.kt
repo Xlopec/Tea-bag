@@ -25,7 +25,6 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.message.Message
 import com.oliynick.max.tea.core.component.UpdateWith
 
 fun interface AppUpdater<Env> {

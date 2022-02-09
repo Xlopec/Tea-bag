@@ -1,9 +1,8 @@
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.reader.app
+package com.oliynick.max.reader.app.feature.storage
 
 import com.oliynick.max.reader.app.storage.AppDatabase
-import com.oliynick.max.reader.app.storage.LocalStorage
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.drivers.native.NativeSqliteDriver
 

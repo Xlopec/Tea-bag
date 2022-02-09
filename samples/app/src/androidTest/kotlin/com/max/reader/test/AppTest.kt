@@ -38,12 +38,12 @@ import com.max.reader.environment.anyRequest
 import com.oliynick.max.entities.shared.randomUUID
 import com.oliynick.max.reader.app.AppComponent
 import com.oliynick.max.reader.app.AppInitializer
+import com.oliynick.max.reader.app.domain.Author
+import com.oliynick.max.reader.app.domain.Description
+import com.oliynick.max.reader.app.domain.Title
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.QueryType.Regular
-import com.oliynick.max.reader.domain.Author
-import com.oliynick.max.reader.domain.Description
-import com.oliynick.max.reader.domain.Title
 import com.oliynick.max.reader.network.ArticleElement
 import org.junit.Rule
 import org.junit.Test

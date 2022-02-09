@@ -3,10 +3,10 @@ package com.oliynick.max.reader.app.serialization
 import com.google.gson.*
 import com.oliynick.max.entities.shared.Date
 import com.oliynick.max.entities.shared.Url
-import com.oliynick.max.reader.domain.Author
-import com.oliynick.max.reader.domain.Description
-import com.oliynick.max.reader.domain.Title
-import com.oliynick.max.reader.domain.tryCreate
+import com.oliynick.max.reader.app.domain.Author
+import com.oliynick.max.reader.app.domain.Description
+import com.oliynick.max.reader.app.domain.Title
+import com.oliynick.max.reader.app.domain.tryCreate
 import java.lang.reflect.Type
 import java.net.URL
 import java.text.SimpleDateFormat

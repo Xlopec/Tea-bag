@@ -1,8 +1,8 @@
-package com.oliynick.max.reader.app.navigation
+package com.oliynick.max.reader.app.feature.navigation
 
 import com.oliynick.max.reader.app.AppState
+import com.oliynick.max.reader.app.Navigation
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.message.Navigation
 import com.oliynick.max.tea.core.component.UpdateWith
 
 fun interface AppNavigation {

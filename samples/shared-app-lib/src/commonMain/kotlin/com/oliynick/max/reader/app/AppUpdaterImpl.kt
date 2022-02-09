@@ -34,11 +34,9 @@ import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsUpdater
 import com.oliynick.max.reader.app.feature.article.list.ArticlesMessage
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.ArticlesUpdater
-import com.oliynick.max.reader.app.message.Navigation
-import com.oliynick.max.reader.app.message.ScreenMessage
-import com.oliynick.max.reader.app.navigation.AppNavigation
-import com.oliynick.max.reader.settings.SettingsMessage
-import com.oliynick.max.reader.settings.ToggleDarkMode
+import com.oliynick.max.reader.app.feature.navigation.AppNavigation
+import com.oliynick.max.reader.app.feature.settings.SettingsMessage
+import com.oliynick.max.reader.app.feature.settings.ToggleDarkMode
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 

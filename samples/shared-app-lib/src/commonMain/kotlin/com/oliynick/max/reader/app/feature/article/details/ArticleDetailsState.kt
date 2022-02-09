@@ -26,7 +26,7 @@ package com.oliynick.max.reader.app.feature.article.details
 
 import com.oliynick.max.reader.app.FullScreen
 import com.oliynick.max.reader.app.ScreenId
-import com.oliynick.max.reader.domain.Article
+import com.oliynick.max.reader.app.domain.Article
 
 data class ArticleDetailsState(
     override val id: ScreenId,

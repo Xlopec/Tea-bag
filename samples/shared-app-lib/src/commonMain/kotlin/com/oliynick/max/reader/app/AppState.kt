@@ -26,9 +26,9 @@ package com.oliynick.max.reader.app
 
 import com.oliynick.max.entities.shared.UUID
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.navigation.NavigationStack
-import com.oliynick.max.reader.app.navigation.push
-import com.oliynick.max.reader.app.navigation.screen
+import com.oliynick.max.reader.app.feature.navigation.NavigationStack
+import com.oliynick.max.reader.app.feature.navigation.push
+import com.oliynick.max.reader.app.feature.navigation.screen
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand

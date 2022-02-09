@@ -54,8 +54,8 @@
     <ID>NewLineAtEndOfFile:AndroidComposeTestRuleExtensions.kt$com.max.reader.test.AndroidComposeTestRuleExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:Annotations.kt$com.oliynick.max.reader.app.Annotations.kt</ID>
     <ID>NewLineAtEndOfFile:AppModule.kt$com.oliynick.max.reader.app.AppModule.kt</ID>
-    <ID>NewLineAtEndOfFile:AppNavigation.kt$com.oliynick.max.reader.app.navigation.AppNavigation.kt</ID>
-    <ID>NewLineAtEndOfFile:AppNavigationImpl.kt$com.oliynick.max.reader.app.navigation.AppNavigationImpl.kt</ID>
+    <ID>NewLineAtEndOfFile:AppNavigation.kt$com.oliynick.max.reader.app.feature.navigation.AppNavigation.kt</ID>
+    <ID>NewLineAtEndOfFile:AppNavigationImpl.kt$com.oliynick.max.reader.app.feature.navigation.AppNavigationImpl.kt</ID>
     <ID>NewLineAtEndOfFile:AppResolverImpl.kt$com.oliynick.max.reader.app.AppResolverImpl.kt</ID>
     <ID>NewLineAtEndOfFile:ArticleDetailsModule.kt$com.oliynick.max.reader.app.feature.article.details.ArticleDetailsModule.kt</ID>
     <ID>NewLineAtEndOfFile:ArticlesModule.kt$com.oliynick.max.reader.app.feature.article.list.ArticlesModule.kt</ID>
@@ -72,16 +72,16 @@
     <ID>NewLineAtEndOfFile:IosComponent.kt$com.oliynick.max.reader.app.IosComponent.kt</ID>
     <ID>NewLineAtEndOfFile:LiveArticleDetailsResolver.kt$com.oliynick.max.reader.app.feature.article.details.LiveArticleDetailsResolver.kt</ID>
     <ID>NewLineAtEndOfFile:LocalStorage.kt$com.oliynick.max.reader.app.LocalStorage.kt</ID>
-    <ID>NewLineAtEndOfFile:LocalStorage.kt$com.oliynick.max.reader.app.storage.LocalStorage.kt</ID>
-    <ID>NewLineAtEndOfFile:LocalStorageImpl.kt$com.oliynick.max.reader.app.storage.LocalStorageImpl.kt</ID>
+    <ID>NewLineAtEndOfFile:LocalStorage.kt$com.oliynick.max.reader.app.feature.storage.LocalStorage.kt</ID>
+    <ID>NewLineAtEndOfFile:LocalStorageImpl.kt$com.oliynick.max.reader.app.feature.storage.LocalStorageImpl.kt</ID>
     <ID>NewLineAtEndOfFile:MockResponses.kt$com.max.reader.environment.MockResponses.kt</ID>
     <ID>NewLineAtEndOfFile:Model.kt$com.oliynick.max.reader.network.Model.kt</ID>
     <ID>NewLineAtEndOfFile:NavigationExtensionsTest.kt$com.oliynick.max.reader.app.NavigationExtensionsTest.kt</ID>
-    <ID>NewLineAtEndOfFile:NavigationStack.kt$com.oliynick.max.reader.app.navigation.NavigationStack.kt</ID>
+    <ID>NewLineAtEndOfFile:NavigationStack.kt$com.oliynick.max.reader.app.feature.navigation.NavigationStack.kt</ID>
     <ID>NewLineAtEndOfFile:NewsApi.kt$com.oliynick.max.reader.app.feature.article.list.NewsApi.kt</ID>
     <ID>NewLineAtEndOfFile:NewsApiImpl.kt$com.oliynick.max.reader.network.NewsApiImpl.kt</ID>
     <ID>NewLineAtEndOfFile:PluginDependenciesSpecExt.kt$.PluginDependenciesSpecExt.kt</ID>
-    <ID>NewLineAtEndOfFile:PopScreen.kt$com.oliynick.max.reader.app.navigation.PopScreen.kt</ID>
+    <ID>NewLineAtEndOfFile:PopScreen.kt$com.oliynick.max.reader.app.feature.navigation.PopScreen.kt</ID>
     <ID>NewLineAtEndOfFile:Screens.kt$com.oliynick.max.reader.app.Screens.kt</ID>
     <ID>NewLineAtEndOfFile:Thread.kt$com.oliynick.max.tea.core.misc.Thread.kt</ID>
     <ID>NewLineAtEndOfFile:UUID.kt$com.oliynick.max.entities.shared.UUID.kt</ID>
@@ -92,7 +92,7 @@
     <ID>NewLineAtEndOfFile:publish-convention.gradle.kts$.publish-convention.gradle.kts</ID>
     <ID>NewLineAtEndOfFile:published-multiplatform-library.gradle.kts$.published-multiplatform-library.gradle.kts</ID>
     <ID>NewLineAtEndOfFile:settings.gradle.kts$.settings.gradle.kts</ID>
-    <ID>NewLineAtEndOfFile:toJson.kt$com.oliynick.max.reader.network.toJson.kt</ID>
+    <ID>NewLineAtEndOfFile:toJson.kt$com.oliynick.max.reader.app.feature.network.toJson.kt</ID>
     <ID>TooGenericExceptionCaught:NettyServer.kt$e: Throwable</ID>
     <ID>TooManyFunctions:ComponentTest.kt$ComponentTest</ID>
     <ID>TooManyFunctions:RenderExtensions.kt$com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.misc.RenderExtensions.kt</ID>

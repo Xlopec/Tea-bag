@@ -5,14 +5,14 @@ package com.oliynick.max.reader.app.feature.article.list
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.entities.shared.datatypes.fold
 import com.oliynick.max.reader.app.AppException
+import com.oliynick.max.reader.app.Message
+import com.oliynick.max.reader.app.ScreenMessage
 import com.oliynick.max.reader.app.command.*
+import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.feature.article.list.QueryType.*
-import com.oliynick.max.reader.app.message.Message
-import com.oliynick.max.reader.app.message.ScreenMessage
-import com.oliynick.max.reader.app.storage.LocalStorage
-import com.oliynick.max.reader.domain.Article
-import com.oliynick.max.reader.network.ArticleElement
-import com.oliynick.max.reader.network.ArticleResponse
+import com.oliynick.max.reader.app.feature.network.ArticleElement
+import com.oliynick.max.reader.app.feature.network.ArticleResponse
+import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
 

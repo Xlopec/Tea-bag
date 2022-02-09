@@ -22,35 +22,12 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+package com.oliynick.max.reader.app.feature.settings
 
-package com.oliynick.max.reader.app.storage
+import com.oliynick.max.entities.shared.randomUUID
+import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.app.TabScreen
 
-import com.oliynick.max.entities.shared.Url
-import com.oliynick.max.reader.app.feature.article.list.Page
-import com.oliynick.max.reader.domain.Article
-
-interface LocalStorage {
-
-    suspend fun insertArticle(
-        article: Article,
-    )
-
-    suspend fun deleteArticle(
-        url: Url,
-    )
-
-    suspend fun findAllArticles(
-        input: String,
-    ): Page
-
-    suspend fun isFavoriteArticle(
-        url: Url,
-    ): Boolean
-
-    suspend fun isDarkModeEnabled(): Boolean
-
-    suspend fun storeIsDarkModeEnabled(
-        isEnabled: Boolean,
-    )
+object SettingsState : TabScreen {
+    override val id: ScreenId = randomUUID()
 }

@@ -22,38 +22,35 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.app.message
+@file:Suppress("FunctionName")
 
-import com.oliynick.max.entities.shared.randomUUID
-import com.oliynick.max.reader.app.ScreenId
-import com.oliynick.max.reader.domain.Article
-import com.oliynick.max.reader.settings.SettingsState
+package com.oliynick.max.reader.app.feature.storage
 
-sealed interface Navigation : Message
+import com.oliynick.max.entities.shared.Url
+import com.oliynick.max.reader.app.domain.Article
+import com.oliynick.max.reader.app.feature.article.list.Page
 
-data class NavigateToArticleDetails(
-    val article: Article,
-    val id: ScreenId = randomUUID(),
-) : Navigation
+interface LocalStorage {
 
-sealed interface TabNavigation : Navigation {
-    val id: ScreenId
+    suspend fun insertArticle(
+        article: Article,
+    )
+
+    suspend fun deleteArticle(
+        url: Url,
+    )
+
+    suspend fun findAllArticles(
+        input: String,
+    ): Page
+
+    suspend fun isFavoriteArticle(
+        url: Url,
+    ): Boolean
+
+    suspend fun isDarkModeEnabled(): Boolean
+
+    suspend fun storeIsDarkModeEnabled(
+        isEnabled: Boolean,
+    )
 }
-
-object NavigateToFavorite : TabNavigation {
-    override val id: ScreenId = randomUUID()
-}
-
-object NavigateToFeed : TabNavigation {
-    override val id: ScreenId = randomUUID()
-}
-
-object NavigateToSettings : TabNavigation {
-    override val id: ScreenId = SettingsState.id
-}
-
-object NavigateToTrending : TabNavigation {
-    override val id: ScreenId = randomUUID()
-}
-
-object Pop : Navigation

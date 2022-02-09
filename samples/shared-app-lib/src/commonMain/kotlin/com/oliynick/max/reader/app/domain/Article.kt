@@ -23,7 +23,7 @@
  */
 @file:OptIn(kotlin.contracts.ExperimentalContracts::class)
 
-package com.oliynick.max.reader.domain
+package com.oliynick.max.reader.app.domain
 
 import com.oliynick.max.entities.shared.Date
 import com.oliynick.max.entities.shared.Url

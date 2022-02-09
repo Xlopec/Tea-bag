@@ -2,12 +2,13 @@
 
 @file:JvmName("AndroidLocalStorageImpl")
 
-package com.oliynick.max.reader.app.storage
+package com.oliynick.max.reader.app.feature.storage
 
 import android.app.Application
 import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import com.oliynick.max.reader.app.storage.AppDatabase
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 
 private const val DB_FILE_NAME = "app.db"

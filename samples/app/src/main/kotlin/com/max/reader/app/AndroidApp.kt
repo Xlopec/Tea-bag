@@ -30,8 +30,8 @@ package com.max.reader.app
 import android.app.Activity
 import android.app.Application
 import com.oliynick.max.reader.app.AppState
+import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.command.CloseApp
-import com.oliynick.max.reader.app.message.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Job

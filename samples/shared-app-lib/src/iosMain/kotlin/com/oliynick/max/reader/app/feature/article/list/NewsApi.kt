@@ -1,6 +1,6 @@
 package com.oliynick.max.reader.app.feature.article.list
 
-import com.oliynick.max.reader.network.NewsApiImpl
+import com.oliynick.max.reader.app.feature.network.NewsApiImpl
 import io.ktor.client.engine.darwin.*
 import platform.Foundation.NSLocale
 import platform.Foundation.countryCode

@@ -29,8 +29,8 @@ package com.oliynick.max.reader.app.feature.article.list
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.TabScreen
+import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState.TransientState.*
-import com.oliynick.max.reader.domain.Article
 
 enum class QueryType {
     Regular, Favorite, Trending

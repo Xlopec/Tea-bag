@@ -32,7 +32,6 @@ import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.QueryType.Regular
-import com.oliynick.max.reader.app.message.NavigateToFeed
 import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Initializer
 

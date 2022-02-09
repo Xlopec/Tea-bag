@@ -51,10 +51,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import com.max.reader.app.ui.misc.ProgressInsetAwareTopAppBar
+import com.oliynick.max.reader.app.Message
+import com.oliynick.max.reader.app.Pop
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
 import com.oliynick.max.reader.app.feature.article.details.OpenInBrowser
-import com.oliynick.max.reader.app.message.Message
-import com.oliynick.max.reader.app.message.Pop
 
 @Composable
 fun ArticleDetailsScreen(

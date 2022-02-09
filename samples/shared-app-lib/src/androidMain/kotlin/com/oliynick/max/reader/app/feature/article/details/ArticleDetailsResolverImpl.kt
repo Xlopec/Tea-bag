@@ -29,10 +29,10 @@ package com.oliynick.max.reader.app.feature.article.details
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
+import com.oliynick.max.reader.app.Message
+import com.oliynick.max.reader.app.ScreenMessage
 import com.oliynick.max.reader.app.command.ArticleDetailsCommand
 import com.oliynick.max.reader.app.command.DoOpenArticle
-import com.oliynick.max.reader.app.message.Message
-import com.oliynick.max.reader.app.message.ScreenMessage
 import com.oliynick.max.tea.core.component.sideEffect
 
 fun ArticleDetailsResolver(

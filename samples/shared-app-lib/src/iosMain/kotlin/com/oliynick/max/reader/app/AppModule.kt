@@ -6,8 +6,8 @@ import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsResolve
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsUpdater
 import com.oliynick.max.reader.app.feature.article.list.ArticlesResolver
 import com.oliynick.max.reader.app.feature.article.list.ArticlesUpdater
-import com.oliynick.max.reader.app.navigation.AppNavigation
-import com.oliynick.max.reader.app.storage.LocalStorage
+import com.oliynick.max.reader.app.feature.navigation.AppNavigation
+import com.oliynick.max.reader.app.feature.storage.LocalStorage
 
 fun <Env> AppModule(): AppModule<Env> where Env : ArticlesResolver<Env>,
                                             Env : ArticleDetailsResolver,
