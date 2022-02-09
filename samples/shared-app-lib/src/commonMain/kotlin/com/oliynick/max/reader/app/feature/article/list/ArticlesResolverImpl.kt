@@ -23,9 +23,9 @@ fun interface ShareArticle {
 
 fun <Env> ArticlesResolver(
     shareDelegate: ShareArticle
-): ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage = LiveArticlesResolver(shareDelegate)
+): ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage = ArticlesResolverImpl(shareDelegate)
 
-class LiveArticlesResolver<Env>(
+class ArticlesResolverImpl<Env>(
     private val shareDelegate: ShareArticle
 ) : ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage {
     override suspend fun Env.resolve(

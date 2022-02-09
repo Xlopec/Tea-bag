@@ -41,12 +41,14 @@ import com.oliynick.max.tea.core.component.noCommand
 import kotlin.Int.Companion.MAX_VALUE
 import kotlin.Int.Companion.MIN_VALUE
 
-fun AppNavigation(
+fun navigate(
+    nav: Navigation,
+    state: AppState,
     debug: Boolean = true
-) = NavigationUpdater { nav, state ->
+): UpdateWith<AppState, Command> {
 // gson serializer breaks singletons identity, thus we should rely on `is` check rather
 // then referential equality
-    when (nav) {
+    return when (nav) {
         is TabNavigation -> state.navigateToTab(nav, TabNavigation::toTabScreen)
         is NavigateToArticleDetails -> state.navigateToArticleDetails(nav)
         is Pop -> state.popScreen()
