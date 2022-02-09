@@ -29,14 +29,12 @@ package com.oliynick.max.reader.app
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsResolver
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsUpdater
 import com.oliynick.max.reader.app.feature.article.list.ArticlesResolver
-import com.oliynick.max.reader.app.feature.article.list.ArticlesUpdater
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 
 interface AppModule<Env> : AppUpdater<Env>, AppResolver<Env>
 
 fun <Env> AppModule(): AppModule<Env> where Env : ArticlesResolver<Env>,
                                             Env : ArticleDetailsResolver,
-                                            Env : ArticlesUpdater,
                                             Env : LocalStorage,
                                             Env : ArticleDetailsUpdater =
     object : AppModule<Env>,

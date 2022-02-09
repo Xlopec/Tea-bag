@@ -24,7 +24,7 @@
 
 package com.oliynick.max.reader.app.feature.article.list
 
-import com.oliynick.max.reader.app.command.*
+import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.domain.toggleFavorite
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
@@ -33,83 +33,77 @@ import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
 
-// nothing is private in our world
-@Suppress("MemberVisibilityCanBePrivate")
-object LiveArticlesUpdater : ArticlesUpdater {
-
-    override fun updateArticles(
-        message: ArticlesMessage,
-        state: ArticlesState
-    ): UpdateWith<ArticlesState, Command> =
-        // fixme refactor this bit
-        when (message) {
-            is ArticlesLoaded -> state.toPreview(message.page).noCommand()
-            is LoadNextArticles -> state.toLoadNextArticlesUpdate()
-            is LoadArticlesFromScratch -> state.toLoadArticlesFromScratchUpdate()
-            is RefreshArticles -> state.toRefreshUpdate()
-            is ArticlesOperationException -> state.toException(message.cause).noCommand()
-            is ToggleArticleIsFavorite -> toggleFavorite(message.article, state)
-            is OnArticleUpdated -> updateArticle(message.article, state)
-            is OnShareArticle -> shareArticle(message.article, state)
-            // fixme redesign FeedState
-            is OnQueryUpdated -> updateQuery(message.query, state)
-        }
-
-    fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadArticlesQuery(FirstPage)
-
-    fun ArticlesState.toLoadArticlesQuery(
-        paging: Paging
-    ) = LoadArticlesByQuery(id, query, paging)
-
-    fun ArticlesState.toLoadArticlesFromScratchUpdate() =
-        toLoading() command toLoadArticlesQuery(FirstPage)
-
-    fun ArticlesState.toLoadNextArticlesUpdate() =
-        if (isPreview && hasMoreArticles && articles.isNotEmpty() /*todo should we throw an error in this case?*/) {
-            toLoadingNext() command toLoadArticlesQuery(nextPage())
-        } else {
-            // just ignore the command
-            noCommand()
-        }
-
-    fun updateArticle(
-        article: Article,
-        state: ArticlesState
-    ): UpdateWith<ArticlesState, Command> {
-
-        val updated = when (state.query.type) {
-            Regular, Trending -> state.updateArticle(article)
-            Favorite -> if (article.isFavorite) state.prependArticle(article) else state.removeArticle(article)
-        }
-
-        return updated.noCommand()
+fun updateArticles(
+    message: ArticlesMessage,
+    state: ArticlesState
+): UpdateWith<ArticlesState, Command> =
+    // fixme refactor this bit
+    when (message) {
+        is ArticlesLoaded -> state.toPreview(message.page).noCommand()
+        is LoadNextArticles -> state.toLoadNextArticlesUpdate()
+        is LoadArticlesFromScratch -> state.toLoadArticlesFromScratchUpdate()
+        is RefreshArticles -> state.toRefreshUpdate()
+        is ArticlesOperationException -> state.toException(message.cause).noCommand()
+        is ToggleArticleIsFavorite -> toggleFavorite(message.article, state)
+        is OnArticleUpdated -> updateArticle(message.article, state)
+        is OnShareArticle -> shareArticle(message.article, state)
+        // fixme redesign FeedState
+        is OnQueryUpdated -> updateQuery(message.query, state)
     }
 
-    fun toggleFavorite(
-        article: Article,
-        state: ArticlesState
-    ): UpdateWith<ArticlesState, Command> {
+private fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadArticlesQuery(FirstPage)
 
-        val toggled = article.toggleFavorite()
+private fun ArticlesState.toLoadArticlesQuery(
+    paging: Paging
+) = LoadArticlesByQuery(id, query, paging)
 
-        return state.updateArticle(toggled) command toggled.storeCommand()
+private fun ArticlesState.toLoadArticlesFromScratchUpdate() =
+    toLoading() command toLoadArticlesQuery(FirstPage)
+
+private fun ArticlesState.toLoadNextArticlesUpdate() =
+    if (isPreview && hasMoreArticles && articles.isNotEmpty() /*todo should we throw an error in this case?*/) {
+        toLoadingNext() command toLoadArticlesQuery(nextPage())
+    } else {
+        // just ignore the command
+        noCommand()
     }
 
-    fun shareArticle(
-        article: Article,
-        state: ArticlesState
-    ): UpdateWith<ArticlesState, DoShareArticle> = state command DoShareArticle(article)
+private fun updateArticle(
+    article: Article,
+    state: ArticlesState
+): UpdateWith<ArticlesState, Command> {
 
-    fun updateQuery(
-        input: String,
-        state: ArticlesState
-    ): UpdateWith<ArticlesState, ArticlesCommand> = state.updateQuery(input).noCommand()
+    val updated = when (state.query.type) {
+        Regular, Trending -> state.updateArticle(article)
+        Favorite -> if (article.isFavorite) state.prependArticle(article) else state.removeArticle(article)
+    }
 
-    fun Article.storeCommand() = if (isFavorite) SaveArticle(this) else RemoveArticle(this)
-
-    // fixme inline
-    fun ArticlesState.updateQuery(
-        input: String
-    ) = copy(query = query.copy(input = input))
-
+    return updated.noCommand()
 }
+
+private fun toggleFavorite(
+    article: Article,
+    state: ArticlesState
+): UpdateWith<ArticlesState, Command> {
+
+    val toggled = article.toggleFavorite()
+
+    return state.updateArticle(toggled) command toggled.storeCommand()
+}
+
+private fun shareArticle(
+    article: Article,
+    state: ArticlesState
+): UpdateWith<ArticlesState, DoShareArticle> = state command DoShareArticle(article)
+
+private fun updateQuery(
+    input: String,
+    state: ArticlesState
+): UpdateWith<ArticlesState, ArticlesCommand> = state.updateQuery(input).noCommand()
+
+private fun Article.storeCommand() = if (isFavorite) SaveArticle(this) else RemoveArticle(this)
+
+// fixme inline
+private fun ArticlesState.updateQuery(
+    input: String
+) = copy(query = query.copy(input = input))
