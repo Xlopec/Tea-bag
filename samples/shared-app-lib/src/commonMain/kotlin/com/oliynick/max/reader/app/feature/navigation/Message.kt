@@ -25,10 +25,12 @@
 package com.oliynick.max.reader.app.feature.navigation
 
 import com.oliynick.max.entities.shared.randomUUID
-import com.oliynick.max.reader.app.Navigation
+import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
+
+sealed interface Navigation : Message
 
 data class NavigateToArticleDetails(
     val article: Article,

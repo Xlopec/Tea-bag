@@ -7,7 +7,6 @@ import com.oliynick.max.entities.shared.datatypes.fold
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenMessage
-import com.oliynick.max.reader.app.command.*
 import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.feature.article.list.QueryType.*
 import com.oliynick.max.reader.app.feature.network.ArticleElement

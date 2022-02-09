@@ -34,6 +34,7 @@ import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsUpdater
 import com.oliynick.max.reader.app.feature.article.list.ArticlesMessage
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.ArticlesUpdater
+import com.oliynick.max.reader.app.feature.navigation.Navigation
 import com.oliynick.max.reader.app.feature.navigation.NavigationUpdater
 import com.oliynick.max.reader.app.feature.settings.SettingsMessage
 import com.oliynick.max.reader.app.feature.settings.ToggleDarkMode
@@ -47,6 +48,7 @@ fun <Env> AppUpdater(): AppUpdater<Env> where Env : ArticlesUpdater,
         when (message) {
             is Navigation -> navigate(message, state)
             is ScreenMessage -> updateScreen(message, state)
+            else -> error("can't get here")
         }
     }
 

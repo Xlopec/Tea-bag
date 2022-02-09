@@ -24,8 +24,6 @@
 
 package com.oliynick.max.reader.app
 
-sealed interface Message
+interface Message
 
 interface ScreenMessage : Message
-
-/*sealed*/ interface Navigation : Message
