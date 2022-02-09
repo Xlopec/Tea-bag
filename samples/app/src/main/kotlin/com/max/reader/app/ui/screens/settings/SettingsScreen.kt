@@ -36,7 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.message.Message
-import com.oliynick.max.reader.settings.OnToggleDarkMode
+import com.oliynick.max.reader.settings.ToggleDarkMode
 
 @Composable
 fun SettingsScreen(
@@ -86,7 +86,7 @@ fun SettingsScreen(
 
                 Switch(
                     checked = state.isInDarkMode,
-                    onCheckedChange = { onMessage(OnToggleDarkMode) }
+                    onCheckedChange = { onMessage(ToggleDarkMode(it)) }
                 )
             }
             Divider()

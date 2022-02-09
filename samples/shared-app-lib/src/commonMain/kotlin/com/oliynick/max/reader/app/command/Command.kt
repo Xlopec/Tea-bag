@@ -35,8 +35,8 @@ sealed interface Command
 
 object CloseApp : Command
 
-data class StoreDarkMode(
-    val isEnabled: Boolean
+data class DoStoreDarkMode(
+    val enabled: Boolean
 ) : Command
 
 // Article details commands

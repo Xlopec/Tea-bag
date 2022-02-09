@@ -162,8 +162,8 @@
     <ID>UndocumentedPublicClass:NewsApiImpl.kt$NewsApiImpl : NewsApi</ID>
     <ID>UndocumentedPublicClass:Page.kt$Page</ID>
     <ID>UndocumentedPublicClass:Page.kt$Paging</ID>
-    <ID>UndocumentedPublicClass:SettingsMessage.kt$OnToggleDarkMode : SettingsMessage</ID>
     <ID>UndocumentedPublicClass:SettingsMessage.kt$SettingsMessage : ScreenMessage</ID>
+    <ID>UndocumentedPublicClass:SettingsMessage.kt$ToggleDarkMode : SettingsMessage</ID>
     <ID>UndocumentedPublicClass:SettingsState.kt$SettingsState : TabScreen</ID>
     <ID>UndocumentedPublicClass:TempTest.kt$ForeverWaitingResolver&lt;T></ID>
     <ID>UndocumentedPublicClass:TempTest.kt$TempTest</ID>
@@ -342,6 +342,7 @@
     <ID>UndocumentedPublicProperty:Page.kt$Paging$val currentSize: Int</ID>
     <ID>UndocumentedPublicProperty:Page.kt$Paging$val resultsPerPage: Int = ArticlesPerPage</ID>
     <ID>UndocumentedPublicProperty:Page.kt$Paging.Companion$val FirstPage = Paging(currentSize = 0)</ID>
+    <ID>UndocumentedPublicProperty:SettingsMessage.kt$ToggleDarkMode$val enable: Boolean</ID>
     <ID>UndocumentedPublicProperty:TempTest.kt$ForeverWaitingResolver$val messages: ReceiveChannel&lt;T> = _messages</ID>
     <ID>UndocumentedPublicProperty:TempTest.kt$const val TestTimeoutMillis = 10 * 1000L</ID>
     <ID>UndocumentedPublicProperty:TempTest.kt$inline val CoroutineScope.job: Job get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")</ID>

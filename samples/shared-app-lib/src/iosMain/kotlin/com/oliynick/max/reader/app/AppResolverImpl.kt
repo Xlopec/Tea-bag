@@ -17,6 +17,6 @@ fun <Env> AppResolverImpl(): AppResolver<Env> where
             is CloseApp -> error("IOS app can't get here")
             is ArticlesCommand -> resolve(command)
             is ArticleDetailsCommand -> resolve(command)
-            is StoreDarkMode -> command.sideEffect { storeIsDarkModeEnabled(command.isEnabled) }
+            is DoStoreDarkMode -> command sideEffect { storeIsDarkModeEnabled(enabled) }
         }
     }

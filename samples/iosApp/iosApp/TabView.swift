@@ -22,12 +22,13 @@ struct AppTabView: View {
     
     private let handler: MessageHandler
     
-    @State private var darkModeEnabled = false
+    @State private var darkModeEnabled: Bool
         
     init(initialTab: TabScreen, appState: AppState, handler: @escaping MessageHandler) {
         self.tab = initialTab
         self.appState = appState
         self.handler = handler
+        self.darkModeEnabled = appState.isInDarkMode
     }
     
     var body: some View {
@@ -38,8 +39,8 @@ struct AppTabView: View {
                     ArticlesView(state: articlesState, handler: handler, searchHintText: articlesState.searchHintText, headingText: articlesState.headingText)
                 } else {
                     SettingsView(darkMode: $darkModeEnabled)
-                        .onChange(of: darkModeEnabled) {_ in
-                            handler(OnToggleDarkMode.shared)
+                        .onChange(of: darkModeEnabled) {
+                            handler(ToggleDarkMode(enable: $0))
                         }
                 }
             }
