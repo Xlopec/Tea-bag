@@ -32,10 +32,11 @@ import android.app.Application
 import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.command.CloseApp
+import com.oliynick.max.reader.app.command.Command
+import com.oliynick.max.tea.core.component.Component
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 class AndroidApp : Application() {
@@ -48,8 +49,5 @@ class AndroidApp : Application() {
 inline val Activity.androidApp: AndroidApp
     get() = application as AndroidApp
 
-inline val Activity.component: (Flow<Message>) -> Flow<AppState>
+inline val Activity.component: Component<Message, AppState, Command>
     get() = androidApp.component
-
-inline val Activity.closeAppCommands: Flow<CloseApp>
-    get() = androidApp.closeCommands

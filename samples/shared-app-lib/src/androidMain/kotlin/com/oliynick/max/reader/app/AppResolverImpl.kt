@@ -11,6 +11,7 @@ import com.oliynick.max.reader.app.feature.article.list.ArticlesResolver
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.tea.core.component.sideEffect
 
+@Deprecated("remove")
 typealias CloseCommandsSink = suspend (CloseApp) -> Unit
 
 fun <Env> AppResolverImpl(
@@ -20,7 +21,7 @@ fun <Env> AppResolverImpl(
                           Env : ArticleDetailsResolver =
     AppResolver { command ->
         when (command) {
-            is CloseApp -> command sideEffect { closeCommands(command) }
+            is CloseApp -> setOf()
             is ArticlesCommand -> resolve(command)
             is ArticleDetailsCommand -> resolve(command)
             is DoStoreDarkMode -> command sideEffect { storeIsDarkModeEnabled(enabled) }

@@ -31,9 +31,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.max.reader.R
 import com.max.reader.app.ui.screens.AppView
+import com.oliynick.max.reader.app.command.CloseApp
+import com.oliynick.max.reader.app.command.Command
+import com.oliynick.max.tea.core.component.observeCommands
+import com.oliynick.max.tea.core.component.states
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
@@ -47,13 +52,13 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            AppView(component)
+            AppView(component.states())
         }
 
         launch {
-            closeAppCommands.collect {
-                finishAfterTransition()
-            }
+            component.observeCommands()
+                .filter { it.hasCloseCommand }
+                .collect { finishAfterTransition() }
         }
     }
 
@@ -63,3 +68,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     }
 
 }
+
+private val Collection<Command>.hasCloseCommand: Boolean
+    get() = CloseApp in this

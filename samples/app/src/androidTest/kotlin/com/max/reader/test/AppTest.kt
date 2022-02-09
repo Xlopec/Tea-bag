@@ -44,7 +44,8 @@ import com.oliynick.max.reader.app.domain.Title
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.QueryType.Regular
-import com.oliynick.max.reader.network.ArticleElement
+import com.oliynick.max.reader.app.feature.network.ArticleElement
+import com.oliynick.max.tea.core.component.states
 import org.junit.Rule
 import org.junit.Test
 import java.net.URL
@@ -75,7 +76,7 @@ internal class AppTest {
 
             anyRequest() yields ArticleResponse(TestArticleElement)
 
-            AppView(AppComponent(this, AppInitializer(this)))
+            AppView(AppComponent(this, AppInitializer(this)).states())
 
             resumeDispatcher()
         }

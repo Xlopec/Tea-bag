@@ -1,5 +1,6 @@
 package com.oliynick.max.reader.app
 
+import com.oliynick.max.tea.core.component.states
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job
@@ -19,7 +20,7 @@ class IosComponent {
     private val componentScope = CoroutineScope(Main + componentJob)
 
     private val component = Environment(componentScope)
-        .let { env -> AppComponent(env, AppInitializer(env)) }
+        .let { env -> AppComponent(env, AppInitializer(env)).states() }
 
     private val messages = MutableSharedFlow<Message>()
 

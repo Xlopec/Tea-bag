@@ -29,16 +29,14 @@ package com.oliynick.max.reader.app
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.component.Component
-import com.oliynick.max.tea.core.component.states
-import kotlinx.coroutines.flow.Flow
 
 fun AppComponent(
     environment: Environment,
     initializer: Initializer<AppState, Command>,
-): (Flow<Message>) -> Flow<AppState> =
+): Component<Message, AppState, Command> =
     Component(
         initializer = initializer,
         resolver = { c -> with(environment) { resolve(c) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment,
-    ).states()
+    )

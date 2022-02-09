@@ -49,14 +49,10 @@ import com.max.reader.app.ui.screens.home.BottomMenuItem.Trending
 import com.max.reader.app.ui.screens.settings.SettingsScreen
 import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.Message
-import com.oliynick.max.reader.app.Navigation
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.RefreshArticles
-import com.oliynick.max.reader.app.feature.navigation.NavigateToFavorite
-import com.oliynick.max.reader.app.feature.navigation.NavigateToFeed
-import com.oliynick.max.reader.app.feature.navigation.NavigateToSettings
-import com.oliynick.max.reader.app.feature.navigation.NavigateToTrending
+import com.oliynick.max.reader.app.feature.navigation.*
 import com.oliynick.max.reader.app.feature.article.list.QueryType.Favorite as FavoriteQuery
 import com.oliynick.max.reader.app.feature.article.list.QueryType.Regular as RegularQuery
 import com.oliynick.max.reader.app.feature.article.list.QueryType.Trending as TrendingQuery
