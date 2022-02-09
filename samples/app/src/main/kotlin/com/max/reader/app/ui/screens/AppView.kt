@@ -11,8 +11,9 @@ import com.max.reader.app.ui.theme.AppTheme
 import com.oliynick.max.reader.app.*
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
+import com.oliynick.max.reader.app.feature.navigation.Pop
 import com.oliynick.max.reader.app.feature.navigation.currentTab
-import com.oliynick.max.reader.app.feature.settings.SettingsState
+import com.oliynick.max.reader.app.feature.settings.SettingsScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -69,7 +70,7 @@ private fun TabScreen(
 ) {
     when (screen) {
         is ArticlesState -> HomeScreen(screen, onMessage, content)
-        is SettingsState -> HomeScreen(appState, onMessage)
+        is SettingsScreen -> HomeScreen(appState, onMessage)
         else -> error("unhandled branch $screen")
     }
 }

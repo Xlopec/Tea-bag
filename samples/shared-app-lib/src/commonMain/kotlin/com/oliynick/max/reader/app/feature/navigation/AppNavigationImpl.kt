@@ -34,7 +34,7 @@ import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.QueryType.*
-import com.oliynick.max.reader.app.feature.settings.SettingsState
+import com.oliynick.max.reader.app.feature.settings.SettingsScreen
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -43,13 +43,14 @@ import kotlin.Int.Companion.MIN_VALUE
 
 fun AppNavigation(
     debug: Boolean = true
-) = AppNavigation { nav, state ->
+) = NavigationUpdater { nav, state ->
 // gson serializer breaks singletons identity, thus we should rely on `is` check rather
 // then referential equality
     when (nav) {
         is TabNavigation -> state.navigateToTab(nav, TabNavigation::toTabScreen)
         is NavigateToArticleDetails -> state.navigateToArticleDetails(nav)
         is Pop -> state.popScreen()
+        else -> error("can't get here")
     }.also { (appState, _) ->
         if (debug) {
             checkInvariants(appState)
@@ -60,7 +61,7 @@ fun AppNavigation(
 // todo refactor later
 fun TabNavigation.toTabScreen(): UpdateWith<TabScreen, Command> =
     when (this) {
-        NavigateToSettings -> SettingsState.noCommand()
+        NavigateToSettings -> SettingsScreen.noCommand()
         NavigateToFeed -> ArticlesInitialUpdate(id, Query("android", Regular))
         NavigateToFavorite -> ArticlesInitialUpdate(id, Query("", Favorite))
         NavigateToTrending -> ArticlesInitialUpdate(id, Query("", Trending))

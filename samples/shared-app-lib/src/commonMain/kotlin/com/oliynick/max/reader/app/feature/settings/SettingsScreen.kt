@@ -28,6 +28,6 @@ import com.oliynick.max.entities.shared.randomUUID
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.TabScreen
 
-object SettingsState : TabScreen {
+object SettingsScreen : TabScreen {
     override val id: ScreenId = randomUUID()
 }

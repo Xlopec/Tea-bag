@@ -8,7 +8,7 @@ import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsModule
 import com.oliynick.max.reader.app.feature.article.list.AndroidShareArticle
 import com.oliynick.max.reader.app.feature.article.list.ArticlesModule
 import com.oliynick.max.reader.app.feature.article.list.NewsApi
-import com.oliynick.max.reader.app.feature.navigation.AppNavigation
+import com.oliynick.max.reader.app.feature.navigation.NavigationUpdater
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -60,5 +60,5 @@ actual interface Environment :
     ArticleDetailsModule<Environment>,
     NewsApi,
     LocalStorage,
-    AppNavigation,
+    NavigationUpdater,
     CoroutineScope

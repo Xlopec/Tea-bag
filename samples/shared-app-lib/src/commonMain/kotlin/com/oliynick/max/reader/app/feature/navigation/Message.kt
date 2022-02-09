@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.app
+package com.oliynick.max.reader.app.feature.navigation
 
 import com.oliynick.max.entities.shared.randomUUID
+import com.oliynick.max.reader.app.Navigation
+import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Article
-import com.oliynick.max.reader.app.feature.settings.SettingsState
-
-sealed interface Navigation : Message
+import com.oliynick.max.reader.app.feature.settings.SettingsScreen
 
 data class NavigateToArticleDetails(
     val article: Article,
@@ -48,7 +48,7 @@ object NavigateToFeed : TabNavigation {
 }
 
 object NavigateToSettings : TabNavigation {
-    override val id: ScreenId = SettingsState.id
+    override val id: ScreenId = SettingsScreen.id
 }
 
 object NavigateToTrending : TabNavigation {

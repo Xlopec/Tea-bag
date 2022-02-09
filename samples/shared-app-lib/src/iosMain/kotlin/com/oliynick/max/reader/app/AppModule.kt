@@ -7,16 +7,17 @@ import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsUpdater
 import com.oliynick.max.reader.app.feature.article.list.ArticlesResolver
 import com.oliynick.max.reader.app.feature.article.list.ArticlesUpdater
 import com.oliynick.max.reader.app.feature.navigation.AppNavigation
+import com.oliynick.max.reader.app.feature.navigation.NavigationUpdater
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 
 fun <Env> AppModule(): AppModule<Env> where Env : ArticlesResolver<Env>,
                                             Env : ArticleDetailsResolver,
                                             Env : ArticlesUpdater,
                                             Env : LocalStorage,
-                                            Env : AppNavigation,
+                                            Env : NavigationUpdater,
                                             Env : ArticleDetailsUpdater =
     object : AppModule<Env>,
-        AppNavigation by AppNavigation(),
+        NavigationUpdater by AppNavigation(),
         AppUpdater<Env> by AppUpdater(),
         AppResolver<Env> by AppResolverImpl() {
 

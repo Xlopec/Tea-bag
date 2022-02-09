@@ -34,7 +34,7 @@ import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsUpdater
 import com.oliynick.max.reader.app.feature.article.list.ArticlesMessage
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.ArticlesUpdater
-import com.oliynick.max.reader.app.feature.navigation.AppNavigation
+import com.oliynick.max.reader.app.feature.navigation.NavigationUpdater
 import com.oliynick.max.reader.app.feature.settings.SettingsMessage
 import com.oliynick.max.reader.app.feature.settings.ToggleDarkMode
 import com.oliynick.max.tea.core.component.UpdateWith
@@ -42,7 +42,7 @@ import com.oliynick.max.tea.core.component.command
 
 fun <Env> AppUpdater(): AppUpdater<Env> where Env : ArticlesUpdater,
                                               Env : ArticleDetailsUpdater,
-                                              Env : AppNavigation =
+                                              Env : NavigationUpdater =
     AppUpdater { message, state ->
         when (message) {
             is Navigation -> navigate(message, state)
@@ -55,7 +55,7 @@ fun <Env> Env.updateScreen(
     state: AppState,
 ): UpdateWith<AppState, Command> where Env : ArticlesUpdater,
                                        Env : ArticleDetailsUpdater,
-                                       Env : AppNavigation =
+                                       Env : NavigationUpdater =
     when (message) {
         is ArticlesMessage -> state.updateScreen<ArticlesState>(message.id) { screen ->
             updateArticles(message, screen)
