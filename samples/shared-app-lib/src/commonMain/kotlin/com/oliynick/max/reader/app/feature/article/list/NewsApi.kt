@@ -22,12 +22,23 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.settings
+@file:Suppress("FunctionName")
 
-import com.oliynick.max.reader.app.message.ScreenMessage
+package com.oliynick.max.reader.app.feature.article.list
 
-sealed interface SettingsMessage : ScreenMessage
+import com.oliynick.max.entities.shared.datatypes.Either
+import com.oliynick.max.reader.app.AppException
+import com.oliynick.max.reader.network.ArticleResponse
 
-data class ToggleDarkMode(
-    val enable: Boolean
-) : SettingsMessage
+interface NewsApi {
+
+    suspend fun fetchFromEverything(
+        input: String,
+        paging: Paging
+    ): Either<ArticleResponse, AppException>
+
+    suspend fun fetchTopHeadlines(
+        input: String,
+        paging: Paging
+    ): Either<ArticleResponse, AppException>
+}

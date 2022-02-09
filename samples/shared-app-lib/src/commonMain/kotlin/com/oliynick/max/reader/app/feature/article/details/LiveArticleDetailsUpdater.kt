@@ -22,12 +22,20 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.settings
+package com.oliynick.max.reader.app.feature.article.details
 
-import com.oliynick.max.reader.app.message.ScreenMessage
+import com.oliynick.max.reader.app.command.ArticleDetailsCommand
+import com.oliynick.max.reader.app.command.DoOpenArticle
+import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.component.command
 
-sealed interface SettingsMessage : ScreenMessage
+object LiveArticleDetailsUpdater : ArticleDetailsUpdater {
 
-data class ToggleDarkMode(
-    val enable: Boolean
-) : SettingsMessage
+    override fun updateArticleDetails(
+        message: ArticleDetailsMessage,
+        screen: ArticleDetailsState,
+    ): UpdateWith<ArticleDetailsState, ArticleDetailsCommand> =
+        when(message) {
+            is OpenInBrowser -> screen command DoOpenArticle(screen.article)
+        }
+}

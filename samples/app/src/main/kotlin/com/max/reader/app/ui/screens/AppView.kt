@@ -9,11 +9,11 @@ import com.max.reader.app.ui.screens.article.ArticleDetailsScreen
 import com.max.reader.app.ui.screens.home.HomeScreen
 import com.max.reader.app.ui.theme.AppTheme
 import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
+import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.message.Message
 import com.oliynick.max.reader.app.message.Pop
 import com.oliynick.max.reader.app.navigation.currentTab
-import com.oliynick.max.reader.article.details.ArticleDetailsState
-import com.oliynick.max.reader.article.list.ArticlesState
 import com.oliynick.max.reader.settings.SettingsState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

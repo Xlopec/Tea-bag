@@ -22,37 +22,14 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
-
-package com.oliynick.max.reader.app
+package com.oliynick.max.reader.app.feature.article.list
 
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.command.LoadArticlesByQuery
-import com.oliynick.max.reader.app.feature.article.list.ArticlesState
-import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
-import com.oliynick.max.reader.app.feature.article.list.Query
-import com.oliynick.max.reader.app.feature.article.list.QueryType.Regular
-import com.oliynick.max.reader.app.message.NavigateToFeed
-import com.oliynick.max.tea.core.Initial
-import com.oliynick.max.tea.core.Initializer
+import com.oliynick.max.tea.core.component.UpdateWith
 
-fun AppInitializer(
-    environment: Environment
-): Initializer<AppState, Command> = Initializer(IO) {
-    val initScreen = ArticlesState.newLoading(
-        NavigateToFeed.id,
-        Query("android", Regular),
-    )
-
-    Initial(AppState(initScreen, environment.isDarkModeEnabled()), initScreen.toInitialQuery())
+fun interface ArticlesUpdater {
+    fun updateArticles(
+        message: ArticlesMessage,
+        state: ArticlesState
+    ): UpdateWith<ArticlesState, Command>
 }
-
-private fun ArticlesState.toInitialQuery(): LoadArticlesByQuery {
-    require(articles.isEmpty()) { "non initial state $this" }
-    return LoadArticlesByQuery(id, query, FirstPage)
-}
-
-private fun Initial(
-    appState: AppState,
-    vararg initialCommands: Command,
-) = Initial(appState, setOf(*initialCommands))

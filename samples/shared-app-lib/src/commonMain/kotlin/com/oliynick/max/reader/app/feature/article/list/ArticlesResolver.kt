@@ -22,12 +22,15 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.settings
+package com.oliynick.max.reader.app.feature.article.list
 
-import com.oliynick.max.reader.app.message.ScreenMessage
+import com.oliynick.max.reader.app.command.ArticlesCommand
+import com.oliynick.max.reader.app.message.Message
 
-sealed interface SettingsMessage : ScreenMessage
+interface ArticlesResolver<Env> {
 
-data class ToggleDarkMode(
-    val enable: Boolean
-) : SettingsMessage
+    suspend fun Env.resolve(
+        command: ArticlesCommand
+    ): Set<Message>
+
+}

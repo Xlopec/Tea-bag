@@ -1,10 +1,10 @@
 package com.oliynick.max.reader.app
 
+import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsModule
+import com.oliynick.max.reader.app.feature.article.list.ArticlesModule
+import com.oliynick.max.reader.app.feature.article.list.IosShareArticle
+import com.oliynick.max.reader.app.feature.article.list.NewsApi
 import com.oliynick.max.reader.app.storage.LocalStorage
-import com.oliynick.max.reader.article.details.ArticleDetailsModule
-import com.oliynick.max.reader.article.list.ArticlesModule
-import com.oliynick.max.reader.article.list.IosShareArticle
-import com.oliynick.max.reader.article.list.NewsApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 

@@ -48,13 +48,13 @@ import com.max.reader.app.ui.screens.home.BottomMenuItem.Settings
 import com.max.reader.app.ui.screens.home.BottomMenuItem.Trending
 import com.max.reader.app.ui.screens.settings.SettingsScreen
 import com.oliynick.max.reader.app.AppState
+import com.oliynick.max.reader.app.feature.article.list.ArticlesState
+import com.oliynick.max.reader.app.feature.article.list.Query
+import com.oliynick.max.reader.app.feature.article.list.RefreshArticles
 import com.oliynick.max.reader.app.message.*
-import com.oliynick.max.reader.article.list.ArticlesState
-import com.oliynick.max.reader.article.list.Query
-import com.oliynick.max.reader.article.list.RefreshArticles
-import com.oliynick.max.reader.article.list.QueryType.Favorite as FavoriteQuery
-import com.oliynick.max.reader.article.list.QueryType.Regular as RegularQuery
-import com.oliynick.max.reader.article.list.QueryType.Trending as TrendingQuery
+import com.oliynick.max.reader.app.feature.article.list.QueryType.Favorite as FavoriteQuery
+import com.oliynick.max.reader.app.feature.article.list.QueryType.Regular as RegularQuery
+import com.oliynick.max.reader.app.feature.article.list.QueryType.Trending as TrendingQuery
 
 enum class BottomMenuItem {
     Feed,

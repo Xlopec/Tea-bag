@@ -25,8 +25,8 @@
 package com.oliynick.max.reader.app.command
 
 import com.oliynick.max.reader.app.ScreenId
-import com.oliynick.max.reader.article.list.Paging
-import com.oliynick.max.reader.article.list.Query
+import com.oliynick.max.reader.app.feature.article.list.Paging
+import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.domain.Article
 
 sealed interface Command

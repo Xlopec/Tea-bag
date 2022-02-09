@@ -22,12 +22,13 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.settings
+package com.oliynick.max.reader.app.feature.article.details
 
-import com.oliynick.max.reader.app.message.ScreenMessage
+import com.oliynick.max.reader.app.FullScreen
+import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.domain.Article
 
-sealed interface SettingsMessage : ScreenMessage
-
-data class ToggleDarkMode(
-    val enable: Boolean
-) : SettingsMessage
+data class ArticleDetailsState(
+    override val id: ScreenId,
+    val article: Article,
+) : FullScreen

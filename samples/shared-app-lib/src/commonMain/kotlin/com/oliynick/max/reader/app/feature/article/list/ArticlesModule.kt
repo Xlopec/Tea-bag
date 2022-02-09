@@ -22,12 +22,20 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.settings
+@file:Suppress("FunctionName")
 
-import com.oliynick.max.reader.app.message.ScreenMessage
+package com.oliynick.max.reader.app.feature.article.list
 
-sealed interface SettingsMessage : ScreenMessage
+import com.oliynick.max.reader.app.storage.LocalStorage
 
-data class ToggleDarkMode(
-    val enable: Boolean
-) : SettingsMessage
+interface ArticlesModule<Env> : ArticlesUpdater, ArticlesResolver<Env>
+
+fun <Env> ArticlesModule(
+    shareArticle: ShareArticle
+): ArticlesModule<Env> where Env : NewsApi,
+                             Env : LocalStorage =
+
+    object : ArticlesModule<Env>,
+        ArticlesUpdater by LiveArticlesUpdater,
+        ArticlesResolver<Env> by ArticlesResolver(shareArticle) {
+    }

@@ -2,7 +2,7 @@ package com.oliynick.max.reader.app.storage
 
 import com.oliynick.max.entities.shared.*
 import com.oliynick.max.reader.app.IO
-import com.oliynick.max.reader.article.list.Page
+import com.oliynick.max.reader.app.feature.article.list.Page
 import com.oliynick.max.reader.domain.Article
 import com.oliynick.max.reader.domain.Author
 import com.oliynick.max.reader.domain.Description

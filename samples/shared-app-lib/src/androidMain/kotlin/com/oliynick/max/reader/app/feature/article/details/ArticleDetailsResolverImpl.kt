@@ -22,12 +22,40 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.settings
+@file:Suppress("FunctionName")
 
+package com.oliynick.max.reader.app.feature.article.details
+
+import android.app.Application
+import android.content.Intent
+import android.net.Uri
+import com.oliynick.max.reader.app.command.ArticleDetailsCommand
+import com.oliynick.max.reader.app.command.DoOpenArticle
+import com.oliynick.max.reader.app.message.Message
 import com.oliynick.max.reader.app.message.ScreenMessage
+import com.oliynick.max.tea.core.component.sideEffect
 
-sealed interface SettingsMessage : ScreenMessage
+fun ArticleDetailsResolver(
+    application: Application
+): ArticleDetailsResolver =
+    object : ArticleDetailsResolver {
 
-data class ToggleDarkMode(
-    val enable: Boolean
-) : SettingsMessage
+        override suspend fun resolve(
+            command: ArticleDetailsCommand
+        ): Set<Message> =
+            when (command) {
+                is DoOpenArticle -> openArticle(command)
+            }
+
+        suspend fun openArticle(
+            command: DoOpenArticle
+        ): Set<ScreenMessage> = command.sideEffect {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url.toString()))
+                .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
+
+            if (intent.resolveActivity(application.packageManager) != null) {
+                application.startActivity(intent)
+            }
+        }
+
+    }

@@ -22,12 +22,16 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.settings
+package com.oliynick.max.reader.app.feature.article.details
 
-import com.oliynick.max.reader.app.message.ScreenMessage
+import com.oliynick.max.reader.app.command.ArticleDetailsCommand
+import com.oliynick.max.tea.core.component.UpdateWith
 
-sealed interface SettingsMessage : ScreenMessage
+interface ArticleDetailsUpdater {
 
-data class ToggleDarkMode(
-    val enable: Boolean
-) : SettingsMessage
+    fun updateArticleDetails(
+        message: ArticleDetailsMessage,
+        screen: ArticleDetailsState
+    ): UpdateWith<ArticleDetailsState, ArticleDetailsCommand>
+
+}

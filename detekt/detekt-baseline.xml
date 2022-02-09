@@ -57,8 +57,8 @@
     <ID>NewLineAtEndOfFile:AppNavigation.kt$com.oliynick.max.reader.app.navigation.AppNavigation.kt</ID>
     <ID>NewLineAtEndOfFile:AppNavigationImpl.kt$com.oliynick.max.reader.app.navigation.AppNavigationImpl.kt</ID>
     <ID>NewLineAtEndOfFile:AppResolverImpl.kt$com.oliynick.max.reader.app.AppResolverImpl.kt</ID>
-    <ID>NewLineAtEndOfFile:ArticleDetailsModule.kt$com.oliynick.max.reader.article.details.ArticleDetailsModule.kt</ID>
-    <ID>NewLineAtEndOfFile:ArticlesModule.kt$com.oliynick.max.reader.article.list.ArticlesModule.kt</ID>
+    <ID>NewLineAtEndOfFile:ArticleDetailsModule.kt$com.oliynick.max.reader.app.feature.article.details.ArticleDetailsModule.kt</ID>
+    <ID>NewLineAtEndOfFile:ArticlesModule.kt$com.oliynick.max.reader.app.feature.article.list.ArticlesModule.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentException.kt$com.oliynick.max.tea.core.misc.ComponentException.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentTest.kt$com.oliynick.max.tea.core.component.ComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:ComposeAnnotations.kt$com.oliynick.max.reader.app.ComposeAnnotations.kt</ID>
@@ -70,7 +70,7 @@
     <ID>NewLineAtEndOfFile:ExportImportTest.kt$com.oliynick.max.tea.core.debug.app.feature.storage.ExportImportTest.kt</ID>
     <ID>NewLineAtEndOfFile:IosAnnotations.kt$com.oliynick.max.reader.app.IosAnnotations.kt</ID>
     <ID>NewLineAtEndOfFile:IosComponent.kt$com.oliynick.max.reader.app.IosComponent.kt</ID>
-    <ID>NewLineAtEndOfFile:LiveArticleDetailsResolver.kt$com.oliynick.max.reader.article.details.LiveArticleDetailsResolver.kt</ID>
+    <ID>NewLineAtEndOfFile:LiveArticleDetailsResolver.kt$com.oliynick.max.reader.app.feature.article.details.LiveArticleDetailsResolver.kt</ID>
     <ID>NewLineAtEndOfFile:LocalStorage.kt$com.oliynick.max.reader.app.LocalStorage.kt</ID>
     <ID>NewLineAtEndOfFile:LocalStorage.kt$com.oliynick.max.reader.app.storage.LocalStorage.kt</ID>
     <ID>NewLineAtEndOfFile:LocalStorageImpl.kt$com.oliynick.max.reader.app.storage.LocalStorageImpl.kt</ID>
@@ -78,7 +78,7 @@
     <ID>NewLineAtEndOfFile:Model.kt$com.oliynick.max.reader.network.Model.kt</ID>
     <ID>NewLineAtEndOfFile:NavigationExtensionsTest.kt$com.oliynick.max.reader.app.NavigationExtensionsTest.kt</ID>
     <ID>NewLineAtEndOfFile:NavigationStack.kt$com.oliynick.max.reader.app.navigation.NavigationStack.kt</ID>
-    <ID>NewLineAtEndOfFile:NewsApi.kt$com.oliynick.max.reader.article.list.NewsApi.kt</ID>
+    <ID>NewLineAtEndOfFile:NewsApi.kt$com.oliynick.max.reader.app.feature.article.list.NewsApi.kt</ID>
     <ID>NewLineAtEndOfFile:NewsApiImpl.kt$com.oliynick.max.reader.network.NewsApiImpl.kt</ID>
     <ID>NewLineAtEndOfFile:PluginDependenciesSpecExt.kt$.PluginDependenciesSpecExt.kt</ID>
     <ID>NewLineAtEndOfFile:PopScreen.kt$com.oliynick.max.reader.app.navigation.PopScreen.kt</ID>

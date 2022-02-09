@@ -9,11 +9,11 @@ import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.AppModule
 import com.oliynick.max.reader.app.CloseCommandsSink
 import com.oliynick.max.reader.app.Environment
+import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsModule
+import com.oliynick.max.reader.app.feature.article.list.AndroidShareArticle
+import com.oliynick.max.reader.app.feature.article.list.ArticlesModule
+import com.oliynick.max.reader.app.feature.article.list.NewsApi
 import com.oliynick.max.reader.app.storage.LocalStorage
-import com.oliynick.max.reader.article.details.ArticleDetailsModule
-import com.oliynick.max.reader.article.list.AndroidShareArticle
-import com.oliynick.max.reader.article.list.ArticlesModule
-import com.oliynick.max.reader.article.list.NewsApi
 import com.oliynick.max.reader.network.ArticleResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.DelayController

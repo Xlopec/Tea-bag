@@ -22,12 +22,8 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.settings
+@file:Suppress("FunctionName")
 
-import com.oliynick.max.reader.app.message.ScreenMessage
+package com.oliynick.max.reader.app.feature.article.details
 
-sealed interface SettingsMessage : ScreenMessage
-
-data class ToggleDarkMode(
-    val enable: Boolean
-) : SettingsMessage
+interface ArticleDetailsModule<Env> : ArticleDetailsUpdater, ArticleDetailsResolver

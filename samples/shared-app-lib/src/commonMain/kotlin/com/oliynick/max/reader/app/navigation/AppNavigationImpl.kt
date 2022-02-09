@@ -29,12 +29,12 @@ package com.oliynick.max.reader.app.navigation
 import com.oliynick.max.reader.app.*
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.command.LoadArticlesByQuery
+import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
+import com.oliynick.max.reader.app.feature.article.list.ArticlesState
+import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
+import com.oliynick.max.reader.app.feature.article.list.Query
+import com.oliynick.max.reader.app.feature.article.list.QueryType.*
 import com.oliynick.max.reader.app.message.*
-import com.oliynick.max.reader.article.details.ArticleDetailsState
-import com.oliynick.max.reader.article.list.ArticlesState
-import com.oliynick.max.reader.article.list.Paging.Companion.FirstPage
-import com.oliynick.max.reader.article.list.Query
-import com.oliynick.max.reader.article.list.QueryType.*
 import com.oliynick.max.reader.settings.SettingsState
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
