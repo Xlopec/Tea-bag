@@ -16,7 +16,7 @@ fun Environment(
     object : Environment,
         AppModule<Environment> by AppModule(),
         ArticlesModule<Environment> by ArticlesModule(IosShareArticle),
-        ArticleDetailsModule<Environment> by ArticleDetailsModule(),
+        ArticleDetailsModule by ArticleDetailsModule(),
         LocalStorage by LocalStorage(),
         NewsApi by NewsApi(),
         CoroutineScope by scope {
@@ -25,7 +25,7 @@ fun Environment(
 actual interface Environment :
     AppModule<Environment>,
     ArticlesModule<Environment>,
-    ArticleDetailsModule<Environment>,
+    ArticleDetailsModule,
     LocalStorage,
     NewsApi,
     CoroutineScope

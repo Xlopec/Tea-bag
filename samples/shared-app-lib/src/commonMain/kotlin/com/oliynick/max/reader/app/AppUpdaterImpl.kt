@@ -30,7 +30,7 @@ import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.command.DoStoreDarkMode
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsMessage
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
-import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsUpdater
+import com.oliynick.max.reader.app.feature.article.details.updateArticleDetails
 import com.oliynick.max.reader.app.feature.article.list.ArticlesMessage
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.updateArticles
@@ -41,7 +41,7 @@ import com.oliynick.max.reader.app.feature.settings.ToggleDarkMode
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 
-fun <Env> AppUpdater(): AppUpdater<Env> where Env : ArticleDetailsUpdater =
+fun <Env> AppUpdater(): AppUpdater<Env> =
     AppUpdater { message, state ->
         when (message) {
             is Navigation -> navigate(message, state)
@@ -50,10 +50,10 @@ fun <Env> AppUpdater(): AppUpdater<Env> where Env : ArticleDetailsUpdater =
         }
     }
 
-fun <Env> Env.updateScreen(
+private fun updateScreen(
     message: ScreenMessage,
     state: AppState,
-): UpdateWith<AppState, Command> where Env : ArticleDetailsUpdater =
+): UpdateWith<AppState, Command> =
     when (message) {
         is ArticlesMessage -> state.updateScreen<ArticlesState>(message.id) { screen ->
             updateArticles(message, screen)
@@ -65,7 +65,7 @@ fun <Env> Env.updateScreen(
         else -> error("Unknown screen message, was $message")
     }
 
-fun AppState.updateSettings(
+private fun AppState.updateSettings(
     message: SettingsMessage,
 ): UpdateWith<AppState, Command> =
     when (message) {

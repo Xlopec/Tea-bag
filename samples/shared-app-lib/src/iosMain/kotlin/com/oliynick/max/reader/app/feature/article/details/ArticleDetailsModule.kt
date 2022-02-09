@@ -1,13 +1,8 @@
+@file:JvmName("IosArticleDetailsModule")
 @file:Suppress("FunctionName")
 
 package com.oliynick.max.reader.app.feature.article.details
 
-import com.oliynick.max.reader.app.feature.article.list.ArticlesResolver
+import kotlin.jvm.JvmName
 
-fun <Env> ArticleDetailsModule(): ArticleDetailsModule<Env>
-        where Env : ArticlesResolver<Env>,
-              Env : ArticleDetailsResolver =
-    object : ArticleDetailsModule<Env>,
-        ArticleDetailsUpdater by LiveArticleDetailsUpdater,
-        ArticleDetailsResolver by ArticleDetailsResolver() {
-    }
+fun ArticleDetailsModule(): ArticleDetailsModule = ArticleDetailsResolver()

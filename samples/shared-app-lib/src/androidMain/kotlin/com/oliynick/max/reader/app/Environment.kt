@@ -28,7 +28,7 @@ fun Environment(
     return object : Environment,
         AppModule<Environment> by AppModule(),
         ArticlesModule<Environment> by ArticlesModule(AndroidShareArticle(application)),
-        ArticleDetailsModule<Environment> by ArticleDetailsModule(application),
+        ArticleDetailsModule by ArticleDetailsModule(application),
         NewsApi by NewsApi(application),
         LocalStorage by LocalStorage(application),
         CoroutineScope by scope {
@@ -55,7 +55,7 @@ private fun setupStrictAppPolicies() {
 actual interface Environment :
     AppModule<Environment>,
     ArticlesModule<Environment>,
-    ArticleDetailsModule<Environment>,
+    ArticleDetailsModule,
     NewsApi,
     LocalStorage,
     CoroutineScope

@@ -38,7 +38,7 @@ fun TestEnvironment(
     object : TestEnvironment,
         AppModule<Environment> by AppModule(),
         ArticlesModule<Environment> by ArticlesModule(AndroidShareArticle(application)),
-        ArticleDetailsModule<Environment> by ArticleDetailsModule(application),
+        ArticleDetailsModule by ArticleDetailsModule(application),
         MockNewsApi by TestNewsApi(dispatcher),
         LocalStorage by LocalStorage(application),
         CoroutineScope by TestCoroutineScope(dispatcher),

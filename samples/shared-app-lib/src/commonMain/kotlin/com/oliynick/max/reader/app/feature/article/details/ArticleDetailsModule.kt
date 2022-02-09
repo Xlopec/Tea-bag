@@ -26,4 +26,4 @@
 
 package com.oliynick.max.reader.app.feature.article.details
 
-interface ArticleDetailsModule<Env> : ArticleDetailsUpdater, ArticleDetailsResolver
+typealias ArticleDetailsModule = ArticleDetailsResolver
