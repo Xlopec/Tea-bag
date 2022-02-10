@@ -18,7 +18,7 @@ DELETE FROM Articles WHERE url = ?;
 
 findAllArticles:
 SELECT * FROM Articles WHERE title LIKE ? OR author LIKE ? OR description LIKE ?
-ORDER BY saved_on ASC;
+ORDER BY saved_on DESC;
 
 isFavoriteArticle:
 SELECT * FROM Articles WHERE url = ?;
