@@ -26,7 +26,8 @@ private class LocalStorageImpl(
 ) : LocalStorage {
 
     private companion object {
-        private const val DarkModeEnabledKey = "isDarkModeEnabled"
+        private const val DarkModeEnabledKey = "DarkModeEnabledKey"
+        private const val SyncWithSystemDarkModeEnabledKey = "SyncWithSystemDarkModeEnabledKey"
     }
 
     private val database = AppDatabase(driver)
@@ -75,6 +76,10 @@ private class LocalStorageImpl(
 
     override suspend fun isDarkModeEnabled(): Boolean = query {
         settings[DarkModeEnabledKey, false]
+    }
+
+    override suspend fun isSyncWithSystemDarkModeEnabled(): Boolean = query {
+        settings[SyncWithSystemDarkModeEnabledKey, false]
     }
 
     override suspend fun storeIsDarkModeEnabled(isEnabled: Boolean) = query {

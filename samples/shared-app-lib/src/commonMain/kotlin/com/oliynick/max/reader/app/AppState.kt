@@ -35,14 +35,20 @@ typealias ScreenId = UUID
 
 @ImmutableType
 data class AppState(
-    val isInDarkMode: Boolean,
+    val settings: Settings,
     val screens: NavigationStack,
 ) {
 
+    @Deprecated("Remove")
     constructor(
         screen: TabScreen,
         isAppInDarkMode: Boolean
-    ) : this(isAppInDarkMode, persistentListOf(screen))
+    ) : this(Settings(isAppInDarkMode, false, false), persistentListOf(screen))
+
+    constructor(
+        screen: TabScreen,
+        settings: Settings,
+    ) : this(settings, persistentListOf(screen))
 
     init {
         require(screens.isNotEmpty())

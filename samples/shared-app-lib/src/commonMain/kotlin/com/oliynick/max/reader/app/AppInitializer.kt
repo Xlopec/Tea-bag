@@ -37,6 +37,7 @@ import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Initializer
 
 fun AppInitializer(
+    systemDarkModeEnabled: Boolean,
     environment: Environment
 ): Initializer<AppState, Command> = Initializer(IO) {
     val initScreen = ArticlesState.newLoading(
@@ -44,7 +45,13 @@ fun AppInitializer(
         Query("android", Regular),
     )
 
-    Initial(AppState(initScreen, environment.isDarkModeEnabled()), initScreen.toInitialQuery())
+    val settings = Settings(
+        syncWithSystemDarkMode = environment.isSyncWithSystemDarkModeEnabled(),
+        systemDarkMode = systemDarkModeEnabled,
+        appDarkMode = environment.isDarkModeEnabled()
+    )
+
+    Initial(AppState(initScreen, settings), initScreen.toInitialQuery())
 }
 
 private fun ArticlesState.toInitialQuery(): LoadArticlesByQuery {

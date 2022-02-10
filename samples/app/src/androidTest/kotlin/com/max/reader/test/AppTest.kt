@@ -76,7 +76,7 @@ internal class AppTest {
 
             anyRequest() yields ArticleResponse(TestArticleElement)
 
-            AppView(AppComponent(this, AppInitializer(this)).states())
+            AppView(AppComponent(this, AppInitializer(systemDarkModeEnabled = false, this)).states())
 
             resumeDispatcher()
         }

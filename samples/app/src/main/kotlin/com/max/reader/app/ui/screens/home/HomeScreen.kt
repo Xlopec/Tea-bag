@@ -117,7 +117,7 @@ fun HomeScreen(
         }, content = { innerPadding ->
             SettingsScreen(
                 innerPadding = innerPadding,
-                state = state,
+                settings = state.settings,
                 onMessage = onMessage
             )
         })

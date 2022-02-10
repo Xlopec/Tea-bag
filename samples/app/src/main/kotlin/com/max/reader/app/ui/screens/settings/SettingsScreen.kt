@@ -30,18 +30,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Brightness5
+import androidx.compose.material.icons.outlined.SyncAlt
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.Message
+import com.oliynick.max.reader.app.Settings
 import com.oliynick.max.reader.app.feature.settings.ToggleDarkMode
 
 @Composable
 fun SettingsScreen(
     innerPadding: PaddingValues,
-    state: AppState,
+    settings: Settings,
     onMessage: (Message) -> Unit,
 ) {
     Column(
@@ -54,42 +56,83 @@ fun SettingsScreen(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+            SwitchItem(
+                icon = Icons.Default.Brightness5,
+                imageDescription = "App dark mode",
+                title = "App dark mode",
+                description = "Use dark mode in the app",
+                checked = settings.appDarkMode,
+                enabled = !settings.syncWithSystemDarkMode,
             ) {
-
-                Icon(
-                    contentDescription = "Dark Mode",
-                    tint = MaterialTheme.colors.onSurface,
-                    imageVector = Icons.Default.Brightness5
-                )
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Dark mode",
-                        style = MaterialTheme.typography.subtitle1
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "${if (state.isInDarkMode) "Dis" else "En"}ables dark mode in the app",
-                        style = MaterialTheme.typography.body1
-                    )
-                }
-
-                Switch(
-                    checked = state.isInDarkMode,
-                    onCheckedChange = { onMessage(ToggleDarkMode(it)) }
-                )
+                onMessage(settings.toToggleDarkModeMessage(enableAppDarkMode = it))
             }
-            Divider()
+
+            SwitchItem(
+                icon = Icons.Outlined.SyncAlt,
+                imageDescription = "System dark mode",
+                title = "System dark mode",
+                description = "Use system dark mode",
+                checked = settings.syncWithSystemDarkMode,
+            ) {
+                onMessage(settings.toToggleDarkModeMessage(syncWithSystemDarkMode = it))
+            }
         }
     }
 }
+
+@Composable
+private fun SwitchItem(
+    icon: ImageVector,
+    imageDescription: String?,
+    title: String,
+    description: String,
+    checked: Boolean,
+    enabled: Boolean = true,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+
+        Icon(
+            contentDescription = imageDescription,
+            tint = MaterialTheme.colors.onSurface,
+            imageVector = icon
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.subtitle1
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = description,
+                style = MaterialTheme.typography.body1
+            )
+        }
+
+        Switch(
+            enabled = enabled,
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
+    }
+    Divider()
+}
+
+private fun Settings.toToggleDarkModeMessage(
+    enableAppDarkMode: Boolean = appDarkMode,
+    syncWithSystemDarkMode: Boolean = this.syncWithSystemDarkMode
+) = ToggleDarkMode(
+    enableAppDarkMode = enableAppDarkMode,
+    syncWithSystemDarkMode = syncWithSystemDarkMode
+)

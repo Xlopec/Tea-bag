@@ -24,6 +24,7 @@
 
 package com.max.reader.app
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
 import androidx.activity.compose.setContent
@@ -33,15 +34,21 @@ import com.max.reader.R
 import com.max.reader.app.ui.screens.AppView
 import com.oliynick.max.reader.app.command.CloseApp
 import com.oliynick.max.reader.app.command.Command
+import com.oliynick.max.reader.app.feature.settings.SystemDarkModeChanged
+import com.oliynick.max.reader.app.isSystemDarkModeEnabled
 import com.oliynick.max.tea.core.component.observeCommands
 import com.oliynick.max.tea.core.component.states
+import com.oliynick.max.tea.core.component.subscribeIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
+
+    private val systemDarkModeChanges = MutableSharedFlow<SystemDarkModeChanged>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_NewsReader)
@@ -59,6 +66,15 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             component.observeCommands()
                 .filter { it.hasCloseCommand }
                 .collect { finishAfterTransition() }
+        }
+
+        component.states().subscribeIn(systemDarkModeChanges, this)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        launch {
+            systemDarkModeChanges.emit(SystemDarkModeChanged(newConfig.isSystemDarkModeEnabled))
         }
     }
 

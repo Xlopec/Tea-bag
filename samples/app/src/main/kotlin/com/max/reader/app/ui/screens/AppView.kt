@@ -42,7 +42,7 @@ fun AppView(
     onMessage: (Message) -> Unit,
 ) {
     AppTheme(
-        isDarkModeEnabled = appState.isInDarkMode
+        isDarkModeEnabled = appState.settings.isInDarkMode
     ) {
 
         BackHandler {

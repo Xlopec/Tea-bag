@@ -29,5 +29,10 @@ import com.oliynick.max.reader.app.ScreenMessage
 sealed interface SettingsMessage : ScreenMessage
 
 data class ToggleDarkMode(
-    val enable: Boolean
+    val enableAppDarkMode: Boolean,
+    val syncWithSystemDarkMode: Boolean = false,
+) : SettingsMessage
+
+data class SystemDarkModeChanged(
+    val enabled: Boolean
 ) : SettingsMessage
