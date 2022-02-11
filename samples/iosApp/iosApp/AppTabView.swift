@@ -21,7 +21,7 @@ struct AppTabView: View {
     private let titles = ["Articles", "Favorites", "Trending", "Settings"]
     
     private let handler: MessageHandler
-        
+    
     init(initialTab: TabScreen, appState: AppState, handler: @escaping MessageHandler) {
         self.tab = initialTab
         self.appState = appState
@@ -31,53 +31,66 @@ struct AppTabView: View {
     var body: some View {
         VStack(spacing: 0) {
             
-            ZStack {
-                if let articlesState = tab as? ArticlesState {
-                    ArticlesView(state: articlesState, handler: handler, searchHintText: articlesState.searchHintText, headingText: articlesState.headingText)
-                } else {
-                    SettingsView(settings: appState.settings, handler: handler)
-                }
-            }
-                        
-            Divider()
-                .padding(.bottom, 10)
-            
-            HStack {
+            ScrollViewReader { proxy in
                 
-                ForEach(0..<4, id: \.self) { number in
-                    Spacer()
-                    Button(action: {
-                        
-                        switch number {
-                        case 0:
-                            handler(NavigateToFeed.shared)
-                        case 1:
-                            handler(NavigateToFavorite.shared)
-                        case 2:
-                            handler(NavigateToTrending.shared)
-                        default:
-                            handler(NavigateToSettings.shared)
-                        }
-                        
-                    }, label: {
-                        
-                        VStack {
-                            
-                            Image(systemName: icons[number])
-                                .font(.system(size: 25, weight: .regular, design: .default))
-                                .foregroundColor(number == tab.tabId ? .blue : Color(UIColor.lightGray))
-                            
-                            Text(titles[number])
-                                .font(.caption)
-                                .foregroundColor(number == tab.tabId ? .blue : Color(UIColor.lightGray))
-                        }
-                    })
+                ZStack {
+                    if let articlesState = tab as? ArticlesState {
+                        ArticlesView(state: articlesState, handler: handler, searchHintText: articlesState.searchHintText, headingText: articlesState.headingText)
+                    } else {
+                        SettingsView(settings: appState.settings, handler: handler)
+                    }
+                }
+                
+                Divider()
+                    .padding(.bottom, 10)
+                
+                HStack {
                     
-                    Spacer()
+                    ForEach(icons.indices, id: \.self) { tabId in
+                        Spacer()
+                        Button(action: {
+                            handleTabNavigation(proxy: proxy, forTabIdSelection: tabId)
+                        }, label: {
+                            
+                            VStack {
+                                
+                                Image(systemName: icons[tabId])
+                                    .font(.system(size: 25, weight: .regular, design: .default))
+                                    .foregroundColor(tabId == tab.tabId ? .blue : Color(UIColor.lightGray))
+                                
+                                Text(titles[tabId])
+                                    .font(.caption)
+                                    .foregroundColor(tabId == tab.tabId ? .blue : Color(UIColor.lightGray))
+                            }
+                        })
+                        
+                        Spacer()
+                    }
                 }
             }
         }
     }
+    
+    private func handleTabNavigation(proxy: ScrollViewProxy, forTabIdSelection number: Int) {
+        
+        switch number {
+        case 0:
+            handler(NavigateToFeed.shared)
+        case 1:
+            handler(NavigateToFavorite.shared)
+        case 2:
+            handler(NavigateToTrending.shared)
+        default:
+            handler(NavigateToSettings.shared)
+        }
+        
+        if number == tab.tabId, let topItem = (tab as? ArticlesState)?.articles.first {
+            withAnimation {
+                proxy.scrollTo(topItem.url)
+            }
+        }
+    }
+    
 }
 
 struct AppTabView_Previews: PreviewProvider {
