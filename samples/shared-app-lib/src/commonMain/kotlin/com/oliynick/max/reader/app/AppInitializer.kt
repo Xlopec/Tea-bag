@@ -45,14 +45,18 @@ fun AppInitializer(
         Query("android", Regular),
     )
 
-    val settings = Settings(
+    Initial(AppState(initScreen, readAppSettings(systemDarkModeEnabled, environment)), initScreen.toInitialQuery())
+}
+
+suspend fun readAppSettings(
+    systemDarkModeEnabled: Boolean,
+    environment: Environment
+): Settings =
+    Settings(
         syncWithSystemDarkModeEnabled = environment.isSyncWithSystemDarkModeEnabled(),
         systemDarkModeEnabled = systemDarkModeEnabled,
         userDarkModeEnabled = environment.isDarkModeEnabled()
     )
-
-    Initial(AppState(initScreen, settings), initScreen.toInitialQuery())
-}
 
 private fun ArticlesState.toInitialQuery(): LoadArticlesByQuery {
     require(articles.isEmpty()) { "non initial state $this" }

@@ -16,7 +16,7 @@ class ObservableAppComponent : ObservableObject {
     @Published public var appState: AppState? = nil
     
     private var cancellation: Cancellation?
-    private let component: IosComponent
+    let component: IosComponent
     
     init(systemDarkModeEnabled: Bool) {
         component = IosComponent(systemDarkModeEnabled: systemDarkModeEnabled)
@@ -68,20 +68,30 @@ struct AppView: View {
                 }
             } else {
                 // todo: show splash screen
-                Text("Splash screen!")
+                Text("News Reader")
+                    .font(.headline)
             }
+        }.onAppear {
+            
+            let dark = appComponent.component.appSettings.appDarkModeEnabled
+            
+            updateDarkMode(darkModeEnabled: dark)
+            
         }.onChange(of: appComponent.appState?.settings) {
-
-            guard let darkMode = $0?.appDarkModeEnabled else {
-                return
+            
+            if let darkMode = $0?.appDarkModeEnabled {
+                updateDarkMode(darkModeEnabled: darkMode)
             }
-            
-            let window = UIApplication.shared.windows.first
-            
-            window?.overrideUserInterfaceStyle = darkMode ? .dark : .light
+
         }.onChange(of: colorScheme) {
             handler(SystemDarkModeChanged(enabled: $0 == .dark))
         }
+    }
+    
+    private func updateDarkMode(darkModeEnabled: Bool) {
+        let window = UIApplication.shared.windows.first
+        
+        window?.overrideUserInterfaceStyle = darkModeEnabled ? .dark : .light
     }
     
 }

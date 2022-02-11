@@ -1,5 +1,7 @@
 package com.oliynick.max.reader.app
 
+import com.oliynick.max.reader.app.feature.storage.SettingsDelegate
+import com.oliynick.max.reader.app.feature.storage.appSettings
 import com.oliynick.max.tea.core.component.states
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
@@ -9,22 +11,27 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import com.oliynick.max.reader.app.Settings as AppSettings
 
 fun interface Cancellation {
     fun cancel()
 }
 
 class IosComponent(
-    systemDarkModeEnabled: Boolean
+    private val systemDarkModeEnabled: Boolean
 ) {
 
     private val componentJob = Job()
     private val componentScope = CoroutineScope(Main + componentJob)
 
-    private val component = Environment(componentScope)
-        .let { env -> AppComponent(env, AppInitializer(systemDarkModeEnabled, env)).states() }
+    private val environment = Environment(componentScope)
+    private val component =
+        AppComponent(environment, AppInitializer(systemDarkModeEnabled, environment)).states()
 
     private val messages = MutableSharedFlow<Message>()
+
+    val appSettings: AppSettings
+        get() = SettingsDelegate.appSettings(systemDarkModeEnabled)
 
     fun dispatch(
         message: Message

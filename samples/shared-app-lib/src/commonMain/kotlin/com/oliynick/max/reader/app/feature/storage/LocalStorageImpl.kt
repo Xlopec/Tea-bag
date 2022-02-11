@@ -17,21 +17,18 @@ import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.db.use
 import kotlinx.coroutines.withContext
 
+internal val SettingsDelegate by lazy { Settings() }
+
 fun LocalStorage(
     driver: SqlDriver
-): LocalStorage = LocalStorageImpl(driver)
+): LocalStorage = LocalStorageImpl(driver, SettingsDelegate)
 
 private class LocalStorageImpl(
     driver: SqlDriver,
+    private val settings: Settings
 ) : LocalStorage {
 
-    private companion object {
-        private const val DarkModeEnabledKey = "DarkModeEnabledKey"
-        private const val SyncWithSystemDarkModeEnabledKey = "SyncWithSystemDarkModeEnabledKey"
-    }
-
     private val database = AppDatabase(driver)
-    private val settings = Settings()
 
     override suspend fun insertArticle(article: Article) = query {
         // fixme there should be insert or replace option (upsert)
@@ -82,7 +79,10 @@ private class LocalStorageImpl(
         settings[SyncWithSystemDarkModeEnabledKey, false]
     }
 
-    override suspend fun storeDarkModePreferences(appDarkMode: Boolean, syncWithSystemDarkMode: Boolean) = query {
+    override suspend fun storeDarkModePreferences(
+        appDarkMode: Boolean,
+        syncWithSystemDarkMode: Boolean
+    ) = query {
         settings[DarkModeEnabledKey] = appDarkMode
         settings[SyncWithSystemDarkModeEnabledKey] = syncWithSystemDarkMode
     }
@@ -116,3 +116,6 @@ private fun dbModelToArticle(
 
 private inline val SqlCursor.isFavorite: Boolean
     get() = getLong(6) != 0L
+
+internal const val DarkModeEnabledKey = "DarkModeEnabledKey"
+internal const val SyncWithSystemDarkModeEnabledKey = "SyncWithSystemDarkModeEnabledKey"
