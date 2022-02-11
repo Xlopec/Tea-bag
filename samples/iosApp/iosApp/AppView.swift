@@ -71,12 +71,6 @@ struct AppView: View {
                 Text("News Reader")
                     .font(.headline)
             }
-        }.onAppear {
-            
-            let dark = appComponent.component.appSettings.appDarkModeEnabled
-            
-            updateDarkMode(darkModeEnabled: dark)
-            
         }.onChange(of: appComponent.appState?.settings) {
             
             if let darkMode = $0?.appDarkModeEnabled {

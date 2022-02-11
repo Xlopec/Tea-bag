@@ -17,16 +17,20 @@ import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.db.use
 import kotlinx.coroutines.withContext
 
-internal val SettingsDelegate by lazy { Settings() }
-
 fun LocalStorage(
-    driver: SqlDriver
-): LocalStorage = LocalStorageImpl(driver, SettingsDelegate)
+    driver: SqlDriver,
+    settings: Settings = Settings()
+): LocalStorage = LocalStorageImpl(driver, settings)
 
 private class LocalStorageImpl(
     driver: SqlDriver,
     private val settings: Settings
 ) : LocalStorage {
+
+    private companion object {
+        private const val DarkModeEnabledKey = "DarkModeEnabledKey"
+        private const val SyncWithSystemDarkModeEnabledKey = "SyncWithSystemDarkModeEnabledKey"
+    }
 
     private val database = AppDatabase(driver)
 
@@ -116,6 +120,3 @@ private fun dbModelToArticle(
 
 private inline val SqlCursor.isFavorite: Boolean
     get() = getLong(6) != 0L
-
-internal const val DarkModeEnabledKey = "DarkModeEnabledKey"
-internal const val SyncWithSystemDarkModeEnabledKey = "SyncWithSystemDarkModeEnabledKey"
