@@ -1,3 +1,4 @@
+@file:JvmName("jvmUUID")
 package com.oliynick.max.entities.shared
 
 import java.util.UUID as JavaUUID

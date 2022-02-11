@@ -27,8 +27,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
 
-class NewsApiImpl(
-    // todo refine this field
+internal class NewsApiImpl(
     engine: HttpClientEngineFactory<HttpClientEngineConfig>,
     private val countryCode: String
 ) : NewsApi {

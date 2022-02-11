@@ -35,6 +35,7 @@ import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPa
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.QueryType.*
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
+import com.oliynick.max.reader.app.feature.suggest.SuggestState
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -51,6 +52,7 @@ fun navigate(
     return when (nav) {
         is TabNavigation -> state.navigateToTab(nav, TabNavigation::toTabScreen)
         is NavigateToArticleDetails -> state.navigateToArticleDetails(nav)
+        is NavigateToSuggestions -> state.navigateToSuggestions(nav)
         is Pop -> state.popScreen()
     }.also { (appState, _) ->
         if (debug) {
@@ -101,6 +103,10 @@ val AppState.currentTab: TabScreen
 fun AppState.navigateToArticleDetails(
     nav: NavigateToArticleDetails,
 ) = pushScreen(ArticleDetailsState(nav.id, nav.article)).noCommand()
+
+fun AppState.navigateToSuggestions(
+    nav: NavigateToSuggestions
+) = pushScreen(SuggestState()).noCommand()
 
 expect fun AppState.popScreen(): UpdateWith<AppState, Command>
 

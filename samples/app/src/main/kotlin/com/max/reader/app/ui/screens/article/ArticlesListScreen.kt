@@ -34,31 +34,29 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.ButtonDefaults.textButtonColors
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.google.accompanist.insets.statusBarsPadding
+import com.max.reader.app.ui.misc.SearchHeader
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.Message
@@ -68,6 +66,7 @@ import com.oliynick.max.reader.app.feature.article.list.*
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState.TransientState.*
 import com.oliynick.max.reader.app.feature.article.list.QueryType.*
 import com.oliynick.max.reader.app.feature.navigation.NavigateToArticleDetails
+import com.oliynick.max.reader.app.feature.navigation.NavigateToSuggestions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
@@ -399,44 +398,25 @@ fun ArticleSearchHeader(
     state: ArticlesState,
     onMessage: (Message) -> Unit,
 ) {
-    val (id, query) = state
 
-    Card(
-        modifier = modifier
-            .statusBarsPadding()
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp)
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    CompositionLocalProvider(
+        LocalTextInputService provides null
     ) {
-
-        val keyboardController = LocalSoftwareKeyboardController.current
-
-        TextField(
-            value = query.input,
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(text = query.type.toSearchHint(), style = typography.subtitle2) },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            maxLines = 1,
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    keyboardController?.hide()
-                    onMessage(LoadArticlesFromScratch(id))
-                }
-            ),
-            textStyle = typography.subtitle2,
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        keyboardController?.hide()
-                        onMessage(LoadArticlesFromScratch(id))
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search"
-                    )
-                }
+        SearchHeader(
+            inputText = state.query.input,
+            placeholderText = state.query.type.toSearchHint(),
+            onSearchQueryUpdate = { query -> onMessage(OnQueryUpdated(state.id, query)) },
+            onSearch = {
+                keyboardController?.hide()
+                onMessage(LoadArticlesFromScratch(state.id))
             },
-            onValueChange = { query -> onMessage(OnQueryUpdated(id, query)) }
+            onFocusChanged = { focusState ->
+                if (focusState.isFocused) {
+                    onMessage(NavigateToSuggestions)
+                }
+            }
         )
     }
 }
