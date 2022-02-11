@@ -20,7 +20,7 @@ fun <Env> AppResolver(): AppResolver<Env> where
             is CloseApp -> setOf()
             is ArticlesCommand -> resolve(command)
             is ArticleDetailsCommand -> resolve(command)
-            is DoStoreDarkMode -> command sideEffect { storeIsDarkModeEnabled(enabled) }
+            is DoStoreDarkMode -> command sideEffect { storeDarkModePreferences(userDarkModeEnabled, syncWithSystemDarkModeEnabled) }
             else -> error("can't get here")
         }
     }

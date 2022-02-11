@@ -21,14 +21,11 @@ struct AppTabView: View {
     private let titles = ["Articles", "Favorites", "Trending", "Settings"]
     
     private let handler: MessageHandler
-    
-    @State private var darkModeEnabled: Bool
         
     init(initialTab: TabScreen, appState: AppState, handler: @escaping MessageHandler) {
         self.tab = initialTab
         self.appState = appState
         self.handler = handler
-        self.darkModeEnabled = appState.isInDarkMode
     }
     
     var body: some View {
@@ -38,10 +35,7 @@ struct AppTabView: View {
                 if let articlesState = tab as? ArticlesState {
                     ArticlesView(state: articlesState, handler: handler, searchHintText: articlesState.searchHintText, headingText: articlesState.headingText)
                 } else {
-                    SettingsView(darkMode: $darkModeEnabled)
-                        .onChange(of: darkModeEnabled) {
-                            handler(ToggleDarkMode(enable: $0))
-                        }
+                    SettingsView(settings: appState.settings, handler: handler)
                 }
             }
                         
@@ -87,8 +81,12 @@ struct AppTabView: View {
 }
 
 struct AppTabView_Previews: PreviewProvider {
+    
+    static let settings = Settings(userDarkModeEnabled: true, systemDarkModeEnabled: true, syncWithSystemDarkModeEnabled: true)
+    static let appState = AppState(settings: settings, screens: [])
+    
     static var previews: some View {
-        AppTabView(initialTab: SettingsState.shared, appState: AppState(isInDarkMode: true, screens: []), handler: {_ in })
+        AppTabView(initialTab: SettingsScreen.shared, appState: appState, handler: {_ in })
     }
 }
 

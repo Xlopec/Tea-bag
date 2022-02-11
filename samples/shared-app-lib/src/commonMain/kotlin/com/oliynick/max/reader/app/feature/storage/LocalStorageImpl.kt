@@ -82,8 +82,9 @@ private class LocalStorageImpl(
         settings[SyncWithSystemDarkModeEnabledKey, false]
     }
 
-    override suspend fun storeIsDarkModeEnabled(isEnabled: Boolean) = query {
-        settings[DarkModeEnabledKey] = isEnabled
+    override suspend fun storeDarkModePreferences(appDarkMode: Boolean, syncWithSystemDarkMode: Boolean) = query {
+        settings[DarkModeEnabledKey] = appDarkMode
+        settings[SyncWithSystemDarkModeEnabledKey] = syncWithSystemDarkMode
     }
 
     private suspend inline fun <T> query(

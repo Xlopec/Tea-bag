@@ -18,8 +18,8 @@ class ObservableAppComponent : ObservableObject {
     private var cancellation: Cancellation?
     private let component: IosComponent
     
-    init() {
-        component = IosComponent()
+    init(systemDarkModeEnabled: Bool) {
+        component = IosComponent(systemDarkModeEnabled: systemDarkModeEnabled)
         
         cancellation = component.render { state in
             self.appState = state
@@ -39,6 +39,8 @@ class ObservableAppComponent : ObservableObject {
 typealias MessageHandler = (Message) -> Void
 
 struct AppView: View {
+    
+    @SwiftUI.Environment(\.colorScheme) var colorScheme: ColorScheme
     
     @ObservedObject private(set) var appComponent: ObservableAppComponent
     
@@ -68,15 +70,17 @@ struct AppView: View {
                 // todo: show splash screen
                 Text("Splash screen!")
             }
-        }.onChange(of: appComponent.appState?.isInDarkMode) { newDarkMode in
+        }.onChange(of: appComponent.appState?.settings) {
 
-            guard let darkMode = newDarkMode else {
+            guard let darkMode = $0?.appDarkModeEnabled else {
                 return
             }
             
             let window = UIApplication.shared.windows.first
             
             window?.overrideUserInterfaceStyle = darkMode ? .dark : .light
+        }.onChange(of: colorScheme) {
+            handler(SystemDarkModeChanged(enabled: $0 == .dark))
         }
     }
     

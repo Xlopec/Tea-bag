@@ -7,10 +7,11 @@ import com.max.reader.BuildConfig
 import com.oliynick.max.reader.app.AppInitializer
 import com.oliynick.max.reader.app.DebuggableAppComponent
 import com.oliynick.max.reader.app.Environment
+import com.oliynick.max.reader.app.systemDarkModeEnabled
 import kotlinx.coroutines.CoroutineScope
 
 fun AppComponent(
     application: Application,
     scope: CoroutineScope,
 ) = Environment(BuildConfig.DEBUG, application, scope)
-    .let { env -> DebuggableAppComponent(env, AppInitializer(env)) }
+    .let { env -> DebuggableAppComponent(env, AppInitializer(application.systemDarkModeEnabled, env)) }

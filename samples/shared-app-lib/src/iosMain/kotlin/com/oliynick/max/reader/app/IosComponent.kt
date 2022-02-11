@@ -14,13 +14,15 @@ fun interface Cancellation {
     fun cancel()
 }
 
-class IosComponent {
+class IosComponent(
+    systemDarkModeEnabled: Boolean
+) {
 
     private val componentJob = Job()
     private val componentScope = CoroutineScope(Main + componentJob)
 
     private val component = Environment(componentScope)
-        .let { env -> AppComponent(env, AppInitializer(false, env)).states() }
+        .let { env -> AppComponent(env, AppInitializer(systemDarkModeEnabled, env)).states() }
 
     private val messages = MutableSharedFlow<Message>()
 

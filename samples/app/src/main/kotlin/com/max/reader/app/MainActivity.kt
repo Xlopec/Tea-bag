@@ -35,7 +35,7 @@ import com.max.reader.app.ui.screens.AppView
 import com.oliynick.max.reader.app.command.CloseApp
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.feature.settings.SystemDarkModeChanged
-import com.oliynick.max.reader.app.isSystemDarkModeEnabled
+import com.oliynick.max.reader.app.systemDarkModeEnabled
 import com.oliynick.max.tea.core.component.observeCommands
 import com.oliynick.max.tea.core.component.states
 import com.oliynick.max.tea.core.component.subscribeIn
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         launch {
-            systemDarkModeChanges.emit(SystemDarkModeChanged(newConfig.isSystemDarkModeEnabled))
+            systemDarkModeChanges.emit(SystemDarkModeChanged(newConfig.systemDarkModeEnabled))
         }
     }
 

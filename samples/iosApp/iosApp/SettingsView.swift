@@ -11,7 +11,16 @@ import SharedAppLib
 
 struct SettingsView: View {
     
-    @Binding public var darkMode: Bool
+    @State private var userDarkMode: Bool
+    @State private var syncWithSystemDarkMode: Bool
+    
+    let handler: MessageHandler
+    
+    init(settings: Settings, handler: @escaping MessageHandler) {
+        self.handler = handler
+        self.userDarkMode = settings.userDarkModeEnabled
+        self.syncWithSystemDarkMode = settings.syncWithSystemDarkModeEnabled
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -20,9 +29,15 @@ struct SettingsView: View {
                 .font(.title)
                 .padding()
             Form {
-                Section("Theming") {
-                    Toggle("Enable dark mode", isOn: $darkMode)
+                Section("Appearance") {
+                    Toggle("Use dark mode in the app", isOn: $userDarkMode)
+                        .disabled(syncWithSystemDarkMode)
+                    Toggle("Use system dark mode", isOn: $syncWithSystemDarkMode)
                 }
+            }.onChange(of: userDarkMode) {
+                handler(ToggleDarkMode(userDarkModeEnabled: $0, syncWithSystemDarkModeEnabled: syncWithSystemDarkMode))
+            }.onChange(of: syncWithSystemDarkMode) {
+                handler(ToggleDarkMode(userDarkModeEnabled: userDarkMode, syncWithSystemDarkModeEnabled: $0))
             }
         }
     }
@@ -30,6 +45,6 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(darkMode: Binding.constant(true))
+        SettingsView(settings: Settings(userDarkModeEnabled: true, systemDarkModeEnabled: true, syncWithSystemDarkModeEnabled: true), handler: {_ in })
     }
-}
+ }

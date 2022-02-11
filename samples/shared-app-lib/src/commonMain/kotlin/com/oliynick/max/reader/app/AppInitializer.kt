@@ -46,9 +46,9 @@ fun AppInitializer(
     )
 
     val settings = Settings(
-        syncWithSystemDarkMode = environment.isSyncWithSystemDarkModeEnabled(),
-        systemDarkMode = systemDarkModeEnabled,
-        appDarkMode = environment.isDarkModeEnabled()
+        syncWithSystemDarkModeEnabled = environment.isSyncWithSystemDarkModeEnabled(),
+        systemDarkModeEnabled = systemDarkModeEnabled,
+        userDarkModeEnabled = environment.isDarkModeEnabled()
     )
 
     Initial(AppState(initScreen, settings), initScreen.toInitialQuery())

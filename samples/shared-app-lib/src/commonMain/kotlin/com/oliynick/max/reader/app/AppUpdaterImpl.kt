@@ -73,11 +73,11 @@ private fun AppState.updateSettings(
     when (message) {
         is ToggleDarkMode -> updateSettings {
             updated(
-                appDarkMode = message.enableAppDarkMode,
-                syncWithSystemDarkMode = message.syncWithSystemDarkMode
+                userDarkModeEnabled = message.userDarkModeEnabled,
+                syncWithSystemDarkModeEnabled = message.syncWithSystemDarkModeEnabled
             )
-        } command DoStoreDarkMode(message.enableAppDarkMode)
-        is SystemDarkModeChanged -> updateSettings { updated(systemDarkMode = message.enabled) }.noCommand()
+        } command DoStoreDarkMode(message.userDarkModeEnabled, message.syncWithSystemDarkModeEnabled)
+        is SystemDarkModeChanged -> updateSettings { updated(systemDarkModeEnabled = message.enabled) }.noCommand()
     }
 
 private fun AppState.updateSettings(

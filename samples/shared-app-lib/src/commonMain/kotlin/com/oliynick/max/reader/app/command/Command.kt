@@ -31,5 +31,6 @@ package com.oliynick.max.reader.app.command
 object CloseApp : Command
 
 data class DoStoreDarkMode(
-    val enabled: Boolean
+    val userDarkModeEnabled: Boolean,
+    val syncWithSystemDarkModeEnabled: Boolean
 ) : Command

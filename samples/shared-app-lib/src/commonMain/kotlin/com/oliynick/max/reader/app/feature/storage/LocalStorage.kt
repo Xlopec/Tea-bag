@@ -52,7 +52,8 @@ interface LocalStorage {
 
     suspend fun isSyncWithSystemDarkModeEnabled(): Boolean
 
-    suspend fun storeIsDarkModeEnabled(
-        isEnabled: Boolean,
+    suspend fun storeDarkModePreferences(
+        appDarkMode: Boolean,
+        syncWithSystemDarkMode: Boolean,
     )
 }

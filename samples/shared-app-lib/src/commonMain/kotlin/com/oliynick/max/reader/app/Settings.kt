@@ -2,20 +2,20 @@ package com.oliynick.max.reader.app
 
 @ImmutableType
 data class Settings(
-    val appDarkMode: Boolean,
-    val systemDarkMode: Boolean,
-    val syncWithSystemDarkMode: Boolean
+    val userDarkModeEnabled: Boolean,
+    val systemDarkModeEnabled: Boolean,
+    val syncWithSystemDarkModeEnabled: Boolean
 ) {
-    val isInDarkMode: Boolean
-        get() = if (syncWithSystemDarkMode) systemDarkMode else appDarkMode
+    val appDarkModeEnabled: Boolean
+        get() = if (syncWithSystemDarkModeEnabled) systemDarkModeEnabled else userDarkModeEnabled
 }
 
 fun Settings.updated(
-    appDarkMode: Boolean = this.appDarkMode,
-    systemDarkMode: Boolean = this.systemDarkMode,
-    syncWithSystemDarkMode: Boolean = this.syncWithSystemDarkMode
+    userDarkModeEnabled: Boolean = this.userDarkModeEnabled,
+    systemDarkModeEnabled: Boolean = this.systemDarkModeEnabled,
+    syncWithSystemDarkModeEnabled: Boolean = this.syncWithSystemDarkModeEnabled
 ) = copy(
-    appDarkMode = appDarkMode,
-    systemDarkMode = systemDarkMode,
-    syncWithSystemDarkMode = syncWithSystemDarkMode
+    userDarkModeEnabled = userDarkModeEnabled,
+    systemDarkModeEnabled = systemDarkModeEnabled,
+    syncWithSystemDarkModeEnabled = syncWithSystemDarkModeEnabled
 )

@@ -61,10 +61,10 @@ fun SettingsScreen(
                 imageDescription = "App dark mode",
                 title = "App dark mode",
                 description = "Use dark mode in the app",
-                checked = settings.appDarkMode,
-                enabled = !settings.syncWithSystemDarkMode,
+                checked = settings.userDarkModeEnabled,
+                enabled = !settings.syncWithSystemDarkModeEnabled,
             ) {
-                onMessage(settings.toToggleDarkModeMessage(enableAppDarkMode = it))
+                onMessage(settings.toToggleDarkModeMessage(userDarkModeEnabled = it))
             }
 
             SwitchItem(
@@ -72,9 +72,9 @@ fun SettingsScreen(
                 imageDescription = "System dark mode",
                 title = "System dark mode",
                 description = "Use system dark mode",
-                checked = settings.syncWithSystemDarkMode,
+                checked = settings.syncWithSystemDarkModeEnabled,
             ) {
-                onMessage(settings.toToggleDarkModeMessage(syncWithSystemDarkMode = it))
+                onMessage(settings.toToggleDarkModeMessage(syncWithSystemDarkModeEnabled = it))
             }
         }
     }
@@ -130,9 +130,9 @@ private fun SwitchItem(
 }
 
 private fun Settings.toToggleDarkModeMessage(
-    enableAppDarkMode: Boolean = appDarkMode,
-    syncWithSystemDarkMode: Boolean = this.syncWithSystemDarkMode
+    userDarkModeEnabled: Boolean = this.userDarkModeEnabled,
+    syncWithSystemDarkModeEnabled: Boolean = this.syncWithSystemDarkModeEnabled
 ) = ToggleDarkMode(
-    enableAppDarkMode = enableAppDarkMode,
-    syncWithSystemDarkMode = syncWithSystemDarkMode
+    userDarkModeEnabled = userDarkModeEnabled,
+    syncWithSystemDarkModeEnabled = syncWithSystemDarkModeEnabled
 )
