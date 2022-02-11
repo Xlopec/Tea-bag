@@ -35,6 +35,9 @@ import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.google.accompanist.insets.navigationBarsPadding
@@ -42,6 +45,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.max.reader.app.ui.misc.InsetAwareTopAppBar
 import com.max.reader.app.ui.screens.article.ArticlesScreen
+import com.max.reader.app.ui.screens.article.listState
 import com.max.reader.app.ui.screens.home.BottomMenuItem.Favorite
 import com.max.reader.app.ui.screens.home.BottomMenuItem.Feed
 import com.max.reader.app.ui.screens.home.BottomMenuItem.Settings
@@ -75,17 +79,30 @@ fun HomeScreen(
         swipeEnabled = state.isPreview,
         onRefresh = { onMessage(RefreshArticles(state.id)) },
     ) {
+        val scrollTrigger = remember { mutableStateOf(0) }
+        val listState = listState(id = state.id)
+
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
                 BottomBar(
                     modifier = Modifier.navigationBarsPadding(),
                     item = state.query.toMenuItem(),
-                    onMessage = onMessage
+                    handler = { reselected, nav ->
+                        onMessage(nav)
+
+                        if (reselected) {
+                            scrollTrigger.value++
+                        }
+                    }
                 )
+
+                LaunchedEffect(scrollTrigger.value) {
+                    listState.animateScrollToItem(0)
+                }
             }, content = { innerPadding ->
                 if (content == null) {
-                    ArticlesScreen(state, onMessage, Modifier.padding(innerPadding))
+                    ArticlesScreen(state, onMessage, Modifier.padding(innerPadding), listState)
                 } else {
                     content(innerPadding)
                 }
@@ -112,7 +129,7 @@ fun HomeScreen(
             BottomBar(
                 modifier = Modifier.navigationBarsPadding(),
                 item = Settings,
-                onMessage = onMessage
+                handler = { _, nav -> onMessage(nav) }
             )
         }, content = { innerPadding ->
             SettingsScreen(
@@ -136,7 +153,7 @@ operator fun PaddingValues.plus(other: PaddingValues) =
 fun BottomBar(
     modifier: Modifier,
     item: BottomMenuItem,
-    onMessage: (Navigation) -> Unit,
+    handler: (reselected: Boolean, navigation: Navigation) -> Unit,
 ) {
     BottomNavigation(modifier = modifier) {
 
@@ -148,7 +165,7 @@ fun BottomBar(
                 )
             },
             selected = item === Feed,
-            onClick = { onMessage(NavigateToFeed) }
+            onClick = { handler(item === Feed, NavigateToFeed) }
         )
 
         BottomNavigationItem(icon = {
@@ -158,7 +175,7 @@ fun BottomBar(
             )
         },
             selected = item === Favorite,
-            onClick = { onMessage(NavigateToFavorite) }
+            onClick = { handler(item === Favorite, NavigateToFavorite) }
         )
 
         BottomNavigationItem(icon = {
@@ -168,7 +185,7 @@ fun BottomBar(
             )
         },
             selected = item === Trending,
-            onClick = { onMessage(NavigateToTrending) }
+            onClick = { handler(item === Trending, NavigateToTrending) }
         )
 
         BottomNavigationItem(icon = {
@@ -178,7 +195,7 @@ fun BottomBar(
             )
         },
             selected = item === Settings,
-            onClick = { onMessage(NavigateToSettings) }
+            onClick = { handler(item === Settings, NavigateToSettings) }
         )
     }
 }

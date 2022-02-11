@@ -82,6 +82,7 @@ fun ArticlesScreen(
     state: ArticlesState,
     onMessage: (Message) -> Unit,
     modifier: Modifier = Modifier,
+    listState: LazyListState = listState(id = state.id),
 ) {
 
     val (id, _, articles, _, transientState) = state
@@ -90,7 +91,7 @@ fun ArticlesScreen(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        val listState = listState(id = id)
+        //val listState = listState(id = id)
         // buggy behavior
         // .apply { setScrollingEnabled(articles.isNotEmpty(), rememberCoroutineScope()) }
 
@@ -443,7 +444,7 @@ fun ArticleSearchHeader(
 }
 
 @Composable
-private fun listState(
+fun listState(
     id: ScreenId,
     initialFirstVisibleItemIndex: Int = 0,
     initialFirstVisibleItemScrollOffset: Int = 0,
