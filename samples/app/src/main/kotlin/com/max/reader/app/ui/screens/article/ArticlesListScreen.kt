@@ -423,7 +423,6 @@ fun ArticleSearchHeader(
                     onMessage(LoadArticlesFromScratch(id))
                 }
             ),
-            colors = TextFieldDefaults.textFieldColors(backgroundColor = colors.surface),
             textStyle = typography.subtitle2,
             trailingIcon = {
                 IconButton(

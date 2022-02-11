@@ -24,15 +24,19 @@
 
 package com.max.reader.app.ui.theme
 
+import androidx.compose.material.Colors
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
 
+val Colors.importantActionColor: Color
+    get() = if (isLight) Color(0xffdb2a59) else Color(0xffbd2b52)
+
 val DarkThemeColors = darkColors(
-    primary = Color(35, 35, 36),
+    primary = Color(20, 20, 20),
     secondary = Color(0xFFFFFFFF),
     background = Color.Black,
-    surface = Color(20, 20, 20),
+    surface = Color(4, 4, 6),
     error = Color(0xFFF70040),
     onPrimary = Color.White,
     onSecondary = Color.White,

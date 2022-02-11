@@ -78,7 +78,7 @@ private fun appColors(
         onBackground = onBackground,
         onSurface = onSurface,
         onError = onError,
-        isLight = true
+        isLight = !isDarkModeEnabled
     )
 }
 
