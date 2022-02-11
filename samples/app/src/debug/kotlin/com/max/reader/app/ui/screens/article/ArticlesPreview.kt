@@ -1,5 +1,6 @@
 package com.max.reader.app.ui.screens.article
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,8 +68,9 @@ fun ArticlesScreenPreview() {
                 PreviewArticles,
                 ArticlesState.TransientState.Preview
             ),
-            {}
-        )
+            ListState,
+            Modifier
+        ) {}
     }
 }
 
@@ -82,8 +84,9 @@ fun ArticlesScreenLoadingNextPreview() {
                 listOf(PreviewArticle),
                 ArticlesState.TransientState.LoadingNext
             ),
-            {}
-        )
+            ListState,
+            Modifier
+        ) {}
     }
 }
 
@@ -97,8 +100,9 @@ fun ArticlesScreenLoadingPreview() {
                 listOf(),
                 ArticlesState.TransientState.Loading
             ),
-            {}
-        )
+            ListState,
+            Modifier
+        ) {}
     }
 }
 
@@ -112,8 +116,9 @@ fun ArticlesScreenRefreshingPreview() {
                 listOf(PreviewArticle),
                 ArticlesState.TransientState.Refreshing
             ),
-            {}
-        )
+            ListState,
+            Modifier
+        ) {}
     }
 }
 
@@ -155,3 +160,5 @@ private val PreviewArticles = listOf(
     PreviewArticle.copy(url = URL("https://miro.medium.com/2")),
     PreviewArticle.copy(url = URL("https://miro.medium.com/3"))
 )
+
+private val ListState = LazyListState(firstVisibleItemIndex = 0, firstVisibleItemScrollOffset = 5)

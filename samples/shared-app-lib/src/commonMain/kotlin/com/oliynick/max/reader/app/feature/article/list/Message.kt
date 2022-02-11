@@ -73,6 +73,11 @@ value class OnArticleUpdated(
         get() = null
 }
 
+data class SyncScrollPosition(
+    override val id: ScreenId,
+    val scrollState: ScrollState,
+) : ArticlesMessage
+
 /*@JvmInline
 value*/data class OnShareArticle(
     val article: Article,

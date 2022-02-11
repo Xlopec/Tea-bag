@@ -47,7 +47,6 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -80,9 +79,9 @@ internal const val ProgressIndicatorTag = "Progress Indicator"
 @Composable
 fun ArticlesScreen(
     state: ArticlesState,
-    onMessage: (Message) -> Unit,
+    listState: LazyListState,
     modifier: Modifier = Modifier,
-    listState: LazyListState = listState(id = state.id),
+    onMessage: (Message) -> Unit,
 ) {
 
     val (id, _, articles, _, transientState) = state
@@ -441,26 +440,6 @@ fun ArticleSearchHeader(
         )
     }
 }
-
-@Composable
-fun listState(
-    id: ScreenId,
-    initialFirstVisibleItemIndex: Int = 0,
-    initialFirstVisibleItemScrollOffset: Int = 0,
-): LazyListState {
-
-    val idToListState = remember { mutableMapOf<ScreenId, LazyListState>() }
-
-    return remember(id) {
-        idToListState.getOrPut(id) {
-            LazyListState(
-                initialFirstVisibleItemIndex,
-                initialFirstVisibleItemScrollOffset,
-            )
-        }
-    }
-}
-
 
 private val DateFormatter: SimpleDateFormat by lazy {
     SimpleDateFormat("dd MMM' at 'hh:mm", Locale.getDefault())

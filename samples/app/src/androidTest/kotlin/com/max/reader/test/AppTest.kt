@@ -25,6 +25,8 @@
 package com.max.reader.test
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -62,8 +64,9 @@ internal class AppTest {
             AppTheme(isDarkModeEnabled = true) {
                 ArticlesScreen(
                     ArticlesState.newLoading(randomUUID(), Query("Input text", Regular), listOf()),
-                    {}
-                )
+                    LazyListState(0, 0),
+                    Modifier
+                ) {}
             }
         }
 
@@ -76,7 +79,12 @@ internal class AppTest {
 
             anyRequest() yields ArticleResponse(TestArticleElement)
 
-            AppView(AppComponent(this, AppInitializer(systemDarkModeEnabled = false, this)).states())
+            AppView(
+                AppComponent(
+                    this,
+                    AppInitializer(systemDarkModeEnabled = false, this)
+                ).states()
+            )
 
             resumeDispatcher()
         }

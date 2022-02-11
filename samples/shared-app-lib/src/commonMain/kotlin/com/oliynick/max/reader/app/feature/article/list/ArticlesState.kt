@@ -41,12 +41,22 @@ data class Query(
     val type: QueryType,
 )
 
+data class ScrollState(
+    val firstVisibleItemIndex: Int,
+    val firstVisibleItemScrollOffset: Int,
+) {
+    companion object {
+        val Initial = ScrollState(firstVisibleItemIndex = 0, firstVisibleItemScrollOffset = 0)
+    }
+}
+
 data class ArticlesState(
     override val id: ScreenId,
     val query: Query,
     val articles: List<Article>,
     val hasMoreArticles: Boolean,
     val transientState: TransientState,
+    val scrollState: ScrollState = ScrollState.Initial
 ) : TabScreen {
 
     sealed class TransientState {

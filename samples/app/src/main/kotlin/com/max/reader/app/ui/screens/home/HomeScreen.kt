@@ -27,6 +27,7 @@
 package com.max.reader.app.ui.screens.home
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.Icons.Outlined
@@ -34,10 +35,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Language
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.google.accompanist.insets.navigationBarsPadding
@@ -45,7 +43,6 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.max.reader.app.ui.misc.InsetAwareTopAppBar
 import com.max.reader.app.ui.screens.article.ArticlesScreen
-import com.max.reader.app.ui.screens.article.listState
 import com.max.reader.app.ui.screens.home.BottomMenuItem.Favorite
 import com.max.reader.app.ui.screens.home.BottomMenuItem.Feed
 import com.max.reader.app.ui.screens.home.BottomMenuItem.Settings
@@ -53,9 +50,7 @@ import com.max.reader.app.ui.screens.home.BottomMenuItem.Trending
 import com.max.reader.app.ui.screens.settings.SettingsScreen
 import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.Message
-import com.oliynick.max.reader.app.feature.article.list.ArticlesState
-import com.oliynick.max.reader.app.feature.article.list.Query
-import com.oliynick.max.reader.app.feature.article.list.RefreshArticles
+import com.oliynick.max.reader.app.feature.article.list.*
 import com.oliynick.max.reader.app.feature.navigation.*
 import com.oliynick.max.reader.app.feature.article.list.QueryType.Favorite as FavoriteQuery
 import com.oliynick.max.reader.app.feature.article.list.QueryType.Regular as RegularQuery
@@ -79,8 +74,14 @@ fun HomeScreen(
         swipeEnabled = state.isPreview,
         onRefresh = { onMessage(RefreshArticles(state.id)) },
     ) {
-        val scrollTrigger = remember { mutableStateOf(0) }
-        val listState = listState(id = state.id)
+        val scrollTrigger = remember(state.id) { mutableStateOf(0) }
+        val listState = remember(state.id) { state.scrollState.toLazyListState() }
+
+        DisposableEffect(state.id) {
+            onDispose {
+                onMessage(SyncScrollPosition(state.id, listState.toScrollState()))
+            }
+        }
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -97,12 +98,14 @@ fun HomeScreen(
                     }
                 )
 
-                LaunchedEffect(scrollTrigger.value) {
-                    listState.animateScrollToItem(0)
+                if (scrollTrigger.value != 0) {
+                    LaunchedEffect(scrollTrigger.value) {
+                        listState.animateScrollToItem(0)
+                    }
                 }
             }, content = { innerPadding ->
                 if (content == null) {
-                    ArticlesScreen(state, onMessage, Modifier.padding(innerPadding), listState)
+                    ArticlesScreen(state, listState, Modifier.padding(innerPadding), onMessage)
                 } else {
                     content(innerPadding)
                 }
@@ -199,6 +202,12 @@ fun BottomBar(
         )
     }
 }
+
+private fun LazyListState.toScrollState() =
+    ScrollState(firstVisibleItemIndex, firstVisibleItemScrollOffset)
+
+private fun ScrollState.toLazyListState() =
+    LazyListState(firstVisibleItemIndex, firstVisibleItemScrollOffset)
 
 private fun Query.toMenuItem() = when (type) {
     RegularQuery -> Feed

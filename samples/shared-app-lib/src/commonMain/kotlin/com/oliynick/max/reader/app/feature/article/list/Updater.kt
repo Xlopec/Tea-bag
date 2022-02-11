@@ -49,6 +49,7 @@ fun updateArticles(
         is OnShareArticle -> shareArticle(message.article, state)
         // fixme redesign FeedState
         is OnQueryUpdated -> updateQuery(message.query, state)
+        is SyncScrollPosition -> updateScrollState(state, message)
     }
 
 private fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadArticlesQuery(FirstPage)
@@ -107,3 +108,8 @@ private fun Article.storeCommand() = if (isFavorite) SaveArticle(this) else Remo
 private fun ArticlesState.updateQuery(
     input: String
 ) = copy(query = query.copy(input = input))
+
+private fun updateScrollState(
+    state: ArticlesState,
+    message: SyncScrollPosition
+) = state.copy(scrollState = message.scrollState).noCommand()
