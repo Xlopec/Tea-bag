@@ -39,6 +39,9 @@ import com.oliynick.max.reader.app.feature.navigation.navigate
 import com.oliynick.max.reader.app.feature.settings.SettingsMessage
 import com.oliynick.max.reader.app.feature.settings.SystemDarkModeChanged
 import com.oliynick.max.reader.app.feature.settings.ToggleDarkMode
+import com.oliynick.max.reader.app.feature.suggest.SuggestMessage
+import com.oliynick.max.reader.app.feature.suggest.SuggestState
+import com.oliynick.max.reader.app.feature.suggest.updateSuggestions
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -48,7 +51,7 @@ fun <Env> AppUpdater(): AppUpdater<Env> =
         when (message) {
             is Navigation -> navigate(message, state)
             is ScreenMessage -> updateScreen(message, state)
-            else -> error("can't get here")
+            else -> error("can't get here, $message")
         }
     }
 
@@ -57,6 +60,9 @@ private fun updateScreen(
     state: AppState,
 ): UpdateWith<AppState, Command> =
     when (message) {
+        is SuggestMessage -> state.updateScreen<SuggestState>(message.id) { screen ->
+            updateSuggestions(message, screen)
+        }
         is ArticlesMessage -> state.updateScreen<ArticlesState>(message.id) { screen ->
             updateArticles(message, screen)
         }

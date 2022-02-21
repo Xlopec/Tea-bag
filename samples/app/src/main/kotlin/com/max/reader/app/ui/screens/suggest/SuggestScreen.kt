@@ -28,11 +28,20 @@ import com.max.reader.app.ui.screens.suggest.AnimationState.End
 import com.max.reader.app.ui.screens.suggest.AnimationState.Start
 import com.max.reader.app.ui.screens.suggest.ScreenAnimationState.*
 import com.oliynick.max.reader.app.Message
+import com.oliynick.max.reader.app.feature.article.list.LoadArticlesFromScratch
+import com.oliynick.max.reader.app.feature.article.list.OnQueryUpdated
 import com.oliynick.max.reader.app.feature.navigation.Pop
 import com.oliynick.max.reader.app.feature.suggest.SuggestState
+import com.oliynick.max.reader.app.feature.suggest.SuggestionQueryUpdated
 
 private enum class ScreenAnimationState {
     Begin, Half, Finish
+}
+
+operator fun ((Message) -> Unit).invoke(
+    vararg message: Message
+) {
+    message.forEach(::invoke)
 }
 
 @OptIn(
@@ -46,6 +55,7 @@ fun SuggestScreen(
 ) {
     var screenTransitionState by remember { mutableStateOf(Begin) }
     var closeScreen by remember { mutableStateOf(false) }
+    var performSearch by remember { mutableStateOf(false) }
     val screenTransition = updateTransition(label = "Header transition", targetState = screenTransitionState)
 
     val headerTransitionState = screenTransition.headerTransitionState()
@@ -72,6 +82,14 @@ fun SuggestScreen(
         }
     }
 
+    DisposableEffect(Unit) {
+        onDispose {
+            if (performSearch) {
+                onMessage(LoadArticlesFromScratch(state.id))
+            }
+        }
+    }
+
     BackHandler {
         closeScreen = true
     }
@@ -79,7 +97,6 @@ fun SuggestScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
-        val mstate = remember { mutableStateOf("android") }
 
         LazyColumn(
             modifier = Modifier
@@ -96,11 +113,13 @@ fun SuggestScreen(
                             vertical = 16.dp
                         )
                         .focusRequester(focusRequester),
-                    inputText = mstate.value,
+                    inputText = state.query.input,
                     placeholderText = "Search in articles",
-                    onSearchQueryUpdate = { mstate.value = it },
-                    onFocusChanged = {},
-                    onSearch = {},
+                    onQueryUpdate = { onMessage(SuggestionQueryUpdated(state.id, it), OnQueryUpdated(state.id, it)) },
+                    onSearch = {
+                        performSearch = true
+                        closeScreen = true
+                    },
                     shape = RoundedCornerShape(headerTransitionState.cornerRadius),
                     colors = headerTransitionState.textFieldTransitionColors()
                 )
@@ -128,31 +147,6 @@ fun SuggestScreen(
                 )
             }
         }
-
-        // fixme should be a better way to chain animations
-        /*if (closeScreen) {
-
-            LaunchedEffect(Unit) {
-                childAnimationState = Start
-            }
-
-            if (childAnimationData.transition.currentState == childAnimationData.transition.targetState && childAnimationData.transition.currentState != Start && !childAnimationData.transition.isRunning) {
-                headerTransitionState = Start
-            } else if (headerAnimationData.transition.currentState == Start && !headerAnimationData.transition.isRunning) {
-                focusRequester.freeFocus()
-                onMessage(Pop)
-            }
-        } else {
-
-            LaunchedEffect(Unit) {
-                headerTransitionState = End
-            }
-
-            if (headerAnimationData.isEndState) {
-                focusRequester.requestFocus()
-                childAnimationState = End
-            }
-        }*/
     }
 }
 
@@ -228,7 +222,7 @@ private data class ChildTransitionState(
 private fun Transition<ScreenAnimationState>.headerTransitionState(): HeaderTransitionState {
 
     val transition = createChildTransition(label = "Header transition") {
-        when(it) {
+        when (it) {
             Begin -> Start
             Half, Finish -> End
         }
@@ -285,7 +279,7 @@ private fun Transition<ScreenAnimationState>.headerTransitionState(): HeaderTran
 @Composable
 private fun Transition<ScreenAnimationState>.childTransitionState(): ChildTransitionState {
     val childTransition = createChildTransition(label = "Suggestions child transition") {
-        when(it) {
+        when (it) {
             Begin, Half -> Start
             Finish -> End
         }

@@ -23,11 +23,12 @@ fun SearchHeader(
     modifier: Modifier = Modifier,
     inputText: String,
     placeholderText: String,
-    onSearchQueryUpdate: (String) -> Unit,
+    onQueryUpdate: (String) -> Unit,
     onSearch: () -> Unit,
-    onFocusChanged: (FocusState) -> Unit,
+    onFocusChanged: (FocusState) -> Unit = {},
     shape: Shape = RoundedCornerShape(8.dp),
-    colors: TextFieldColors = TextFieldDefaults.textFieldColors()
+    colors: TextFieldColors = TextFieldDefaults.textFieldColors(),
+    leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     Card(
         modifier = modifier//rm
@@ -52,6 +53,7 @@ fun SearchHeader(
             keyboardActions = KeyboardActions(onSearch = { onSearch() }),
             textStyle = MaterialTheme.typography.subtitle2,
             colors = colors,
+            leadingIcon = leadingIcon,
             trailingIcon = {
                 IconButton(onClick = { onSearch() }) {
                     Icon(
@@ -60,7 +62,7 @@ fun SearchHeader(
                     )
                 }
             },
-            onValueChange = onSearchQueryUpdate
+            onValueChange = onQueryUpdate
         )
     }
 }

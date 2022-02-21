@@ -100,14 +100,10 @@ private fun shareArticle(
 private fun updateQuery(
     input: String,
     state: ArticlesState
-): UpdateWith<ArticlesState, ArticlesCommand> = state.updateQuery(input).noCommand()
+): UpdateWith<ArticlesState, ArticlesCommand> =
+    state.copy(query = state.query.update(input)).noCommand()
 
 private fun Article.storeCommand() = if (isFavorite) SaveArticle(this) else RemoveArticle(this)
-
-// fixme inline
-private fun ArticlesState.updateQuery(
-    input: String
-) = copy(query = query.copy(input = input))
 
 private fun updateScrollState(
     state: ArticlesState,

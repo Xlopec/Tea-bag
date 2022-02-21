@@ -96,10 +96,10 @@ fun ArticlesScreen(
         ArticlesContent(listState, state, onMessage) {
 
             if (articles.isNotEmpty()) {
-                ArticleItems(state, onMessage)
+                articleItems(state, onMessage)
             }
 
-            TransientContent(id, articles.isEmpty(), transientState, onMessage)
+            transientContent(id, articles.isEmpty(), transientState, onMessage)
         }
     }
 }
@@ -108,7 +108,7 @@ internal fun ArticleTestTag(
     url: Url
 ) = "Article $url"
 
-private fun LazyListScope.ArticleItems(
+private fun LazyListScope.articleItems(
     screen: ArticlesState,
     onMessage: (Message) -> Unit,
     onLastElement: () -> Unit = { onMessage(LoadNextArticles(screen.id)) },
@@ -154,7 +154,7 @@ private fun LazyListScope.ArticleItems(
     }
 }
 
-private fun LazyListScope.TransientContent(
+private fun LazyListScope.transientContent(
     id: ScreenId,
     isEmpty: Boolean,
     transientState: ArticlesState.TransientState,
@@ -407,14 +407,14 @@ fun ArticleSearchHeader(
         SearchHeader(
             inputText = state.query.input,
             placeholderText = state.query.type.toSearchHint(),
-            onSearchQueryUpdate = { query -> onMessage(OnQueryUpdated(state.id, query)) },
+            onQueryUpdate = { onMessage(OnQueryUpdated(state.id, it)) },
             onSearch = {
                 keyboardController?.hide()
                 onMessage(LoadArticlesFromScratch(state.id))
             },
             onFocusChanged = { focusState ->
                 if (focusState.isFocused) {
-                    onMessage(NavigateToSuggestions)
+                    onMessage(NavigateToSuggestions(state.id, state.query))
                 }
             }
         )

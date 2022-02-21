@@ -41,6 +41,10 @@ data class Query(
     val type: QueryType,
 )
 
+fun Query.update(
+    input: String
+) = copy(input = input)
+
 data class ScrollState(
     val firstVisibleItemIndex: Int,
     val firstVisibleItemScrollOffset: Int,

@@ -106,7 +106,7 @@ fun AppState.navigateToArticleDetails(
 
 fun AppState.navigateToSuggestions(
     nav: NavigateToSuggestions
-) = pushScreen(SuggestState()).noCommand()
+) = pushScreen(SuggestState(nav.id, nav.query)).noCommand()
 
 expect fun AppState.popScreen(): UpdateWith<AppState, Command>
 

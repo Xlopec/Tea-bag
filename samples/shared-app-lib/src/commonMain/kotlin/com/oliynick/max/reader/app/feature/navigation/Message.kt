@@ -28,6 +28,7 @@ import com.oliynick.max.entities.shared.UUID
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Article
+import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
 
 sealed interface Navigation : Message
@@ -37,7 +38,10 @@ data class NavigateToArticleDetails(
     val id: ScreenId = UUID(),
 ) : Navigation
 
-object NavigateToSuggestions : Navigation
+data class NavigateToSuggestions(
+    val id: ScreenId,
+    val query: Query,
+) : Navigation
 
 sealed interface TabNavigation : Navigation {
     val id: ScreenId

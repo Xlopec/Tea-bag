@@ -1,11 +1,12 @@
 package com.oliynick.max.reader.app.feature.suggest
 
-import com.oliynick.max.entities.shared.UUID
 import com.oliynick.max.reader.app.FullScreen
 import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.app.feature.article.list.Query
 
-class SuggestState(
-    override val id: ScreenId = UUID()
+data class SuggestState(
+    override val id: ScreenId,
+    val query: Query,
 ) : FullScreen {
     val suggestions = listOf(
         "politics",
