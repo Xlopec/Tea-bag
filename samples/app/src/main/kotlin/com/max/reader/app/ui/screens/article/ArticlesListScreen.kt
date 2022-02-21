@@ -95,7 +95,7 @@ fun ArticlesScreen(
 
         ArticlesContent(listState, state, onMessage) {
 
-            if (articles.isNotEmpty()) {
+            if (articles.isNotEmpty() && !state.isLoading) {
                 articleItems(state, onMessage)
             }
 

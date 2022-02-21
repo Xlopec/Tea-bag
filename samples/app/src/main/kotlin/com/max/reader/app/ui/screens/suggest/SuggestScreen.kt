@@ -70,6 +70,10 @@ fun SuggestScreen(
 
         if (screenTransition transitionedTo Begin) {
             focusRequester.freeFocus()
+
+            if (performSearch) {
+                onMessage(LoadArticlesFromScratch(state.id))
+            }
             onMessage(Pop)
         }
     } else {
@@ -79,14 +83,6 @@ fun SuggestScreen(
 
         if (screenTransition transitionedTo Finish) {
             focusRequester.requestFocus()
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            if (performSearch) {
-                onMessage(LoadArticlesFromScratch(state.id))
-            }
         }
     }
 
