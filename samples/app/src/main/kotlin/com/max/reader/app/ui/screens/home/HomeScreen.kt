@@ -51,6 +51,8 @@ import com.max.reader.app.ui.screens.settings.SettingsScreen
 import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.feature.article.list.*
+import com.oliynick.max.reader.app.feature.isPreview
+import com.oliynick.max.reader.app.feature.isRefreshing
 import com.oliynick.max.reader.app.feature.navigation.*
 import com.oliynick.max.reader.app.feature.article.list.QueryType.Favorite as FavoriteQuery
 import com.oliynick.max.reader.app.feature.article.list.QueryType.Regular as RegularQuery
@@ -70,8 +72,8 @@ fun HomeScreen(
     content: (@Composable (innerPadding: PaddingValues) -> Unit)?
 ) {
     SwipeRefresh(
-        state = rememberSwipeRefreshState(state.isRefreshing),
-        swipeEnabled = state.isPreview,
+        state = rememberSwipeRefreshState(state.loadable.isRefreshing),
+        swipeEnabled = state.loadable.isPreview,
         onRefresh = { onMessage(RefreshArticles(state.id)) },
     ) {
         val scrollTrigger = remember(state.id) { mutableStateOf(0) }

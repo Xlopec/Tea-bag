@@ -29,6 +29,8 @@ package com.oliynick.max.reader.app.feature.storage
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.feature.article.list.Page
+import com.oliynick.max.reader.app.feature.article.list.Query
+import com.oliynick.max.reader.app.feature.article.list.QueryType
 
 interface LocalStorage {
 
@@ -42,7 +44,7 @@ interface LocalStorage {
 
     suspend fun findAllArticles(
         input: String,
-    ): Page
+    ): Page<Article>
 
     suspend fun isFavoriteArticle(
         url: Url,
@@ -56,4 +58,13 @@ interface LocalStorage {
         appDarkMode: Boolean,
         syncWithSystemDarkMode: Boolean,
     )
+
+    suspend fun storeRecentSearch(
+        query: Query
+    )
+
+    suspend fun recentSearches(
+        type: QueryType
+    ): List<String>
+
 }

@@ -41,7 +41,7 @@ data class LoadNextArticles(
 ) : ArticlesMessage
 
 /*@JvmInline value*///see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
-data class LoadArticlesFromScratch(
+data class LoadArticles(
     override val id: ScreenId,
 ) : ArticlesMessage
 
@@ -57,7 +57,7 @@ data class ToggleArticleIsFavorite(
 
 data class ArticlesLoaded(
     override val id: ScreenId,
-    val page: Page,
+    val page: Page<Article>,
 ) : ArticlesMessage
 
 data class ArticlesOperationException(

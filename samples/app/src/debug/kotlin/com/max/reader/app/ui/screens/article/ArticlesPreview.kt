@@ -3,30 +3,29 @@ package com.max.reader.app.ui.screens.article
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.max.reader.app.ui.theme.ThemedPreview
 import com.oliynick.max.entities.shared.now
 import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.domain.Author
 import com.oliynick.max.reader.app.domain.Description
 import com.oliynick.max.reader.app.domain.Title
+import com.oliynick.max.reader.app.feature.*
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.QueryType
 import java.net.URL
 import java.util.*
+import androidx.compose.ui.tooling.preview.Preview as ComposePreview
 
 @Composable
-@Preview("Articles search input field")
+@ComposePreview("Articles search input field")
 fun ArticleSearchHeaderPreview() {
     ThemedPreview {
         ArticleSearchHeader(
             state = ArticlesState(
                 UUID.randomUUID(),
                 Query("some input text", QueryType.Trending),
-                listOf(),
-                false,
-                ArticlesState.TransientState.Preview
+                LoadableState(listOf(), false, Preview)
             ),
             onMessage = {}
         )
@@ -34,7 +33,7 @@ fun ArticleSearchHeaderPreview() {
 }
 
 @Composable
-@Preview("Articles bottom action menu")
+@ComposePreview("Articles bottom action menu")
 fun ArticleActionsPreview() {
     ThemedPreview {
         ArticleActions(
@@ -46,7 +45,7 @@ fun ArticleActionsPreview() {
 }
 
 @Composable
-@Preview("Messages preview")
+@ComposePreview("Messages preview")
 fun MessagePreview() {
     ThemedPreview {
         Message(
@@ -59,14 +58,14 @@ fun MessagePreview() {
 }
 
 @Composable
-@Preview("Articles screen preview")
+@ComposePreview("Articles screen preview")
 fun ArticlesScreenPreview() {
     ThemedPreview {
         ArticlesScreen(
             state = ArticlesState(
                 QueryType.Trending,
                 PreviewArticles,
-                ArticlesState.TransientState.Preview
+                Preview
             ),
             ListState,
             Modifier
@@ -75,14 +74,14 @@ fun ArticlesScreenPreview() {
 }
 
 @Composable
-@Preview("Articles screen loading next")
+@ComposePreview("Articles screen loading next")
 fun ArticlesScreenLoadingNextPreview() {
     ThemedPreview {
         ArticlesScreen(
             state = ArticlesState(
                 QueryType.Trending,
                 listOf(PreviewArticle),
-                ArticlesState.TransientState.LoadingNext
+                LoadingNext
             ),
             ListState,
             Modifier
@@ -91,14 +90,14 @@ fun ArticlesScreenLoadingNextPreview() {
 }
 
 @Composable
-@Preview("Articles screen loading")
+@ComposePreview("Articles screen loading")
 fun ArticlesScreenLoadingPreview() {
     ThemedPreview {
         ArticlesScreen(
             state = ArticlesState(
                 QueryType.Trending,
                 listOf(),
-                ArticlesState.TransientState.Loading
+                Loading
             ),
             ListState,
             Modifier
@@ -107,14 +106,14 @@ fun ArticlesScreenLoadingPreview() {
 }
 
 @Composable
-@Preview("Articles screen refreshing")
+@ComposePreview("Articles screen refreshing")
 fun ArticlesScreenRefreshingPreview() {
     ThemedPreview {
         ArticlesScreen(
             state = ArticlesState(
                 QueryType.Trending,
                 listOf(PreviewArticle),
-                ArticlesState.TransientState.Refreshing
+                Refreshing
             ),
             ListState,
             Modifier
@@ -123,7 +122,7 @@ fun ArticlesScreenRefreshingPreview() {
 }
 
 @Composable
-@Preview("Article item")
+@ComposePreview("Article item")
 fun ArticleItemPreview() {
     ThemedPreview {
         ArticleItem(
@@ -137,8 +136,8 @@ fun ArticleItemPreview() {
 private fun ArticlesState(
     type: QueryType,
     articles: List<Article>,
-    transientState: ArticlesState.TransientState
-) = ArticlesState(UUID.randomUUID(), Query("input", type), articles, false, transientState)
+    transientState: TransientState
+) = ArticlesState(UUID.randomUUID(), Query("input", type), LoadableState(articles, false, transientState))
 
 private val PreviewArticle = Article(
     url = URL("https://www.google.com"),

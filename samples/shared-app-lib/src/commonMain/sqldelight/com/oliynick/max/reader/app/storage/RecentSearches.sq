@@ -1,0 +1,19 @@
+CREATE TABLE RecentSearches(
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  value TEXT NOT NULL,
+  saved_on INTEGER NOT NULL,
+  type TEXT NOT NULL-- tab type
+);
+
+insert:
+INSERT INTO RecentSearches(value, saved_on, type)
+VALUES (?, ?, ?);
+
+deleteOutdated:
+DELETE FROM RecentSearches
+WHERE type = ? AND id NOT IN (SELECT id FROM RecentSearches ORDER BY saved_on DESC LIMIT ?);
+
+findAllByType:
+SELECT * FROM RecentSearches
+WHERE type = ?
+ORDER BY saved_on DESC;

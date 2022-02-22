@@ -7,8 +7,11 @@ import com.oliynick.max.reader.app.domain.Author
 import com.oliynick.max.reader.app.domain.Description
 import com.oliynick.max.reader.app.domain.Title
 import com.oliynick.max.reader.app.feature.article.list.Page
+import com.oliynick.max.reader.app.feature.article.list.Query
+import com.oliynick.max.reader.app.feature.article.list.QueryType
 import com.oliynick.max.reader.app.storage.AppDatabase
 import com.oliynick.max.reader.app.storage.ArticlesQueries
+import com.oliynick.max.reader.app.storage.RecentSearchesQueries
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set
@@ -34,7 +37,7 @@ private class LocalStorageImpl(
 
     private val database = AppDatabase(driver)
 
-    override suspend fun insertArticle(article: Article) = query {
+    override suspend fun insertArticle(article: Article) = articlesQuery {
         // fixme there should be insert or replace option (upsert)
         transaction {
             with(article) {
@@ -55,11 +58,11 @@ private class LocalStorageImpl(
         }
     }
 
-    override suspend fun deleteArticle(url: Url) = query {
+    override suspend fun deleteArticle(url: Url) = articlesQuery {
         deleteArticle(url.toExternalValue())
     }
 
-    override suspend fun findAllArticles(input: String): Page = query {
+    override suspend fun findAllArticles(input: String) = articlesQuery {
         // todo check if it actually works
         val wrappedInput = "%$input%"
 
@@ -69,32 +72,53 @@ private class LocalStorageImpl(
         )
     }
 
-    override suspend fun isFavoriteArticle(url: Url): Boolean = query {
+    override suspend fun isFavoriteArticle(url: Url): Boolean = articlesQuery {
         isFavoriteArticle(url.toExternalValue())
             .execute()
             .use { cursor -> cursor.next() && cursor.isFavorite }
     }
 
-    override suspend fun isDarkModeEnabled(): Boolean = query {
+    override suspend fun isDarkModeEnabled(): Boolean = articlesQuery {
         settings[DarkModeEnabledKey, false]
     }
 
-    override suspend fun isSyncWithSystemDarkModeEnabled(): Boolean = query {
+    override suspend fun isSyncWithSystemDarkModeEnabled(): Boolean = articlesQuery {
         settings[SyncWithSystemDarkModeEnabledKey, false]
     }
 
     override suspend fun storeDarkModePreferences(
         appDarkMode: Boolean,
         syncWithSystemDarkMode: Boolean
-    ) = query {
+    ) = articlesQuery {
         settings[DarkModeEnabledKey] = appDarkMode
         settings[SyncWithSystemDarkModeEnabledKey] = syncWithSystemDarkMode
     }
 
-    private suspend inline fun <T> query(
+    override suspend fun storeRecentSearch(
+        query: Query
+    ) = searchesQuery {
+        transaction {
+            insert(query.input, now().toMillis(), query.type.name)
+            deleteOutdated(query.type.name, 5)
+        }
+    }
+
+    override suspend fun recentSearches(
+        type: QueryType
+    ): List<String> = searchesQuery {
+        findAllByType(type.name) { _, value_, _, _ -> value_ }.executeAsList()
+    }
+
+    private suspend inline fun <T> articlesQuery(
         crossinline block: ArticlesQueries.() -> T
     ) = withContext(IO) {
         database.articlesQueries.run(block)
+    }
+
+    private suspend inline fun <T> searchesQuery(
+        crossinline block: RecentSearchesQueries.() -> T
+    ) = withContext(IO) {
+        database.recentSearchesQueries.run(block)
     }
 }
 

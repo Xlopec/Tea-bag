@@ -24,11 +24,10 @@
 
 package com.oliynick.max.reader.app.feature.article.list
 
-import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState.Companion.ArticlesPerPage
 
-data class Page(
-    val articles: List<Article>,
+data class Page<out T>(
+    val data: List<T>,
     val hasMore: Boolean = false
 )
 
@@ -50,4 +49,4 @@ inline val Paging.nextPage: Int
 
 fun ArticlesState.nextPage(
     resultsPerPage: Int = ArticlesPerPage
-) = Paging(articles.size, resultsPerPage)
+) = Paging(loadable.data.size, resultsPerPage)

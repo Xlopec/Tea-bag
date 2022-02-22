@@ -30,7 +30,7 @@ import com.max.reader.app.ui.screens.suggest.AnimationState.End
 import com.max.reader.app.ui.screens.suggest.AnimationState.Start
 import com.max.reader.app.ui.screens.suggest.ScreenAnimationState.*
 import com.oliynick.max.reader.app.Message
-import com.oliynick.max.reader.app.feature.article.list.LoadArticlesFromScratch
+import com.oliynick.max.reader.app.feature.article.list.LoadArticles
 import com.oliynick.max.reader.app.feature.article.list.OnQueryUpdated
 import com.oliynick.max.reader.app.feature.navigation.Pop
 import com.oliynick.max.reader.app.feature.suggest.SuggestState
@@ -74,7 +74,7 @@ fun SuggestScreen(
             focusRequester.freeFocus()
 
             if (performSearch) {
-                onMessage(LoadArticlesFromScratch(state.id))
+                onMessage(LoadArticles(state.id))
             }
             onMessage(Pop)
         }

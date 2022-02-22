@@ -29,6 +29,7 @@ import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.domain.toggleFavorite
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.app.feature.article.list.QueryType.*
+import com.oliynick.max.reader.app.feature.isPreview
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -40,9 +41,9 @@ fun updateArticles(
     // fixme refactor this bit
     when (message) {
         is ArticlesLoaded -> state.toPreview(message.page).noCommand()
-        is LoadNextArticles -> state.toLoadNextArticlesUpdate()
-        is LoadArticlesFromScratch -> state.toLoadArticlesFromScratchUpdate()
-        is RefreshArticles -> state.toRefreshUpdate()
+        is LoadNextArticles -> loadNextArticle(state)
+        is LoadArticles -> loadArticles(state)
+        is RefreshArticles -> refreshArticles(state)
         is ArticlesOperationException -> state.toException(message.cause).noCommand()
         is ToggleArticleIsFavorite -> toggleFavorite(message.article, state)
         is OnArticleUpdated -> updateArticle(message.article, state)
@@ -52,21 +53,33 @@ fun updateArticles(
         is SyncScrollPosition -> updateScrollState(state, message)
     }
 
-private fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadArticlesQuery(FirstPage)
+private fun refreshArticles(
+    articlesState: ArticlesState
+) = articlesState.toRefreshing() command articlesState.toLoadArticlesQuery(FirstPage)
 
 private fun ArticlesState.toLoadArticlesQuery(
     paging: Paging
 ) = LoadArticlesByQuery(id, query, paging)
 
-private fun ArticlesState.toLoadArticlesFromScratchUpdate() =
-    toLoading() command toLoadArticlesQuery(FirstPage)
+private fun loadArticles(
+    articlesState: ArticlesState
+) = articlesState.run {
+    toLoading() command setOfNotNull(
+        toLoadArticlesQuery(FirstPage), query.toSanitized()?.let(::StoreSearchQuery)
+    )
+}
 
-private fun ArticlesState.toLoadNextArticlesUpdate() =
-    if (isPreview && hasMoreArticles && articles.isNotEmpty() /*todo should we throw an error in this case?*/) {
-        toLoadingNext() command toLoadArticlesQuery(nextPage())
+private fun Query.toSanitized() =
+    input.takeUnless(CharSequence::isEmpty)?.trim()?.let { Query(it, type) }
+
+private fun loadNextArticle(
+    articlesState: ArticlesState
+) =
+    if (articlesState.loadable.isPreview && articlesState.loadable.hasMore && articlesState.loadable.data.isNotEmpty() /*todo should we throw an error in this case?*/) {
+        articlesState.toLoadingNext() command articlesState.toLoadArticlesQuery(articlesState.nextPage())
     } else {
         // just ignore the command
-        noCommand()
+        articlesState.noCommand()
     }
 
 private fun updateArticle(
@@ -76,7 +89,9 @@ private fun updateArticle(
 
     val updated = when (state.query.type) {
         Regular, Trending -> state.updateArticle(article)
-        Favorite -> if (article.isFavorite) state.prependArticle(article) else state.removeArticle(article)
+        Favorite -> if (article.isFavorite) state.prependArticle(article) else state.removeArticle(
+            article
+        )
     }
 
     return updated.noCommand()

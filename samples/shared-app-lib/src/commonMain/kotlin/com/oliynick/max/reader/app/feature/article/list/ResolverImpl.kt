@@ -23,7 +23,8 @@ fun interface ShareArticle {
 
 fun <Env> ArticlesResolver(
     shareDelegate: ShareArticle
-): ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage = ArticlesResolverImpl(shareDelegate)
+): ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage =
+    ArticlesResolverImpl(shareDelegate)
 
 class ArticlesResolverImpl<Env>(
     private val shareDelegate: ShareArticle
@@ -35,7 +36,8 @@ class ArticlesResolverImpl<Env>(
             is LoadArticlesByQuery -> loadArticles(command)
             is SaveArticle -> storeArticle(command.article)
             is RemoveArticle -> removeArticle(command.article)
-            is DoShareArticle -> command sideEffect { shareDelegate.share(article) }
+            is DoShareArticle -> sideEffect { shareDelegate.share(command.article) }
+            is StoreSearchQuery -> command sideEffect { storeRecentSearch(query) }
         }
 }
 
@@ -84,7 +86,7 @@ private suspend fun LocalStorage.toArticlesMessage(
 private suspend fun LocalStorage.toPage(
     response: ArticleResponse,
     paging: Paging,
-): Page {
+): Page<Article> {
     val (currentSize, resultsPerPage) = paging
     val (total, results) = response
     val skip = currentSize % resultsPerPage

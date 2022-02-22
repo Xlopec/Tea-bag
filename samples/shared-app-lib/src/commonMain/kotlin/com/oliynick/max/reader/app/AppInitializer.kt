@@ -55,7 +55,7 @@ fun AppInitializer(
 }
 
 private fun ArticlesState.toInitialQuery(): LoadArticlesByQuery {
-    require(articles.isEmpty()) { "non initial state $this" }
+    require(loadable.data.isEmpty()) { "non initial state $this" }
     return LoadArticlesByQuery(id, query, FirstPage)
 }
 

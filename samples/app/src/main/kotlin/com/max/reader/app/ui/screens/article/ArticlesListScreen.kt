@@ -61,8 +61,8 @@ import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Article
+import com.oliynick.max.reader.app.feature.*
 import com.oliynick.max.reader.app.feature.article.list.*
-import com.oliynick.max.reader.app.feature.article.list.ArticlesState.TransientState.*
 import com.oliynick.max.reader.app.feature.article.list.QueryType.*
 import com.oliynick.max.reader.app.feature.navigation.NavigateToArticleDetails
 import com.oliynick.max.reader.app.feature.navigation.NavigateToSuggestions
@@ -82,8 +82,6 @@ fun ArticlesScreen(
     onMessage: (Message) -> Unit,
 ) {
 
-    val (id, _, articles, _, transientState) = state
-
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -94,11 +92,16 @@ fun ArticlesScreen(
 
         ArticlesContent(listState, state, onMessage) {
 
-            if (articles.isNotEmpty() && !state.isLoading) {
+            if (state.hasDataToDisplay) {
                 articleItems(state, onMessage)
             }
 
-            transientContent(id, articles.isEmpty(), transientState, onMessage)
+            transientContent(
+                state.id,
+                state.loadable.data.isEmpty(),
+                state.loadable.transientState,
+                onMessage
+            )
         }
     }
 }
@@ -112,7 +115,8 @@ private fun LazyListScope.articleItems(
     onMessage: (Message) -> Unit,
     onLastElement: () -> Unit = { onMessage(LoadNextArticles(screen.id)) },
 ) {
-    val (id, query, articles) = screen
+
+    val articles = screen.loadable.data
 
     require(articles.isNotEmpty()) { "Empty articles for screen=$screen" }
 
@@ -120,7 +124,7 @@ private fun LazyListScope.articleItems(
         Text(
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start,
-            text = query.toScreenTitle(),
+            text = screen.query.toScreenTitle(),
             style = typography.subtitle1
         )
 
@@ -134,7 +138,7 @@ private fun LazyListScope.articleItems(
             }
         ) {
             ArticleItem(
-                screenId = id,
+                screenId = screen.id,
                 article = article,
                 onMessage = onMessage
             )
@@ -156,7 +160,7 @@ private fun LazyListScope.articleItems(
 private fun LazyListScope.transientContent(
     id: ScreenId,
     isEmpty: Boolean,
-    transientState: ArticlesState.TransientState,
+    transientState: TransientState,
     onMessage: (Message) -> Unit,
 ) = item {
 
@@ -180,7 +184,7 @@ private fun LazyListScope.transientContent(
                     message = "No articles",
                     actionText = "Reload",
                     onClick = {
-                        onMessage(LoadArticlesFromScratch(id))
+                        onMessage(LoadArticles(id))
                     }
                 )
             }
@@ -358,7 +362,7 @@ private fun ArticlesError(
         "Failed to load articles, message: '${message.replaceFirstChar { it.lowercase(Locale.getDefault()) }}'",
         "Retry"
     ) {
-        onMessage(LoadArticlesFromScratch(id))
+        onMessage(LoadArticles(id))
     }
 }
 
@@ -411,11 +415,17 @@ fun ArticleSearchHeader(
             onQueryUpdate = { textFieldValue = it },
             onSearch = {
                 keyboardController?.hide()
-                onMessage(LoadArticlesFromScratch(state.id))
+                onMessage(LoadArticles(state.id))
             },
             onFocusChanged = { focusState ->
                 if (focusState.isFocused) {
-                    onMessage(NavigateToSuggestions(state.id, state.query, textFieldValue.selection.start))
+                    onMessage(
+                        NavigateToSuggestions(
+                            state.id,
+                            state.query,
+                            textFieldValue.selection.start
+                        )
+                    )
                 }
             }
         )
@@ -454,3 +464,6 @@ private fun LazyListState.setScrollingEnabled(enabled: Boolean, scope: Coroutine
         }
     }
 }
+
+private val ArticlesState.hasDataToDisplay: Boolean
+    get() = loadable.data.isNotEmpty() && !loadable.isLoading

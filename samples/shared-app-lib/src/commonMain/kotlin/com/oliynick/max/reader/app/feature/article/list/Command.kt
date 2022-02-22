@@ -3,6 +3,7 @@ package com.oliynick.max.reader.app.feature.article.list
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.domain.Article
+import kotlin.jvm.JvmInline
 
 sealed interface ArticlesCommand : Command
 
@@ -10,6 +11,11 @@ data class LoadArticlesByQuery(
     val id: ScreenId,
     val query: Query,
     val paging: Paging
+) : ArticlesCommand
+
+@JvmInline
+value class StoreSearchQuery(
+    val query: Query
 ) : ArticlesCommand
 
 data class SaveArticle(

@@ -30,7 +30,7 @@ import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.domain.Article
-import com.oliynick.max.reader.app.feature.article.list.ArticlesState.TransientState.*
+import com.oliynick.max.reader.app.feature.*
 
 enum class QueryType {
     Regular, Favorite, Trending
@@ -57,30 +57,9 @@ data class ScrollState(
 data class ArticlesState(
     override val id: ScreenId,
     val query: Query,
-    val articles: List<Article>,
-    val hasMoreArticles: Boolean,
-    val transientState: TransientState,
+    val loadable: LoadableState<Article>,
     val scrollState: ScrollState = ScrollState.Initial
 ) : TabScreen {
-
-    sealed class TransientState {
-        data class Exception(
-            val th: AppException,
-        ) : TransientState()
-
-        object Loading : TransientState()
-        object LoadingNext : TransientState()
-        object Refreshing : TransientState()
-        object Preview : TransientState()
-    }
-
-    val isLoading = transientState === Loading
-
-    val isLoadingNext = transientState === LoadingNext
-
-    val isRefreshing = transientState === Refreshing
-
-    val isPreview = transientState === Preview
 
     companion object {
 
@@ -90,52 +69,39 @@ data class ArticlesState(
             id: ScreenId,
             query: Query,
             articles: List<Article> = emptyList(),
-        ) = ArticlesState(id, query, articles, false, Loading)
+        ) = ArticlesState(id, query, LoadableState.newLoading(articles))
     }
 
 }
 
 // todo replace with immutable collection
 fun ArticlesState.toLoadingNext() =
-    copy(transientState = LoadingNext)
+    copy(loadable = loadable.toLoadingNext())
 
 fun ArticlesState.toLoading() =
-    copy(transientState = Loading)
+    copy(loadable = loadable.toLoading())
 
 fun ArticlesState.toRefreshing() =
-    copy(transientState = Refreshing)
+    copy(loadable = loadable.toRefreshing())
 
 fun ArticlesState.toPreview(
-    page: Page,
-): ArticlesState =
-    when (transientState) {
-        LoadingNext, is Exception -> {
-            copy(
-                articles = articles + page.articles,
-                transientState = Preview,
-                hasMoreArticles = page.hasMore
-            )
-        }
-        Loading, Refreshing -> copy(
-            articles = page.articles,
-            transientState = Preview,
-            hasMoreArticles = page.hasMore
-        )
-        Preview -> this
-    }
+    page: Page<Article>,
+): ArticlesState = copy(loadable = loadable.toPreview(page))
 
 fun ArticlesState.toException(
     cause: AppException,
-) = copy(transientState = Exception(cause))
+) = copy(loadable = loadable.toException(cause))
 
 fun ArticlesState.updateArticle(
     new: Article,
-): ArticlesState = copy(articles = articles.map { if (it.url == new.url) new else it })
+): ArticlesState =
+    copy(loadable = loadable.updated { articles -> articles.map { if (it.url == new.url) new else it } })
 
 fun ArticlesState.prependArticle(
     new: Article,
-): ArticlesState = copy(articles = listOf(new) + articles)
+): ArticlesState = copy(loadable = loadable.updated { listOf(new) + it })
 
 fun ArticlesState.removeArticle(
     victim: Article,
-): ArticlesState = copy(articles = articles.filter { it.url != victim.url })
+): ArticlesState =
+    copy(loadable = loadable.updated { articles -> articles.filter { it.url != victim.url } })
