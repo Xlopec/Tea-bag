@@ -36,6 +36,7 @@ import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.QueryType.*
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
 import com.oliynick.max.reader.app.feature.suggest.SuggestState
+import com.oliynick.max.reader.app.feature.suggest.TextFieldState
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -106,7 +107,7 @@ fun AppState.navigateToArticleDetails(
 
 fun AppState.navigateToSuggestions(
     nav: NavigateToSuggestions
-) = pushScreen(SuggestState(nav.id, nav.query)).noCommand()
+) = pushScreen(SuggestState(nav.id, TextFieldState(nav))).noCommand()
 
 expect fun AppState.popScreen(): UpdateWith<AppState, Command>
 
@@ -134,3 +135,7 @@ private fun checkInvariants(
         "Fullscreen segment isn't continuous, was $fullScreens for stack ${state.screens}"
     }
 }
+
+private fun TextFieldState(
+    nav: NavigateToSuggestions
+) = nav.run { TextFieldState(query, cursorPosition) }

@@ -20,6 +20,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -32,7 +34,7 @@ import com.oliynick.max.reader.app.feature.article.list.LoadArticlesFromScratch
 import com.oliynick.max.reader.app.feature.article.list.OnQueryUpdated
 import com.oliynick.max.reader.app.feature.navigation.Pop
 import com.oliynick.max.reader.app.feature.suggest.SuggestState
-import com.oliynick.max.reader.app.feature.suggest.SuggestionQueryUpdated
+import com.oliynick.max.reader.app.feature.suggest.TextFieldState
 
 private enum class ScreenAnimationState {
     Begin, Half, Finish
@@ -90,6 +92,8 @@ fun SuggestScreen(
         closeScreen = true
     }
 
+    var textFieldState by remember { mutableStateOf(state.textFieldState.toTextFieldValue()) }
+
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -109,9 +113,12 @@ fun SuggestScreen(
                             vertical = 16.dp
                         )
                         .focusRequester(focusRequester),
-                    inputText = state.query.input,
+                    inputText = textFieldState,
                     placeholderText = "Search in articles",
-                    onQueryUpdate = { onMessage(SuggestionQueryUpdated(state.id, it), OnQueryUpdated(state.id, it)) },
+                    onQueryUpdate = {
+                        textFieldState = it
+                        onMessage(/*SuggestionQueryUpdated(state.id, it), */OnQueryUpdated(state.id, it.text))
+                                    },
                     onSearch = {
                         performSearch = true
                         closeScreen = true
@@ -303,3 +310,6 @@ private fun Transition<ScreenAnimationState>.childTransitionState(): ChildTransi
 private infix fun <T> Transition<T>.transitionedTo(
     state: T
 ): Boolean = targetState == currentState && targetState == state && !isRunning
+
+private fun TextFieldState.toTextFieldValue() =
+    TextFieldValue(query.input, TextRange(cursorPosition))

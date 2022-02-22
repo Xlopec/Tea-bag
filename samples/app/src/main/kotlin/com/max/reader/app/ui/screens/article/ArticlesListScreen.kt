@@ -42,9 +42,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -53,6 +51,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
@@ -404,17 +403,19 @@ fun ArticleSearchHeader(
     CompositionLocalProvider(
         LocalTextInputService provides null
     ) {
+        var textFieldValue by remember { mutableStateOf(TextFieldValue(state.query.input)) }
+
         SearchHeader(
-            inputText = state.query.input,
+            inputText = textFieldValue,
             placeholderText = state.query.type.toSearchHint(),
-            onQueryUpdate = { onMessage(OnQueryUpdated(state.id, it)) },
+            onQueryUpdate = { textFieldValue = it },
             onSearch = {
                 keyboardController?.hide()
                 onMessage(LoadArticlesFromScratch(state.id))
             },
             onFocusChanged = { focusState ->
                 if (focusState.isFocused) {
-                    onMessage(NavigateToSuggestions(state.id, state.query))
+                    onMessage(NavigateToSuggestions(state.id, state.query, textFieldValue.selection.start))
                 }
             }
         )

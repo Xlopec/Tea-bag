@@ -14,6 +14,7 @@ import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsPadding
 
@@ -21,9 +22,9 @@ import com.google.accompanist.insets.statusBarsPadding
 @OptIn(ExperimentalComposeUiApi::class)
 fun SearchHeader(
     modifier: Modifier = Modifier,
-    inputText: String,
+    inputText: TextFieldValue,
     placeholderText: String,
-    onQueryUpdate: (String) -> Unit,
+    onQueryUpdate: (TextFieldValue) -> Unit,
     onSearch: () -> Unit,
     onFocusChanged: (FocusState) -> Unit = {},
     shape: Shape = RoundedCornerShape(8.dp),
