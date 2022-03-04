@@ -31,6 +31,8 @@ import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.feature.*
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 
 enum class QueryType {
     Regular, Favorite, Trending
@@ -68,7 +70,7 @@ data class ArticlesState(
         fun newLoading(
             id: ScreenId,
             query: Query,
-            articles: List<Article> = emptyList(),
+            articles: PersistentList<Article> = persistentListOf(),
         ) = ArticlesState(id, query, Loadable.newLoading(articles))
     }
 
@@ -95,13 +97,38 @@ fun ArticlesState.toException(
 fun ArticlesState.updateArticle(
     new: Article,
 ): ArticlesState =
-    copy(loadable = loadable.updated { articles -> articles.map { if (it.url == new.url) new else it } })
+    copy(loadable = loadable.updated { articles -> articles.replace(new) { it.url == new.url } })
 
 fun ArticlesState.prependArticle(
     new: Article,
-): ArticlesState = copy(loadable = loadable.updated { listOf(new) + it })
+): ArticlesState = copy(loadable = loadable.updated { it.add(0, new) })
 
 fun ArticlesState.removeArticle(
     victim: Article,
 ): ArticlesState =
-    copy(loadable = loadable.updated { articles -> articles.filter { it.url != victim.url } })
+    copy(loadable = loadable.updated { articles -> articles.remove { it.url != victim.url } })
+
+inline fun <E> PersistentList<E>.replace(
+    e: E,
+    predicate: (E) -> Boolean,
+): PersistentList<E> {
+    val i = indexOfFirst(predicate)
+
+    return if (i >= 0) {
+        set(i, e)
+    } else {
+        this
+    }
+}
+
+inline fun <E> PersistentList<E>.remove(
+    predicate: (E) -> Boolean
+): PersistentList<E> {
+    val i = indexOfFirst(predicate)
+
+    return if (i >= 0) {
+        removeAt(i)
+    } else {
+        this
+    }
+}

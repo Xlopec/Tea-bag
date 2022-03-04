@@ -69,7 +69,7 @@ private class LocalStorageImpl(
 
         Page(
             findAllArticles(wrappedInput, wrappedInput, wrappedInput, ::dbModelToArticle)
-                .executeAsList()
+                .executeAsList().toPersistentList()
         )
     }
 

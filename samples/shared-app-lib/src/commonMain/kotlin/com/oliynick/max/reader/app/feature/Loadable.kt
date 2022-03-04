@@ -2,23 +2,20 @@ package com.oliynick.max.reader.app.feature
 
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.feature.article.list.Page
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 
 data class Loadable<out T>(
-    val data: List<T>,
+    val data: PersistentList<T>,
     val hasMore: Boolean,
     val loadableState: LoadableState,
 ) {
     companion object {
         fun <T> newLoading(
-            data: List<T>
+            data: PersistentList<T>
         ) = Loadable(data = data, hasMore = false, loadableState = Loading)
     }
 }
-
-data class Loadable1<out T>(
-    val data: List<T>,
-    val loadableState: LoadableState,
-)
 
 sealed interface LoadableState
 
@@ -47,7 +44,7 @@ val Loadable<*>.isPreview: Boolean
     get() = loadableState === Preview
 
 inline fun <T> Loadable<T>.updated(
-    how: (List<T>) -> List<T>
+    how: (PersistentList<T>) -> PersistentList<T>
 ) = copy(data = how(data))
 
 fun <T> Loadable<T>.toLoadingNext() =
@@ -65,13 +62,13 @@ fun <T> Loadable<T>.toPreview(
     when (loadableState) {
         LoadingNext, is Exception -> {
             copy(
-                data = data + page.data,
+                data = data.addAll(page.data),
                 loadableState = Preview,
                 hasMore = page.hasMore
             )
         }
         Loading, Refreshing -> copy(
-            data = page.data,
+            data = page.data.toPersistentList(),
             loadableState = Preview,
             hasMore = page.hasMore
         )

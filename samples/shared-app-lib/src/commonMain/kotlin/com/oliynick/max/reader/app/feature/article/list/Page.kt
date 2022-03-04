@@ -25,9 +25,10 @@
 package com.oliynick.max.reader.app.feature.article.list
 
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState.Companion.ArticlesPerPage
+import kotlinx.collections.immutable.ImmutableList
 
 data class Page<out T>(
-    val data: List<T>,
+    val data: ImmutableList<T>,
     val hasMore: Boolean = false
 )
 

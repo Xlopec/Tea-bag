@@ -13,6 +13,8 @@ import com.oliynick.max.reader.app.feature.*
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.QueryType
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import java.net.URL
 import java.util.*
 import androidx.compose.ui.tooling.preview.Preview as ComposePreview
@@ -25,7 +27,7 @@ fun ArticleSearchHeaderPreview() {
             state = ArticlesState(
                 UUID.randomUUID(),
                 Query("some input text", QueryType.Trending),
-                Loadable(listOf(), false, Preview)
+                Loadable(persistentListOf(), false, Preview)
             ),
             onMessage = {}
         )
@@ -80,7 +82,7 @@ fun ArticlesScreenLoadingNextPreview() {
         ArticlesScreen(
             state = ArticlesState(
                 QueryType.Trending,
-                listOf(PreviewArticle),
+                persistentListOf(PreviewArticle),
                 LoadingNext
             ),
             ListState,
@@ -96,7 +98,7 @@ fun ArticlesScreenLoadingPreview() {
         ArticlesScreen(
             state = ArticlesState(
                 QueryType.Trending,
-                listOf(),
+                persistentListOf(),
                 Loading
             ),
             ListState,
@@ -112,7 +114,7 @@ fun ArticlesScreenRefreshingPreview() {
         ArticlesScreen(
             state = ArticlesState(
                 QueryType.Trending,
-                listOf(PreviewArticle),
+                persistentListOf(PreviewArticle),
                 Refreshing
             ),
             ListState,
@@ -135,7 +137,7 @@ fun ArticleItemPreview() {
 
 private fun ArticlesState(
     type: QueryType,
-    articles: List<Article>,
+    articles: PersistentList<Article>,
     loadableState: LoadableState
 ) = ArticlesState(UUID.randomUUID(), Query("input", type), Loadable(articles, false, loadableState))
 
@@ -154,7 +156,7 @@ private val PreviewArticle = Article(
     urlToImage = URL("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png")
 )
 
-private val PreviewArticles = listOf(
+private val PreviewArticles = persistentListOf(
     PreviewArticle.copy(url = URL("https://miro.medium.com/1")),
     PreviewArticle.copy(url = URL("https://miro.medium.com/2")),
     PreviewArticle.copy(url = URL("https://miro.medium.com/3"))

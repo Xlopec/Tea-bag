@@ -14,6 +14,8 @@ import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
 fun interface ShareArticle {
     fun share(
@@ -100,7 +102,8 @@ private suspend fun LocalStorage.toPage(
 
 private suspend fun LocalStorage.toArticles(
     articles: Iterable<ArticleElement>,
-) = articles.map { elem -> toArticle(elem) }
+): ImmutableList<Article> =
+    articles.map { elem -> toArticle(elem) }.toPersistentList()
 
 private suspend fun LocalStorage.toArticle(
     element: ArticleElement,
