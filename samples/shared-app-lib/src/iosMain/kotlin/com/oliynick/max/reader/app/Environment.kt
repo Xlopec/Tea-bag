@@ -5,6 +5,7 @@ import com.oliynick.max.reader.app.feature.article.list.ArticlesModule
 import com.oliynick.max.reader.app.feature.article.list.IosShareArticle
 import com.oliynick.max.reader.app.feature.article.list.NewsApi
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
+import com.oliynick.max.reader.app.feature.suggest.SuggestionsModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -16,6 +17,7 @@ fun Environment(
     object : Environment,
         AppModule<Environment> by AppModule(),
         ArticlesModule<Environment> by ArticlesModule(IosShareArticle),
+        SuggestionsModule<Environment> by SuggestionsModule(),
         ArticleDetailsModule by ArticleDetailsModule(),
         LocalStorage by LocalStorage(),
         NewsApi by NewsApi(),
@@ -25,6 +27,7 @@ fun Environment(
 actual interface Environment :
     AppModule<Environment>,
     ArticlesModule<Environment>,
+    SuggestionsModule<Environment>,
     ArticleDetailsModule,
     LocalStorage,
     NewsApi,

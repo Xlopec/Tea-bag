@@ -18,6 +18,8 @@ import com.russhwolf.settings.set
 import com.squareup.sqldelight.db.SqlCursor
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.db.use
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.withContext
 
 fun LocalStorage(
@@ -63,7 +65,6 @@ private class LocalStorageImpl(
     }
 
     override suspend fun findAllArticles(input: String) = articlesQuery {
-        // todo check if it actually works
         val wrappedInput = "%$input%"
 
         Page(
@@ -105,8 +106,8 @@ private class LocalStorageImpl(
 
     override suspend fun recentSearches(
         type: QueryType
-    ): List<String> = searchesQuery {
-        findAllByType(type.name) { _, value_, _, _ -> value_ }.executeAsList()
+    ): ImmutableList<String> = searchesQuery {
+        findAllByType(type.name) { _, value_, _, _ -> value_ }.executeAsList().toPersistentList()
     }
 
     private suspend inline fun <T> articlesQuery(

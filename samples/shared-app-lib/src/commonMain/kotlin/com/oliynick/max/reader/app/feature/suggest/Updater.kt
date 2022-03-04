@@ -9,6 +9,7 @@ fun updateSuggestions(
 ): UpdateWith<SuggestState, SuggestCommand> =
     when(message) {
         is SuggestionQueryUpdated -> updateQuery(state, message)
+        is SuggestionsLoaded -> state.copy(suggestions = message.suggestions).noCommand()
     }
 
 private fun updateQuery(

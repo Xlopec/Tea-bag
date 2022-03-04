@@ -35,6 +35,7 @@ import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPa
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.QueryType.*
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
+import com.oliynick.max.reader.app.feature.suggest.DoLoadSuggestions
 import com.oliynick.max.reader.app.feature.suggest.SuggestState
 import com.oliynick.max.reader.app.feature.suggest.TextFieldState
 import com.oliynick.max.tea.core.component.UpdateWith
@@ -107,7 +108,7 @@ fun AppState.navigateToArticleDetails(
 
 fun AppState.navigateToSuggestions(
     nav: NavigateToSuggestions
-) = pushScreen(SuggestState(nav.id, TextFieldState(nav))).noCommand()
+) = pushScreen(SuggestState(nav.id, TextFieldState(nav))) command DoLoadSuggestions(nav.id, nav.query.type)
 
 expect fun AppState.popScreen(): UpdateWith<AppState, Command>
 

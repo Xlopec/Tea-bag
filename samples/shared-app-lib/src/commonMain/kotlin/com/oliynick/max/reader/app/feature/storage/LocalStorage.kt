@@ -31,6 +31,7 @@ import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.feature.article.list.Page
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.QueryType
+import kotlinx.collections.immutable.ImmutableList
 
 interface LocalStorage {
 
@@ -65,6 +66,6 @@ interface LocalStorage {
 
     suspend fun recentSearches(
         type: QueryType
-    ): List<String>
+    ): ImmutableList<String>
 
 }

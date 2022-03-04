@@ -16,7 +16,7 @@ fun SuggestPreview() {
         SuggestScreen(
             state = SuggestState(
                 UUID.randomUUID(),
-                TextFieldState(Query("Android", QueryType.Regular), 0)
+                TextFieldState(Query("Android", QueryType.Regular), 0),
             ),
             onMessage = {})
     }

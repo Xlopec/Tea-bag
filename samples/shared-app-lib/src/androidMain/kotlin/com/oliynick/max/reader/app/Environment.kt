@@ -9,6 +9,7 @@ import com.oliynick.max.reader.app.feature.article.list.AndroidShareArticle
 import com.oliynick.max.reader.app.feature.article.list.ArticlesModule
 import com.oliynick.max.reader.app.feature.article.list.NewsApi
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
+import com.oliynick.max.reader.app.feature.suggest.SuggestionsModule
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +30,7 @@ fun Environment(
         AppModule<Environment> by AppModule(),
         ArticlesModule<Environment> by ArticlesModule(AndroidShareArticle(application)),
         ArticleDetailsModule by ArticleDetailsModule(application),
+        SuggestionsModule<Environment> by SuggestionsModule(),
         NewsApi by NewsApi(application),
         LocalStorage by LocalStorage(application),
         CoroutineScope by scope {
@@ -55,6 +57,7 @@ private fun setupStrictAppPolicies() {
 actual interface Environment :
     AppModule<Environment>,
     ArticlesModule<Environment>,
+    SuggestionsModule<Environment>,
     ArticleDetailsModule,
     NewsApi,
     LocalStorage,

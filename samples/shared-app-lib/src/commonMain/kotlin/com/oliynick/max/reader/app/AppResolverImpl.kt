@@ -9,11 +9,14 @@ import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsResolve
 import com.oliynick.max.reader.app.feature.article.list.ArticlesCommand
 import com.oliynick.max.reader.app.feature.article.list.ArticlesResolver
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
+import com.oliynick.max.reader.app.feature.suggest.SuggestCommand
+import com.oliynick.max.reader.app.feature.suggest.SuggestionsResolver
 import com.oliynick.max.tea.core.component.sideEffect
 
 fun <Env> AppResolver(): AppResolver<Env> where
         Env : ArticlesResolver<Env>,
         Env : LocalStorage,
+        Env : SuggestionsResolver<Env>,
         Env : ArticleDetailsResolver =
     AppResolver { command ->
         when (command) {
@@ -21,6 +24,7 @@ fun <Env> AppResolver(): AppResolver<Env> where
             is ArticlesCommand -> resolve(command)
             is ArticleDetailsCommand -> resolve(command)
             is DoStoreDarkMode -> command sideEffect { storeDarkModePreferences(userDarkModeEnabled, syncWithSystemDarkModeEnabled) }
-            else -> error("can't get here")
+            is SuggestCommand -> resolve(command)
+            else -> error("Shouldn't get here $command")
         }
     }
