@@ -38,32 +38,34 @@ fun updateArticles(
     message: ArticlesMessage,
     state: ArticlesState
 ): UpdateWith<ArticlesState, Command> =
-    // fixme refactor this bit
     when (message) {
-        is ArticlesLoaded -> state.toPreview(message.page).noCommand()
-        is LoadNextArticles -> loadNextArticle(state)
-        is LoadArticles -> loadArticles(state)
-        is RefreshArticles -> refreshArticles(state)
-        is ArticlesOperationException -> state.toException(message.cause).noCommand()
-        is ToggleArticleIsFavorite -> toggleFavorite(message.article, state)
-        is OnArticleUpdated -> updateArticle(message.article, state)
-        is OnShareArticle -> shareArticle(message.article, state)
-        // fixme redesign FeedState
-        is OnQueryUpdated -> updateQuery(message.query, state)
-        is SyncScrollPosition -> updateScrollState(state, message)
+        is ArticlesLoaded -> state.toPreviewUpdate(message.page)
+        is LoadNextArticles -> state.toLoadNextUpdate()
+        is LoadArticles -> state.toLoadUpdate()
+        is RefreshArticles -> state.toRefreshUpdate()
+        is ArticlesOperationException -> state.toOperationExceptionUpdate(message)
+        is ToggleArticleIsFavorite -> state.toToggleFavoriteUpdate(message.article)
+        is OnArticleUpdated -> state.toUpdateAllArticlesUpdate(message.article)
+        is OnShareArticle -> state.toShareArticleUpdate(message.article)
+        is OnQueryUpdated -> state.toQueryUpdate(message.query)
+        is SyncScrollPosition -> state.toSyncScrollStateUpdate(message)
     }
 
-private fun refreshArticles(
-    articlesState: ArticlesState
-) = articlesState.toRefreshing() command articlesState.toLoadArticlesQuery(FirstPage)
+private fun ArticlesState.toOperationExceptionUpdate(
+    message: ArticlesOperationException
+) = toException(message.cause).noCommand()
+
+private fun ArticlesState.toPreviewUpdate(
+    page: Page<Article>
+) = toPreview(page).noCommand()
+
+private fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadArticlesQuery(FirstPage)
 
 private fun ArticlesState.toLoadArticlesQuery(
     paging: Paging
 ) = LoadArticlesByQuery(id, query, paging)
 
-private fun loadArticles(
-    articlesState: ArticlesState
-) = articlesState.run {
+private fun ArticlesState.toLoadUpdate() = run {
     toLoading() command setOfNotNull(
         toLoadArticlesQuery(FirstPage), query.toSanitized()?.let(::StoreSearchQuery)
     )
@@ -72,24 +74,21 @@ private fun loadArticles(
 private fun Query.toSanitized() =
     input.takeUnless(CharSequence::isEmpty)?.trim()?.let { Query(it, type) }
 
-private fun loadNextArticle(
-    articlesState: ArticlesState
-) =
-    if (articlesState.loadable.isPreview && articlesState.loadable.hasMore && articlesState.loadable.data.isNotEmpty() /*todo should we throw an error in this case?*/) {
-        articlesState.toLoadingNext() command articlesState.toLoadArticlesQuery(articlesState.nextPage())
+private fun ArticlesState.toLoadNextUpdate() =
+    if (loadable.isPreview && loadable.hasMore && loadable.data.isNotEmpty() /*todo should we throw an error in this case?*/) {
+        toLoadingNext() command toLoadArticlesQuery(nextPage())
     } else {
         // just ignore the command
-        articlesState.noCommand()
+        noCommand()
     }
 
-private fun updateArticle(
-    article: Article,
-    state: ArticlesState
+private fun ArticlesState.toUpdateAllArticlesUpdate(
+    article: Article
 ): UpdateWith<ArticlesState, Command> {
 
-    val updated = when (state.query.type) {
-        Regular, Trending -> state.updateArticle(article)
-        Favorite -> if (article.isFavorite) state.prependArticle(article) else state.removeArticle(
+    val updated = when (query.type) {
+        Regular, Trending -> updateArticle(article)
+        Favorite -> if (article.isFavorite) prependArticle(article) else removeArticle(
             article
         )
     }
@@ -97,30 +96,26 @@ private fun updateArticle(
     return updated.noCommand()
 }
 
-private fun toggleFavorite(
-    article: Article,
-    state: ArticlesState
+private fun ArticlesState.toToggleFavoriteUpdate(
+    article: Article
 ): UpdateWith<ArticlesState, Command> {
 
     val toggled = article.toggleFavorite()
 
-    return state.updateArticle(toggled) command toggled.storeCommand()
+    return updateArticle(toggled) command toggled.storeCommand()
 }
 
-private fun shareArticle(
-    article: Article,
-    state: ArticlesState
-): UpdateWith<ArticlesState, DoShareArticle> = state command DoShareArticle(article)
+private fun ArticlesState.toShareArticleUpdate(
+    article: Article
+): UpdateWith<ArticlesState, DoShareArticle> = this command DoShareArticle(article)
 
-private fun updateQuery(
-    input: String,
-    state: ArticlesState
+private fun ArticlesState.toQueryUpdate(
+    input: String
 ): UpdateWith<ArticlesState, ArticlesCommand> =
-    state.copy(query = state.query.update(input)).noCommand()
+    copy(query = query.update(input)).noCommand()
 
 private fun Article.storeCommand() = if (isFavorite) SaveArticle(this) else RemoveArticle(this)
 
-private fun updateScrollState(
-    state: ArticlesState,
+private fun ArticlesState.toSyncScrollStateUpdate(
     message: SyncScrollPosition
-) = state.copy(scrollState = message.scrollState).noCommand()
+) = copy(scrollState = message.scrollState).noCommand()

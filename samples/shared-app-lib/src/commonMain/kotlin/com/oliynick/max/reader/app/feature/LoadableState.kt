@@ -3,7 +3,7 @@ package com.oliynick.max.reader.app.feature
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.feature.article.list.Page
 
-data class LoadableState<T>(
+data class LoadableState<out T>(
     val data: List<T>,
     val hasMore: Boolean,
     val transientState: TransientState,
