@@ -99,7 +99,7 @@ fun ArticlesScreen(
             transientContent(
                 state.id,
                 state.loadable.data.isEmpty(),
-                state.loadable.transientState,
+                state.loadable.loadableState,
                 onMessage
             )
         }
@@ -160,16 +160,16 @@ private fun LazyListScope.articleItems(
 private fun LazyListScope.transientContent(
     id: ScreenId,
     isEmpty: Boolean,
-    transientState: TransientState,
+    loadableState: LoadableState,
     onMessage: (Message) -> Unit,
 ) = item {
 
-    when (transientState) {
+    when (loadableState) {
         is Exception ->
             ArticlesError(
                 modifier = if (isEmpty) Modifier.fillParentMaxSize() else Modifier.fillParentMaxWidth(),
                 id = id,
-                message = transientState.th.readableMessage,
+                message = loadableState.th.readableMessage,
                 onMessage = onMessage
             )
         is Loading -> ArticlesProgress(modifier = Modifier.fillParentMaxSize())

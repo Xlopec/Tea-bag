@@ -57,7 +57,7 @@ data class ScrollState(
 data class ArticlesState(
     override val id: ScreenId,
     val query: Query,
-    val loadable: LoadableState<Article>,
+    val loadable: Loadable<Article>,
     val scrollState: ScrollState = ScrollState.Initial
 ) : TabScreen {
 
@@ -69,7 +69,7 @@ data class ArticlesState(
             id: ScreenId,
             query: Query,
             articles: List<Article> = emptyList(),
-        ) = ArticlesState(id, query, LoadableState.newLoading(articles))
+        ) = ArticlesState(id, query, Loadable.newLoading(articles))
     }
 
 }
