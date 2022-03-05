@@ -29,6 +29,7 @@ package com.oliynick.max.reader.app.feature.article.list
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
+import com.oliynick.max.reader.app.feature.network.SourcesResponse
 
 interface NewsApi {
 
@@ -41,4 +42,7 @@ interface NewsApi {
         input: String,
         paging: Paging
     ): Either<ArticleResponse, AppException>
+
+    suspend fun fetchNewsSources(): Either<SourcesResponse, AppException>
+
 }

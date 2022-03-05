@@ -78,7 +78,3 @@ object UrlSerializer : KSerializer<Url> {
     override fun deserialize(decoder: Decoder): Url = UrlFor(decoder.decodeString())
 
 }
-
-private fun Encoder.encodeNullableString(
-    s: String?
-) = s?.let(::encodeString) ?: encodeNull()

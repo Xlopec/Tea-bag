@@ -108,7 +108,25 @@ fun AppState.navigateToArticleDetails(
 
 fun AppState.navigateToSuggestions(
     nav: NavigateToSuggestions
-) = pushScreen(SuggestState(nav.id, TextFieldState(nav))) command DoLoadSuggestions(nav.id, nav.query.type)
+) = pushScreen(SuggestState(nav.id, TextFieldState(nav),
+
+  /*  persistentListOf(
+        Source(
+            SourceId("abc-news"),
+            SourceName("Abc News"),
+            SourceDescription("Your trusted source for breaking news, analysis, exclusive interviews, headlines, and videos at ABCNews.com."),
+            UrlFor("https://abcnews.go.com"),
+            UrlFor("https://www.google.com/s2/favicons?sz=64&domain_url=abcnews.go.com")
+        ),
+        Source(
+            SourceId("entertainment-weekly"),
+            SourceName("Entertainment Weekly"),
+            SourceDescription("Online version of the print magazine includes entertainment news, interviews, reviews of music, film, TV and books, and a special area for magazine subscribers."),
+            UrlFor("http://www.ew.com"),
+            UrlFor("https://www.google.com/s2/favicons?sz=64&domain_url=www.ew.com")
+        )
+    )*/
+    )) command DoLoadSuggestions(nav.id, nav.query.type)
 
 expect fun AppState.popScreen(): UpdateWith<AppState, Command>
 

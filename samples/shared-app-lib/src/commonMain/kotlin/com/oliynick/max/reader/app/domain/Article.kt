@@ -122,6 +122,11 @@ fun Description.Companion.tryCreate(
 
 fun Article.toggleFavorite(): Article = copy(isFavorite = !isFavorite)
 
+fun <T> tryCreate(
+    s: String?,
+    constructor: (String) -> T
+) = if (s?.isNonEmpty() == true) constructor(s) else null
+
 private fun String?.isNonEmpty(): Boolean {
     contract {
         returns(true) implies (this@isNonEmpty is String)

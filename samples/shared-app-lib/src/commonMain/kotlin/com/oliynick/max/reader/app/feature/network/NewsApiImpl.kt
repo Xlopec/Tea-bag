@@ -3,6 +3,7 @@
 
 package com.oliynick.max.reader.app.feature.network
 
+import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.IO
@@ -26,6 +27,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
+import kotlin.jvm.JvmInline
 
 internal class NewsApiImpl(
     engine: HttpClientEngineFactory<HttpClientEngineConfig>,
@@ -38,14 +40,18 @@ internal class NewsApiImpl(
         input: String,
         paging: Paging
     ) = Try {
-        httpClient.get(EverythingRequest(input, paging)).body()
+        httpClient.get(EverythingRequest(input, paging)).body<ArticleResponse>()
     }
 
     override suspend fun fetchTopHeadlines(
         input: String,
         paging: Paging
     ) = Try {
-        httpClient.get(TopHeadlinesRequest(input, paging, countryCode)).body()
+        httpClient.get(TopHeadlinesRequest(input, paging, countryCode)).body<ArticleResponse>()
+    }
+
+    override suspend fun fetchNewsSources() = Try {
+        httpClient.get(SourcesRequest).body<SourcesResponse>()
     }
 }
 
@@ -65,8 +71,8 @@ private fun HttpClient(
     }
 }
 
-private suspend inline fun Try(
-    ifSuccess: () -> ArticleResponse
+private suspend inline fun <T> Try(
+    ifSuccess: () -> T
 ) = Either(ifSuccess) { it.toAppException() }
 
 private suspend fun Throwable.toAppException(): AppException =
@@ -123,6 +129,49 @@ private fun EverythingRequest(
             .forEach { (k, v) ->
                 append(k, v)
             }
+    }
+}
+
+enum class Category {
+    Business,
+    Entertainment,
+    General,
+    Health,
+    Science,
+    Sports,
+    Technology
+}
+
+data class Source(
+    val id: SourceId,
+    val name: SourceName,
+    val description: SourceDescription?,
+    val url: Url,
+    val logo: Url,
+)
+
+@JvmInline
+value class SourceName(
+    val value: String
+)
+
+@JvmInline
+value class SourceDescription(
+    val value: String
+)
+
+@JvmInline
+value class SourceId(
+    val value: String
+)
+
+private val SourcesRequest = HttpRequestBuilder(
+    scheme = HTTPS.name,
+    host = "newsapi.org",
+    path = "/v2/top-headlines/sources"
+) {
+    with(parameters) {
+        append("apiKey", ApiKey)
     }
 }
 

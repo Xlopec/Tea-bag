@@ -4,13 +4,18 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.runtime.*
@@ -20,11 +25,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
 import com.max.reader.app.ui.misc.SearchHeader
 import com.max.reader.app.ui.screens.suggest.AnimationState.End
 import com.max.reader.app.ui.screens.suggest.AnimationState.Start
@@ -58,7 +65,8 @@ fun SuggestScreen(
     var screenTransitionState by remember { mutableStateOf(Begin) }
     var closeScreen by remember { mutableStateOf(false) }
     var performSearch by remember { mutableStateOf(false) }
-    val screenTransition = updateTransition(label = "Header transition", targetState = screenTransitionState)
+    val screenTransition =
+        updateTransition(label = "Header transition", targetState = screenTransitionState)
 
     val headerTransitionState = screenTransition.headerTransitionState()
     val childTransitionState = screenTransition.childTransitionState()
@@ -117,8 +125,12 @@ fun SuggestScreen(
                     placeholderText = "Search in articles",
                     onQueryUpdate = {
                         textFieldState = it
-                        onMessage(/*SuggestionQueryUpdated(state.id, it), */OnQueryUpdated(state.id, it.text))
-                                    },
+                        onMessage(/*SuggestionQueryUpdated(state.id, it), */OnQueryUpdated(
+                            state.id,
+                            it.text
+                        )
+                        )
+                    },
                     onSearch = {
                         performSearch = true
                         closeScreen = true
@@ -128,12 +140,54 @@ fun SuggestScreen(
                 )
             }
 
+            if (state.sources.isNotEmpty()) {
+                item {
+                    Subtitle(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(all = 16.dp)
+                            .alpha(childTransitionState.contentAlpha),
+                        text = "Sources"
+                    )
+
+                    LazyRow(
+                        modifier = Modifier
+                            .fillParentMaxWidth().padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(state.sources, { it.id.value }) { source ->
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Surface(
+                                    elevation = 8.dp,
+                                    shape = CircleShape,
+                                    onClick = { }
+                                ) {
+                                    Image(
+                                        modifier = Modifier.size(60.dp).background(Color.White.copy(alpha = 0.8f)),
+                                        contentScale = ContentScale.Crop,
+                                        painter = rememberImagePainter(
+                                            data = source.logo.toExternalForm(),
+                                        ) {
+                                            crossfade(true)
+                                        },
+                                        contentDescription = source.name.value
+                                    )
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
             item {
-                SuggestionsSubtitle(
+                Subtitle(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(all = 16.dp)
-                        .alpha(childTransitionState.contentAlpha)
+                        .alpha(childTransitionState.contentAlpha),
+                    text = "Recent searches"
                 )
             }
 
@@ -154,11 +208,12 @@ fun SuggestScreen(
 }
 
 @Composable
-private fun SuggestionsSubtitle(
+private fun Subtitle(
     modifier: Modifier,
+    text: String,
 ) {
     Text(
-        text = "Recent searches",
+        text = text,
         modifier = modifier,
         textAlign = TextAlign.Start,
         style = MaterialTheme.typography.subtitle1
@@ -231,7 +286,7 @@ private fun Transition<ScreenAnimationState>.headerTransitionState(): HeaderTran
         }
     }
 
-    val colorsss = MaterialTheme.colors
+    val colorsss = colors
 
     val endColor = remember {
         colorsss.surface

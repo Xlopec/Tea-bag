@@ -12,3 +12,6 @@ public actual fun UrlFor(
 ): Url = NSURL(string = s)
 
 public actual fun Url.toExternalValue(): String = toString()
+
+public actual val Url.domain: String
+    get() = host ?: error("No domain: ${toExternalValue()}")
