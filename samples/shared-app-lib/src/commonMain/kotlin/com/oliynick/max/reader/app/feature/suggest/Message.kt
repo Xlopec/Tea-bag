@@ -12,6 +12,10 @@ sealed interface SuggestMessage : ScreenMessage {
 data class SuggestionsLoaded(
     override val id: ScreenId,
     val suggestions: ImmutableList<String>,
+) : SuggestMessage
+
+data class SourcesLoaded(
+    override val id: ScreenId,
     val sources: ImmutableList<Source>,
 ) : SuggestMessage
 

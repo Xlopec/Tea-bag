@@ -56,10 +56,12 @@ data class ScrollState(
     }
 }
 
+typealias ArticlesLoadable = Loadable<PersistentList<Article>>
+
 data class ArticlesState(
     override val id: ScreenId,
     val query: Query,
-    val loadable: Loadable<Article>,
+    val loadable: ArticlesLoadable,
     val scrollState: ScrollState = ScrollState.Initial
 ) : TabScreen {
 

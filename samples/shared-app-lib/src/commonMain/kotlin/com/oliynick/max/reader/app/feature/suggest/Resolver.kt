@@ -11,6 +11,7 @@ import com.oliynick.max.reader.app.feature.network.Source
 import com.oliynick.max.reader.app.feature.network.SourceResponseElement
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.tea.core.component.effect
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
 interface SuggestionsResolver<Env> {
@@ -31,28 +32,32 @@ private class SuggestionsResolverImpl<Env> : SuggestionsResolver<Env>
         command: SuggestCommand
     ): Set<SuggestMessage> =
         when (command) {
-            is DoLoadSuggestions -> command effect {
-                SuggestionsLoaded(
-                    id,
-                    recentSearches(command.type),
-                    fetchNewsSources().fold(
-                        left = {
-
-                            val builder = persistentListOf<Source>().builder()
-
-                            it.sources.mapTo(builder, SourceResponseElement::toSource)
-
-                            builder.build()
-                        },
-                        right = {
-                            it.printStackTrace()
-                            persistentListOf()
-                        })
-                )
-            }
+            is DoLoadSuggestions -> resolveSuggestions(command)
+            is DoLoadSources -> resolveSources(command)
         }
-
 }
+
+private suspend fun LocalStorage.resolveSuggestions(
+    command: DoLoadSuggestions
+) = command effect {
+    SuggestionsLoaded(id, recentSearches(command.type))
+}
+
+private suspend fun NewsApi.resolveSources(
+    command: DoLoadSources
+) = command effect {
+    val sources = fetchNewsSources().fold(
+        left = { it.sources.toPersistentList(SourceResponseElement::toSource) },
+        right = { persistentListOf() }
+    )
+
+    SourcesLoaded(command.id, sources)
+}
+
+inline fun <T, R> Iterable<T>.toPersistentList(
+    mapper: (T) -> R
+): PersistentList<R> =
+    persistentListOf<R>().builder().also { mapTo(it, mapper) }.build()
 
 private fun SourceResponseElement.toSource() = Source(id, name, description, url, logo)
 

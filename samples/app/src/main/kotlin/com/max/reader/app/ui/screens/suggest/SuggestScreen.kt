@@ -16,7 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.colors
-import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Default
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -140,7 +140,7 @@ fun SuggestScreen(
                 )
             }
 
-            if (state.sources.isNotEmpty()) {
+            if (state.sources.data.isNotEmpty()) {
                 item {
                     Subtitle(
                         modifier = Modifier
@@ -152,18 +152,24 @@ fun SuggestScreen(
 
                     LazyRow(
                         modifier = Modifier
-                            .fillParentMaxWidth().padding(horizontal = 16.dp),
+                            .alpha(childTransitionState.contentAlpha)
+                            .fillParentMaxWidth()
+                            .offset(y = childTransitionState.listItemOffsetY)
+                            .padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(state.sources, { it.id.value }) { source ->
+                        items(state.sources.data, { it.id.value }) { source ->
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
                                 Surface(
                                     elevation = 8.dp,
                                     shape = CircleShape,
-                                    onClick = { }
+                                    onClick = {}
                                 ) {
                                     Image(
-                                        modifier = Modifier.size(60.dp).background(Color.White.copy(alpha = 0.8f)),
+                                        modifier = Modifier
+                                            .size(60.dp)
+                                            .background(Color.White.copy(alpha = 0.8f)),
                                         contentScale = ContentScale.Crop,
                                         painter = rememberImagePainter(
                                             data = source.logo.toExternalForm(),
@@ -172,14 +178,12 @@ fun SuggestScreen(
                                         },
                                         contentDescription = source.name.value
                                     )
-
                                 }
                             }
                         }
                     }
                 }
             }
-
 
             item {
                 Subtitle(
@@ -229,7 +233,7 @@ private fun SuggestionItem(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(imageVector = Icons.Default.Image, contentDescription = null)
+        Icon(imageVector = Default.Image, contentDescription = null)
 
         Spacer(modifier = Modifier.width(8.dp))
 

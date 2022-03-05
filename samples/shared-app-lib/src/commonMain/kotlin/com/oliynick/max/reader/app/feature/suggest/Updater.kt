@@ -1,5 +1,6 @@
 package com.oliynick.max.reader.app.feature.suggest
 
+import com.oliynick.max.reader.app.feature.toPreview
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.noCommand
 
@@ -9,7 +10,8 @@ fun updateSuggestions(
 ): UpdateWith<SuggestState, SuggestCommand> =
     when(message) {
         is SuggestionQueryUpdated -> updateQuery(state, message)
-        is SuggestionsLoaded -> state.copy(suggestions = message.suggestions, sources = message.sources).noCommand()
+        is SuggestionsLoaded -> state.copy(suggestions = message.suggestions).noCommand()
+        is SourcesLoaded -> state.copy(sources = state.sources.toPreview(message.sources)).noCommand()
     }
 
 private fun updateQuery(

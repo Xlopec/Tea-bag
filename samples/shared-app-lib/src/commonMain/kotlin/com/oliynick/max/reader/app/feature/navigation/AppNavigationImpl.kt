@@ -28,6 +28,7 @@ package com.oliynick.max.reader.app.feature.navigation
 
 import com.oliynick.max.reader.app.*
 import com.oliynick.max.reader.app.command.Command
+import com.oliynick.max.reader.app.feature.Loadable
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.LoadArticlesByQuery
@@ -35,6 +36,7 @@ import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPa
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.QueryType.*
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
+import com.oliynick.max.reader.app.feature.suggest.DoLoadSources
 import com.oliynick.max.reader.app.feature.suggest.DoLoadSuggestions
 import com.oliynick.max.reader.app.feature.suggest.SuggestState
 import com.oliynick.max.reader.app.feature.suggest.TextFieldState
@@ -108,25 +110,10 @@ fun AppState.navigateToArticleDetails(
 
 fun AppState.navigateToSuggestions(
     nav: NavigateToSuggestions
-) = pushScreen(SuggestState(nav.id, TextFieldState(nav),
-
-  /*  persistentListOf(
-        Source(
-            SourceId("abc-news"),
-            SourceName("Abc News"),
-            SourceDescription("Your trusted source for breaking news, analysis, exclusive interviews, headlines, and videos at ABCNews.com."),
-            UrlFor("https://abcnews.go.com"),
-            UrlFor("https://www.google.com/s2/favicons?sz=64&domain_url=abcnews.go.com")
-        ),
-        Source(
-            SourceId("entertainment-weekly"),
-            SourceName("Entertainment Weekly"),
-            SourceDescription("Online version of the print magazine includes entertainment news, interviews, reviews of music, film, TV and books, and a special area for magazine subscribers."),
-            UrlFor("http://www.ew.com"),
-            UrlFor("https://www.google.com/s2/favicons?sz=64&domain_url=www.ew.com")
-        )
-    )*/
-    )) command DoLoadSuggestions(nav.id, nav.query.type)
+) = pushScreen(SuggestState(nav.id, TextFieldState(nav), Loadable.newLoading())).command(
+    DoLoadSuggestions(nav.id, nav.query.type),
+    DoLoadSources(nav.id)
+)
 
 expect fun AppState.popScreen(): UpdateWith<AppState, Command>
 
