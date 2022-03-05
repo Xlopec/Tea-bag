@@ -27,7 +27,6 @@
 package com.max.reader.app.ui.screens.article
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -66,9 +65,6 @@ import com.oliynick.max.reader.app.feature.article.list.*
 import com.oliynick.max.reader.app.feature.article.list.QueryType.*
 import com.oliynick.max.reader.app.feature.navigation.NavigateToArticleDetails
 import com.oliynick.max.reader.app.feature.navigation.NavigateToSuggestions
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -86,9 +82,6 @@ fun ArticlesScreen(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        //val listState = listState(id = id)
-        // buggy behavior
-        // .apply { setScrollingEnabled(articles.isNotEmpty(), rememberCoroutineScope()) }
 
         ArticlesContent(listState, state, onMessage) {
 
@@ -218,7 +211,8 @@ private fun ArticlesContent(
         modifier = Modifier.fillMaxSize(),
         state = listState,
         contentPadding = PaddingValues(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        userScrollEnabled = screen.loadable.data.isNotEmpty()
     ) {
 
         item {
@@ -452,18 +446,6 @@ private fun QueryType.toSearchHint(): String =
         Favorite -> "Search in favorite"
         Trending -> "Search in trending"
     }
-
-private fun LazyListState.setScrollingEnabled(enabled: Boolean, scope: CoroutineScope) {
-    scope.launch {
-        scroll(scrollPriority = MutatePriority.PreventUserInput) {
-            if (!enabled) {
-                // Await indefinitely, blocking scrolls
-                awaitCancellation()
-            }
-            // Do nothing, just cancel the previous indefinite "scroll"
-        }
-    }
-}
 
 private val ArticlesState.hasDataToDisplay: Boolean
     get() = loadable.data.isNotEmpty() && !loadable.isLoading
