@@ -34,7 +34,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.ButtonDefaults.textButtonColors
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.icons.Icons
@@ -54,6 +53,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.max.reader.app.ui.misc.ColumnMessage
 import com.max.reader.app.ui.misc.SearchHeader
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.AppException
@@ -172,14 +172,12 @@ private fun LazyListScope.transientContent(
         }
         is Preview, is Refreshing -> {
             if (isEmpty) {
-                Message(
-                    modifier = Modifier.fillParentMaxSize(),
-                    message = "No articles",
-                    actionText = "Reload",
-                    onClick = {
-                        onMessage(LoadArticles(id))
-                    }
-                )
+                ColumnMessage(
+                    modifier = Modifier.fillParentMaxSize().padding(16.dp),
+                    message = "No articles"
+                ) {
+                    onMessage(LoadArticles(id))
+                }
             }
         }
     }
@@ -351,40 +349,11 @@ private fun ArticlesError(
     message: String,
     onMessage: (Message) -> Unit,
 ) {
-    Message(
+    ColumnMessage(
         modifier,
-        "Failed to load articles, message: '${message.replaceFirstChar { it.lowercase(Locale.getDefault()) }}'",
-        "Retry"
+        "Failed to load articles, message: '${message.replaceFirstChar { it.lowercase(Locale.getDefault()) }}'"
     ) {
         onMessage(LoadArticles(id))
-    }
-}
-
-@Composable
-fun Message(
-    modifier: Modifier,
-    message: String,
-    actionText: String,
-    onClick: () -> Unit,
-) {
-    Column(
-        modifier = modifier
-            .padding(16.dp)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = message,
-            textAlign = TextAlign.Center
-        )
-
-        TextButton(
-            colors = textButtonColors(contentColor = colors.onSurface),
-            onClick = onClick
-        ) {
-            Text(text = actionText)
-        }
     }
 }
 

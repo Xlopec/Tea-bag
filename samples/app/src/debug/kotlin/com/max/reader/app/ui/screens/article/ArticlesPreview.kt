@@ -3,6 +3,7 @@ package com.max.reader.app.ui.screens.article
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.max.reader.app.ui.misc.ColumnMessage
 import com.max.reader.app.ui.theme.ThemedPreview
 import com.oliynick.max.entities.shared.now
 import com.oliynick.max.reader.app.domain.Article
@@ -50,12 +51,10 @@ fun ArticleActionsPreview() {
 @ComposePreview("Messages preview")
 fun MessagePreview() {
     ThemedPreview {
-        Message(
+        ColumnMessage(
             modifier = Modifier,
-            message = "Oops, something went wrong",
-            actionText = "Retry",
-            onClick = {}
-        )
+            message = "Oops, something went wrong"
+        ) {}
     }
 }
 

@@ -17,7 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons.Default
-import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.QueryBuilder
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +25,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -32,16 +34,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.max.reader.app.ui.misc.RowMessage
 import com.max.reader.app.ui.misc.SearchHeader
 import com.max.reader.app.ui.screens.suggest.AnimationState.End
 import com.max.reader.app.ui.screens.suggest.AnimationState.Start
 import com.max.reader.app.ui.screens.suggest.ScreenAnimationState.*
 import com.oliynick.max.reader.app.Message
+import com.oliynick.max.reader.app.feature.*
 import com.oliynick.max.reader.app.feature.article.list.LoadArticles
 import com.oliynick.max.reader.app.feature.article.list.OnQueryUpdated
 import com.oliynick.max.reader.app.feature.navigation.Pop
+import com.oliynick.max.reader.app.feature.network.Source
 import com.oliynick.max.reader.app.feature.suggest.SuggestState
 import com.oliynick.max.reader.app.feature.suggest.TextFieldState
+import kotlinx.collections.immutable.PersistentList
 
 private enum class ScreenAnimationState {
     Begin, Half, Finish
@@ -140,73 +146,159 @@ fun SuggestScreen(
                 )
             }
 
-            if (state.sources.data.isNotEmpty()) {
+            item {
+                SourcesSection(
+                    modifier = Modifier.fillParentMaxWidth(),
+                    sources = state.sources,
+                    childTransitionState = childTransitionState
+                )
+            }
+
+            if (state.suggestions.isNotEmpty()) {
                 item {
                     Subtitle(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(all = 16.dp)
                             .alpha(childTransitionState.contentAlpha),
-                        text = "Sources"
+                        text = "Recent searches"
                     )
+                }
 
-                    LazyRow(
+                items(state.suggestions, { it }) { item ->
+                    SuggestionItem(
                         modifier = Modifier
-                            .alpha(childTransitionState.contentAlpha)
                             .fillParentMaxWidth()
-                            .offset(y = childTransitionState.listItemOffsetY)
-                            .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(state.sources.data, { it.id.value }) { source ->
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            .clickable { }
+                            .animateItemPlacement()
+                            .alpha(childTransitionState.contentAlpha)
+                            .padding(all = 16.dp)
+                            .offset(y = childTransitionState.listItemOffsetY),
+                        suggestion = item
+                    )
+                }
+            }
+        }
+    }
+}
 
-                                Surface(
-                                    elevation = 8.dp,
-                                    shape = CircleShape,
-                                    onClick = {}
-                                ) {
-                                    Image(
-                                        modifier = Modifier
-                                            .size(60.dp)
-                                            .background(Color.White.copy(alpha = 0.8f)),
-                                        contentScale = ContentScale.Crop,
-                                        painter = rememberImagePainter(
-                                            data = source.logo.toExternalForm(),
-                                        ) {
-                                            crossfade(true)
-                                        },
-                                        contentDescription = source.name.value
-                                    )
-                                }
-                            }
-                        }
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun SourcesSection(
+    modifier: Modifier,
+    sources: Loadable<PersistentList<Source>>,
+    childTransitionState: ChildTransitionState,
+) {
+
+    Subtitle(
+        modifier = modifier
+            .padding(all = 16.dp)
+            .alpha(childTransitionState.contentAlpha),
+        text = "Sources"
+    )
+
+    when (val loadable = sources.loadableState) {
+        LoadingNext -> Unit
+        is Exception -> {
+            RowMessage(
+                message = loadable.th.message,
+                onClick = {}
+            )
+        }
+        Loading, Refreshing -> {
+            val infiniteTransition = rememberInfiniteTransition()
+            val alpha by infiniteTransition.animateFloat(
+                initialValue = 0f,
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = keyframes {
+                        durationMillis = 1000
+                        0.7f at 500
+                    },
+                    repeatMode = RepeatMode.Reverse
+                )
+            )
+
+            Subtitle(
+                modifier = modifier
+                    .padding(all = 16.dp)
+                    .alpha(childTransitionState.contentAlpha),
+                text = "Sources"
+            )
+
+            LazyRow(
+                modifier = modifier
+                    .padding(horizontal = 16.dp)
+                    .alpha(childTransitionState.contentAlpha)
+                    .offset(y = childTransitionState.listItemOffsetY),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                userScrollEnabled = false
+            ) {
+                // fixme we should know in advance how many items we can place
+                items((1..20).toList(), { it }) {
+                    SourceItem(
+                        modifier = Modifier.alpha(alpha),
+                        painter = ColorPainter(Color.Gray),
+                        contentDescription = null
+                    )
+                }
+            }
+        }
+        Preview -> {
+
+            if (sources.data.isNotEmpty()) {
+
+                Subtitle(
+                    modifier = modifier
+                        .padding(all = 16.dp)
+                        .alpha(childTransitionState.contentAlpha),
+                    text = "Sources"
+                )
+
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    modifier = modifier
+                        .alpha(childTransitionState.contentAlpha)
+                        .offset(y = childTransitionState.listItemOffsetY),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(sources.data, { it.id.value }) { source ->
+                        SourceItem(
+                            painter = rememberImagePainter(
+                                data = source.logo.toExternalForm(),
+                            ) {
+                                crossfade(true)
+                            },
+                            contentDescription = source.name.value
+                        )
                     }
                 }
             }
+        }
+    }
+}
 
-            item {
-                Subtitle(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(all = 16.dp)
-                        .alpha(childTransitionState.contentAlpha),
-                    text = "Recent searches"
-                )
-            }
-
-            items(state.suggestions, { it }) { item ->
-                SuggestionItem(
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .clickable { }
-                        .animateItemPlacement()
-                        .alpha(childTransitionState.contentAlpha)
-                        .padding(all = 16.dp)
-                        .offset(y = childTransitionState.listItemOffsetY),
-                    suggestion = item
-                )
-            }
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun SourceItem(
+    painter: Painter,
+    contentDescription: String?,
+    modifier: Modifier = Modifier
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
+        Surface(
+            elevation = 8.dp,
+            shape = CircleShape,
+            onClick = {}
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(SourceImageSize)
+                    .background(Color.White),
+                contentScale = ContentScale.Crop,
+                painter = painter,
+                contentDescription = contentDescription
+            )
         }
     }
 }
@@ -233,7 +325,7 @@ private fun SuggestionItem(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(imageVector = Default.Image, contentDescription = null)
+        Icon(imageVector = Default.QueryBuilder, contentDescription = null)
 
         Spacer(modifier = Modifier.width(8.dp))
 
@@ -372,3 +464,5 @@ private infix fun <T> Transition<T>.transitionedTo(
 
 private fun TextFieldState.toTextFieldValue() =
     TextFieldValue(query.input, TextRange(cursorPosition))
+
+private val SourceImageSize = 60.dp
