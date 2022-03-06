@@ -64,8 +64,8 @@ private class LocalStorageImpl(
         deleteArticle(url.toExternalValue())
     }
 
-    override suspend fun findAllArticles(input: String) = articlesQuery {
-        val wrappedInput = "%$input%"
+    override suspend fun findAllArticles(filter: Filter) = articlesQuery {
+        val wrappedInput = "%${filter.input}%"
 
         Page(
             findAllArticles(wrappedInput, wrappedInput, wrappedInput, ::dbModelToArticle)

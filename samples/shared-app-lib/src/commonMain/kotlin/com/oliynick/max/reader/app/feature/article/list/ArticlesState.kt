@@ -30,9 +30,12 @@ import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.domain.Article
+import com.oliynick.max.reader.app.feature.network.SourceId
 import com.oliynick.max.reader.app.misc.*
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 
 enum class FilterType {
     Regular, Favorite, Trending
@@ -41,11 +44,8 @@ enum class FilterType {
 data class Filter(
     val input: String,
     val type: FilterType,
+    val sources: ImmutableSet<SourceId> = persistentSetOf(),
 )
-
-fun Filter.update(
-    input: String
-) = copy(input = input)
 
 data class ScrollState(
     val firstVisibleItemIndex: Int,
@@ -62,7 +62,7 @@ data class ArticlesState(
     override val id: ScreenId,
     val filter: Filter,
     val loadable: ArticlesLoadable,
-    val scrollState: ScrollState = ScrollState.Initial
+    val scrollState: ScrollState = ScrollState.Initial,
 ) : TabScreen {
 
     companion object {
@@ -124,7 +124,7 @@ inline fun <E> PersistentList<E>.replace(
 }
 
 inline fun <E> PersistentList<E>.remove(
-    predicate: (E) -> Boolean
+    predicate: (E) -> Boolean,
 ): PersistentList<E> {
     val i = indexOfFirst(predicate)
 

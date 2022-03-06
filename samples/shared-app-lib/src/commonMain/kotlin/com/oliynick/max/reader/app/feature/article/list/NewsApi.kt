@@ -29,17 +29,21 @@ package com.oliynick.max.reader.app.feature.article.list
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
+import com.oliynick.max.reader.app.feature.network.SourceId
 import com.oliynick.max.reader.app.feature.network.SourcesResponse
+import kotlinx.collections.immutable.ImmutableSet
 
 interface NewsApi {
 
     suspend fun fetchFromEverything(
-        input: String,
+        query: String,
+        sources: ImmutableSet<SourceId>,
         paging: Paging
     ): Either<ArticleResponse, AppException>
 
     suspend fun fetchTopHeadlines(
-        input: String,
+        query: String,
+        sources: ImmutableSet<SourceId>,
         paging: Paging
     ): Either<ArticleResponse, AppException>
 

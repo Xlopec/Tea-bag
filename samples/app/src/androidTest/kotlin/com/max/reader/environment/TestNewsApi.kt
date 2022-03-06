@@ -5,6 +5,8 @@ import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.feature.article.list.Paging
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
+import com.oliynick.max.reader.app.feature.network.SourceId
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -37,17 +39,19 @@ class TestNewsApi(
     }
 
     override suspend fun fetchFromEverything(
-        input: String,
+        query: String,
+        sources: ImmutableSet<SourceId>,
         paging: Paging
     ): Either<ArticleResponse, AppException> {
-        return dequeResponse(input, paging)
+        return dequeResponse(query, paging)
     }
 
     override suspend fun fetchTopHeadlines(
-        input: String,
+        query: String,
+        sources: ImmutableSet<SourceId>,
         paging: Paging
     ): Either<ArticleResponse, AppException> {
-        return dequeResponse(input, paging)
+        return dequeResponse(query, paging)
     }
 
     private suspend fun dequeResponse(

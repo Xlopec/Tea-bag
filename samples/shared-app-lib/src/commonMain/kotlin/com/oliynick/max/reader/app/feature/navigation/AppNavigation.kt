@@ -32,7 +32,7 @@ import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.Filter
 import com.oliynick.max.reader.app.feature.article.list.FilterType.*
-import com.oliynick.max.reader.app.feature.article.list.LoadArticlesByQuery
+import com.oliynick.max.reader.app.feature.article.list.LoadArticlesByFilter
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
 import com.oliynick.max.reader.app.feature.suggest.DoLoadSources
@@ -76,7 +76,7 @@ fun TabNavigation.toTabScreen(): UpdateWith<TabScreen, Command> =
 private fun ArticlesInitialUpdate(
     id: ScreenId,
     filter: Filter
-) = ArticlesState.newLoading(id, filter) command LoadArticlesByQuery(id, filter, FirstPage)
+) = ArticlesState.newLoading(id, filter) command LoadArticlesByFilter(id, filter, FirstPage)
 
 fun AppState.navigateToTab(
     nav: TabNavigation,

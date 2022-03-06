@@ -44,7 +44,7 @@ interface LocalStorage {
     )
 
     suspend fun findAllArticles(
-        input: String,
+        filter: Filter,
     ): Page<Article>
 
     suspend fun isFavoriteArticle(

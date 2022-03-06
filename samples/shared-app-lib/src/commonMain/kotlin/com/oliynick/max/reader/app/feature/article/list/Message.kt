@@ -66,7 +66,7 @@ data class ArticlesOperationException(
 ) : ArticlesMessage
 
 @JvmInline
-value class OnArticleUpdated(
+value class ArticleUpdated(
     val article: Article,
 ) : ArticlesMessage {
     override val id: Nothing?
@@ -86,7 +86,7 @@ value*/data class OnShareArticle(
         get() = null
 }
 
-data class OnQueryUpdated(
+data class FilterUpdated(
     override val id: ScreenId,
-    val query: String,
+    val filter: Filter,
 ) : ArticlesMessage

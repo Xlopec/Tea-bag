@@ -30,7 +30,7 @@ import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.Filter
 import com.oliynick.max.reader.app.feature.article.list.FilterType.Regular
-import com.oliynick.max.reader.app.feature.article.list.LoadArticlesByQuery
+import com.oliynick.max.reader.app.feature.article.list.LoadArticlesByFilter
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.app.feature.navigation.NavigateToFeed
 import com.oliynick.max.tea.core.Initial
@@ -54,9 +54,9 @@ fun AppInitializer(
     Initial(AppState(initScreen, settings), initScreen.toInitialQuery())
 }
 
-private fun ArticlesState.toInitialQuery(): LoadArticlesByQuery {
+private fun ArticlesState.toInitialQuery(): LoadArticlesByFilter {
     require(loadable.data.isEmpty()) { "non initial state $this" }
-    return LoadArticlesByQuery(id, filter, FirstPage)
+    return LoadArticlesByFilter(id, filter, FirstPage)
 }
 
 private fun Initial(

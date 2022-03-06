@@ -19,10 +19,12 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import io.ktor.http.URLProtocol.Companion.HTTPS
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.*
 import io.ktor.util.network.*
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
@@ -31,23 +33,25 @@ import kotlin.jvm.JvmInline
 
 internal class NewsApiImpl(
     engine: HttpClientEngineFactory<HttpClientEngineConfig>,
-    private val countryCode: String
+    private val countryCode: String,
 ) : NewsApi {
 
     private val httpClient by lazy { HttpClient(engine) }
 
     override suspend fun fetchFromEverything(
-        input: String,
-        paging: Paging
+        query: String,
+        sources: ImmutableSet<SourceId>,
+        paging: Paging,
     ) = Try {
-        httpClient.get(EverythingRequest(input, paging)).body<ArticleResponse>()
+        httpClient.get(EverythingRequest(query, sources, paging)).body<ArticleResponse>()
     }
 
     override suspend fun fetchTopHeadlines(
-        input: String,
-        paging: Paging
+        query: String,
+        sources: ImmutableSet<SourceId>,
+        paging: Paging,
     ) = Try {
-        httpClient.get(TopHeadlinesRequest(input, paging, countryCode)).body<ArticleResponse>()
+        httpClient.get(TopHeadlinesRequest(query, sources, paging, countryCode)).body<ArticleResponse>()
     }
 
     override suspend fun fetchNewsSources() = Try {
@@ -56,7 +60,7 @@ internal class NewsApiImpl(
 }
 
 private fun HttpClient(
-    engine: HttpClientEngineFactory<HttpClientEngineConfig>
+    engine: HttpClientEngineFactory<HttpClientEngineConfig>,
 ) = HttpClient(engine) {
 
     install(ContentNegotiation) {
@@ -72,7 +76,7 @@ private fun HttpClient(
 }
 
 private suspend inline fun <T> Try(
-    ifSuccess: () -> T
+    ifSuccess: () -> T,
 ) = Either(ifSuccess) { it.toAppException() }
 
 private suspend fun Throwable.toAppException(): AppException =
@@ -112,36 +116,6 @@ private fun NetworkException(
     cause: UnresolvedAddressException,
 ) = NetworkException("Network exception occurred, check connectivity", cause)
 
-private fun EverythingRequest(
-    input: String,
-    paging: Paging,
-) = HttpRequestBuilder(
-    scheme = HTTPS.name,
-    host = "newsapi.org",
-    path = "/v2/everything"
-) {
-    with(parameters) {
-        append("apiKey", ApiKey)
-        append("page", paging.nextPage.toString())
-        append("pageSize", paging.resultsPerPage.toString())
-
-        input.toInputQueryMap()
-            .forEach { (k, v) ->
-                append(k, v)
-            }
-    }
-}
-
-enum class Category {
-    Business,
-    Entertainment,
-    General,
-    Health,
-    Science,
-    Sports,
-    Technology
-}
-
 data class Source(
     val id: SourceId,
     val name: SourceName,
@@ -152,17 +126,17 @@ data class Source(
 
 @JvmInline
 value class SourceName(
-    val value: String
+    val value: String,
 )
 
 @JvmInline
 value class SourceDescription(
-    val value: String
+    val value: String,
 )
 
 @JvmInline
 value class SourceId(
-    val value: String
+    val value: String,
 )
 
 private val SourcesRequest = HttpRequestBuilder(
@@ -175,8 +149,25 @@ private val SourcesRequest = HttpRequestBuilder(
     }
 }
 
+private fun EverythingRequest(
+    input: String,
+    sources: ImmutableSet<SourceId>,
+    paging: Paging,
+) = HttpRequestBuilder(
+    scheme = HTTPS.name,
+    host = "newsapi.org",
+    path = "/v2/everything"
+) {
+    with(parameters) {
+        append("apiKey", ApiKey)
+        appendPaging(paging)
+        appendFiltering(input, sources)
+    }
+}
+
 private fun TopHeadlinesRequest(
     input: String,
+    sources: ImmutableSet<SourceId>,
     paging: Paging,
     countryCode: String,
 ) = HttpRequestBuilder(
@@ -186,18 +177,29 @@ private fun TopHeadlinesRequest(
 ) {
     with(parameters) {
         append("apiKey", ApiKey)
-        append("page", paging.nextPage.toString())
-        append("pageSize", paging.resultsPerPage.toString())
         append("country", countryCode)
-
-        input.toInputQueryMap()
-            .forEach { (k, v) ->
-                append(k, v)
-            }
+        appendPaging(paging)
+        appendFiltering(input, sources)
     }
 }
 
-private fun String.toInputQueryMap(): Map<String, String> =
-    if (isEmpty()) emptyMap() else mapOf("q" to this)
+private fun ParametersBuilder.appendPaging(
+    paging: Paging,
+) {
+    append("page", paging.nextPage.toString())
+    append("pageSize", paging.resultsPerPage.toString())
+}
+
+private fun ParametersBuilder.appendFiltering(
+    input: String,
+    sources: ImmutableSet<SourceId>,
+) {
+    if (sources.isNotEmpty()) {
+        append("sources", sources.joinToString(transform = SourceId::value))
+    }
+    if (input.isNotEmpty()) {
+        append("q", input)
+    }
+}
 
 private const val ApiKey = "08a7e13902bf4cffab115365071e3850"

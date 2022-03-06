@@ -45,9 +45,9 @@ fun updateArticles(
         is RefreshArticles -> state.toRefreshUpdate()
         is ArticlesOperationException -> state.toOperationExceptionUpdate(message)
         is ToggleArticleIsFavorite -> state.toToggleFavoriteUpdate(message.article)
-        is OnArticleUpdated -> state.toUpdateAllArticlesUpdate(message.article)
+        is ArticleUpdated -> state.toUpdateAllArticlesUpdate(message.article)
         is OnShareArticle -> state.toShareArticleUpdate(message.article)
-        is OnQueryUpdated -> state.toQueryUpdate(message.query)
+        is FilterUpdated -> state.toFilterUpdate(message.filter)
         is SyncScrollPosition -> state.toSyncScrollStateUpdate(message)
     }
 
@@ -63,11 +63,11 @@ private fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadArtic
 
 private fun ArticlesState.toLoadArticlesQuery(
     paging: Paging
-) = LoadArticlesByQuery(id, filter, paging)
+) = LoadArticlesByFilter(id, filter, paging)
 
 private fun ArticlesState.toLoadUpdate() = run {
     toLoading() command setOfNotNull(
-        toLoadArticlesQuery(FirstPage), filter.toSanitized()?.let(::StoreSearchQuery)
+        toLoadArticlesQuery(FirstPage), filter.toSanitized()?.let(::StoreSearchFilter)
     )
 }
 
@@ -109,10 +109,10 @@ private fun ArticlesState.toShareArticleUpdate(
     article: Article
 ): UpdateWith<ArticlesState, DoShareArticle> = this command DoShareArticle(article)
 
-private fun ArticlesState.toQueryUpdate(
-    input: String
+private fun ArticlesState.toFilterUpdate(
+    filter: Filter
 ): UpdateWith<ArticlesState, ArticlesCommand> =
-    copy(filter = filter.update(input)).noCommand()
+    copy(filter = filter).noCommand()
 
 private fun Article.storeCommand() = if (isFavorite) SaveArticle(this) else RemoveArticle(this)
 

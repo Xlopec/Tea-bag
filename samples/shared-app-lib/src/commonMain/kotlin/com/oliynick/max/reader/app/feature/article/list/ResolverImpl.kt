@@ -19,41 +19,41 @@ import kotlinx.collections.immutable.toPersistentList
 
 fun interface ShareArticle {
     fun share(
-        article: Article
+        article: Article,
     )
 }
 
 fun <Env> ArticlesResolver(
-    shareDelegate: ShareArticle
+    shareDelegate: ShareArticle,
 ): ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage =
     ArticlesResolverImpl(shareDelegate)
 
 class ArticlesResolverImpl<Env>(
-    private val shareDelegate: ShareArticle
+    private val shareDelegate: ShareArticle,
 ) : ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage {
     override suspend fun Env.resolve(
-        command: ArticlesCommand
+        command: ArticlesCommand,
     ): Set<Message> =
         when (command) {
-            is LoadArticlesByQuery -> loadArticles(command)
+            is LoadArticlesByFilter -> loadArticles(command)
             is SaveArticle -> storeArticle(command.article)
             is RemoveArticle -> removeArticle(command.article)
             is DoShareArticle -> sideEffect { shareDelegate.share(command.article) }
-            is StoreSearchQuery -> command sideEffect { storeRecentSearch(filter) }
+            is StoreSearchFilter -> command sideEffect { storeRecentSearch(filter) }
         }
 }
 
 private suspend fun <Env> Env.loadArticles(
-    command: LoadArticlesByQuery
+    command: LoadArticlesByFilter,
 ): Set<ArticlesMessage> where Env : LocalStorage, Env : NewsApi =
     command.effect {
 
-        val (input, type) = filter
+        val (input, type, sources) = filter
 
         when (type) {
-            Regular -> toArticlesMessage(fetchFromEverything(input, paging), command)
-            Favorite -> ArticlesLoaded(command.id, findAllArticles(input))
-            Trending -> toArticlesMessage(fetchTopHeadlines(input, paging), command)
+            Regular -> toArticlesMessage(fetchFromEverything(input, sources, paging), command)
+            Favorite -> ArticlesLoaded(command.id, findAllArticles(filter))
+            Trending -> toArticlesMessage(fetchTopHeadlines(input, sources, paging), command)
         }
     }
 
@@ -61,19 +61,19 @@ private suspend fun LocalStorage.storeArticle(
     article: Article,
 ): Set<ScreenMessage> = effect {
     insertArticle(article)
-    OnArticleUpdated(article)
+    ArticleUpdated(article)
 }
 
 private suspend fun LocalStorage.removeArticle(
     article: Article,
 ): Set<ScreenMessage> = effect {
     deleteArticle(article.url)
-    OnArticleUpdated(article)
+    ArticleUpdated(article)
 }
 
 private suspend fun LocalStorage.toArticlesMessage(
     either: Either<ArticleResponse, AppException>,
-    command: LoadArticlesByQuery
+    command: LoadArticlesByFilter,
 ) =
     either.fold(
         left = { response ->

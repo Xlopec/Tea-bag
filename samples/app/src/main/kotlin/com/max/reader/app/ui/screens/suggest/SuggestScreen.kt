@@ -44,8 +44,8 @@ import com.max.reader.app.ui.screens.suggest.AnimationState.Start
 import com.max.reader.app.ui.screens.suggest.ScreenAnimationState.*
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.app.feature.article.list.FilterUpdated
 import com.oliynick.max.reader.app.feature.article.list.LoadArticles
-import com.oliynick.max.reader.app.feature.article.list.OnQueryUpdated
 import com.oliynick.max.reader.app.feature.navigation.Pop
 import com.oliynick.max.reader.app.feature.network.Source
 import com.oliynick.max.reader.app.feature.suggest.*
@@ -136,9 +136,9 @@ fun SuggestScreen(
                     placeholderText = "Search in articles",
                     onQueryUpdate = {
                         textFieldState = it
-                        messageHandler(/*SuggestionQueryUpdated(state.id, it), */OnQueryUpdated(
+                        messageHandler(/*SuggestionQueryUpdated(state.id, it), */FilterUpdated(
                             state.id,
-                            it.text
+                            state.filter.copy(input = it.text, sources = state.selectedSources)
                         )
                         )
                     },
@@ -163,35 +163,47 @@ fun SuggestScreen(
             }
 
             if (state.suggestions.isNotEmpty()) {
-                item {
-                    Subtitle(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(all = 16.dp)
-                            .alpha(childTransitionState.contentAlpha),
-                        text = "Recent searches"
-                    )
-                }
-
-                items(state.suggestions, { it }) { item ->
-                    SuggestionItem(
-                        modifier = Modifier
-                            .fillParentMaxWidth()
-                            .clickable {
-                                textFieldState = textFieldState.copy(text = item)
-                                messageHandler(OnQueryUpdated(state.id, item))
-                                performSearch = true
-                                closeScreen = true
-                            }
-                            .animateItemPlacement()
-                            .alpha(childTransitionState.contentAlpha)
-                            .padding(all = 16.dp)
-                            .offset(y = childTransitionState.listItemOffsetY),
-                        suggestion = item
-                    )
+                suggestionsSection(
+                    suggestions = state.suggestions,
+                    childTransitionState = childTransitionState
+                ) { suggestion ->
+                    textFieldState = textFieldState.copy(text = suggestion)
+                    messageHandler(FilterUpdated(state.id, state.filter.copy(input = suggestion, sources = state.selectedSources)))
+                    performSearch = true
+                    closeScreen = true
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+private fun LazyListScope.suggestionsSection(
+    suggestions: List<String>,
+    childTransitionState: ChildTransitionState,
+    onSuggestionSelected: (String) -> Unit,
+) {
+    item {
+        Subtitle(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp)
+                .alpha(childTransitionState.contentAlpha),
+            text = "Recent searches"
+        )
+    }
+
+    items(suggestions, { it }) { item ->
+        SuggestionItem(
+            modifier = Modifier
+                .fillParentMaxWidth()
+                .clickable { onSuggestionSelected(item) }
+                .animateItemPlacement()
+                .alpha(childTransitionState.contentAlpha)
+                .padding(all = 16.dp)
+                .offset(y = childTransitionState.listItemOffsetY),
+            suggestion = item
+        )
     }
 }
 
@@ -395,7 +407,7 @@ private fun SuggestionItem(
 
 @Composable
 private fun ClearSelectionButton(
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Text(
         modifier = Modifier

@@ -7,14 +7,14 @@ import kotlin.jvm.JvmInline
 
 sealed interface ArticlesCommand : Command
 
-data class LoadArticlesByQuery(
+data class LoadArticlesByFilter(
     val id: ScreenId,
     val filter: Filter,
     val paging: Paging
 ) : ArticlesCommand
 
 @JvmInline
-value class StoreSearchQuery(
+value class StoreSearchFilter(
     val filter: Filter
 ) : ArticlesCommand
 
