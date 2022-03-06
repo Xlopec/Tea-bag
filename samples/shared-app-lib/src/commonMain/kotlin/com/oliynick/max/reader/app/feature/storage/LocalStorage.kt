@@ -28,9 +28,9 @@ package com.oliynick.max.reader.app.feature.storage
 
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.domain.Article
+import com.oliynick.max.reader.app.feature.article.list.Filter
+import com.oliynick.max.reader.app.feature.article.list.FilterType
 import com.oliynick.max.reader.app.feature.article.list.Page
-import com.oliynick.max.reader.app.feature.article.list.Query
-import com.oliynick.max.reader.app.feature.article.list.QueryType
 import kotlinx.collections.immutable.ImmutableList
 
 interface LocalStorage {
@@ -61,11 +61,11 @@ interface LocalStorage {
     )
 
     suspend fun storeRecentSearch(
-        query: Query
+        filter: Filter
     )
 
     suspend fun recentSearches(
-        type: QueryType
+        type: FilterType
     ): ImmutableList<String>
 
 }

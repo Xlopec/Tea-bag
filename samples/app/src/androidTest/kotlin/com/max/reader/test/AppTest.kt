@@ -44,8 +44,8 @@ import com.oliynick.max.reader.app.domain.Author
 import com.oliynick.max.reader.app.domain.Description
 import com.oliynick.max.reader.app.domain.Title
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
-import com.oliynick.max.reader.app.feature.article.list.Query
-import com.oliynick.max.reader.app.feature.article.list.QueryType.Regular
+import com.oliynick.max.reader.app.feature.article.list.Filter
+import com.oliynick.max.reader.app.feature.article.list.FilterType.Regular
 import com.oliynick.max.reader.app.feature.network.ArticleElement
 import com.oliynick.max.tea.core.component.states
 import org.junit.Rule
@@ -63,7 +63,7 @@ internal class AppTest {
         setContent {
             AppTheme(isDarkModeEnabled = true) {
                 ArticlesScreen(
-                    ArticlesState.newLoading(randomUUID(), Query("Input text", Regular), listOf()),
+                    ArticlesState.newLoading(randomUUID(), Filter("Input text", Regular), listOf()),
                     LazyListState(0, 0),
                     Modifier
                 ) {}

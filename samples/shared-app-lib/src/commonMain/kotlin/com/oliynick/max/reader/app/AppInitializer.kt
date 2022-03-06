@@ -28,10 +28,10 @@ package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
+import com.oliynick.max.reader.app.feature.article.list.Filter
+import com.oliynick.max.reader.app.feature.article.list.FilterType.Regular
 import com.oliynick.max.reader.app.feature.article.list.LoadArticlesByQuery
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
-import com.oliynick.max.reader.app.feature.article.list.Query
-import com.oliynick.max.reader.app.feature.article.list.QueryType.Regular
 import com.oliynick.max.reader.app.feature.navigation.NavigateToFeed
 import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Initializer
@@ -42,7 +42,7 @@ fun AppInitializer(
 ): Initializer<AppState, Command> = Initializer(IO) {
     val initScreen = ArticlesState.newLoading(
         NavigateToFeed.id,
-        Query("android", Regular),
+        Filter("android", Regular),
     )
 
     val settings = Settings(
@@ -56,7 +56,7 @@ fun AppInitializer(
 
 private fun ArticlesState.toInitialQuery(): LoadArticlesByQuery {
     require(loadable.data.isEmpty()) { "non initial state $this" }
-    return LoadArticlesByQuery(id, query, FirstPage)
+    return LoadArticlesByQuery(id, filter, FirstPage)
 }
 
 private fun Initial(

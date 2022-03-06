@@ -1,6 +1,6 @@
 package com.oliynick.max.reader.app.feature.suggest
 
-import com.oliynick.max.reader.app.feature.toPreview
+import com.oliynick.max.reader.app.misc.toPreview
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand

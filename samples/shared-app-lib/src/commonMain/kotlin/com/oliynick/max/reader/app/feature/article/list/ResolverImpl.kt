@@ -8,7 +8,7 @@ import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenMessage
 import com.oliynick.max.reader.app.domain.Article
-import com.oliynick.max.reader.app.feature.article.list.QueryType.*
+import com.oliynick.max.reader.app.feature.article.list.FilterType.*
 import com.oliynick.max.reader.app.feature.network.ArticleElement
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
@@ -39,7 +39,7 @@ class ArticlesResolverImpl<Env>(
             is SaveArticle -> storeArticle(command.article)
             is RemoveArticle -> removeArticle(command.article)
             is DoShareArticle -> sideEffect { shareDelegate.share(command.article) }
-            is StoreSearchQuery -> command sideEffect { storeRecentSearch(query) }
+            is StoreSearchQuery -> command sideEffect { storeRecentSearch(filter) }
         }
 }
 
@@ -48,7 +48,7 @@ private suspend fun <Env> Env.loadArticles(
 ): Set<ArticlesMessage> where Env : LocalStorage, Env : NewsApi =
     command.effect {
 
-        val (input, type) = query
+        val (input, type) = filter
 
         when (type) {
             Regular -> toArticlesMessage(fetchFromEverything(input, paging), command)

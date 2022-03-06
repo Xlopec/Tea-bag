@@ -27,9 +27,9 @@ package com.oliynick.max.reader.app.feature.article.list
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.domain.toggleFavorite
+import com.oliynick.max.reader.app.feature.article.list.FilterType.*
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
-import com.oliynick.max.reader.app.feature.article.list.QueryType.*
-import com.oliynick.max.reader.app.feature.isPreview
+import com.oliynick.max.reader.app.misc.isPreview
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -63,16 +63,16 @@ private fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadArtic
 
 private fun ArticlesState.toLoadArticlesQuery(
     paging: Paging
-) = LoadArticlesByQuery(id, query, paging)
+) = LoadArticlesByQuery(id, filter, paging)
 
 private fun ArticlesState.toLoadUpdate() = run {
     toLoading() command setOfNotNull(
-        toLoadArticlesQuery(FirstPage), query.toSanitized()?.let(::StoreSearchQuery)
+        toLoadArticlesQuery(FirstPage), filter.toSanitized()?.let(::StoreSearchQuery)
     )
 }
 
-private fun Query.toSanitized() =
-    input.takeUnless(CharSequence::isEmpty)?.trim()?.let { Query(it, type) }
+private fun Filter.toSanitized() =
+    input.takeUnless(CharSequence::isEmpty)?.trim()?.let { Filter(it, type) }
 
 private fun ArticlesState.toLoadNextUpdate() =
     if (loadable.isPreview && loadable.hasMore && loadable.data.isNotEmpty() /*todo should we throw an error in this case?*/) {
@@ -86,7 +86,7 @@ private fun ArticlesState.toUpdateAllArticlesUpdate(
     article: Article
 ): UpdateWith<ArticlesState, Command> {
 
-    val updated = when (query.type) {
+    val updated = when (filter.type) {
         Regular, Trending -> updateArticle(article)
         Favorite -> if (article.isFavorite) prependArticle(article) else removeArticle(
             article
@@ -112,7 +112,7 @@ private fun ArticlesState.toShareArticleUpdate(
 private fun ArticlesState.toQueryUpdate(
     input: String
 ): UpdateWith<ArticlesState, ArticlesCommand> =
-    copy(query = query.update(input)).noCommand()
+    copy(filter = filter.update(input)).noCommand()
 
 private fun Article.storeCommand() = if (isFavorite) SaveArticle(this) else RemoveArticle(this)
 

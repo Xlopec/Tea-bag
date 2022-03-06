@@ -1,4 +1,4 @@
-package com.oliynick.max.reader.app.feature
+package com.oliynick.max.reader.app.misc
 
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.feature.article.list.Page

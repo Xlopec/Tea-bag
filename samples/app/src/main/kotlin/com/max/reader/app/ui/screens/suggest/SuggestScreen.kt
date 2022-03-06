@@ -45,12 +45,12 @@ import com.max.reader.app.ui.screens.suggest.AnimationState.Start
 import com.max.reader.app.ui.screens.suggest.ScreenAnimationState.*
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenId
-import com.oliynick.max.reader.app.feature.*
 import com.oliynick.max.reader.app.feature.article.list.LoadArticles
 import com.oliynick.max.reader.app.feature.article.list.OnQueryUpdated
 import com.oliynick.max.reader.app.feature.navigation.Pop
 import com.oliynick.max.reader.app.feature.network.Source
 import com.oliynick.max.reader.app.feature.suggest.*
+import com.oliynick.max.reader.app.misc.*
 import kotlinx.collections.immutable.PersistentList
 
 private enum class ScreenAnimationState {
@@ -531,6 +531,6 @@ private infix fun <T> Transition<T>.transitionedTo(
 ): Boolean = targetState == currentState && targetState == state && !isRunning
 
 private fun TextFieldState.toTextFieldValue() =
-    TextFieldValue(query.input, TextRange(cursorPosition))
+    TextFieldValue(filter.input, TextRange(cursorPosition))
 
 private val SourceImageSize = 60.dp

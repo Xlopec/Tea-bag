@@ -10,10 +10,10 @@ import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.domain.Author
 import com.oliynick.max.reader.app.domain.Description
 import com.oliynick.max.reader.app.domain.Title
-import com.oliynick.max.reader.app.feature.*
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
-import com.oliynick.max.reader.app.feature.article.list.Query
-import com.oliynick.max.reader.app.feature.article.list.QueryType
+import com.oliynick.max.reader.app.feature.article.list.Filter
+import com.oliynick.max.reader.app.feature.article.list.FilterType
+import com.oliynick.max.reader.app.misc.*
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import java.net.URL
@@ -27,7 +27,7 @@ fun ArticleSearchHeaderPreview() {
         ArticleSearchHeader(
             state = ArticlesState(
                 UUID.randomUUID(),
-                Query("some input text", QueryType.Trending),
+                Filter("some input text", FilterType.Trending),
                 Loadable(persistentListOf(), false, Preview)
             ),
             onMessage = {}
@@ -64,7 +64,7 @@ fun ArticlesScreenPreview() {
     ThemedPreview {
         ArticlesScreen(
             state = ArticlesState(
-                QueryType.Trending,
+                FilterType.Trending,
                 PreviewArticles,
                 Preview
             ),
@@ -80,7 +80,7 @@ fun ArticlesScreenLoadingNextPreview() {
     ThemedPreview {
         ArticlesScreen(
             state = ArticlesState(
-                QueryType.Trending,
+                FilterType.Trending,
                 persistentListOf(PreviewArticle),
                 LoadingNext
             ),
@@ -96,7 +96,7 @@ fun ArticlesScreenLoadingPreview() {
     ThemedPreview {
         ArticlesScreen(
             state = ArticlesState(
-                QueryType.Trending,
+                FilterType.Trending,
                 persistentListOf(),
                 Loading
             ),
@@ -112,7 +112,7 @@ fun ArticlesScreenRefreshingPreview() {
     ThemedPreview {
         ArticlesScreen(
             state = ArticlesState(
-                QueryType.Trending,
+                FilterType.Trending,
                 persistentListOf(PreviewArticle),
                 Refreshing
             ),
@@ -135,10 +135,10 @@ fun ArticleItemPreview() {
 }
 
 private fun ArticlesState(
-    type: QueryType,
+    type: FilterType,
     articles: PersistentList<Article>,
     loadableState: LoadableState
-) = ArticlesState(UUID.randomUUID(), Query("input", type), Loadable(articles, false, loadableState))
+) = ArticlesState(UUID.randomUUID(), Filter("input", type), Loadable(articles, false, loadableState))
 
 private val PreviewArticle = Article(
     url = URL("https://www.google.com"),

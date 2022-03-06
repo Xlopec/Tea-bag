@@ -2,14 +2,14 @@ package com.oliynick.max.reader.app.feature.suggest
 
 import com.oliynick.max.reader.app.FullScreen
 import com.oliynick.max.reader.app.ScreenId
-import com.oliynick.max.reader.app.feature.Loadable
-import com.oliynick.max.reader.app.feature.article.list.Query
+import com.oliynick.max.reader.app.feature.article.list.Filter
 import com.oliynick.max.reader.app.feature.network.Source
 import com.oliynick.max.reader.app.feature.network.SourceId
+import com.oliynick.max.reader.app.misc.Loadable
 import kotlinx.collections.immutable.*
 
 data class TextFieldState(
-    val query: Query,
+    val filter: Filter,
     val cursorPosition: Int
 )
 

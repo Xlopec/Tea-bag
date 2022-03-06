@@ -9,13 +9,13 @@ sealed interface ArticlesCommand : Command
 
 data class LoadArticlesByQuery(
     val id: ScreenId,
-    val query: Query,
+    val filter: Filter,
     val paging: Paging
 ) : ArticlesCommand
 
 @JvmInline
 value class StoreSearchQuery(
-    val query: Query
+    val filter: Filter
 ) : ArticlesCommand
 
 data class SaveArticle(

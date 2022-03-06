@@ -60,11 +60,11 @@ import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Article
-import com.oliynick.max.reader.app.feature.*
 import com.oliynick.max.reader.app.feature.article.list.*
-import com.oliynick.max.reader.app.feature.article.list.QueryType.*
+import com.oliynick.max.reader.app.feature.article.list.FilterType.*
 import com.oliynick.max.reader.app.feature.navigation.NavigateToArticleDetails
 import com.oliynick.max.reader.app.feature.navigation.NavigateToSuggestions
+import com.oliynick.max.reader.app.misc.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -117,7 +117,7 @@ private fun LazyListScope.articleItems(
         Text(
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start,
-            text = screen.query.toScreenTitle(),
+            text = screen.filter.toScreenTitle(),
             style = typography.subtitle1
         )
 
@@ -370,11 +370,11 @@ fun ArticleSearchHeader(
     CompositionLocalProvider(
         LocalTextInputService provides null
     ) {
-        var textFieldValue by remember { mutableStateOf(TextFieldValue(state.query.input)) }
+        var textFieldValue by remember { mutableStateOf(TextFieldValue(state.filter.input)) }
 
         SearchHeader(
             inputText = textFieldValue,
-            placeholderText = state.query.type.toSearchHint(),
+            placeholderText = state.filter.type.toSearchHint(),
             onQueryUpdate = { textFieldValue = it },
             onSearch = {
                 keyboardController?.hide()
@@ -385,7 +385,7 @@ fun ArticleSearchHeader(
                     onMessage(
                         NavigateToSuggestions(
                             state.id,
-                            state.query,
+                            state.filter,
                             textFieldValue.selection.start
                         )
                     )
@@ -402,14 +402,14 @@ private val DateFormatter: SimpleDateFormat by lazy {
 private val AppException.readableMessage: String
     get() = message.replaceFirstChar { it.lowercase(Locale.getDefault()) }
 
-private fun Query.toScreenTitle(): String =
+private fun Filter.toScreenTitle(): String =
     when (type) {
         Regular -> "Feed"
         Favorite -> "Favorite"
         Trending -> "Trending"
     }
 
-private fun QueryType.toSearchHint(): String =
+private fun FilterType.toSearchHint(): String =
     when (this) {
         Regular -> "Search in articles"
         Favorite -> "Search in favorite"

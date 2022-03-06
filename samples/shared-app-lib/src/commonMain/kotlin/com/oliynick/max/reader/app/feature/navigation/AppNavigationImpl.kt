@@ -28,18 +28,18 @@ package com.oliynick.max.reader.app.feature.navigation
 
 import com.oliynick.max.reader.app.*
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.feature.Loadable
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
+import com.oliynick.max.reader.app.feature.article.list.Filter
+import com.oliynick.max.reader.app.feature.article.list.FilterType.*
 import com.oliynick.max.reader.app.feature.article.list.LoadArticlesByQuery
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
-import com.oliynick.max.reader.app.feature.article.list.Query
-import com.oliynick.max.reader.app.feature.article.list.QueryType.*
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
 import com.oliynick.max.reader.app.feature.suggest.DoLoadSources
 import com.oliynick.max.reader.app.feature.suggest.DoLoadSuggestions
 import com.oliynick.max.reader.app.feature.suggest.SuggestState
 import com.oliynick.max.reader.app.feature.suggest.TextFieldState
+import com.oliynick.max.reader.app.misc.Loadable
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -69,15 +69,15 @@ fun navigate(
 fun TabNavigation.toTabScreen(): UpdateWith<TabScreen, Command> =
     when (this) {
         NavigateToSettings -> SettingsScreen.noCommand()
-        NavigateToFeed -> ArticlesInitialUpdate(id, Query("android", Regular))
-        NavigateToFavorite -> ArticlesInitialUpdate(id, Query("", Favorite))
-        NavigateToTrending -> ArticlesInitialUpdate(id, Query("", Trending))
+        NavigateToFeed -> ArticlesInitialUpdate(id, Filter("android", Regular))
+        NavigateToFavorite -> ArticlesInitialUpdate(id, Filter("", Favorite))
+        NavigateToTrending -> ArticlesInitialUpdate(id, Filter("", Trending))
     }
 
 private fun ArticlesInitialUpdate(
     id: ScreenId,
-    query: Query
-) = ArticlesState.newLoading(id, query) command LoadArticlesByQuery(id, query, FirstPage)
+    filter: Filter
+) = ArticlesState.newLoading(id, filter) command LoadArticlesByQuery(id, filter, FirstPage)
 
 fun AppState.navigateToTab(
     nav: TabNavigation,
@@ -111,7 +111,7 @@ fun AppState.navigateToArticleDetails(
 fun AppState.navigateToSuggestions(
     nav: NavigateToSuggestions
 ) = pushScreen(SuggestState(nav.id, TextFieldState(nav), Loadable.newLoading())).command(
-    DoLoadSuggestions(nav.id, nav.query.type),
+    DoLoadSuggestions(nav.id, nav.filter.type),
     DoLoadSources(nav.id)
 )
 
@@ -144,4 +144,4 @@ private fun checkInvariants(
 
 private fun TextFieldState(
     nav: NavigateToSuggestions
-) = nav.run { TextFieldState(query, cursorPosition) }
+) = nav.run { TextFieldState(filter, cursorPosition) }

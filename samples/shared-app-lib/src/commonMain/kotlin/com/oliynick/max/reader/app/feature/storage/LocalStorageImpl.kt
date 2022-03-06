@@ -6,9 +6,9 @@ import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.domain.Author
 import com.oliynick.max.reader.app.domain.Description
 import com.oliynick.max.reader.app.domain.Title
+import com.oliynick.max.reader.app.feature.article.list.Filter
+import com.oliynick.max.reader.app.feature.article.list.FilterType
 import com.oliynick.max.reader.app.feature.article.list.Page
-import com.oliynick.max.reader.app.feature.article.list.Query
-import com.oliynick.max.reader.app.feature.article.list.QueryType
 import com.oliynick.max.reader.app.storage.AppDatabase
 import com.oliynick.max.reader.app.storage.ArticlesQueries
 import com.oliynick.max.reader.app.storage.RecentSearchesQueries
@@ -96,16 +96,16 @@ private class LocalStorageImpl(
     }
 
     override suspend fun storeRecentSearch(
-        query: Query,
+        filter: Filter,
     ) = searchesQuery {
         transaction {
-            insert(query.input, query.type.name, now().toMillis())
-            deleteOutdated(query.type.name, query.type.name, 5)
+            insert(filter.input, filter.type.name, now().toMillis())
+            deleteOutdated(filter.type.name, filter.type.name, 5)
         }
     }
 
     override suspend fun recentSearches(
-        type: QueryType,
+        type: FilterType,
     ): ImmutableList<String> = searchesQuery {
         findAllByType(type.name) { value_, _, _ -> value_ }.executeAsList().toPersistentList()
     }

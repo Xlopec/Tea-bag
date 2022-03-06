@@ -30,20 +30,20 @@ import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.domain.Article
-import com.oliynick.max.reader.app.feature.*
+import com.oliynick.max.reader.app.misc.*
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
-enum class QueryType {
+enum class FilterType {
     Regular, Favorite, Trending
 }
 
-data class Query(
+data class Filter(
     val input: String,
-    val type: QueryType,
+    val type: FilterType,
 )
 
-fun Query.update(
+fun Filter.update(
     input: String
 ) = copy(input = input)
 
@@ -60,7 +60,7 @@ typealias ArticlesLoadable = Loadable<PersistentList<Article>>
 
 data class ArticlesState(
     override val id: ScreenId,
-    val query: Query,
+    val filter: Filter,
     val loadable: ArticlesLoadable,
     val scrollState: ScrollState = ScrollState.Initial
 ) : TabScreen {
@@ -71,9 +71,9 @@ data class ArticlesState(
 
         fun newLoading(
             id: ScreenId,
-            query: Query,
+            filter: Filter,
             articles: PersistentList<Article> = persistentListOf(),
-        ) = ArticlesState(id, query, Loadable.newLoading(articles))
+        ) = ArticlesState(id, filter, Loadable.newLoading(articles))
     }
 
 }

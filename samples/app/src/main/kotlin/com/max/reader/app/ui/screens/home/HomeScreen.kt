@@ -51,12 +51,12 @@ import com.max.reader.app.ui.screens.settings.SettingsScreen
 import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.feature.article.list.*
-import com.oliynick.max.reader.app.feature.isPreview
-import com.oliynick.max.reader.app.feature.isRefreshing
 import com.oliynick.max.reader.app.feature.navigation.*
-import com.oliynick.max.reader.app.feature.article.list.QueryType.Favorite as FavoriteQuery
-import com.oliynick.max.reader.app.feature.article.list.QueryType.Regular as RegularQuery
-import com.oliynick.max.reader.app.feature.article.list.QueryType.Trending as TrendingQuery
+import com.oliynick.max.reader.app.misc.isPreview
+import com.oliynick.max.reader.app.misc.isRefreshing
+import com.oliynick.max.reader.app.feature.article.list.FilterType.Favorite as FavoriteQuery
+import com.oliynick.max.reader.app.feature.article.list.FilterType.Regular as RegularQuery
+import com.oliynick.max.reader.app.feature.article.list.FilterType.Trending as TrendingQuery
 
 enum class BottomMenuItem {
     Feed,
@@ -90,7 +90,7 @@ fun HomeScreen(
             bottomBar = {
                 BottomBar(
                     modifier = Modifier.navigationBarsPadding(),
-                    item = state.query.toMenuItem(),
+                    item = state.filter.toMenuItem(),
                     handler = { reselected, nav ->
                         onMessage(nav)
 
@@ -211,7 +211,7 @@ private fun LazyListState.toScrollState() =
 private fun ScrollState.toLazyListState() =
     LazyListState(firstVisibleItemIndex, firstVisibleItemScrollOffset)
 
-private fun Query.toMenuItem() = when (type) {
+private fun Filter.toMenuItem() = when (type) {
     RegularQuery -> Feed
     FavoriteQuery -> Favorite
     TrendingQuery -> Trending
