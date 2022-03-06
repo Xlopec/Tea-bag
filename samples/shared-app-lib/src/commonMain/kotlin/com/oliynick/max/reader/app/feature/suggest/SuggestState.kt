@@ -8,15 +8,12 @@ import com.oliynick.max.reader.app.feature.network.SourceId
 import com.oliynick.max.reader.app.misc.Loadable
 import kotlinx.collections.immutable.*
 
-data class TextFieldState(
-    val filter: Filter,
-    val cursorPosition: Int
-)
+typealias SourcesState = Loadable<PersistentList<Source>>
 
 data class SuggestState(
     override val id: ScreenId,
-    val textFieldState: TextFieldState,
-    val sources: Loadable<PersistentList<Source>>,
+    val filter: Filter,
+    val sources: SourcesState,
     val suggestions: ImmutableList<String> = persistentListOf(),
     val selectedSources: PersistentSet<SourceId> = persistentSetOf(),
 ) : FullScreen

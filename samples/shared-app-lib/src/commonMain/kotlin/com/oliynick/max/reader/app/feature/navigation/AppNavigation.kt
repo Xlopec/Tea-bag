@@ -38,7 +38,6 @@ import com.oliynick.max.reader.app.feature.settings.SettingsScreen
 import com.oliynick.max.reader.app.feature.suggest.DoLoadSources
 import com.oliynick.max.reader.app.feature.suggest.DoLoadSuggestions
 import com.oliynick.max.reader.app.feature.suggest.SuggestState
-import com.oliynick.max.reader.app.feature.suggest.TextFieldState
 import com.oliynick.max.reader.app.misc.Loadable
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
@@ -110,7 +109,7 @@ fun AppState.navigateToArticleDetails(
 
 fun AppState.navigateToSuggestions(
     nav: NavigateToSuggestions
-) = pushScreen(SuggestState(nav.id, TextFieldState(nav), Loadable.newLoading())).command(
+) = pushScreen(SuggestState(nav.id, nav.filter, Loadable.newLoading())).command(
     DoLoadSuggestions(nav.id, nav.filter.type),
     DoLoadSources(nav.id)
 )
@@ -141,7 +140,3 @@ private fun checkInvariants(
         "Fullscreen segment isn't continuous, was $fullScreens for stack ${state.screens}"
     }
 }
-
-private fun TextFieldState(
-    nav: NavigateToSuggestions
-) = nav.run { TextFieldState(filter, cursorPosition) }

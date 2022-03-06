@@ -6,7 +6,6 @@ import com.max.reader.app.ui.theme.ThemedPreview
 import com.oliynick.max.reader.app.feature.article.list.Filter
 import com.oliynick.max.reader.app.feature.article.list.FilterType
 import com.oliynick.max.reader.app.feature.suggest.SuggestState
-import com.oliynick.max.reader.app.feature.suggest.TextFieldState
 import com.oliynick.max.reader.app.misc.Loadable
 import java.util.*
 
@@ -17,7 +16,7 @@ fun SuggestPreview() {
         SuggestScreen(
             state = SuggestState(
                 UUID.randomUUID(),
-                TextFieldState(Filter("Android", FilterType.Regular), 0),
+                Filter("Android", FilterType.Regular),
                 Loadable.newLoading()
             ),
             messageHandler = {})

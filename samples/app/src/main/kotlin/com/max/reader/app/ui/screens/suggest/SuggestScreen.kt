@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -112,7 +111,7 @@ fun SuggestScreen(
         closeScreen = true
     }
 
-    var textFieldState by remember { mutableStateOf(state.textFieldState.toTextFieldValue()) }
+    var textFieldState by remember { mutableStateOf(TextFieldValue(state.filter.input)) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -178,7 +177,12 @@ fun SuggestScreen(
                     SuggestionItem(
                         modifier = Modifier
                             .fillParentMaxWidth()
-                            .clickable { }
+                            .clickable {
+                                textFieldState = textFieldState.copy(text = item)
+                                messageHandler(OnQueryUpdated(state.id, item))
+                                performSearch = true
+                                closeScreen = true
+                            }
                             .animateItemPlacement()
                             .alpha(childTransitionState.contentAlpha)
                             .padding(all = 16.dp)
@@ -529,8 +533,5 @@ private fun Transition<ScreenAnimationState>.childTransitionState(): ChildTransi
 private infix fun <T> Transition<T>.transitionedTo(
     state: T,
 ): Boolean = targetState == currentState && targetState == state && !isRunning
-
-private fun TextFieldState.toTextFieldValue() =
-    TextFieldValue(filter.input, TextRange(cursorPosition))
 
 private val SourceImageSize = 60.dp
