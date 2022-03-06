@@ -40,7 +40,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -49,7 +51,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
@@ -360,7 +361,6 @@ private fun ArticlesError(
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun ArticleSearchHeader(
-    modifier: Modifier = Modifier,
     state: ArticlesState,
     onMessage: (Message) -> Unit,
 ) {
@@ -370,12 +370,10 @@ fun ArticleSearchHeader(
     CompositionLocalProvider(
         LocalTextInputService provides null
     ) {
-        var textFieldValue by remember { mutableStateOf(TextFieldValue(state.filter.input)) }
-
         SearchHeader(
-            inputText = textFieldValue,
+            inputText = state.filter.input,
             placeholderText = state.filter.type.toSearchHint(),
-            onQueryUpdate = { textFieldValue = it },
+            onQueryUpdate = { },
             onSearch = {
                 keyboardController?.hide()
                 onMessage(LoadArticles(state.id))
@@ -386,7 +384,6 @@ fun ArticleSearchHeader(
                         NavigateToSuggestions(
                             state.id,
                             state.filter,
-                            textFieldValue.selection.start
                         )
                     )
                 }
@@ -409,7 +406,7 @@ private fun Filter.toScreenTitle(): String =
         Trending -> "Trending"
     }
 
-private fun FilterType.toSearchHint(): String =
+fun FilterType.toSearchHint(): String =
     when (this) {
         Regular -> "Search in articles"
         Favorite -> "Search in favorite"

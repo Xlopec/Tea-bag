@@ -16,9 +16,9 @@ fun SuggestPreview() {
         SuggestScreen(
             state = SuggestState(
                 UUID.randomUUID(),
-                Filter("Android", FilterType.Regular),
+                Filter(FilterType.Regular, "Android"),
                 Loadable.newLoading()
             ),
-            messageHandler = {})
+            handler = {})
     }
 }

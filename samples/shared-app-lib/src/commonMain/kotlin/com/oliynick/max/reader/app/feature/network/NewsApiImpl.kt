@@ -67,6 +67,7 @@ private fun HttpClient(
         json(json = Json {
             ignoreUnknownKeys = true
             useAlternativeNames = false
+            isLenient = true
         })
     }
 
@@ -86,7 +87,7 @@ private suspend fun Throwable.toAppException(): AppException =
             is ClientRequestException -> raw.toAppException()
             else -> null
         }
-    } ?: InternalException("An internal exception occurred", this)
+    } ?: throw InternalException("An internal exception occurred", this)
 
 private suspend inline fun Throwable.wrap(
     crossinline transform: suspend (Throwable) -> AppException?,

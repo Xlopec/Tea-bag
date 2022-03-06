@@ -68,9 +68,9 @@ fun navigate(
 fun TabNavigation.toTabScreen(): UpdateWith<TabScreen, Command> =
     when (this) {
         NavigateToSettings -> SettingsScreen.noCommand()
-        NavigateToFeed -> ArticlesInitialUpdate(id, Filter("android", Regular))
-        NavigateToFavorite -> ArticlesInitialUpdate(id, Filter("", Favorite))
-        NavigateToTrending -> ArticlesInitialUpdate(id, Filter("", Trending))
+        NavigateToFeed -> ArticlesInitialUpdate(id, Filter(Regular))
+        NavigateToFavorite -> ArticlesInitialUpdate(id, Filter(Favorite))
+        NavigateToTrending -> ArticlesInitialUpdate(id, Filter(Trending))
     }
 
 private fun ArticlesInitialUpdate(

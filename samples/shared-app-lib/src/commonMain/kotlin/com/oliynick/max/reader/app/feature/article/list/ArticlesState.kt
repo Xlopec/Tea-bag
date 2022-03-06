@@ -32,8 +32,8 @@ import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.feature.network.SourceId
 import com.oliynick.max.reader.app.misc.*
-import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -42,9 +42,9 @@ enum class FilterType {
 }
 
 data class Filter(
-    val input: String,
     val type: FilterType,
-    val sources: ImmutableSet<SourceId> = persistentSetOf(),
+    val input: String = "",
+    val sources: PersistentSet<SourceId> = persistentSetOf(),
 )
 
 data class ScrollState(

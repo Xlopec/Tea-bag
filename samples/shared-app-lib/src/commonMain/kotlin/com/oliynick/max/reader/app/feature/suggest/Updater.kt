@@ -11,23 +11,21 @@ fun updateSuggestions(
     state: SuggestState
 ): UpdateWith<SuggestState, SuggestCommand> =
     when(message) {
-        is SuggestionQueryUpdated -> updateQuery(state, message)
         is SuggestionsLoaded -> state.copy(suggestions = message.suggestions).noCommand()
         is SourcesLoaded -> state.copy(sources = state.sources.toPreview(message.sources)).noCommand()
         is LoadSources -> state command DoLoadSources(message.id)
         is ToggleSourceSelection -> {
-            val news = if (state.isSelected(message.source.id)) {
-                state.copy(selectedSources = state.selectedSources.remove(message.source.id))
+
+            val filter = state.filter
+
+            val upd = if (message.sourceId in filter.sources) {
+                filter.copy(sources = filter.sources.remove(message.sourceId))
             } else {
-                state.copy(selectedSources = state.selectedSources.add(message.source.id))
+                filter.copy(sources = filter.sources.add(message.sourceId))
             }
 
-            news.noCommand()
+            state.copy(filter = upd).noCommand()
         }
-        is ClearSelection -> state.copy(selectedSources = persistentHashSetOf()).noCommand()
+        is ClearSelection -> state.copy(filter = state.filter.copy(sources = persistentHashSetOf())).noCommand()
+        is InputChanged -> state.copy(filter = state.filter.copy(input = message.input)).noCommand()
     }
-
-private fun updateQuery(
-    state: SuggestState,
-    message: SuggestionQueryUpdated
-) = state.noCommand()//copy(textFieldState = state.textFieldState.copy(), query = state.query.update(message.query)).noCommand()

@@ -27,7 +27,7 @@ fun ArticleSearchHeaderPreview() {
         ArticleSearchHeader(
             state = ArticlesState(
                 UUID.randomUUID(),
-                Filter("some input text", FilterType.Trending),
+                Filter(FilterType.Trending, "some input text"),
                 Loadable(persistentListOf(), false, Preview)
             ),
             onMessage = {}
@@ -138,7 +138,7 @@ private fun ArticlesState(
     type: FilterType,
     articles: PersistentList<Article>,
     loadableState: LoadableState
-) = ArticlesState(UUID.randomUUID(), Filter("input", type), Loadable(articles, false, loadableState))
+) = ArticlesState(UUID.randomUUID(), Filter(type, "input"), Loadable(articles, false, loadableState))
 
 private val PreviewArticle = Article(
     url = URL("https://www.google.com"),

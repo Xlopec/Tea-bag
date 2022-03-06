@@ -42,7 +42,7 @@ fun AppInitializer(
 ): Initializer<AppState, Command> = Initializer(IO) {
     val initScreen = ArticlesState.newLoading(
         NavigateToFeed.id,
-        Filter("android", Regular),
+        Filter(Regular),
     )
 
     val settings = Settings(

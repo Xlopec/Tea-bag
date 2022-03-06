@@ -72,7 +72,7 @@ private fun ArticlesState.toLoadUpdate() = run {
 }
 
 private fun Filter.toSanitized() =
-    input.takeUnless(CharSequence::isEmpty)?.trim()?.let { Filter(it, type) }
+    input.takeUnless(CharSequence::isEmpty)?.trim()?.let { Filter(type, it) }
 
 private fun ArticlesState.toLoadNextUpdate() =
     if (loadable.isPreview && loadable.hasMore && loadable.data.isNotEmpty() /*todo should we throw an error in this case?*/) {

@@ -46,9 +46,9 @@ class ArticlesResolverImpl<Env>(
 private suspend fun <Env> Env.loadArticles(
     command: LoadArticlesByFilter,
 ): Set<ArticlesMessage> where Env : LocalStorage, Env : NewsApi =
-    command.effect {
+    command effect {
 
-        val (input, type, sources) = filter
+        val (type, input, sources) = filter
 
         when (type) {
             Regular -> toArticlesMessage(fetchFromEverything(input, sources, paging), command)

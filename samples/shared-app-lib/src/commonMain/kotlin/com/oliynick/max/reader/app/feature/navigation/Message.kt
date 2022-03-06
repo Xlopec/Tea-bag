@@ -41,7 +41,6 @@ data class NavigateToArticleDetails(
 data class NavigateToSuggestions(
     val id: ScreenId,
     val filter: Filter,
-    val cursorPosition: Int,
 ) : Navigation
 
 sealed interface TabNavigation : Navigation {

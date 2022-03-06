@@ -32,13 +32,13 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.max.reader.app.ui.misc.RowMessage
 import com.max.reader.app.ui.misc.SearchHeader
+import com.max.reader.app.ui.screens.article.toSearchHint
 import com.max.reader.app.ui.screens.suggest.AnimationState.End
 import com.max.reader.app.ui.screens.suggest.AnimationState.Start
 import com.max.reader.app.ui.screens.suggest.ScreenAnimationState.*
@@ -71,7 +71,7 @@ typealias MessageHandler = (Message) -> Unit
 @Composable
 fun SuggestScreen(
     state: SuggestState,
-    messageHandler: MessageHandler,
+    handler: MessageHandler,
 ) {
     var screenTransitionState by remember { mutableStateOf(Begin) }
     var closeScreen by remember { mutableStateOf(false) }
@@ -93,9 +93,9 @@ fun SuggestScreen(
             focusRequester.freeFocus()
 
             if (performSearch) {
-                messageHandler(LoadArticles(state.id))
+                handler(LoadArticles(state.id))
             }
-            messageHandler(Pop)
+            handler(Pop)
         }
     } else {
         LaunchedEffect(Unit) {
@@ -111,7 +111,9 @@ fun SuggestScreen(
         closeScreen = true
     }
 
-    var textFieldState by remember { mutableStateOf(TextFieldValue(state.filter.input)) }
+    LaunchedEffect(state.filter) {
+        handler(FilterUpdated(state.id, state.filter))
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -132,15 +134,10 @@ fun SuggestScreen(
                             vertical = 16.dp
                         )
                         .focusRequester(focusRequester),
-                    inputText = textFieldState,
-                    placeholderText = "Search in articles",
+                    inputText = state.filter.input,
+                    placeholderText = state.filter.type.toSearchHint(),
                     onQueryUpdate = {
-                        textFieldState = it
-                        messageHandler(/*SuggestionQueryUpdated(state.id, it), */FilterUpdated(
-                            state.id,
-                            state.filter.copy(input = it.text, sources = state.selectedSources)
-                        )
-                        )
+                        handler(InputChanged(state.id, it))
                     },
                     onSearch = {
                         performSearch = true
@@ -157,7 +154,7 @@ fun SuggestScreen(
                     modifier = Modifier.fillParentMaxWidth(),
                     sources = state.sources,
                     childTransitionState = childTransitionState,
-                    handler = messageHandler,
+                    handler = handler,
                     state = state
                 )
             }
@@ -167,8 +164,7 @@ fun SuggestScreen(
                     suggestions = state.suggestions,
                     childTransitionState = childTransitionState
                 ) { suggestion ->
-                    textFieldState = textFieldState.copy(text = suggestion)
-                    messageHandler(FilterUpdated(state.id, state.filter.copy(input = suggestion, sources = state.selectedSources)))
+                    handler(InputChanged(state.id, suggestion))
                     performSearch = true
                     closeScreen = true
                 }
@@ -233,7 +229,7 @@ private fun SourcesSection(
 
             Spacer(Modifier.weight(1f))
 
-            AnimatedVisibility(visible = state.selectedSources.isNotEmpty()) {
+            AnimatedVisibility(visible = state.filter.sources.isNotEmpty()) {
                 ClearSelectionButton(onClick = { handler(ClearSelection(id)) })
             }
         }
@@ -276,7 +272,7 @@ private fun SourcesSection(
                         )
                         loadable == Preview -> sourceItems(
                             sources = sources.data,
-                            onClick = { handler(ToggleSourceSelection(id, it)) },
+                            onClick = { handler(ToggleSourceSelection(id, it.id)) },
                             state = state
                         )
                         else -> shimmerSourceItems(alpha = alpha)
@@ -326,7 +322,7 @@ private fun LazyListScope.sourceItems(
             ) {
                 crossfade(true)
             },
-            checked = state.isSelected(source.id),
+            checked = source.id in state.filter.sources,
             contentDescription = source.name.value,
             onClick = { onClick(source) }
         )
