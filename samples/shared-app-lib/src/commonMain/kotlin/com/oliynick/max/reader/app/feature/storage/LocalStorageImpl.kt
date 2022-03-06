@@ -24,12 +24,12 @@ import kotlinx.coroutines.withContext
 
 fun LocalStorage(
     driver: SqlDriver,
-    settings: Settings = Settings()
+    settings: Settings = Settings(),
 ): LocalStorage = LocalStorageImpl(driver, settings)
 
 private class LocalStorageImpl(
     driver: SqlDriver,
-    private val settings: Settings
+    private val settings: Settings,
 ) : LocalStorage {
 
     private companion object {
@@ -89,35 +89,35 @@ private class LocalStorageImpl(
 
     override suspend fun storeDarkModePreferences(
         appDarkMode: Boolean,
-        syncWithSystemDarkMode: Boolean
+        syncWithSystemDarkMode: Boolean,
     ) = articlesQuery {
         settings[DarkModeEnabledKey] = appDarkMode
         settings[SyncWithSystemDarkModeEnabledKey] = syncWithSystemDarkMode
     }
 
     override suspend fun storeRecentSearch(
-        query: Query
+        query: Query,
     ) = searchesQuery {
         transaction {
-            insert(query.input, now().toMillis(), query.type.name)
-            deleteOutdated(query.type.name, 5)
+            insert(query.input, query.type.name, now().toMillis())
+            deleteOutdated(query.type.name, query.type.name, 5)
         }
     }
 
     override suspend fun recentSearches(
-        type: QueryType
+        type: QueryType,
     ): ImmutableList<String> = searchesQuery {
-        findAllByType(type.name) { _, value_, _, _ -> value_ }.executeAsList().toPersistentList()
+        findAllByType(type.name) { value_, _, _ -> value_ }.executeAsList().toPersistentList()
     }
 
     private suspend inline fun <T> articlesQuery(
-        crossinline block: ArticlesQueries.() -> T
+        crossinline block: ArticlesQueries.() -> T,
     ) = withContext(IO) {
         database.articlesQueries.run(block)
     }
 
     private suspend inline fun <T> searchesQuery(
-        crossinline block: RecentSearchesQueries.() -> T
+        crossinline block: RecentSearchesQueries.() -> T,
     ) = withContext(IO) {
         database.recentSearchesQueries.run(block)
     }
@@ -132,7 +132,7 @@ private fun dbModelToArticle(
     published: Long,
     // this unused arg is needed just to make function signatures match
     @Suppress("UNUSED_PARAMETER") savedOn: Long,
-    isFavorite: Boolean
+    isFavorite: Boolean,
 ): Article = Article(
     url = UrlFor(url),
     title = Title(title),
