@@ -20,6 +20,6 @@ fun SuggestPreview() {
                 TextFieldState(Query("Android", QueryType.Regular), 0),
                 Loadable.newLoading()
             ),
-            onMessage = {})
+            messageHandler = {})
     }
 }

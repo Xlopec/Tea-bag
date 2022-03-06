@@ -5,9 +5,8 @@ import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.feature.Loadable
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.network.Source
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
+import com.oliynick.max.reader.app.feature.network.SourceId
+import kotlinx.collections.immutable.*
 
 data class TextFieldState(
     val query: Query,
@@ -19,4 +18,9 @@ data class SuggestState(
     val textFieldState: TextFieldState,
     val sources: Loadable<PersistentList<Source>>,
     val suggestions: ImmutableList<String> = persistentListOf(),
+    val selectedSources: PersistentSet<SourceId> = persistentSetOf(),
 ) : FullScreen
+
+fun SuggestState.isSelected(
+    id: SourceId
+) = id in selectedSources

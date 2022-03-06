@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons.Default
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.QueryBuilder
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +27,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -40,13 +43,13 @@ import com.max.reader.app.ui.screens.suggest.AnimationState.End
 import com.max.reader.app.ui.screens.suggest.AnimationState.Start
 import com.max.reader.app.ui.screens.suggest.ScreenAnimationState.*
 import com.oliynick.max.reader.app.Message
+import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.feature.*
 import com.oliynick.max.reader.app.feature.article.list.LoadArticles
 import com.oliynick.max.reader.app.feature.article.list.OnQueryUpdated
 import com.oliynick.max.reader.app.feature.navigation.Pop
 import com.oliynick.max.reader.app.feature.network.Source
-import com.oliynick.max.reader.app.feature.suggest.SuggestState
-import com.oliynick.max.reader.app.feature.suggest.TextFieldState
+import com.oliynick.max.reader.app.feature.suggest.*
 import kotlinx.collections.immutable.PersistentList
 
 private enum class ScreenAnimationState {
@@ -54,10 +57,12 @@ private enum class ScreenAnimationState {
 }
 
 operator fun ((Message) -> Unit).invoke(
-    vararg message: Message
+    vararg message: Message,
 ) {
     message.forEach(::invoke)
 }
+
+typealias MessageHandler = (Message) -> Unit
 
 @OptIn(
     ExperimentalMaterialApi::class, ExperimentalFoundationApi::class,
@@ -66,7 +71,7 @@ operator fun ((Message) -> Unit).invoke(
 @Composable
 fun SuggestScreen(
     state: SuggestState,
-    onMessage: (Message) -> Unit,
+    messageHandler: MessageHandler,
 ) {
     var screenTransitionState by remember { mutableStateOf(Begin) }
     var closeScreen by remember { mutableStateOf(false) }
@@ -88,9 +93,9 @@ fun SuggestScreen(
             focusRequester.freeFocus()
 
             if (performSearch) {
-                onMessage(LoadArticles(state.id))
+                messageHandler(LoadArticles(state.id))
             }
-            onMessage(Pop)
+            messageHandler(Pop)
         }
     } else {
         LaunchedEffect(Unit) {
@@ -131,7 +136,7 @@ fun SuggestScreen(
                     placeholderText = "Search in articles",
                     onQueryUpdate = {
                         textFieldState = it
-                        onMessage(/*SuggestionQueryUpdated(state.id, it), */OnQueryUpdated(
+                        messageHandler(/*SuggestionQueryUpdated(state.id, it), */OnQueryUpdated(
                             state.id,
                             it.text
                         )
@@ -148,9 +153,12 @@ fun SuggestScreen(
 
             item {
                 SourcesSection(
+                    id = state.id,
                     modifier = Modifier.fillParentMaxWidth(),
                     sources = state.sources,
-                    childTransitionState = childTransitionState
+                    childTransitionState = childTransitionState,
+                    handler = messageHandler,
+                    state = state
                 )
             }
 
@@ -185,9 +193,12 @@ fun SuggestScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun SourcesSection(
+    state: SuggestState,
+    id: ScreenId,
     modifier: Modifier,
     sources: Loadable<PersistentList<Source>>,
     childTransitionState: ChildTransitionState,
+    handler: MessageHandler,
 ) {
 
     Subtitle(
@@ -201,11 +212,14 @@ private fun SourcesSection(
         LoadingNext -> Unit
         is Exception -> {
             RowMessage(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Red),
                 message = loadable.th.message,
-                onClick = {}
+                onClick = { handler(LoadSources(id)) }
             )
         }
-        Loading, Refreshing -> {
+        Loading, Refreshing, Preview -> {
             val infiniteTransition = rememberInfiniteTransition()
             val alpha by infiniteTransition.animateFloat(
                 initialValue = 0f,
@@ -219,62 +233,74 @@ private fun SourcesSection(
                 )
             )
 
-            Subtitle(
-                modifier = modifier
-                    .padding(all = 16.dp)
-                    .alpha(childTransitionState.contentAlpha),
-                text = "Sources"
-            )
-
             LazyRow(
                 modifier = modifier
-                    .padding(horizontal = 16.dp)
                     .alpha(childTransitionState.contentAlpha)
                     .offset(y = childTransitionState.listItemOffsetY),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                userScrollEnabled = false
+                userScrollEnabled = sources.data.isNotEmpty(),
+                contentPadding = PaddingValues(horizontal = 16.dp),
             ) {
-                // fixme we should know in advance how many items we can place
-                items((1..20).toList(), { it }) {
-                    SourceItem(
-                        modifier = Modifier.alpha(alpha),
-                        painter = ColorPainter(Color.Gray),
-                        contentDescription = null
+
+                when {
+                    loadable == Preview && sources.data.isEmpty() -> emptySourceItems(
+                        onClick = { handler(LoadSources(id)) }
                     )
+                    loadable == Preview -> sourceItems(
+                        sources = sources.data,
+                        onClick = { handler(ToggleSourceSelection(id, it)) },
+                        state = state
+                    )
+                    else -> shimmerSourceItems(alpha = alpha)
                 }
             }
         }
-        Preview -> {
+    }
+}
 
-            if (sources.data.isNotEmpty()) {
+private fun LazyListScope.emptySourceItems(
+    onClick: () -> Unit,
+) {
+    item {
+        RowMessage(
+            modifier = Modifier.fillParentMaxWidth(),
+            message = "No sources found",
+            onClick = onClick
+        )
+    }
+}
 
-                Subtitle(
-                    modifier = modifier
-                        .padding(all = 16.dp)
-                        .alpha(childTransitionState.contentAlpha),
-                    text = "Sources"
-                )
-
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    modifier = modifier
-                        .alpha(childTransitionState.contentAlpha)
-                        .offset(y = childTransitionState.listItemOffsetY),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(sources.data, { it.id.value }) { source ->
-                        SourceItem(
-                            painter = rememberImagePainter(
-                                data = source.logo.toExternalForm(),
-                            ) {
-                                crossfade(true)
-                            },
-                            contentDescription = source.name.value
-                        )
-                    }
-                }
-            }
+private fun LazyListScope.shimmerSourceItems(
+    alpha: Float,
+) {
+    repeat(10) {
+        item(it) {
+            SourceItem(
+                modifier = Modifier.alpha(alpha),
+                painter = ColorPainter(Color.Gray),
+                contentDescription = null,
+                onClick = {}
+            )
         }
+    }
+}
+
+private fun LazyListScope.sourceItems(
+    state: SuggestState,
+    sources: List<Source>,
+    onClick: (Source) -> Unit,
+) {
+    items(sources, { it.id.value }) { source ->
+        SourceItem(
+            painter = rememberImagePainter(
+                data = source.logo.toExternalForm(),
+            ) {
+                crossfade(true)
+            },
+            checked = state.isSelected(source.id),
+            contentDescription = source.name.value,
+            onClick = { onClick(source) }
+        )
     }
 }
 
@@ -283,13 +309,18 @@ private fun SourcesSection(
 private fun SourceItem(
     painter: Painter,
     contentDescription: String?,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    checked: Boolean = false,
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
         Surface(
             elevation = 8.dp,
             shape = CircleShape,
-            onClick = {}
+            onClick = onClick
         ) {
             Image(
                 modifier = Modifier
@@ -299,6 +330,18 @@ private fun SourceItem(
                 painter = painter,
                 contentDescription = contentDescription
             )
+
+            if (checked) {
+                Image(
+                    modifier = Modifier
+                        .size(SourceImageSize)
+                        .background(Color.Black.copy(alpha = 0.65f))
+                        .padding(SourceImageSize * 0.15f),
+                    colorFilter = ColorFilter.tint(Color.White),
+                    imageVector = Default.Check,
+                    contentDescription = contentDescription
+                )
+            }
         }
     }
 }
@@ -459,7 +502,7 @@ private fun Transition<ScreenAnimationState>.childTransitionState(): ChildTransi
 }
 
 private infix fun <T> Transition<T>.transitionedTo(
-    state: T
+    state: T,
 ): Boolean = targetState == currentState && targetState == state && !isRunning
 
 private fun TextFieldState.toTextFieldValue() =

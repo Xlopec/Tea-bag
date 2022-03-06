@@ -33,7 +33,7 @@ dependencyResolutionManagement {
 
             version("ktor", "2.0.0-beta-1")
             version("coroutines", "1.6.0")
-            version("compose", "1.2.0-alpha02")
+            version("compose", "1.2.0-alpha04")
             version("accompanist", "0.24.1-alpha")
             version("sqldelight", "1.5.3")
 
@@ -199,7 +199,7 @@ dependencyResolutionManagement {
                 .to("androidx.compose.compiler", "compiler")
                 .versionRef("compose")
 
-            alias("compose-activity").to("androidx.activity:activity-compose:1.5.0-alpha01")
+            alias("compose-activity").to("androidx.activity:activity-compose:1.5.0-alpha03")
 
             bundle(
                 "compose",
