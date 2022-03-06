@@ -4,6 +4,7 @@ import com.oliynick.max.reader.app.feature.toPreview
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
+import kotlinx.collections.immutable.persistentHashSetOf
 
 fun updateSuggestions(
     message: SuggestMessage,
@@ -23,6 +24,7 @@ fun updateSuggestions(
 
             news.noCommand()
         }
+        is ClearSelection -> state.copy(selectedSources = persistentHashSetOf()).noCommand()
     }
 
 private fun updateQuery(

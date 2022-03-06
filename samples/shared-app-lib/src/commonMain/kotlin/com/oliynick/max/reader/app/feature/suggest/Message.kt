@@ -15,6 +15,11 @@ value class LoadSources(
     override val id: ScreenId,
 ) : SuggestMessage
 
+@JvmInline
+value class ClearSelection(
+    override val id: ScreenId,
+) : SuggestMessage
+
 data class ToggleSourceSelection(
     override val id: ScreenId,
     val source: Source

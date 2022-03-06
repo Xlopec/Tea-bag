@@ -1,6 +1,7 @@
 package com.max.reader.app.ui.screens.suggest
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -201,57 +202,69 @@ private fun SourcesSection(
     handler: MessageHandler,
 ) {
 
-    Subtitle(
-        modifier = modifier
-            .padding(all = 16.dp)
-            .alpha(childTransitionState.contentAlpha),
-        text = "Sources"
-    )
+    Column {
 
-    when (val loadable = sources.loadableState) {
-        LoadingNext -> Unit
-        is Exception -> {
-            RowMessage(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Red),
-                message = loadable.th.message,
-                onClick = { handler(LoadSources(id)) }
+        Row(
+            modifier = modifier
+                .padding(all = 16.dp)
+                .alpha(childTransitionState.contentAlpha),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Subtitle(
+                modifier = Modifier,
+                text = "Sources"
             )
+
+            Spacer(Modifier.weight(1f))
+
+            AnimatedVisibility(visible = state.selectedSources.isNotEmpty()) {
+                ClearSelectionButton(onClick = { handler(ClearSelection(id)) })
+            }
         }
-        Loading, Refreshing, Preview -> {
-            val infiniteTransition = rememberInfiniteTransition()
-            val alpha by infiniteTransition.animateFloat(
-                initialValue = 0f,
-                targetValue = 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = keyframes {
-                        durationMillis = 1000
-                        0.7f at 500
-                    },
-                    repeatMode = RepeatMode.Reverse
+
+        when (val loadable = sources.loadableState) {
+            LoadingNext -> Unit
+            is Exception -> {
+                RowMessage(
+                    modifier = modifier,
+                    message = loadable.th.message,
+                    onClick = { handler(LoadSources(id)) }
                 )
-            )
-
-            LazyRow(
-                modifier = modifier
-                    .alpha(childTransitionState.contentAlpha)
-                    .offset(y = childTransitionState.listItemOffsetY),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                userScrollEnabled = sources.data.isNotEmpty(),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-            ) {
-
-                when {
-                    loadable == Preview && sources.data.isEmpty() -> emptySourceItems(
-                        onClick = { handler(LoadSources(id)) }
+            }
+            Loading, Refreshing, Preview -> {
+                val infiniteTransition = rememberInfiniteTransition()
+                val alpha by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = 1f,
+                    animationSpec = infiniteRepeatable(
+                        animation = keyframes {
+                            durationMillis = 1000
+                            0.7f at 500
+                        },
+                        repeatMode = RepeatMode.Reverse
                     )
-                    loadable == Preview -> sourceItems(
-                        sources = sources.data,
-                        onClick = { handler(ToggleSourceSelection(id, it)) },
-                        state = state
-                    )
-                    else -> shimmerSourceItems(alpha = alpha)
+                )
+
+                LazyRow(
+                    modifier = modifier
+                        .alpha(childTransitionState.contentAlpha)
+                        .offset(y = childTransitionState.listItemOffsetY),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    userScrollEnabled = sources.data.isNotEmpty(),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                ) {
+
+                    when {
+                        loadable == Preview && sources.data.isEmpty() -> emptySourceItems(
+                            onClick = { handler(LoadSources(id)) }
+                        )
+                        loadable == Preview -> sourceItems(
+                            sources = sources.data,
+                            onClick = { handler(ToggleSourceSelection(id, it)) },
+                            state = state
+                        )
+                        else -> shimmerSourceItems(alpha = alpha)
+                    }
                 }
             }
         }
@@ -374,6 +387,18 @@ private fun SuggestionItem(
 
         Text(text = suggestion)
     }
+}
+
+@Composable
+private fun ClearSelectionButton(
+    onClick: () -> Unit
+) {
+    Text(
+        modifier = Modifier
+            .clickable(onClick = onClick),
+        text = "Clear",
+        style = MaterialTheme.typography.subtitle2
+    )
 }
 
 private enum class AnimationState {
