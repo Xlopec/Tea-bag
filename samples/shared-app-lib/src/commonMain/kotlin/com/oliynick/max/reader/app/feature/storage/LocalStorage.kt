@@ -32,6 +32,7 @@ import com.oliynick.max.reader.app.feature.article.list.Filter
 import com.oliynick.max.reader.app.feature.article.list.Filter.Companion.StoreSourcesLimit
 import com.oliynick.max.reader.app.feature.article.list.FilterType
 import com.oliynick.max.reader.app.feature.article.list.Page
+import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.suggest.SuggestState.Companion.StoreSuggestionsLimit
 import kotlinx.collections.immutable.ImmutableList
 
@@ -74,6 +75,6 @@ interface LocalStorage {
 
     suspend fun recentSearches(
         type: FilterType
-    ): ImmutableList<String>
+    ): ImmutableList<Query>
 
 }

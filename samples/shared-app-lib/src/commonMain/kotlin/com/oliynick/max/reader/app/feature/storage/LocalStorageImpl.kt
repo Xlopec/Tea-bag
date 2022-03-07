@@ -9,6 +9,7 @@ import com.oliynick.max.reader.app.domain.Title
 import com.oliynick.max.reader.app.feature.article.list.Filter
 import com.oliynick.max.reader.app.feature.article.list.FilterType
 import com.oliynick.max.reader.app.feature.article.list.Page
+import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.network.SourceId
 import com.oliynick.max.reader.app.storage.AppDatabase
 import com.oliynick.max.reader.app.storage.ArticlesQueries
@@ -68,7 +69,7 @@ private class LocalStorageImpl(
     }
 
     override suspend fun findAllArticles(filter: Filter) = articlesQuery {
-        val wrappedInput = "%${filter.input}%"
+        val wrappedInput = "%${filter.query}%"
 
         Page(
             findAllArticles(wrappedInput, wrappedInput, wrappedInput, ::dbModelToArticle)
@@ -107,7 +108,7 @@ private class LocalStorageImpl(
 
         filtersQuery {
             transaction {
-                insertFilter(type, filter.input)
+                insertFilter(type, filter.query.value)
                 deleteSources(type)
                 filter.sources.take(storeSourcesLimit.toInt()).forEach { sourceId ->
                     insertSource(sourceId.value, type)
@@ -116,7 +117,7 @@ private class LocalStorageImpl(
         }
 
         searchesQuery {
-            insert(filter.input, type, now().toMillis())
+            insert(filter.query.value, type, now().toMillis())
             deleteOutdated(type, type, storeSuggestionsLimit.toLong())
         }
     }
@@ -127,8 +128,8 @@ private class LocalStorageImpl(
 
     override suspend fun recentSearches(
         type: FilterType,
-    ): ImmutableList<String> = searchesQuery {
-        findAllByType(type.ordinal.toLong()) { value_, _, _ -> value_ }
+    ): ImmutableList<Query> = searchesQuery {
+        findAllByType(type.ordinal.toLong()) { value_, _, _ -> Query.of(value_) }
             .executeAsList()
             .toPersistentList()
     }
@@ -160,7 +161,9 @@ private fun FiltersQueries.findSourcesByType(
 
 private fun FiltersQueries.findInputByType(
     type: FilterType,
-) = findFilterByType(type.ordinal.toLong()) { _, input -> input ?: "" }.executeAsOneOrNull() ?: ""
+) = findFilterByType(type.ordinal.toLong()) { _, input -> input ?: "" }
+    .executeAsOneOrNull()
+    .let(Query.Companion::of)
 
 private fun dbModelToArticle(
     url: String,

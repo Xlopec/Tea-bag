@@ -27,5 +27,5 @@ fun updateSuggestions(
             state.copy(filter = upd).noCommand()
         }
         is ClearSelection -> state.copy(filter = state.filter.copy(sources = persistentHashSetOf())).noCommand()
-        is InputChanged -> state.copy(filter = state.filter.copy(input = message.input)).noCommand()
+        is InputChanged -> state.copy(filter = state.filter.copy(query = message.query)).noCommand()
     }

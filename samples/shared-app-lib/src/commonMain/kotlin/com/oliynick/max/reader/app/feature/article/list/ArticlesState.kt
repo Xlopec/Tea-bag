@@ -36,14 +36,29 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlin.jvm.JvmInline
 
 enum class FilterType {
     Regular, Favorite, Trending
 }
 
+@JvmInline
+value class Query private constructor(
+    val value: String
+) {
+    companion object {
+
+        private const val MaxQueryLength = 500U
+
+        fun of(
+            input: String?
+        ) = Query((input ?: "").replace("\n", "").take(MaxQueryLength.toInt()))
+    }
+}
+
 data class Filter(
     val type: FilterType,
-    val input: String = "",
+    val query: Query = Query.of(""),
     val sources: PersistentSet<SourceId> = persistentSetOf(),
 ) {
     companion object {

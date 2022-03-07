@@ -4,6 +4,7 @@ import androidx.compose.ui.test.IdlingResource
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.feature.article.list.Paging
+import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import com.oliynick.max.reader.app.feature.network.SourceId
 import kotlinx.collections.immutable.ImmutableSet
@@ -39,7 +40,7 @@ class TestNewsApi(
     }
 
     override suspend fun fetchFromEverything(
-        query: String,
+        query: Query,
         sources: ImmutableSet<SourceId>,
         paging: Paging
     ): Either<ArticleResponse, AppException> {
@@ -47,7 +48,7 @@ class TestNewsApi(
     }
 
     override suspend fun fetchTopHeadlines(
-        query: String,
+        query: Query,
         sources: ImmutableSet<SourceId>,
         paging: Paging
     ): Either<ArticleResponse, AppException> {

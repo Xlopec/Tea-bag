@@ -5,7 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Default
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.ImeAction.Companion.Search
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsPadding
 
@@ -48,8 +48,8 @@ fun SearchHeader(
                     style = MaterialTheme.typography.subtitle2
                 )
             },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            maxLines = 1,
+            keyboardOptions = KeyboardOptions(imeAction = Search),
+            singleLine = true,
             keyboardActions = KeyboardActions(onSearch = { onSearch() }),
             textStyle = MaterialTheme.typography.subtitle2,
             colors = colors,
@@ -57,7 +57,7 @@ fun SearchHeader(
             trailingIcon = {
                 IconButton(onClick = { onSearch() }) {
                     Icon(
-                        imageVector = Icons.Default.Search,
+                        imageVector = Default.Search,
                         contentDescription = "Search"
                     )
                 }

@@ -36,13 +36,13 @@ import kotlinx.collections.immutable.ImmutableSet
 interface NewsApi {
 
     suspend fun fetchFromEverything(
-        query: String,
+        query: Query,
         sources: ImmutableSet<SourceId>,
         paging: Paging
     ): Either<ArticleResponse, AppException>
 
     suspend fun fetchTopHeadlines(
-        query: String,
+        query: Query,
         sources: ImmutableSet<SourceId>,
         paging: Paging
     ): Either<ArticleResponse, AppException>

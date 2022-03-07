@@ -3,6 +3,7 @@ package com.oliynick.max.reader.app.feature.suggest
 import com.oliynick.max.reader.app.FullScreen
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.feature.article.list.Filter
+import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.network.Source
 import com.oliynick.max.reader.app.misc.Loadable
 import kotlinx.collections.immutable.ImmutableList
@@ -15,7 +16,7 @@ data class SuggestState(
     override val id: ScreenId,
     val filter: Filter,
     val sources: SourcesState,
-    val suggestions: ImmutableList<String> = persistentListOf(),
+    val suggestions: ImmutableList<Query> = persistentListOf(),
 ) : FullScreen {
     companion object {
         const val StoreSuggestionsLimit = 10U

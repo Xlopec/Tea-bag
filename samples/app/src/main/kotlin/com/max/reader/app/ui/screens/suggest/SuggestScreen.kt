@@ -46,6 +46,7 @@ import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.feature.article.list.FilterUpdated
 import com.oliynick.max.reader.app.feature.article.list.LoadArticles
+import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.navigation.Pop
 import com.oliynick.max.reader.app.feature.network.Source
 import com.oliynick.max.reader.app.feature.suggest.*
@@ -134,10 +135,10 @@ fun SuggestScreen(
                             vertical = 16.dp
                         )
                         .focusRequester(focusRequester),
-                    inputText = state.filter.input,
+                    inputText = state.filter.query.value,
                     placeholderText = state.filter.type.toSearchHint(),
                     onQueryUpdate = {
-                        handler(InputChanged(state.id, it))
+                        handler(InputChanged(state.id, Query.of(it)))
                     },
                     onSearch = {
                         performSearch = true
@@ -175,9 +176,9 @@ fun SuggestScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.suggestionsSection(
-    suggestions: List<String>,
+    suggestions: List<Query>,
     childTransitionState: ChildTransitionState,
-    onSuggestionSelected: (String) -> Unit,
+    onSuggestionSelected: (Query) -> Unit,
 ) {
     item {
         Subtitle(
@@ -189,7 +190,7 @@ private fun LazyListScope.suggestionsSection(
         )
     }
 
-    items(suggestions, { it }) { item ->
+    items(suggestions, Query::value) { item ->
         SuggestionItem(
             modifier = Modifier
                 .fillParentMaxWidth()
@@ -387,7 +388,7 @@ private fun Subtitle(
 @Composable
 private fun SuggestionItem(
     modifier: Modifier,
-    suggestion: String,
+    suggestion: Query,
 ) {
     Row(
         modifier = modifier,
@@ -397,7 +398,7 @@ private fun SuggestionItem(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Text(text = suggestion)
+        Text(text = suggestion.value)
     }
 }
 

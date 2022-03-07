@@ -2,6 +2,7 @@ package com.oliynick.max.reader.app.feature.suggest
 
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.ScreenMessage
+import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.network.Source
 import com.oliynick.max.reader.app.feature.network.SourceId
 import kotlinx.collections.immutable.ImmutableList
@@ -13,7 +14,7 @@ sealed interface SuggestMessage : ScreenMessage {
 
 data class InputChanged(
     override val id: ScreenId,
-    val input: String
+    val query: Query
 ) : SuggestMessage
 
 @JvmInline
@@ -33,7 +34,7 @@ data class ToggleSourceSelection(
 
 data class SuggestionsLoaded(
     override val id: ScreenId,
-    val suggestions: ImmutableList<String>,
+    val suggestions: ImmutableList<Query>,
 ) : SuggestMessage
 
 data class SourcesLoaded(

@@ -13,6 +13,7 @@ import com.oliynick.max.reader.app.domain.Title
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.Filter
 import com.oliynick.max.reader.app.feature.article.list.FilterType
+import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.misc.*
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -27,7 +28,7 @@ fun ArticleSearchHeaderPreview() {
         ArticleSearchHeader(
             state = ArticlesState(
                 UUID.randomUUID(),
-                Filter(FilterType.Trending, "some input text"),
+                Filter(FilterType.Trending, Query.of("some input text")),
                 Loadable(persistentListOf(), false, Preview)
             ),
             onMessage = {}
@@ -138,7 +139,7 @@ private fun ArticlesState(
     type: FilterType,
     articles: PersistentList<Article>,
     loadableState: LoadableState
-) = ArticlesState(UUID.randomUUID(), Filter(type, "input"), Loadable(articles, false, loadableState))
+) = ArticlesState(UUID.randomUUID(), Filter(type, Query.of("input")), Loadable(articles, false, loadableState))
 
 private val PreviewArticle = Article(
     url = URL("https://www.google.com"),

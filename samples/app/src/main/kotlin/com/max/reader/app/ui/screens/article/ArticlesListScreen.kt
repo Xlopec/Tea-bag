@@ -371,7 +371,7 @@ fun ArticleSearchHeader(
         LocalTextInputService provides null
     ) {
         SearchHeader(
-            inputText = state.filter.input,
+            inputText = state.filter.query.value,
             placeholderText = state.filter.type.toSearchHint(),
             onQueryUpdate = { },
             onSearch = {

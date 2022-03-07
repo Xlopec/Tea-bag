@@ -11,6 +11,7 @@ import com.oliynick.max.reader.app.InternalException
 import com.oliynick.max.reader.app.NetworkException
 import com.oliynick.max.reader.app.feature.article.list.NewsApi
 import com.oliynick.max.reader.app.feature.article.list.Paging
+import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.nextPage
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -39,7 +40,7 @@ internal class NewsApiImpl(
     private val httpClient by lazy { HttpClient(engine) }
 
     override suspend fun fetchFromEverything(
-        query: String,
+        query: Query,
         sources: ImmutableSet<SourceId>,
         paging: Paging,
     ) = Try {
@@ -47,7 +48,7 @@ internal class NewsApiImpl(
     }
 
     override suspend fun fetchTopHeadlines(
-        query: String,
+        query: Query,
         sources: ImmutableSet<SourceId>,
         paging: Paging,
     ) = Try {
@@ -151,7 +152,7 @@ private val SourcesRequest = HttpRequestBuilder(
 }
 
 private fun EverythingRequest(
-    input: String,
+    query: Query,
     sources: ImmutableSet<SourceId>,
     paging: Paging,
 ) = HttpRequestBuilder(
@@ -162,12 +163,12 @@ private fun EverythingRequest(
     with(parameters) {
         append("apiKey", ApiKey)
         appendPaging(paging)
-        appendFiltering(input, sources)
+        appendFiltering(query.value, sources)
     }
 }
 
 private fun TopHeadlinesRequest(
-    input: String,
+    query: Query,
     sources: ImmutableSet<SourceId>,
     paging: Paging,
     countryCode: String,
@@ -180,7 +181,7 @@ private fun TopHeadlinesRequest(
         append("apiKey", ApiKey)
         append("country", countryCode)
         appendPaging(paging)
-        appendFiltering(input, sources)
+        appendFiltering(query.value, sources)
     }
 }
 
