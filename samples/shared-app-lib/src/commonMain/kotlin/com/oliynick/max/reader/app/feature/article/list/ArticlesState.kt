@@ -78,7 +78,6 @@ data class ArticlesState(
 
 }
 
-// todo replace with immutable collection
 fun ArticlesState.toLoadingNext() =
     copy(loadable = loadable.toLoadingNext())
 
