@@ -88,7 +88,7 @@ private suspend fun Throwable.toAppException(): AppException =
             is ClientRequestException -> raw.toAppException()
             else -> null
         }
-    } ?: throw InternalException("An internal exception occurred", this)
+    } ?: InternalException("An internal exception occurred", this)
 
 private suspend inline fun Throwable.wrap(
     crossinline transform: suspend (Throwable) -> AppException?,
