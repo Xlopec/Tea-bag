@@ -49,6 +49,7 @@ fun updateArticles(
         is OnShareArticle -> state.toShareArticleUpdate(message.article)
         is FilterUpdated -> state.toFilterUpdate(message.filter)
         is SyncScrollPosition -> state.toSyncScrollStateUpdate(message)
+        is FilterLoaded -> state.toLoadUpdate(message.filter)
     }
 
 private fun ArticlesState.toOperationExceptionUpdate(
@@ -62,17 +63,16 @@ private fun ArticlesState.toPreviewUpdate(
 private fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadArticlesQuery(FirstPage)
 
 private fun ArticlesState.toLoadArticlesQuery(
-    paging: Paging
-) = LoadArticlesByFilter(id, filter, paging)
+    paging: Paging,
+    filter: Filter = this.filter,
+) = DoLoadArticles(id, filter, paging)
 
-private fun ArticlesState.toLoadUpdate() = run {
-    toLoading() command setOfNotNull(
-        toLoadArticlesQuery(FirstPage), filter.toSanitized()?.let(::StoreSearchFilter)
-    )
-}
+private fun ArticlesState.toLoadUpdate(
+    newFilter: Filter = filter
+) = toLoading(filter = newFilter) command toLoadArticlesQuery(FirstPage, newFilter)
 
-private fun Filter.toSanitized() =
-    input.takeUnless(CharSequence::isEmpty)?.trim()?.let { Filter(type, it) }
+/*private fun Filter.toSanitized() =
+    input.takeUnless(CharSequence::isEmpty)?.trim()?.let { Filter(type, it) }*/
 
 private fun ArticlesState.toLoadNextUpdate() =
     if (loadable.isPreview && loadable.hasMore && loadable.data.isNotEmpty() /*todo should we throw an error in this case?*/) {
@@ -112,9 +112,9 @@ private fun ArticlesState.toShareArticleUpdate(
 private fun ArticlesState.toFilterUpdate(
     filter: Filter
 ): UpdateWith<ArticlesState, ArticlesCommand> =
-    copy(filter = filter).noCommand()
+    copy(filter = filter) command DoStoreFilter(filter)
 
-private fun Article.storeCommand() = if (isFavorite) SaveArticle(this) else RemoveArticle(this)
+private fun Article.storeCommand() = if (isFavorite) DoSaveArticle(this) else DoRemoveArticle(this)
 
 private fun ArticlesState.toSyncScrollStateUpdate(
     message: SyncScrollPosition

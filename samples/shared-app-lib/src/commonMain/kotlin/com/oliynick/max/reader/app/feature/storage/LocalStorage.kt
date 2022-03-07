@@ -60,9 +60,13 @@ interface LocalStorage {
         syncWithSystemDarkMode: Boolean,
     )
 
-    suspend fun storeRecentSearch(
+    suspend fun storeFilter(
         filter: Filter
     )
+
+    suspend fun findFilter(
+        type: FilterType
+    ) : Filter
 
     suspend fun recentSearches(
         type: FilterType

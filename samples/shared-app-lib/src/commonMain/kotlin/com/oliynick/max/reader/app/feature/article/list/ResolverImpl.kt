@@ -35,16 +35,17 @@ class ArticlesResolverImpl<Env>(
         command: ArticlesCommand,
     ): Set<Message> =
         when (command) {
-            is LoadArticlesByFilter -> loadArticles(command)
-            is SaveArticle -> storeArticle(command.article)
-            is RemoveArticle -> removeArticle(command.article)
+            is DoLoadArticles -> loadArticles(command)
+            is DoSaveArticle -> storeArticle(command.article)
+            is DoRemoveArticle -> removeArticle(command.article)
             is DoShareArticle -> sideEffect { shareDelegate.share(command.article) }
-            is StoreSearchFilter -> command sideEffect { storeRecentSearch(filter) }
+            is DoStoreFilter -> command sideEffect { storeFilter(filter) }
+            is DoLoadFilter -> command effect { FilterLoaded(id, findFilter(type)) }
         }
 }
 
 private suspend fun <Env> Env.loadArticles(
-    command: LoadArticlesByFilter,
+    command: DoLoadArticles,
 ): Set<ArticlesMessage> where Env : LocalStorage, Env : NewsApi =
     command effect {
 
@@ -73,7 +74,7 @@ private suspend fun LocalStorage.removeArticle(
 
 private suspend fun LocalStorage.toArticlesMessage(
     either: Either<ArticleResponse, AppException>,
-    command: LoadArticlesByFilter,
+    command: DoLoadArticles,
 ) =
     either.fold(
         left = { response ->

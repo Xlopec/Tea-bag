@@ -81,8 +81,9 @@ data class ArticlesState(
 fun ArticlesState.toLoadingNext() =
     copy(loadable = loadable.toLoadingNext())
 
-fun ArticlesState.toLoading() =
-    copy(loadable = loadable.toLoading())
+fun ArticlesState.toLoading(
+    filter: Filter = this.filter
+) = copy(filter = filter, loadable = loadable.toLoading())
 
 fun ArticlesState.toRefreshing() =
     copy(loadable = loadable.toRefreshing())

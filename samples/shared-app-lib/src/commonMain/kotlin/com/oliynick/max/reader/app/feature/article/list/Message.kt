@@ -35,6 +35,11 @@ sealed interface ArticlesMessage : ScreenMessage {
     val id: ScreenId?
 }
 
+data class FilterLoaded(
+    override val id: ScreenId,
+    val filter: Filter,
+) : ArticlesMessage
+
 /*@JvmInline value*///see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
 data class LoadNextArticles(
     override val id: ScreenId,

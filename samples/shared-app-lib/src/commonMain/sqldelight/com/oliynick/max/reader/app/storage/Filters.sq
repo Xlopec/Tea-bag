@@ -1,0 +1,31 @@
+CREATE TABLE Filter(
+  type INTEGER NOT NULL PRIMARY KEY, -- tab type
+  input TEXT DEFAULT NULL
+);
+
+CREATE TABLE Source(
+  source TEXT NOT NULL PRIMARY KEY, -- source id
+  type INTEGER NOT NULL,
+  FOREIGN KEY (type) REFERENCES Filter ON DELETE CASCADE
+);
+
+insertFilter:
+INSERT OR REPLACE INTO Filter(type, input)
+VALUES (?, ?);
+
+insertSource:
+INSERT OR REPLACE INTO Source(source, type)
+VALUES (?, ?);
+
+-- API doesn't allow more than 20 sources per request
+deleteSources:
+DELETE FROM Source
+WHERE type = ?;
+
+findAllSourcesByType:
+SELECT * FROM Source
+WHERE type = ?;
+
+findFilterByType:
+SELECT * FROM Filter
+WHERE type = ?;

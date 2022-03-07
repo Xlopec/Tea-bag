@@ -7,22 +7,27 @@ import kotlin.jvm.JvmInline
 
 sealed interface ArticlesCommand : Command
 
-data class LoadArticlesByFilter(
+data class DoLoadArticles(
     val id: ScreenId,
     val filter: Filter,
     val paging: Paging
 ) : ArticlesCommand
 
+data class DoLoadFilter(
+    val id: ScreenId,
+    val type: FilterType
+) : ArticlesCommand
+
 @JvmInline
-value class StoreSearchFilter(
+value class DoStoreFilter(
     val filter: Filter
 ) : ArticlesCommand
 
-data class SaveArticle(
+data class DoSaveArticle(
     val article: Article,
 ) : ArticlesCommand
 
-data class RemoveArticle(
+data class DoRemoveArticle(
     val article: Article,
 ) : ArticlesCommand
 

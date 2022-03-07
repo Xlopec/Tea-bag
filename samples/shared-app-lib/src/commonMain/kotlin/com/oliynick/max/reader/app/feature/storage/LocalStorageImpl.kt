@@ -9,8 +9,10 @@ import com.oliynick.max.reader.app.domain.Title
 import com.oliynick.max.reader.app.feature.article.list.Filter
 import com.oliynick.max.reader.app.feature.article.list.FilterType
 import com.oliynick.max.reader.app.feature.article.list.Page
+import com.oliynick.max.reader.app.feature.network.SourceId
 import com.oliynick.max.reader.app.storage.AppDatabase
 import com.oliynick.max.reader.app.storage.ArticlesQueries
+import com.oliynick.max.reader.app.storage.FiltersQueries
 import com.oliynick.max.reader.app.storage.RecentSearchesQueries
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
@@ -20,6 +22,7 @@ import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.db.use
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.withContext
 
 fun LocalStorage(
@@ -95,13 +98,23 @@ private class LocalStorageImpl(
         settings[SyncWithSystemDarkModeEnabledKey] = syncWithSystemDarkMode
     }
 
-    override suspend fun storeRecentSearch(
+    override suspend fun storeFilter(
         filter: Filter,
-    ) = searchesQuery {
+    ) = filtersQuery {
         transaction {
-            insert(filter.input, filter.type.name, now().toMillis())
-            deleteOutdated(filter.type.name, filter.type.name, 5)
+
+            val type = filter.type.ordinal.toLong()
+
+            insertFilter(type, filter.input)
+            deleteSources(type)
+            filter.sources.forEach { sourceId ->
+                insertSource(sourceId.value, type)
+            }
         }
+    }
+
+    override suspend fun findFilter(type: FilterType): Filter = filtersQuery {
+        Filter(type, findInputByType(type), findSourcesByType(type))
     }
 
     override suspend fun recentSearches(
@@ -121,7 +134,23 @@ private class LocalStorageImpl(
     ) = withContext(IO) {
         database.recentSearchesQueries.run(block)
     }
+
+    private suspend inline fun <T> filtersQuery(
+        crossinline block: FiltersQueries.() -> T,
+    ) = withContext(IO) {
+        database.filtersQueries.run(block)
+    }
 }
+
+private fun FiltersQueries.findSourcesByType(
+    type: FilterType
+) = findAllSourcesByType(type.ordinal.toLong()) { source, _ -> SourceId(source) }
+    .executeAsList()
+    .toPersistentSet()
+
+private fun FiltersQueries.findInputByType(
+    type: FilterType
+) = findFilterByType(type.ordinal.toLong()) { _, input -> input ?: "" }.executeAsOneOrNull() ?: ""
 
 private fun dbModelToArticle(
     url: String,

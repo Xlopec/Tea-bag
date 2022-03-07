@@ -27,11 +27,8 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.feature.article.list.ArticlesState
-import com.oliynick.max.reader.app.feature.article.list.Filter
+import com.oliynick.max.reader.app.feature.article.list.ArticlesInitialUpdate
 import com.oliynick.max.reader.app.feature.article.list.FilterType.Regular
-import com.oliynick.max.reader.app.feature.article.list.LoadArticlesByFilter
-import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.app.feature.navigation.NavigateToFeed
 import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Initializer
@@ -40,10 +37,9 @@ fun AppInitializer(
     systemDarkModeEnabled: Boolean,
     environment: Environment
 ): Initializer<AppState, Command> = Initializer(IO) {
-    val initScreen = ArticlesState.newLoading(
-        NavigateToFeed.id,
-        Filter(Regular),
-    )
+
+    val filter = environment.findFilter(Regular)
+    val (screen, commands) = ArticlesInitialUpdate(NavigateToFeed.id, filter)
 
     val settings = Settings(
         syncWithSystemDarkModeEnabled = environment.isSyncWithSystemDarkModeEnabled(),
@@ -51,15 +47,5 @@ fun AppInitializer(
         userDarkModeEnabled = environment.isDarkModeEnabled()
     )
 
-    Initial(AppState(initScreen, settings), initScreen.toInitialQuery())
+    Initial(AppState(screen, settings), commands)
 }
-
-private fun ArticlesState.toInitialQuery(): LoadArticlesByFilter {
-    require(loadable.data.isEmpty()) { "non initial state $this" }
-    return LoadArticlesByFilter(id, filter, FirstPage)
-}
-
-private fun Initial(
-    appState: AppState,
-    vararg initialCommands: Command,
-) = Initial(appState, setOf(*initialCommands))
