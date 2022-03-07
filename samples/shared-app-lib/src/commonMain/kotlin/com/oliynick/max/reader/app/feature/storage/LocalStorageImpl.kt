@@ -100,16 +100,24 @@ private class LocalStorageImpl(
 
     override suspend fun storeFilter(
         filter: Filter,
-    ) = filtersQuery {
-        transaction {
+        storeSuggestionsLimit: UInt,
+        storeSourcesLimit: UInt,
+    ) {
+        val type = filter.type.ordinal.toLong()
 
-            val type = filter.type.ordinal.toLong()
-
-            insertFilter(type, filter.input)
-            deleteSources(type)
-            filter.sources.forEach { sourceId ->
-                insertSource(sourceId.value, type)
+        filtersQuery {
+            transaction {
+                insertFilter(type, filter.input)
+                deleteSources(type)
+                filter.sources.take(storeSourcesLimit.toInt()).forEach { sourceId ->
+                    insertSource(sourceId.value, type)
+                }
             }
+        }
+
+        searchesQuery {
+            insert(filter.input, type, now().toMillis())
+            deleteOutdated(type, type, storeSuggestionsLimit.toLong())
         }
     }
 
@@ -120,7 +128,9 @@ private class LocalStorageImpl(
     override suspend fun recentSearches(
         type: FilterType,
     ): ImmutableList<String> = searchesQuery {
-        findAllByType(type.name) { value_, _, _ -> value_ }.executeAsList().toPersistentList()
+        findAllByType(type.ordinal.toLong()) { value_, _, _ -> value_ }
+            .executeAsList()
+            .toPersistentList()
     }
 
     private suspend inline fun <T> articlesQuery(
@@ -130,26 +140,26 @@ private class LocalStorageImpl(
     }
 
     private suspend inline fun <T> searchesQuery(
-        crossinline block: RecentSearchesQueries.() -> T,
+        crossinline block: suspend RecentSearchesQueries.() -> T,
     ) = withContext(IO) {
-        database.recentSearchesQueries.run(block)
+        database.recentSearchesQueries.run { block() }
     }
 
     private suspend inline fun <T> filtersQuery(
-        crossinline block: FiltersQueries.() -> T,
+        crossinline block: suspend FiltersQueries.() -> T,
     ) = withContext(IO) {
-        database.filtersQueries.run(block)
+        database.filtersQueries.run { block() }
     }
 }
 
 private fun FiltersQueries.findSourcesByType(
-    type: FilterType
+    type: FilterType,
 ) = findAllSourcesByType(type.ordinal.toLong()) { source, _ -> SourceId(source) }
     .executeAsList()
     .toPersistentSet()
 
 private fun FiltersQueries.findInputByType(
-    type: FilterType
+    type: FilterType,
 ) = findFilterByType(type.ordinal.toLong()) { _, input -> input ?: "" }.executeAsOneOrNull() ?: ""
 
 private fun dbModelToArticle(

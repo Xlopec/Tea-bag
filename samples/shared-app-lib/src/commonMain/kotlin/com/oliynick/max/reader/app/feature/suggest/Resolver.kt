@@ -32,12 +32,12 @@ private class SuggestionsResolverImpl<Env> : SuggestionsResolver<Env>
         command: SuggestCommand
     ): Set<SuggestMessage> =
         when (command) {
-            is DoLoadSuggestions -> resolveSuggestions(command)
+            is DoLoadSuggestions -> resolveRecentSearches(command)
             is DoLoadSources -> resolveSources(command)
         }
 }
 
-private suspend fun LocalStorage.resolveSuggestions(
+private suspend fun LocalStorage.resolveRecentSearches(
     command: DoLoadSuggestions
 ) = command effect {
     SuggestionsLoaded(id, recentSearches(command.type))

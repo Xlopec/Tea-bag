@@ -60,23 +60,23 @@ private fun ArticlesState.toPreviewUpdate(
     page: Page<Article>
 ) = toPreview(page).noCommand()
 
-private fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadArticlesQuery(FirstPage)
+private fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadCommand(FirstPage)
 
-private fun ArticlesState.toLoadArticlesQuery(
+private fun ArticlesState.toLoadCommand(
     paging: Paging,
     filter: Filter = this.filter,
 ) = DoLoadArticles(id, filter, paging)
 
 private fun ArticlesState.toLoadUpdate(
     newFilter: Filter = filter
-) = toLoading(filter = newFilter) command toLoadArticlesQuery(FirstPage, newFilter)
+) = toLoading(filter = newFilter).command(toLoadCommand(FirstPage, newFilter), DoStoreFilter(newFilter))
 
 /*private fun Filter.toSanitized() =
     input.takeUnless(CharSequence::isEmpty)?.trim()?.let { Filter(type, it) }*/
 
 private fun ArticlesState.toLoadNextUpdate() =
     if (loadable.isPreview && loadable.hasMore && loadable.data.isNotEmpty() /*todo should we throw an error in this case?*/) {
-        toLoadingNext() command toLoadArticlesQuery(nextPage())
+        toLoadingNext() command toLoadCommand(nextPage())
     } else {
         // just ignore the command
         noCommand()
@@ -112,7 +112,7 @@ private fun ArticlesState.toShareArticleUpdate(
 private fun ArticlesState.toFilterUpdate(
     filter: Filter
 ): UpdateWith<ArticlesState, ArticlesCommand> =
-    copy(filter = filter) command DoStoreFilter(filter)
+    copy(filter = filter).noCommand()
 
 private fun Article.storeCommand() = if (isFavorite) DoSaveArticle(this) else DoRemoveArticle(this)
 

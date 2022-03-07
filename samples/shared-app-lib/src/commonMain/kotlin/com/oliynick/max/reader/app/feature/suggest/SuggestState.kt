@@ -16,4 +16,8 @@ data class SuggestState(
     val filter: Filter,
     val sources: SourcesState,
     val suggestions: ImmutableList<String> = persistentListOf(),
-) : FullScreen
+) : FullScreen {
+    companion object {
+        const val StoreSuggestionsLimit = 10U
+    }
+}

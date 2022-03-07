@@ -1,6 +1,6 @@
 CREATE TABLE RecentSearches(
   value TEXT NOT NULL,
-  type TEXT NOT NULL, -- tab type
+  type INTEGER NOT NULL, -- tab type
   saved_on INTEGER NOT NULL,
   PRIMARY KEY (value, type)
 );

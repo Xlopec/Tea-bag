@@ -45,7 +45,14 @@ data class Filter(
     val type: FilterType,
     val input: String = "",
     val sources: PersistentSet<SourceId> = persistentSetOf(),
-)
+) {
+    companion object {
+        /**
+         * API doesn't accept more than 20 sources per request
+         */
+        const val StoreSourcesLimit = 20U
+    }
+}
 
 data class ScrollState(
     val firstVisibleItemIndex: Int,

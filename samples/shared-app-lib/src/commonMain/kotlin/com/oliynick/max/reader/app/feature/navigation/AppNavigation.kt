@@ -26,16 +26,14 @@
 
 package com.oliynick.max.reader.app.feature.navigation
 
-import com.oliynick.max.reader.app.AppState
-import com.oliynick.max.reader.app.FullScreen
-import com.oliynick.max.reader.app.TabScreen
+import com.oliynick.max.reader.app.*
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
+import com.oliynick.max.reader.app.feature.article.list.Filter
 import com.oliynick.max.reader.app.feature.suggest.DoLoadSources
 import com.oliynick.max.reader.app.feature.suggest.DoLoadSuggestions
 import com.oliynick.max.reader.app.feature.suggest.SuggestState
 import com.oliynick.max.reader.app.misc.Loadable
-import com.oliynick.max.reader.app.pushScreen
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -45,7 +43,7 @@ import kotlin.Int.Companion.MIN_VALUE
 fun navigate(
     nav: Navigation,
     state: AppState,
-    debug: Boolean = true
+    debug: Boolean = true,
 ): UpdateWith<AppState, Command> {
 // gson serializer breaks singletons identity, thus we should rely on `is` check rather
 // then referential equality
@@ -90,8 +88,14 @@ fun AppState.navigateToArticleDetails(
     nav: NavigateToArticleDetails,
 ) = pushScreen(ArticleDetailsState(nav.id, nav.article)).noCommand()
 
+private fun SuggestionsInitialUpdate(
+    id: ScreenId,
+    filter: Filter,
+) = SuggestState(id, filter, Loadable.newLoading())
+    .command(DoLoadSuggestions(id, filter.type), DoLoadSources(id))
+
 fun AppState.navigateToSuggestions(
-    nav: NavigateToSuggestions
+    nav: NavigateToSuggestions,
 ) = pushScreen(SuggestState(nav.id, nav.filter, Loadable.newLoading())).command(
     DoLoadSuggestions(nav.id, nav.filter.type),
     DoLoadSources(nav.id)
@@ -101,7 +105,7 @@ expect fun AppState.popScreen(): UpdateWith<AppState, Command>
 
 // todo looks like we should extract class for navigation stack
 private fun checkInvariants(
-    state: AppState
+    state: AppState,
 ) {
     check(state.screens.size > 0) { "screens stack can't be empty" }
     check(state.screens.count { it is TabScreen } > 0) {
