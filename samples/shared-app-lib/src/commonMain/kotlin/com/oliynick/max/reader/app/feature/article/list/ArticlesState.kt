@@ -108,7 +108,7 @@ fun ArticlesState.prependArticle(
 fun ArticlesState.removeArticle(
     victim: Article,
 ): ArticlesState =
-    copy(loadable = loadable.updated { articles -> articles.remove { it.url != victim.url } })
+    copy(loadable = loadable.updated { articles -> articles.remove { it.url == victim.url } })
 
 inline fun <E> PersistentList<E>.replace(
     e: E,
