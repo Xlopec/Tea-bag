@@ -226,7 +226,17 @@ dependencyResolutionManagement {
                 .to("com.google.accompanist", "accompanist-swiperefresh")
                 .versionRef("accompanist")
 
-            bundle("accompanist", listOf("accompanist-insets", "accompanist-swiperefresh"))
+            alias("accompanist-flow-layout")
+                .to("com.google.accompanist", "accompanist-flowlayout")
+                .versionRef("accompanist")
+
+            bundle("accompanist",
+                listOf(
+                    "accompanist-insets",
+                    "accompanist-swiperefresh",
+                    "accompanist-flow-layout"
+                )
+            )
 
             // Coil
 

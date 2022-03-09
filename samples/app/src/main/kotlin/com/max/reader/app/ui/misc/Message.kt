@@ -1,6 +1,7 @@
 package com.max.reader.app.ui.misc
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -11,6 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
+import com.google.accompanist.flowlayout.FlowMainAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
 
 @Composable
 fun RowMessage(
@@ -18,18 +22,18 @@ fun RowMessage(
     message: String,
     onClick: () -> Unit,
 ) {
-    Row(
+    FlowRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
+        mainAxisAlignment = FlowMainAxisAlignment.Center,
+        crossAxisAlignment = FlowCrossAxisAlignment.Center,
+        mainAxisSpacing = 16.dp,
+        crossAxisSpacing = 8.dp
     ) {
         Text(
             text = message,
             textAlign = TextAlign.Center
         )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
+        
         IconButton(onClick = onClick) {
             Icon(imageVector = Default.Replay, contentDescription = "Retry")
         }

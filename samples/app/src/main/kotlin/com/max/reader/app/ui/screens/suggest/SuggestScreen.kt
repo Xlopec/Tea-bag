@@ -57,12 +57,6 @@ private enum class ScreenAnimationState {
     Begin, Half, Finish
 }
 
-operator fun ((Message) -> Unit).invoke(
-    vararg message: Message,
-) {
-    message.forEach(::invoke)
-}
-
 typealias MessageHandler = (Message) -> Unit
 
 @OptIn(
@@ -153,7 +147,7 @@ fun SuggestScreen(
                 SourcesSection(
                     id = state.id,
                     modifier = Modifier.fillParentMaxWidth(),
-                    sources = state.sources,
+                    sources = state.sourcesState,
                     childTransitionState = childTransitionState,
                     handler = handler,
                     state = state
@@ -239,7 +233,7 @@ private fun SourcesSection(
             LoadingNext -> Unit
             is Exception -> {
                 RowMessage(
-                    modifier = modifier,
+                    modifier = modifier.padding(horizontal = 16.dp),
                     message = loadable.th.message,
                     onClick = { handler(LoadSources(id)) }
                 )

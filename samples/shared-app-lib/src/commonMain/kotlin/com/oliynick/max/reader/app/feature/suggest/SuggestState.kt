@@ -15,7 +15,7 @@ typealias SourcesState = Loadable<PersistentList<Source>>
 data class SuggestState(
     override val id: ScreenId,
     val filter: Filter,
-    val sources: SourcesState,
+    val sourcesState: SourcesState,
     val suggestions: ImmutableList<Query> = persistentListOf(),
 ) : FullScreen {
     companion object {

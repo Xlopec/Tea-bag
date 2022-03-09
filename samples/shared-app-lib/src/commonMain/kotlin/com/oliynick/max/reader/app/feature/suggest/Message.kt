@@ -1,5 +1,6 @@
 package com.oliynick.max.reader.app.feature.suggest
 
+import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.ScreenMessage
 import com.oliynick.max.reader.app.feature.article.list.Query
@@ -35,6 +36,11 @@ data class ToggleSourceSelection(
 data class SuggestionsLoaded(
     override val id: ScreenId,
     val suggestions: ImmutableList<Query>,
+) : SuggestMessage
+
+data class SourcesLoadException(
+    override val id: ScreenId,
+    val exception: AppException
 ) : SuggestMessage
 
 data class SourcesLoaded(
