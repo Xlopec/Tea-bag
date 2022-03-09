@@ -6,8 +6,8 @@ import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.entities.shared.UrlFor
 import com.oliynick.max.entities.shared.datatypes.fold
 import com.oliynick.max.entities.shared.domain
+import com.oliynick.max.reader.app.domain.Source
 import com.oliynick.max.reader.app.feature.article.list.NewsApi
-import com.oliynick.max.reader.app.feature.network.Source
 import com.oliynick.max.reader.app.feature.network.SourceResponseElement
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.reader.app.misc.mapToPersistentList

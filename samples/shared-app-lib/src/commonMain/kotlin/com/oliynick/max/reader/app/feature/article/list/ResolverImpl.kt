@@ -5,6 +5,7 @@ package com.oliynick.max.reader.app.feature.article.list
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.entities.shared.datatypes.fold
 import com.oliynick.max.reader.app.AppException
+import com.oliynick.max.reader.app.Log
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenMessage
 import com.oliynick.max.reader.app.domain.Article
@@ -46,17 +47,17 @@ class ArticlesResolverImpl<Env>(
 
 private suspend fun <Env> Env.loadArticles(
     command: DoLoadArticles,
-): Set<ArticlesMessage> where Env : LocalStorage, Env : NewsApi =
-    command effect {
+): Set<Message> where Env : LocalStorage, Env : NewsApi {
 
-        val (type, input, sources) = filter
+    val paging = command.paging
+    val (type, input, sources) = command.filter
 
-        when (type) {
-            Regular -> toArticlesMessage(fetchFromEverything(input, sources, paging), command)
-            Favorite -> ArticlesLoaded(command.id, findAllArticles(filter))
-            Trending -> toArticlesMessage(fetchTopHeadlines(input, sources, paging), command)
-        }
+    return when (type) {
+        Regular -> toArticlesMessage(fetchFromEverything(input, sources, paging), command)
+        Favorite -> setOf(ArticlesLoaded(command.id, findAllArticles(command.filter)))
+        Trending -> toArticlesMessage(fetchTopHeadlines(input, sources, paging), command)
     }
+}
 
 private suspend fun LocalStorage.storeArticle(
     article: Article,
@@ -75,16 +76,10 @@ private suspend fun LocalStorage.removeArticle(
 private suspend fun LocalStorage.toArticlesMessage(
     either: Either<ArticleResponse, AppException>,
     command: DoLoadArticles,
-) =
-    either.fold(
-        left = { response ->
-            ArticlesLoaded(
-                command.id,
-                toPage(response, command.paging)
-            )
-        },
-        right = { th -> ArticlesOperationException(command.id, th) }
-    )
+) = either.fold(
+    left = { setOf(ArticlesLoaded(command.id, toPage(it, command.paging))) },
+    right = { setOf(ArticlesOperationException(command.id, it), Log(it, command, command.id)) }
+)
 
 private suspend fun LocalStorage.toPage(
     response: ArticleResponse,

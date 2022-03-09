@@ -3,12 +3,12 @@
 
 package com.oliynick.max.reader.app.feature.network
 
-import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.IO
 import com.oliynick.max.reader.app.InternalException
 import com.oliynick.max.reader.app.NetworkException
+import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.feature.article.list.NewsApi
 import com.oliynick.max.reader.app.feature.article.list.Paging
 import com.oliynick.max.reader.app.feature.article.list.Query
@@ -30,14 +30,13 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
-import kotlin.jvm.JvmInline
 
 internal class NewsApiImpl(
     engine: HttpClientEngineFactory<HttpClientEngineConfig>,
     private val countryCode: String,
 ) : NewsApi {
 
-    private val httpClient by lazy { HttpClient(engine) }
+    private val httpClient by lazy { HttpClient(engine, LogLevel.ALL) }
 
     override suspend fun fetchFromEverything(
         query: Query?,
@@ -62,6 +61,7 @@ internal class NewsApiImpl(
 
 private fun HttpClient(
     engine: HttpClientEngineFactory<HttpClientEngineConfig>,
+    logLevel: LogLevel,
 ) = HttpClient(engine) {
 
     install(ContentNegotiation) {
@@ -73,7 +73,7 @@ private fun HttpClient(
     }
 
     Logging {
-        level = LogLevel.ALL
+        level = logLevel
     }
 }
 
@@ -117,29 +117,6 @@ private fun ClientRequestException.toGenericExceptionDescription() =
 private fun NetworkException(
     cause: UnresolvedAddressException,
 ) = NetworkException("Network exception occurred, check connectivity", cause)
-
-data class Source(
-    val id: SourceId,
-    val name: SourceName,
-    val description: SourceDescription?,
-    val url: Url,
-    val logo: Url,
-)
-
-@JvmInline
-value class SourceName(
-    val value: String,
-)
-
-@JvmInline
-value class SourceDescription(
-    val value: String,
-)
-
-@JvmInline
-value class SourceId(
-    val value: String,
-)
 
 private val SourcesRequest = HttpRequestBuilder(
     scheme = HTTPS.name,

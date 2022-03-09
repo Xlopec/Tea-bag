@@ -27,6 +27,7 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
+import com.oliynick.max.reader.app.command.DoLog
 import com.oliynick.max.reader.app.command.DoStoreDarkMode
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsMessage
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
@@ -69,11 +70,16 @@ private fun updateScreen(
         is ArticleDetailsMessage -> state.updateScreen<ArticleDetailsState>(message.id) { screen ->
             updateArticleDetails(message, screen)
         }
-        is SettingsMessage -> state.updateSettings(message)
+        is SettingsMessage -> state.toSettingsUpdate(message)
+        is Log -> state.toLogUpdate(message)
         else -> error("Unknown screen message, was $message")
     }
 
-private fun AppState.updateSettings(
+private fun AppState.toLogUpdate(
+    message: Log
+) = command(DoLog(this, message.throwable, message.id, message.causedBy))
+
+private fun AppState.toSettingsUpdate(
     message: SettingsMessage,
 ): UpdateWith<AppState, Command> =
     when (message) {

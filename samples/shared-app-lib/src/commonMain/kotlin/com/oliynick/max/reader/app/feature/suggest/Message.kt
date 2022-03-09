@@ -3,9 +3,9 @@ package com.oliynick.max.reader.app.feature.suggest
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.ScreenMessage
+import com.oliynick.max.reader.app.domain.Source
+import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.feature.article.list.Query
-import com.oliynick.max.reader.app.feature.network.Source
-import com.oliynick.max.reader.app.feature.network.SourceId
 import kotlinx.collections.immutable.ImmutableList
 import kotlin.jvm.JvmInline
 

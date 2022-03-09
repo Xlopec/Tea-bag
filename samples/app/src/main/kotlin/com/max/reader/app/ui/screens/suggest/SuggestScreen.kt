@@ -44,11 +44,11 @@ import com.max.reader.app.ui.screens.suggest.AnimationState.Start
 import com.max.reader.app.ui.screens.suggest.ScreenAnimationState.*
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenId
+import com.oliynick.max.reader.app.domain.Source
 import com.oliynick.max.reader.app.feature.article.list.FilterUpdated
 import com.oliynick.max.reader.app.feature.article.list.LoadArticles
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.navigation.Pop
-import com.oliynick.max.reader.app.feature.network.Source
 import com.oliynick.max.reader.app.feature.suggest.*
 import com.oliynick.max.reader.app.misc.*
 import kotlinx.collections.immutable.PersistentList

@@ -24,6 +24,14 @@
 
 package com.oliynick.max.reader.app
 
+import com.oliynick.max.reader.app.command.Command
+
 interface Message
 
 interface ScreenMessage : Message
+
+data class Log(
+    val throwable: Throwable,
+    val causedBy: Command,
+    val id: ScreenId? = null,
+) : ScreenMessage

@@ -1,5 +1,8 @@
 package com.oliynick.max.reader.app.feature.network
 
+import com.oliynick.max.reader.app.domain.SourceDescription
+import com.oliynick.max.reader.app.domain.SourceId
+import com.oliynick.max.reader.app.domain.SourceName
 import com.oliynick.max.reader.app.domain.tryCreate
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

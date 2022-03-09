@@ -30,7 +30,7 @@ import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.domain.Article
-import com.oliynick.max.reader.app.feature.network.SourceId
+import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.misc.*
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet

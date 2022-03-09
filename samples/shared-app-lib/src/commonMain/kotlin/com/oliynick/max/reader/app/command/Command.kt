@@ -24,11 +24,21 @@
 
 package com.oliynick.max.reader.app.command
 
+import com.oliynick.max.reader.app.AppState
+import com.oliynick.max.reader.app.ScreenId
+
 /*sealed*/ interface Command
 
 // App wide commands
 
 object CloseApp : Command
+
+data class DoLog(
+    val state: AppState,
+    val throwable: Throwable,
+    val id: ScreenId?,
+    val causedBy: Command,
+) : Command
 
 data class DoStoreDarkMode(
     val userDarkModeEnabled: Boolean,
