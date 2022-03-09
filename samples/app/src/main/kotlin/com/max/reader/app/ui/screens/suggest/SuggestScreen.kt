@@ -224,8 +224,12 @@ private fun SourcesSection(
 
             Spacer(Modifier.weight(1f))
 
-            AnimatedVisibility(visible = state.filter.sources.isNotEmpty()) {
-                ClearSelectionButton(onClick = { handler(ClearSelection(id)) })
+            val filtersCount = state.filter.sources.size.toUInt()
+
+            AnimatedVisibility(visible = filtersCount > 0U) {
+                ClearSelectionButton(
+                    filtersCount = filtersCount
+                ) { handler(ClearSelection(id)) }
             }
         }
 
@@ -398,12 +402,13 @@ private fun SuggestionItem(
 
 @Composable
 private fun ClearSelectionButton(
+    filtersCount: UInt,
     onClick: () -> Unit,
 ) {
     Text(
         modifier = Modifier
             .clickable(onClick = onClick),
-        text = "Clear",
+        text = if (filtersCount > 0U) "Clear ($filtersCount)" else "Clear",
         style = MaterialTheme.typography.subtitle2
     )
 }
