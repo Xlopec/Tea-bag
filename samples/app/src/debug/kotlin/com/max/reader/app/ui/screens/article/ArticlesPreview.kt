@@ -54,7 +54,8 @@ fun MessagePreview() {
     ThemedPreview {
         ColumnMessage(
             modifier = Modifier,
-            message = "Oops, something went wrong"
+            title = "Oops, something went wrong",
+            message = "Unknown exception",
         ) {}
     }
 }

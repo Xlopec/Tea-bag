@@ -93,6 +93,7 @@ fun ArticlesScreen(
                 state.id,
                 state.loadable.data.isEmpty(),
                 state.loadable.loadableState,
+                state.filter.type,
                 onMessage
             )
         }
@@ -100,7 +101,7 @@ fun ArticlesScreen(
 }
 
 internal fun ArticleTestTag(
-    url: Url
+    url: Url,
 ) = "Article $url"
 
 private fun LazyListScope.articleItems(
@@ -148,6 +149,7 @@ private fun LazyListScope.loadableContent(
     id: ScreenId,
     isEmpty: Boolean,
     loadableState: LoadableState,
+    filterType: FilterType,
     onMessage: MessageHandler,
 ) = item {
 
@@ -166,8 +168,11 @@ private fun LazyListScope.loadableContent(
         is Preview, is Refreshing -> {
             if (isEmpty) {
                 ColumnMessage(
-                    modifier = Modifier.fillParentMaxSize().padding(16.dp),
-                    message = "No articles"
+                    modifier = Modifier
+                        .fillParentMaxSize()
+                        .padding(16.dp),
+                    title = "No articles",
+                    message = filterType.toEmptyStateDescription(),
                 ) {
                     onMessage(LoadArticles(id))
                 }
@@ -248,8 +253,8 @@ fun ArticleItem(
     onMessage: MessageHandler,
 ) {
     Card(
-        elevation = 4.dp,
-        shape = RoundedCornerShape(8.dp),
+        elevation = CardElevation,
+        shape = CardShape,
         onClick = { onMessage(NavigateToArticleDetails(article)) }
     ) {
         Column {
@@ -271,7 +276,9 @@ fun ArticleItem(
 private fun ArticleContents(
     article: Article,
 ) {
-    Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+    Column(
+        modifier = Modifier.padding(horizontal = 8.dp)
+    ) {
 
         Text(
             text = article.title.value,
@@ -332,6 +339,7 @@ fun ArticleActions(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ArticlesError(
     modifier: Modifier,
@@ -340,8 +348,9 @@ private fun ArticlesError(
     onMessage: MessageHandler,
 ) {
     ColumnMessage(
-        modifier,
-        "Failed to load articles, message: '${message.replaceFirstChar { it.lowercase(Locale.getDefault()) }}'"
+        modifier = modifier,
+        title = "Ooops, something went wrong",
+        message = "Failed to load articles, message: '${message.toDisplayErrorMessage()}'",
     ) {
         onMessage(LoadArticles(id))
     }
@@ -381,6 +390,9 @@ fun ArticleSearchHeader(
     }
 }
 
+private val CardElevation = 4.dp
+private val CardShape = RoundedCornerShape(8.dp)
+
 private val DateFormatter: SimpleDateFormat by lazy {
     SimpleDateFormat("dd MMM' at 'hh:mm", Locale.getDefault())
 }
@@ -402,5 +414,13 @@ fun FilterType.toSearchHint(): String =
         Trending -> "Search in trending"
     }
 
+private fun FilterType.toEmptyStateDescription() =
+    when (this) {
+        Regular, Trending -> "There are no articles matching search criteria"
+        Favorite -> "There are no favorite articles. Let's add some"
+    }
+
 private val ArticlesState.hasDataToDisplay: Boolean
     get() = loadable.data.isNotEmpty() && !loadable.isLoading
+
+private fun String.toDisplayErrorMessage() = replaceFirstChar { it.lowercase(Locale.getDefault()) }
