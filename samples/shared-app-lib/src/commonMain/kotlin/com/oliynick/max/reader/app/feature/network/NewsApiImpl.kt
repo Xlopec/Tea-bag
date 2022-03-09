@@ -40,7 +40,7 @@ internal class NewsApiImpl(
     private val httpClient by lazy { HttpClient(engine) }
 
     override suspend fun fetchFromEverything(
-        query: Query,
+        query: Query?,
         sources: ImmutableSet<SourceId>,
         paging: Paging,
     ) = Try {
@@ -48,7 +48,7 @@ internal class NewsApiImpl(
     }
 
     override suspend fun fetchTopHeadlines(
-        query: Query,
+        query: Query?,
         sources: ImmutableSet<SourceId>,
         paging: Paging,
     ) = Try {
@@ -152,7 +152,7 @@ private val SourcesRequest = HttpRequestBuilder(
 }
 
 private fun EverythingRequest(
-    query: Query,
+    query: Query?,
     sources: ImmutableSet<SourceId>,
     paging: Paging,
 ) = HttpRequestBuilder(
@@ -163,12 +163,12 @@ private fun EverythingRequest(
     with(parameters) {
         append("apiKey", ApiKey)
         appendPaging(paging)
-        appendFiltering(query.value, sources)
+        appendFiltering(query, sources)
     }
 }
 
 private fun TopHeadlinesRequest(
-    query: Query,
+    query: Query?,
     sources: ImmutableSet<SourceId>,
     paging: Paging,
     countryCode: String,
@@ -181,7 +181,7 @@ private fun TopHeadlinesRequest(
         append("apiKey", ApiKey)
         append("country", countryCode)
         appendPaging(paging)
-        appendFiltering(query.value, sources)
+        appendFiltering(query, sources)
     }
 }
 
@@ -193,14 +193,14 @@ private fun ParametersBuilder.appendPaging(
 }
 
 private fun ParametersBuilder.appendFiltering(
-    input: String,
+    query: Query?,
     sources: ImmutableSet<SourceId>,
 ) {
     if (sources.isNotEmpty()) {
         append("sources", sources.joinToString(transform = SourceId::value))
     }
-    if (input.isNotEmpty()) {
-        append("q", input)
+    if (query != null) {
+        append("q", query.value)
     }
 }
 

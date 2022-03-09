@@ -14,7 +14,7 @@ sealed interface SuggestMessage : ScreenMessage {
 
 data class InputChanged(
     override val id: ScreenId,
-    val query: Query
+    val query: Query?
 ) : SuggestMessage
 
 @JvmInline

@@ -1,6 +1,15 @@
 package com.oliynick.max.reader.app.misc
 
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+
+inline fun <E, T> Iterable<E>.mapToPersistentList(
+    mapper: (E) -> T,
+) = with(persistentListOf<T>().builder()) { mapTo(this, mapper) }.build()
+
+inline fun <E, T : Any> Iterable<E>.mapNotNullToPersistentList(
+    mapper: (E) -> T?,
+) = with(persistentListOf<T>().builder()) { mapNotNullTo(this, mapper) }.build()
 
 inline fun <E> PersistentList<E>.replace(
     e: E,

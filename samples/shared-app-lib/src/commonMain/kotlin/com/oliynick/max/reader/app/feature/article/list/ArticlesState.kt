@@ -42,6 +42,9 @@ enum class FilterType {
     Regular, Favorite, Trending
 }
 
+/**
+ * Represents user query, never empty
+ */
 @JvmInline
 value class Query private constructor(
     val value: String
@@ -49,16 +52,17 @@ value class Query private constructor(
     companion object {
 
         private const val MaxQueryLength = 500U
+        private const val MinQueryLength = 1U
 
         fun of(
             input: String?
-        ) = Query((input ?: "").replace("\n", "").take(MaxQueryLength.toInt()))
+        ) = input?.coerceIn(MinQueryLength, MaxQueryLength)?.replace("\n", "")?.let(::Query)
     }
 }
 
 data class Filter(
     val type: FilterType,
-    val query: Query = Query.of(""),
+    val query: Query? = null,
     val sources: PersistentSet<SourceId> = persistentSetOf(),
 ) {
     companion object {

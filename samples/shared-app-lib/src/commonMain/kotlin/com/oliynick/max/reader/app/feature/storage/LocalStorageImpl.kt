@@ -11,6 +11,7 @@ import com.oliynick.max.reader.app.feature.article.list.FilterType
 import com.oliynick.max.reader.app.feature.article.list.Page
 import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.network.SourceId
+import com.oliynick.max.reader.app.misc.mapNotNullToPersistentList
 import com.oliynick.max.reader.app.storage.AppDatabase
 import com.oliynick.max.reader.app.storage.ArticlesQueries
 import com.oliynick.max.reader.app.storage.FiltersQueries
@@ -73,7 +74,8 @@ private class LocalStorageImpl(
 
         Page(
             findAllArticles(wrappedInput, wrappedInput, wrappedInput, ::dbModelToArticle)
-                .executeAsList().toPersistentList()
+                .executeAsList()
+                .toPersistentList()
         )
     }
 
@@ -108,7 +110,7 @@ private class LocalStorageImpl(
 
         filtersQuery {
             transaction {
-                insertFilter(type, filter.query.value)
+                insertFilter(type, filter.query?.value)
                 deleteSources(type)
                 filter.sources.take(storeSourcesLimit.toInt()).forEach { sourceId ->
                     insertSource(sourceId.value, type)
@@ -116,9 +118,11 @@ private class LocalStorageImpl(
             }
         }
 
-        searchesQuery {
-            insert(filter.query.value, type, now().toMillis())
-            deleteOutdated(type, type, storeSuggestionsLimit.toLong())
+        if (filter.query != null) {
+            searchesQuery {
+                insert(filter.query.value, type, now().toMillis())
+                deleteOutdated(type, type, storeSuggestionsLimit.toLong())
+            }
         }
     }
 
@@ -129,9 +133,9 @@ private class LocalStorageImpl(
     override suspend fun recentSearches(
         type: FilterType,
     ): ImmutableList<Query> = searchesQuery {
-        findAllByType(type.ordinal.toLong()) { value_, _, _ -> Query.of(value_) }
+        findAllByType(type.ordinal.toLong()) { value_, _, _ -> value_ }
             .executeAsList()
-            .toPersistentList()
+            .mapNotNullToPersistentList(Query::of)
     }
 
     private suspend inline fun <T> articlesQuery(

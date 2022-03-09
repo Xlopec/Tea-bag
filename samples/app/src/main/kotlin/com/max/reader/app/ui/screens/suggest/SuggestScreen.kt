@@ -135,7 +135,7 @@ fun SuggestScreen(
                             vertical = 16.dp
                         )
                         .focusRequester(focusRequester),
-                    inputText = state.filter.query.value,
+                    inputText = state.filter.query?.value ?: "",
                     placeholderText = state.filter.type.toSearchHint(),
                     onQueryUpdate = {
                         handler(InputChanged(state.id, Query.of(it)))

@@ -12,10 +12,10 @@ import com.oliynick.max.reader.app.feature.article.list.FilterType.*
 import com.oliynick.max.reader.app.feature.network.ArticleElement
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
+import com.oliynick.max.reader.app.misc.mapToPersistentList
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
 
 fun interface ShareArticle {
     fun share(
@@ -104,7 +104,7 @@ private suspend fun LocalStorage.toPage(
 private suspend fun LocalStorage.toArticles(
     articles: Iterable<ArticleElement>,
 ): ImmutableList<Article> =
-    articles.map { elem -> toArticle(elem) }.toPersistentList()
+    articles.mapToPersistentList { elem -> toArticle(elem) }
 
 private suspend fun LocalStorage.toArticle(
     element: ArticleElement,

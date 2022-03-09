@@ -40,7 +40,7 @@ class TestNewsApi(
     }
 
     override suspend fun fetchFromEverything(
-        query: Query,
+        query: Query?,
         sources: ImmutableSet<SourceId>,
         paging: Paging
     ): Either<ArticleResponse, AppException> {
@@ -48,7 +48,7 @@ class TestNewsApi(
     }
 
     override suspend fun fetchTopHeadlines(
-        query: Query,
+        query: Query?,
         sources: ImmutableSet<SourceId>,
         paging: Paging
     ): Either<ArticleResponse, AppException> {
