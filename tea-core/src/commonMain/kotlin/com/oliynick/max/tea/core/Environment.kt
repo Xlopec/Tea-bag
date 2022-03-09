@@ -61,7 +61,7 @@ public data class Env<M, S, C>(
  */
 public data class ShareOptions(
     val started: SharingStarted,
-    val replay: UInt,
+    val replay: UInt = 0U,
 )
 
 @ExperimentalTeaApi

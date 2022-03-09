@@ -28,7 +28,9 @@ package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.tea.core.Initializer
+import com.oliynick.max.tea.core.ShareOptions
 import com.oliynick.max.tea.core.component.Component
+import kotlinx.coroutines.flow.SharingStarted
 
 fun AppComponent(
     environment: Environment,
@@ -39,4 +41,5 @@ fun AppComponent(
         resolver = { c -> with(environment) { resolve(c) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment,
+        shareOptions = ShareOptions(SharingStarted.WhileSubscribed())
     )
