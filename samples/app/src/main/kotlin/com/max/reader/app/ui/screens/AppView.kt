@@ -7,6 +7,7 @@ import com.max.reader.BuildConfig
 import com.max.reader.app.ui.misc.LocalLogCompositions
 import com.max.reader.app.ui.screens.article.ArticleDetailsScreen
 import com.max.reader.app.ui.screens.home.HomeScreen
+import com.max.reader.app.ui.screens.suggest.MessageHandler
 import com.max.reader.app.ui.screens.suggest.SuggestScreen
 import com.max.reader.app.ui.theme.AppTheme
 import com.oliynick.max.reader.app.*
@@ -41,7 +42,7 @@ fun AppView(
 @Composable
 fun AppView(
     appState: AppState,
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
 ) {
     AppTheme(
         isDarkModeEnabled = appState.settings.appDarkModeEnabled
@@ -67,7 +68,7 @@ fun AppView(
 private fun TabScreen(
     appState: AppState,
     screen: TabScreen,
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
     content: (@Composable (innerPadding: PaddingValues) -> Unit)? = null
 ) {
     when (screen) {
@@ -80,7 +81,7 @@ private fun TabScreen(
 @Composable
 private fun FullScreen(
     screen: FullScreen,
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
 ) {
     when (screen) {
         is ArticleDetailsState -> ArticleDetailsScreen(screen, onMessage)
@@ -90,7 +91,7 @@ private fun FullScreen(
 
 private fun CoroutineScope.dispatcher(
     messages: FlowCollector<Message>,
-): (Message) -> Unit =
+): MessageHandler =
     { message -> launch { messages.emit(message) } }
 
 @Composable

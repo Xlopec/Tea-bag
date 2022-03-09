@@ -71,9 +71,6 @@ private fun ArticlesState.toLoadUpdate(
     newFilter: Filter = filter
 ) = toLoading(filter = newFilter).command(toLoadCommand(FirstPage, newFilter), DoStoreFilter(newFilter))
 
-/*private fun Filter.toSanitized() =
-    input.takeUnless(CharSequence::isEmpty)?.trim()?.let { Filter(type, it) }*/
-
 private fun ArticlesState.toLoadNextUpdate() =
     if (loadable.isPreview && loadable.hasMore && loadable.data.isNotEmpty() /*todo should we throw an error in this case?*/) {
         toLoadingNext() command toLoadCommand(nextPage())

@@ -48,10 +48,11 @@ import com.max.reader.app.ui.screens.home.BottomMenuItem.Feed
 import com.max.reader.app.ui.screens.home.BottomMenuItem.Settings
 import com.max.reader.app.ui.screens.home.BottomMenuItem.Trending
 import com.max.reader.app.ui.screens.settings.SettingsScreen
+import com.max.reader.app.ui.screens.suggest.MessageHandler
 import com.oliynick.max.reader.app.AppState
-import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.feature.article.list.*
 import com.oliynick.max.reader.app.feature.navigation.*
+import com.oliynick.max.reader.app.misc.isException
 import com.oliynick.max.reader.app.misc.isPreview
 import com.oliynick.max.reader.app.misc.isRefreshing
 import com.oliynick.max.reader.app.feature.article.list.FilterType.Favorite as FavoriteQuery
@@ -68,12 +69,12 @@ enum class BottomMenuItem {
 @Composable
 fun HomeScreen(
     state: ArticlesState,
-    onMessage: (Message) -> Unit,
-    content: (@Composable (innerPadding: PaddingValues) -> Unit)?
+    onMessage: MessageHandler,
+    content: (@Composable (innerPadding: PaddingValues) -> Unit)?,
 ) {
     SwipeRefresh(
         state = rememberSwipeRefreshState(state.loadable.isRefreshing),
-        swipeEnabled = state.loadable.isPreview,
+        swipeEnabled = state.isRefreshable,
         onRefresh = { onMessage(RefreshArticles(state.id)) },
     ) {
         val scrollTrigger = remember(state.id) { mutableStateOf(0) }
@@ -118,7 +119,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreen(
     state: AppState,
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -216,3 +217,6 @@ private fun Filter.toMenuItem() = when (type) {
     FavoriteQuery -> Favorite
     TrendingQuery -> Trending
 }
+
+private val ArticlesState.isRefreshable: Boolean
+    get() = loadable.data.isNotEmpty() && (loadable.isPreview || loadable.isException)

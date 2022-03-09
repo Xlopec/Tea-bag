@@ -261,7 +261,7 @@ private fun JTree.showActionPopup(
     e: MouseEvent,
     id: ComponentId,
     project: Project,
-    onAction: (Message) -> Unit
+    onAction: MessageHandler
 ) {
     val row = getClosestRowForLocation(e.x, e.y)
 
@@ -303,7 +303,7 @@ private fun ValuePopup(
 
 private fun SnapshotsPopup(
     id: ComponentId,
-    onAction: (Message) -> Unit
+    onAction: MessageHandler
 ): JPopupMenu = JBPopupMenu("Snapshots").apply {
     add(JBMenuItem("Delete all", RemoveIcon).apply {
         addActionListener {
@@ -315,7 +315,7 @@ private fun SnapshotsPopup(
 private fun SnapshotPopup(
     component: ComponentId,
     snapshot: FilteredSnapshot,
-    onAction: (Message) -> Unit
+    onAction: MessageHandler
 ): JPopupMenu =
     JBPopupMenu("Snapshot ${snapshot.meta.id.value}").apply {
         add(JBMenuItem(
@@ -337,7 +337,7 @@ private fun SnapshotPopup(
 private fun MessagePopup(
     componentId: ComponentId,
     snapshotId: SnapshotId,
-    onAction: (Message) -> Unit
+    onAction: MessageHandler
 ): JPopupMenu =
     JBPopupMenu().apply {
         add(JBMenuItem("Apply this message", UpdateRunningAppIcon).apply {
@@ -350,7 +350,7 @@ private fun MessagePopup(
 private fun StatePopup(
     componentId: ComponentId,
     snapshotId: SnapshotId,
-    onAction: (Message) -> Unit
+    onAction: MessageHandler
 ): JPopupMenu =
     JBPopupMenu().apply {
         add(JBMenuItem("Apply this state", UpdateRunningAppIcon).apply {

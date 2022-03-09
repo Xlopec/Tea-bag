@@ -36,7 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.oliynick.max.reader.app.Message
+import com.max.reader.app.ui.screens.suggest.MessageHandler
 import com.oliynick.max.reader.app.Settings
 import com.oliynick.max.reader.app.feature.settings.ToggleDarkMode
 
@@ -44,7 +44,7 @@ import com.oliynick.max.reader.app.feature.settings.ToggleDarkMode
 fun SettingsScreen(
     innerPadding: PaddingValues,
     settings: Settings,
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
 ) {
     Column(
         modifier = Modifier
@@ -95,7 +95,7 @@ private fun SwitchItem(
             .fillMaxWidth()
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
 
         Icon(

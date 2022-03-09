@@ -91,14 +91,14 @@ fun Plugin(
 
 fun CoroutineScope.dispatcher(
     messages: FlowCollector<Message>,
-): (Message) -> Unit =
+): MessageHandler =
     { message -> launch { messages.emit(message) } }
 
 @Composable
 private fun Plugin(
     project: Project,
     state: State,
-    events: (Message) -> Unit,
+    events: MessageHandler,
 ) {
     Column(
         modifier = Modifier
@@ -131,7 +131,7 @@ private fun Plugin(
 private fun ComponentsView(
     project: Project,
     pluginState: Started,
-    events: (Message) -> Unit
+    events: MessageHandler
 ) {
     require(pluginState.debugState.components.isNotEmpty())
 
@@ -160,7 +160,7 @@ private fun ComponentsView(
 @Composable
 private fun SettingsFields(
     state: State,
-    events: (Message) -> Unit,
+    events: MessageHandler,
 ) {
     ValidatedTextField(
         validated = state.settings.host,
@@ -191,7 +191,7 @@ private fun SettingsFields(
 private fun BottomActionMenu(
     project: Project,
     state: State,
-    events: (Message) -> Unit,
+    events: MessageHandler,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -244,7 +244,7 @@ private fun ActionButton(
 }
 
 private fun Project.handlerSessionImport(
-    events: (Message) -> Unit
+    events: MessageHandler
 ) {
     chooseImportSessionFile { file ->
         events(ImportSession(file))
@@ -253,7 +253,7 @@ private fun Project.handlerSessionImport(
 
 private fun Project.handleSessionExport(
     state: State,
-    events: (Message) -> Unit
+    events: MessageHandler
 ) {
     val componentIds = (state as Started).debugState.componentIds
     // if there is no ambiguity regarding what session we should store - don't show chooser popup

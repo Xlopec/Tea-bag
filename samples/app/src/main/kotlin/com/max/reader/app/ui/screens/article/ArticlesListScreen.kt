@@ -56,9 +56,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.max.reader.app.ui.misc.ColumnMessage
 import com.max.reader.app.ui.misc.SearchHeader
+import com.max.reader.app.ui.screens.suggest.MessageHandler
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.AppException
-import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.feature.article.list.*
@@ -76,9 +76,8 @@ fun ArticlesScreen(
     state: ArticlesState,
     listState: LazyListState,
     modifier: Modifier = Modifier,
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
 ) {
-
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -90,7 +89,7 @@ fun ArticlesScreen(
                 articleItems(state, onMessage)
             }
 
-            transientContent(
+            loadableContent(
                 state.id,
                 state.loadable.data.isEmpty(),
                 state.loadable.loadableState,
@@ -106,7 +105,7 @@ internal fun ArticleTestTag(
 
 private fun LazyListScope.articleItems(
     screen: ArticlesState,
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
     onLastElement: () -> Unit = { onMessage(LoadNextArticles(screen.id)) },
 ) {
 
@@ -121,8 +120,6 @@ private fun LazyListScope.articleItems(
             text = screen.filter.toScreenTitle(),
             style = typography.subtitle1
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 
     itemsIndexed(articles, { _, item -> item.url.toExternalForm() }) { index, article ->
@@ -137,10 +134,6 @@ private fun LazyListScope.articleItems(
                 onMessage = onMessage
             )
 
-            if (index != articles.lastIndex) {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
             if (index == articles.lastIndex) {
                 DisposableEffect(Unit) {
                     onLastElement()
@@ -151,11 +144,11 @@ private fun LazyListScope.articleItems(
     }
 }
 
-private fun LazyListScope.transientContent(
+private fun LazyListScope.loadableContent(
     id: ScreenId,
     isEmpty: Boolean,
     loadableState: LoadableState,
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
 ) = item {
 
     when (loadableState) {
@@ -168,7 +161,6 @@ private fun LazyListScope.transientContent(
             )
         is Loading -> ArticlesProgress(modifier = Modifier.fillParentMaxSize())
         is LoadingNext -> {
-            Spacer(modifier = Modifier.height(16.dp))
             ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
         }
         is Preview, is Refreshing -> {
@@ -203,7 +195,7 @@ private fun ArticlesProgress(
 private fun ArticlesContent(
     listState: LazyListState,
     screen: ArticlesState,
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
     children: LazyListScope.() -> Unit,
 ) {
     LazyColumn(
@@ -211,14 +203,11 @@ private fun ArticlesContent(
         state = listState,
         contentPadding = PaddingValues(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         userScrollEnabled = screen.loadable.data.isNotEmpty()
     ) {
 
-        item {
-            ArticleSearchHeader(state = screen, onMessage = onMessage)
-
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+        item { ArticleSearchHeader(state = screen, onMessage = onMessage) }
 
         children()
     }
@@ -256,7 +245,7 @@ private fun ArticleImage(
 fun ArticleItem(
     screenId: ScreenId,
     article: Article,
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
 ) {
     Card(
         elevation = 4.dp,
@@ -314,7 +303,7 @@ private fun ArticleContents(
 
 @Composable
 fun ArticleActions(
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
     article: Article,
     screenId: ScreenId,
 ) {
@@ -348,7 +337,7 @@ private fun ArticlesError(
     modifier: Modifier,
     id: ScreenId,
     message: String,
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
 ) {
     ColumnMessage(
         modifier,
@@ -362,7 +351,7 @@ private fun ArticlesError(
 @OptIn(ExperimentalComposeUiApi::class)
 fun ArticleSearchHeader(
     state: ArticlesState,
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
 ) {
 
     val keyboardController = LocalSoftwareKeyboardController.current

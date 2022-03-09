@@ -51,7 +51,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import com.max.reader.app.ui.misc.ProgressInsetAwareTopAppBar
-import com.oliynick.max.reader.app.Message
+import com.max.reader.app.ui.screens.suggest.MessageHandler
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
 import com.oliynick.max.reader.app.feature.article.details.OpenInBrowser
 import com.oliynick.max.reader.app.feature.navigation.Pop
@@ -59,7 +59,7 @@ import com.oliynick.max.reader.app.feature.navigation.Pop
 @Composable
 fun ArticleDetailsScreen(
     screen: ArticleDetailsState,
-    onMessage: (Message) -> Unit,
+    onMessage: MessageHandler,
 ) {
     val (canGoBack, backStackUpdater) = remember(screen.id) { mutableStateOf(false) }
     val (progress, loadProgressUpdater) = remember(screen.id) { mutableStateOf(0) }

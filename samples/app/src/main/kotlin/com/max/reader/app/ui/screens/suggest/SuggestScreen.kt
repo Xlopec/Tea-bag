@@ -386,7 +386,7 @@ private fun SuggestionItem(
 ) {
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(imageVector = Default.QueryBuilder, contentDescription = null)
 

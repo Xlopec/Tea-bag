@@ -45,6 +45,9 @@ val Loadable<*>.isRefreshing: Boolean
 val Loadable<*>.isPreview: Boolean
     get() = loadableState === Preview
 
+val Loadable<*>.isException: Boolean
+    get() = loadableState is Exception
+
 inline fun <T> Loadable<T>.updated(
     how: (T) -> T
 ) = copy(data = how(data))
