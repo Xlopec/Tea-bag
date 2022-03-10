@@ -12,7 +12,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 typealias SourcesState = Loadable<PersistentList<Source>>
 
-data class SuggestState(
+data class FiltersState(
     override val id: ScreenId,
     val filter: Filter,
     val sourcesState: SourcesState,

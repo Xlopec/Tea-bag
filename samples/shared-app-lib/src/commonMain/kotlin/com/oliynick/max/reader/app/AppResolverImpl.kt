@@ -9,15 +9,15 @@ import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsCommand
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsResolver
 import com.oliynick.max.reader.app.feature.article.list.ArticlesCommand
 import com.oliynick.max.reader.app.feature.article.list.ArticlesResolver
-import com.oliynick.max.reader.app.feature.filter.SuggestCommand
-import com.oliynick.max.reader.app.feature.filter.SuggestionsResolver
+import com.oliynick.max.reader.app.feature.filter.FilterCommand
+import com.oliynick.max.reader.app.feature.filter.FiltersResolver
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.tea.core.component.sideEffect
 
 fun <Env> AppResolver(): AppResolver<Env> where
         Env : ArticlesResolver<Env>,
         Env : LocalStorage,
-        Env : SuggestionsResolver<Env>,
+        Env : FiltersResolver<Env>,
         Env : ArticleDetailsResolver =
     AppResolver { command ->
         when (command) {
@@ -25,7 +25,7 @@ fun <Env> AppResolver(): AppResolver<Env> where
             is ArticlesCommand -> resolve(command)
             is ArticleDetailsCommand -> resolve(command)
             is DoStoreDarkMode -> command sideEffect { storeDarkModePreferences(userDarkModeEnabled, syncWithSystemDarkModeEnabled) }
-            is SuggestCommand -> resolve(command)
+            is FilterCommand -> resolve(command)
             is DoLog -> command sideEffect { log(this) }
             else -> error("Shouldn't get here $command")
         }

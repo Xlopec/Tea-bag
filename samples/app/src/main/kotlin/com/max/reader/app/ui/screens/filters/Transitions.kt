@@ -1,4 +1,4 @@
-package com.max.reader.app.ui.screens.suggest
+package com.max.reader.app.ui.screens.filters
 
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.*
@@ -13,9 +13,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.max.reader.app.ui.screens.suggest.ChildAnimationState.End
-import com.max.reader.app.ui.screens.suggest.ChildAnimationState.Start
-import com.max.reader.app.ui.screens.suggest.ScreenAnimationState.*
+import com.max.reader.app.ui.screens.filters.ChildAnimationState.End
+import com.max.reader.app.ui.screens.filters.ChildAnimationState.Start
+import com.max.reader.app.ui.screens.filters.ScreenAnimationState.*
 
 enum class ScreenAnimationState {
     Begin, Half, Finish

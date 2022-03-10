@@ -38,7 +38,7 @@ data class NavigateToArticleDetails(
     val id: ScreenId = UUID(),
 ) : Navigation
 
-data class NavigateToSuggestions(
+data class NavigateToFilters(
     val id: ScreenId,
     val filter: Filter,
 ) : Navigation

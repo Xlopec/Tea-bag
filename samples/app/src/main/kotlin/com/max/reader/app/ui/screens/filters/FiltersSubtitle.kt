@@ -1,4 +1,4 @@
-package com.max.reader.app.ui.screens.suggest
+package com.max.reader.app.ui.screens.filters
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 
 @Composable
-fun SuggestionsSubtitle(
+fun FiltersSubtitle(
     modifier: Modifier,
     text: String,
 ) {

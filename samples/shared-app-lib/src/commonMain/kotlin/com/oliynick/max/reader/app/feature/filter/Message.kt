@@ -9,41 +9,41 @@ import com.oliynick.max.reader.app.domain.SourceId
 import kotlinx.collections.immutable.ImmutableList
 import kotlin.jvm.JvmInline
 
-sealed interface SuggestMessage : ScreenMessage {
+sealed interface FilterMessage : ScreenMessage {
     val id: ScreenId
 }
 
 data class InputChanged(
     override val id: ScreenId,
     val query: Query?
-) : SuggestMessage
+) : FilterMessage
 
 @JvmInline
 value class LoadSources(
     override val id: ScreenId,
-) : SuggestMessage
+) : FilterMessage
 
 @JvmInline
 value class ClearSelection(
     override val id: ScreenId,
-) : SuggestMessage
+) : FilterMessage
 
 data class ToggleSourceSelection(
     override val id: ScreenId,
     val sourceId: SourceId
-) : SuggestMessage
+) : FilterMessage
 
 data class SuggestionsLoaded(
     override val id: ScreenId,
     val suggestions: ImmutableList<Query>,
-) : SuggestMessage
+) : FilterMessage
 
 data class SourcesLoadException(
     override val id: ScreenId,
     val exception: AppException
-) : SuggestMessage
+) : FilterMessage
 
 data class SourcesLoaded(
     override val id: ScreenId,
     val sources: ImmutableList<Source>,
-) : SuggestMessage
+) : FilterMessage

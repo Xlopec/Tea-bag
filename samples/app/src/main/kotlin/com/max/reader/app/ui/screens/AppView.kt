@@ -8,13 +8,13 @@ import com.max.reader.app.MessageHandler
 import com.max.reader.app.messageHandler
 import com.max.reader.app.ui.misc.LocalLogCompositions
 import com.max.reader.app.ui.screens.article.ArticleDetailsScreen
+import com.max.reader.app.ui.screens.filters.FiltersScreen
 import com.max.reader.app.ui.screens.home.HomeScreen
-import com.max.reader.app.ui.screens.suggest.FiltersScreen
 import com.max.reader.app.ui.theme.AppTheme
 import com.oliynick.max.reader.app.*
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
-import com.oliynick.max.reader.app.feature.filter.SuggestState
+import com.oliynick.max.reader.app.feature.filter.FiltersState
 import com.oliynick.max.reader.app.feature.navigation.Pop
 import com.oliynick.max.reader.app.feature.navigation.currentTab
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
@@ -83,7 +83,7 @@ private fun FullScreen(
 ) {
     when (screen) {
         is ArticleDetailsState -> ArticleDetailsScreen(screen, onMessage)
-        is SuggestState -> FiltersScreen(screen, onMessage)
+        is FiltersState -> FiltersScreen(screen, onMessage)
     }
 }
 

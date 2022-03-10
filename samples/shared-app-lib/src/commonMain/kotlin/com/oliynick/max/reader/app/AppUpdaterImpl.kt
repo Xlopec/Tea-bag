@@ -35,9 +35,9 @@ import com.oliynick.max.reader.app.feature.article.details.updateArticleDetails
 import com.oliynick.max.reader.app.feature.article.list.ArticlesMessage
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.updateArticles
-import com.oliynick.max.reader.app.feature.filter.SuggestMessage
-import com.oliynick.max.reader.app.feature.filter.SuggestState
-import com.oliynick.max.reader.app.feature.filter.updateSuggestions
+import com.oliynick.max.reader.app.feature.filter.FilterMessage
+import com.oliynick.max.reader.app.feature.filter.FiltersState
+import com.oliynick.max.reader.app.feature.filter.updateFilters
 import com.oliynick.max.reader.app.feature.navigation.Navigation
 import com.oliynick.max.reader.app.feature.navigation.navigate
 import com.oliynick.max.reader.app.feature.settings.SettingsMessage
@@ -61,8 +61,8 @@ private fun updateScreen(
     state: AppState,
 ): UpdateWith<AppState, Command> =
     when (message) {
-        is SuggestMessage -> state.updateScreen<SuggestState>(message.id) { screen ->
-            updateSuggestions(message, screen)
+        is FilterMessage -> state.updateScreen<FiltersState>(message.id) { screen ->
+            updateFilters(message, screen)
         }
         is ArticlesMessage -> state.updateScreen<ArticlesState>(message.id) { screen ->
             updateArticles(message, screen)

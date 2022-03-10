@@ -31,8 +31,8 @@ import com.oliynick.max.reader.app.FullScreen
 import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
-import com.oliynick.max.reader.app.feature.filter.SuggestCommand
-import com.oliynick.max.reader.app.feature.filter.SuggestionsInitialUpdate
+import com.oliynick.max.reader.app.feature.filter.FilterCommand
+import com.oliynick.max.reader.app.feature.filter.FiltersInitialUpdate
 import com.oliynick.max.reader.app.pushScreen
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
@@ -50,7 +50,7 @@ fun navigate(
     return when (nav) {
         is TabNavigation -> state.navigateToTab(nav, TabNavigation::toTabScreen)
         is NavigateToArticleDetails -> state.navigateToArticleDetails(nav)
-        is NavigateToSuggestions -> state.navigateToSuggestions(nav)
+        is NavigateToFilters -> state.navigateToFilters(nav)
         is Pop -> state.popScreen()
     }.also { (appState, _) ->
         if (debug) {
@@ -81,11 +81,11 @@ fun AppState.navigateToArticleDetails(
     nav: NavigateToArticleDetails,
 ) = pushScreen(ArticleDetailsState(nav.id, nav.article)).noCommand()
 
-fun AppState.navigateToSuggestions(
-    nav: NavigateToSuggestions,
-): UpdateWith<AppState, SuggestCommand> {
+fun AppState.navigateToFilters(
+    nav: NavigateToFilters,
+): UpdateWith<AppState, FilterCommand> {
 
-    val (state, commands) = SuggestionsInitialUpdate(nav.id, nav.filter)
+    val (state, commands) = FiltersInitialUpdate(nav.id, nav.filter)
 
     return pushScreen(state) command commands
 }

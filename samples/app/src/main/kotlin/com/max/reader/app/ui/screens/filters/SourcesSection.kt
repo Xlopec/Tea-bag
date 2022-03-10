@@ -1,4 +1,4 @@
-package com.max.reader.app.ui.screens.suggest
+package com.max.reader.app.ui.screens.filters
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
@@ -33,8 +33,8 @@ import com.max.reader.app.ui.misc.RowMessage
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Source
 import com.oliynick.max.reader.app.feature.filter.ClearSelection
+import com.oliynick.max.reader.app.feature.filter.FiltersState
 import com.oliynick.max.reader.app.feature.filter.LoadSources
-import com.oliynick.max.reader.app.feature.filter.SuggestState
 import com.oliynick.max.reader.app.feature.filter.ToggleSourceSelection
 import com.oliynick.max.reader.app.misc.*
 import kotlinx.collections.immutable.PersistentList
@@ -42,7 +42,7 @@ import kotlinx.collections.immutable.PersistentList
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SourcesSection(
-    state: SuggestState,
+    state: FiltersState,
     id: ScreenId,
     modifier: Modifier,
     sources: Loadable<PersistentList<Source>>,
@@ -58,7 +58,7 @@ fun SourcesSection(
                 .alpha(childTransitionState.contentAlpha),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            SuggestionsSubtitle(
+            FiltersSubtitle(
                 modifier = Modifier,
                 text = "Sources"
             )
@@ -151,7 +151,7 @@ private fun LazyListScope.shimmerSourceItems(
 }
 
 private fun LazyListScope.sourceItems(
-    state: SuggestState,
+    state: FiltersState,
     sources: List<Source>,
     onClick: (Source) -> Unit,
 ) {

@@ -66,7 +66,7 @@ import com.oliynick.max.reader.app.domain.FilterType
 import com.oliynick.max.reader.app.domain.FilterType.*
 import com.oliynick.max.reader.app.feature.article.list.*
 import com.oliynick.max.reader.app.feature.navigation.NavigateToArticleDetails
-import com.oliynick.max.reader.app.feature.navigation.NavigateToSuggestions
+import com.oliynick.max.reader.app.feature.navigation.NavigateToFilters
 import com.oliynick.max.reader.app.misc.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -381,7 +381,7 @@ fun ArticleSearchHeader(
             onFocusChanged = { focusState ->
                 if (focusState.isFocused) {
                     onMessage(
-                        NavigateToSuggestions(
+                        NavigateToFilters(
                             state.id,
                             state.filter,
                         )

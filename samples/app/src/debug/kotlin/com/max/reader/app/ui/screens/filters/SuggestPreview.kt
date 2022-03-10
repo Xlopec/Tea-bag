@@ -1,4 +1,4 @@
-package com.max.reader.app.ui.screens.suggest
+package com.max.reader.app.ui.screens.filters
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
@@ -6,11 +6,11 @@ import com.max.reader.app.ui.theme.ThemedPreview
 import com.oliynick.max.reader.app.domain.Filter
 import com.oliynick.max.reader.app.domain.FilterType
 import com.oliynick.max.reader.app.domain.Query
-import com.oliynick.max.reader.app.feature.filter.SuggestState
+import com.oliynick.max.reader.app.feature.filter.FiltersState
 import com.oliynick.max.reader.app.misc.Loadable
 import java.util.*
 
-private val PreviewState = SuggestState(
+private val PreviewState = FiltersState(
     UUID.randomUUID(),
     Filter(FilterType.Regular, Query.of("Android")),
     Loadable.newLoading()

@@ -1,4 +1,4 @@
-package com.max.reader.app.ui.screens.suggest
+package com.max.reader.app.ui.screens.filters
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -23,7 +23,7 @@ fun LazyListScope.suggestionsSection(
     onSuggestionSelected: (Query) -> Unit,
 ) {
     item {
-        SuggestionsSubtitle(
+        FiltersSubtitle(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(all = 16.dp)

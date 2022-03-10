@@ -15,10 +15,10 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentHashSetOf
 
-fun updateSuggestions(
-    message: SuggestMessage,
-    state: SuggestState,
-): UpdateWith<SuggestState, SuggestCommand> =
+fun updateFilters(
+    message: FilterMessage,
+    state: FiltersState,
+): UpdateWith<FiltersState, FilterCommand> =
     when (message) {
         is SuggestionsLoaded -> state.toLoadedUpdate(message.suggestions)
         is SourcesLoaded -> state.toPreviewUpdate(message.sources)
@@ -29,7 +29,7 @@ fun updateSuggestions(
         is InputChanged -> state.toInputChangedUpdate(message.query)
     }
 
-private fun SuggestState.toToggleSelectionUpdate(
+private fun FiltersState.toToggleSelectionUpdate(
     sourceId: SourceId,
 ) = updatedFilter {
     copy(sources = selectToggleOperation(sourceId, sources)(sources, sourceId))
@@ -40,29 +40,29 @@ private fun selectToggleOperation(
     sources: PersistentSet<SourceId>,
 ) = if (id in sources) PersistentSet<SourceId>::remove else PersistentSet<SourceId>::add
 
-private fun SuggestState.toInputChangedUpdate(
+private fun FiltersState.toInputChangedUpdate(
     query: Query?,
 ) = updatedFilter { copy(query = query) }.noCommand()
 
-private fun SuggestState.toClearSelectionUpdate() =
+private fun FiltersState.toClearSelectionUpdate() =
     updatedFilter { copy(sources = persistentHashSetOf()) }.noCommand()
 
-private fun SuggestState.toLoadUpdate(
+private fun FiltersState.toLoadUpdate(
     id: ScreenId,
 ) = command(DoLoadSources(id))
 
-private fun SuggestState.toExceptionUpdate(
+private fun FiltersState.toExceptionUpdate(
     exception: AppException,
 ) = copy(sourcesState = sourcesState.toException(exception)).noCommand()
 
-private fun SuggestState.toPreviewUpdate(
+private fun FiltersState.toPreviewUpdate(
     sources: ImmutableList<Source>,
 ) = copy(sourcesState = sourcesState.toPreview(sources)).noCommand()
 
-private fun SuggestState.toLoadedUpdate(
+private fun FiltersState.toLoadedUpdate(
     suggestions: ImmutableList<Query>,
 ) = copy(suggestions = suggestions).noCommand()
 
-private fun SuggestState.updatedFilter(
+private fun FiltersState.updatedFilter(
     how: Filter.() -> Filter,
 ) = copy(filter = filter.run(how))

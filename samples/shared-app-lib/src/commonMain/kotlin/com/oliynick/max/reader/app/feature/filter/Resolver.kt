@@ -13,23 +13,23 @@ import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.reader.app.misc.mapToPersistentList
 import com.oliynick.max.tea.core.component.effect
 
-interface SuggestionsResolver<Env> {
+interface FiltersResolver<Env> {
 
     suspend fun Env.resolve(
-        command: SuggestCommand
-    ): Set<SuggestMessage>
+        command: FilterCommand,
+    ): Set<FilterMessage>
 
 }
 
-fun <Env> SuggestionsResolver(): SuggestionsResolver<Env> where Env : LocalStorage, Env : NewsApi =
-    SuggestionsResolverImpl()
+fun <Env> FiltersResolver(): FiltersResolver<Env>
+        where Env : LocalStorage, Env : NewsApi = FiltersResolverImpl()
 
-private class SuggestionsResolverImpl<Env> : SuggestionsResolver<Env>
+private class FiltersResolverImpl<Env> : FiltersResolver<Env>
         where Env : LocalStorage, Env : NewsApi {
 
     override suspend fun Env.resolve(
-        command: SuggestCommand
-    ): Set<SuggestMessage> =
+        command: FilterCommand,
+    ): Set<FilterMessage> =
         when (command) {
             is DoLoadSuggestions -> resolveRecentSearches(command)
             is DoLoadSources -> resolveSources(command)
@@ -37,16 +37,19 @@ private class SuggestionsResolverImpl<Env> : SuggestionsResolver<Env>
 }
 
 private suspend fun LocalStorage.resolveRecentSearches(
-    command: DoLoadSuggestions
+    command: DoLoadSuggestions,
 ) = command effect {
     SuggestionsLoaded(id, recentSearches(command.type))
 }
 
 private suspend fun NewsApi.resolveSources(
-    command: DoLoadSources
+    command: DoLoadSources,
 ) = command effect {
     fetchNewsSources().fold(
-        left = { SourcesLoaded(id, it.sources.mapToPersistentList(SourceResponseElement::toSource)) },
+        left = {
+            SourcesLoaded(id,
+                it.sources.mapToPersistentList(SourceResponseElement::toSource))
+        },
         right = { SourcesLoadException(id, it) }
     )
 }

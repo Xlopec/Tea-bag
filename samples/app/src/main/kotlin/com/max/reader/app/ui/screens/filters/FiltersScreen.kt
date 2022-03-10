@@ -1,4 +1,4 @@
-package com.max.reader.app.ui.screens.suggest
+package com.max.reader.app.ui.screens.filters
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.ExperimentalTransitionApi
@@ -20,13 +20,13 @@ import androidx.compose.ui.unit.dp
 import com.max.reader.app.MessageHandler
 import com.max.reader.app.ui.misc.SearchHeader
 import com.max.reader.app.ui.screens.article.toSearchHint
-import com.max.reader.app.ui.screens.suggest.ScreenAnimationState.Begin
-import com.max.reader.app.ui.screens.suggest.ScreenAnimationState.Finish
+import com.max.reader.app.ui.screens.filters.ScreenAnimationState.Begin
+import com.max.reader.app.ui.screens.filters.ScreenAnimationState.Finish
 import com.oliynick.max.reader.app.domain.Query
 import com.oliynick.max.reader.app.feature.article.list.FilterUpdated
 import com.oliynick.max.reader.app.feature.article.list.LoadArticles
+import com.oliynick.max.reader.app.feature.filter.FiltersState
 import com.oliynick.max.reader.app.feature.filter.InputChanged
-import com.oliynick.max.reader.app.feature.filter.SuggestState
 import com.oliynick.max.reader.app.feature.navigation.Pop
 
 @OptIn(
@@ -35,7 +35,7 @@ import com.oliynick.max.reader.app.feature.navigation.Pop
 )
 @Composable
 fun FiltersScreen(
-    state: SuggestState,
+    state: FiltersState,
     handler: MessageHandler,
 ) {
     var screenTransitionState by remember { mutableStateOf(Begin) }
