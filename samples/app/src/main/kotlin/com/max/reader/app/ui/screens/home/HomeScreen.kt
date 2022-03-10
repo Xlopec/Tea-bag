@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.max.reader.app.MessageHandler
 import com.max.reader.app.ui.misc.InsetAwareTopAppBar
 import com.max.reader.app.ui.screens.article.ArticlesScreen
 import com.max.reader.app.ui.screens.home.BottomMenuItem.Favorite
@@ -48,7 +49,6 @@ import com.max.reader.app.ui.screens.home.BottomMenuItem.Feed
 import com.max.reader.app.ui.screens.home.BottomMenuItem.Settings
 import com.max.reader.app.ui.screens.home.BottomMenuItem.Trending
 import com.max.reader.app.ui.screens.settings.SettingsScreen
-import com.max.reader.app.ui.screens.suggest.MessageHandler
 import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.feature.article.list.*
 import com.oliynick.max.reader.app.feature.navigation.*

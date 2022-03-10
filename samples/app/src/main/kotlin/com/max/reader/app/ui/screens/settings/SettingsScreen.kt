@@ -36,7 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.max.reader.app.ui.screens.suggest.MessageHandler
+import com.max.reader.app.MessageHandler
 import com.oliynick.max.reader.app.Settings
 import com.oliynick.max.reader.app.feature.settings.ToggleDarkMode
 

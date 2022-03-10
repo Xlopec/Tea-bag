@@ -54,9 +54,9 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.max.reader.app.MessageHandler
 import com.max.reader.app.ui.misc.ColumnMessage
 import com.max.reader.app.ui.misc.SearchHeader
-import com.max.reader.app.ui.screens.suggest.MessageHandler
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId

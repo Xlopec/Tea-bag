@@ -16,22 +16,22 @@ private val PreviewState = SuggestState(
     Loadable.newLoading()
 )
 
-@Preview("Suggestions preview dark mode")
+@Preview("Filters preview dark mode")
 @Composable
-fun SuggestPreviewDark() {
+fun FiltersPreviewDark() {
     ThemedPreview {
-        SuggestScreen(
+        FiltersScreen(
             state = PreviewState,
             handler = {}
         )
     }
 }
 
-@Preview("Suggestions preview dark mode")
+@Preview("Filters preview light mode")
 @Composable
-fun SuggestPreviewLight() {
+fun FiltersPreviewLight() {
     ThemedPreview(isDarkModeEnabled = false) {
-        SuggestScreen(
+        FiltersScreen(
             state = PreviewState,
             handler = {}
         )
