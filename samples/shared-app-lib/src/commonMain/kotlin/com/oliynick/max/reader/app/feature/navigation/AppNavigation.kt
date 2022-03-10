@@ -31,8 +31,8 @@ import com.oliynick.max.reader.app.FullScreen
 import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
-import com.oliynick.max.reader.app.feature.suggest.SuggestCommand
-import com.oliynick.max.reader.app.feature.suggest.SuggestionsInitialUpdate
+import com.oliynick.max.reader.app.feature.filter.SuggestCommand
+import com.oliynick.max.reader.app.feature.filter.SuggestionsInitialUpdate
 import com.oliynick.max.reader.app.pushScreen
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command

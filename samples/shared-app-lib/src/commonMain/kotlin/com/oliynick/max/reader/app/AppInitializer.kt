@@ -27,8 +27,8 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
+import com.oliynick.max.reader.app.domain.FilterType.Regular
 import com.oliynick.max.reader.app.feature.article.list.ArticlesInitialUpdate
-import com.oliynick.max.reader.app.feature.article.list.FilterType.Regular
 import com.oliynick.max.reader.app.feature.navigation.NavigateToFeed
 import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Initializer

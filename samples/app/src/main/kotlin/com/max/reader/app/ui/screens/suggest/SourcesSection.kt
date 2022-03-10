@@ -32,10 +32,10 @@ import com.max.reader.app.MessageHandler
 import com.max.reader.app.ui.misc.RowMessage
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Source
-import com.oliynick.max.reader.app.feature.suggest.ClearSelection
-import com.oliynick.max.reader.app.feature.suggest.LoadSources
-import com.oliynick.max.reader.app.feature.suggest.SuggestState
-import com.oliynick.max.reader.app.feature.suggest.ToggleSourceSelection
+import com.oliynick.max.reader.app.feature.filter.ClearSelection
+import com.oliynick.max.reader.app.feature.filter.LoadSources
+import com.oliynick.max.reader.app.feature.filter.SuggestState
+import com.oliynick.max.reader.app.feature.filter.ToggleSourceSelection
 import com.oliynick.max.reader.app.misc.*
 import kotlinx.collections.immutable.PersistentList
 

@@ -28,6 +28,7 @@ import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.ScreenMessage
 import com.oliynick.max.reader.app.domain.Article
+import com.oliynick.max.reader.app.domain.Filter
 
 import kotlin.jvm.JvmInline
 

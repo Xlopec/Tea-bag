@@ -1,6 +1,6 @@
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.reader.app.feature.suggest
+package com.oliynick.max.reader.app.feature.filter
 
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.entities.shared.UrlFor

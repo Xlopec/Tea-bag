@@ -42,10 +42,10 @@ import com.oliynick.max.reader.app.AppComponent
 import com.oliynick.max.reader.app.AppInitializer
 import com.oliynick.max.reader.app.domain.Author
 import com.oliynick.max.reader.app.domain.Description
+import com.oliynick.max.reader.app.domain.Filter
+import com.oliynick.max.reader.app.domain.FilterType.Regular
 import com.oliynick.max.reader.app.domain.Title
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
-import com.oliynick.max.reader.app.feature.article.list.Filter
-import com.oliynick.max.reader.app.feature.article.list.FilterType.Regular
 import com.oliynick.max.reader.app.feature.network.ArticleElement
 import com.oliynick.max.tea.core.component.states
 import org.junit.Rule

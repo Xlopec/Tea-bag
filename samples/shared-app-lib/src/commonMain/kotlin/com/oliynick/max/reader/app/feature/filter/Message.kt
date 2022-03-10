@@ -1,11 +1,11 @@
-package com.oliynick.max.reader.app.feature.suggest
+package com.oliynick.max.reader.app.feature.filter
 
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.ScreenMessage
+import com.oliynick.max.reader.app.domain.Query
 import com.oliynick.max.reader.app.domain.Source
 import com.oliynick.max.reader.app.domain.SourceId
-import com.oliynick.max.reader.app.feature.article.list.Query
 import kotlinx.collections.immutable.ImmutableList
 import kotlin.jvm.JvmInline
 

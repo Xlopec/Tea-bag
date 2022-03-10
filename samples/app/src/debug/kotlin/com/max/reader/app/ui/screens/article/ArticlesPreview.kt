@@ -6,14 +6,8 @@ import androidx.compose.ui.Modifier
 import com.max.reader.app.ui.misc.ColumnMessage
 import com.max.reader.app.ui.theme.ThemedPreview
 import com.oliynick.max.entities.shared.now
-import com.oliynick.max.reader.app.domain.Article
-import com.oliynick.max.reader.app.domain.Author
-import com.oliynick.max.reader.app.domain.Description
-import com.oliynick.max.reader.app.domain.Title
+import com.oliynick.max.reader.app.domain.*
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
-import com.oliynick.max.reader.app.feature.article.list.Filter
-import com.oliynick.max.reader.app.feature.article.list.FilterType
-import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.misc.*
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf

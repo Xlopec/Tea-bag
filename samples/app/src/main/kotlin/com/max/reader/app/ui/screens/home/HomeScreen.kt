@@ -50,14 +50,18 @@ import com.max.reader.app.ui.screens.home.BottomMenuItem.Settings
 import com.max.reader.app.ui.screens.home.BottomMenuItem.Trending
 import com.max.reader.app.ui.screens.settings.SettingsScreen
 import com.oliynick.max.reader.app.AppState
-import com.oliynick.max.reader.app.feature.article.list.*
+import com.oliynick.max.reader.app.domain.Filter
+import com.oliynick.max.reader.app.feature.article.list.ArticlesState
+import com.oliynick.max.reader.app.feature.article.list.RefreshArticles
+import com.oliynick.max.reader.app.feature.article.list.ScrollState
+import com.oliynick.max.reader.app.feature.article.list.SyncScrollPosition
 import com.oliynick.max.reader.app.feature.navigation.*
 import com.oliynick.max.reader.app.misc.isException
 import com.oliynick.max.reader.app.misc.isPreview
 import com.oliynick.max.reader.app.misc.isRefreshing
-import com.oliynick.max.reader.app.feature.article.list.FilterType.Favorite as FavoriteQuery
-import com.oliynick.max.reader.app.feature.article.list.FilterType.Regular as RegularQuery
-import com.oliynick.max.reader.app.feature.article.list.FilterType.Trending as TrendingQuery
+import com.oliynick.max.reader.app.domain.FilterType.Favorite as FavoriteQuery
+import com.oliynick.max.reader.app.domain.FilterType.Regular as RegularQuery
+import com.oliynick.max.reader.app.domain.FilterType.Trending as TrendingQuery
 
 enum class BottomMenuItem {
     Feed,

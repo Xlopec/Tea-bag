@@ -28,6 +28,7 @@ package com.oliynick.max.reader.app.feature.article.list
 
 import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
+import com.oliynick.max.reader.app.domain.Query
 import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import com.oliynick.max.reader.app.feature.network.SourcesResponse

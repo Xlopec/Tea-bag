@@ -4,8 +4,8 @@ package com.oliynick.max.reader.app.feature.navigation
 
 import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.command.Command
+import com.oliynick.max.reader.app.domain.FilterType
 import com.oliynick.max.reader.app.feature.article.list.ArticlesInitialUpdate
-import com.oliynick.max.reader.app.feature.article.list.FilterType
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.noCommand

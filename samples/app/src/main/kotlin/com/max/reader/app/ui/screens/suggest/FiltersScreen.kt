@@ -22,12 +22,12 @@ import com.max.reader.app.ui.misc.SearchHeader
 import com.max.reader.app.ui.screens.article.toSearchHint
 import com.max.reader.app.ui.screens.suggest.ScreenAnimationState.Begin
 import com.max.reader.app.ui.screens.suggest.ScreenAnimationState.Finish
+import com.oliynick.max.reader.app.domain.Query
 import com.oliynick.max.reader.app.feature.article.list.FilterUpdated
 import com.oliynick.max.reader.app.feature.article.list.LoadArticles
-import com.oliynick.max.reader.app.feature.article.list.Query
+import com.oliynick.max.reader.app.feature.filter.InputChanged
+import com.oliynick.max.reader.app.feature.filter.SuggestState
 import com.oliynick.max.reader.app.feature.navigation.Pop
-import com.oliynick.max.reader.app.feature.suggest.InputChanged
-import com.oliynick.max.reader.app.feature.suggest.SuggestState
 
 @OptIn(
     ExperimentalMaterialApi::class, ExperimentalFoundationApi::class,

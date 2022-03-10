@@ -1,8 +1,8 @@
-package com.oliynick.max.reader.app.feature.suggest
+package com.oliynick.max.reader.app.feature.filter
 
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.feature.article.list.FilterType
+import com.oliynick.max.reader.app.domain.FilterType
 import kotlin.jvm.JvmInline
 
 sealed interface SuggestCommand : Command

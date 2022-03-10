@@ -33,7 +33,7 @@ import com.oliynick.max.reader.app.ScreenMessage
 import com.oliynick.max.reader.app.serialization.PersistentListSerializer
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.LoadArticlesFromScratch
-import com.oliynick.max.reader.app.feature.article.list.Query
+import com.oliynick.max.reader.app.domain.Query
 import com.oliynick.max.reader.app.feature.article.list.QueryType
 import com.oliynick.max.tea.core.debug.gson.Gson
 import com.oliynick.max.tea.core.debug.protocol.NotifyComponentAttached

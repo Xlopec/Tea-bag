@@ -3,10 +3,8 @@ package com.oliynick.max.reader.app.feature.storage
 import com.oliynick.max.entities.shared.*
 import com.oliynick.max.reader.app.IO
 import com.oliynick.max.reader.app.domain.*
-import com.oliynick.max.reader.app.feature.article.list.Filter
-import com.oliynick.max.reader.app.feature.article.list.FilterType
+import com.oliynick.max.reader.app.domain.Query
 import com.oliynick.max.reader.app.feature.article.list.Page
-import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.misc.mapNotNullToPersistentList
 import com.oliynick.max.reader.app.storage.AppDatabase
 import com.oliynick.max.reader.app.storage.ArticlesQueries

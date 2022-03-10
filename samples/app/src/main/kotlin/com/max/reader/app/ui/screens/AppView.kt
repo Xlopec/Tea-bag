@@ -14,10 +14,10 @@ import com.max.reader.app.ui.theme.AppTheme
 import com.oliynick.max.reader.app.*
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
+import com.oliynick.max.reader.app.feature.filter.SuggestState
 import com.oliynick.max.reader.app.feature.navigation.Pop
 import com.oliynick.max.reader.app.feature.navigation.currentTab
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
-import com.oliynick.max.reader.app.feature.suggest.SuggestState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

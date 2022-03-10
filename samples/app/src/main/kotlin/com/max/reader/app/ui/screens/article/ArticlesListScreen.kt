@@ -61,8 +61,10 @@ import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Article
+import com.oliynick.max.reader.app.domain.Filter
+import com.oliynick.max.reader.app.domain.FilterType
+import com.oliynick.max.reader.app.domain.FilterType.*
 import com.oliynick.max.reader.app.feature.article.list.*
-import com.oliynick.max.reader.app.feature.article.list.FilterType.*
 import com.oliynick.max.reader.app.feature.navigation.NavigateToArticleDetails
 import com.oliynick.max.reader.app.feature.navigation.NavigateToSuggestions
 import com.oliynick.max.reader.app.misc.*

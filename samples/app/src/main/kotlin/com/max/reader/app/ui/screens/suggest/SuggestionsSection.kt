@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
-import com.oliynick.max.reader.app.feature.article.list.Query
+import com.oliynick.max.reader.app.domain.Query
 
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.suggestionsSection(

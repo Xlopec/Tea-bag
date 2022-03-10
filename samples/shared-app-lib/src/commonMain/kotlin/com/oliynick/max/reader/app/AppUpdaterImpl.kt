@@ -35,14 +35,14 @@ import com.oliynick.max.reader.app.feature.article.details.updateArticleDetails
 import com.oliynick.max.reader.app.feature.article.list.ArticlesMessage
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.article.list.updateArticles
+import com.oliynick.max.reader.app.feature.filter.SuggestMessage
+import com.oliynick.max.reader.app.feature.filter.SuggestState
+import com.oliynick.max.reader.app.feature.filter.updateSuggestions
 import com.oliynick.max.reader.app.feature.navigation.Navigation
 import com.oliynick.max.reader.app.feature.navigation.navigate
 import com.oliynick.max.reader.app.feature.settings.SettingsMessage
 import com.oliynick.max.reader.app.feature.settings.SystemDarkModeChanged
 import com.oliynick.max.reader.app.feature.settings.ToggleDarkMode
-import com.oliynick.max.reader.app.feature.suggest.SuggestMessage
-import com.oliynick.max.reader.app.feature.suggest.SuggestState
-import com.oliynick.max.reader.app.feature.suggest.updateSuggestions
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand

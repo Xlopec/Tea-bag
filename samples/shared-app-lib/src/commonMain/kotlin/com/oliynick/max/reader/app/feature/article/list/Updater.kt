@@ -26,8 +26,9 @@ package com.oliynick.max.reader.app.feature.article.list
 
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.domain.Article
+import com.oliynick.max.reader.app.domain.Filter
+import com.oliynick.max.reader.app.domain.FilterType.*
 import com.oliynick.max.reader.app.domain.toggleFavorite
-import com.oliynick.max.reader.app.feature.article.list.FilterType.*
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.app.misc.isPreview
 import com.oliynick.max.tea.core.component.UpdateWith

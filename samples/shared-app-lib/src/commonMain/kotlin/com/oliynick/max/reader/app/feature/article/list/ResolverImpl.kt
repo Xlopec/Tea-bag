@@ -9,7 +9,7 @@ import com.oliynick.max.reader.app.Log
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenMessage
 import com.oliynick.max.reader.app.domain.Article
-import com.oliynick.max.reader.app.feature.article.list.FilterType.*
+import com.oliynick.max.reader.app.domain.FilterType.*
 import com.oliynick.max.reader.app.feature.network.ArticleElement
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import com.oliynick.max.reader.app.feature.storage.LocalStorage

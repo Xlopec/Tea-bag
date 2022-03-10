@@ -3,6 +3,8 @@ package com.oliynick.max.reader.app.feature.article.list
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.domain.Article
+import com.oliynick.max.reader.app.domain.Filter
+import com.oliynick.max.reader.app.domain.FilterType
 import kotlin.jvm.JvmInline
 
 sealed interface ArticlesCommand : Command

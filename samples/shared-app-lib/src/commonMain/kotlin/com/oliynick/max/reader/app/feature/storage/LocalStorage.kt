@@ -28,12 +28,12 @@ package com.oliynick.max.reader.app.feature.storage
 
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.domain.Article
-import com.oliynick.max.reader.app.feature.article.list.Filter
-import com.oliynick.max.reader.app.feature.article.list.Filter.Companion.StoreSourcesLimit
-import com.oliynick.max.reader.app.feature.article.list.FilterType
+import com.oliynick.max.reader.app.domain.Filter
+import com.oliynick.max.reader.app.domain.Filter.Companion.StoreSourcesLimit
+import com.oliynick.max.reader.app.domain.FilterType
+import com.oliynick.max.reader.app.domain.Query
 import com.oliynick.max.reader.app.feature.article.list.Page
-import com.oliynick.max.reader.app.feature.article.list.Query
-import com.oliynick.max.reader.app.feature.suggest.SuggestState.Companion.StoreSuggestionsLimit
+import com.oliynick.max.reader.app.feature.filter.SuggestState.Companion.StoreSuggestionsLimit
 import kotlinx.collections.immutable.ImmutableList
 
 interface LocalStorage {

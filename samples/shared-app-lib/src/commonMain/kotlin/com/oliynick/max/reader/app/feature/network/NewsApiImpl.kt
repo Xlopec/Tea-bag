@@ -8,10 +8,10 @@ import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.IO
 import com.oliynick.max.reader.app.InternalException
 import com.oliynick.max.reader.app.NetworkException
+import com.oliynick.max.reader.app.domain.Query
 import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.feature.article.list.NewsApi
 import com.oliynick.max.reader.app.feature.article.list.Paging
-import com.oliynick.max.reader.app.feature.article.list.Query
 import com.oliynick.max.reader.app.feature.article.list.nextPage
 import io.ktor.client.*
 import io.ktor.client.call.*
