@@ -10,16 +10,30 @@ import com.oliynick.max.reader.app.feature.suggest.SuggestState
 import com.oliynick.max.reader.app.misc.Loadable
 import java.util.*
 
-@Preview
+private val PreviewState = SuggestState(
+    UUID.randomUUID(),
+    Filter(FilterType.Regular, Query.of("Android")),
+    Loadable.newLoading()
+)
+
+@Preview("Suggestions preview dark mode")
 @Composable
-fun SuggestPreview() {
+fun SuggestPreviewDark() {
     ThemedPreview {
         SuggestScreen(
-            state = SuggestState(
-                UUID.randomUUID(),
-                Filter(FilterType.Regular, Query.of("Android")),
-                Loadable.newLoading()
-            ),
-            handler = {})
+            state = PreviewState,
+            handler = {}
+        )
+    }
+}
+
+@Preview("Suggestions preview dark mode")
+@Composable
+fun SuggestPreviewLight() {
+    ThemedPreview(isDarkModeEnabled = false) {
+        SuggestScreen(
+            state = PreviewState,
+            handler = {}
+        )
     }
 }

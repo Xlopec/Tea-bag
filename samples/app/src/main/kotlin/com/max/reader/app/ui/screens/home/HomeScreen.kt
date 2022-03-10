@@ -161,7 +161,10 @@ fun BottomBar(
     item: BottomMenuItem,
     handler: (reselected: Boolean, navigation: Navigation) -> Unit,
 ) {
-    BottomNavigation(modifier = modifier) {
+    BottomNavigation(
+        modifier = modifier,
+        backgroundColor = MaterialTheme.colors.surface
+    ) {
 
         BottomNavigationItem(
             icon = {

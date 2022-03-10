@@ -84,9 +84,10 @@ private fun appColors(
 
 @Composable
 fun ThemedPreview(
+    isDarkModeEnabled: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    AppTheme(isDarkModeEnabled = true) {
+    AppTheme(isDarkModeEnabled = isDarkModeEnabled) {
         Surface {
             content()
         }

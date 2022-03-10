@@ -74,8 +74,8 @@ fun SuggestScreen(
     val screenTransition =
         updateTransition(label = "Header transition", targetState = screenTransitionState)
 
-    val headerTransitionState = screenTransition.headerTransitionState()
-    val childTransitionState = screenTransition.childTransitionState()
+    val headerTransition = screenTransition.headerTransitionState()
+    val childTransition = screenTransition.childTransitionState()
 
     val focusRequester = remember { FocusRequester() }
 
@@ -125,10 +125,11 @@ fun SuggestScreen(
                 SearchHeader(
                     modifier = Modifier
                         .padding(
-                            horizontal = headerTransitionState.horizontalPadding,
+                            horizontal = headerTransition.horizontalPadding,
                             vertical = 16.dp
                         )
                         .focusRequester(focusRequester),
+                    elevation = headerTransition.elevation,
                     inputText = state.filter.query?.value ?: "",
                     placeholderText = state.filter.type.toSearchHint(),
                     onQueryUpdate = {
@@ -138,8 +139,8 @@ fun SuggestScreen(
                         performSearch = true
                         closeScreen = true
                     },
-                    shape = RoundedCornerShape(headerTransitionState.cornerRadius),
-                    colors = headerTransitionState.textFieldTransitionColors()
+                    shape = RoundedCornerShape(headerTransition.cornerRadius),
+                    colors = headerTransition.textFieldTransitionColors()
                 )
             }
 
@@ -148,7 +149,7 @@ fun SuggestScreen(
                     id = state.id,
                     modifier = Modifier.fillParentMaxWidth(),
                     sources = state.sourcesState,
-                    childTransitionState = childTransitionState,
+                    childTransitionState = childTransition,
                     handler = handler,
                     state = state
                 )
@@ -157,7 +158,7 @@ fun SuggestScreen(
             if (state.suggestions.isNotEmpty()) {
                 suggestionsSection(
                     suggestions = state.suggestions,
-                    childTransitionState = childTransitionState
+                    childTransitionState = childTransition
                 ) { suggestion ->
                     handler(InputChanged(state.id, suggestion))
                     performSearch = true
@@ -422,23 +423,23 @@ private data class HeaderTransitionState(
     val _indicatorColor: State<Color>,
     val _horizontalPadding: State<Dp>,
     val _cornerRadius: State<Dp>,
+    val _elevation: State<Dp>,
     val transition: Transition<AnimationState>,
 ) {
     val horizontalPadding by _horizontalPadding
     val cornerRadius by _cornerRadius
     val textBackground by _textBackground
     val indicatorColor by _indicatorColor
+    val elevation by _elevation
 
     @Composable
     fun textFieldTransitionColors(): TextFieldColors =
         TextFieldDefaults.textFieldColors(
-            textColor = Color.White.copy(LocalContentAlpha.current),
             backgroundColor = textBackground,
             focusedIndicatorColor = indicatorColor,
             unfocusedIndicatorColor = indicatorColor,
             disabledIndicatorColor = indicatorColor,
-            errorIndicatorColor = indicatorColor,
-            cursorColor = Color.White.copy(LocalContentAlpha.current)
+            errorIndicatorColor = indicatorColor
         )
 }
 
@@ -462,18 +463,12 @@ private fun Transition<ScreenAnimationState>.headerTransitionState(): HeaderTran
         }
     }
 
-    val colorsss = colors
-
-    val endColor = remember {
-        colorsss.surface
-    }
-
     val textFieldColors = TextFieldDefaults.textFieldColors()
 
     val textBackground = transition.animateColor(label = "Text background color") {
         when (it) {
             Start -> textFieldColors.backgroundColor(enabled = true).value
-            End -> endColor
+            End -> colors.background
         }
     }
 
@@ -498,12 +493,20 @@ private fun Transition<ScreenAnimationState>.headerTransitionState(): HeaderTran
         }
     }
 
+    val elevation = transition.animateDp(label = "Header elevation") {
+        when (it) {
+            Start -> 1.dp
+            End -> 0.dp
+        }
+    }
+
     return remember(transition) {
         HeaderTransitionState(
             textBackground,
             indicatorColor,
             horizontalPadding,
             cornerRadius,
+            elevation,
             transition
         )
     }

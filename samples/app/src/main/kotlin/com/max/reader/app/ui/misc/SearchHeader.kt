@@ -14,6 +14,7 @@ import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.input.ImeAction.Companion.Search
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsPadding
 
@@ -27,6 +28,7 @@ fun SearchHeader(
     onSearch: () -> Unit,
     onFocusChanged: (FocusState) -> Unit = {},
     shape: Shape = RoundedCornerShape(8.dp),
+    elevation: Dp = 1.dp,
     colors: TextFieldColors = TextFieldDefaults.textFieldColors(),
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
@@ -34,6 +36,7 @@ fun SearchHeader(
         modifier = modifier//rm
             .statusBarsPadding()
             .fillMaxWidth(),
+        elevation = elevation,
         shape = shape
     ) {
 

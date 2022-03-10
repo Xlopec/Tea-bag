@@ -33,7 +33,7 @@ val Colors.importantActionColor: Color
     get() = if (isLight) Color(0xffdb2a59) else Color(0xffbd2b52)
 
 val DarkThemeColors = darkColors(
-    primary = Color(20, 20, 20),
+    primary = Color.White,
     secondary = Color(0xFFFFFFFF),
     background = Color.Black,
     surface = Color(4, 4, 6),
@@ -46,7 +46,7 @@ val DarkThemeColors = darkColors(
 )
 
 val LightThemeColors = lightColors(
-    primary = Color.White,
+    primary = Color.Black,
     onPrimary = Color.Black,
     secondary = Color(18, 18, 18),
     secondaryVariant = Color(18, 18, 18),
