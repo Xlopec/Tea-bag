@@ -26,14 +26,14 @@
 
 package com.oliynick.max.reader.app.feature.navigation
 
-import com.oliynick.max.reader.app.*
+import com.oliynick.max.reader.app.AppState
+import com.oliynick.max.reader.app.FullScreen
+import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
-import com.oliynick.max.reader.app.feature.article.list.Filter
-import com.oliynick.max.reader.app.feature.suggest.DoLoadSources
-import com.oliynick.max.reader.app.feature.suggest.DoLoadSuggestions
-import com.oliynick.max.reader.app.feature.suggest.SuggestState
-import com.oliynick.max.reader.app.misc.Loadable
+import com.oliynick.max.reader.app.feature.suggest.SuggestCommand
+import com.oliynick.max.reader.app.feature.suggest.SuggestionsInitialUpdate
+import com.oliynick.max.reader.app.pushScreen
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.component.noCommand
@@ -71,10 +71,23 @@ fun AppState.navigateToTab(
         copy(screens = screens.floatGroup(i, nav.id)).noCommand()
     } else {
 
-        val (tab, cmds) = screenWithCommand(nav)
+        val (state, commands) = screenWithCommand(nav)
 
-        pushScreen(tab) command cmds
+        pushScreen(state) command commands
     }
+}
+
+fun AppState.navigateToArticleDetails(
+    nav: NavigateToArticleDetails,
+) = pushScreen(ArticleDetailsState(nav.id, nav.article)).noCommand()
+
+fun AppState.navigateToSuggestions(
+    nav: NavigateToSuggestions,
+): UpdateWith<AppState, SuggestCommand> {
+
+    val (state, commands) = SuggestionsInitialUpdate(nav.id, nav.filter)
+
+    return pushScreen(state) command commands
 }
 
 fun AppState.findTabScreenIndex(
@@ -83,23 +96,6 @@ fun AppState.findTabScreenIndex(
 
 val AppState.currentTab: TabScreen
     get() = screens.first { it is TabScreen } as TabScreen
-
-fun AppState.navigateToArticleDetails(
-    nav: NavigateToArticleDetails,
-) = pushScreen(ArticleDetailsState(nav.id, nav.article)).noCommand()
-
-private fun SuggestionsInitialUpdate(
-    id: ScreenId,
-    filter: Filter,
-) = SuggestState(id, filter, Loadable.newLoading())
-    .command(DoLoadSuggestions(id, filter.type), DoLoadSources(id))
-
-fun AppState.navigateToSuggestions(
-    nav: NavigateToSuggestions,
-) = pushScreen(SuggestState(nav.id, nav.filter, Loadable.newLoading())).command(
-    DoLoadSuggestions(nav.id, nav.filter.type),
-    DoLoadSources(nav.id)
-)
 
 expect fun AppState.popScreen(): UpdateWith<AppState, Command>
 

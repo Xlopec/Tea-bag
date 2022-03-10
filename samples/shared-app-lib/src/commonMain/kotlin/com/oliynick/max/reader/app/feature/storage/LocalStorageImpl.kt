@@ -42,7 +42,7 @@ private class LocalStorageImpl(
     private val database = AppDatabase(driver)
 
     override suspend fun insertArticle(
-        article: Article
+        article: Article,
     ) = articlesQuery {
         transaction {
             with(article) {
@@ -64,19 +64,19 @@ private class LocalStorageImpl(
     }
 
     override suspend fun deleteArticle(
-        url: Url
+        url: Url,
     ) = articlesQuery {
         deleteArticle(url.toExternalValue())
     }
 
     override suspend fun findAllArticles(
-        filter: Filter
+        filter: Filter,
     ) = articlesQuery {
         Page(driver.executeQuery(filter).toPersistentList(SqlCursor::toArticle))
     }
 
     override suspend fun isFavoriteArticle(
-        url: Url
+        url: Url,
     ): Boolean = articlesQuery {
         isFavoriteArticle(url.toExternalValue())
             .execute()
@@ -225,7 +225,7 @@ private fun Filter.toSqlQuery(): String {
 }
 
 private fun SqlPreparedStatement.bindValues(
-    filter: Filter
+    filter: Filter,
 ) {
     val boundInput = filter.query?.value?.let { "%${it}%" }
 
@@ -243,7 +243,7 @@ private fun SqlPreparedStatement.bindValues(
 }
 
 private fun SqlDriver.executeQuery(
-    filter: Filter
+    filter: Filter,
 ) = executeQuery(null, filter.toSqlQuery(), filter.parametersCount) {
     bindValues(filter)
 }
