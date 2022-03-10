@@ -110,5 +110,6 @@ private suspend fun LocalStorage.toArticle(
     description = element.description,
     urlToImage = element.urlToImage,
     isFavorite = isFavoriteArticle(element.url),
-    published = element.publishedAt
+    published = element.publishedAt,
+    source = element.source.id
 )

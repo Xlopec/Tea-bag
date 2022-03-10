@@ -36,7 +36,7 @@ import com.oliynick.max.tea.core.component.noCommand
 
 fun updateArticles(
     message: ArticlesMessage,
-    state: ArticlesState
+    state: ArticlesState,
 ): UpdateWith<ArticlesState, Command> =
     when (message) {
         is ArticlesLoaded -> state.toPreviewUpdate(message.page)
@@ -53,11 +53,11 @@ fun updateArticles(
     }
 
 private fun ArticlesState.toOperationExceptionUpdate(
-    message: ArticlesOperationException
+    message: ArticlesOperationException,
 ) = toException(message.cause).noCommand()
 
 private fun ArticlesState.toPreviewUpdate(
-    page: Page<Article>
+    page: Page<Article>,
 ) = toPreview(page).noCommand()
 
 private fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadCommand(FirstPage)
@@ -68,8 +68,9 @@ private fun ArticlesState.toLoadCommand(
 ) = DoLoadArticles(id, filter, paging)
 
 private fun ArticlesState.toLoadUpdate(
-    newFilter: Filter = filter
-) = toLoading(filter = newFilter).command(toLoadCommand(FirstPage, newFilter), DoStoreFilter(newFilter))
+    newFilter: Filter = filter,
+) = toLoading(filter = newFilter).command(toLoadCommand(FirstPage, newFilter),
+    DoStoreFilter(newFilter))
 
 private fun ArticlesState.toLoadNextUpdate() =
     if (loadable.isPreview && loadable.hasMore && loadable.data.isNotEmpty() /*todo should we throw an error in this case?*/) {
@@ -80,21 +81,22 @@ private fun ArticlesState.toLoadNextUpdate() =
     }
 
 private fun ArticlesState.toUpdateAllArticlesUpdate(
-    article: Article
-): UpdateWith<ArticlesState, Command> {
+    article: Article,
+) = when (filter.type) {
+    Regular, Trending -> updateArticle(article).noCommand()
+    Favorite -> toFavoriteArticleUpdate(article)
+}
 
-    val updated = when (filter.type) {
-        Regular, Trending -> updateArticle(article)
-        Favorite -> if (article.isFavorite) prependArticle(article) else removeArticle(
-            article
-        )
-    }
-
-    return updated.noCommand()
+private fun ArticlesState.toFavoriteArticleUpdate(
+    article: Article,
+): UpdateWith<ArticlesState, ArticlesCommand> {
+    require(filter.type == Favorite)
+    // if article was marked as favorite, then we should perform full page reload from DB
+    return if (article.isFavorite) toLoadUpdate() else removeArticle(article).noCommand()
 }
 
 private fun ArticlesState.toToggleFavoriteUpdate(
-    article: Article
+    article: Article,
 ): UpdateWith<ArticlesState, Command> {
 
     val toggled = article.toggleFavorite()
@@ -103,16 +105,16 @@ private fun ArticlesState.toToggleFavoriteUpdate(
 }
 
 private fun ArticlesState.toShareArticleUpdate(
-    article: Article
+    article: Article,
 ): UpdateWith<ArticlesState, DoShareArticle> = this command DoShareArticle(article)
 
 private fun ArticlesState.toFilterUpdate(
-    filter: Filter
+    filter: Filter,
 ): UpdateWith<ArticlesState, ArticlesCommand> =
     copy(filter = filter).noCommand()
 
 private fun Article.storeCommand() = if (isFavorite) DoSaveArticle(this) else DoRemoveArticle(this)
 
 private fun ArticlesState.toSyncScrollStateUpdate(
-    message: SyncScrollPosition
+    message: SyncScrollPosition,
 ) = copy(scrollState = message.scrollState).noCommand()

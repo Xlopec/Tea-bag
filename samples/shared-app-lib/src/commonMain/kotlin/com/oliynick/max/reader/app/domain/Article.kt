@@ -40,6 +40,7 @@ data class Article(
     val urlToImage: Url?,
     val published: Date,
     val isFavorite: Boolean,
+    val source: SourceId?
 )
 
 @JvmInline

@@ -4,6 +4,7 @@ import com.oliynick.max.entities.shared.Date
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.domain.Author
 import com.oliynick.max.reader.app.domain.Description
+import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.domain.Title
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -28,6 +29,15 @@ data class ArticleElement(
     @SerialName("urlToImage")
     @Serializable(with = UrlSerializer::class)
     val urlToImage: Url? = null,
+    @SerialName("source")
+    val source: SourceElement,
+)
+
+@Serializable
+data class SourceElement(
+    @SerialName("id")
+    @Serializable(with = SourceIdSerializer::class)
+    val id: SourceId?,
 )
 
 @Serializable

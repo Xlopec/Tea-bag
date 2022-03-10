@@ -154,7 +154,8 @@ private val PreviewArticle = Article(
     ),
     published = now(),
     isFavorite = true,
-    urlToImage = URL("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png")
+    urlToImage = URL("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png"),
+    source = null
 )
 
 private val PreviewArticles = persistentListOf(

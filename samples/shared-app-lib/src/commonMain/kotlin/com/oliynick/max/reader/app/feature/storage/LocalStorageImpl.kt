@@ -17,9 +17,10 @@ import com.russhwolf.settings.get
 import com.russhwolf.settings.set
 import com.squareup.sqldelight.db.SqlCursor
 import com.squareup.sqldelight.db.SqlDriver
+import com.squareup.sqldelight.db.SqlPreparedStatement
 import com.squareup.sqldelight.db.use
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.withContext
 
@@ -29,7 +30,7 @@ fun LocalStorage(
 ): LocalStorage = LocalStorageImpl(driver, settings)
 
 private class LocalStorageImpl(
-    driver: SqlDriver,
+    private val driver: SqlDriver,
     private val settings: Settings,
 ) : LocalStorage {
 
@@ -40,11 +41,11 @@ private class LocalStorageImpl(
 
     private val database = AppDatabase(driver)
 
-    override suspend fun insertArticle(article: Article) = articlesQuery {
-        // fixme there should be insert or replace option (upsert)
+    override suspend fun insertArticle(
+        article: Article
+    ) = articlesQuery {
         transaction {
             with(article) {
-                deleteArticle(url.toExternalValue())
                 insertArticle(
                     url = url.toExternalValue(),
                     title = title.value,
@@ -55,27 +56,28 @@ private class LocalStorageImpl(
                     // to store thousands of articles in a row
                     saved_on = now().toMillis(),
                     published = published.toMillis(),
-                    is_favorite = isFavorite
+                    is_favorite = isFavorite,
+                    source = article.source?.value
                 )
             }
         }
     }
 
-    override suspend fun deleteArticle(url: Url) = articlesQuery {
+    override suspend fun deleteArticle(
+        url: Url
+    ) = articlesQuery {
         deleteArticle(url.toExternalValue())
     }
 
-    override suspend fun findAllArticles(filter: Filter) = articlesQuery {
-        val wrappedInput = "%${filter.query}%"
-
-        Page(
-            findAllArticles(wrappedInput, wrappedInput, wrappedInput, ::dbModelToArticle)
-                .executeAsList()
-                .toPersistentList()
-        )
+    override suspend fun findAllArticles(
+        filter: Filter
+    ) = articlesQuery {
+        Page(driver.executeQuery(filter).toPersistentList(SqlCursor::toArticle))
     }
 
-    override suspend fun isFavoriteArticle(url: Url): Boolean = articlesQuery {
+    override suspend fun isFavoriteArticle(
+        url: Url
+    ): Boolean = articlesQuery {
         isFavoriteArticle(url.toExternalValue())
             .execute()
             .use { cursor -> cursor.next() && cursor.isFavorite }
@@ -165,25 +167,86 @@ private fun FiltersQueries.findInputByType(
     .executeAsOneOrNull()
     .let(Query.Companion::of)
 
-private fun dbModelToArticle(
-    url: String,
-    title: String,
-    author: String?,
-    description: String?,
-    urlToImage: String?,
-    published: Long,
-    // this unused arg is needed just to make function signatures match
-    @Suppress("UNUSED_PARAMETER") savedOn: Long,
-    isFavorite: Boolean,
-): Article = Article(
-    url = UrlFor(url),
-    title = Title(title),
-    author = author?.let(::Author),
-    description = description?.let(::Description),
-    urlToImage = urlToImage?.let(::UrlFor),
-    published = fromMillis(published),
-    isFavorite = isFavorite
-)
+private fun SqlCursor.toArticle() =
+    Article(
+        url = UrlFor(getString(0)!!),
+        title = Title(getString(1)!!),
+        author = getString(2)?.let(::Author),
+        description = getString(3)?.let(::Description),
+        urlToImage = getString(4)?.let(::UrlFor),
+        published = fromMillis(getLong(5)!!),
+        isFavorite = isFavorite,
+        source = getString(8)?.let(::SourceId)
+    )
+
+private fun <T> SqlCursor.toPersistentList(
+    mapper: SqlCursor.() -> T,
+) = persistentListOf<T>().builder().apply {
+    use { cursor ->
+        while (cursor.next()) {
+            add(mapper.invoke(this@toPersistentList))
+        }
+    }
+}.build()
+
+private fun createSqlArguments(
+    count: Int,
+): String {
+    if (count == 0) return "()"
+
+    return buildString(count + 2) {
+        append("(?")
+        repeat(count - 1) {
+            append(",?")
+        }
+        append(')')
+    }
+}
+
+private val Filter.parametersCount: Int
+    get() = if (query?.value == null) 0 else 3 + sources.size
+
+private fun Filter.toSqlQuery(): String {
+    val inputFilter = query?.value?.let {
+        " (title LIKE ? OR author LIKE ? OR description LIKE ?) "
+    }
+    val sourcesFilter = sources.size.takeIf { it > 0 }?.let {
+        " (source IN ${createSqlArguments(count = it)} OR source IS NULL)"
+    }
+
+    val filteringClause = when {
+        inputFilter != null && sourcesFilter != null -> "WHERE $inputFilter AND $sourcesFilter"
+        inputFilter != null -> "WHERE $inputFilter"
+        sourcesFilter != null -> "WHERE $sourcesFilter"
+        else -> ""
+    }
+
+    return "SELECT * FROM Articles $filteringClause ORDER BY saved_on DESC"
+}
+
+private fun SqlPreparedStatement.bindValues(
+    filter: Filter
+) {
+    val boundInput = filter.query?.value?.let { "%${it}%" }
+
+    if (boundInput != null) {
+        bindString(1, boundInput)
+        bindString(2, boundInput)
+        bindString(3, boundInput)
+    }
+
+    val shift = if (boundInput == null) 0 else 3
+
+    filter.sources.map(SourceId::value).forEachIndexed { index, source_ ->
+        bindString(index + 1 + shift, source_)
+    }
+}
+
+private fun SqlDriver.executeQuery(
+    filter: Filter
+) = executeQuery(null, filter.toSqlQuery(), filter.parametersCount) {
+    bindValues(filter)
+}
 
 private inline val SqlCursor.isFavorite: Boolean
-    get() = getLong(6) != 0L
+    get() = getLong(7) != 0L
