@@ -26,10 +26,10 @@
 
 package com.oliynick.max.tea.core.data
 
+import com.oliynick.max.entities.shared.RandomUUID
 import com.oliynick.max.entities.shared.UUID
 import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.entities.shared.UrlFor
-import com.oliynick.max.entities.shared.randomUUID
 import kotlin.jvm.JvmInline
 
 data class User(
@@ -57,7 +57,7 @@ value class Photo(
     val url: Url
 )
 
-fun RandomId() = Id(randomUUID())
+fun RandomId() = Id(RandomUUID())
 
 fun Photo(urlSpec: String) = Photo(UrlFor(urlSpec))
 

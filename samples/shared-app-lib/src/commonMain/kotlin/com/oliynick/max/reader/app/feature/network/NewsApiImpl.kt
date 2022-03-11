@@ -43,7 +43,13 @@ internal class NewsApiImpl(
         sources: ImmutableSet<SourceId>,
         paging: Paging,
     ) = Try {
+        try {
         httpClient.get(EverythingRequest(query, sources, paging)).body<ArticleResponse>()
+        } catch (th: Throwable) {
+            // fixme crashes on IOS
+            th.printStackTrace()
+            ArticleResponse(0, emptyList())
+        }
     }
 
     override suspend fun fetchTopHeadlines(

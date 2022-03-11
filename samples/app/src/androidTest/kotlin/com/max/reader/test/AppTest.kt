@@ -37,7 +37,7 @@ import com.max.reader.app.ui.screens.article.ProgressIndicatorTag
 import com.max.reader.app.ui.theme.AppTheme
 import com.max.reader.environment.ArticleResponse
 import com.max.reader.environment.anyRequest
-import com.oliynick.max.entities.shared.randomUUID
+import com.oliynick.max.entities.shared.RandomUUID
 import com.oliynick.max.reader.app.AppComponent
 import com.oliynick.max.reader.app.AppInitializer
 import com.oliynick.max.reader.app.domain.Author
@@ -63,7 +63,7 @@ internal class AppTest {
         setContent {
             AppTheme(isDarkModeEnabled = true) {
                 ArticlesScreen(
-                    ArticlesState.newLoading(randomUUID(), Filter(Regular, "Input text"), listOf()),
+                    ArticlesState.newLoading(RandomUUID(), Filter(Regular, "Input text"), listOf()),
                     LazyListState(0, 0),
                     Modifier
                 ) {}

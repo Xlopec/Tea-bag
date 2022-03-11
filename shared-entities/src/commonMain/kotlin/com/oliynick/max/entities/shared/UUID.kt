@@ -1,17 +1,13 @@
+@file:Suppress("FunctionName")
+
 package com.oliynick.max.entities.shared
 
 public expect class UUID
 
-@Deprecated("remove", ReplaceWith("UUID()"))
-public expect fun randomUUID(): UUID
+public expect fun RandomUUID(): UUID
 
-public fun UUID(): UUID = randomUUID()
-
-public fun UUID(
+public expect fun UUIDFrom(
     value: String
-): UUID = value.toUUID()
-
-@Deprecated("remove")
-public expect fun String.toUUID(): UUID
+): UUID
 
 public expect fun UUID.toHumanReadable(): String

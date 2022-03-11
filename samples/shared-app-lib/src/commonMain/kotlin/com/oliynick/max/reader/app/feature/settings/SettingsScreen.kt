@@ -24,10 +24,10 @@
 
 package com.oliynick.max.reader.app.feature.settings
 
-import com.oliynick.max.entities.shared.randomUUID
+import com.oliynick.max.entities.shared.RandomUUID
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.TabScreen
 
 object SettingsScreen : TabScreen {
-    override val id: ScreenId = randomUUID()
+    override val id: ScreenId = RandomUUID()
 }

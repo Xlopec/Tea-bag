@@ -24,7 +24,7 @@
 
 package com.oliynick.max.reader.app.feature.navigation
 
-import com.oliynick.max.entities.shared.UUID
+import com.oliynick.max.entities.shared.RandomUUID
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Article
@@ -35,7 +35,7 @@ sealed interface Navigation : Message
 
 data class NavigateToArticleDetails(
     val article: Article,
-    val id: ScreenId = UUID(),
+    val id: ScreenId = RandomUUID(),
 ) : Navigation
 
 data class NavigateToFilters(
@@ -48,11 +48,11 @@ sealed interface TabNavigation : Navigation {
 }
 
 object NavigateToFavorite : TabNavigation {
-    override val id: ScreenId = UUID()
+    override val id: ScreenId = RandomUUID()
 }
 
 object NavigateToFeed : TabNavigation {
-    override val id: ScreenId = UUID()
+    override val id: ScreenId = RandomUUID()
 }
 
 object NavigateToSettings : TabNavigation {
@@ -60,7 +60,7 @@ object NavigateToSettings : TabNavigation {
 }
 
 object NavigateToTrending : TabNavigation {
-    override val id: ScreenId = UUID()
+    override val id: ScreenId = RandomUUID()
 }
 
 object Pop : Navigation

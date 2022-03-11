@@ -26,7 +26,7 @@
 
 package com.oliynick.max.tea.core.debug.component
 
-import com.oliynick.max.entities.shared.randomUUID
+import com.oliynick.max.entities.shared.RandomUUID
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.debug.component.internal.mergeWith
@@ -143,7 +143,7 @@ private suspend fun <M, S, C, J> DebugSession<M, S, J>.notifyServer(
     env: DebugEnv<M, S, C, J>,
     snapshot: Snapshot<M, S, C>,
 ) = with(env.settings) {
-    invoke(NotifyServer(randomUUID(), id, serializer.toServerMessage(snapshot)))
+    invoke(NotifyServer(RandomUUID(), id, serializer.toServerMessage(snapshot)))
 }
 
 private fun <M, S, C, J> JsonSerializer<J>.toServerMessage(
