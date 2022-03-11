@@ -84,7 +84,9 @@ struct AppTabView: View {
             handler(NavigateToSettings.shared)
         }
         
-        if number == tab.tabId, let topItem = (tab as? ArticlesState)?.articles.first {
+        let data = (tab as? ArticlesState)?.loadable.data as? Array<Article> ?? []
+        
+        if number == tab.tabId, !data.isEmpty, let topItem = data.first {
             withAnimation {
                 proxy.scrollTo(topItem.url)
             }
@@ -110,11 +112,11 @@ private extension TabScreen {
         var initialTab = 3
         
         if let articlesState = self as? ArticlesState {
-            if articlesState.query.type.description() == "Regular" {
+            if articlesState.filter.type.description() == "Regular" {
                 initialTab = 0
-            } else if articlesState.query.type.description() == "Favorite" {
+            } else if articlesState.filter.type.description() == "Favorite" {
                 initialTab = 1
-            } else if articlesState.query.type.description() == "Trending" {
+            } else if articlesState.filter.type.description() == "Trending" {
                 initialTab = 2
             }
         }
@@ -148,11 +150,11 @@ private extension ArticlesState {
     var headingText: String {
         var text = "Feed"
         
-        if query.type.description() == "Regular" {
+        if filter.type.description() == "Regular" {
             text = "Feed"
-        } else if query.type.description() == "Favorite" {
+        } else if filter.type.description() == "Favorite" {
             text = "Favorite"
-        } else if query.type.description() == "Trending" {
+        } else if filter.type.description() == "Trending" {
             text = "Trending"
         }
         
@@ -162,11 +164,11 @@ private extension ArticlesState {
     var searchHintText: String {
         var text = "Search in articles..."
         
-        if query.type.description() == "Regular" {
+        if filter.type.description() == "Regular" {
             text = "Search in articles..."
-        } else if query.type.description() == "Favorite" {
+        } else if filter.type.description() == "Favorite" {
             text = "Search in favorite..."
-        } else if query.type.description() == "Trending" {
+        } else if filter.type.description() == "Trending" {
             text = "Search in trending..."
         }
         
