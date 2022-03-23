@@ -7,12 +7,12 @@ import com.oliynick.max.reader.app.feature.network.ArticleElement
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import kotlinx.coroutines.delay
 
-fun foreverWaitingResponse(): ResponseProvider = { _, _ ->
+fun foreverWaitingResponse(): ArticleResponseProvider = { _, _ ->
     delay(Long.MAX_VALUE)
     error("Should never get here")
 }
 
-fun anyRequest(): InputPredicate = { _, _ -> true }
+fun anyArticleRequest(): ArticlePredicate = { _, _ -> true }
 
 fun ArticleResponse(
     vararg articles: ArticleElement

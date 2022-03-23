@@ -49,6 +49,7 @@ import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ta
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.theme.WidgetTheme
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.info.InfoView
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.screens.component.Component
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.screens.component.MessageHandler
 import com.oliynick.max.tea.core.debug.app.feature.server.StartServer
 import com.oliynick.max.tea.core.debug.app.feature.server.StopServer
 import com.oliynick.max.tea.core.debug.app.feature.storage.ExportSessions

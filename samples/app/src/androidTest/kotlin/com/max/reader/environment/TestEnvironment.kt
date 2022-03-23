@@ -12,7 +12,9 @@ import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsModule
 import com.oliynick.max.reader.app.feature.article.list.AndroidShareArticle
 import com.oliynick.max.reader.app.feature.article.list.ArticlesModule
 import com.oliynick.max.reader.app.feature.article.list.NewsApi
+import com.oliynick.max.reader.app.feature.filter.FiltersModule
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
+import com.oliynick.max.reader.app.feature.network.SourcesResponse
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.DelayController
@@ -22,12 +24,16 @@ import kotlinx.coroutines.test.TestCoroutineScope
 interface TestEnvironment : Environment, MockNewsApi, DelayController
 
 interface MockNewsApi : NewsApi, IdlingResource {
-    infix fun InputPredicate.yields(
-        provider: ResponseProvider
+    infix fun ArticlePredicate.yields(
+        provider: ArticleResponseProvider
     )
 
-    infix fun InputPredicate.yields(
+    infix fun ArticlePredicate.yields(
         result: Either<ArticleResponse, AppException>
+    )
+
+    fun yieldsSourcesResponse(
+        result: Either<SourcesResponse, AppException>
     )
 }
 
@@ -39,6 +45,7 @@ fun TestEnvironment(
         AppModule<Environment> by AppModule(),
         ArticlesModule<Environment> by ArticlesModule(AndroidShareArticle(application)),
         ArticleDetailsModule by ArticleDetailsModule(application),
+        FiltersModule<Environment> by FiltersModule(),
         MockNewsApi by TestNewsApi(dispatcher),
         LocalStorage by LocalStorage(application),
         CoroutineScope by TestCoroutineScope(dispatcher),

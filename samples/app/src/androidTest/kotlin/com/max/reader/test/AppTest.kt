@@ -36,18 +36,19 @@ import com.max.reader.app.ui.screens.article.ArticlesScreen
 import com.max.reader.app.ui.screens.article.ProgressIndicatorTag
 import com.max.reader.app.ui.theme.AppTheme
 import com.max.reader.environment.ArticleResponse
-import com.max.reader.environment.anyRequest
+import com.max.reader.environment.anyArticleRequest
+import com.max.reader.environment.invoke
+import com.max.reader.environment.setTestContent
 import com.oliynick.max.entities.shared.RandomUUID
 import com.oliynick.max.reader.app.AppComponent
 import com.oliynick.max.reader.app.AppInitializer
-import com.oliynick.max.reader.app.domain.Author
-import com.oliynick.max.reader.app.domain.Description
-import com.oliynick.max.reader.app.domain.Filter
+import com.oliynick.max.reader.app.domain.*
 import com.oliynick.max.reader.app.domain.FilterType.Regular
-import com.oliynick.max.reader.app.domain.Title
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.network.ArticleElement
+import com.oliynick.max.reader.app.feature.network.SourceElement
 import com.oliynick.max.tea.core.component.states
+import kotlinx.collections.immutable.persistentListOf
 import org.junit.Rule
 import org.junit.Test
 import java.net.URL
@@ -63,7 +64,9 @@ internal class AppTest {
         setContent {
             AppTheme(isDarkModeEnabled = true) {
                 ArticlesScreen(
-                    ArticlesState.newLoading(RandomUUID(), Filter(Regular, "Input text"), listOf()),
+                    ArticlesState.newLoading(RandomUUID(),
+                        Filter(Regular, Query.of("Input text")),
+                        persistentListOf()),
                     LazyListState(0, 0),
                     Modifier
                 ) {}
@@ -77,7 +80,7 @@ internal class AppTest {
     fun testArticlesListIsDisplayedCorrectly() = composeTestRule {
         setTestContent {
 
-            anyRequest() yields ArticleResponse(TestArticleElement)
+            anyArticleRequest() yields ArticleResponse(TestArticleElement)
 
             AppView(
                 AppComponent(
@@ -103,5 +106,7 @@ private val TestArticleElement = ArticleElement(
     Description("Android description"),
     TestDate,
     Title("Android"),
-    TestUrl
+    TestUrl,
+    null,
+    SourceElement(SourceId("cnn"))
 )

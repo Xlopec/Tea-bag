@@ -7,75 +7,96 @@ import com.oliynick.max.reader.app.domain.Query
 import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.feature.article.list.Paging
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
+import com.oliynick.max.reader.app.feature.network.SourcesResponse
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.withContext
 
-typealias InputPredicate = (input: String, paging: Paging) -> Boolean
+typealias ArticlePredicate = (input: Query?, paging: Paging) -> Boolean
 
-typealias ResponseProvider = suspend (input: String, paging: Paging) -> Either<ArticleResponse, AppException>
+typealias ArticleResponseProvider = suspend (input: Query?, paging: Paging) -> Either<ArticleResponse, AppException>
 
-data class MockNewsData(
-    val predicate: InputPredicate,
-    val response: ResponseProvider
+data class ArticlesMockData(
+    val predicate: ArticlePredicate,
+    val response: ArticleResponseProvider,
+)
+
+@JvmInline
+value class SourcesMockData(
+    val response: Either<SourcesResponse, AppException>,
 )
 
 class TestNewsApi(
-    private val dispatcher: TestCoroutineDispatcher
+    private val dispatcher: TestCoroutineDispatcher,
 ) : MockNewsApi, IdlingResource {
 
-    private val requests = mutableListOf<MockNewsData>()
+    private val articlesMockData = mutableListOf<ArticlesMockData>()
+    private val sourcesMockData = mutableListOf<SourcesMockData>()
 
-    override infix fun InputPredicate.yields(
-        provider: ResponseProvider
+    override infix fun ArticlePredicate.yields(
+        provider: ArticleResponseProvider,
     ) {
-        requests += MockNewsData(this, provider)
+        articlesMockData += ArticlesMockData(this, provider)
     }
 
-    override infix fun InputPredicate.yields(
-        result: Either<ArticleResponse, AppException>
+    override infix fun ArticlePredicate.yields(
+        result: Either<ArticleResponse, AppException>,
     ) {
-        requests += MockNewsData(this, { _, _ -> result })
+        articlesMockData += ArticlesMockData(this, { _, _ -> result })
+    }
+
+    override fun yieldsSourcesResponse(result: Either<SourcesResponse, AppException>) {
+        sourcesMockData += SourcesMockData(result)
     }
 
     override suspend fun fetchFromEverything(
         query: Query?,
         sources: ImmutableSet<SourceId>,
-        paging: Paging
+        paging: Paging,
     ): Either<ArticleResponse, AppException> {
-        return dequeResponse(query, paging)
+        return dequeArticlesResponse(query, paging)
     }
 
     override suspend fun fetchTopHeadlines(
         query: Query?,
         sources: ImmutableSet<SourceId>,
-        paging: Paging
+        paging: Paging,
     ): Either<ArticleResponse, AppException> {
-        return dequeResponse(query, paging)
+        return dequeArticlesResponse(query, paging)
     }
 
-    private suspend fun dequeResponse(
-        input: String,
-        paging: Paging
-    ): Either<ArticleResponse, AppException> = withContext(dispatcher) {
+    override suspend fun fetchNewsSources(): Either<SourcesResponse, AppException> {
+        return dequeSourcesResponse()
+    }
 
-        val i = requests.indexOfFirst { (predicate, _) -> predicate(input, paging) }
+    private suspend fun dequeSourcesResponse() =
+        withContext(dispatcher) {
+            require(sourcesMockData.isNotEmpty()) { "there are no mock data for sources api" }
+            sourcesMockData.removeAt(0).response
+        }
+
+    private suspend fun dequeArticlesResponse(
+        input: Query?,
+        paging: Paging,
+    ) = withContext(dispatcher) {
+
+        val i = articlesMockData.indexOfFirst { (predicate, _) -> predicate(input, paging) }
 
         if (i < 0) {
             error(
                 "Couldn't find matching response for arguments input=$input, paging=$paging,\n" +
-                        "registered $requests"
+                        "registered $articlesMockData"
             )
         }
 
-        val (_, response) = requests.removeAt(i)
+        val (_, response) = articlesMockData.removeAt(i)
 
         response(input, paging)
     }
 
     override val isIdleNow: Boolean
-        get() = runBlocking(dispatcher) { requests.isEmpty() }
+        get() = runBlocking(dispatcher) { articlesMockData.isEmpty() && sourcesMockData.isEmpty() }
 
 }
 

@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.intellij.openapi.project.Project
+import com.oliynick.max.tea.core.debug.app.Message
 import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption.*
@@ -31,6 +32,8 @@ import org.jetbrains.compose.splitpane.VerticalSplitPane
 import org.jetbrains.compose.splitpane.rememberSplitPaneState
 
 private val SplitPaneMinContentHeight = 100.dp
+
+typealias MessageHandler = (Message) -> Unit
 
 @OptIn(ExperimentalSplitPaneApi::class)
 @Composable

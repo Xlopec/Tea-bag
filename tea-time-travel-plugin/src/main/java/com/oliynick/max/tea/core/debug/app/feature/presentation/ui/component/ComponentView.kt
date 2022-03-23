@@ -33,6 +33,7 @@ import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.In
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ValueIcon.ClassIcon
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.action.DefaultMouseListener
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.misc.*
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.screens.component.MessageHandler
 import com.oliynick.max.tea.core.debug.app.misc.javaPsiFacade
 import com.oliynick.max.tea.core.debug.app.state.Started
 import com.oliynick.max.tea.core.debug.app.state.component

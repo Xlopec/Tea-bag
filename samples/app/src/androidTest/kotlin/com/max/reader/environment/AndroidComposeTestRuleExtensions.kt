@@ -1,4 +1,4 @@
-package com.max.reader.test
+package com.max.reader.environment
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
@@ -6,7 +6,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.max.reader.environment.TestEnvironment
 import com.oliynick.max.reader.app.command.CloseApp
 import kotlinx.coroutines.flow.MutableSharedFlow
 
