@@ -1,4 +1,3 @@
-import gradle.kotlin.dsl.accessors._3032137ebba2d130c40d1f11fdc37120.classes
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
@@ -9,21 +8,6 @@ plugins {
 
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
-
-val packSourcesJar by tasks.creating(Jar::class) {
-    if (project.hasKotlinMultiplatformPlugin) {
-        dependsOn(tasks["sourcesJar"])
-    } else if (project.hasKotlinJvmPlugin) {
-        dependsOn(tasks.classes)
-        archiveClassifier.set("sources")
-        from(projectSourceSets["main"].allSource)
-    } else {
-        throw ProjectConfigurationException("Can't create \"$name\" task for project $project", listOf())
-    }
-
-    group = "release"
-    description = "Packs sources jar depending on kotlin plugin applied"
-}
 
 val packJavadocJar by tasks.registering(Jar::class) {
     dependsOn(tasks.named("dokkaHtml"))
@@ -51,43 +35,39 @@ val release by tasks.registering {
 }
 
 publishing {
-    publications {
+    publications.withType<MavenPublication> {
+        artifact(packJavadocJar)
 
         val projectName = name
 
-        create<MavenPublication>(projectName) {
-            artifact(packSourcesJar)
-            artifact(packJavadocJar)
+        pom {
+            name.set(projectName)
+            description.set(
+                "TEA Bag is simple implementation of TEA written in Kotlin. " +
+                        "${projectName.capitalize()} is part of this project"
+            )
+            url.set("https://github.com/Xlopec/Tea-bag.git")
 
-            pom {
-                name.set(projectName)
-                description.set(
-                    "TEA Bag is simple implementation of TEA written in Kotlin. " +
-                            "${projectName.capitalize()} is part of this project"
-                )
-                url.set("https://github.com/Xlopec/Tea-bag.git")
-
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
+            licenses {
+                license {
+                    name.set("MIT License")
+                    url.set("https://opensource.org/licenses/MIT")
                 }
+            }
 
-                developers {
-                    developer {
-                        id.set("Maxxx")
-                        name.set("Maksym Oliinyk")
-                        url.set("https://github.com/Xlopec")
-                        organizationUrl.set("https://github.com/Xlopec")
-                    }
+            developers {
+                developer {
+                    id.set("Maxxx")
+                    name.set("Maksym Oliinyk")
+                    url.set("https://github.com/Xlopec")
+                    organizationUrl.set("https://github.com/Xlopec")
                 }
+            }
 
-                scm {
-                    connection.set("scm:git:git://github.com/Xlopec/Tea-bag.git")
-                    developerConnection.set("scm:git:ssh://github.com:Xlopec/Tea-bag.git")
-                    url.set("https://github.com/Xlopec/Tea-bag/tree/master")
-                }
+            scm {
+                connection.set("scm:git:git://github.com/Xlopec/Tea-bag.git")
+                developerConnection.set("scm:git:ssh://github.com:Xlopec/Tea-bag.git")
+                url.set("https://github.com/Xlopec/Tea-bag/tree/master")
             }
         }
     }
@@ -111,11 +91,6 @@ signing {
     val publishing: PublishingExtension by project
 
     sign(publishing.publications)
-}
-
-artifacts {
-    archives(packSourcesJar)
-    archives(packJavadocJar)
 }
 
 tasks.withType<DokkaTask>().configureEach {
