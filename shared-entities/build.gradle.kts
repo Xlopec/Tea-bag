@@ -1,5 +1,5 @@
 plugins {
-    `multiplatform-library`
+    `published-multiplatform-library`
 }
 
 kotlin {
