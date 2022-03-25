@@ -2,7 +2,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
     `maven-publish`
-    signing
+    id("signing-convention")
     id("org.jetbrains.dokka")
 }
 
@@ -35,62 +35,16 @@ val release by tasks.registering {
 }
 
 publishing {
+    // note that we have preconfigured maven publications
     publications.withType<MavenPublication> {
         artifact(packJavadocJar)
-
-        val projectName = name
-
-        pom {
-            name.set(projectName)
-            description.set(
-                "TEA Bag is simple implementation of TEA written in Kotlin. " +
-                        "${projectName.capitalize()} is part of this project"
-            )
-            url.set("https://github.com/Xlopec/Tea-bag.git")
-
-            licenses {
-                license {
-                    name.set("MIT License")
-                    url.set("https://opensource.org/licenses/MIT")
-                }
-            }
-
-            developers {
-                developer {
-                    id.set("Maxxx")
-                    name.set("Maksym Oliinyk")
-                    url.set("https://github.com/Xlopec")
-                    organizationUrl.set("https://github.com/Xlopec")
-                }
-            }
-
-            scm {
-                connection.set("scm:git:git://github.com/Xlopec/Tea-bag.git")
-                developerConnection.set("scm:git:ssh://github.com:Xlopec/Tea-bag.git")
-                url.set("https://github.com/Xlopec/Tea-bag/tree/master")
-            }
-        }
+        // other artifacts are added automatically
+        pom.configurePom(project.name)
     }
 
     repositories {
-        mavenLocal()
-        maven {
-            name = "OSSRH"
-            url = libraryVersion.toOssrhDeploymentUri()
-            credentials {
-                username = ossrhUser
-                password = ossrhPassword
-            }
-        }
+        configureRepositories(project)
     }
-}
-
-signing {
-    useInMemoryPgpKeys(signingKey, signingPassword)
-
-    val publishing: PublishingExtension by project
-
-    sign(publishing.publications)
 }
 
 tasks.withType<DokkaTask>().configureEach {
