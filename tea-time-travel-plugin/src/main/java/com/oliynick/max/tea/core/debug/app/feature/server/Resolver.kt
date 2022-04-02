@@ -1,14 +1,14 @@
 package com.oliynick.max.tea.core.debug.app.feature.server
 
 import com.intellij.openapi.project.Project
-import com.oliynick.max.entities.shared.datatypes.Either
-import com.oliynick.max.entities.shared.datatypes.mapL
 import com.oliynick.max.tea.core.debug.app.*
 import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
 import com.oliynick.max.tea.core.debug.app.feature.notification.*
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.balloon.showBalloon
 import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
 import com.oliynick.max.tea.core.debug.protocol.ApplyState
+import com.oliynick.max.tea.data.Either
+import com.oliynick.max.tea.data.mapL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.withContext

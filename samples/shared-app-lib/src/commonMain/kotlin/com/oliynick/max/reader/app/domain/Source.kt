@@ -1,6 +1,6 @@
 package com.oliynick.max.reader.app.domain
 
-import com.oliynick.max.entities.shared.Url
+import com.oliynick.max.tea.data.Url
 import kotlin.jvm.JvmInline
 
 data class Source(

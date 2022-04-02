@@ -26,10 +26,10 @@
 
 package com.oliynick.max.tea.core.data
 
-import com.oliynick.max.entities.shared.RandomUUID
-import com.oliynick.max.entities.shared.UUID
-import com.oliynick.max.entities.shared.Url
-import com.oliynick.max.entities.shared.UrlFor
+import com.oliynick.max.tea.data.RandomUUID
+import com.oliynick.max.tea.data.UUID
+import com.oliynick.max.tea.data.Url
+import com.oliynick.max.tea.data.UrlFor
 import kotlin.jvm.JvmInline
 
 data class User(

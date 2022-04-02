@@ -1,9 +1,9 @@
 package com.oliynick.max.reader.app.feature.network
 
-import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.domain.SourceDescription
 import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.domain.SourceName
+import com.oliynick.max.tea.data.Url
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

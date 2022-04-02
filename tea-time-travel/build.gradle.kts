@@ -40,6 +40,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":tea-core"))
+                implementation(project(":tea-data"))
                 implementation(project(":tea-time-travel-protocol"))
 
                 implementation(libs.stdlib)

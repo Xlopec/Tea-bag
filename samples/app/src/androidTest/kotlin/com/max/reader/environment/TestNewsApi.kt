@@ -1,13 +1,13 @@
 package com.max.reader.environment
 
 import androidx.compose.ui.test.IdlingResource
-import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.domain.Query
 import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.feature.article.list.Paging
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import com.oliynick.max.reader.app.feature.network.SourcesResponse
+import com.oliynick.max.tea.data.Either
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher

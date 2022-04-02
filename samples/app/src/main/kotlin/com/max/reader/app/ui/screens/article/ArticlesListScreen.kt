@@ -57,7 +57,6 @@ import coil.compose.rememberImagePainter
 import com.max.reader.app.MessageHandler
 import com.max.reader.app.ui.misc.ColumnMessage
 import com.max.reader.app.ui.misc.SearchHeader
-import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Article
@@ -68,6 +67,7 @@ import com.oliynick.max.reader.app.feature.article.list.*
 import com.oliynick.max.reader.app.feature.navigation.NavigateToArticleDetails
 import com.oliynick.max.reader.app.feature.navigation.NavigateToFilters
 import com.oliynick.max.reader.app.misc.*
+import com.oliynick.max.tea.data.Url
 import java.text.SimpleDateFormat
 import java.util.*
 

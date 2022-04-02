@@ -39,7 +39,6 @@ import com.max.reader.environment.ArticleResponse
 import com.max.reader.environment.anyArticleRequest
 import com.max.reader.environment.invoke
 import com.max.reader.environment.setTestContent
-import com.oliynick.max.entities.shared.RandomUUID
 import com.oliynick.max.reader.app.AppComponent
 import com.oliynick.max.reader.app.AppInitializer
 import com.oliynick.max.reader.app.domain.*
@@ -48,6 +47,7 @@ import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.network.ArticleElement
 import com.oliynick.max.reader.app.feature.network.SourceElement
 import com.oliynick.max.tea.core.component.states
+import com.oliynick.max.tea.data.RandomUUID
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Rule
 import org.junit.Test

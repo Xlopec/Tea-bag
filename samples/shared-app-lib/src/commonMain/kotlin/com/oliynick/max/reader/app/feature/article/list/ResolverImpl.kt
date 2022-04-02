@@ -2,8 +2,6 @@
 
 package com.oliynick.max.reader.app.feature.article.list
 
-import com.oliynick.max.entities.shared.datatypes.Either
-import com.oliynick.max.entities.shared.datatypes.fold
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.Log
 import com.oliynick.max.reader.app.Message
@@ -16,6 +14,8 @@ import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.reader.app.misc.mapToPersistentList
 import com.oliynick.max.tea.core.component.effect
 import com.oliynick.max.tea.core.component.sideEffect
+import com.oliynick.max.tea.data.Either
+import com.oliynick.max.tea.data.fold
 import kotlinx.collections.immutable.ImmutableList
 
 fun interface ShareArticle {

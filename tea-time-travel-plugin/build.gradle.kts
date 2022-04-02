@@ -84,6 +84,7 @@ dependencies {
     implementation(project(":tea-core"))
     implementation(project(":tea-time-travel-protocol"))
     implementation(project(":tea-time-travel-adapter-gson"))
+    implementation(project(":tea-data"))
 
     implementation(libs.stdlib)
     implementation(libs.stdlib.reflect)

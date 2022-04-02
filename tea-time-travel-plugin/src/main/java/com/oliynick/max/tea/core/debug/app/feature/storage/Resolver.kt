@@ -3,13 +3,13 @@ package com.oliynick.max.tea.core.debug.app.feature.storage
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.intellij.ide.util.PropertiesComponent
-import com.oliynick.max.entities.shared.datatypes.Either
-import com.oliynick.max.entities.shared.datatypes.Left
 import com.oliynick.max.tea.core.debug.app.NotificationMessage
 import com.oliynick.max.tea.core.debug.app.StoreCommand
 import com.oliynick.max.tea.core.debug.app.feature.notification.ComponentImported
 import com.oliynick.max.tea.core.debug.app.feature.notification.OperationException
 import com.oliynick.max.tea.core.debug.app.misc.settings
+import com.oliynick.max.tea.data.Either
+import com.oliynick.max.tea.data.Left
 import com.oliynick.max.tea.core.debug.app.toPluginException
 
 fun interface StorageResolver {

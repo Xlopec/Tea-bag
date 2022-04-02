@@ -12,10 +12,6 @@
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _indicatorColor: State&lt;Color></ID>
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _textBackground: State&lt;Color></ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") internal fun Null.toReadableString(): String</ID>
-    <ID>LongMethod:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
-    <ID>LongMethod:FiltersScreen.kt$@OptIn( ExperimentalMaterialApi::class, ExperimentalFoundationApi::class, ExperimentalTransitionApi::class ) @Composable fun FiltersScreen( state: FiltersState, handler: MessageHandler, )</ID>
-    <ID>LongMethod:SourcesSection.kt$@OptIn(ExperimentalMaterialApi::class) @Composable fun SourcesSection( state: FiltersState, id: ScreenId, modifier: Modifier, sources: Loadable&lt;PersistentList&lt;Source>>, childTransitionState: ChildTransitionState, handler: MessageHandler, )</ID>
-    <ID>LongMethod:TempTest.kt$TempTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
     <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C>, noinline resolver: Resolver&lt;C, M>, noinline updater: Updater&lt;M, S, C>, scope: CoroutineScope, // todo: group to reduce number of arguments url: Url = Localhost, jsonSerializer: JsonSerializer&lt;J>, // see https://youtrack.jetbrains.com/issue/KT-47195 // see https://github.com/Kotlin/kotlinx.coroutines/issues/3005#issuecomment-1014577573 noinline sessionFactory: SessionFactory&lt;M, S, J> = { settings, block -> HttpClient.session(settings, block) }, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
     <ID>LongParameterList:SettingsScreen.kt$( icon: ImageVector, imageDescription: String?, title: String, description: String, checked: Boolean, enabled: Boolean = true, onCheckedChange: (Boolean) -> Unit, )</ID>
     <ID>LongParameterList:SourcesSection.kt$( state: FiltersState, id: ScreenId, modifier: Modifier, sources: Loadable&lt;PersistentList&lt;Source>>, childTransitionState: ChildTransitionState, handler: MessageHandler, )</ID>
@@ -65,16 +61,15 @@
     <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>
     <ID>NewLineAtEndOfFile:Adapters.kt$com.oliynick.max.reader.app.serialization.Adapters.kt</ID>
     <ID>NewLineAtEndOfFile:AndroidAppComponent.kt$com.max.reader.app.AndroidAppComponent.kt</ID>
-    <ID>NewLineAtEndOfFile:AndroidComposeTestRuleExtensions.kt$com.max.reader.test.AndroidComposeTestRuleExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:Annotations.kt$com.oliynick.max.reader.app.Annotations.kt</ID>
     <ID>NewLineAtEndOfFile:ArticleDetailsModule.kt$com.oliynick.max.reader.app.feature.article.details.ArticleDetailsModule.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentException.kt$com.oliynick.max.tea.core.misc.ComponentException.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentTest.kt$com.oliynick.max.tea.core.component.ComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:ComposeAnnotations.kt$com.oliynick.max.reader.app.ComposeAnnotations.kt</ID>
     <ID>NewLineAtEndOfFile:CompositionsLogger.kt$com.max.reader.app.ui.misc.CompositionsLogger.kt</ID>
-    <ID>NewLineAtEndOfFile:Date.kt$com.oliynick.max.entities.shared.Date.kt</ID>
+    <ID>NewLineAtEndOfFile:Date.kt$com.oliynick.max.tea.data.Date.kt</ID>
     <ID>NewLineAtEndOfFile:DebuggableComponentTest.kt$com.oliynick.max.tea.core.debug.component.DebuggableComponentTest.kt</ID>
-    <ID>NewLineAtEndOfFile:Either.kt$com.oliynick.max.entities.shared.datatypes.Either.kt</ID>
+    <ID>NewLineAtEndOfFile:Either.kt$com.oliynick.max.tea.data.Either.kt</ID>
     <ID>NewLineAtEndOfFile:Environment.kt$com.oliynick.max.reader.app.Environment.kt</ID>
     <ID>NewLineAtEndOfFile:ExportImportTest.kt$com.oliynick.max.tea.core.debug.app.feature.storage.ExportImportTest.kt</ID>
     <ID>NewLineAtEndOfFile:IosAnnotations.kt$com.oliynick.max.reader.app.IosAnnotations.kt</ID>
@@ -88,8 +83,8 @@
     <ID>NewLineAtEndOfFile:PopScreen.kt$com.oliynick.max.reader.app.feature.navigation.PopScreen.kt</ID>
     <ID>NewLineAtEndOfFile:Screens.kt$com.oliynick.max.reader.app.Screens.kt</ID>
     <ID>NewLineAtEndOfFile:Thread.kt$com.oliynick.max.tea.core.misc.Thread.kt</ID>
-    <ID>NewLineAtEndOfFile:UUID.kt$com.oliynick.max.entities.shared.UUID.kt</ID>
-    <ID>NewLineAtEndOfFile:Url.kt$com.oliynick.max.entities.shared.Url.kt</ID>
+    <ID>NewLineAtEndOfFile:UUID.kt$com.oliynick.max.tea.data.UUID.kt</ID>
+    <ID>NewLineAtEndOfFile:Url.kt$com.oliynick.max.tea.data.Url.kt</ID>
     <ID>NewLineAtEndOfFile:build.gradle.kts$.build.gradle.kts</ID>
     <ID>NewLineAtEndOfFile:currentThreadName.kt$com.oliynick.max.tea.core.misc.currentThreadName.kt</ID>
     <ID>NewLineAtEndOfFile:multiplatform-library.gradle.kts$.multiplatform-library.gradle.kts</ID>
@@ -130,17 +125,17 @@
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;S> messageAsStateUpdate( message: S, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, S></ID>
     <ID>UndocumentedPublicFunction:ComponentLogic.kt$fun testUpdate(message: Message, state: TodoState): UpdateWith&lt;TodoState, Command></ID>
     <ID>UndocumentedPublicFunction:ComponentLogic.kt$suspend fun testResolver(cmd: Command): Set&lt;Message></ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when attaching interceptor to component, then original sequence of snapshots pipes through it`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component with specific dispatcher, then updater runs on this dispatcher`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component, given initializer throws exception, then it's handled by coroutine scope`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component, given updater throws exception, then it's handled by coroutine scope`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers, then component is initialized only once`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers, then snapshots are shared among them`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component receives input, given recursive calculations, then it emits correct sequence of snapshots`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component receives input, then it emits correct sequence of snapshots`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when subscriber disconnects, then component initializer is re-invoked`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when upstream receives new input, then previous downstream is canceled`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when attaching interceptor to component then original sequence of snapshots pipes through it`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component given initializer throws exception then it's handled by coroutine scope`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component given updater throws exception then it's handled by coroutine scope`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component with specific dispatcher then updater runs on this dispatcher`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers then component is initialized only once`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers then it can serve multiple message sources`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers then snapshots are shared among them`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component receives input given recursive calculations then it emits correct sequence of snapshots`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component receives input then it emits correct sequence of snapshots`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when subscriber disconnects then component initializer is re-invoked`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when upstream receives new input then previous downstream is canceled`()</ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$ForeverWaitingResolver$suspend fun resolveForever( t: T, ): Nothing</ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$fun ThrowingInitializer( th: Throwable, ): Initializer&lt;Nothing, Nothing></ID>
     <ID>UndocumentedPublicFunction:Date.kt$public actual fun Date.toMillis(): Long</ID>

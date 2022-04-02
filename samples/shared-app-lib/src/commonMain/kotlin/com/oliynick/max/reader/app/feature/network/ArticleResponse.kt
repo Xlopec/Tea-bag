@@ -1,11 +1,11 @@
 package com.oliynick.max.reader.app.feature.network
 
-import com.oliynick.max.entities.shared.Date
-import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.domain.Author
 import com.oliynick.max.reader.app.domain.Description
 import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.domain.Title
+import com.oliynick.max.tea.data.Date
+import com.oliynick.max.tea.data.Url
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

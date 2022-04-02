@@ -4,7 +4,6 @@ package com.max.reader.environment
 
 import android.app.Application
 import androidx.compose.ui.test.IdlingResource
-import com.oliynick.max.entities.shared.datatypes.Either
 import com.oliynick.max.reader.app.AppException
 import com.oliynick.max.reader.app.AppModule
 import com.oliynick.max.reader.app.Environment
@@ -16,6 +15,7 @@ import com.oliynick.max.reader.app.feature.filter.FiltersModule
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import com.oliynick.max.reader.app.feature.network.SourcesResponse
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
+import com.oliynick.max.tea.data.Either
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.DelayController
 import kotlinx.coroutines.test.TestCoroutineDispatcher

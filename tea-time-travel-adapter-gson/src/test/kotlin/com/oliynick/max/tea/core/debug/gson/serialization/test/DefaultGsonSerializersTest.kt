@@ -27,7 +27,6 @@ package com.oliynick.max.tea.core.debug.gson.serialization.test
 import com.google.gson.JsonNull
 import com.google.gson.JsonPrimitive
 import com.google.gson.reflect.TypeToken
-import com.oliynick.max.entities.shared.UUID
 import com.oliynick.max.tea.core.data.Id
 import com.oliynick.max.tea.core.data.Name
 import com.oliynick.max.tea.core.data.Photo
@@ -36,6 +35,7 @@ import com.oliynick.max.tea.core.debug.gson.Gson
 import com.oliynick.max.tea.core.debug.gson.GsonClientMessage
 import com.oliynick.max.tea.core.debug.gson.serialization.data.Singleton
 import com.oliynick.max.tea.core.debug.protocol.*
+import com.oliynick.max.tea.data.UUID
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4

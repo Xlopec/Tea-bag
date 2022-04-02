@@ -2,16 +2,16 @@
 
 package com.oliynick.max.reader.app.feature.filter
 
-import com.oliynick.max.entities.shared.Url
-import com.oliynick.max.entities.shared.UrlFor
-import com.oliynick.max.entities.shared.datatypes.fold
-import com.oliynick.max.entities.shared.domain
 import com.oliynick.max.reader.app.domain.Source
 import com.oliynick.max.reader.app.feature.article.list.NewsApi
 import com.oliynick.max.reader.app.feature.network.SourceResponseElement
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.reader.app.misc.mapToPersistentList
 import com.oliynick.max.tea.core.component.effect
+import com.oliynick.max.tea.data.Url
+import com.oliynick.max.tea.data.UrlFor
+import com.oliynick.max.tea.data.domain
+import com.oliynick.max.tea.data.fold
 
 interface FiltersResolver<Env> {
 

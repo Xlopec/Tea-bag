@@ -38,7 +38,7 @@ dependencies {
 
     api(project(":tea-time-travel-protocol"))
     api(libs.gson)
-    implementation(project(":shared-entities"))
+    implementation(project(":tea-data"))
     implementation(libs.stdlib.reflect)
 
     implementation(libs.stdlib)

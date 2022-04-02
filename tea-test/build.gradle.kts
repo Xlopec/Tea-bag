@@ -48,7 +48,7 @@ kotlin {
                 api(libs.kotlin.test)
                 api("org.jetbrains.kotlin:kotlin-test-annotations-common:1.6.10")
                 implementation(project(":tea-core"))
-                api(project(":shared-entities"))
+                api(project(":tea-data"))
             }
         }
 

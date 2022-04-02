@@ -1,12 +1,12 @@
 package com.oliynick.max.reader.app.serialization
 
 import com.google.gson.*
-import com.oliynick.max.entities.shared.Date
-import com.oliynick.max.entities.shared.Url
 import com.oliynick.max.reader.app.domain.Author
 import com.oliynick.max.reader.app.domain.Description
 import com.oliynick.max.reader.app.domain.Title
 import com.oliynick.max.reader.app.domain.tryCreate
+import com.oliynick.max.tea.data.Date
+import com.oliynick.max.tea.data.Url
 import java.lang.reflect.Type
 import java.net.URL
 import java.text.SimpleDateFormat

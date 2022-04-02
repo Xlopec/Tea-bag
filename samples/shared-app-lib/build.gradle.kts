@@ -57,7 +57,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(project(":shared-entities"))
+                api(project(":tea-core"))
+                api(project(":tea-data"))
                 api(libs.collections.immutable)
                 api(libs.coroutines.core)
                 api(project(":tea-core"))

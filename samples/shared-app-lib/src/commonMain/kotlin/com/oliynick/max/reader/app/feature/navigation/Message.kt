@@ -24,12 +24,12 @@
 
 package com.oliynick.max.reader.app.feature.navigation
 
-import com.oliynick.max.entities.shared.RandomUUID
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.domain.Filter
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
+import com.oliynick.max.tea.data.RandomUUID
 
 sealed interface Navigation : Message
 

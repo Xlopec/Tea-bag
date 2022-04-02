@@ -24,11 +24,11 @@
 
 package com.oliynick.max.reader.app
 
-import com.oliynick.max.entities.shared.UUID
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.feature.navigation.*
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.data.UUID
 import kotlinx.collections.immutable.persistentListOf
 
 typealias ScreenId = UUID

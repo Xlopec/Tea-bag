@@ -5,10 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.max.reader.app.ui.misc.ColumnMessage
 import com.max.reader.app.ui.theme.ThemedPreview
-import com.oliynick.max.entities.shared.now
 import com.oliynick.max.reader.app.domain.*
 import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.misc.*
+import com.oliynick.max.tea.data.now
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import java.net.URL

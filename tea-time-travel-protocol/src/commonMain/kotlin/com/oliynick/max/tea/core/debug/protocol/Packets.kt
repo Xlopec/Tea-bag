@@ -26,7 +26,7 @@
 
 package com.oliynick.max.tea.core.debug.protocol
 
-import com.oliynick.max.entities.shared.UUID
+import com.oliynick.max.tea.data.UUID
 
 /**
  * Message that notifies a debug server about component's state changes

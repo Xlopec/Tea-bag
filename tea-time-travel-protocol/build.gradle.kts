@@ -31,7 +31,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(project(":shared-entities"))
+                implementation(project(":tea-data"))
                 implementation(libs.stdlib)
             }
         }

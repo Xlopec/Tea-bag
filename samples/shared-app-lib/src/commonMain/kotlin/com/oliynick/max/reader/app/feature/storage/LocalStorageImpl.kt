@@ -1,6 +1,5 @@
 package com.oliynick.max.reader.app.feature.storage
 
-import com.oliynick.max.entities.shared.*
 import com.oliynick.max.reader.app.IO
 import com.oliynick.max.reader.app.domain.*
 import com.oliynick.max.reader.app.domain.Query
@@ -10,6 +9,7 @@ import com.oliynick.max.reader.app.storage.AppDatabase
 import com.oliynick.max.reader.app.storage.ArticlesQueries
 import com.oliynick.max.reader.app.storage.FiltersQueries
 import com.oliynick.max.reader.app.storage.RecentSearchesQueries
+import com.oliynick.max.tea.data.*
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set

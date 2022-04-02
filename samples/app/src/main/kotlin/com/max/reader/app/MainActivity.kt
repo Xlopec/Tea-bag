@@ -36,6 +36,7 @@ import com.oliynick.max.reader.app.command.CloseApp
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.feature.settings.SystemDarkModeChanged
 import com.oliynick.max.reader.app.systemDarkModeEnabled
+import com.oliynick.max.tea.core.ExperimentalTeaApi
 import com.oliynick.max.tea.core.component.observeCommands
 import com.oliynick.max.tea.core.component.states
 import com.oliynick.max.tea.core.component.subscribeIn
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private val systemDarkModeChanges = MutableSharedFlow<SystemDarkModeChanged>()
 
+    @OptIn(ExperimentalTeaApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_NewsReader)
         super.onCreate(savedInstanceState)

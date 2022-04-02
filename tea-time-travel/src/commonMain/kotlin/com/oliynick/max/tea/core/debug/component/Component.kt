@@ -26,12 +26,12 @@
 
 package com.oliynick.max.tea.core.debug.component
 
-import com.oliynick.max.entities.shared.RandomUUID
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.debug.component.internal.mergeWith
 import com.oliynick.max.tea.core.debug.protocol.*
 import com.oliynick.max.tea.core.debug.session.*
+import com.oliynick.max.tea.data.RandomUUID
 import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
