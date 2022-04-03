@@ -57,16 +57,13 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                //api(project(":tea-data"))
+                api(project(":tea-core"))
+                api(project(":tea-data"))
                 api(libs.collections.immutable)
                 api(libs.coroutines.core)
-                api(project(":tea-core"))
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.logging)
-
-                //implementation(libs.ktor.client.json)
-                //implementation(libs.ktor.client.serialization)
 
                 implementation(libs.ktor.client.negotiation)
                 implementation(libs.ktor.serialization.json)
