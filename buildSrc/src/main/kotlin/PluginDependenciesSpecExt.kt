@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +28,6 @@ import org.gradle.plugin.use.PluginDependencySpec
 
 fun PluginDependenciesSpec.intellij(): PluginDependencySpec =
     id("org.jetbrains.intellij")
-
-fun PluginDependenciesSpec.publishedLibrary(): PluginDependencySpec =
-    id("published-library")
 
 fun DependencyHandlerScope.remoteImplementation(dependencyNotation: Any) {
     add("remoteImplementation", dependencyNotation)

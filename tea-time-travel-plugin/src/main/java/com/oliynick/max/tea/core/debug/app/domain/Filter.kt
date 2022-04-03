@@ -20,25 +20,27 @@ package com.oliynick.max.tea.core.debug.app.domain
 
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption.*
 import java.util.*
-import kotlin.collections.HashSet
 
 typealias Predicate = (String) -> Boolean
 
+// todo make a sealed interface with predicate
 enum class FilterOption {
     SUBSTRING,
     REGEX,
     WORDS
 }
 
+private val MatchAllValidatedPredicate: Validated<Predicate> = Valid("") { true }
+
 class Filter private constructor(
     val option: FilterOption,
     val ignoreCase: Boolean,
-    val predicate: Validated<Predicate>? = null
+    val predicate: Validated<Predicate>
 ) {
 
     companion object {
 
-        private val EMPTY = Filter(option = SUBSTRING, ignoreCase = true)
+        private val EMPTY = Filter(option = SUBSTRING, ignoreCase = true, predicate = MatchAllValidatedPredicate)
 
         fun empty() = EMPTY
 
@@ -49,7 +51,7 @@ class Filter private constructor(
         ): Filter {
 
             if (filter.isEmpty()) {
-                return Filter(option, ignoreCase)
+                return Filter(option, ignoreCase, MatchAllValidatedPredicate)
             }
 
             return when (option) {
@@ -68,8 +70,27 @@ class Filter private constructor(
         }
     }
 
-    val isEmpty: Boolean = predicate == null
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
+        other as Filter
+
+        if (option != other.option) return false
+        if (ignoreCase != other.ignoreCase) return false
+        if (predicate != other.predicate) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = option.hashCode()
+        result = 31 * result + ignoreCase.hashCode()
+        result = 31 * result + predicate.hashCode()
+        return result
+    }
+
+    override fun toString(): String = "Filter(option=$option, ignoreCase=$ignoreCase, predicate=$predicate)"
 }
 
 fun SubstringPredicate(
@@ -116,27 +137,26 @@ fun RegexPredicate(
  * or any its child value matches regex.
  * Any non-matching siblings of the current value will be filtered out
  */
-fun applyTo(
-    value: Value,
-    predicate: Predicate
+fun Predicate.applyTo(
+    value: Value
 ): Value? =
     when {
-        value.primitiveTypeName?.let(predicate) == true || (value is Null && predicate(null.toString())) -> value
-        value is CollectionWrapper -> applyToWrapper(value, predicate)
-        value is Ref -> applyToRef(value, predicate)
+        value.primitiveTypeName?.let(this) == true || (value is Null && this(null.toString())) -> value
+        value.stringValue?.let(this) == true -> value
+        value is CollectionWrapper -> applyToWrapper(value)
+        value is Ref -> applyToRef(value)
         else -> null
     }
 
-private fun applyToRef(
-    ref: Ref,
-    predicate: Predicate
+private fun Predicate.applyToRef(
+    ref: Ref
 ): Ref? {
 
     fun applyToProp(
         property: Property
     ): Property? =
-        if (predicate(property.name)) property
-        else applyTo(property.v, predicate)
+        if (this(property.name)) property
+        else applyTo(property.v)
             ?.let { filteredValue ->
                 Property(
                     property.name,
@@ -144,17 +164,16 @@ private fun applyToRef(
                 )
             }
 
-    return if (predicate(ref.type.name)) ref
+    return if (this(ref.type.name)) ref
     else ref.properties.mapNotNullTo(HashSet(ref.properties.size), ::applyToProp)
-        .takeIf { filteredProps -> filteredProps.isNotEmpty() }
+        .takeIf(Collection<*>::isNotEmpty)
         ?.let { ref.copy(properties = it) }
 }
 
-private fun applyToWrapper(
-    wrapper: CollectionWrapper,
-    predicate: Predicate
+fun Predicate.applyToWrapper(
+    wrapper: CollectionWrapper
 ): CollectionWrapper? =
-    wrapper.value
-        .mapNotNull { v -> applyTo(v, predicate) }
-        .takeIf { filtered -> filtered.isNotEmpty() }
+    wrapper.items
+        .mapNotNull(::applyTo)
+        .takeIf(Collection<*>::isNotEmpty)
         ?.let(::CollectionWrapper)

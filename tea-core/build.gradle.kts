@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,18 +22,43 @@
  * SOFTWARE.
  */
 
-import Libraries.coroutinesCore
-import Libraries.kotlinStdLib
-
 plugins {
-    publishedLibrary()
+    `published-multiplatform-library`
 }
 
-dependencies {
+kotlin {
 
-    api(coroutinesCore)
+    optIn(
+        "kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "kotlinx.coroutines.FlowPreview",
+        "kotlinx.coroutines.InternalCoroutinesApi",
+        "com.oliynick.max.tea.core.InternalTeaApi",
+        "com.oliynick.max.tea.core.ExperimentalTeaApi"
+    )
 
-    implementation(kotlinStdLib)
+    sourceSets {
 
-    testImplementation(project(":tea-test"))
+        val commonMain by getting {
+            dependencies {
+                api(libs.coroutines.core)
+                implementation(libs.stdlib)
+            }
+        }
+
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test)
+                implementation(libs.atomicfu)
+                implementation(libs.coroutines.test)
+            }
+        }
+
+        val jvmMain by getting
+
+        val jvmTest by getting
+
+        val iosMain by getting
+
+        val iosTest by getting
+    }
 }

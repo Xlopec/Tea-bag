@@ -16,6 +16,9 @@
 
 package com.oliynick.max.tea.core.debug.app.domain
 
+import com.oliynick.max.tea.core.debug.app.misc.map
+import com.oliynick.max.tea.core.debug.app.state.filteredBy
+import com.oliynick.max.tea.core.debug.app.state.toFiltered
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
@@ -38,66 +41,67 @@ data class SnapshotMeta(
 
 data class OriginalSnapshot(
     val meta: SnapshotMeta,
-    val message: Value,
-    val state: Value
+    val message: Value?,
+    val state: Value,
+    val commands: CollectionWrapper,
 )
 
-class FilteredSnapshot private constructor(
+data class FilteredSnapshot(
     val meta: SnapshotMeta,
     val message: Value? = null,
-    val state: Value? = null
+    val state: Value? = null,
+    val commands: CollectionWrapper? = null,
 ) {
-
-    companion object {
-
-        fun ofMessage(
-            meta: SnapshotMeta,
-            message: Value
-        ) = FilteredSnapshot(meta, message)
-
-        fun ofState(
-            meta: SnapshotMeta,
-            state: Value
-        ) = FilteredSnapshot(meta, state = state)
-
-        fun ofBoth(
-            meta: SnapshotMeta,
-            message: Value,
-            state: Value
-        ) = FilteredSnapshot(meta, message, state)
+    init {
+        require(message != null || state != null || commands != null) { "failed requirement $this" }
     }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as FilteredSnapshot
-
-        if (meta != other.meta) return false
-        if (message != other.message) return false
-        if (state != other.state) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = meta.hashCode()
-        result = 31 * result + (message?.hashCode() ?: 0)
-        result = 31 * result + (state?.hashCode() ?: 0)
-        return result
-    }
-
-    override fun toString(): String = "FilteredSnapshot(meta=$meta, message=$message, state=$state)"
-
 }
 
 data class ComponentDebugState(
     val id: ComponentId,
     val state: Value,
+    // fixme we should re-model this bit, invariant checks should reside inside a dedicated entity
     val filter: Filter = Filter.empty(),
     val snapshots: PersistentList<OriginalSnapshot> = persistentListOf(),
     val filteredSnapshots: PersistentList<FilteredSnapshot> = persistentListOf()
-)
+) {
+    /**
+     * Creates already reset debug state
+     */
+    constructor(
+        id: ComponentId,
+        state: Value,
+        snapshots: PersistentList<OriginalSnapshot>,
+    ) : this(id, state, Filter.empty(), snapshots, snapshots.map(OriginalSnapshot::toFiltered))
+
+    init {
+        require(filteredSnapshots.size <= snapshots.size) {
+            """
+            filteredSnapshots.size > snapshots.size,
+            snapshots=$snapshots",
+            filtered=$filteredSnapshots
+            """.trimIndent()
+        }
+    }
+
+}
+
+fun ComponentDebugState.updateFilter(
+    filterInput: String,
+    ignoreCase: Boolean,
+    option: FilterOption
+): ComponentDebugState = updateFilter(Filter.new(filterInput, option, ignoreCase))
+
+fun ComponentDebugState.updateFilter(
+    filter: Filter
+): ComponentDebugState {
+    val filtered = when (val validatedPredicate = filter.predicate) {
+        is Valid -> snapshots.filteredBy(validatedPredicate.t)
+        is Invalid -> filteredSnapshots
+    }
+
+    return copy(filter = filter, filteredSnapshots = filtered)
+}
 
 data class DebugState(
     val components: ComponentMapping = persistentMapOf()

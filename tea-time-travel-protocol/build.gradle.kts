@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,28 @@
  * SOFTWARE.
  */
 
-import Libraries.kotlinStdLib
-
 plugins {
-    publishedLibrary()
+    `published-multiplatform-library`
 }
 
-dependencies {
+kotlin {
 
-    implementation(kotlinStdLib)
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(project(":tea-data"))
+                implementation(libs.stdlib)
+            }
+        }
 
-    testImplementation(project(":tea-test"))
+        val commonTest by getting
+
+        val jvmMain by getting
+
+        val jvmTest by getting
+
+        val iosMain by getting
+
+        val iosTest by getting
+    }
 }

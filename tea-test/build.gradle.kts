@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,29 +22,44 @@
  * SOFTWARE.
  */
 
-
-import Libraries.atomicfu
-import Libraries.coroutinesCore
-import Libraries.coroutinesTest
-import Libraries.kotlinStdLib
-import TestLibraries.junit
-import TestLibraries.junitRunner
-
 plugins {
-    `java-library`
-    kotlin("jvm")
+    kotlin("multiplatform")
 }
 
-dependencies {
+kotlin {
 
-    implementation(project(":tea-core"))
+    jvm {
+        withJava()
 
-    api(kotlinStdLib)
-    api(atomicfu)
+        testRuns["test"].executionTask.configure {
+            useJUnit()
+        }
+    }
 
-    api(coroutinesCore)
-    api(junit)
-    api(coroutinesTest)
-    api(junitRunner)
+    ios()
 
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                api(libs.stdlib)
+                api(libs.atomicfu)
+                api(libs.coroutines.core)
+                api(libs.coroutines.test)
+                api(libs.kotlin.test)
+                api("org.jetbrains.kotlin:kotlin-test-annotations-common:1.6.10")
+                implementation(project(":tea-core"))
+                api(project(":tea-data"))
+            }
+        }
+
+        val commonTest by getting
+
+        val iosMain by getting
+
+        val iosTest by getting
+
+        val jvmMain by getting
+
+        val jvmTest by getting
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,27 +22,59 @@
  * SOFTWARE.
  */
 
-import Libraries.kotlinStdLib
-import Libraries.ktorClientCio
-import Libraries.ktorClientWebsockets
-import TestLibraries.ktorMockJvm
-
 plugins {
-    publishedLibrary()
+    `published-multiplatform-library`
 }
 
-dependencies {
+kotlin {
 
-    implementation(project(":tea-core"))
-    api(project(":tea-time-travel-protocol"))
+    optIn(
+        "kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "kotlinx.coroutines.FlowPreview",
+        "kotlinx.coroutines.InternalCoroutinesApi",
+        "com.oliynick.max.tea.core.InternalTeaApi",
+        "com.oliynick.max.tea.core.ExperimentalTeaApi"
+    )
 
-    implementation(kotlinStdLib)
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(project(":tea-core"))
+                implementation(project(":tea-data"))
+                implementation(project(":tea-time-travel-protocol"))
 
-    implementation(ktorClientWebsockets)
-    implementation(ktorClientCio)
+                implementation(libs.stdlib)
+                implementation(libs.ktor.client.websockets)
+                implementation(libs.ktor.client.core)
+            }
+        }
 
-    testImplementation(project(":tea-test"))
-    testImplementation(project(":tea-time-travel-adapter-gson"))
-    testImplementation(ktorMockJvm)
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test)
+                implementation(libs.atomicfu)
+                implementation(libs.coroutines.test)
+            }
+        }
 
+        val jvmMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.cio)
+            }
+        }
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(project(":tea-time-travel-adapter-gson"))
+            }
+        }
+
+        val iosMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.ios)
+            }
+        }
+
+        val iosTest by getting
+    }
 }

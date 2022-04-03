@@ -3,8 +3,8 @@
 <img align="right" alt="Tea Bag Logo" height="200px" src="res/tea-bag-logo.png">
 
 Tea Bag is the simplest implementation of [TEA](https://guide.elm-lang.org/architecture/)
-architecture written in Kotlin. This library is based on Kotlin's coroutines and extensively uses
-extension-based approach.
+architecture written in Kotlin. This library is based on Kotlin's coroutines, extensively uses
+extension-based approach and supports both jvm and ios targets.
 
 This library isn't production ready yet and was originally intended as pet project to give TEA a
 try. Later I found that it'd be nice to make it simpler and more lightweight than analogs, add
@@ -77,12 +77,15 @@ Regular snapshot, Regular(currentState=Hello , commands=[ ], previousState=Hello
 Regular snapshot, Regular(currentState=Hello world, commands=[world], previousState=Hello , message=world)
 ```
 
-Real world example includes [Android app sample](https://github.com/Xlopec/Tea-bag/tree/master/app)
-built on the top of Jetpack Compose and
-[Intellij plugin](https://github.com/Xlopec/Tea-bag/tree/master/tea-time-travel-plugin)
+Real world examples include [Android](https://github.com/Xlopec/Tea-bag/tree/master/samples/app) and
+[IOS](https://github.com/Xlopec/Tea-bag/tree/master/samples/iosApp) app samples that use the same application component 
+and share common entities, application and navigation logic.
+[Intellij plugin](https://github.com/Xlopec/Tea-bag/tree/master/tea-time-travel-plugin) is built on the top of the library
+as well.
 
 ## Main Features
 
+- **Multiplatform** this library supports jvm, iosX64 and iosArm64 targets
 - **Scalability** it is build on the top of a simple idea of having pure functions that operate on
   plain data separated from impure one. Those functions are building blocks and form testable
   components that can be combined to build complex applications
@@ -98,10 +101,8 @@ Add the dependency:
 
 ```kotlin
 implementation("io.github.xlopec:tea-core:[version]")
-// Broken due to coroutines bug, see https://youtrack.jetbrains.com/issue/KT-47195
-// implementation("io.github.xlopec:tea-time-travel:[version]")
+implementation("io.github.xlopec:tea-time-travel:[version]")
 implementation("io.github.xlopec:tea-time-travel-adapter-gson:[version]")
-implementation("io.github.xlopec:tea-time-travel-protocol:[version]")
 ```
 
 Make sure that you have `mavenCentral()` in the list of repositories.
@@ -117,15 +118,13 @@ Plugin is available on [JetBrains marketplace](https://plugins.jetbrains.com/plu
 ## Main Modules
 
 - **tea-core** - contains core types along with basic component implementation
-- **tea-time-travel** - contains debuggable version of the component (broken due
-  to [bug in coroutines](https://youtrack.jetbrains.com/issue/KT-47195))
+- **tea-time-travel** - contains debuggable version of the component
 - **tea-time-travel-adapter-gson** - implements debug protocol and serialization by means
-  of [Gson](https://github.com/google/gson) library. Should be added as dependency together with **
-  tea-time-travel** module
+  of [Gson](https://github.com/google/gson) library. Should be added as dependency together with **tea-time-travel** module
 - **tea-time-travel-protocol** - contains debug protocol types definitions
 - **tea-time-travel-plugin** - contains Intellij plugin implementation
 
-## Notes
+## How to build and run
 
 To build plugin from sources use ```./gradlew tea-time-travel-plugin:buildPlugin``` command.
 Installable plugin will be located in ```tea-time-travel-plugin/build/distributions``` directory.
@@ -133,18 +132,18 @@ Installable plugin will be located in ```tea-time-travel-plugin/build/distributi
 To run Intellij Idea with installed plugin use ```./gradlew tea-time-travel-plugin:runIde```
 command.
 
-Currently, the debugger is broken due
-to [bug in coroutines implementation](https://youtrack.jetbrains.com/issue/KT-47195)
+To build android app sample run ```./gradlew :samples:app:assembleDefaultDebug``` or ```./gradlew :samples:app:assembleRemoteDebug```.
+The last command assembles debuggable version on of the application that connects to the currently running instance of 
+debugger (will try connecting to http://localhost:8080).
 
 ## Planned features and TODOs
 
+- Re-implement client-server communication protocol from scratch
+- Migrate from gson to kotlinx.serialization.json
 - Release v1.0.0
-- Migrate project to KMP
 - Add Github Wiki
-- Add possibility to dump app's state to a file to restore debug session later
 - Rework component builders and possibly replace it with some kind of DSL
 - Add keyboard shortcuts for plugin, consider improving plugin UX
-- Consider implementing client-server communication protocol from scratch
 
 ## Contribution
 

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,25 +22,29 @@
  * SOFTWARE.
  */
 
-
-import Libraries.gson
-import Libraries.immutableCollections
-import Libraries.kotlinStdLib
-import Libraries.kotlinStdLibReflect
-
 plugins {
-    publishedLibrary()
+    `published-jvm-library`
+}
+
+tasks.test {
+    useJUnit()
+}
+
+val allTests by tasks.creating(Task::class) {
+    dependsOn("test")
 }
 
 dependencies {
 
     api(project(":tea-time-travel-protocol"))
-    api(kotlinStdLibReflect)
-    api(gson)
+    api(libs.gson)
+    implementation(project(":tea-data"))
+    implementation(libs.stdlib.reflect)
 
-    implementation(kotlinStdLib)
+    implementation(libs.stdlib)
 
     testImplementation(project(":tea-test"))
-    testImplementation(immutableCollections)
-
+    testImplementation(project(":tea-time-travel-protocol"))
+    testImplementation(libs.collections.immutable)
+    testImplementation(libs.junit)
 }
