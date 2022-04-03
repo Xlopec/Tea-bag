@@ -3,8 +3,8 @@
 <img align="right" alt="Tea Bag Logo" height="200px" src="res/tea-bag-logo.png">
 
 Tea Bag is the simplest implementation of [TEA](https://guide.elm-lang.org/architecture/)
-architecture written in Kotlin. This library is based on Kotlin's coroutines and extensively uses
-extension-based approach.
+architecture written in Kotlin. This library is based on Kotlin's coroutines, extensively uses
+extension-based approach and supports both jvm and ios targets.
 
 This library isn't production ready yet and was originally intended as pet project to give TEA a
 try. Later I found that it'd be nice to make it simpler and more lightweight than analogs, add
@@ -85,6 +85,7 @@ as well.
 
 ## Main Features
 
+- **Multiplatform** this library supports jvm, iosX64 and iosArm64 targets
 - **Scalability** it is build on the top of a simple idea of having pure functions that operate on
   plain data separated from impure one. Those functions are building blocks and form testable
   components that can be combined to build complex applications
@@ -117,8 +118,7 @@ Plugin is available on [JetBrains marketplace](https://plugins.jetbrains.com/plu
 ## Main Modules
 
 - **tea-core** - contains core types along with basic component implementation
-- **tea-time-travel** - contains debuggable version of the component (broken due
-  to [bug in coroutines](https://youtrack.jetbrains.com/issue/KT-47195))
+- **tea-time-travel** - contains debuggable version of the component
 - **tea-time-travel-adapter-gson** - implements debug protocol and serialization by means
   of [Gson](https://github.com/google/gson) library. Should be added as dependency together with **tea-time-travel** module
 - **tea-time-travel-protocol** - contains debug protocol types definitions
