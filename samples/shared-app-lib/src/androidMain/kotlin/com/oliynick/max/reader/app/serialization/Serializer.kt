@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,9 @@ package com.oliynick.max.reader.app.serialization
 
 import com.google.gson.*
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentSet
 import java.lang.reflect.Type
 
 // gson serializers to enable debugging facilities
@@ -47,6 +49,26 @@ object PersistentListSerializer : Serializer<PersistentList<*>> {
 
     override fun serialize(
         src: PersistentList<*>,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext,
+    ): JsonElement = JsonArray()
+        .apply { src.map(context::serialize).forEach(::add) }
+}
+
+object PersistentSetSerializer : Serializer<PersistentSet<*>> {
+
+    override fun deserialize(
+        json: JsonElement,
+        typeOfT: Type?,
+        context: JsonDeserializationContext,
+    ): PersistentSet<*> = json.asJsonArray.map { element ->
+        // For our app we know that we always deal with objects,
+        // so it's safe to access "@type" property without additional checks
+        context.deserialize<Any?>(element, Class.forName(element.asJsonObject["@type"].asString))
+    }.toPersistentSet()
+
+    override fun serialize(
+        src: PersistentSet<*>,
         typeOfSrc: Type?,
         context: JsonSerializationContext,
     ): JsonElement = JsonArray()

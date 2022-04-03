@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,8 +57,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(project(":tea-core"))
-                api(project(":tea-data"))
+                //api(project(":tea-data"))
                 api(libs.collections.immutable)
                 api(libs.coroutines.core)
                 api(project(":tea-core"))

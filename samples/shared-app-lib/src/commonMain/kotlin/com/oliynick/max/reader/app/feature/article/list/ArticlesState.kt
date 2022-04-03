@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ import com.oliynick.max.reader.app.misc.*
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
-typealias ArticlesLoadable = Loadable<PersistentList<Article>>
+typealias ArticlesLoadable = Loadable<Article>
 
 data class ScrollState(
     val firstVisibleItemIndex: Int,
@@ -87,9 +87,9 @@ fun ArticlesState.toException(
 fun ArticlesState.updateArticle(
     new: Article,
 ): ArticlesState =
-    copy(loadable = loadable.updated { articles -> articles.replace(new) { it.url == new.url } })
+    copy(loadable = loadable.updated { replace(new) { it.url == new.url } })
 
 fun ArticlesState.removeArticle(
     victim: Article,
 ): ArticlesState =
-    copy(loadable = loadable.updated { articles -> articles.remove { it.url == victim.url } })
+    copy(loadable = loadable.updated { remove { it.url == victim.url } })
