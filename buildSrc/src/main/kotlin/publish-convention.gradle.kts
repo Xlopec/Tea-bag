@@ -50,14 +50,6 @@ val copyArtifacts by tasks.registering(Copy::class) {
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
 }
 
-val release by tasks.registering {
-    dependsOn(tasks[if (isCiEnv) "publish" else "publishToMavenLocal"])
-    finalizedBy(tasks.named("copyArtifacts"))
-
-    group = "release"
-    description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
-}
-
 publishing {
     // note that we have preconfigured maven publications
     publications.withType<MavenPublication> {
@@ -67,7 +59,7 @@ publishing {
     }
 
     repositories {
-        configureRepositories(project)
+        mavenLocal()
     }
 }
 

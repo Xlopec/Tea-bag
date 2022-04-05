@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import gradle.kotlin.dsl.accessors._2cce830b43201e290b93c3ed1e38ead2.publishing
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URL
 
@@ -66,14 +65,6 @@ val copyArtifacts by tasks.registering(Copy::class) {
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
 }
 
-val release by tasks.registering {
-    dependsOn(tasks[if (isCiEnv) "publish" else "publishToMavenLocal"])
-    finalizedBy(tasks.named("copyArtifacts"))
-
-    group = "release"
-    description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
-}
-
 publishing {
     publications {
         create<MavenPublication>(project.name) {
@@ -85,7 +76,7 @@ publishing {
     }
 
     repositories {
-        configureRepositories(project)
+        mavenLocal()
     }
 }
 

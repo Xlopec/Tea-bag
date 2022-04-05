@@ -71,8 +71,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Publish artifacts
-        # It makes sense releasing tea-core artifact for now
-        run: ./gradlew release
+        run: ./gradlew publishToSonatype closeSonatypeStagingRepository publishPlugin copyArtifacts
         env:
           GITHUB_TAG: ${{ steps.get_version.outputs.GITHUB_TAG }}
           OSSRH_USER: ${{ secrets.OSSRH_USER }}

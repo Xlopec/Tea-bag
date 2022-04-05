@@ -33,6 +33,24 @@ plugins {
     kotlin("jvm")
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
     id("com.github.ben-manes.versions")
+    id("io.github.gradle-nexus.publish-plugin")
+}
+
+version = libraryVersion.toVersionName()
+group = "io.github.xlopec"
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            stagingProfileId.set(SonatypeProfileId)
+            nexusUrl.set(NexusUrl)
+            snapshotRepositoryUrl.set(SnapshotNexusUrl)
+            username.set(project.ossrhUser)
+            password.set(project.ossrhPassword)
+        }
+    }
+
+    useStaging.set(libraryVersion !is Snapshot)
 }
 
 allprojects {
