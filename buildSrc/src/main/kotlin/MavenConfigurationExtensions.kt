@@ -22,24 +22,8 @@
  * SOFTWARE.
  */
 
-import org.gradle.api.Project
-import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.publish.maven.MavenPom
 import java.util.*
-
-fun RepositoryHandler.configureRepositories(
-    project: Project
-) {
-    mavenLocal()
-    maven {
-        name = "OSSRH"
-        url = libraryVersion.toOssrhDeploymentUri()
-        credentials {
-            username = project.ossrhUser
-            password = project.ossrhPassword
-        }
-    }
-}
 
 fun MavenPom.configurePom(
     projectName: String,

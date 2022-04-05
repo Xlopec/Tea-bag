@@ -28,14 +28,18 @@ import org.gradle.kotlin.dsl.get
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
+import java.net.URI
 import java.nio.file.Paths
 
 const val CommitHashLength = 6
+const val SonatypeProfileId = "1c78bd5d6fbb0c"
+val NexusUrl = URI("https://s01.oss.sonatype.org/service/local/")
+val SnapshotNexusUrl = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 
 val isCiEnv: Boolean
     get() = getenvSafe("CI")?.toBoolean() == true
 
-val pluginReleaseChannels: Collection<String>
+val PluginReleaseChannels: Collection<String>
     get() = when (libraryVersion) {
         is Snapshot -> listOf("dev")
         is Alpha -> listOf("eap")

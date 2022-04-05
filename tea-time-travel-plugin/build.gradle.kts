@@ -46,7 +46,7 @@ tasks.named<PatchPluginXmlTask>("patchPluginXml") {
 
 tasks.named<PublishPluginTask>("publishPlugin") {
     token.set(ciVariable("PUBLISH_PLUGIN_TOKEN"))
-    channels.set(pluginReleaseChannels)
+    channels.set(PluginReleaseChannels)
 }
 
 val copyArtifacts by tasks.registering(Copy::class) {
@@ -55,14 +55,6 @@ val copyArtifacts by tasks.registering(Copy::class) {
 
     group = "release"
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
-}
-
-val release by tasks.creating(Task::class) {
-    dependsOn("publishPlugin")
-    finalizedBy(copyArtifacts)
-
-    group = "release"
-    description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
 }
 
 val allTests by tasks.creating(Task::class) {

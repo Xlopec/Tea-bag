@@ -58,6 +58,7 @@ dependencies {
     implementation("com.squareup.sqldelight:gradle-plugin:1.5.3")
     implementation("org.jetbrains.compose:compose-gradle-plugin:1.0.1")
     implementation("com.github.ben-manes:gradle-versions-plugin:0.41.0")
+    implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
 
     testImplementation("junit:junit:4.13.1")
     // used for tests under buildSrc directory
