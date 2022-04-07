@@ -4,29 +4,50 @@
   <CurrentIssues>
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
     <ID>ComplexMethod:Updater.kt$fun updateForUiMessage( message: UIMessage, state: State ): UpdateWith&lt;State, Command></ID>
+    <ID>ConstructorParameterNaming:Transitions.kt$ChildTransitionState$val _contentAlpha: State&lt;Float></ID>
+    <ID>ConstructorParameterNaming:Transitions.kt$ChildTransitionState$val _listItemOffsetY: State&lt;Dp></ID>
+    <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _cornerRadius: State&lt;Dp></ID>
+    <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _elevation: State&lt;Dp></ID>
+    <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _horizontalPadding: State&lt;Dp></ID>
+    <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _indicatorColor: State&lt;Color></ID>
+    <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _textBackground: State&lt;Color></ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") internal fun Null.toReadableString(): String</ID>
-    <ID>LongMethod:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
-    <ID>LongMethod:TempTest.kt$TempTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
     <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C>, noinline resolver: Resolver&lt;C, M>, noinline updater: Updater&lt;M, S, C>, scope: CoroutineScope, // todo: group to reduce number of arguments url: Url = Localhost, jsonSerializer: JsonSerializer&lt;J>, // see https://youtrack.jetbrains.com/issue/KT-47195 // see https://github.com/Kotlin/kotlinx.coroutines/issues/3005#issuecomment-1014577573 noinline sessionFactory: SessionFactory&lt;M, S, J> = { settings, block -> HttpClient.session(settings, block) }, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
-    <ID>LongParameterList:LocalStorageImpl.kt$( url: String, title: String, author: String?, description: String?, urlToImage: String?, published: Long, // this unused arg is needed just to make function signatures match @Suppress("UNUSED_PARAMETER") savedOn: Long, isFavorite: Boolean )</ID>
-    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, formatter: TreeFormatter, node: SnapshotINode, state: TreeState, handler: (Message) -> Unit )</ID>
-    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, node: RefNode, formatter: TreeFormatter, state: TreeState, handler: (Message) -> Unit, )</ID>
-    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, painter: Painter, leaf: Node, state: TreeState, handler: (Message) -> Unit, )</ID>
-    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, painter: Painter, node: INode, state: TreeState, handler: (Message) -> Unit )</ID>
-    <ID>LongParameterList:TreeView.kt$( node: CollectionNode, level: Int, text: String, formatter: TreeFormatter, state: TreeState, handler: (Message) -> Unit )</ID>
-    <ID>LongParameterList:TreeView.kt$( node: Node, level: Int, formatter: TreeFormatter, text: String, state: TreeState, handler: (Message) -> Unit )</ID>
+    <ID>LongParameterList:SettingsScreen.kt$( icon: ImageVector, imageDescription: String?, title: String, description: String, checked: Boolean, enabled: Boolean = true, onCheckedChange: (Boolean) -> Unit, )</ID>
+    <ID>LongParameterList:SourcesSection.kt$( state: FiltersState, id: ScreenId, modifier: Modifier, sources: Loadable&lt;Source>, childTransitionState: ChildTransitionState, handler: MessageHandler, )</ID>
+    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, formatter: TreeFormatter, node: SnapshotINode, state: TreeState, handler: MessageHandler )</ID>
+    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, node: RefNode, formatter: TreeFormatter, state: TreeState, handler: MessageHandler, )</ID>
+    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, painter: Painter, leaf: Node, state: TreeState, handler: MessageHandler, )</ID>
+    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, painter: Painter, node: INode, state: TreeState, handler: MessageHandler )</ID>
+    <ID>LongParameterList:TreeView.kt$( node: CollectionNode, level: Int, text: String, formatter: TreeFormatter, state: TreeState, handler: MessageHandler )</ID>
+    <ID>LongParameterList:TreeView.kt$( node: Node, level: Int, formatter: TreeFormatter, text: String, state: TreeState, handler: MessageHandler )</ID>
     <ID>MagicNumber:Balloon.kt$15</ID>
     <ID>MagicNumber:Balloon.kt$15_000L</ID>
     <ID>MagicNumber:Balloon.kt$30</ID>
     <ID>MagicNumber:Colors.kt$0x33412E</ID>
     <ID>MagicNumber:Colors.kt$0x704745</ID>
+    <ID>MagicNumber:Colors.kt$0xFFD00036</ID>
+    <ID>MagicNumber:Colors.kt$0xFFF70040</ID>
+    <ID>MagicNumber:Colors.kt$0xFFFFFFFF</ID>
     <ID>MagicNumber:Colors.kt$0xbaeeba</ID>
+    <ID>MagicNumber:Colors.kt$0xffbd2b52</ID>
     <ID>MagicNumber:Colors.kt$0xffcccc</ID>
+    <ID>MagicNumber:Colors.kt$0xffdb2a59</ID>
+    <ID>MagicNumber:Colors.kt$18</ID>
     <ID>MagicNumber:Colors.kt$182</ID>
+    <ID>MagicNumber:Colors.kt$242</ID>
+    <ID>MagicNumber:Colors.kt$4</ID>
+    <ID>MagicNumber:Colors.kt$6</ID>
     <ID>MagicNumber:ComponentTest.kt$ComponentTest$1_000</ID>
     <ID>MagicNumber:ComponentTest.kt$ComponentTest$3</ID>
     <ID>MagicNumber:Date.kt$1000.0</ID>
-    <ID>MagicNumber:LocalStorageImpl.kt$6</ID>
+    <ID>MagicNumber:InsetAwareTopAppBar.kt$100</ID>
+    <ID>MagicNumber:InsetAwareTopAppBar.kt$100f</ID>
+    <ID>MagicNumber:LocalStorageImpl.kt$3</ID>
+    <ID>MagicNumber:LocalStorageImpl.kt$4</ID>
+    <ID>MagicNumber:LocalStorageImpl.kt$5</ID>
+    <ID>MagicNumber:LocalStorageImpl.kt$7</ID>
+    <ID>MagicNumber:LocalStorageImpl.kt$8</ID>
     <ID>MagicNumber:NettyServer.kt$10</ID>
     <ID>MagicNumber:NettyServer.kt$5</ID>
     <ID>MagicNumber:Plugin.kt$86</ID>
@@ -39,84 +60,43 @@
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
     <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>
     <ID>NewLineAtEndOfFile:Adapters.kt$com.oliynick.max.reader.app.serialization.Adapters.kt</ID>
-    <ID>NewLineAtEndOfFile:Adapters.kt$com.oliynick.max.reader.network.Adapters.kt</ID>
     <ID>NewLineAtEndOfFile:AndroidAppComponent.kt$com.max.reader.app.AndroidAppComponent.kt</ID>
-    <ID>NewLineAtEndOfFile:AndroidComposeTestRuleExtensions.kt$com.max.reader.test.AndroidComposeTestRuleExtensions.kt</ID>
     <ID>NewLineAtEndOfFile:Annotations.kt$com.oliynick.max.reader.app.Annotations.kt</ID>
-    <ID>NewLineAtEndOfFile:AppModule.kt$com.oliynick.max.reader.app.AppModule.kt</ID>
-    <ID>NewLineAtEndOfFile:AppNavigation.kt$com.oliynick.max.reader.app.navigation.AppNavigation.kt</ID>
-    <ID>NewLineAtEndOfFile:AppNavigationImpl.kt$com.oliynick.max.reader.app.navigation.AppNavigationImpl.kt</ID>
-    <ID>NewLineAtEndOfFile:AppResolverImpl.kt$com.oliynick.max.reader.app.AppResolverImpl.kt</ID>
-    <ID>NewLineAtEndOfFile:AppTest.kt$com.max.reader.AppTest.kt</ID>
-    <ID>NewLineAtEndOfFile:ArticleDetailsModule.kt$com.oliynick.max.reader.article.details.ArticleDetailsModule.kt</ID>
-    <ID>NewLineAtEndOfFile:ArticlesModule.kt$com.oliynick.max.reader.article.list.ArticlesModule.kt</ID>
+    <ID>NewLineAtEndOfFile:ArticleDetailsModule.kt$com.oliynick.max.reader.app.feature.article.details.ArticleDetailsModule.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentException.kt$com.oliynick.max.tea.core.misc.ComponentException.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentTest.kt$com.oliynick.max.tea.core.component.ComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:ComposeAnnotations.kt$com.oliynick.max.reader.app.ComposeAnnotations.kt</ID>
-    <ID>NewLineAtEndOfFile:CompositionsLogger.kt$com.max.reader.misc.CompositionsLogger.kt</ID>
-    <ID>NewLineAtEndOfFile:Date.kt$com.oliynick.max.entities.shared.Date.kt</ID>
+    <ID>NewLineAtEndOfFile:CompositionsLogger.kt$com.max.reader.app.ui.misc.CompositionsLogger.kt</ID>
+    <ID>NewLineAtEndOfFile:Date.kt$com.oliynick.max.tea.data.Date.kt</ID>
     <ID>NewLineAtEndOfFile:DebuggableComponentTest.kt$com.oliynick.max.tea.core.debug.component.DebuggableComponentTest.kt</ID>
-    <ID>NewLineAtEndOfFile:Either.kt$com.oliynick.max.entities.shared.datatypes.Either.kt</ID>
+    <ID>NewLineAtEndOfFile:Either.kt$com.oliynick.max.tea.data.Either.kt</ID>
     <ID>NewLineAtEndOfFile:Environment.kt$com.oliynick.max.reader.app.Environment.kt</ID>
     <ID>NewLineAtEndOfFile:ExportImportTest.kt$com.oliynick.max.tea.core.debug.app.feature.storage.ExportImportTest.kt</ID>
     <ID>NewLineAtEndOfFile:IosAnnotations.kt$com.oliynick.max.reader.app.IosAnnotations.kt</ID>
-    <ID>NewLineAtEndOfFile:IosComponent.kt$com.oliynick.max.reader.app.IosComponent.kt</ID>
-    <ID>NewLineAtEndOfFile:LiveArticleDetailsResolver.kt$com.oliynick.max.reader.article.details.LiveArticleDetailsResolver.kt</ID>
-    <ID>NewLineAtEndOfFile:LocalStorage.kt$com.oliynick.max.reader.app.LocalStorage.kt</ID>
-    <ID>NewLineAtEndOfFile:LocalStorage.kt$com.oliynick.max.reader.app.storage.LocalStorage.kt</ID>
-    <ID>NewLineAtEndOfFile:LocalStorageImpl.kt$com.oliynick.max.reader.app.storage.LocalStorageImpl.kt</ID>
+    <ID>NewLineAtEndOfFile:LiveArticleDetailsResolver.kt$com.oliynick.max.reader.app.feature.article.details.LiveArticleDetailsResolver.kt</ID>
+    <ID>NewLineAtEndOfFile:LocalStorage.kt$com.oliynick.max.reader.app.feature.storage.LocalStorage.kt</ID>
+    <ID>NewLineAtEndOfFile:LocalStorageImpl.kt$com.oliynick.max.reader.app.feature.storage.LocalStorageImpl.kt</ID>
     <ID>NewLineAtEndOfFile:MockResponses.kt$com.max.reader.environment.MockResponses.kt</ID>
-    <ID>NewLineAtEndOfFile:Model.kt$com.oliynick.max.reader.network.Model.kt</ID>
     <ID>NewLineAtEndOfFile:NavigationExtensionsTest.kt$com.oliynick.max.reader.app.NavigationExtensionsTest.kt</ID>
-    <ID>NewLineAtEndOfFile:NavigationStack.kt$com.oliynick.max.reader.app.navigation.NavigationStack.kt</ID>
-    <ID>NewLineAtEndOfFile:NewsApi.kt$com.oliynick.max.reader.article.list.NewsApi.kt</ID>
-    <ID>NewLineAtEndOfFile:NewsApiImpl.kt$com.oliynick.max.reader.network.NewsApiImpl.kt</ID>
+    <ID>NewLineAtEndOfFile:NewsApi.kt$com.oliynick.max.reader.app.feature.article.list.NewsApi.kt</ID>
     <ID>NewLineAtEndOfFile:PluginDependenciesSpecExt.kt$.PluginDependenciesSpecExt.kt</ID>
-    <ID>NewLineAtEndOfFile:PopScreen.kt$com.oliynick.max.reader.app.navigation.PopScreen.kt</ID>
+    <ID>NewLineAtEndOfFile:PopScreen.kt$com.oliynick.max.reader.app.feature.navigation.PopScreen.kt</ID>
     <ID>NewLineAtEndOfFile:Screens.kt$com.oliynick.max.reader.app.Screens.kt</ID>
     <ID>NewLineAtEndOfFile:Thread.kt$com.oliynick.max.tea.core.misc.Thread.kt</ID>
-    <ID>NewLineAtEndOfFile:UUID.kt$com.oliynick.max.entities.shared.UUID.kt</ID>
-    <ID>NewLineAtEndOfFile:Url.kt$com.oliynick.max.entities.shared.Url.kt</ID>
+    <ID>NewLineAtEndOfFile:UUID.kt$com.oliynick.max.tea.data.UUID.kt</ID>
+    <ID>NewLineAtEndOfFile:Url.kt$com.oliynick.max.tea.data.Url.kt</ID>
     <ID>NewLineAtEndOfFile:build.gradle.kts$.build.gradle.kts</ID>
     <ID>NewLineAtEndOfFile:currentThreadName.kt$com.oliynick.max.tea.core.misc.currentThreadName.kt</ID>
     <ID>NewLineAtEndOfFile:multiplatform-library.gradle.kts$.multiplatform-library.gradle.kts</ID>
     <ID>NewLineAtEndOfFile:publish-convention.gradle.kts$.publish-convention.gradle.kts</ID>
     <ID>NewLineAtEndOfFile:published-multiplatform-library.gradle.kts$.published-multiplatform-library.gradle.kts</ID>
     <ID>NewLineAtEndOfFile:settings.gradle.kts$.settings.gradle.kts</ID>
-    <ID>NewLineAtEndOfFile:toJson.kt$com.oliynick.max.reader.network.toJson.kt</ID>
+    <ID>NewLineAtEndOfFile:toJson.kt$com.oliynick.max.reader.app.feature.network.toJson.kt</ID>
     <ID>TooGenericExceptionCaught:NettyServer.kt$e: Throwable</ID>
+    <ID>TooGenericExceptionCaught:NewsApiImpl.kt$NewsApiImpl$th: Throwable</ID>
     <ID>TooManyFunctions:ComponentTest.kt$ComponentTest</ID>
     <ID>TooManyFunctions:RenderExtensions.kt$com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.misc.RenderExtensions.kt</ID>
     <ID>TooManyFunctions:TempTest.kt$TempTest</ID>
-    <ID>UndocumentedPublicClass:Adapters.kt$AuthorSerializer : KSerializer</ID>
-    <ID>UndocumentedPublicClass:Adapters.kt$CommonDateSerializer : KSerializer</ID>
-    <ID>UndocumentedPublicClass:Adapters.kt$DescriptionSerializer : KSerializer</ID>
-    <ID>UndocumentedPublicClass:Adapters.kt$TitleSerializer : KSerializer</ID>
-    <ID>UndocumentedPublicClass:Adapters.kt$UrlSerializer : KSerializer</ID>
-    <ID>UndocumentedPublicClass:AndroidShareArticle.kt$AndroidShareArticle : ShareArticle</ID>
-    <ID>UndocumentedPublicClass:Article.kt$Article</ID>
-    <ID>UndocumentedPublicClass:Article.kt$Author</ID>
-    <ID>UndocumentedPublicClass:Article.kt$Description</ID>
-    <ID>UndocumentedPublicClass:Article.kt$Title</ID>
-    <ID>UndocumentedPublicClass:ArticleDetailsMessage.kt$ArticleDetailsMessage : ScreenMessage</ID>
-    <ID>UndocumentedPublicClass:ArticleDetailsMessage.kt$OpenInBrowser : ArticleDetailsMessage</ID>
-    <ID>UndocumentedPublicClass:ArticleDetailsModule.kt$ArticleDetailsModule&lt;Env> : ArticleDetailsUpdaterArticleDetailsResolver</ID>
-    <ID>UndocumentedPublicClass:ArticleDetailsResolver.kt$ArticleDetailsResolver</ID>
-    <ID>UndocumentedPublicClass:ArticleDetailsState.kt$ArticleDetailsState : FullScreen</ID>
-    <ID>UndocumentedPublicClass:ArticleDetailsUpdater.kt$ArticleDetailsUpdater</ID>
-    <ID>UndocumentedPublicClass:ArticlesModule.kt$ArticlesModule&lt;Env> : ArticlesUpdaterArticlesResolver</ID>
-    <ID>UndocumentedPublicClass:ArticlesResolver.kt$ArticlesResolver&lt;Env></ID>
-    <ID>UndocumentedPublicClass:ArticlesResolver.kt$IosShareArticle : ShareArticle</ID>
-    <ID>UndocumentedPublicClass:ArticlesState.kt$ArticlesState : TabScreen</ID>
-    <ID>UndocumentedPublicClass:ArticlesState.kt$ArticlesState$TransientState</ID>
-    <ID>UndocumentedPublicClass:ArticlesState.kt$ArticlesState.TransientState$Exception : TransientState</ID>
-    <ID>UndocumentedPublicClass:ArticlesState.kt$ArticlesState.TransientState$Loading : TransientState</ID>
-    <ID>UndocumentedPublicClass:ArticlesState.kt$ArticlesState.TransientState$LoadingNext : TransientState</ID>
-    <ID>UndocumentedPublicClass:ArticlesState.kt$ArticlesState.TransientState$Preview : TransientState</ID>
-    <ID>UndocumentedPublicClass:ArticlesState.kt$ArticlesState.TransientState$Refreshing : TransientState</ID>
-    <ID>UndocumentedPublicClass:ArticlesState.kt$Query</ID>
-    <ID>UndocumentedPublicClass:ArticlesState.kt$QueryType</ID>
-    <ID>UndocumentedPublicClass:ArticlesUpdater.kt$ArticlesUpdater</ID>
     <ID>UndocumentedPublicClass:ComponentException.kt$ComponentException : IllegalStateException</ID>
     <ID>UndocumentedPublicClass:ComponentLogic.kt$AddItem : Message</ID>
     <ID>UndocumentedPublicClass:ComponentLogic.kt$Command</ID>
@@ -133,59 +113,10 @@
     <ID>UndocumentedPublicClass:Either.kt$Either&lt;out L, out R></ID>
     <ID>UndocumentedPublicClass:Either.kt$Left&lt;L> : Either</ID>
     <ID>UndocumentedPublicClass:Either.kt$Right&lt;R> : Either</ID>
-    <ID>UndocumentedPublicClass:LiveArticleDetailsUpdater.kt$LiveArticleDetailsUpdater : ArticleDetailsUpdater</ID>
-    <ID>UndocumentedPublicClass:LiveArticlesResolver.kt$LiveArticlesResolver&lt;Env> : ArticlesResolver</ID>
-    <ID>UndocumentedPublicClass:LiveArticlesResolver.kt$ShareArticle</ID>
-    <ID>UndocumentedPublicClass:LiveArticlesUpdater.kt$LiveArticlesUpdater : ArticlesUpdater</ID>
-    <ID>UndocumentedPublicClass:Message.kt$ArticlesLoaded : ArticlesMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$ArticlesMessage : ScreenMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$ArticlesOperationException : ArticlesMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$LoadArticlesFromScratch : ArticlesMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$LoadNextArticles : ArticlesMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$OnArticleUpdated : ArticlesMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$OnQueryUpdated : ArticlesMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$OnShareArticle : ArticlesMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$RefreshArticles : ArticlesMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$ToggleArticleIsFavorite : ArticlesMessage</ID>
-    <ID>UndocumentedPublicClass:Model.kt$ArticleElement</ID>
-    <ID>UndocumentedPublicClass:Model.kt$ArticleResponse</ID>
-    <ID>UndocumentedPublicClass:NewsApi.kt$NewsApi</ID>
-    <ID>UndocumentedPublicClass:NewsApiImpl.kt$NewsApiImpl : NewsApi</ID>
-    <ID>UndocumentedPublicClass:Page.kt$Page</ID>
-    <ID>UndocumentedPublicClass:Page.kt$Paging</ID>
-    <ID>UndocumentedPublicClass:SettingsMessage.kt$OnToggleDarkMode : SettingsMessage</ID>
-    <ID>UndocumentedPublicClass:SettingsMessage.kt$SettingsMessage : ScreenMessage</ID>
-    <ID>UndocumentedPublicClass:SettingsState.kt$SettingsState : TabScreen</ID>
     <ID>UndocumentedPublicClass:TempTest.kt$ForeverWaitingResolver&lt;T></ID>
     <ID>UndocumentedPublicClass:TempTest.kt$TempTest</ID>
     <ID>UndocumentedPublicClass:UUID.kt$UUID</ID>
     <ID>UndocumentedPublicClass:Url.kt$Url</ID>
-    <ID>UndocumentedPublicFunction:Adapters.kt$expect fun Date.toJson(): String</ID>
-    <ID>UndocumentedPublicFunction:Adapters.kt$expect fun String.toDate(): Date</ID>
-    <ID>UndocumentedPublicFunction:Article.kt$fun Article.toggleFavorite(): Article</ID>
-    <ID>UndocumentedPublicFunction:Article.kt$fun Author.Companion.isValid( s: String?, ): Boolean</ID>
-    <ID>UndocumentedPublicFunction:Article.kt$fun Author.Companion.tryCreate( s: String?, )</ID>
-    <ID>UndocumentedPublicFunction:Article.kt$fun Description.Companion.isValid( s: String?, ): Boolean</ID>
-    <ID>UndocumentedPublicFunction:Article.kt$fun Description.Companion.tryCreate( s: String?, )</ID>
-    <ID>UndocumentedPublicFunction:Article.kt$fun Title.Companion.isValid( s: String?, ): Boolean</ID>
-    <ID>UndocumentedPublicFunction:Article.kt$fun Title.Companion.tryCreate( s: String?, )</ID>
-    <ID>UndocumentedPublicFunction:ArticleDetailsModule.kt$fun &lt;Env> ArticleDetailsModule( application: Application ): ArticleDetailsModule&lt;Env></ID>
-    <ID>UndocumentedPublicFunction:ArticleDetailsModule.kt$fun &lt;Env> ArticleDetailsModule(): ArticleDetailsModule&lt;Env></ID>
-    <ID>UndocumentedPublicFunction:ArticleDetailsResolver.kt$ArticleDetailsResolver$suspend fun resolve( command: ArticleDetailsCommand ): Set&lt;Message></ID>
-    <ID>UndocumentedPublicFunction:ArticleDetailsResolverImpl.kt$fun ArticleDetailsResolver( application: Application ): ArticleDetailsResolver</ID>
-    <ID>UndocumentedPublicFunction:ArticleDetailsUpdater.kt$ArticleDetailsUpdater$fun updateArticleDetails( message: ArticleDetailsMessage, screen: ArticleDetailsState ): UpdateWith&lt;ArticleDetailsState, ArticleDetailsCommand></ID>
-    <ID>UndocumentedPublicFunction:ArticlesModule.kt$fun &lt;Env> ArticlesModule( shareArticle: ShareArticle ): ArticlesModule&lt;Env></ID>
-    <ID>UndocumentedPublicFunction:ArticlesResolver.kt$ArticlesResolver$suspend fun Env.resolve( command: ArticlesCommand ): Set&lt;Message></ID>
-    <ID>UndocumentedPublicFunction:ArticlesState.kt$// todo replace with immutable collection fun ArticlesState.toLoadingNext()</ID>
-    <ID>UndocumentedPublicFunction:ArticlesState.kt$ArticlesState.Companion$fun newLoading( id: ScreenId, query: Query, articles: List&lt;Article> = emptyList(), )</ID>
-    <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.prependArticle( new: Article, ): ArticlesState</ID>
-    <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.removeArticle( victim: Article, ): ArticlesState</ID>
-    <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.toException( cause: AppException, )</ID>
-    <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.toLoading()</ID>
-    <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.toPreview( page: Page, ): ArticlesState</ID>
-    <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.toRefreshing()</ID>
-    <ID>UndocumentedPublicFunction:ArticlesState.kt$fun ArticlesState.updateArticle( new: Article, ): ArticlesState</ID>
-    <ID>UndocumentedPublicFunction:ArticlesUpdater.kt$ArticlesUpdater$fun updateArticles( message: ArticlesMessage, state: ArticlesState ): UpdateWith&lt;ArticlesState, Command></ID>
     <ID>UndocumentedPublicFunction:Component.kt$@Suppress("RedundantSuspendModifier") suspend fun &lt;C> throwingResolver( c: C, ): Nothing</ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C> CoroutineScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> ignoringMessageAsStateUpdate( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;M, S></ID>
@@ -194,17 +125,17 @@
     <ID>UndocumentedPublicFunction:Component.kt$fun &lt;S> messageAsStateUpdate( message: S, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, S></ID>
     <ID>UndocumentedPublicFunction:ComponentLogic.kt$fun testUpdate(message: Message, state: TodoState): UpdateWith&lt;TodoState, Command></ID>
     <ID>UndocumentedPublicFunction:ComponentLogic.kt$suspend fun testResolver(cmd: Command): Set&lt;Message></ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when attaching interceptor to component, then original sequence of snapshots pipes through it`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component with specific dispatcher, then updater runs on this dispatcher`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component, given initializer throws exception, then it's handled by coroutine scope`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component, given updater throws exception, then it's handled by coroutine scope`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers, then component is initialized only once`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers, then it can serve multiple message sources`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers, then snapshots are shared among them`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component receives input, given recursive calculations, then it emits correct sequence of snapshots`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component receives input, then it emits correct sequence of snapshots`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when subscriber disconnects, then component initializer is re-invoked`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when upstream receives new input, then previous downstream is canceled`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when attaching interceptor to component then original sequence of snapshots pipes through it`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component given initializer throws exception then it's handled by coroutine scope`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component given updater throws exception then it's handled by coroutine scope`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component with specific dispatcher then updater runs on this dispatcher`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers then component is initialized only once`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers then it can serve multiple message sources`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers then snapshots are shared among them`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component receives input given recursive calculations then it emits correct sequence of snapshots`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component receives input then it emits correct sequence of snapshots`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when subscriber disconnects then component initializer is re-invoked`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when upstream receives new input then previous downstream is canceled`()</ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$ForeverWaitingResolver$suspend fun resolveForever( t: T, ): Nothing</ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$fun ThrowingInitializer( th: Throwable, ): Initializer&lt;Nothing, Nothing></ID>
     <ID>UndocumentedPublicFunction:Date.kt$public actual fun Date.toMillis(): Long</ID>
@@ -224,24 +155,6 @@
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L> Either( ifSuccess: () -> L, ): Either&lt;L, Throwable></ID>
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L> Left( ifSuccess: () -> L, ): Left&lt;L></ID>
     <ID>UndocumentedPublicFunction:FlowExtensions.kt$@Deprecated("Bad api") @InternalTeaApi public suspend fun &lt;T> Flow&lt;T>.into( sendChannel: SendChannel&lt;T> )</ID>
-    <ID>UndocumentedPublicFunction:LiveArticleDetailsResolver.kt$fun ArticleDetailsResolver(): ArticleDetailsResolver</ID>
-    <ID>UndocumentedPublicFunction:LiveArticlesResolver.kt$ShareArticle$fun share( article: Article )</ID>
-    <ID>UndocumentedPublicFunction:LiveArticlesResolver.kt$fun &lt;Env> ArticlesResolver( shareDelegate: ShareArticle ): ArticlesResolver&lt;Env></ID>
-    <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$// fixme inline fun ArticlesState.updateQuery( input: String )</ID>
-    <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$fun Article.storeCommand()</ID>
-    <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$fun ArticlesState.toLoadArticlesFromScratchUpdate()</ID>
-    <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$fun ArticlesState.toLoadArticlesQuery( paging: Paging )</ID>
-    <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$fun ArticlesState.toLoadNextArticlesUpdate()</ID>
-    <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$fun ArticlesState.toRefreshUpdate()</ID>
-    <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$fun shareArticle( article: Article, state: ArticlesState ): UpdateWith&lt;ArticlesState, DoShareArticle></ID>
-    <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$fun toggleFavorite( article: Article, state: ArticlesState ): UpdateWith&lt;ArticlesState, Command></ID>
-    <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$fun updateArticle( article: Article, state: ArticlesState ): UpdateWith&lt;ArticlesState, Command></ID>
-    <ID>UndocumentedPublicFunction:LiveArticlesUpdater.kt$LiveArticlesUpdater$fun updateQuery( input: String, state: ArticlesState ): UpdateWith&lt;ArticlesState, ArticlesCommand></ID>
-    <ID>UndocumentedPublicFunction:NewsApi.kt$NewsApi$suspend fun fetchFromEverything( input: String, paging: Paging ): Either&lt;ArticleResponse, AppException></ID>
-    <ID>UndocumentedPublicFunction:NewsApi.kt$NewsApi$suspend fun fetchTopHeadlines( input: String, paging: Paging ): Either&lt;ArticleResponse, AppException></ID>
-    <ID>UndocumentedPublicFunction:NewsApi.kt$fun NewsApi( application: Application ): NewsApi</ID>
-    <ID>UndocumentedPublicFunction:NewsApi.kt$fun NewsApi(): NewsApi</ID>
-    <ID>UndocumentedPublicFunction:Page.kt$fun ArticlesState.nextPage( resultsPerPage: Int = ArticlesPerPage )</ID>
     <ID>UndocumentedPublicFunction:TempTest.kt$ForeverWaitingResolver$suspend fun resolveForever( t: T, ): Nothing</ID>
     <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when attaching interceptor to component, then original sequence of snapshots pipes through it`()</ID>
     <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when collecting component, given initializer throws exception, then it's handled by coroutine scope`()</ID>
@@ -262,42 +175,17 @@
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> messageAsCommand( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, M></ID>
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> throwingUpdater( m: M, s: S, ): Nothing</ID>
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;S> messageAsStateUpdate( message: S, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, S></ID>
-    <ID>UndocumentedPublicFunction:UUID.kt$public actual fun String.toUUID(): UUID</ID>
+    <ID>UndocumentedPublicFunction:UUID.kt$public actual fun RandomUUID(): UUID</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public actual fun UUID.toHumanReadable(): String</ID>
-    <ID>UndocumentedPublicFunction:UUID.kt$public actual fun randomUUID(): UUID</ID>
-    <ID>UndocumentedPublicFunction:UUID.kt$public expect fun String.toUUID(): UUID</ID>
+    <ID>UndocumentedPublicFunction:UUID.kt$public actual fun UUIDFrom( value: String ): UUID</ID>
+    <ID>UndocumentedPublicFunction:UUID.kt$public actual fun UUIDFrom( value: String, ): UUID</ID>
+    <ID>UndocumentedPublicFunction:UUID.kt$public expect fun RandomUUID(): UUID</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public expect fun UUID.toHumanReadable(): String</ID>
-    <ID>UndocumentedPublicFunction:UUID.kt$public expect fun randomUUID(): UUID</ID>
+    <ID>UndocumentedPublicFunction:UUID.kt$public expect fun UUIDFrom( value: String ): UUID</ID>
     <ID>UndocumentedPublicFunction:Url.kt$public actual fun Url.toExternalValue(): String</ID>
     <ID>UndocumentedPublicFunction:Url.kt$public actual fun UrlFor( s: String ): Url</ID>
     <ID>UndocumentedPublicFunction:Url.kt$public expect fun Url.toExternalValue(): String</ID>
     <ID>UndocumentedPublicFunction:Url.kt$public expect fun UrlFor( s: String ): Url</ID>
-    <ID>UndocumentedPublicFunction:toJson.kt$actual fun Date.toJson(): String</ID>
-    <ID>UndocumentedPublicFunction:toJson.kt$actual fun String.toDate(): Date</ID>
-    <ID>UndocumentedPublicProperty:Article.kt$Article$val author: Author?</ID>
-    <ID>UndocumentedPublicProperty:Article.kt$Article$val description: Description?</ID>
-    <ID>UndocumentedPublicProperty:Article.kt$Article$val isFavorite: Boolean</ID>
-    <ID>UndocumentedPublicProperty:Article.kt$Article$val published: Date</ID>
-    <ID>UndocumentedPublicProperty:Article.kt$Article$val title: Title</ID>
-    <ID>UndocumentedPublicProperty:Article.kt$Article$val url: Url</ID>
-    <ID>UndocumentedPublicProperty:Article.kt$Article$val urlToImage: Url?</ID>
-    <ID>UndocumentedPublicProperty:Article.kt$Author$val value: String</ID>
-    <ID>UndocumentedPublicProperty:Article.kt$Description$val value: String</ID>
-    <ID>UndocumentedPublicProperty:Article.kt$Title$val value: String</ID>
-    <ID>UndocumentedPublicProperty:ArticleDetailsMessage.kt$ArticleDetailsMessage$val id: ScreenId</ID>
-    <ID>UndocumentedPublicProperty:ArticleDetailsState.kt$ArticleDetailsState$val article: Article</ID>
-    <ID>UndocumentedPublicProperty:ArticlesState.kt$ArticlesState$val articles: List&lt;Article></ID>
-    <ID>UndocumentedPublicProperty:ArticlesState.kt$ArticlesState$val hasMoreArticles: Boolean</ID>
-    <ID>UndocumentedPublicProperty:ArticlesState.kt$ArticlesState$val isLoading = transientState === Loading</ID>
-    <ID>UndocumentedPublicProperty:ArticlesState.kt$ArticlesState$val isLoadingNext = transientState === LoadingNext</ID>
-    <ID>UndocumentedPublicProperty:ArticlesState.kt$ArticlesState$val isPreview = transientState === Preview</ID>
-    <ID>UndocumentedPublicProperty:ArticlesState.kt$ArticlesState$val isRefreshing = transientState === Refreshing</ID>
-    <ID>UndocumentedPublicProperty:ArticlesState.kt$ArticlesState$val query: Query</ID>
-    <ID>UndocumentedPublicProperty:ArticlesState.kt$ArticlesState$val transientState: TransientState</ID>
-    <ID>UndocumentedPublicProperty:ArticlesState.kt$ArticlesState.Companion$const val ArticlesPerPage = 10</ID>
-    <ID>UndocumentedPublicProperty:ArticlesState.kt$ArticlesState.TransientState.Exception$val th: AppException</ID>
-    <ID>UndocumentedPublicProperty:ArticlesState.kt$Query$val input: String</ID>
-    <ID>UndocumentedPublicProperty:ArticlesState.kt$Query$val type: QueryType</ID>
     <ID>UndocumentedPublicProperty:ComponentLogic.kt$AddItem$val item: Item</ID>
     <ID>UndocumentedPublicProperty:ComponentLogic.kt$DoAddItem$val item: Item</ID>
     <ID>UndocumentedPublicProperty:ComponentLogic.kt$DoAddItem$val to: List&lt;Item> = emptyList()</ID>
@@ -313,31 +201,14 @@
     <ID>UndocumentedPublicProperty:Either.kt$Left$val value: L</ID>
     <ID>UndocumentedPublicProperty:Either.kt$Right$val value: R</ID>
     <ID>UndocumentedPublicProperty:Environment.kt$@ExperimentalTeaApi public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ArticlesLoaded$val page: Page</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ArticlesMessage$val id: ScreenId?</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ArticlesOperationException$val cause: AppException</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$OnArticleUpdated$val article: Article</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$OnQueryUpdated$val query: String</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$OnShareArticle$val article: Article</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ToggleArticleIsFavorite$val article: Article</ID>
-    <ID>UndocumentedPublicProperty:Model.kt$ArticleElement$@SerialName("description") @Serializable(with = DescriptionSerializer::class) val description: Description? = null</ID>
-    <ID>UndocumentedPublicProperty:Model.kt$ArticleElement$@SerialName("publishedAt") @Serializable(with = CommonDateSerializer::class) val publishedAt: Date</ID>
-    <ID>UndocumentedPublicProperty:Model.kt$ArticleElement$@SerialName("title") @Serializable(with = TitleSerializer::class) val title: Title</ID>
-    <ID>UndocumentedPublicProperty:Model.kt$ArticleElement$@SerialName("url") @Serializable(with = UrlSerializer::class) val url: Url</ID>
-    <ID>UndocumentedPublicProperty:Model.kt$ArticleElement$@SerialName("urlToImage") @Serializable(with = UrlSerializer::class) val urlToImage: Url? = null</ID>
-    <ID>UndocumentedPublicProperty:Model.kt$ArticleElement$@Serializable(with = AuthorSerializer::class) @SerialName("author") val author: Author? = null</ID>
-    <ID>UndocumentedPublicProperty:Model.kt$ArticleResponse$@SerialName("articles") val articles: List&lt;ArticleElement></ID>
-    <ID>UndocumentedPublicProperty:Model.kt$ArticleResponse$@SerialName("totalResults") val totalResults: Int</ID>
-    <ID>UndocumentedPublicProperty:Page.kt$Page$val articles: List&lt;Article></ID>
-    <ID>UndocumentedPublicProperty:Page.kt$Page$val hasMore: Boolean = false</ID>
-    <ID>UndocumentedPublicProperty:Page.kt$Paging$val currentSize: Int</ID>
-    <ID>UndocumentedPublicProperty:Page.kt$Paging$val resultsPerPage: Int = ArticlesPerPage</ID>
-    <ID>UndocumentedPublicProperty:Page.kt$Paging.Companion$val FirstPage = Paging(currentSize = 0)</ID>
     <ID>UndocumentedPublicProperty:TempTest.kt$ForeverWaitingResolver$val messages: ReceiveChannel&lt;T> = _messages</ID>
     <ID>UndocumentedPublicProperty:TempTest.kt$const val TestTimeoutMillis = 10 * 1000L</ID>
     <ID>UndocumentedPublicProperty:TempTest.kt$inline val CoroutineScope.job: Job get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")</ID>
     <ID>UndocumentedPublicProperty:TestEnv.kt$@OptIn(ExperimentalStdlibApi::class) val TestScope.coroutineDispatcher: CoroutineDispatcher get() = coroutineContext[CoroutineDispatcher.Key]!!</ID>
     <ID>UndocumentedPublicProperty:TestEnv.kt$val TestComponentId = ComponentId("test")</ID>
     <ID>UndocumentedPublicProperty:TestEnv.kt$val TestSerializer = GsonSerializer()</ID>
+    <ID>UndocumentedPublicProperty:Url.kt$public actual val Url.domain: String get() = host</ID>
+    <ID>UndocumentedPublicProperty:Url.kt$public actual val Url.domain: String get() = host ?: error("No domain: ${toExternalValue()}")</ID>
+    <ID>UndocumentedPublicProperty:Url.kt$public expect val Url.domain: String</ID>
   </CurrentIssues>
 </SmellBaseline>

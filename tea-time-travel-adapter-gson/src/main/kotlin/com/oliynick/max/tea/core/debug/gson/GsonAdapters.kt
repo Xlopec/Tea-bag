@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +28,9 @@ package com.oliynick.max.tea.core.debug.gson
 
 import com.google.gson.*
 import com.google.gson.JsonSerializer
-import com.oliynick.max.entities.shared.UUID
-import com.oliynick.max.entities.shared.toHumanReadable
 import com.oliynick.max.tea.core.debug.protocol.*
+import com.oliynick.max.tea.data.UUID
+import com.oliynick.max.tea.data.toHumanReadable
 import java.lang.reflect.Type
 
 internal object UUIDAdapter : JsonSerializer<UUID>, JsonDeserializer<UUID> {

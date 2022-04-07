@@ -1,9 +1,9 @@
 package com.oliynick.max.tea.core.debug.app.feature.notification
 
 import com.intellij.openapi.project.Project
-import com.oliynick.max.entities.shared.datatypes.Left
 import com.oliynick.max.tea.core.debug.app.NotifyCommand
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.balloon.showBalloon
+import com.oliynick.max.tea.data.Left
 
 fun interface NotificationResolver {
     suspend fun resolve(

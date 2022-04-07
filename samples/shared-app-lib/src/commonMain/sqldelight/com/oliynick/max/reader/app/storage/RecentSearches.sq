@@ -1,0 +1,24 @@
+CREATE TABLE RecentSearches(
+  value TEXT NOT NULL,
+  type INTEGER NOT NULL, -- tab type
+  saved_on INTEGER NOT NULL,
+  PRIMARY KEY (value, type)
+);
+
+insert:
+INSERT OR REPLACE INTO RecentSearches(value, type, saved_on)
+VALUES (?, ?, ?);
+
+deleteOutdated:
+DELETE FROM RecentSearches
+WHERE type = ? AND value NOT IN (
+    SELECT value
+    FROM RecentSearches
+    WHERE type = ?
+    ORDER BY saved_on DESC LIMIT ?
+    );
+
+findAllByType:
+SELECT * FROM RecentSearches
+WHERE type = ?
+ORDER BY saved_on DESC;

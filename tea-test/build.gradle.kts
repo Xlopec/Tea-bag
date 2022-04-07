@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,7 @@ kotlin {
                 api(libs.kotlin.test)
                 api("org.jetbrains.kotlin:kotlin-test-annotations-common:1.6.10")
                 implementation(project(":tea-core"))
-                api(project(":shared-entities"))
+                api(project(":tea-data"))
             }
         }
 

@@ -6,19 +6,21 @@ CREATE TABLE Articles(
   url_to_image TEXT,
   published INTEGER NOT NULL,
   saved_on INTEGER NOT NULL,
-  is_favorite INTEGER AS Boolean NOT NULL DEFAULT 0
+  is_favorite INTEGER AS Boolean NOT NULL DEFAULT 0,
+  source TEXT DEFAULT NULL,
+  FOREIGN KEY (source) REFERENCES Source ON DELETE SET DEFAULT
 );
 
 insertArticle:
-INSERT INTO Articles(url, title, author, description, url_to_image, published, saved_on, is_favorite)
-VALUES (?, ?, ?, ?, ?, ?, ?,?);
+INSERT OR REPLACE INTO Articles(url, title, author, description, url_to_image, published, saved_on, is_favorite, source)
+VALUES (?, ?, ?, ?, ?, ?, ?,?, ?);
 
 deleteArticle:
 DELETE FROM Articles WHERE url = ?;
 
 findAllArticles:
-SELECT * FROM Articles WHERE title LIKE ? OR author LIKE ? OR description LIKE ?
-ORDER BY saved_on ASC;
+SELECT * FROM Articles
+ORDER BY saved_on DESC;
 
 isFavoriteArticle:
 SELECT * FROM Articles WHERE url = ?;

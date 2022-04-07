@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,32 +27,25 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.command.LoadArticlesByQuery
-import com.oliynick.max.reader.app.message.NavigateToFeed
-import com.oliynick.max.reader.article.list.ArticlesState
-import com.oliynick.max.reader.article.list.Paging.Companion.FirstPage
-import com.oliynick.max.reader.article.list.Query
-import com.oliynick.max.reader.article.list.QueryType.Regular
+import com.oliynick.max.reader.app.domain.FilterType.Regular
+import com.oliynick.max.reader.app.feature.article.list.ArticlesInitialUpdate
+import com.oliynick.max.reader.app.feature.navigation.NavigateToFeed
 import com.oliynick.max.tea.core.Initial
 import com.oliynick.max.tea.core.Initializer
 
 fun AppInitializer(
+    systemDarkModeEnabled: Boolean,
     environment: Environment
 ): Initializer<AppState, Command> = Initializer(IO) {
-    val initScreen = ArticlesState.newLoading(
-        NavigateToFeed.id,
-        Query("android", Regular),
+
+    val filter = environment.findFilter(Regular)
+    val (screen, commands) = ArticlesInitialUpdate(NavigateToFeed.id, filter)
+
+    val settings = Settings(
+        syncWithSystemDarkModeEnabled = environment.isSyncWithSystemDarkModeEnabled(),
+        systemDarkModeEnabled = systemDarkModeEnabled,
+        userDarkModeEnabled = environment.isDarkModeEnabled()
     )
 
-    Initial(AppState(initScreen, environment.isDarkModeEnabled()), initScreen.toInitialQuery())
+    Initial(AppState(screen, settings), commands)
 }
-
-private fun ArticlesState.toInitialQuery(): LoadArticlesByQuery {
-    require(articles.isEmpty()) { "non initial state $this" }
-    return LoadArticlesByQuery(id, query, FirstPage)
-}
-
-private fun Initial(
-    appState: AppState,
-    vararg initialCommands: Command,
-) = Initial(appState, setOf(*initialCommands))

@@ -7,7 +7,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        let appComponent = ObservableAppComponent()
+       
+        let appComponent = ObservableAppComponent(systemDarkModeEnabled: UIViewController().isDarkMode)
         let contentView = AppView(appComponent: appComponent)
         
         UITabBar.appearance().isTranslucent = false
@@ -19,7 +20,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.window = window
             window.makeKeyAndVisible()
         }
-        
         
     }
 
@@ -54,3 +54,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 }
 
+private extension UIViewController {
+    var isDarkMode: Bool {
+        if #available(iOS 13.0, *) {
+            return self.traitCollection.userInterfaceStyle == .dark
+        }
+        else {
+            return false
+        }
+    }
+}

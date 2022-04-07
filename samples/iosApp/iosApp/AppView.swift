@@ -16,10 +16,10 @@ class ObservableAppComponent : ObservableObject {
     @Published public var appState: AppState? = nil
     
     private var cancellation: Cancellation?
-    private let component: IosComponent
+    let component: IosComponent
     
-    init() {
-        component = IosComponent()
+    init(systemDarkModeEnabled: Bool) {
+        component = IosComponent(systemDarkModeEnabled: systemDarkModeEnabled)
         
         cancellation = component.render { state in
             self.appState = state
@@ -40,6 +40,8 @@ typealias MessageHandler = (Message) -> Void
 
 struct AppView: View {
     
+    @SwiftUI.Environment(\.colorScheme) var colorScheme: ColorScheme
+    
     @ObservedObject private(set) var appComponent: ObservableAppComponent
     
     let handler: MessageHandler
@@ -58,7 +60,7 @@ struct AppView: View {
                 switch screen {
                     // fixme refactor in truly Swift fashion
                 case let tabScreen as TabScreen:
-                    AppTabViewContent(tabScreen: tabScreen)
+                    AppTabView(initialTab: tabScreen, appState: appState, handler: handler)
                 case let articleDetailsState as ArticleDetailsState:
                     Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
                 default:
@@ -66,87 +68,26 @@ struct AppView: View {
                 }
             } else {
                 // todo: show splash screen
-                Text("Splash screen!")
+                Text("News Reader")
+                    .font(.headline)
             }
-        }
-    }
-    
-    @ViewBuilder
-    private func AppTabViewContent(tabScreen: TabScreen) -> some View {
-        AppTabView(initialTab: (tabScreen as? ArticlesState)?.displayTab ?? 3, handler: handler) { tab in
+        }.onChange(of: appComponent.appState?.settings) {
             
-            if let articlesState = tabScreen as? ArticlesState {
-                ArticlesView(state: articlesState, handler: handler, searchHintText: tab.searchHintText, headingText: articlesState.headingText)
-            } else {
-                Text("App Settings")
+            if let darkMode = $0?.appDarkModeEnabled {
+                updateDarkMode(darkModeEnabled: darkMode)
             }
-        }
-    }
-    
-}
 
-private extension Int {
-    
-    var searchHintText: String {
-        var text = "Search in articles..."
-        
-        if self == 0 {
-            text = "Search in articles..."
-        } else if self == 1 {
-            text = "Search in favorite..."
-        } else if self == 2 {
-            text = "Search in trending..."
+        }.onChange(of: colorScheme) {
+            handler(SystemDarkModeChanged(enabled: $0 == .dark))
         }
-        
-        return text
     }
     
-}
-
-private extension ArticlesState {
-    
-    var headingText: String {
-        var text = "Feed"
+    private func updateDarkMode(darkModeEnabled: Bool) {
+        let window = UIApplication.shared.windows.first
         
-        if query.type.description() == "Regular" {
-            text = "Feed"
-        } else if query.type.description() == "Favorite" {
-            text = "Favorite"
-        } else if query.type.description() == "Trending" {
-            text = "Trending"
-        }
-        
-        return text
+        window?.overrideUserInterfaceStyle = darkModeEnabled ? .dark : .light
     }
     
-    var displayTab: Int {
-        
-        var initialTab = 0
-        
-        if query.type.description() == "Regular" {
-            initialTab = 0
-        } else if query.type.description() == "Favorite" {
-            initialTab = 1
-        } else if query.type.description() == "Trending" {
-            initialTab = 2
-        }
-        
-        return initialTab
-    }
-    
-    var searchHintText: String {
-        var text = "Search in articles..."
-        
-        if query.type.description() == "Regular" {
-            text = "Search in articles..."
-        } else if query.type.description() == "Favorite" {
-            text = "Search in favorite..."
-        } else if query.type.description() == "Trending" {
-            text = "Search in trending..."
-        }
-        
-        return text
-    }
 }
 
 struct AppView_Previews: PreviewProvider {

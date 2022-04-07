@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,7 @@ import kotlin.test.*
 class ComponentTest {
 
     @Test
-    fun `when subscriber disconnects, then component initializer is re-invoked`() =
+    fun `when subscriber disconnects then component initializer is re-invoked`() =
         runTestCancellingChildren {
 
             var counter = 0
@@ -65,7 +65,7 @@ class ComponentTest {
         }
 
     @Test
-    fun `when upstream receives new input, then previous downstream is canceled`() =
+    fun `when upstream receives new input then previous downstream is canceled`() =
         runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
             val env = TestEnv<Char, String, Char>(
@@ -101,7 +101,7 @@ class ComponentTest {
         }
 
     @Test
-    fun `when component receives input, then it emits correct sequence of snapshots`() =
+    fun `when component receives input then it emits correct sequence of snapshots`() =
         runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
@@ -123,7 +123,7 @@ class ComponentTest {
         }
 
     @Test
-    fun `when component receives input, given recursive calculations, then it emits correct sequence of snapshots`() =
+    fun `when component receives input given recursive calculations then it emits correct sequence of snapshots`() =
         runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
@@ -146,7 +146,7 @@ class ComponentTest {
         }
 
     @Test
-    fun `when attaching interceptor to component, then original sequence of snapshots pipes through it`() =
+    fun `when attaching interceptor to component then original sequence of snapshots pipes through it`() =
         runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
@@ -165,7 +165,7 @@ class ComponentTest {
         }
 
     @Test
-    fun `when component has multiple consumers, then snapshots are shared among them`() =
+    fun `when component has multiple consumers then snapshots are shared among them`() =
         runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
@@ -204,7 +204,7 @@ class ComponentTest {
         }
 
     @Test
-    fun `when component has multiple consumers, then component is initialized only once`() =
+    fun `when component has multiple consumers then component is initialized only once`() =
         runTestCancellingChildren {
 
             var invocations = 0
@@ -255,7 +255,7 @@ class ComponentTest {
         }
 
     @Test
-    fun `when component has multiple consumers, then it can serve multiple message sources`() =
+    fun `when component has multiple consumers then it can serve multiple message sources`() =
         runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
@@ -333,7 +333,7 @@ class ComponentTest {
         }
 
     @Test
-    fun `when collecting component, given updater throws exception, then it's handled by coroutine scope`() {
+    fun `when collecting component given updater throws exception then it's handled by coroutine scope`() {
         val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
 
         val component = Component<String, String, String>(
@@ -354,7 +354,7 @@ class ComponentTest {
     }
 
     @Test
-    fun `when collecting component, given initializer throws exception, then it's handled by coroutine scope`() {
+    fun `when collecting component given initializer throws exception then it's handled by coroutine scope`() {
 
         val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
 
@@ -379,7 +379,7 @@ class ComponentTest {
     }
 
     @Test
-    fun `when collecting component with specific dispatcher, then updater runs on this dispatcher`() =
+    fun `when collecting component with specific dispatcher then updater runs on this dispatcher`() =
         runTestCancellingChildren {
             // All test schedulers use 'Test worker' as prefix, so to workaround this issue we use
             // custom dispatcher with different thread naming strategy

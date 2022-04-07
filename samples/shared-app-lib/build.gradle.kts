@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,15 +57,17 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(project(":shared-entities"))
+                api(project(":tea-core"))
+                api(project(":tea-data"))
                 api(libs.collections.immutable)
                 api(libs.coroutines.core)
-                api(project(":tea-core"))
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.logging)
-                implementation(libs.ktor.client.json)
-                implementation(libs.ktor.client.serialization)
+
+                implementation(libs.ktor.client.negotiation)
+                implementation(libs.ktor.serialization.json)
+
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2")
                 implementation("com.russhwolf:multiplatform-settings-no-arg:0.8.1")
                 implementation("com.squareup.sqldelight:runtime:1.5.3")

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +26,10 @@
 
 package com.oliynick.max.tea.core.data
 
-import com.oliynick.max.entities.shared.UUID
-import com.oliynick.max.entities.shared.Url
-import com.oliynick.max.entities.shared.UrlFor
-import com.oliynick.max.entities.shared.randomUUID
+import com.oliynick.max.tea.data.RandomUUID
+import com.oliynick.max.tea.data.UUID
+import com.oliynick.max.tea.data.Url
+import com.oliynick.max.tea.data.UrlFor
 import kotlin.jvm.JvmInline
 
 data class User(
@@ -57,7 +57,7 @@ value class Photo(
     val url: Url
 )
 
-fun RandomId() = Id(randomUUID())
+fun RandomId() = Id(RandomUUID())
 
 fun Photo(urlSpec: String) = Photo(UrlFor(urlSpec))
 

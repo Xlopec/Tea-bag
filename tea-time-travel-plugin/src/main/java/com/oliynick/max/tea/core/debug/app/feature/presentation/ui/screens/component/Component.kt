@@ -33,13 +33,15 @@ import org.jetbrains.compose.splitpane.rememberSplitPaneState
 
 private val SplitPaneMinContentHeight = 100.dp
 
+typealias MessageHandler = (Message) -> Unit
+
 @OptIn(ExperimentalSplitPaneApi::class)
 @Composable
 fun Component(
     project: Project,
     settings: Settings,
     state: ComponentDebugState,
-    events: (Message) -> Unit,
+    events: MessageHandler,
 ) {
     Column {
 
@@ -94,7 +96,7 @@ fun Component(
 @Composable
 private fun ComponentFilterHeader(
     state: ComponentDebugState,
-    events: (Message) -> Unit
+    events: MessageHandler
 ) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
         ValidatedTextField(

@@ -100,3 +100,9 @@
 
 # FIXME R8 full mode works only if we're keeping everything from network module as is
 #-keep class com.oliynick.max.reader.network.** { *; }
+
+-assumenosideeffects public class androidx.compose.runtime.ComposerKt {
+      boolean isTraceInProgress();
+      void traceEventStart(int,java.lang.String);
+      void traceEventEnd();
+}

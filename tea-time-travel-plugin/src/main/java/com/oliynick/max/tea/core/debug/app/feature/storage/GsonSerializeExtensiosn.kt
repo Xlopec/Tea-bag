@@ -2,8 +2,6 @@ package com.oliynick.max.tea.core.debug.app.feature.storage
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.oliynick.max.entities.shared.UUID
-import com.oliynick.max.entities.shared.toHumanReadable
 import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
 import com.oliynick.max.tea.core.debug.app.domain.OriginalSnapshot
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
@@ -13,6 +11,8 @@ import com.oliynick.max.tea.core.debug.app.feature.server.toJsonArray
 import com.oliynick.max.tea.core.debug.app.feature.server.toJsonElement
 import com.oliynick.max.tea.core.debug.app.feature.server.toValue
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import com.oliynick.max.tea.data.UUID
+import com.oliynick.max.tea.data.toHumanReadable
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDateTime

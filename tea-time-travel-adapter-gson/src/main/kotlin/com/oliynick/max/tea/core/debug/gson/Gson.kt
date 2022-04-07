@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,8 @@ package com.oliynick.max.tea.core.debug.gson
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
-import com.oliynick.max.entities.shared.UUID
 import com.oliynick.max.tea.core.debug.protocol.*
+import com.oliynick.max.tea.data.UUID
 
 /**
  * Type alias a for Gson specific [ClientMessage]

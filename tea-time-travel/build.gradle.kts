@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,6 +40,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":tea-core"))
+                implementation(project(":tea-data"))
                 implementation(project(":tea-time-travel-protocol"))
 
                 implementation(libs.stdlib)

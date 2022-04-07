@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -104,10 +104,10 @@ android {
     sourceSets {
 
         maybeCreate("remote")
-            .java.srcDirs("remote/java", "main/java")
+            .java.srcDirs("remote/kotlin", "main/kotlin")
 
         maybeCreate("default")
-            .java.srcDirs("default/java", "main/java")
+            .java.srcDirs("default/kotlin", "main/kotlin")
     }
 }
 
@@ -122,6 +122,7 @@ dependencies {
     implementation(libs.coroutines.android)
 
     implementation(libs.bundles.compose)
+    debugImplementation(libs.compose.tooling)
 
     implementation(libs.bundles.accompanist)
     implementation(libs.coil)

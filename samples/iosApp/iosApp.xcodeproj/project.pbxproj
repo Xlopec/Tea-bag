@@ -11,9 +11,10 @@
 		3D0EED4927218D5B0020E30E /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D0EED4827218D5A0020E30E /* SearchBar.swift */; };
 		3D18EDC72717146200D8FA2B /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D18EDC62717146200D8FA2B /* AlertView.swift */; };
 		3D1C3F6A2714DC4300AD2F0C /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1C3F692714DC4300AD2F0C /* AppView.swift */; };
+		3D2ED41C27AC736E001DEB77 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2ED41B27AC736E001DEB77 /* SettingsView.swift */; };
 		3D4F2860267D108E00D3D126 /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F986668854AAE55513203521 /* Pods_iosApp.framework */; };
 		3D4F2861267D108E00D3D126 /* Pods_iosApp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F986668854AAE55513203521 /* Pods_iosApp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		3D6AC7882737390800351A17 /* TabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D6AC7872737390800351A17 /* TabView.swift */; };
+		3D6AC7882737390800351A17 /* AppTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D6AC7872737390800351A17 /* AppTabView.swift */; };
 		3D77241A27298261008103EE /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D77241927298261008103EE /* MessageView.swift */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
 		7555FF81242A565900829871 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF80242A565900829871 /* SceneDelegate.swift */; };
@@ -64,10 +65,11 @@
 		3D0EED4827218D5A0020E30E /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		3D18EDC62717146200D8FA2B /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		3D1C3F692714DC4300AD2F0C /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
+		3D2ED41B27AC736E001DEB77 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		3D4F286D267D118A00D3D126 /* SharedAppLib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SharedAppLib.framework; path = "../shared-app-lib/build/cocoapods/framework/SharedAppLib.framework"; sourceTree = "<group>"; };
 		3D4F2872267D119200D3D126 /* TeaCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TeaCore.framework; path = "../tea-core/build/cocoapods/framework/TeaCore.framework"; sourceTree = "<group>"; };
 		3D52458326780EC6005C4ED3 /* TeaCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TeaCore.framework; path = "../tea-core/build/xcode-frameworks/TeaCore.framework"; sourceTree = "<group>"; };
-		3D6AC7872737390800351A17 /* TabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabView.swift; sourceTree = "<group>"; };
+		3D6AC7872737390800351A17 /* AppTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTabView.swift; sourceTree = "<group>"; };
 		3D77241927298261008103EE /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		3D94EE83267A9FEA0008D90C /* SharedAppLib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SharedAppLib.framework; path = "../shared-app-lib/build/xcode-frameworks/SharedAppLib.framework"; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -159,7 +161,8 @@
 				3D0EED4827218D5A0020E30E /* SearchBar.swift */,
 				3D77241927298261008103EE /* MessageView.swift */,
 				3D07BC4D272DED0F00F58ADA /* WebView.swift */,
-				3D6AC7872737390800351A17 /* TabView.swift */,
+				3D6AC7872737390800351A17 /* AppTabView.swift */,
+				3D2ED41B27AC736E001DEB77 /* SettingsView.swift */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -481,9 +484,10 @@
 				3D1C3F6A2714DC4300AD2F0C /* AppView.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				7555FF81242A565900829871 /* SceneDelegate.swift in Sources */,
+				3D2ED41C27AC736E001DEB77 /* SettingsView.swift in Sources */,
 				7555FF83242A565900829871 /* ArticlesView.swift in Sources */,
 				3D77241A27298261008103EE /* MessageView.swift in Sources */,
-				3D6AC7882737390800351A17 /* TabView.swift in Sources */,
+				3D6AC7882737390800351A17 /* AppTabView.swift in Sources */,
 				3D0EED4927218D5B0020E30E /* SearchBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

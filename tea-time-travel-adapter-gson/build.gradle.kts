@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ dependencies {
 
     api(project(":tea-time-travel-protocol"))
     api(libs.gson)
-    implementation(project(":shared-entities"))
+    implementation(project(":tea-data"))
     implementation(libs.stdlib.reflect)
 
     implementation(libs.stdlib)

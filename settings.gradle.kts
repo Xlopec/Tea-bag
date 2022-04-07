@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022. Maksym Oliinyk.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 @file:Suppress("UnstableApiUsage")
 
 rootProject.name = "Tea-bag"
@@ -17,7 +41,7 @@ include(
     ":tea-time-travel-plugin",
     ":tea-test",
     ":tea-time-travel-adapter-gson",
-    ":shared-entities",
+    ":tea-data",
     ":samples:app",
     ":samples:shared-app-lib"
 )
@@ -33,8 +57,8 @@ dependencyResolutionManagement {
 
             version("ktor", "2.0.0-beta-1")
             version("coroutines", "1.6.0")
-            version("compose", "1.2.0-alpha01")
-            version("accompanist", "0.22.0-rc")
+            version("compose", "1.2.0-alpha04")
+            version("accompanist", "0.24.1-alpha")
             version("sqldelight", "1.5.3")
 
             // Testing
@@ -134,7 +158,7 @@ dependencyResolutionManagement {
                 .versionRef("ktor")
 
             alias("ktor-client-ios")
-                .to("io.ktor", "ktor-client-ios")
+                .to("io.ktor", "ktor-client-darwin")
                 .versionRef("ktor")
 
             alias("ktor-client-websockets")
@@ -153,12 +177,12 @@ dependencyResolutionManagement {
                 .to("io.ktor", "ktor-client-gson")
                 .versionRef("ktor")
 
-            alias("ktor-client-json")
-                .to("io.ktor", "ktor-client-json")
+            alias("ktor-client-negotiation")
+                .to("io.ktor", "ktor-client-content-negotiation")
                 .versionRef("ktor")
 
-            alias("ktor-client-serialization")
-                .to("io.ktor", "ktor-client-serialization")
+            alias("ktor-serialization-json")
+                .to("io.ktor", "ktor-serialization-kotlinx-json")
                 .versionRef("ktor")
 
             // Compose
@@ -199,7 +223,7 @@ dependencyResolutionManagement {
                 .to("androidx.compose.compiler", "compiler")
                 .versionRef("compose")
 
-            alias("compose-activity").to("androidx.activity:activity-compose:1.4.0")
+            alias("compose-activity").to("androidx.activity:activity-compose:1.5.0-alpha03")
 
             bundle(
                 "compose",
@@ -209,7 +233,6 @@ dependencyResolutionManagement {
                     "compose-foundation-layout",
                     "compose-material",
                     "compose-icons",
-                    "compose-tooling",
                     "compose-runtime",
                     "compose-animation",
                     "compose-compiler",
@@ -227,7 +250,17 @@ dependencyResolutionManagement {
                 .to("com.google.accompanist", "accompanist-swiperefresh")
                 .versionRef("accompanist")
 
-            bundle("accompanist", listOf("accompanist-insets", "accompanist-swiperefresh"))
+            alias("accompanist-flow-layout")
+                .to("com.google.accompanist", "accompanist-flowlayout")
+                .versionRef("accompanist")
+
+            bundle("accompanist",
+                listOf(
+                    "accompanist-insets",
+                    "accompanist-swiperefresh",
+                    "accompanist-flow-layout"
+                )
+            )
 
             // Coil
 

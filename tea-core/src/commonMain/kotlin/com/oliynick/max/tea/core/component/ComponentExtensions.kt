@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -186,12 +186,19 @@ public fun <M, S, C> Component<M, S, C>.observeSnapshots(): Flow<Snapshot<M, S, 
  * Transforms component into flow of states
  *
  * @receiver component to transform
- * @param C command
- * @param M message
  * @param S state
  */
-public fun <M, S, C> Component<M, S, C>.observeStates(): Flow<S> =
+public fun <S> Component<*, S, *>.observeStates(): Flow<S> =
     observeSnapshots().map { snapshot -> snapshot.currentState }
+
+/**
+ * Transforms component into flow of commands
+ *
+ * @receiver component to transform
+ * @param C command
+ */
+public fun <M, S, C> Component<M, S, C>.observeCommands(): Flow<Set<C>> =
+    observeSnapshots().map { snapshot -> snapshot.commands }
 
 /**
  * Transforms component into function that accepts messages and returns flow that

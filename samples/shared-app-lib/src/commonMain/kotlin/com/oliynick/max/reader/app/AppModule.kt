@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,19 @@
 
 package com.oliynick.max.reader.app
 
-import com.oliynick.max.reader.app.navigation.AppNavigation
+import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsResolver
+import com.oliynick.max.reader.app.feature.article.list.ArticlesResolver
+import com.oliynick.max.reader.app.feature.filter.FiltersResolver
+import com.oliynick.max.reader.app.feature.storage.LocalStorage
 
-interface AppModule<Env> : AppUpdater<Env>, AppResolver<Env>, AppNavigation
+interface AppModule<Env> : AppUpdater<Env>, AppResolver<Env>
+
+fun <Env> AppModule(): AppModule<Env> where Env : ArticlesResolver<Env>,
+                                            Env : FiltersResolver<Env>,
+                                            Env : ArticleDetailsResolver,
+                                            Env : LocalStorage =
+    object : AppModule<Env>,
+        AppUpdater<Env> by AppUpdater(),
+        AppResolver<Env> by AppResolver() {
+
+    }

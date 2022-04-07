@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,11 @@
 
 package com.oliynick.max.tea.core.debug.session
 
-import com.oliynick.max.entities.shared.datatypes.Either
-import com.oliynick.max.entities.shared.datatypes.Left
-import com.oliynick.max.entities.shared.datatypes.Right
 import com.oliynick.max.tea.core.debug.component.Settings
 import com.oliynick.max.tea.core.debug.protocol.*
+import com.oliynick.max.tea.data.Either
+import com.oliynick.max.tea.data.Left
+import com.oliynick.max.tea.data.Right
 import io.ktor.websocket.*
 import kotlinx.coroutines.flow.*
 import kotlin.reflect.KClass

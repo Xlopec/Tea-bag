@@ -1,17 +1,25 @@
 /*
- * Copyright (C) 2021. Maksym Oliinyk.
+ * MIT License
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 @file:Suppress("FunctionName")
@@ -20,23 +28,23 @@ package com.oliynick.max.reader.app
 
 import com.google.gson.JsonElement
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.message.Message
 import com.oliynick.max.reader.app.serialization.PersistentListSerializer
+import com.oliynick.max.reader.app.serialization.PersistentSetSerializer
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.ShareStateWhileSubscribed
-import com.oliynick.max.tea.core.component.states
+import com.oliynick.max.tea.core.component.Component
 import com.oliynick.max.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
 import io.ktor.http.*
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.coroutines.flow.Flow
+import kotlinx.collections.immutable.PersistentSet
 
 fun DebuggableAppComponent(
     environment: Environment,
     initializer: Initializer<AppState, Command>,
-): (Flow<Message>) -> Flow<AppState> =
+): Component<Message, AppState, Command> =
     Component(
         id = ComponentId("News Reader App"),
         initializer = initializer,
@@ -46,8 +54,9 @@ fun DebuggableAppComponent(
         url = Url("http://10.0.2.2:8080"),
         jsonSerializer = AppGsonSerializer(),
         shareOptions = ShareStateWhileSubscribed,
-    ).states()
+    )
 
 private fun AppGsonSerializer(): JsonSerializer<JsonElement> = GsonSerializer {
-    registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
+    registerTypeAdapter(PersistentList::class.java, PersistentListSerializer)
+    registerTypeAdapter(PersistentSet::class.java, PersistentSetSerializer)
 }

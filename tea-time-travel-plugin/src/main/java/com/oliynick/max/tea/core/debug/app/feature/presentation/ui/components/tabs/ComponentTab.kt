@@ -13,10 +13,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.oliynick.max.tea.core.debug.app.Message
 import com.oliynick.max.tea.core.debug.app.domain.DebugState
 import com.oliynick.max.tea.core.debug.app.feature.presentation.RemoveComponent
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ActionIcons
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.screens.component.MessageHandler
 import com.oliynick.max.tea.core.debug.app.state.componentIds
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
@@ -26,7 +26,7 @@ fun ComponentTab(
     selectedId: MutableState<ComponentId>,
     state: DebugState,
     tabIndex: Int,
-    events: (Message) -> Unit
+    events: MessageHandler
 ) {
     Tab(
         selected = id == selectedId.value,

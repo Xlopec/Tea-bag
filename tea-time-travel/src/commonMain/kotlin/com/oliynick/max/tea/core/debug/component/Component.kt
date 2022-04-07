@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +26,12 @@
 
 package com.oliynick.max.tea.core.debug.component
 
-import com.oliynick.max.entities.shared.randomUUID
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.debug.component.internal.mergeWith
 import com.oliynick.max.tea.core.debug.protocol.*
 import com.oliynick.max.tea.core.debug.session.*
+import com.oliynick.max.tea.data.RandomUUID
 import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -143,7 +143,7 @@ private suspend fun <M, S, C, J> DebugSession<M, S, J>.notifyServer(
     env: DebugEnv<M, S, C, J>,
     snapshot: Snapshot<M, S, C>,
 ) = with(env.settings) {
-    invoke(NotifyServer(randomUUID(), id, serializer.toServerMessage(snapshot)))
+    invoke(NotifyServer(RandomUUID(), id, serializer.toServerMessage(snapshot)))
 }
 
 private fun <M, S, C, J> JsonSerializer<J>.toServerMessage(

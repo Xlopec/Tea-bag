@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -61,7 +61,7 @@ public data class Env<M, S, C>(
  */
 public data class ShareOptions(
     val started: SharingStarted,
-    val replay: UInt,
+    val replay: UInt = 0U,
 )
 
 @ExperimentalTeaApi

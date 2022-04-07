@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@
 
 package com.oliynick.max.tea.core.debug.protocol
 
-import com.oliynick.max.entities.shared.UUID
+import com.oliynick.max.tea.data.UUID
 
 /**
  * Message that notifies a debug server about component's state changes

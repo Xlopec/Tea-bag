@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,19 +27,19 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.message.Message
 import com.oliynick.max.tea.core.Initializer
+import com.oliynick.max.tea.core.ShareOptions
 import com.oliynick.max.tea.core.component.Component
-import com.oliynick.max.tea.core.component.states
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 
 fun AppComponent(
     environment: Environment,
     initializer: Initializer<AppState, Command>,
-): (Flow<Message>) -> Flow<AppState> =
+): Component<Message, AppState, Command> =
     Component(
         initializer = initializer,
         resolver = { c -> with(environment) { resolve(c) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment,
-    ).states()
+        shareOptions = ShareOptions(SharingStarted.WhileSubscribed())
+    )

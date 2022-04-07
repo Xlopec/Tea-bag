@@ -57,7 +57,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiClass
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PsiNavigateUtil
-import com.oliynick.max.tea.core.debug.app.Message
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ApplyMessage
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ApplyState
@@ -76,6 +75,7 @@ import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.Va
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ValueIcon.Property
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ValueIcon.Snapshot
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.misc.toReadableStringDetailed
+import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.screens.component.MessageHandler
 import com.oliynick.max.tea.core.debug.app.misc.javaPsiFacade
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 
@@ -87,7 +87,7 @@ fun Tree(
     id: ComponentId,
     roots: List<Node>,
     formatter: TreeFormatter,
-    handler: (Message) -> Unit,
+    handler: MessageHandler,
 ) {
     val state = remember(roots) { TreeState(id, roots) }
 
@@ -100,7 +100,7 @@ fun Tree(
     id: ComponentId,
     root: Node,
     formatter: TreeFormatter,
-    handler: (Message) -> Unit,
+    handler: MessageHandler,
 ) {
     val state = remember(root) { TreeState(id, root) }
 
@@ -112,7 +112,7 @@ fun Tree(
     modifier: Modifier = Modifier,
     tree: TreeState,
     formatter: TreeFormatter,
-    handler: (Message) -> Unit,
+    handler: MessageHandler,
 ) {
     Box(
         modifier = modifier
@@ -140,7 +140,7 @@ private fun LazyListScope.subTree(
     formatter: TreeFormatter,
     text: String,
     state: TreeState,
-    handler: (Message) -> Unit
+    handler: MessageHandler
 ) =
     when (node) {
         is SnapshotINode -> snapshotSubTree(level, formatter(node), formatter, node, state, handler)
@@ -155,7 +155,7 @@ private fun LazyListScope.snapshotSubTree(
     formatter: TreeFormatter,
     node: SnapshotINode,
     state: TreeState,
-    handler: (Message) -> Unit
+    handler: MessageHandler
 ) {
     item {
         if (node.message == null && node.state == null) {
@@ -208,7 +208,7 @@ private fun LazyListScope.referenceSubTree(
     node: RefNode,
     formatter: TreeFormatter,
     state: TreeState,
-    handler: (Message) -> Unit,
+    handler: MessageHandler,
 ) {
     item {
         ExpandableNode(level, text, Class, node, state, handler)
@@ -227,7 +227,7 @@ private fun LazyListScope.collectionSubTree(
     text: String,
     formatter: TreeFormatter,
     state: TreeState,
-    handler: (Message) -> Unit
+    handler: MessageHandler
 ) {
     item {
         ExpandableNode(level, text, Property, node, state, handler)
@@ -245,7 +245,7 @@ private fun LazyListScope.leaf(
     text: String,
     leaf: Leaf,
     state: TreeState,
-    handler: (Message) -> Unit,
+    handler: MessageHandler,
 ) {
     item {
         LeafNode(level, text, Property, leaf, state, handler)
@@ -260,7 +260,7 @@ private fun LeafNode(
     painter: Painter,
     leaf: Node,
     state: TreeState,
-    handler: (Message) -> Unit,
+    handler: MessageHandler,
 ) {
     val showPopup = remember { mutableStateOf(false) }
 
@@ -307,7 +307,7 @@ private fun ExpandableNode(
     painter: Painter,
     node: INode,
     state: TreeState,
-    handler: (Message) -> Unit
+    handler: MessageHandler
 ) {
     val showPopup = remember { mutableStateOf(false) }
 
@@ -366,7 +366,7 @@ private fun ActionsPopup(
     state: TreeState,
     node: Node,
     onDismiss: () -> Unit,
-    handler: (Message) -> Unit
+    handler: MessageHandler
 ) {
 
     Popup(onDismissRequest = onDismiss) {
@@ -434,7 +434,7 @@ private fun JumpToSourcesActionItem(
 private fun SnapshotActionItems(
     id: ComponentId,
     node: SnapshotINode,
-    handler: (Message) -> Unit
+    handler: MessageHandler
 ) {
     Column {
         PopupItem(Remove, "Delete all") {

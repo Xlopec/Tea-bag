@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,51 +27,71 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.command.StoreDarkMode
-import com.oliynick.max.reader.app.message.Navigation
-import com.oliynick.max.reader.app.message.ScreenMessage
-import com.oliynick.max.reader.app.navigation.AppNavigation
-import com.oliynick.max.reader.article.details.ArticleDetailsMessage
-import com.oliynick.max.reader.article.details.ArticleDetailsState
-import com.oliynick.max.reader.article.details.ArticleDetailsUpdater
-import com.oliynick.max.reader.article.list.ArticlesMessage
-import com.oliynick.max.reader.article.list.ArticlesState
-import com.oliynick.max.reader.article.list.ArticlesUpdater
-import com.oliynick.max.reader.settings.OnToggleDarkMode
-import com.oliynick.max.reader.settings.SettingsMessage
+import com.oliynick.max.reader.app.command.DoLog
+import com.oliynick.max.reader.app.command.DoStoreDarkMode
+import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsMessage
+import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
+import com.oliynick.max.reader.app.feature.article.details.updateArticleDetails
+import com.oliynick.max.reader.app.feature.article.list.ArticlesMessage
+import com.oliynick.max.reader.app.feature.article.list.ArticlesState
+import com.oliynick.max.reader.app.feature.article.list.updateArticles
+import com.oliynick.max.reader.app.feature.filter.FilterMessage
+import com.oliynick.max.reader.app.feature.filter.FiltersState
+import com.oliynick.max.reader.app.feature.filter.updateFilters
+import com.oliynick.max.reader.app.feature.navigation.Navigation
+import com.oliynick.max.reader.app.feature.navigation.navigate
+import com.oliynick.max.reader.app.feature.settings.SettingsMessage
+import com.oliynick.max.reader.app.feature.settings.SystemDarkModeChanged
+import com.oliynick.max.reader.app.feature.settings.ToggleDarkMode
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.component.noCommand
 
-fun <Env> AppUpdater(): AppUpdater<Env> where Env : ArticlesUpdater,
-                                              Env : ArticleDetailsUpdater,
-                                              Env : AppNavigation =
+fun <Env> AppUpdater(): AppUpdater<Env> =
     AppUpdater { message, state ->
         when (message) {
             is Navigation -> navigate(message, state)
             is ScreenMessage -> updateScreen(message, state)
+            else -> error("can't get here, $message")
         }
     }
 
-fun <Env> Env.updateScreen(
+private fun updateScreen(
     message: ScreenMessage,
     state: AppState,
-): UpdateWith<AppState, Command> where Env : ArticlesUpdater,
-                                       Env : ArticleDetailsUpdater,
-                                       Env : AppNavigation =
+): UpdateWith<AppState, Command> =
     when (message) {
+        is FilterMessage -> state.updateScreen<FiltersState>(message.id) { screen ->
+            updateFilters(message, screen)
+        }
         is ArticlesMessage -> state.updateScreen<ArticlesState>(message.id) { screen ->
             updateArticles(message, screen)
         }
         is ArticleDetailsMessage -> state.updateScreen<ArticleDetailsState>(message.id) { screen ->
             updateArticleDetails(message, screen)
         }
-        is SettingsMessage -> state.updateSettings(message)
+        is SettingsMessage -> state.toSettingsUpdate(message)
+        is Log -> state.toLogUpdate(message)
         else -> error("Unknown screen message, was $message")
     }
 
-fun AppState.updateSettings(
+private fun AppState.toLogUpdate(
+    message: Log
+) = command(DoLog(this, message.throwable, message.id, message.causedBy))
+
+private fun AppState.toSettingsUpdate(
     message: SettingsMessage,
 ): UpdateWith<AppState, Command> =
     when (message) {
-        is OnToggleDarkMode -> copy(isInDarkMode = !isInDarkMode) command StoreDarkMode(!isInDarkMode)
+        is ToggleDarkMode -> updateSettings {
+            updated(
+                userDarkModeEnabled = message.userDarkModeEnabled,
+                syncWithSystemDarkModeEnabled = message.syncWithSystemDarkModeEnabled
+            )
+        } command DoStoreDarkMode(message.userDarkModeEnabled, message.syncWithSystemDarkModeEnabled)
+        is SystemDarkModeChanged -> updateSettings { updated(systemDarkModeEnabled = message.enabled) }.noCommand()
     }
+
+private fun AppState.updateSettings(
+    how: Settings.() -> Settings
+) = copy(settings = settings.run(how))

@@ -1,29 +1,37 @@
-import gradle.kotlin.dsl.accessors._3032137ebba2d130c40d1f11fdc37120.classes
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022. Maksym Oliinyk.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
     `maven-publish`
-    signing
+    id("signing-convention")
     id("org.jetbrains.dokka")
 }
 
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
-
-val packSourcesJar by tasks.creating(Jar::class) {
-    if (project.hasKotlinMultiplatformPlugin) {
-        dependsOn(tasks["sourcesJar"])
-    } else if (project.hasKotlinJvmPlugin) {
-        dependsOn(tasks.classes)
-        archiveClassifier.set("sources")
-        from(projectSourceSets["main"].allSource)
-    } else {
-        throw ProjectConfigurationException("Can't create \"$name\" task for project $project", listOf())
-    }
-
-    group = "release"
-    description = "Packs sources jar depending on kotlin plugin applied"
-}
 
 val packJavadocJar by tasks.registering(Jar::class) {
     dependsOn(tasks.named("dokkaHtml"))
@@ -42,80 +50,17 @@ val copyArtifacts by tasks.registering(Copy::class) {
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
 }
 
-val release by tasks.registering {
-    dependsOn(tasks[if (isCiEnv) "publish" else "publishToMavenLocal"])
-    finalizedBy(tasks.named("copyArtifacts"))
-
-    group = "release"
-    description = "Runs build tasks, assembles all the necessary artifacts and publishes them"
-}
-
 publishing {
-    publications {
-
-        val projectName = name
-
-        create<MavenPublication>(projectName) {
-            artifact(packSourcesJar)
-            artifact(packJavadocJar)
-
-            pom {
-                name.set(projectName)
-                description.set(
-                    "TEA Bag is simple implementation of TEA written in Kotlin. " +
-                            "${projectName.capitalize()} is part of this project"
-                )
-                url.set("https://github.com/Xlopec/Tea-bag.git")
-
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-
-                developers {
-                    developer {
-                        id.set("Maxxx")
-                        name.set("Maksym Oliinyk")
-                        url.set("https://github.com/Xlopec")
-                        organizationUrl.set("https://github.com/Xlopec")
-                    }
-                }
-
-                scm {
-                    connection.set("scm:git:git://github.com/Xlopec/Tea-bag.git")
-                    developerConnection.set("scm:git:ssh://github.com:Xlopec/Tea-bag.git")
-                    url.set("https://github.com/Xlopec/Tea-bag/tree/master")
-                }
-            }
-        }
+    // note that we have preconfigured maven publications
+    publications.withType<MavenPublication> {
+        artifact(packJavadocJar)
+        // other artifacts are added automatically
+        pom.configurePom(project.name)
     }
 
     repositories {
         mavenLocal()
-        maven {
-            name = "OSSRH"
-            url = libraryVersion.toOssrhDeploymentUri()
-            credentials {
-                username = ossrhUser
-                password = ossrhPassword
-            }
-        }
     }
-}
-
-signing {
-    useInMemoryPgpKeys(signingKey, signingPassword)
-
-    val publishing: PublishingExtension by project
-
-    sign(publishing.publications)
-}
-
-artifacts {
-    archives(packSourcesJar)
-    archives(packJavadocJar)
 }
 
 tasks.withType<DokkaTask>().configureEach {

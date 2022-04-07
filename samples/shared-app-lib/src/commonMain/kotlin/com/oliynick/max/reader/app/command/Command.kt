@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,47 +24,23 @@
 
 package com.oliynick.max.reader.app.command
 
+import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.ScreenId
-import com.oliynick.max.reader.article.list.Paging
-import com.oliynick.max.reader.article.list.Query
-import com.oliynick.max.reader.domain.Article
 
-sealed interface Command
+/*sealed*/ interface Command
 
 // App wide commands
 
 object CloseApp : Command
 
-data class StoreDarkMode(
-    val isEnabled: Boolean
+data class DoLog(
+    val state: AppState,
+    val throwable: Throwable,
+    val id: ScreenId?,
+    val causedBy: Command,
 ) : Command
 
-// Article details commands
-
-sealed interface ArticleDetailsCommand : Command
-
-data class DoOpenArticle(
-    val article: Article,
-) : ArticleDetailsCommand
-
-// Feed screen commands
-
-sealed interface ArticlesCommand : Command
-
-data class LoadArticlesByQuery(
-    val id: ScreenId,
-    val query: Query,
-    val paging: Paging
-) : ArticlesCommand
-
-data class SaveArticle(
-    val article: Article,
-) : ArticlesCommand
-
-data class RemoveArticle(
-    val article: Article,
-) : ArticlesCommand
-
-data class DoShareArticle(
-    val article: Article,
-) : ArticlesCommand
+data class DoStoreDarkMode(
+    val userDarkModeEnabled: Boolean,
+    val syncWithSystemDarkModeEnabled: Boolean
+) : Command

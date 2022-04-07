@@ -16,7 +16,7 @@ struct ArticlesView: View {
     init(state: ArticlesState, handler: @escaping MessageHandler, searchHintText: String, headingText: String) {
         self.state = state
         self.handler = handler
-        self.searchText = state.query.input
+        self.searchText = state.filter.query as? String ?? ""
         self.searchHintText = searchHintText
         self.headingText = headingText
     }
@@ -29,13 +29,15 @@ struct ArticlesView: View {
                 .padding()
             
             SearchBar(text: $searchText, hintText: searchHintText) {
-                handler(LoadArticlesFromScratch(id: state.id))
+                handler(LoadArticles(id: state.id))
             }.onChange(of: searchText) { updatedSearchText in
                 // todo send request to fetch and show suggestions
-                handler(OnQueryUpdated(id: state.id, query: updatedSearchText))
+                handler(FilterUpdated(id: state.id, filter: Filter(type: state.filter.type, query: updatedSearchText, sources: [])))
             }
             
-            if state.isLoading {
+            let data = state.loadable.data as? Array<Article> ?? []
+            
+            if state.loadable.isLoading {
                 ZStack {
                     ProgressView()
                 }
@@ -44,7 +46,7 @@ struct ArticlesView: View {
                     maxHeight: .infinity,
                     alignment: .center
                 )
-            } else if let transientState = state.transientState as? ArticlesState.TransientStateException, state.articles.isEmpty {
+            } else if let transientState = state.loadable.loadableState as? Exception, data.isEmpty {
                 MessageView(message: transientState.displayMessage, actionButtonMessage: "Retry") {
                     handler(RefreshArticles(id: state.id))
                 }.frame(
@@ -52,7 +54,7 @@ struct ArticlesView: View {
                     maxHeight: .infinity,
                     alignment: .center
                 )
-            } else if state.articles.isEmpty {
+            } else if data.isEmpty {
                 MessageView(message: "No articles found", actionButtonMessage: "Reload") {
                     handler(RefreshArticles(id: state.id))
                 }.frame(
@@ -63,21 +65,21 @@ struct ArticlesView: View {
             } else {
                 List {
                     
-                    ForEach(state.articles, id: \.url) { article in
+                    ForEach(data, id: \.url) { article in
                         RowItem(screenId: state.id, article: article, handler: handler)
                             .onAppear {
                                 // give window of size of 2 last items in order to prefetch next articles
                                 // before user will scroll to the end of the list
-                                if article == state.articles[safe: state.articles.count - 2] {
+                                if article == data[safe: data.count - 2] {
                                     handler(LoadNextArticles(id: state.id))
                                 }
                             }
                     }
                     
                     VStack(alignment: .center) {
-                        if state.isLoadingNext {
+                        if state.loadable.isLoadingNext {
                             ProgressView()
-                        } else if let transientState = state.transientState as? ArticlesState.TransientStateException {
+                        } else if let transientState = state.loadable.loadableState as? Exception {
                             MessageView(message: transientState.displayMessage, actionButtonMessage: "Retry") {
                                 handler(RefreshArticles(id: state.id))
                             }
@@ -170,16 +172,20 @@ struct RowItem: View {
 
 struct ContentView_Previews: PreviewProvider {
     
-    static private let article = Article(url: URL(string: "www.google.com")!, title: "Title", author: nil, description: nil, urlToImage: nil, published: Date(), isFavorite: true)
+    static private let filter = Filter(type: FilterType.favorite, query: "", sources: [])
+    static private let article = Article(url: URL(string: "www.google.com")!, title: "Title", author: nil, description: nil, urlToImage: nil, published: Date(), isFavorite: true, source: nil)
+    static private let loadable = Loadable<AnyObject>.companion.doNewLoading(data: [article])
+    
+    static private let state = ArticlesState(id: UUID(), filter: filter, loadable: loadable, scrollState: ScrollState.companion.Initial)
     
     static var previews: some View {
         RowItem(screenId: UUID(), article: article) {_ in }
         
-        ArticlesView(state: ArticlesState(id: UUID(), query: Query(input: "Ios articles", type: QueryType.favorite), articles: [article], hasMoreArticles: true, transientState: ArticlesState.TransientStatePreview.shared), handler: { _ in }, searchHintText: "Search in articles", headingText: "Feed")
+        ArticlesView(state: state, handler: { _ in }, searchHintText: "Search in articles", headingText: "Feed")
     }
 }
 
-private extension ArticlesState.TransientStateException {
+private extension Exception {
     var displayMessage: String { return th.message }
 }
 

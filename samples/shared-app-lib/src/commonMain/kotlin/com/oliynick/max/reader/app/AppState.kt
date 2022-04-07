@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021. Maksym Oliinyk.
+ * Copyright (c) 2022. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,28 +24,31 @@
 
 package com.oliynick.max.reader.app
 
-import com.oliynick.max.entities.shared.UUID
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.reader.app.navigation.NavigationStack
-import com.oliynick.max.reader.app.navigation.push
-import com.oliynick.max.reader.app.navigation.screen
+import com.oliynick.max.reader.app.feature.navigation.*
 import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
+import com.oliynick.max.tea.data.UUID
 import kotlinx.collections.immutable.persistentListOf
 
 typealias ScreenId = UUID
 
 @ImmutableType
 data class AppState(
-    val isInDarkMode: Boolean,
+    val settings: Settings,
     val screens: NavigationStack,
 ) {
 
+    @Deprecated("Remove")
     constructor(
         screen: TabScreen,
         isAppInDarkMode: Boolean
-    ) : this(isAppInDarkMode, persistentListOf(screen))
+    ) : this(Settings(isAppInDarkMode, false, false), persistentListOf(screen))
+
+    constructor(
+        screen: TabScreen,
+        settings: Settings,
+    ) : this(settings, persistentListOf(screen))
 
     init {
         require(screens.isNotEmpty())
@@ -67,37 +70,6 @@ inline fun <reified T : ScreenState> AppState.updateScreen(
     }
 
     return copy(screens = updatedStack) command commands
-}
-
-@PublishedApi
-internal inline fun <reified T : ScreenState> NavigationStack.updateAllScreens(
-    noinline how: (T) -> UpdateWith<T, Command>,
-): UpdateWith<NavigationStack, Command> {
-    val builder = builder()
-    val commands = foldIndexed(mutableSetOf<Command>()) { i, cmds, screen ->
-        if (screen is T) {
-            val (new, commands) = how(screen)
-
-            builder[i] = new
-            cmds += commands
-        }
-        cmds
-    }
-
-    return builder.build() to commands
-}
-
-@PublishedApi
-internal inline fun <reified T : ScreenState> NavigationStack.updateScreen(
-    id: ScreenId,
-    noinline how: (T) -> UpdateWith<T, Command>,
-): UpdateWith<NavigationStack, Command> {
-    val screenIdx = indexOfFirst { it.id == id && it is T }
-        .takeIf { it >= 0 } ?: return noCommand()
-
-    val (updated, commands) = how(this[screenIdx] as T)
-
-    return set(screenIdx, updated) to commands
 }
 
 fun AppState.pushScreen(
