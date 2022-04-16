@@ -135,6 +135,8 @@ dependencies {
     implementation(libs.ktor.client.logging)
     implementation(libs.logging)
 
+    testImplementation(project(":tea-data"))
+
     androidTestImplementation(libs.android.test.runner)
     androidTestUtil(libs.android.test.orchestrator)
     androidTestImplementation(libs.compose.test.junit)

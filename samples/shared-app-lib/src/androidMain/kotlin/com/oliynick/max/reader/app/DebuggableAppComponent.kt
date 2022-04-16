@@ -32,7 +32,7 @@ import com.oliynick.max.reader.app.serialization.PersistentListSerializer
 import com.oliynick.max.reader.app.serialization.PersistentSetSerializer
 import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.ShareStateWhileSubscribed
-import com.oliynick.max.tea.core.component.Component
+import com.oliynick.max.tea.core.Component
 import com.oliynick.max.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
@@ -48,7 +48,7 @@ fun DebuggableAppComponent(
     Component(
         id = ComponentId("News Reader App"),
         initializer = initializer,
-        resolver = { c -> with(environment) { resolve(c) } },
+        resolver = { c, ctx -> with(environment) { resolve(c, ctx) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment,
         url = Url("http://10.0.2.2:8080"),

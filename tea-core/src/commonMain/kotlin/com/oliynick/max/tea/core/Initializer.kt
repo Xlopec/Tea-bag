@@ -33,6 +33,11 @@ import kotlinx.coroutines.withContext
 /**
  * Initializer is an **impure** function that computes [initial][Initial] snapshot
  *
+ * ### Exceptions
+ *
+ * Any exception that happens inside this function will redelivered to a [Component]'s scope and handled
+ * by it.
+ *
  * @param S initial state of the application
  * @param C initial set of commands to be executed
  */

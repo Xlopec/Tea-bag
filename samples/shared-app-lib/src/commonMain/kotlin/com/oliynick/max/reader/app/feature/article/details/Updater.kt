@@ -22,22 +22,15 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.tea.core.misc
+package com.oliynick.max.reader.app.feature.article.details
 
-/*
-import io.kotlintest.shouldBe
+import com.oliynick.max.tea.core.Update
+import com.oliynick.max.tea.core.command
 
-inline fun <T, E> Collection<T>.shouldForEach(
-    another: Collection<E>,
-    block: (t: T, e: E) -> Unit
-) {
-    size shouldBe another.size
-
-    val thisIter = iterator()
-    val anotherIter = another.iterator()
-
-    while(thisIter.hasNext()) {
-        block(thisIter.next(), anotherIter.next())
+fun updateArticleDetails(
+    message: ArticleDetailsMessage,
+    screen: ArticleDetailsState,
+): Update<ArticleDetailsState, ArticleDetailsCommand> =
+    when(message) {
+        is OpenInBrowser -> screen command DoOpenArticle(screen.article)
     }
-}
-*/

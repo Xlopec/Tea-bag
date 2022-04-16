@@ -43,9 +43,9 @@ import com.oliynick.max.reader.app.feature.navigation.navigate
 import com.oliynick.max.reader.app.feature.settings.SettingsMessage
 import com.oliynick.max.reader.app.feature.settings.SystemDarkModeChanged
 import com.oliynick.max.reader.app.feature.settings.ToggleDarkMode
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
+import com.oliynick.max.tea.core.Update
+import com.oliynick.max.tea.core.command
+import com.oliynick.max.tea.core.noCommand
 
 fun <Env> AppUpdater(): AppUpdater<Env> =
     AppUpdater { message, state ->
@@ -59,7 +59,7 @@ fun <Env> AppUpdater(): AppUpdater<Env> =
 private fun updateScreen(
     message: ScreenMessage,
     state: AppState,
-): UpdateWith<AppState, Command> =
+): Update<AppState, Command> =
     when (message) {
         is FilterMessage -> state.updateScreen<FiltersState>(message.id) { screen ->
             updateFilters(message, screen)
@@ -81,7 +81,7 @@ private fun AppState.toLogUpdate(
 
 private fun AppState.toSettingsUpdate(
     message: SettingsMessage,
-): UpdateWith<AppState, Command> =
+): Update<AppState, Command> =
     when (message) {
         is ToggleDarkMode -> updateSettings {
             updated(

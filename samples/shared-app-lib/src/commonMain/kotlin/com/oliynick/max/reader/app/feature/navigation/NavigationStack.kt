@@ -28,8 +28,8 @@ import com.oliynick.max.reader.app.NestedScreen
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.ScreenState
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.noCommand
+import com.oliynick.max.tea.core.Update
+import com.oliynick.max.tea.core.noCommand
 import kotlinx.collections.immutable.PersistentList
 
 typealias NavigationStack = PersistentList<ScreenState>
@@ -138,8 +138,8 @@ fun NavigationStack.floatGroup(
 
 @PublishedApi
 internal inline fun <reified T : ScreenState> NavigationStack.updateAllScreens(
-    noinline how: (T) -> UpdateWith<T, Command>,
-): UpdateWith<NavigationStack, Command> {
+    noinline how: (T) -> Update<T, Command>,
+): Update<NavigationStack, Command> {
     val builder = builder()
     val commands = foldIndexed(mutableSetOf<Command>()) { i, cmds, screen ->
         if (screen is T) {
@@ -157,8 +157,8 @@ internal inline fun <reified T : ScreenState> NavigationStack.updateAllScreens(
 @PublishedApi
 internal inline fun <reified T : ScreenState> NavigationStack.updateScreen(
     id: ScreenId,
-    noinline how: (T) -> UpdateWith<T, Command>,
-): UpdateWith<NavigationStack, Command> {
+    noinline how: (T) -> Update<T, Command>,
+): Update<NavigationStack, Command> {
     val screenIdx = indexOfFirst { it.id == id && it is T }
         .takeIf { it >= 0 } ?: return noCommand()
 

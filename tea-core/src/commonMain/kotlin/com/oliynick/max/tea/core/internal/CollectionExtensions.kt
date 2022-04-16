@@ -22,15 +22,11 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.reader.app.feature.article.details
+package com.oliynick.max.tea.core.internal
 
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
+import kotlinx.coroutines.*
 
-fun updateArticleDetails(
-    message: ArticleDetailsMessage,
-    screen: ArticleDetailsState,
-): UpdateWith<ArticleDetailsState, ArticleDetailsCommand> =
-    when(message) {
-        is OpenInBrowser -> screen command DoOpenArticle(screen.article)
-    }
+internal suspend fun <T, R> Iterable<T>.parMapTo(
+    dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    mapper: suspend (T) -> R
+) = coroutineScope { map { t -> async(dispatcher) { mapper(t) } }.awaitAll() }

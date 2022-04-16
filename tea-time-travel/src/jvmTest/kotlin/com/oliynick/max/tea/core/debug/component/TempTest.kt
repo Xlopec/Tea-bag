@@ -25,7 +25,6 @@
 package com.oliynick.max.tea.core.debug.component
 
 import com.oliynick.max.tea.core.*
-import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.debug.misc.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel

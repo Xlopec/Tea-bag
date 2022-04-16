@@ -32,7 +32,7 @@ import android.app.Application
 import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.Message
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.tea.core.component.Component
+import com.oliynick.max.tea.core.Component
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Job

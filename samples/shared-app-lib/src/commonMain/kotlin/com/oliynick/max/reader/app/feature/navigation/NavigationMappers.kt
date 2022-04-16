@@ -31,10 +31,10 @@ import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.domain.FilterType
 import com.oliynick.max.reader.app.feature.article.list.ArticlesInitialUpdate
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.noCommand
+import com.oliynick.max.tea.core.Update
+import com.oliynick.max.tea.core.noCommand
 
-internal fun TabNavigation.toTabScreen(): UpdateWith<TabScreen, Command> =
+internal fun TabNavigation.toTabScreen(): Update<TabScreen, Command> =
     when (this) {
         NavigateToSettings -> SettingsScreen.noCommand()
         NavigateToFeed -> ArticlesInitialUpdate(id, FilterType.Regular)

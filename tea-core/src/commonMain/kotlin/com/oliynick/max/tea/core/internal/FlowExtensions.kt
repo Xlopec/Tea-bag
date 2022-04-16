@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.tea.core.component.internal
+package com.oliynick.max.tea.core.internal
 
 import com.oliynick.max.tea.core.InternalTeaApi
 import kotlinx.coroutines.channels.SendChannel

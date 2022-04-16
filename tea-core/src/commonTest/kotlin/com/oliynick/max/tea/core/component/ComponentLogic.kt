@@ -24,6 +24,9 @@
 
 package com.oliynick.max.tea.core.component
 
+import com.oliynick.max.tea.core.Update
+import com.oliynick.max.tea.core.effect
+import com.oliynick.max.tea.core.noCommand
 import kotlin.jvm.JvmInline
 
 @JvmInline
@@ -58,7 +61,7 @@ suspend fun testResolver(cmd: Command): Set<Message> {
     }
 }
 
-fun testUpdate(message: Message, state: TodoState): UpdateWith<TodoState, Command> {
+fun testUpdate(message: Message, state: TodoState): Update<TodoState, Command> {
     return when (message) {
         is Updated -> TodoState(message.items).noCommand()
         is AddItem -> state command DoAddItem(message.item, state.items)
