@@ -20,13 +20,13 @@ updater (`computeNewState`function), and UI (`renderSnapshot,` function). After 
 them to an appropriate `Component` builder overload.
 
 ```kotlin
-import com.oliynick.max.tea.core.Initial
-import com.oliynick.max.tea.core.Regular
-import com.oliynick.max.tea.core.Snapshot
-import com.oliynick.max.tea.core.component.Component
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.invoke
-import com.oliynick.max.tea.core.component.sideEffect
+import io.github.xlopec.tea.core.Initial
+import io.github.xlopec.tea.core.Regular
+import io.github.xlopec.tea.core.Snapshot
+import io.github.xlopec.tea.core.Component
+import io.github.xlopec.tea.core.command
+import io.github.xlopec.tea.core.invoke
+import io.github.xlopec.tea.core.sideEffect
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 

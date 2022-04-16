@@ -31,8 +31,8 @@ import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.domain.FilterType
 import com.oliynick.max.reader.app.feature.article.list.ArticlesInitialUpdate
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
-import com.oliynick.max.tea.core.Update
-import com.oliynick.max.tea.core.noCommand
+import io.github.xlopec.tea.core.Update
+import io.github.xlopec.tea.core.noCommand
 
 internal fun TabNavigation.toTabScreen(): Update<TabScreen, Command> =
     when (this) {

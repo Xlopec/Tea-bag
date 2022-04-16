@@ -24,8 +24,8 @@
 
 package com.oliynick.max.tea.core.debug.component
 
-import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.debug.misc.*
+import io.github.xlopec.tea.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel

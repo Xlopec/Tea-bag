@@ -32,6 +32,7 @@ import com.oliynick.max.tea.core.debug.protocol.*
 import com.oliynick.max.tea.core.debug.session.*
 import com.oliynick.max.tea.data.RandomUUID
 import io.ktor.http.*
+import io.github.xlopec.tea.core.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.RENDEZVOUS

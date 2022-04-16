@@ -36,8 +36,8 @@ import com.oliynick.max.reader.app.feature.article.list.ArticlesResolver
 import com.oliynick.max.reader.app.feature.filter.FilterCommand
 import com.oliynick.max.reader.app.feature.filter.FiltersResolver
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
-import com.oliynick.max.tea.core.effects
-import com.oliynick.max.tea.core.sideEffect
+import io.github.xlopec.tea.core.effects
+import io.github.xlopec.tea.core.sideEffect
 
 fun <Env> AppResolver(): AppResolver<Env> where
         Env : ArticlesResolver<Env>,

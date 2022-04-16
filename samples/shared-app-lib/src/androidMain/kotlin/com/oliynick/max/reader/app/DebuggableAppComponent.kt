@@ -30,9 +30,9 @@ import com.google.gson.JsonElement
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.serialization.PersistentListSerializer
 import com.oliynick.max.reader.app.serialization.PersistentSetSerializer
-import com.oliynick.max.tea.core.Initializer
-import com.oliynick.max.tea.core.ShareStateWhileSubscribed
-import com.oliynick.max.tea.core.Component
+import io.github.xlopec.tea.core.Initializer
+import io.github.xlopec.tea.core.ShareStateWhileSubscribed
+import io.github.xlopec.tea.core.Component
 import com.oliynick.max.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
 import com.oliynick.max.tea.core.debug.protocol.ComponentId

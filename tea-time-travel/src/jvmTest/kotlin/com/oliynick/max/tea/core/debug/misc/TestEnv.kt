@@ -27,10 +27,6 @@
 package com.oliynick.max.tea.core.debug.misc
 
 import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.*
-import com.oliynick.max.tea.core.Env
-import com.oliynick.max.tea.core.ShareOptions
-import com.oliynick.max.tea.core.ShareStateWhileSubscribed
 import com.oliynick.max.tea.core.debug.component.ComponentException
 import com.oliynick.max.tea.core.debug.component.DebugEnv
 import com.oliynick.max.tea.core.debug.component.Settings
@@ -40,6 +36,7 @@ import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
 import com.oliynick.max.tea.core.debug.session.Localhost
 import com.oliynick.max.tea.core.debug.session.SessionFactory
 import io.ktor.http.*
+import io.github.xlopec.tea.core.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.test.TestScope
 

@@ -32,9 +32,9 @@ import com.oliynick.max.reader.app.domain.Source
 import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.misc.toException
 import com.oliynick.max.reader.app.misc.toPreview
-import com.oliynick.max.tea.core.Update
-import com.oliynick.max.tea.core.command
-import com.oliynick.max.tea.core.noCommand
+import io.github.xlopec.tea.core.Update
+import io.github.xlopec.tea.core.command
+import io.github.xlopec.tea.core.noCommand
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentHashSetOf

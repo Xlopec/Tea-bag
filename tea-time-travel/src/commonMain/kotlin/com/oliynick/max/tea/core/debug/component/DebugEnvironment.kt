@@ -26,7 +26,7 @@
 
 package com.oliynick.max.tea.core.debug.component
 
-import com.oliynick.max.tea.core.Env
+import io.github.xlopec.tea.core.Env
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
 import com.oliynick.max.tea.core.debug.session.DebugSession

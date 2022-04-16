@@ -28,8 +28,8 @@ import com.oliynick.max.reader.app.NestedScreen
 import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.ScreenState
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.tea.core.Update
-import com.oliynick.max.tea.core.noCommand
+import io.github.xlopec.tea.core.Update
+import io.github.xlopec.tea.core.noCommand
 import kotlinx.collections.immutable.PersistentList
 
 typealias NavigationStack = PersistentList<ScreenState>

@@ -25,7 +25,7 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.tea.core.ResolveCtx
+import io.github.xlopec.tea.core.ResolveCtx
 
 fun interface AppResolver<Env> {
 

@@ -27,9 +27,9 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.tea.core.Initializer
-import com.oliynick.max.tea.core.ShareOptions
-import com.oliynick.max.tea.core.Component
+import io.github.xlopec.tea.core.Initializer
+import io.github.xlopec.tea.core.ShareOptions
+import io.github.xlopec.tea.core.Component
 import kotlinx.coroutines.flow.SharingStarted
 
 fun AppComponent(
