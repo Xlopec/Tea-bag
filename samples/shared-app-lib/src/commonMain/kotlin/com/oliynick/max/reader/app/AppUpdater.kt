@@ -25,13 +25,13 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
-import com.oliynick.max.tea.core.component.UpdateWith
+import com.oliynick.max.tea.core.Update
 
 fun interface AppUpdater<Env> {
 
     fun Env.update(
         message: Message,
         state: AppState
-    ): UpdateWith<AppState, Command>
+    ): Update<AppState, Command>
 
 }

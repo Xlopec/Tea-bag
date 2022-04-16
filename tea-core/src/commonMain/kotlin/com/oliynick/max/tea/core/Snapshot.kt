@@ -73,3 +73,35 @@ public data class Regular<out M, out S, out C>(
      */
     val message: M
 ) : Snapshot<M, S, C>
+
+/**
+ * Extension to enable destructuring declaration on the [snapshot][Snapshot]
+ */
+public operator fun <S> Snapshot<*, S, *>.component1(): S = when (this) {
+    is Initial -> currentState
+    is Regular -> currentState
+}
+
+/**
+ * Extension to enable destructuring declaration on the [snapshot][Snapshot]
+ */
+public operator fun <C> Snapshot<*, *, C>.component2(): Set<C> = when (this) {
+    is Initial -> commands
+    is Regular -> commands
+}
+
+/**
+ * Extension to enable destructuring declaration on the [snapshot][Snapshot]
+ */
+public operator fun <S> Snapshot<*, S, *>.component3(): S? = when (this) {
+    is Initial -> null
+    is Regular -> previousState
+}
+
+/**
+ * Extension to enable destructuring declaration on the [snapshot][Snapshot]
+ */
+public operator fun <M> Snapshot<M, *, *>.component4(): M? = when (this) {
+    is Initial -> null
+    is Regular -> message
+}

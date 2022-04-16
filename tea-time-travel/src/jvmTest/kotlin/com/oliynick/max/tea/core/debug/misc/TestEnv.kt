@@ -27,11 +27,10 @@
 package com.oliynick.max.tea.core.debug.misc
 
 import com.google.gson.JsonElement
+import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.Env
-import com.oliynick.max.tea.core.Initializer
 import com.oliynick.max.tea.core.ShareOptions
 import com.oliynick.max.tea.core.ShareStateWhileSubscribed
-import com.oliynick.max.tea.core.component.*
 import com.oliynick.max.tea.core.debug.component.ComponentException
 import com.oliynick.max.tea.core.debug.component.DebugEnv
 import com.oliynick.max.tea.core.debug.component.Settings
@@ -102,18 +101,18 @@ fun <M, S> throwingUpdater(
 fun <S> messageAsStateUpdate(
     message: S,
     @Suppress("UNUSED_PARAMETER") state: S,
-): UpdateWith<S, S> =
+): Update<S, S> =
     message.noCommand()
 
 fun <M, S> messageAsCommand(
     message: M,
     @Suppress("UNUSED_PARAMETER") state: S,
-): UpdateWith<S, M> =
+): Update<S, M> =
     state command message
 
 fun <M, S> ignoringMessageAsStateUpdate(
     message: M,
     @Suppress("UNUSED_PARAMETER") state: S,
-): UpdateWith<M, S> =
+): Update<M, S> =
     message.noCommand()
 

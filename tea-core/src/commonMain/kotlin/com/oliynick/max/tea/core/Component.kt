@@ -24,12 +24,13 @@
 
 @file:Suppress("FunctionName", "KDocUnresolvedReference")
 
-package com.oliynick.max.tea.core.component
+package com.oliynick.max.tea.core
 
 import com.oliynick.max.tea.core.*
-import com.oliynick.max.tea.core.component.internal.*
+import com.oliynick.max.tea.core.internal.*
+import com.oliynick.max.tea.core.internal.mergeWith
+import com.oliynick.max.tea.core.internal.startFrom
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.Unconfined
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.RENDEZVOUS
 import kotlinx.coroutines.flow.*
@@ -41,7 +42,7 @@ import kotlinx.coroutines.flow.*
  * ### Concept
  * For each incoming message component computes a pair that contain new computed state and set of
  * commands to be executed using [Updater]. Such pair or computation result is represented by the
- * [UpdateWith].
+ * [Update].
  *
  * After result if obtained it's fed to [Resolver] which in turn resolves commands to messages and
  * executes side effects, if needed.
@@ -62,49 +63,135 @@ import kotlinx.coroutines.flow.*
 public typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S, C>>
 
 /**
- * Updater is just a regular **pure** function that accepts incoming message, state and calculates
- * a [pair][UpdateWith] that contains a new state and, possibly, empty set of commands to be resolved
- *
- * @param M incoming messages
- * @param S state of the application
- * @param C commands to be executed
+ * **Impure** function that performs some actions on snapshots
+ * @param M message
+ * @param S state
+ * @param C command
  */
-public typealias Updater<M, S, C> = (message: M, state: S) -> UpdateWith<S, C>
+public typealias Interceptor<M, S, C> = suspend (snapshot: Snapshot<M, S, C>) -> Unit
 
 /**
- * Alias for kotlin's [Pair]. It can be created using the following [extensions][command]
+ * Share options used to configure the sharing coroutine
  *
- * @param S state of the component
- * @param C commands to be executed. There's **NO GUARANTEE** of commands ordering, they can be
- * executed in any order. That implies calculation correctness mustn't depend on the ordering
- *
- * @param S state of the application
- * @param C commands to be executed
+ * @param started sharing strategy
+ * @param replay number of states to be replayed to the downstream subscribers
+ * @see [SharingStarted]
  */
-public typealias UpdateWith<S, C> = Pair<S, Set<C>>
+public data class ShareOptions(
+    val started: SharingStarted,
+    val replay: UInt = 0U,
+)
+
+@ExperimentalTeaApi
+public val ShareStateWhileSubscribed: ShareOptions =
+    ShareOptions(SharingStarted.WhileSubscribed(), 1U)
 
 /**
- * Alias for a possibly **impure** function that resolves commands to messages and performs side
- * effects.
+ * Transforms component into flow of snapshots
  *
- * ### Exceptions
- *
- * Any exception that happens inside this function will redelivered to a [Component]'s scope and handled
- * by it. For more information regarding error handling see [shareIn][kotlinx.coroutines.flow.shareIn]
- *
- * @param M incoming messages
- * @param C commands to be executed
+ * @receiver component to transform
+ * @param C command
+ * @param M message
+ * @param S state
  */
-public typealias Resolver<C, M> = suspend (command: C) -> Set<M>
+public fun <M, S, C> Component<M, S, C>.observeSnapshots(): Flow<Snapshot<M, S, C>> =
+    this(emptyFlow())
 
 /**
- * Type alias for suspending function that accepts incoming values a puts it to a queue for later
- * processing
+ * Transforms component into flow of states
  *
- * @param T incoming values
+ * @receiver component to transform
+ * @param S state
  */
-@InternalTeaApi
-public typealias Sink<T> = suspend (T) -> Unit
+public fun <S> Component<*, S, *>.observeStates(): Flow<S> =
+    observeSnapshots().map { snapshot -> snapshot.currentState }
+
+/**
+ * Transforms component into flow of commands
+ *
+ * @receiver component to transform
+ * @param C command
+ */
+public fun <M, S, C> Component<M, S, C>.observeCommands(): Flow<Set<C>> =
+    observeSnapshots().map { snapshot -> snapshot.commands }
+
+/**
+ * Transforms component into function that accepts messages and returns flow that
+ * emits states only
+ *
+ * @receiver component to transform
+ * @param C command
+ * @param M message
+ * @param S state
+ */
+public fun <M, S, C> Component<M, S, C>.states(): ((Flow<M>) -> Flow<S>) =
+    { input -> this(input).map { snapshot -> snapshot.currentState } }
+
+/**
+ * Supplies [messages] to the component. Note that messages won't be consumed
+ * until terminal operator is called on the resulting flow
+ *
+ * @receiver component to transform
+ * @param C command
+ * @param M message
+ * @param S state
+ */
+public operator fun <M, S, C> Component<M, S, C>.invoke(
+    vararg messages: M,
+): Flow<Snapshot<M, S, C>> = this(flowOf(*messages))
+
+/**
+ * Supplies [messages] to the component. Note that messages won't be consumed
+ * until terminal operator is called on the resulting flow
+ *
+ * @receiver component to transform
+ * @param C command
+ * @param M message
+ * @param S state
+ */
+public operator fun <M, S, C> Component<M, S, C>.invoke(
+    messages: Iterable<M>,
+): Flow<Snapshot<M, S, C>> = this(messages.asFlow())
+
+/**
+ * Supplies [message] to the component. Note that messages won't be consumed
+ * until terminal operator is called on the resulting flow
+ *
+ * @receiver component to transform
+ * @param C command
+ * @param M message
+ * @param S state
+ */
+public operator fun <M, S, C> Component<M, S, C>.invoke(
+    message: M,
+): Flow<Snapshot<M, S, C>> = this(flowOf(message))
+
+/**
+ * Attaches [interceptor] to the component
+ *
+ * @receiver component to transform
+ * @param C command
+ * @param M message
+ * @param S state
+ */
+public infix fun <M, S, C> Component<M, S, C>.with(
+    interceptor: Interceptor<M, S, C>,
+): Component<M, S, C> =
+    { input -> this(input).onEach(interceptor) }
+
+/**
+ * Establishes subscription in ELM's terminology. It allows component
+ * to listen to external messages
+ *
+ * @param input external messages
+ * @param scope scope that will be used to manage subscription
+ * @return [Job] if subscription needs to be managed manually
+ */
+@ExperimentalTeaApi
+public fun <M> ((Flow<M>) -> Flow<*>).subscribeIn(
+    input: Flow<M>,
+    scope: CoroutineScope
+): Job = scope.launch { invoke(input).collect() }
 
 /**
  * Creates new component using supplied values
@@ -154,7 +241,7 @@ public fun <M, S, C> Component(
 /**
  * Creates flow that for each [initial snapshot][Initial] computes flow of [snapshots][Snapshot]
  *
- * @param initialSnapshots initial snapshots. Such snapshots usually come from initializer, so it means that there will be no
+ * @param initials initial snapshots. Such snapshots usually come from initializer, so it means that there will be no
  * more than one initial snapshot. For each new initial snapshot new computation flow is started and the old one is
  * disposed
  * @param sink sink that consumes resolved messages
@@ -162,11 +249,11 @@ public fun <M, S, C> Component(
  */
 @InternalTeaApi
 public fun <M, S, C> Env<M, S, C>.toComponentFlow(
-    initialSnapshots: Flow<Initial<S, C>>,
+    initials: Flow<Initial<S, C>>,
     sink: Sink<M>,
     input: (Initial<S, C>) -> Flow<M>,
 ): Flow<Snapshot<M, S, C>> =
-    initialSnapshots.flatMapLatest { startFrom -> toComputationFlow(input(startFrom), startFrom, sink) }
+    initials.flatMapLatest { initial -> toComputationFlow(input(initial), initial, sink) }
 
 /**
  * Emits snapshots emitted by receiver flow without any transformation
@@ -206,11 +293,12 @@ public fun <M, S, C> Env<M, S, C>.toComputationFlow(
     // channel flow is for parallel decomposition
     channelFlow {
         var current: Snapshot<M, S, C> = startFrom
+        val callContext = ResolveCtx(sink, this@channelFlow)
 
         input
             .map { message -> nextSnapshot(current, message) }
             .onEach { regular -> current = regular }
-            .onEach { regular -> resolveAll(this@channelFlow, sink, regular.commands) }
+            .onEach { regular -> resolver.resolveAll(callContext, regular.commands) }
             .collect(::send)
 
     }.startFrom(startFrom)
@@ -247,8 +335,7 @@ public fun <T> Flow<T>.shareIn(
 @InternalTeaApi
 public fun <M, S, C> Env<M, S, C>.resolveAsFlow(
     commands: Iterable<C>,
-): Flow<M> =
-    flow { emitAll(resolve(commands)) }
+): Flow<M> = channelFlow { resolver.resolveAll(ResolveCtx(::send, this), commands) }
 
 /**
  * Merges messages flow produced by [initialCommands] and [messages] into single messages flow
@@ -258,36 +345,20 @@ private fun <M, S, C> Env<M, S, C>.toMessagesFlow(
     messages: Flow<M>,
 ): Flow<M> = resolveAsFlow(initialCommands).mergeWith(messages)
 
-private fun <M, S, C> Env<M, S, C>.resolveAll(
-    coroutineScope: CoroutineScope,
-    sink: Sink<M>,
+private fun <M, C> Resolver<C, M>.resolveAll(
+    callContext: ResolveCtx<M>,
     commands: Iterable<C>,
-) =
-// launches each suspending function
-// in 'launch and forget' fashion so that
-// updater can process new portion of messages
-    commands.forEach { command ->
-        coroutineScope.launch(CoroutineName("Resolver coroutine: $command")) {
-            sink(resolver(command))
-        }
-    }
+) = commands.forEach { command -> this(command, callContext) }
 
-private suspend operator fun <E> Sink<E>.invoke(
-    elements: Iterable<E>,
-) = elements.forEach { e -> invoke(e) }
+public suspend operator fun <T> Sink<T>.invoke(
+    elements: Iterable<T>,
+): Unit = elements.forEach { t -> invoke(t) }
 
 private suspend fun <M, S, C> Env<M, S, C>.update(
     message: M,
     state: S,
-): UpdateWith<S, C> =
+): Update<S, C> =
     withContext(scope.dispatcher ?: Dispatchers.Default) { updater(message, state) }
-
-private suspend fun <M, C> Env<M, *, C>.resolve(
-    commands: Iterable<C>,
-): Iterable<M> =
-    commands
-        .parMapTo(Unconfined, resolver::invoke)
-        .flatten()
-
 private inline val CoroutineScope.dispatcher: CoroutineDispatcher?
     get() = coroutineContext[CoroutineDispatcher.Key]
+

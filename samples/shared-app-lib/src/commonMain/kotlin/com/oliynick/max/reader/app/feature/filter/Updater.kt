@@ -32,9 +32,9 @@ import com.oliynick.max.reader.app.domain.Source
 import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.misc.toException
 import com.oliynick.max.reader.app.misc.toPreview
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
+import com.oliynick.max.tea.core.Update
+import com.oliynick.max.tea.core.command
+import com.oliynick.max.tea.core.noCommand
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentHashSetOf
@@ -42,7 +42,7 @@ import kotlinx.collections.immutable.persistentHashSetOf
 fun updateFilters(
     message: FilterMessage,
     state: FiltersState,
-): UpdateWith<FiltersState, FilterCommand> =
+): Update<FiltersState, FilterCommand> =
     when (message) {
         is SuggestionsLoaded -> state.toLoadedUpdate(message.suggestions)
         is SourcesLoaded -> state.toPreviewUpdate(message.sources)

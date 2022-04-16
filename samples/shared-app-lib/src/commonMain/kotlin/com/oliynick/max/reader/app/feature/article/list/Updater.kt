@@ -31,14 +31,14 @@ import com.oliynick.max.reader.app.domain.FilterType.*
 import com.oliynick.max.reader.app.domain.toggleFavorite
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.app.misc.isPreview
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
+import com.oliynick.max.tea.core.Update
+import com.oliynick.max.tea.core.command
+import com.oliynick.max.tea.core.noCommand
 
 fun updateArticles(
     message: ArticlesMessage,
     state: ArticlesState,
-): UpdateWith<ArticlesState, Command> =
+): Update<ArticlesState, Command> =
     when (message) {
         is ArticlesLoaded -> state.toPreviewUpdate(message.page)
         is LoadNextArticles -> state.toLoadNextUpdate()
@@ -90,7 +90,7 @@ private fun ArticlesState.toUpdateAllArticlesUpdate(
 
 private fun ArticlesState.toFavoriteArticleUpdate(
     article: Article,
-): UpdateWith<ArticlesState, ArticlesCommand> {
+): Update<ArticlesState, ArticlesCommand> {
     require(filter.type == Favorite)
     // if article was marked as favorite, then we should perform full page reload from DB
     return if (article.isFavorite) toLoadUpdate() else removeArticle(article).noCommand()
@@ -98,7 +98,7 @@ private fun ArticlesState.toFavoriteArticleUpdate(
 
 private fun ArticlesState.toToggleFavoriteUpdate(
     article: Article,
-): UpdateWith<ArticlesState, Command> {
+): Update<ArticlesState, Command> {
 
     val toggled = article.toggleFavorite()
 
@@ -107,11 +107,11 @@ private fun ArticlesState.toToggleFavoriteUpdate(
 
 private fun ArticlesState.toShareArticleUpdate(
     article: Article,
-): UpdateWith<ArticlesState, DoShareArticle> = this command DoShareArticle(article)
+): Update<ArticlesState, DoShareArticle> = this command DoShareArticle(article)
 
 private fun ArticlesState.toFilterUpdate(
     filter: Filter,
-): UpdateWith<ArticlesState, ArticlesCommand> =
+): Update<ArticlesState, ArticlesCommand> =
     copy(filter = filter).noCommand()
 
 private fun Article.storeCommand() = if (isFavorite) DoSaveArticle(this) else DoRemoveArticle(this)

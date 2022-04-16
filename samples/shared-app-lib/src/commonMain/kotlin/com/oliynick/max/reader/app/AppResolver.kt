@@ -25,11 +25,13 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
+import com.oliynick.max.tea.core.ResolveCtx
 
 fun interface AppResolver<Env> {
 
-    suspend fun Env.resolve(
-        command: Command
-    ): Set<Message>
+    fun Env.resolve(
+        command: Command,
+        context: ResolveCtx<Message>
+    )
 
 }

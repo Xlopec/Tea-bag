@@ -28,10 +28,10 @@ import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.screen
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.noCommand
+import com.oliynick.max.tea.core.Update
+import com.oliynick.max.tea.core.noCommand
 
-actual fun AppState.popScreen(): UpdateWith<AppState, Command> {
+actual fun AppState.popScreen(): Update<AppState, Command> {
     val screen = screen
 
     return if (screen is TabScreen) {

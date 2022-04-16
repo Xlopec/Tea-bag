@@ -34,9 +34,9 @@ import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
 import com.oliynick.max.reader.app.feature.filter.FilterCommand
 import com.oliynick.max.reader.app.feature.filter.FiltersInitialUpdate
 import com.oliynick.max.reader.app.pushScreen
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
+import com.oliynick.max.tea.core.Update
+import com.oliynick.max.tea.core.command
+import com.oliynick.max.tea.core.noCommand
 import kotlin.Int.Companion.MAX_VALUE
 import kotlin.Int.Companion.MIN_VALUE
 
@@ -44,7 +44,7 @@ fun navigate(
     nav: Navigation,
     state: AppState,
     debug: Boolean = true,
-): UpdateWith<AppState, Command> {
+): Update<AppState, Command> {
 // gson serializer breaks singletons identity, thus we should rely on `is` check rather
 // then referential equality
     return when (nav) {
@@ -61,8 +61,8 @@ fun navigate(
 
 fun AppState.navigateToTab(
     nav: TabNavigation,
-    screenWithCommand: (TabNavigation) -> UpdateWith<TabScreen, Command>,
-): UpdateWith<AppState, Command> {
+    screenWithCommand: (TabNavigation) -> Update<TabScreen, Command>,
+): Update<AppState, Command> {
     val i = findTabScreenIndex(nav)
 
     return if (i >= 0) {
@@ -83,7 +83,7 @@ fun AppState.navigateToArticleDetails(
 
 fun AppState.navigateToFilters(
     nav: NavigateToFilters,
-): UpdateWith<AppState, FilterCommand> {
+): Update<AppState, FilterCommand> {
 
     val (state, commands) = FiltersInitialUpdate(nav.id, nav.filter)
 
@@ -97,7 +97,7 @@ fun AppState.findTabScreenIndex(
 val AppState.currentTab: TabScreen
     get() = screens.first { it is TabScreen } as TabScreen
 
-expect fun AppState.popScreen(): UpdateWith<AppState, Command>
+expect fun AppState.popScreen(): Update<AppState, Command>
 
 // todo looks like we should extract class for navigation stack
 private fun checkInvariants(

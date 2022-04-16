@@ -26,8 +26,8 @@ package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.feature.navigation.*
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.Update
+import com.oliynick.max.tea.core.command
 import com.oliynick.max.tea.data.UUID
 import kotlinx.collections.immutable.persistentListOf
 
@@ -60,8 +60,8 @@ inline val AppState.screen: ScreenState
 
 inline fun <reified T : ScreenState> AppState.updateScreen(
     id: ScreenId?,
-    noinline how: (T) -> UpdateWith<T, Command>,
-): UpdateWith<AppState, Command> {
+    noinline how: (T) -> Update<T, Command>,
+): Update<AppState, Command> {
 
     val (updatedStack, commands) = if (id == null) {
         screens.updateAllScreens(how)

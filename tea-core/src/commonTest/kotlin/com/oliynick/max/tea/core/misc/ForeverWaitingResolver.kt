@@ -22,11 +22,34 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.tea.core.component.internal
+package com.oliynick.max.tea.core.misc
 
-import kotlinx.coroutines.*
+import com.oliynick.max.tea.core.ResolveCtx
+import com.oliynick.max.tea.core.Resolver
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-internal suspend fun <T, R> Iterable<T>.parMapTo(
-    dispatcher: CoroutineDispatcher = Dispatchers.Default,
-    mapper: suspend (T) -> R
-) = coroutineScope { map { t -> async(dispatcher) { mapper(t) } }.awaitAll() }
+class ForeverWaitingResolver<T, M> : Resolver<T, M> {
+
+    private val _messages = Channel<T>()
+
+    val messages: ReceiveChannel<T> = _messages
+
+    override fun invoke(command: T, context: ResolveCtx<M>) {
+        context.scope.launch {
+            try {
+                delay(Long.MAX_VALUE)
+            } finally {
+                withContext(NonCancellable) {
+                    _messages.send(command)
+                }
+            }
+
+            error("Improper cancellation, message=$command")
+        }
+    }
+}

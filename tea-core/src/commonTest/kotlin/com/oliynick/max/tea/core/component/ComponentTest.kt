@@ -31,13 +31,10 @@ import com.oliynick.max.tea.core.misc.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
 import kotlinx.coroutines.test.*
 import kotlin.Long.Companion.MAX_VALUE
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.abs
 import kotlin.test.*
 
@@ -49,9 +46,9 @@ class ComponentTest {
 
             var counter = 0
             val initial = Initial<String, Char>("", setOf())
-            val env = TestEnv<Char, String, Char>(
+            val env = TestEnv(
                 { counter++; initial },
-                ::noOpResolver,
+                NoOpResolver(),
                 { m, str -> (str + m).command(m) },
             )
 
@@ -68,10 +65,10 @@ class ComponentTest {
     fun `when upstream receives new input then previous downstream is canceled`() =
         runTest(dispatchTimeoutMs = TestTimeoutMillis) {
 
-            val env = TestEnv<Char, String, Char>(
+            val env = TestEnv(
                 Initializer(""),
-                ::noOpResolver,
-                ::messageAsCommand
+                NoOpResolver(),
+                { message, state -> state command message }
             )
 
             val lastInitial = Initial("b", setOf('e'))
@@ -106,7 +103,7 @@ class ComponentTest {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
-                ::throwingResolver,
+                CharResolver(),
                 { m, _ -> m.toString().noCommand() }
             )
 
@@ -128,9 +125,9 @@ class ComponentTest {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
-                { ch ->
+                { ch, ctx ->
                     // only message 'b' should be consumed
-                    if (ch == 'a') ('b'..'d').toSet() else setOf()
+                    ctx effects { if (ch == 'a') ('b'..'d').toSet() else setOf() }
                 },
                 { m, str -> (str + m).command(m) }
             )
@@ -151,7 +148,7 @@ class ComponentTest {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
-                { c -> setOf(c) },
+                { c, ctx -> ctx effects { setOf(c) } },
                 { m, _ -> m.toString().noCommand() },
             )
 
@@ -170,12 +167,14 @@ class ComponentTest {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
-                { ch ->
-                    if (ch == 'a') setOf(
-                        ch + 1,// only this message should be consumed
-                        ch + 2,
-                        ch + 3
-                    ) else setOf()
+                { ch, ctx ->
+                    ctx effects {
+                        if (ch == 'a') setOf(
+                            ch + 1,// only this message should be consumed
+                            ch + 2,
+                            ch + 3
+                        ) else setOf()
+                    }
                 },
                 { m, str -> (str + m).command(m) }
             )
@@ -210,7 +209,7 @@ class ComponentTest {
             var invocations = 0
             val env = TestEnv<Char, String, Char>(
                 { invocations++; yield(); Initial("bar", setOf()) },
-                ::throwingResolver,
+                CharResolver(),
                 { _, s -> s.noCommand() },
                 // SharingStarted.Lazily since in case of default option replay
                 // cache will be disposed immediately causing test to fail
@@ -235,11 +234,11 @@ class ComponentTest {
     fun `test component's job gets canceled properly`() =
         runTestCancellingChildren {
 
-            val resolver = ForeverWaitingResolver<Char>()
+            val resolver = ForeverWaitingResolver<Char, Char>()
             val env = TestEnv(
                 Initializer(""),
-                resolver::resolveForever,
-                ::messageAsCommand
+                resolver,
+                { message, state -> state command message }
             )
 
             val messages = 'a'..'z'
@@ -260,7 +259,7 @@ class ComponentTest {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
-                ::throwingResolver,
+                CharResolver(),
                 { m, _ -> m.toString().noCommand() }
             )
 
@@ -333,13 +332,13 @@ class ComponentTest {
         }
 
     @Test
-    fun `when collecting component given updater throws exception then it's handled by coroutine scope`() {
+    fun `when collecting component given updater throws exception then it is handled by coroutine scope`() {
         val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
 
-        val component = Component<String, String, String>(
+        val component = Component(
             Initializer("", "a"),
-            ::throwingResolver,
-            ::throwingUpdater,
+            StringResolver(),
+            { m, s -> throw ComponentException("message=$m, state=$s") },
             scope
         )
 
@@ -354,15 +353,15 @@ class ComponentTest {
     }
 
     @Test
-    fun `when collecting component given initializer throws exception then it's handled by coroutine scope`() {
+    fun `when collecting component given initializer throws exception then it is handled by coroutine scope`() {
 
         val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
 
         val expectedException = RuntimeException("hello")
         val component = Component<String, String, String>(
             ThrowingInitializer(expectedException),
-            ::throwingResolver,
-            ::throwingUpdater,
+            StringResolver(),
+            { m, s -> throw ComponentException("message=$m, state=$s") },
             scope
         )
 
@@ -386,7 +385,7 @@ class ComponentTest {
             val mainThreadNamePrefix = async { currentThreadName() }
             val env = CoroutineScope(Default).TestEnv<Char, String, Char>(
                 Initializer(""),
-                ::throwingResolver,
+                CharResolver(),
                 CheckingUpdater(mainThreadNamePrefix.await())
             )
 
@@ -398,7 +397,7 @@ class ComponentTest {
 @Suppress("UNUSED_PARAMETER")
 private fun <T> noOpSink(t: T) = Unit
 
-fun ThrowingInitializer(
+private fun ThrowingInitializer(
     th: Throwable,
 ): Initializer<Nothing, Nothing> = { throw th }
 
@@ -415,54 +414,25 @@ private fun <M, S> CheckingUpdater(
 }
 
 @Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
-private suspend fun <T> noOpResolver(
-    m: T,
-): Set<Nothing> = setOf()
-
-class ForeverWaitingResolver<T> {
-
-    private val _messages = Channel<T>()
-
-    val messages: ReceiveChannel<T> = _messages
-
-    suspend fun resolveForever(
-        t: T,
-    ): Nothing {
-
-        try {
-            delay(MAX_VALUE)
-        } finally {
-            withContext(NonCancellable) {
-                _messages.send(t)
-            }
-        }
-
-        error("Improper cancellation, message=$t")
-    }
+private suspend fun <C> NoOpResolver(): Resolver<C, Char> = object : Resolver<C, Char> {
+    override fun invoke(command: C, context: ResolveCtx<Char>) = Unit
 }
 
 private val CharRange.size: Int
     get() = 1 + abs(last - first)
 
-const val TestTimeoutMillis = 10 * 1000L
-
-/**
- * Same as [runTest] but cancels child jobs before leaving test.
- * This is useful when testing running [Component] since component's upstream doesn't get
- * destroyed until host scope is canceled
- */
-fun runTestCancellingChildren(
-    context: CoroutineContext = EmptyCoroutineContext,
-    dispatchTimeoutMs: Long = TestTimeoutMillis,
-    testBody: suspend TestScope.() -> Unit
-): TestResult = runTest(context, dispatchTimeoutMs) {
-    testBody()
-    job.cancelChildren()
-}
-
-inline val CoroutineScope.job: Job
-    get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")
-
 private suspend fun Component<Char, String, Char>.collectRanged(
     messages: CharRange,
 ) = this(messages).take(messages.size + 1/*plus initial snapshot*/).collect()
+
+private fun StringResolver() = object : Resolver<String, String> {
+    override fun invoke(command: String, context: ResolveCtx<String>) {
+        throw ComponentException("Unexpected command $command")
+    }
+}
+
+private fun CharResolver() = object : Resolver<Char, Char> {
+    override fun invoke(command: Char, context: ResolveCtx<Char>) {
+        throw ComponentException("Unexpected command $command")
+    }
+}

@@ -28,10 +28,38 @@ package com.oliynick.max.tea.core.misc
 
 import com.oliynick.max.tea.core.Env
 import com.oliynick.max.tea.core.Initializer
+import com.oliynick.max.tea.core.Resolver
+import com.oliynick.max.tea.core.Updater
 import com.oliynick.max.tea.core.ShareOptions
 import com.oliynick.max.tea.core.ShareStateWhileSubscribed
 import com.oliynick.max.tea.core.component.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.test.TestResult
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
+
+const val TestTimeoutMillis = 10 * 1000L
+
+inline val CoroutineScope.job: Job
+    get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")
+
+/**
+ * Same as [runTest] but cancels child jobs before leaving test.
+ * This is useful when testing running [Component] since component's upstream doesn't get
+ * destroyed until host scope is canceled
+ */
+fun runTestCancellingChildren(
+    context: CoroutineContext = EmptyCoroutineContext,
+    dispatchTimeoutMs: Long = TestTimeoutMillis,
+    testBody: suspend TestScope.() -> Unit,
+): TestResult = runTest(context, dispatchTimeoutMs) {
+    testBody()
+    job.cancelChildren()
+}
 
 fun <M, S, C> CoroutineScope.TestEnv(
     initializer: Initializer<S, C>,
@@ -45,33 +73,3 @@ fun <M, S, C> CoroutineScope.TestEnv(
     this,
     shareOptions
 )
-
-@Suppress("RedundantSuspendModifier")
-suspend fun <C> throwingResolver(
-    c: C,
-): Nothing =
-    throw ComponentException("Unexpected command $c")
-
-fun <M, S> throwingUpdater(
-    m: M,
-    s: S,
-): Nothing =
-    throw ComponentException("message=$m, state=$s")
-
-fun <S> messageAsStateUpdate(
-    message: S,
-    @Suppress("UNUSED_PARAMETER") state: S,
-): UpdateWith<S, S> =
-    message.noCommand()
-
-fun <M, S> messageAsCommand(
-    message: M,
-    @Suppress("UNUSED_PARAMETER") state: S,
-): UpdateWith<S, M> =
-    state command message
-
-fun <M, S> ignoringMessageAsStateUpdate(
-    message: M,
-    @Suppress("UNUSED_PARAMETER") state: S,
-): UpdateWith<M, S> =
-    message.noCommand()

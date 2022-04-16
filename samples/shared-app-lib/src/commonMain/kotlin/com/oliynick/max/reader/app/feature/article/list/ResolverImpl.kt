@@ -36,8 +36,7 @@ import com.oliynick.max.reader.app.feature.network.ArticleElement
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.reader.app.misc.mapToPersistentList
-import com.oliynick.max.tea.core.component.effect
-import com.oliynick.max.tea.core.component.sideEffect
+import com.oliynick.max.tea.core.effect
 import com.oliynick.max.tea.data.Either
 import com.oliynick.max.tea.data.fold
 import kotlinx.collections.immutable.ImmutableList
@@ -63,8 +62,8 @@ class ArticlesResolverImpl<Env>(
             is DoLoadArticles -> loadArticles(command)
             is DoSaveArticle -> storeArticle(command.article)
             is DoRemoveArticle -> removeArticle(command.article)
-            is DoShareArticle -> sideEffect { shareDelegate.share(command.article) }
-            is DoStoreFilter -> command sideEffect { storeFilter(filter) }
+            is DoShareArticle -> { shareDelegate.share(command.article); emptySet() }
+            is DoStoreFilter -> { storeFilter(command.filter); emptySet() }
             is DoLoadFilter -> command effect { FilterLoaded(id, findFilter(type)) }
         }
 }

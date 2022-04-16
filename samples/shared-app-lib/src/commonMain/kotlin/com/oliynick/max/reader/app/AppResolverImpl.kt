@@ -36,27 +36,30 @@ import com.oliynick.max.reader.app.feature.article.list.ArticlesResolver
 import com.oliynick.max.reader.app.feature.filter.FilterCommand
 import com.oliynick.max.reader.app.feature.filter.FiltersResolver
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
-import com.oliynick.max.tea.core.component.sideEffect
+import com.oliynick.max.tea.core.effects
+import com.oliynick.max.tea.core.sideEffect
 
 fun <Env> AppResolver(): AppResolver<Env> where
         Env : ArticlesResolver<Env>,
         Env : LocalStorage,
         Env : FiltersResolver<Env>,
         Env : ArticleDetailsResolver =
-    AppResolver { command ->
-        when (command) {
-            is CloseApp -> setOf()
-            is ArticlesCommand -> resolve(command)
-            is ArticleDetailsCommand -> resolve(command)
-            is DoStoreDarkMode -> command sideEffect { storeDarkModePreferences(userDarkModeEnabled, syncWithSystemDarkModeEnabled) }
-            is FilterCommand -> resolve(command)
-            is DoLog -> command sideEffect { log(this) }
-            else -> error("Shouldn't get here $command")
+    AppResolver { cmd, ctx ->
+        when (cmd) {
+            is CloseApp -> Unit
+            is ArticlesCommand -> ctx.effects { resolve(cmd) }
+            is ArticleDetailsCommand -> ctx.effects { resolve(cmd) }
+            is DoStoreDarkMode -> ctx.sideEffect {
+                storeDarkModePreferences(cmd.userDarkModeEnabled, cmd.syncWithSystemDarkModeEnabled)
+            }
+            is FilterCommand -> ctx.effects { resolve(cmd) }
+            is DoLog -> ctx.sideEffect { log(cmd) }
+            else -> error("Shouldn't get here $cmd")
         }
     }
 
 private fun log(
-    cmd: DoLog
+    cmd: DoLog,
 ) {
     val screen = cmd.state.screens.find { it.id == cmd.id }
 

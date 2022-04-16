@@ -30,7 +30,7 @@ import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Filter
 import com.oliynick.max.reader.app.domain.FilterType
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
-import com.oliynick.max.tea.core.component.command
+import com.oliynick.max.tea.core.command
 
 internal fun ArticlesInitialUpdate(
     id: ScreenId,
