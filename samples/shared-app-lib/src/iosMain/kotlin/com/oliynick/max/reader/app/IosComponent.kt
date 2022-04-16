@@ -26,7 +26,7 @@
 
 package com.oliynick.max.reader.app
 
-import com.oliynick.max.tea.core.states
+import io.github.xlopec.tea.core.states
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job

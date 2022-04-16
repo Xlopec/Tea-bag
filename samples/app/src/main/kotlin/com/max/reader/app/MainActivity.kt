@@ -36,10 +36,10 @@ import com.oliynick.max.reader.app.command.CloseApp
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.feature.settings.SystemDarkModeChanged
 import com.oliynick.max.reader.app.systemDarkModeEnabled
-import com.oliynick.max.tea.core.ExperimentalTeaApi
-import com.oliynick.max.tea.core.observeCommands
-import com.oliynick.max.tea.core.states
-import com.oliynick.max.tea.core.subscribeIn
+import io.github.xlopec.tea.core.ExperimentalTeaApi
+import io.github.xlopec.tea.core.observeCommands
+import io.github.xlopec.tea.core.states
+import io.github.xlopec.tea.core.subscribeIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel

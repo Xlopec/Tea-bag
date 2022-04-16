@@ -36,7 +36,7 @@ import com.oliynick.max.reader.app.feature.network.ArticleElement
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.reader.app.misc.mapToPersistentList
-import com.oliynick.max.tea.core.effect
+import io.github.xlopec.tea.core.effect
 import com.oliynick.max.tea.data.Either
 import com.oliynick.max.tea.data.fold
 import kotlinx.collections.immutable.ImmutableList

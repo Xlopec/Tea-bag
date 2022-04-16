@@ -24,8 +24,8 @@
 
 package com.oliynick.max.reader.app.feature.article.details
 
-import com.oliynick.max.tea.core.Update
-import com.oliynick.max.tea.core.command
+import io.github.xlopec.tea.core.Update
+import io.github.xlopec.tea.core.command
 
 fun updateArticleDetails(
     message: ArticleDetailsMessage,

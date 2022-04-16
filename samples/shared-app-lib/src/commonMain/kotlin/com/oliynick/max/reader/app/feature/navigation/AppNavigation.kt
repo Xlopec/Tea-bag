@@ -34,9 +34,9 @@ import com.oliynick.max.reader.app.feature.article.details.ArticleDetailsState
 import com.oliynick.max.reader.app.feature.filter.FilterCommand
 import com.oliynick.max.reader.app.feature.filter.FiltersInitialUpdate
 import com.oliynick.max.reader.app.pushScreen
-import com.oliynick.max.tea.core.Update
-import com.oliynick.max.tea.core.command
-import com.oliynick.max.tea.core.noCommand
+import io.github.xlopec.tea.core.Update
+import io.github.xlopec.tea.core.command
+import io.github.xlopec.tea.core.noCommand
 import kotlin.Int.Companion.MAX_VALUE
 import kotlin.Int.Companion.MIN_VALUE
 

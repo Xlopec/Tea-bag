@@ -31,7 +31,7 @@ import com.oliynick.max.reader.app.feature.article.list.NewsApi
 import com.oliynick.max.reader.app.feature.network.SourceResponseElement
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.reader.app.misc.mapToPersistentList
-import com.oliynick.max.tea.core.effect
+import io.github.xlopec.tea.core.effect
 import com.oliynick.max.tea.data.Url
 import com.oliynick.max.tea.data.UrlFor
 import com.oliynick.max.tea.data.domain

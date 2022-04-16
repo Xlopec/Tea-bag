@@ -31,9 +31,9 @@ import com.oliynick.max.reader.app.domain.FilterType.*
 import com.oliynick.max.reader.app.domain.toggleFavorite
 import com.oliynick.max.reader.app.feature.article.list.Paging.Companion.FirstPage
 import com.oliynick.max.reader.app.misc.isPreview
-import com.oliynick.max.tea.core.Update
-import com.oliynick.max.tea.core.command
-import com.oliynick.max.tea.core.noCommand
+import io.github.xlopec.tea.core.Update
+import io.github.xlopec.tea.core.command
+import io.github.xlopec.tea.core.noCommand
 
 fun updateArticles(
     message: ArticlesMessage,

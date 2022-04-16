@@ -32,8 +32,8 @@ kotlin {
         "kotlinx.coroutines.ExperimentalCoroutinesApi",
         "kotlinx.coroutines.FlowPreview",
         "kotlinx.coroutines.InternalCoroutinesApi",
-        "com.oliynick.max.tea.core.InternalTeaApi",
-        "com.oliynick.max.tea.core.ExperimentalTeaApi"
+        "io.github.xlopec.tea.core.InternalTeaApi",
+        "io.github.xlopec.tea.core.ExperimentalTeaApi"
     )
 
     sourceSets {

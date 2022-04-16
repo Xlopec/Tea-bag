@@ -28,8 +28,8 @@ import com.oliynick.max.reader.app.AppState
 import com.oliynick.max.reader.app.TabScreen
 import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.screen
-import com.oliynick.max.tea.core.Update
-import com.oliynick.max.tea.core.noCommand
+import io.github.xlopec.tea.core.Update
+import io.github.xlopec.tea.core.noCommand
 
 actual fun AppState.popScreen(): Update<AppState, Command> {
     val screen = screen
