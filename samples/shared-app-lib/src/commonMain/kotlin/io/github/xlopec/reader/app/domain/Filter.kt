@@ -25,9 +25,9 @@
 package io.github.xlopec.reader.app.domain
 
 import io.github.xlopec.reader.app.misc.coerceIn
+import kotlin.jvm.JvmInline
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
-import kotlin.jvm.JvmInline
 
 enum class FilterType {
     Regular, Favorite, Trending

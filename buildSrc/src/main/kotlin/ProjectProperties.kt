@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-import org.gradle.api.Project
-import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.kotlin.dsl.get
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import java.net.URI
 import java.nio.file.Paths
+import org.gradle.api.Project
+import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.kotlin.dsl.get
 
 const val CommitHashLength = 6
 const val SonatypeProfileId = "1c78bd5d6fbb0c"

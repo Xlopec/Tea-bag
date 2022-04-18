@@ -27,9 +27,9 @@
 package io.github.xlopec.reader.app
 
 import io.github.xlopec.reader.app.command.Command
+import io.github.xlopec.tea.core.Component
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.ShareOptions
-import io.github.xlopec.tea.core.Component
 import kotlinx.coroutines.flow.SharingStarted
 
 fun AppComponent(

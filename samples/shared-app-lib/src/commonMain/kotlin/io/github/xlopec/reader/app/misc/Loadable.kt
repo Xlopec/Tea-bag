@@ -26,7 +26,10 @@ package io.github.xlopec.reader.app.misc
 
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.feature.article.list.Page
-import kotlinx.collections.immutable.*
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 data class Loadable<out T>(
     val data: PersistentList<T>,

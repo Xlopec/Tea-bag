@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URL
+import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
     kotlin("jvm")

@@ -24,7 +24,11 @@
 
 package io.github.xlopec.tea.core.internal
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 internal suspend fun <T, R> Iterable<T>.parMapTo(
     dispatcher: CoroutineDispatcher = Dispatchers.Default,

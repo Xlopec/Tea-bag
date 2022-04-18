@@ -25,7 +25,11 @@
 package io.github.xlopec.reader.app
 
 import io.github.xlopec.reader.app.command.Command
-import io.github.xlopec.reader.app.feature.navigation.*
+import io.github.xlopec.reader.app.feature.navigation.NavigationStack
+import io.github.xlopec.reader.app.feature.navigation.push
+import io.github.xlopec.reader.app.feature.navigation.screen
+import io.github.xlopec.reader.app.feature.navigation.updateAllScreens
+import io.github.xlopec.reader.app.feature.navigation.updateScreen
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.data.UUID

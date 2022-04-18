@@ -31,7 +31,6 @@ import io.github.xlopec.reader.app.domain.Query
 import io.github.xlopec.reader.app.domain.Source
 import io.github.xlopec.reader.app.misc.Loadable
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
 typealias SourcesState = Loadable<Source>

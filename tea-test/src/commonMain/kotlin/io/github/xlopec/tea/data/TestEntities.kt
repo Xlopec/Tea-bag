@@ -26,10 +26,6 @@
 
 package io.github.xlopec.tea.data
 
-import io.github.xlopec.tea.data.RandomUUID
-import io.github.xlopec.tea.data.UUID
-import io.github.xlopec.tea.data.Url
-import io.github.xlopec.tea.data.UrlFor
 import kotlin.jvm.JvmInline
 
 data class User(
