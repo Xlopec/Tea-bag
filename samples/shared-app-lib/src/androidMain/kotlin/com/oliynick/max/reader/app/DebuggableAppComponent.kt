@@ -33,7 +33,7 @@ import com.oliynick.max.reader.app.serialization.PersistentSetSerializer
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.ShareStateWhileSubscribed
 import io.github.xlopec.tea.core.Component
-import com.oliynick.max.tea.core.debug.component.Component
+import io.github.xlopec.tea.core.debug.component.Component
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
