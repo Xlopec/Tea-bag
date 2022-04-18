@@ -26,8 +26,8 @@
 package com.oliynick.max.reader.app.domain
 
 import com.oliynick.max.reader.app.ImmutableType
-import com.oliynick.max.tea.data.Date
-import com.oliynick.max.tea.data.Url
+import io.github.xlopec.tea.data.Date
+import io.github.xlopec.tea.data.Url
 import kotlin.contracts.contract
 import kotlin.jvm.JvmInline
 

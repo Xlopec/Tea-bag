@@ -8,8 +8,8 @@ import com.oliynick.max.tea.core.debug.app.StoreCommand
 import com.oliynick.max.tea.core.debug.app.feature.notification.ComponentImported
 import com.oliynick.max.tea.core.debug.app.feature.notification.OperationException
 import com.oliynick.max.tea.core.debug.app.misc.settings
-import com.oliynick.max.tea.data.Either
-import com.oliynick.max.tea.data.Left
+import io.github.xlopec.tea.data.Either
+import io.github.xlopec.tea.data.Left
 import com.oliynick.max.tea.core.debug.app.toPluginException
 
 fun interface StorageResolver {

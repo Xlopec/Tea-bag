@@ -31,7 +31,7 @@ import com.oliynick.max.reader.app.domain.Query
 import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import com.oliynick.max.reader.app.feature.network.SourcesResponse
-import com.oliynick.max.tea.data.Either
+import io.github.xlopec.tea.data.Either
 import kotlinx.collections.immutable.ImmutableSet
 
 interface NewsApi {

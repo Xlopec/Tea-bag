@@ -28,7 +28,7 @@ package io.github.xlopec.tea.core.debug.component
 
 import com.oliynick.max.tea.core.*
 import com.oliynick.max.tea.core.debug.protocol.*
-import com.oliynick.max.tea.data.RandomUUID
+import io.github.xlopec.tea.data.RandomUUID
 import io.github.xlopec.tea.core.*
 import io.github.xlopec.tea.core.debug.component.internal.mergeWith
 import io.github.xlopec.tea.core.debug.session.*

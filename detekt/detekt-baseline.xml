@@ -67,9 +67,9 @@
     <ID>NewLineAtEndOfFile:ComponentTest.kt$com.oliynick.max.tea.core.component.ComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:ComposeAnnotations.kt$com.oliynick.max.reader.app.ComposeAnnotations.kt</ID>
     <ID>NewLineAtEndOfFile:CompositionsLogger.kt$com.max.reader.app.ui.misc.CompositionsLogger.kt</ID>
-    <ID>NewLineAtEndOfFile:Date.kt$com.oliynick.max.tea.data.Date.kt</ID>
+    <ID>NewLineAtEndOfFile:Date.kt$io.github.xlopec.tea.data.Date.kt</ID>
     <ID>NewLineAtEndOfFile:DebuggableComponentTest.kt$com.oliynick.max.tea.core.debug.component.DebuggableComponentTest.kt</ID>
-    <ID>NewLineAtEndOfFile:Either.kt$com.oliynick.max.tea.data.Either.kt</ID>
+    <ID>NewLineAtEndOfFile:Either.kt$io.github.xlopec.tea.data.Either.kt</ID>
     <ID>NewLineAtEndOfFile:Environment.kt$com.oliynick.max.reader.app.Environment.kt</ID>
     <ID>NewLineAtEndOfFile:ExportImportTest.kt$com.oliynick.max.tea.core.debug.app.feature.storage.ExportImportTest.kt</ID>
     <ID>NewLineAtEndOfFile:IosAnnotations.kt$com.oliynick.max.reader.app.IosAnnotations.kt</ID>
@@ -83,8 +83,8 @@
     <ID>NewLineAtEndOfFile:PopScreen.kt$com.oliynick.max.reader.app.feature.navigation.PopScreen.kt</ID>
     <ID>NewLineAtEndOfFile:Screens.kt$com.oliynick.max.reader.app.Screens.kt</ID>
     <ID>NewLineAtEndOfFile:Thread.kt$com.oliynick.max.tea.core.misc.Thread.kt</ID>
-    <ID>NewLineAtEndOfFile:UUID.kt$com.oliynick.max.tea.data.UUID.kt</ID>
-    <ID>NewLineAtEndOfFile:Url.kt$com.oliynick.max.tea.data.Url.kt</ID>
+    <ID>NewLineAtEndOfFile:UUID.kt$io.github.xlopec.tea.data.UUID.kt</ID>
+    <ID>NewLineAtEndOfFile:Url.kt$io.github.xlopec.tea.data.Url.kt</ID>
     <ID>NewLineAtEndOfFile:build.gradle.kts$.build.gradle.kts</ID>
     <ID>NewLineAtEndOfFile:currentThreadName.kt$com.oliynick.max.tea.core.misc.currentThreadName.kt</ID>
     <ID>NewLineAtEndOfFile:multiplatform-library.gradle.kts$.multiplatform-library.gradle.kts</ID>

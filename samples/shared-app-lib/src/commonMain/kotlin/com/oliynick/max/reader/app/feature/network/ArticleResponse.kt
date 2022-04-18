@@ -28,8 +28,8 @@ import com.oliynick.max.reader.app.domain.Author
 import com.oliynick.max.reader.app.domain.Description
 import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.domain.Title
-import com.oliynick.max.tea.data.Date
-import com.oliynick.max.tea.data.Url
+import io.github.xlopec.tea.data.Date
+import io.github.xlopec.tea.data.Url
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

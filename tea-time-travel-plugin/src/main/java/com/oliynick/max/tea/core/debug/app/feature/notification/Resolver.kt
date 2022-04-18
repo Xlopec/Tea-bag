@@ -3,7 +3,7 @@ package com.oliynick.max.tea.core.debug.app.feature.notification
 import com.intellij.openapi.project.Project
 import com.oliynick.max.tea.core.debug.app.NotifyCommand
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.balloon.showBalloon
-import com.oliynick.max.tea.data.Left
+import io.github.xlopec.tea.data.Left
 
 fun interface NotificationResolver {
     suspend fun resolve(

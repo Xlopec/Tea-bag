@@ -37,8 +37,8 @@ import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.reader.app.misc.mapToPersistentList
 import io.github.xlopec.tea.core.effect
-import com.oliynick.max.tea.data.Either
-import com.oliynick.max.tea.data.fold
+import io.github.xlopec.tea.data.Either
+import io.github.xlopec.tea.data.fold
 import kotlinx.collections.immutable.ImmutableList
 
 fun interface ShareArticle {

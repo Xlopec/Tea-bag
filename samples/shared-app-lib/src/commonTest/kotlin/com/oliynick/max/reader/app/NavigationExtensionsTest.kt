@@ -27,7 +27,7 @@
 package com.oliynick.max.reader.app
 
 import com.oliynick.max.reader.app.feature.navigation.floatGroup
-import com.oliynick.max.tea.data.RandomUUID
+import io.github.xlopec.tea.data.RandomUUID
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.test.Test
 import kotlin.test.assertEquals

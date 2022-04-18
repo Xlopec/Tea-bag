@@ -15,8 +15,8 @@ import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.ba
 import com.oliynick.max.tea.core.debug.app.toPluginException
 import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
 import com.oliynick.max.tea.core.debug.protocol.ApplyState
-import com.oliynick.max.tea.data.Either
-import com.oliynick.max.tea.data.mapL
+import io.github.xlopec.tea.data.Either
+import io.github.xlopec.tea.data.mapL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.withContext

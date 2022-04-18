@@ -26,10 +26,10 @@
 
 package io.oliynick.max.tea.core.data
 
-import com.oliynick.max.tea.data.RandomUUID
-import com.oliynick.max.tea.data.UUID
-import com.oliynick.max.tea.data.Url
-import com.oliynick.max.tea.data.UrlFor
+import io.github.xlopec.tea.data.RandomUUID
+import io.github.xlopec.tea.data.UUID
+import io.github.xlopec.tea.data.Url
+import io.github.xlopec.tea.data.UrlFor
 import kotlin.jvm.JvmInline
 
 data class User(

@@ -28,7 +28,7 @@ import com.oliynick.max.reader.app.command.Command
 import com.oliynick.max.reader.app.feature.navigation.*
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
-import com.oliynick.max.tea.data.UUID
+import io.github.xlopec.tea.data.UUID
 import kotlinx.collections.immutable.persistentListOf
 
 typealias ScreenId = UUID

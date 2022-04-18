@@ -39,8 +39,8 @@ import com.oliynick.max.tea.core.debug.protocol.ApplyState
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.NotifyComponentAttached
 import com.oliynick.max.tea.core.debug.protocol.NotifyComponentSnapshot
-import com.oliynick.max.tea.data.UUID
-import com.oliynick.max.tea.data.toHumanReadable
+import io.github.xlopec.tea.data.UUID
+import io.github.xlopec.tea.data.toHumanReadable
 import java.lang.reflect.Type
 
 internal object UUIDAdapter : JsonSerializer<UUID>, JsonDeserializer<UUID> {

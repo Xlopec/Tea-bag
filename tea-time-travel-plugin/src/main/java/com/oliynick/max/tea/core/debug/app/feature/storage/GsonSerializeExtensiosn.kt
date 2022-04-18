@@ -11,8 +11,8 @@ import com.oliynick.max.tea.core.debug.app.feature.server.toJsonArray
 import com.oliynick.max.tea.core.debug.app.feature.server.toJsonElement
 import com.oliynick.max.tea.core.debug.app.feature.server.toValue
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import com.oliynick.max.tea.data.UUID
-import com.oliynick.max.tea.data.toHumanReadable
+import io.github.xlopec.tea.data.UUID
+import io.github.xlopec.tea.data.toHumanReadable
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDateTime

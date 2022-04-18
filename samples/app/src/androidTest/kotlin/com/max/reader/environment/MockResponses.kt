@@ -28,7 +28,7 @@ package com.max.reader.environment
 
 import com.oliynick.max.reader.app.feature.network.ArticleElement
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
-import com.oliynick.max.tea.data.Left
+import io.github.xlopec.tea.data.Left
 import kotlinx.coroutines.delay
 
 fun foreverWaitingResponse(): ArticleResponseProvider = { _, _ ->

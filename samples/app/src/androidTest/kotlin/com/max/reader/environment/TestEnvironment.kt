@@ -39,7 +39,7 @@ import com.oliynick.max.reader.app.feature.filter.FiltersModule
 import com.oliynick.max.reader.app.feature.network.ArticleResponse
 import com.oliynick.max.reader.app.feature.network.SourcesResponse
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
-import com.oliynick.max.tea.data.Either
+import io.github.xlopec.tea.data.Either
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.DelayController
 import kotlinx.coroutines.test.TestCoroutineDispatcher
