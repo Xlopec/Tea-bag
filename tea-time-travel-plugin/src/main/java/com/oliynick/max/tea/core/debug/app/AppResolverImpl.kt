@@ -21,7 +21,7 @@ package com.oliynick.max.tea.core.debug.app
 import com.oliynick.max.tea.core.debug.app.feature.notification.NotificationResolver
 import com.oliynick.max.tea.core.debug.app.feature.server.ServerCommandResolver
 import com.oliynick.max.tea.core.debug.app.feature.storage.StorageResolver
-import com.oliynick.max.tea.data.fold
+import io.github.xlopec.tea.data.fold
 import io.github.xlopec.tea.core.ResolveCtx
 import io.github.xlopec.tea.core.effects
 

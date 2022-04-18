@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.tea.data
+package io.github.xlopec.tea.data
 
 public expect class Date
 

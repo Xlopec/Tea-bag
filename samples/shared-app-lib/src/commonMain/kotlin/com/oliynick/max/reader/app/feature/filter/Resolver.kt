@@ -32,10 +32,10 @@ import com.oliynick.max.reader.app.feature.network.SourceResponseElement
 import com.oliynick.max.reader.app.feature.storage.LocalStorage
 import com.oliynick.max.reader.app.misc.mapToPersistentList
 import io.github.xlopec.tea.core.effect
-import com.oliynick.max.tea.data.Url
-import com.oliynick.max.tea.data.UrlFor
-import com.oliynick.max.tea.data.domain
-import com.oliynick.max.tea.data.fold
+import io.github.xlopec.tea.data.Url
+import io.github.xlopec.tea.data.UrlFor
+import io.github.xlopec.tea.data.domain
+import io.github.xlopec.tea.data.fold
 
 interface FiltersResolver<Env> {
 

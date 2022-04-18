@@ -24,7 +24,7 @@
 
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.data
+package io.github.xlopec.tea.data
 
 import java.util.UUID as JavaUUID
 

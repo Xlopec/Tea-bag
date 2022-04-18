@@ -33,7 +33,7 @@ import com.oliynick.max.reader.app.storage.AppDatabase
 import com.oliynick.max.reader.app.storage.ArticlesQueries
 import com.oliynick.max.reader.app.storage.FiltersQueries
 import com.oliynick.max.reader.app.storage.RecentSearchesQueries
-import com.oliynick.max.tea.data.*
+import io.github.xlopec.tea.data.*
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set

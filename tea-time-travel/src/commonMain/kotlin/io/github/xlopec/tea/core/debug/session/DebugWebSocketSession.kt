@@ -26,9 +26,9 @@ package io.github.xlopec.tea.core.debug.session
 
 import io.github.xlopec.tea.core.debug.component.Settings
 import com.oliynick.max.tea.core.debug.protocol.*
-import com.oliynick.max.tea.data.Either
-import com.oliynick.max.tea.data.Left
-import com.oliynick.max.tea.data.Right
+import io.github.xlopec.tea.data.Either
+import io.github.xlopec.tea.data.Left
+import io.github.xlopec.tea.data.Right
 import io.ktor.websocket.*
 import kotlinx.coroutines.flow.*
 import kotlin.reflect.KClass

@@ -47,7 +47,7 @@ import com.oliynick.max.reader.app.feature.article.list.ArticlesState
 import com.oliynick.max.reader.app.feature.network.ArticleElement
 import com.oliynick.max.reader.app.feature.network.SourceElement
 import com.oliynick.max.tea.core.component.states
-import com.oliynick.max.tea.data.RandomUUID
+import io.github.xlopec.tea.data.RandomUUID
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Rule
 import org.junit.Test

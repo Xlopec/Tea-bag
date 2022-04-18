@@ -37,7 +37,7 @@ import com.oliynick.max.tea.core.debug.protocol.NotifyComponentAttached
 import com.oliynick.max.tea.core.debug.protocol.NotifyComponentSnapshot
 import com.oliynick.max.tea.core.debug.protocol.NotifyServer
 import com.oliynick.max.tea.core.debug.protocol.ServerMessage
-import com.oliynick.max.tea.data.UUID
+import io.github.xlopec.tea.data.UUID
 import io.github.xlopec.tea.core.debug.gson.TypeAppenderAdapterFactory
 
 /**

@@ -28,10 +28,10 @@ import com.oliynick.max.reader.app.domain.Author
 import com.oliynick.max.reader.app.domain.Description
 import com.oliynick.max.reader.app.domain.Title
 import com.oliynick.max.reader.app.domain.tryCreate
-import com.oliynick.max.tea.data.Date
-import com.oliynick.max.tea.data.Url
-import com.oliynick.max.tea.data.UrlFor
-import com.oliynick.max.tea.data.toExternalValue
+import io.github.xlopec.tea.data.Date
+import io.github.xlopec.tea.data.Url
+import io.github.xlopec.tea.data.UrlFor
+import io.github.xlopec.tea.data.toExternalValue
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

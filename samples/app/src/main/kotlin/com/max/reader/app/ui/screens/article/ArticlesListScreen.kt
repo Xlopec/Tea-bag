@@ -67,7 +67,7 @@ import com.oliynick.max.reader.app.feature.article.list.*
 import com.oliynick.max.reader.app.feature.navigation.NavigateToArticleDetails
 import com.oliynick.max.reader.app.feature.navigation.NavigateToFilters
 import com.oliynick.max.reader.app.misc.*
-import com.oliynick.max.tea.data.Url
+import io.github.xlopec.tea.data.Url
 import java.text.SimpleDateFormat
 import java.util.*
 

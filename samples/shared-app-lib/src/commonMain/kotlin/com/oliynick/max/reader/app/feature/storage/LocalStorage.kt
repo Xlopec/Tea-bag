@@ -33,7 +33,7 @@ import com.oliynick.max.reader.app.domain.FilterType
 import com.oliynick.max.reader.app.domain.Query
 import com.oliynick.max.reader.app.feature.article.list.Page
 import com.oliynick.max.reader.app.feature.filter.FiltersState.Companion.StoreSuggestionsLimit
-import com.oliynick.max.tea.data.Url
+import io.github.xlopec.tea.data.Url
 import kotlinx.collections.immutable.ImmutableList
 
 interface LocalStorage {

@@ -36,7 +36,7 @@ import com.oliynick.max.reader.app.domain.SourceId
 import com.oliynick.max.reader.app.feature.article.list.NewsApi
 import com.oliynick.max.reader.app.feature.article.list.Paging
 import com.oliynick.max.reader.app.feature.article.list.nextPage
-import com.oliynick.max.tea.data.Either
+import io.github.xlopec.tea.data.Either
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*

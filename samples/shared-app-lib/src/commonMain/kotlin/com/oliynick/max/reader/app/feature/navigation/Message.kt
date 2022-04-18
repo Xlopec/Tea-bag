@@ -29,7 +29,7 @@ import com.oliynick.max.reader.app.ScreenId
 import com.oliynick.max.reader.app.domain.Article
 import com.oliynick.max.reader.app.domain.Filter
 import com.oliynick.max.reader.app.feature.settings.SettingsScreen
-import com.oliynick.max.tea.data.RandomUUID
+import io.github.xlopec.tea.data.RandomUUID
 
 sealed interface Navigation : Message
 

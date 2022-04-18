@@ -24,7 +24,7 @@
 
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.data
+package io.github.xlopec.tea.data
 
 public actual typealias Url = java.net.URL
 

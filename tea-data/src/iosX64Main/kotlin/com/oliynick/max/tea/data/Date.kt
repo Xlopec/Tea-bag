@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.tea.data
+package io.github.xlopec.tea.data
 
 import platform.Foundation.NSDate
 import platform.Foundation.dateWithTimeIntervalSince1970
