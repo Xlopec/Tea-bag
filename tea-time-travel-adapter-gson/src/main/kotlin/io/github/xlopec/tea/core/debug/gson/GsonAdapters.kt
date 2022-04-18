@@ -26,9 +26,19 @@
 
 package com.oliynick.max.tea.core.debug.gson
 
-import com.google.gson.*
+import com.google.gson.JsonArray
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import com.oliynick.max.tea.core.debug.protocol.*
+import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
+import com.oliynick.max.tea.core.debug.protocol.ApplyState
+import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import com.oliynick.max.tea.core.debug.protocol.NotifyComponentAttached
+import com.oliynick.max.tea.core.debug.protocol.NotifyComponentSnapshot
 import com.oliynick.max.tea.data.UUID
 import com.oliynick.max.tea.data.toHumanReadable
 import java.lang.reflect.Type

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.tea.core.debug.gson.serialization.data
+package io.github.xlopec.tea.core.debug.gson.serialization.data
 
 internal sealed class A
 
