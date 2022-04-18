@@ -22,20 +22,27 @@ import com.oliynick.max.tea.core.debug.app.feature.notification.NotificationReso
 import com.oliynick.max.tea.core.debug.app.feature.server.ServerCommandResolver
 import com.oliynick.max.tea.core.debug.app.feature.storage.StorageResolver
 import com.oliynick.max.tea.data.fold
+import io.github.xlopec.tea.core.ResolveCtx
+import io.github.xlopec.tea.core.effects
 
 fun <Env> AppResolver(): AppResolver<Env> where Env : ServerCommandResolver,
                                                 Env : StorageResolver,
                                                 Env : NotificationResolver = AppResolverImpl()
 
-private class AppResolverImpl<Env> : AppResolver<Env> where Env : ServerCommandResolver, Env : StorageResolver, Env : NotificationResolver {
+private class AppResolverImpl<Env> :
+    AppResolver<Env> where Env : ServerCommandResolver, Env : StorageResolver, Env : NotificationResolver {
 
-    override suspend fun Env.resolve(
+    override fun Env.resolve(
         command: Command,
-    ): Set<Message> =
-        when (command) {
-            is NotifyCommand -> resolve(command)
-            is ServerCommand -> resolveServerCommand(command)
-            is StoreCommand -> resolveStoreCommand(command)
-        }.fold(::setOfNotNull, ::setOf)
+        ctx: ResolveCtx<Message>
+    ) {
+        ctx.effects {
+            when (command) {
+                is NotifyCommand -> resolve(command)
+                is ServerCommand -> resolveServerCommand(command)
+                is StoreCommand -> resolveStoreCommand(command)
+            }.fold(::setOfNotNull, ::setOf)
+        }
+    }
 
 }

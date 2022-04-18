@@ -16,9 +16,6 @@
 
 package com.oliynick.max.tea.core.debug.app.feature.presentation
 
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
 import com.oliynick.max.tea.core.debug.app.Command
 import com.oliynick.max.tea.core.debug.app.UIMessage
 import com.oliynick.max.tea.core.debug.app.domain.Settings
@@ -26,14 +23,26 @@ import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
 import com.oliynick.max.tea.core.debug.app.feature.server.DoApplyMessage
 import com.oliynick.max.tea.core.debug.app.feature.server.DoApplyState
 import com.oliynick.max.tea.core.debug.app.feature.storage.DoStoreSettings
-import com.oliynick.max.tea.core.debug.app.state.*
+import com.oliynick.max.tea.core.debug.app.state.Started
+import com.oliynick.max.tea.core.debug.app.state.State
+import com.oliynick.max.tea.core.debug.app.state.Stopped
+import com.oliynick.max.tea.core.debug.app.state.removeSnapshots
+import com.oliynick.max.tea.core.debug.app.state.snapshot
+import com.oliynick.max.tea.core.debug.app.state.state
+import com.oliynick.max.tea.core.debug.app.state.updateComponents
+import com.oliynick.max.tea.core.debug.app.state.updateFilter
+import com.oliynick.max.tea.core.debug.app.state.updateServerSettings
+import com.oliynick.max.tea.core.debug.app.state.updateSettings
 import com.oliynick.max.tea.core.debug.app.warnUnacceptableMessage
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.Update
+import io.github.xlopec.tea.core.command
+import io.github.xlopec.tea.core.noCommand
 
 fun updateForUiMessage(
     message: UIMessage,
     state: State
-): UpdateWith<State, Command> =
+): Update<State, Command> =
     when {
         message is UpdateDebugSettings -> updateDebugSettings(message.isDetailedToStringEnabled, state)
         message is UpdateServerSettings && state is Stopped -> updateServerSettings(message, state)
@@ -49,13 +58,13 @@ fun updateForUiMessage(
 private fun updateDebugSettings(
     isDetailedToStringEnabled: Boolean,
     state: State
-): UpdateWith<State, DoStoreSettings> =
+): Update<State, DoStoreSettings> =
     state.updateSettings { copy(isDetailedOutput = isDetailedToStringEnabled) } command { DoStoreSettings(settings) }
 
 private fun updateServerSettings(
     message: UpdateServerSettings,
     state: State
-): UpdateWith<State, DoStoreSettings> {
+): Update<State, DoStoreSettings> {
     val settings = Settings.of(message.host, message.port, state.settings.isDetailedOutput)
 
     return state.updateServerSettings(settings) command { DoStoreSettings(settings) }
@@ -64,13 +73,13 @@ private fun updateServerSettings(
 private fun applyState(
     message: ApplyState,
     state: Started
-): UpdateWith<State, Command> =
+): Update<State, Command> =
     state command DoApplyState(message.componentId, state.state(message), state.server)
 
 private fun applyMessage(
     message: ApplyMessage,
     state: Started
-): UpdateWith<State, Command> {
+): Update<State, Command> {
     val m = state.messageFor(message) ?: return state.noCommand()
 
     return state command DoApplyMessage(message.componentId, m, state.server)
@@ -81,26 +90,26 @@ private fun removeSnapshots(
     componentId: ComponentId,
     ids: Set<SnapshotId>,
     state: Started
-): UpdateWith<State, Nothing> =
+): Update<State, Nothing> =
     state.removeSnapshots(componentId, ids).noCommand()
 
 private fun removeSnapshots(
     componentId: ComponentId,
     state: Started
-): UpdateWith<State, Nothing> =
+): Update<State, Nothing> =
     state.removeSnapshots(componentId).noCommand()
 
 private fun removeComponent(
     message: RemoveComponent,
     state: Started
-): UpdateWith<State, Nothing> =
+): Update<State, Nothing> =
     state.updateComponents { mapping -> mapping.remove(message.componentId) }
         .noCommand()
 
 private fun updateFilter(
     message: UpdateFilter,
     state: Started
-): UpdateWith<State, Nothing> =
+): Update<State, Nothing> =
     state.updateFilter(message.id, message.input, message.ignoreCase, message.option).noCommand()
 
 private fun Started.state(

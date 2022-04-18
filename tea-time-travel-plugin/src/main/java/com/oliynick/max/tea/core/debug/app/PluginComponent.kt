@@ -21,17 +21,17 @@ package com.oliynick.max.tea.core.debug.app
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.diagnostic.debug
 import com.intellij.openapi.diagnostic.trace
-import com.oliynick.max.tea.core.Initial
-import com.oliynick.max.tea.core.Initializer
-import com.oliynick.max.tea.core.Regular
-import com.oliynick.max.tea.core.Snapshot
-import com.oliynick.max.tea.core.component.Component
-import com.oliynick.max.tea.core.component.Interceptor
-import com.oliynick.max.tea.core.component.with
 import com.oliynick.max.tea.core.debug.app.misc.PluginId
 import com.oliynick.max.tea.core.debug.app.misc.settings
 import com.oliynick.max.tea.core.debug.app.state.State
 import com.oliynick.max.tea.core.debug.app.state.Stopped
+import io.github.xlopec.tea.core.Component
+import io.github.xlopec.tea.core.Initial
+import io.github.xlopec.tea.core.Initializer
+import io.github.xlopec.tea.core.Interceptor
+import io.github.xlopec.tea.core.Regular
+import io.github.xlopec.tea.core.Snapshot
+import io.github.xlopec.tea.core.with
 import kotlinx.coroutines.Dispatchers.IO
 import com.intellij.openapi.diagnostic.Logger as PlatformLogger
 
@@ -39,9 +39,9 @@ fun PluginComponent(
     environment: Environment,
     properties: PropertiesComponent,
 ): Component<Message, State, Command> =
-    Component(
+    Component<Message, Command, State>(
         initializer = AppInitializer(properties),
-        resolver = { c -> with(environment) { resolve(c) } },
+        resolver = { c, ctx -> with(environment) { resolve(c, ctx) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment
     ).with(Logger(PlatformLogger.getInstance(PluginId)))

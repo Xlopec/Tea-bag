@@ -16,9 +16,6 @@
 
 package com.oliynick.max.tea.core.debug.app.feature.notification
 
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.noCommand
 import com.oliynick.max.tea.core.debug.app.*
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.feature.server.DoStartServer
@@ -26,11 +23,12 @@ import com.oliynick.max.tea.core.debug.app.feature.server.DoStopServer
 import com.oliynick.max.tea.core.debug.app.feature.storage.DoStoreSettings
 import com.oliynick.max.tea.core.debug.app.state.*
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.*
 
 internal fun updateForNotification(
     message: NotificationMessage,
     state: State
-): UpdateWith<State, Command> =
+): Update<State, Command> =
     when {
         message is NotifyStarted -> toStartedState(message.server, state.settings)
         message is NotifyStopped -> toStoppedState(state.settings)
@@ -45,7 +43,7 @@ internal fun updateForNotification(
 private fun appendComponent(
     message: ComponentImported,
     state: Started
-): UpdateWith<State, Command> =
+): Update<State, Command> =
 // overwrite any existing session for now
     // todo: show prompt dialog in future with options to merge, overwrite and cancel
     state.updateComponents { mapping ->
@@ -55,7 +53,7 @@ private fun appendComponent(
 private fun toStartedState(
     server: Server,
     settings: Settings
-): UpdateWith<Started, Command> =
+): Update<Started, Command> =
     Started(
         settings,
         DebugState(),
@@ -64,13 +62,13 @@ private fun toStartedState(
 
 private fun toStoppedState(
     settings: Settings
-): UpdateWith<Stopped, Command> =
+): Update<Stopped, Command> =
     Stopped(settings).noCommand()
 
 private fun appendSnapshot(
     message: AppendSnapshot,
     state: Started
-): UpdateWith<State, Command> {
+): Update<State, Command> {
 
     val snapshot = message.toSnapshot()
     val updated = state.debugState.componentOrNew(message.componentId, message.newState)
@@ -83,7 +81,7 @@ private fun appendSnapshot(
 private fun attachComponent(
     message: ComponentAttached,
     state: Started
-): UpdateWith<State, Command> {
+): Update<State, Command> {
 
     val id = message.componentId
     val currentState = message.state
@@ -101,7 +99,7 @@ private fun attachComponent(
 private fun applyState(
     message: StateApplied,
     state: Started
-): UpdateWith<State, Command> {
+): Update<State, Command> {
 
     val component = state.debugState.components[message.componentId] ?: return state.noCommand()
     val updated = component.copy(state = message.state)
@@ -113,7 +111,7 @@ private fun applyState(
 private fun recoverFromException(
     message: OperationException,
     state: State
-): UpdateWith<State, Command> =
+): Update<State, Command> =
     when {
         isFatalProblem(message.exception, message.operation) -> notifyDeveloperException(message.exception)
         message.operation is DoStartServer && state is Starting -> Stopped(state.settings) command DoNotifyOperationException(

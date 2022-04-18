@@ -17,8 +17,11 @@
 package com.oliynick.max.tea.core.debug.app.domain.serialization
 
 import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.data.*
-import com.oliynick.max.tea.core.debug.app.domain.*
+import com.oliynick.max.tea.core.debug.app.domain.CollectionWrapper
+import com.oliynick.max.tea.core.debug.app.domain.Property
+import com.oliynick.max.tea.core.debug.app.domain.Ref
+import com.oliynick.max.tea.core.debug.app.domain.StringWrapper
+import com.oliynick.max.tea.core.debug.app.domain.Type
 import com.oliynick.max.tea.core.debug.app.feature.server.toJsonElement
 import com.oliynick.max.tea.core.debug.app.feature.server.toValue
 import com.oliynick.max.tea.core.debug.gson.Gson
@@ -27,13 +30,18 @@ import com.oliynick.max.tea.core.debug.protocol.ClientMessage
 import com.oliynick.max.tea.core.debug.protocol.ComponentId
 import com.oliynick.max.tea.core.debug.protocol.NotifyClient
 import io.kotlintest.shouldBe
+import io.oliynick.max.tea.core.data.Avatar
+import io.oliynick.max.tea.core.data.Id
+import io.oliynick.max.tea.core.data.Name
+import io.oliynick.max.tea.core.data.Photo
+import io.oliynick.max.tea.core.data.User
+import java.io.File
+import java.io.FileReader
+import java.util.UUID
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import java.io.File
-import java.io.FileReader
-import java.util.*
 
 @RunWith(JUnit4::class)
 internal class ClientMessageSerializationTest {

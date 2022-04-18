@@ -16,14 +16,14 @@
 
 package com.oliynick.max.tea.core.debug.app
 
-import com.oliynick.max.tea.core.component.UpdateWith
 import com.oliynick.max.tea.core.debug.app.state.State
+import io.github.xlopec.tea.core.Update
 
 fun interface AppUpdater {
 
     fun update(
         message: Message,
         state: State
-    ): UpdateWith<State, Command>
+    ): Update<State, Command>
 
 }

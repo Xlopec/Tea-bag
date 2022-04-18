@@ -61,7 +61,7 @@ val allTests by tasks.creating(Task::class) {
     dependsOn("test")
 }
 
-optIn("kotlinx.coroutines.ExperimentalCoroutinesApi", "com.oliynick.max.tea.core.ExperimentalTeaApi")
+optIn("kotlinx.coroutines.ExperimentalCoroutinesApi", "io.githux.xlopec.tea.core.ExperimentalTeaApi")
 
 sourceSets {
     main {
