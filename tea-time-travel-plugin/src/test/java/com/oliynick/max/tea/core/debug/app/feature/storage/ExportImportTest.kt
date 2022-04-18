@@ -10,7 +10,7 @@ import com.oliynick.max.tea.core.debug.app.misc.TestSnapshotId2
 import com.oliynick.max.tea.core.debug.app.misc.TestTimestamp1
 import com.oliynick.max.tea.core.debug.app.misc.TestTimestamp2
 import com.oliynick.max.tea.core.debug.app.state.toFiltered
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Test
 import org.junit.runner.RunWith

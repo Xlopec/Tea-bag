@@ -31,8 +31,8 @@ import io.github.xlopec.tea.core.debug.component.ComponentException
 import io.github.xlopec.tea.core.debug.component.DebugEnv
 import io.github.xlopec.tea.core.debug.component.Settings
 import com.oliynick.max.tea.core.debug.gson.GsonSerializer
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
 import io.github.xlopec.tea.core.debug.session.Localhost
 import io.github.xlopec.tea.core.debug.session.SessionFactory
 import io.ktor.http.*

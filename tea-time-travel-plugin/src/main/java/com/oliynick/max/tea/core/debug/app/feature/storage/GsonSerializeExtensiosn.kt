@@ -10,7 +10,7 @@ import com.oliynick.max.tea.core.debug.app.feature.server.toCollectionWrapper
 import com.oliynick.max.tea.core.debug.app.feature.server.toJsonArray
 import com.oliynick.max.tea.core.debug.app.feature.server.toJsonElement
 import com.oliynick.max.tea.core.debug.app.feature.server.toValue
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.data.UUID
 import io.github.xlopec.tea.data.toHumanReadable
 import kotlinx.collections.immutable.mutate

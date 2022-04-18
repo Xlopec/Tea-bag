@@ -24,7 +24,7 @@
 
 package io.github.xlopec.tea.core.debug.session
 
-import com.oliynick.max.tea.core.debug.protocol.NotifyServer
+import io.github.xlopec.tea.core.debug.protocol.NotifyServer
 import kotlinx.coroutines.flow.Flow
 
 /**

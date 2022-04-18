@@ -13,8 +13,8 @@ import com.oliynick.max.tea.core.debug.app.feature.notification.StateApplied
 import com.oliynick.max.tea.core.debug.app.feature.notification.StateAppliedBalloon
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.balloon.showBalloon
 import com.oliynick.max.tea.core.debug.app.toPluginException
-import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
-import com.oliynick.max.tea.core.debug.protocol.ApplyState
+import io.github.xlopec.tea.core.debug.protocol.ApplyMessage
+import io.github.xlopec.tea.core.debug.protocol.ApplyState
 import io.github.xlopec.tea.data.Either
 import io.github.xlopec.tea.data.mapL
 import kotlinx.coroutines.Dispatchers

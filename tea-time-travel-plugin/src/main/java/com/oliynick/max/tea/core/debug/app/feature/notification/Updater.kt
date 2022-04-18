@@ -22,7 +22,7 @@ import com.oliynick.max.tea.core.debug.app.feature.server.DoStartServer
 import com.oliynick.max.tea.core.debug.app.feature.server.DoStopServer
 import com.oliynick.max.tea.core.debug.app.feature.storage.DoStoreSettings
 import com.oliynick.max.tea.core.debug.app.state.*
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.core.*
 
 internal fun updateForNotification(

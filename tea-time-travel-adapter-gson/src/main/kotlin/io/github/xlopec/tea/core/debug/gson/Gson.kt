@@ -29,14 +29,14 @@ package com.oliynick.max.tea.core.debug.gson
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
-import com.oliynick.max.tea.core.debug.protocol.ApplyState
-import com.oliynick.max.tea.core.debug.protocol.ClientMessage
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import com.oliynick.max.tea.core.debug.protocol.NotifyComponentAttached
-import com.oliynick.max.tea.core.debug.protocol.NotifyComponentSnapshot
-import com.oliynick.max.tea.core.debug.protocol.NotifyServer
-import com.oliynick.max.tea.core.debug.protocol.ServerMessage
+import io.github.xlopec.tea.core.debug.protocol.ApplyMessage
+import io.github.xlopec.tea.core.debug.protocol.ApplyState
+import io.github.xlopec.tea.core.debug.protocol.ClientMessage
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.NotifyComponentAttached
+import io.github.xlopec.tea.core.debug.protocol.NotifyComponentSnapshot
+import io.github.xlopec.tea.core.debug.protocol.NotifyServer
+import io.github.xlopec.tea.core.debug.protocol.ServerMessage
 import io.github.xlopec.tea.data.UUID
 import io.github.xlopec.tea.core.debug.gson.TypeAppenderAdapterFactory
 

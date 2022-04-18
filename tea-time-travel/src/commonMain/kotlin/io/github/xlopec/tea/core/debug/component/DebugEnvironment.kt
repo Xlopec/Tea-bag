@@ -27,8 +27,8 @@
 package io.github.xlopec.tea.core.debug.component
 
 import io.github.xlopec.tea.core.Env
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
 import io.github.xlopec.tea.core.debug.session.DebugSession
 import io.github.xlopec.tea.core.debug.session.SessionFactory
 import io.ktor.http.*

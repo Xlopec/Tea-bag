@@ -25,10 +25,10 @@ import com.oliynick.max.tea.core.debug.app.domain.Type
 import com.oliynick.max.tea.core.debug.app.feature.server.toJsonElement
 import com.oliynick.max.tea.core.debug.app.feature.server.toValue
 import com.oliynick.max.tea.core.debug.gson.Gson
-import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
-import com.oliynick.max.tea.core.debug.protocol.ClientMessage
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import com.oliynick.max.tea.core.debug.protocol.NotifyClient
+import io.github.xlopec.tea.core.debug.protocol.ApplyMessage
+import io.github.xlopec.tea.core.debug.protocol.ClientMessage
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.NotifyClient
 import io.kotlintest.shouldBe
 import io.oliynick.max.tea.core.data.Avatar
 import io.oliynick.max.tea.core.data.Id

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.tea.core.debug.protocol
+package io.github.xlopec.tea.core.debug.protocol
 
 import kotlin.jvm.JvmInline
 

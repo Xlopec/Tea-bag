@@ -25,7 +25,7 @@ import com.oliynick.max.tea.core.debug.app.PluginException
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.balloon.createErrorBalloon
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.balloon.createNotificationBalloon
 import com.oliynick.max.tea.core.debug.app.state.State
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import java.util.*
 
 fun ExceptionBalloon(

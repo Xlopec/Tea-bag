@@ -77,7 +77,7 @@ import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.Va
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.misc.toReadableStringDetailed
 import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.screens.component.MessageHandler
 import com.oliynick.max.tea.core.debug.app.misc.javaPsiFacade
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 
 typealias TreeFormatter = (Node) -> String
 

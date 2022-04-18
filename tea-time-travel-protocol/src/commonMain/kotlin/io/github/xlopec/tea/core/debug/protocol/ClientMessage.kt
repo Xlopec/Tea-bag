@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.tea.core.debug.protocol
+package io.github.xlopec.tea.core.debug.protocol
 
 /**
  * Represents messages that should be applied by client

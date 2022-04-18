@@ -34,7 +34,7 @@ import com.oliynick.max.tea.core.debug.app.state.updateFilter
 import com.oliynick.max.tea.core.debug.app.state.updateServerSettings
 import com.oliynick.max.tea.core.debug.app.state.updateSettings
 import com.oliynick.max.tea.core.debug.app.warnUnacceptableMessage
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand

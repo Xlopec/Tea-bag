@@ -1,7 +1,7 @@
 package com.oliynick.max.tea.core.debug.app.feature.server
 
 import com.oliynick.max.tea.core.debug.gson.GsonClientMessage
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import java.util.*
 
 data class RemoteCall(

@@ -35,8 +35,8 @@ import io.github.xlopec.tea.core.ShareStateWhileSubscribed
 import io.github.xlopec.tea.core.Component
 import io.github.xlopec.tea.core.debug.component.Component
 import io.github.xlopec.tea.core.debug.gson.GsonSerializer
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import com.oliynick.max.tea.core.debug.protocol.JsonSerializer
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
 import io.ktor.http.*
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
