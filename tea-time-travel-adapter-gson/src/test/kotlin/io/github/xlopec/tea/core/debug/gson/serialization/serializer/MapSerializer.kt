@@ -22,50 +22,31 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.tea.core.debug.gson.serialization.serializer
+package io.github.xlopec.tea.core.debug.gson.serialization.serializer
 
-import com.google.gson.*
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-internal object PersistentListSerializer : JsonSerializer<PersistentList<*>>,
-    JsonDeserializer<PersistentList<*>> {
+internal object MapDeserializer : JsonDeserializer<Map<*, *>> {
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type,
         context: JsonDeserializationContext
-    ): PersistentList<*> {
+    ): Map<*, *> {
 
-        val genericArgType = (typeOfT as ParameterizedType).actualTypeArguments[0] as Class<*>
+        val genericKeyArgType = (typeOfT as ParameterizedType).actualTypeArguments[1] as Class<*>
 
-        return json.asJsonArray.asSequence()
-            .map { element ->
-                context.deserialize<Any?>(
-                    element,
-                    if (genericArgType.isJsonPrimitive) genericArgType else element.asJsonObject.type
+        return json.asJsonObject.entrySet()
+            .associate { (k, v) ->
+                (if (k == "null") null else k) to context.deserialize<Any?>(
+                    v,
+                    genericKeyArgType
                 )
             }
-            .toList()
-            .toPersistentList()
-    }
-
-    override fun serialize(
-        src: PersistentList<*>,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
-    ): JsonElement = JsonArray().apply {
-        for (v in src) {
-            add(context.serialize(v))
-        }
     }
 
 }
-
-private inline val Class<*>.isJsonPrimitive: Boolean
-    get() = kotlin.javaPrimitiveType != null || this == String::class.java
-
-private inline val JsonObject.type: Class<*>
-    get() = Class.forName(this["@type"].asString)

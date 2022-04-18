@@ -22,31 +22,52 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.tea.core.debug.gson.serialization.serializer
+package io.github.xlopec.tea.core.debug.gson.serialization.data
 
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
-import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
+import kotlinx.collections.immutable.PersistentList
 
-internal object MapDeserializer : JsonDeserializer<Map<*, *>> {
+internal data class Container(val list: PersistentList<String>)
 
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type,
-        context: JsonDeserializationContext
-    ): Map<*, *> {
+internal data class PolyContainer(val list: PersistentList<Poly>)
 
-        val genericKeyArgType = (typeOfT as ParameterizedType).actualTypeArguments[1] as Class<*>
+internal interface Poly {
+    val property: String
+}
 
-        return json.asJsonObject.entrySet()
-            .associate { (k, v) ->
-                (if (k == "null") null else k) to context.deserialize<Any?>(
-                    v,
-                    genericKeyArgType
-                )
-            }
+internal class PolyB : Poly {
+    override val property: String = "b"
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as PolyB
+
+        if (property != other.property) return false
+
+        return true
     }
+
+    override fun hashCode(): Int {
+        return property.hashCode()
+    }
+}
+
+internal class PolyA : Poly {
+    override val property: String = "a"
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as PolyA
+
+        if (property != other.property) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return property.hashCode()
+    }
+
 
 }
