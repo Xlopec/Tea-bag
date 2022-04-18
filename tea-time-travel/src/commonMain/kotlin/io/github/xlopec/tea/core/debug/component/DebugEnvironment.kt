@@ -31,7 +31,7 @@ import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
 import io.github.xlopec.tea.core.debug.session.DebugSession
 import io.github.xlopec.tea.core.debug.session.SessionFactory
-import io.ktor.http.*
+import io.ktor.http.Url
 
 /**
  * Same as [environment][Env] but with extra settings

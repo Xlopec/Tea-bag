@@ -27,7 +27,6 @@ package io.github.xlopec.tea.core.debug.component.internal
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 internal fun <T> Flow<T>.mergeWith(

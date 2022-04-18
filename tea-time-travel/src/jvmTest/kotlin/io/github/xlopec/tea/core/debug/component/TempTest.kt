@@ -24,16 +24,23 @@
 
 package io.github.xlopec.tea.core.debug.component
 
-import io.github.xlopec.tea.core.*
-import io.github.xlopec.tea.core.debug.misc.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
-import kotlinx.coroutines.test.*
-import org.junit.Ignore
-import org.junit.Test
+import io.github.xlopec.tea.core.Component
+import io.github.xlopec.tea.core.Env
+import io.github.xlopec.tea.core.Initial
+import io.github.xlopec.tea.core.Initializer
+import io.github.xlopec.tea.core.Regular
+import io.github.xlopec.tea.core.ShareOptions
+import io.github.xlopec.tea.core.Snapshot
+import io.github.xlopec.tea.core.command
+import io.github.xlopec.tea.core.debug.misc.TestDebugEnv
+import io.github.xlopec.tea.core.debug.misc.TestEnv
+import io.github.xlopec.tea.core.debug.misc.messageAsCommand
+import io.github.xlopec.tea.core.debug.misc.throwingResolver
+import io.github.xlopec.tea.core.debug.misc.throwingUpdater
+import io.github.xlopec.tea.core.invoke
+import io.github.xlopec.tea.core.noCommand
+import io.github.xlopec.tea.core.toComponentFlow
+import io.github.xlopec.tea.core.with
 import kotlin.Long.Companion.MAX_VALUE
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -41,6 +48,35 @@ import kotlin.math.abs
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestResult
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
+import org.junit.Ignore
+import org.junit.Test
 
 class TempTest {
 

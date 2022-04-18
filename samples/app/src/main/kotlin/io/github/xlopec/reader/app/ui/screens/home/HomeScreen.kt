@@ -26,16 +26,29 @@
 
 package io.github.xlopec.reader.app.ui.screens.home
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.*
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Language
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.google.accompanist.insets.navigationBarsPadding
@@ -48,7 +61,11 @@ import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.article.list.RefreshArticles
 import io.github.xlopec.reader.app.feature.article.list.ScrollState
 import io.github.xlopec.reader.app.feature.article.list.SyncScrollPosition
-import io.github.xlopec.reader.app.feature.navigation.*
+import io.github.xlopec.reader.app.feature.navigation.NavigateToFavorite
+import io.github.xlopec.reader.app.feature.navigation.NavigateToFeed
+import io.github.xlopec.reader.app.feature.navigation.NavigateToSettings
+import io.github.xlopec.reader.app.feature.navigation.NavigateToTrending
+import io.github.xlopec.reader.app.feature.navigation.Navigation
 import io.github.xlopec.reader.app.misc.isException
 import io.github.xlopec.reader.app.misc.isPreview
 import io.github.xlopec.reader.app.misc.isRefreshing

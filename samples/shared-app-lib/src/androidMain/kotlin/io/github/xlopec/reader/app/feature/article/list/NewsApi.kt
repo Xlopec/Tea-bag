@@ -28,7 +28,7 @@ import android.app.Application
 import android.content.res.Configuration
 import android.os.Build
 import io.github.xlopec.reader.app.feature.network.NewsApiImpl
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.cio.CIO
 import java.util.Locale.ENGLISH
 
 fun NewsApi(

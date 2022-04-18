@@ -25,7 +25,8 @@
 package io.github.xlopec.reader.app.feature.network
 
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 private val DateParser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH)
 

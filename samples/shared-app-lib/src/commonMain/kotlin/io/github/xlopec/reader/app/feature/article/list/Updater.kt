@@ -27,7 +27,9 @@ package io.github.xlopec.reader.app.feature.article.list
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.domain.Article
 import io.github.xlopec.reader.app.domain.Filter
-import io.github.xlopec.reader.app.domain.FilterType.*
+import io.github.xlopec.reader.app.domain.FilterType.Favorite
+import io.github.xlopec.reader.app.domain.FilterType.Regular
+import io.github.xlopec.reader.app.domain.FilterType.Trending
 import io.github.xlopec.reader.app.domain.toggleFavorite
 import io.github.xlopec.reader.app.feature.article.list.Paging.Companion.FirstPage
 import io.github.xlopec.reader.app.misc.isPreview

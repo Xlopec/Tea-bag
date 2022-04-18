@@ -24,7 +24,6 @@
 
 package io.github.xlopec.reader.app
 
-import io.github.xlopec.reader.app.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch

@@ -27,11 +27,11 @@ package io.github.xlopec.tea.core.component
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.effect
 import io.github.xlopec.tea.core.noCommand
-import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.test.runTest
 
 internal class ComponentExtensionsTest {
 

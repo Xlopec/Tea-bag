@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
+import java.util.Locale
 import org.gradle.api.publish.maven.MavenPom
-import java.util.*
 
 fun MavenPom.configurePom(
     projectName: String,

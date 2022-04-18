@@ -31,7 +31,9 @@ import io.github.xlopec.reader.app.Log
 import io.github.xlopec.reader.app.Message
 import io.github.xlopec.reader.app.ScreenMessage
 import io.github.xlopec.reader.app.domain.Article
-import io.github.xlopec.reader.app.domain.FilterType.*
+import io.github.xlopec.reader.app.domain.FilterType.Favorite
+import io.github.xlopec.reader.app.domain.FilterType.Regular
+import io.github.xlopec.reader.app.domain.FilterType.Trending
 import io.github.xlopec.reader.app.feature.network.ArticleElement
 import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.storage.LocalStorage

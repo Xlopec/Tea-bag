@@ -28,11 +28,11 @@ package io.github.xlopec.reader.app
 
 import io.github.xlopec.reader.app.feature.navigation.floatGroup
 import io.github.xlopec.tea.data.RandomUUID
-import kotlinx.collections.immutable.persistentListOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
+import kotlinx.collections.immutable.persistentListOf
 
 class NavigationExtensionsTest {
 

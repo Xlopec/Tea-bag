@@ -30,8 +30,8 @@ import io.github.xlopec.reader.app.ScreenMessage
 import io.github.xlopec.reader.app.domain.Query
 import io.github.xlopec.reader.app.domain.Source
 import io.github.xlopec.reader.app.domain.SourceId
-import kotlinx.collections.immutable.ImmutableList
 import kotlin.jvm.JvmInline
+import kotlinx.collections.immutable.ImmutableList
 
 sealed interface FilterMessage : ScreenMessage {
     val id: ScreenId

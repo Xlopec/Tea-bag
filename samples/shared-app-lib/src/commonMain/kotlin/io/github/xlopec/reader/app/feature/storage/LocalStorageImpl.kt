@@ -24,9 +24,6 @@
 
 package io.github.xlopec.reader.app.feature.storage
 
-import io.github.xlopec.reader.app.storage.ArticlesQueries
-import io.github.xlopec.reader.app.storage.FiltersQueries
-import io.github.xlopec.reader.app.storage.RecentSearchesQueries
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set
@@ -46,6 +43,9 @@ import io.github.xlopec.reader.app.domain.Title
 import io.github.xlopec.reader.app.feature.article.list.Page
 import io.github.xlopec.reader.app.misc.mapNotNullToPersistentList
 import io.github.xlopec.reader.app.storage.AppDatabase
+import io.github.xlopec.reader.app.storage.ArticlesQueries
+import io.github.xlopec.reader.app.storage.FiltersQueries
+import io.github.xlopec.reader.app.storage.RecentSearchesQueries
 import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.UrlFor
 import io.github.xlopec.tea.data.fromMillis
