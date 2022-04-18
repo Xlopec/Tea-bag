@@ -64,7 +64,6 @@
     <ID>NewLineAtEndOfFile:Annotations.kt$io.github.xlopec.reader.app.Annotations.kt</ID>
     <ID>NewLineAtEndOfFile:ArticleDetailsModule.kt$io.github.xlopec.reader.app.feature.article.details.ArticleDetailsModule.kt</ID>
     <ID>NewLineAtEndOfFile:ComponentException.kt$io.github.xlopec.tea.core.misc.ComponentException.kt</ID>
-    <ID>NewLineAtEndOfFile:ComponentTest.kt$io.github.xlopec.tea.core.component.ComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:ComposeAnnotations.kt$io.github.xlopec.reader.app.ComposeAnnotations.kt</ID>
     <ID>NewLineAtEndOfFile:CompositionsLogger.kt$io.github.xlopec.reader.app.ui.misc.CompositionsLogger.kt</ID>
     <ID>NewLineAtEndOfFile:Date.kt$io.github.xlopec.tea.data.Date.kt</ID>
@@ -78,7 +77,6 @@
     <ID>NewLineAtEndOfFile:LiveArticleDetailsResolver.kt$io.github.xlopec.reader.app.feature.article.details.LiveArticleDetailsResolver.kt</ID>
     <ID>NewLineAtEndOfFile:LocalStorage.kt$io.github.xlopec.reader.app.feature.storage.LocalStorage.kt</ID>
     <ID>NewLineAtEndOfFile:LocalStorageImpl.kt$io.github.xlopec.reader.app.feature.storage.LocalStorageImpl.kt</ID>
-    <ID>NewLineAtEndOfFile:MockResponses.kt$com.max.reader.environment.MockResponses.kt</ID>
     <ID>NewLineAtEndOfFile:NavigationExtensionsTest.kt$io.github.xlopec.reader.app.NavigationExtensionsTest.kt</ID>
     <ID>NewLineAtEndOfFile:NewsApi.kt$io.github.xlopec.reader.app.feature.article.list.NewsApi.kt</ID>
     <ID>NewLineAtEndOfFile:PluginDependenciesSpecExt.kt$.PluginDependenciesSpecExt.kt</ID>
@@ -117,7 +115,7 @@
     <ID>UndocumentedPublicClass:Either.kt$Left&lt;L> : Either</ID>
     <ID>UndocumentedPublicClass:Either.kt$Right&lt;R> : Either</ID>
     <ID>UndocumentedPublicClass:ForeverWaitingResolver.kt$ForeverWaitingResolver&lt;T, M> : Resolver</ID>
-    <ID>UndocumentedPublicClass:Resolver.kt$ResolveCtx&lt;M></ID>
+    <ID>UndocumentedPublicClass:Resolver.kt$ResolveCtx&lt;in M></ID>
     <ID>UndocumentedPublicClass:TempTest.kt$ForeverWaitingResolver&lt;T></ID>
     <ID>UndocumentedPublicClass:TempTest.kt$TempTest</ID>
     <ID>UndocumentedPublicClass:UUID.kt$UUID</ID>

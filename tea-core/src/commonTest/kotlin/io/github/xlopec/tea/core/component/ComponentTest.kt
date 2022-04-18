@@ -143,7 +143,7 @@ class ComponentTest {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
-                CharResolver(),
+                ThrowingResolver(),
                 { m, _ -> m.toString().noCommand() }
             )
 
@@ -249,7 +249,7 @@ class ComponentTest {
             var invocations = 0
             val env = TestEnv<Char, String, Char>(
                 { invocations++; yield(); Initial("bar", setOf()) },
-                CharResolver(),
+                ThrowingResolver(),
                 { _, s -> s.noCommand() },
                 // SharingStarted.Lazily since in case of default option replay
                 // cache will be disposed immediately causing test to fail
@@ -299,7 +299,7 @@ class ComponentTest {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
-                CharResolver(),
+                ThrowingResolver(),
                 { m, _ -> m.toString().noCommand() }
             )
 
@@ -377,7 +377,7 @@ class ComponentTest {
 
         val component = Component(
             Initializer("", "a"),
-            StringResolver(),
+            ThrowingResolver<String>(),
             { m, s -> throw ComponentException("message=$m, state=$s") },
             scope
         )
@@ -398,10 +398,10 @@ class ComponentTest {
         val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
 
         val expectedException = RuntimeException("hello")
-        val component = Component<String, String, String>(
+        val component = Component(
             ThrowingInitializer(expectedException),
-            StringResolver(),
-            { m, s -> throw ComponentException("message=$m, state=$s") },
+            ThrowingResolver<String>(),
+            { _, s -> s },
             scope
         )
 
@@ -425,7 +425,7 @@ class ComponentTest {
             val mainThreadNamePrefix = async { currentThreadName() }
             val env = CoroutineScope(Default).TestEnv<Char, String, Char>(
                 Initializer(""),
-                CharResolver(),
+                ThrowingResolver(),
                 CheckingUpdater(mainThreadNamePrefix.await())
             )
 
@@ -465,14 +465,8 @@ private suspend fun Component<Char, String, Char>.collectRanged(
     messages: CharRange,
 ) = this(messages).take(messages.size + 1/*plus initial snapshot*/).collect()
 
-private fun StringResolver() = object : Resolver<String, String> {
-    override fun invoke(command: String, context: ResolveCtx<String>) {
-        throw ComponentException("Unexpected command $command")
-    }
-}
-
-private fun CharResolver() = object : Resolver<Char, Char> {
-    override fun invoke(command: Char, context: ResolveCtx<Char>) {
+private fun <T> ThrowingResolver() = object : Resolver<Any?, T> {
+    override fun invoke(command: Any?, context: ResolveCtx<T>) {
         throw ComponentException("Unexpected command $command")
     }
 }
