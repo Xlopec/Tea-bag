@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
 public typealias Resolver<C, M> = (command: C, context: ResolveCtx<M>) -> Unit
 
 // todo replace with multi receivers
-public data class ResolveCtx<M> internal constructor(
+public data class ResolveCtx<in M> internal constructor(
     public val sink: Sink<M>,
     public val scope: CoroutineScope,
 )
