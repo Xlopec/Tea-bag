@@ -18,14 +18,14 @@
 
 package com.oliynick.max.tea.core.debug.app
 
-import com.oliynick.max.tea.core.component.UpdateWith
-import com.oliynick.max.tea.core.component.command
 import com.oliynick.max.tea.core.debug.app.feature.notification.DoWarnUnacceptableMessage
 import com.oliynick.max.tea.core.debug.app.feature.notification.updateForNotification
 import com.oliynick.max.tea.core.debug.app.feature.presentation.updateForUiMessage
 import com.oliynick.max.tea.core.debug.app.feature.server.updateForServerMessage
 import com.oliynick.max.tea.core.debug.app.feature.storage.updateForStoreMessage
 import com.oliynick.max.tea.core.debug.app.state.State
+import io.github.xlopec.tea.core.Update
+import io.github.xlopec.tea.core.command
 
 fun AppUpdater(): AppUpdater = AppUpdaterImpl
 
@@ -34,7 +34,7 @@ private object AppUpdaterImpl : AppUpdater {
     override fun update(
         message: Message,
         state: State
-    ): UpdateWith<State, Command> =
+    ): Update<State, Command> =
         when (message) {
             is UIMessage -> updateForUiMessage(message, state)
             is NotificationMessage -> updateForNotification(message, state)
@@ -47,5 +47,5 @@ private object AppUpdaterImpl : AppUpdater {
 internal fun warnUnacceptableMessage(
     message: Message,
     state: State
-): UpdateWith<State, Command> =
+): Update<State, Command> =
     state command DoWarnUnacceptableMessage(message, state)

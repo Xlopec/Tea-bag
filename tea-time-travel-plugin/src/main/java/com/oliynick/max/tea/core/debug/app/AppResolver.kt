@@ -16,10 +16,13 @@
 
 package com.oliynick.max.tea.core.debug.app
 
+import io.github.xlopec.tea.core.ResolveCtx
+
 fun interface AppResolver<Env> {
 
-    suspend fun Env.resolve(
-        command: Command
-    ): Set<Message>
+    fun Env.resolve(
+        command: Command,
+        ctx: ResolveCtx<Message>
+    )
 
 }

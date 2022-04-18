@@ -38,7 +38,7 @@ tasks.withType<Test>().whenTaskAdded {
 
 kotlin {
 
-    optIn("kotlinx.serialization.ExperimentalSerializationApi", "com.oliynick.max.tea.core.ExperimentalTeaApi")
+    optIn("kotlinx.serialization.ExperimentalSerializationApi", "io.github.xlopec.tea.core.ExperimentalTeaApi")
 
     android()
 

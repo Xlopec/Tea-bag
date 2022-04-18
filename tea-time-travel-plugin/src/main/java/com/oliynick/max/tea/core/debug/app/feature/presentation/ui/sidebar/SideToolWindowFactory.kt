@@ -25,10 +25,6 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
-import com.oliynick.max.tea.core.component.Component
-import com.oliynick.max.tea.core.component.invoke
-import com.oliynick.max.tea.core.component.states
-import com.oliynick.max.tea.core.component.subscribeIn
 import com.oliynick.max.tea.core.debug.app.Command
 import com.oliynick.max.tea.core.debug.app.Environment
 import com.oliynick.max.tea.core.debug.app.Message
@@ -41,15 +37,25 @@ import com.oliynick.max.tea.core.debug.app.feature.server.StopServer
 import com.oliynick.max.tea.core.debug.app.misc.properties
 import com.oliynick.max.tea.core.debug.app.state.State
 import com.oliynick.max.tea.core.debug.app.state.Stopped
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import io.github.xlopec.tea.core.Component
+import io.github.xlopec.tea.core.ExperimentalTeaApi
+import io.github.xlopec.tea.core.invoke
+import io.github.xlopec.tea.core.states
+import io.github.xlopec.tea.core.subscribeIn
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.launch
 
 class SideToolWindowFactory : ToolWindowFactory, DumbAware {
 
+    @OptIn(ExperimentalTeaApi::class)
     override fun createToolWindowContent(
         project: Project,
         toolWindow: ToolWindow
