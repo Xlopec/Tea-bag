@@ -117,6 +117,6 @@ android {
 
 sqldelight {
     database("AppDatabase") {
-        packageName = "com.oliynick.max.reader.app.storage"
+        packageName = "io.github.xlopec.reader.app.storage"
     }
 }

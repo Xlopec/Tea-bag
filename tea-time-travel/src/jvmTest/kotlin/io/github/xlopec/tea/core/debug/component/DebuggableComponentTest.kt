@@ -27,16 +27,16 @@
 package io.github.xlopec.tea.core.debug.component
 
 /*import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.Env
-import com.oliynick.max.tea.core.Initial
-import com.oliynick.max.tea.core.Regular
-import com.oliynick.max.tea.core.Snapshot
-import com.oliynick.max.tea.core.component.Component
-import com.oliynick.max.tea.core.component.invoke
-import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentAttached
-import com.oliynick.max.tea.core.debug.gson.GsonNotifyComponentSnapshot
-import com.oliynick.max.tea.core.debug.misc.*
-import com.oliynick.max.tea.core.debug.session.WebSocketSession
+import io.github.xlopec.tea.core.Env
+import io.github.xlopec.tea.core.Initial
+import io.github.xlopec.tea.core.Regular
+import io.github.xlopec.tea.core.Snapshot
+import io.github.xlopec.tea.core.component.Component
+import io.github.xlopec.tea.core.component.invoke
+import io.github.xlopec.tea.core.debug.gson.GsonNotifyComponentAttached
+import io.github.xlopec.tea.core.debug.gson.GsonNotifyComponentSnapshot
+import io.github.xlopec.tea.core.debug.misc.*
+import io.github.xlopec.tea.core.debug.session.WebSocketSession
 import core.component.BasicComponentTest
 import core.scope.runBlockingInTestScope
 import io.kotlintest.matchers.boolean.shouldBeFalse

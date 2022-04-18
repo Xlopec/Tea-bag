@@ -25,7 +25,7 @@
 package io.github.xlopec.tea.core.debug.misc
 
 import com.google.gson.JsonElement
-import com.oliynick.max.tea.core.debug.gson.GsonNotifyServer
+import io.github.xlopec.tea.core.debug.gson.GsonNotifyServer
 import io.github.xlopec.tea.core.debug.session.DebugSession
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow

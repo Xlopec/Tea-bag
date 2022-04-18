@@ -24,7 +24,7 @@
 
 @file:Suppress("FunctionName")
 
-package com.oliynick.max.tea.core.debug.gson
+package io.github.xlopec.tea.core.debug.gson
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -38,7 +38,6 @@ import io.github.xlopec.tea.core.debug.protocol.NotifyComponentSnapshot
 import io.github.xlopec.tea.core.debug.protocol.NotifyServer
 import io.github.xlopec.tea.core.debug.protocol.ServerMessage
 import io.github.xlopec.tea.data.UUID
-import io.github.xlopec.tea.core.debug.gson.TypeAppenderAdapterFactory
 
 /**
  * Type alias a for Gson specific [ClientMessage]

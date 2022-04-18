@@ -45,7 +45,7 @@ android {
     compileSdk = 31
 
     defaultConfig {
-        applicationId = "com.oliinyk.max.news.reader"
+        applicationId = "io.github.xlopec.news.reader"
         minSdk = 21
         targetSdk = 31
         versionCode = 1
@@ -136,6 +136,7 @@ dependencies {
     implementation(libs.logging)
 
     testImplementation(project(":tea-data"))
+    androidTestImplementation(project(":tea-data"))
 
     androidTestImplementation(libs.android.test.runner)
     androidTestUtil(libs.android.test.orchestrator)
