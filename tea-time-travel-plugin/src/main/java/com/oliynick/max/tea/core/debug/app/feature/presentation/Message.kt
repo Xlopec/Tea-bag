@@ -3,7 +3,7 @@ package com.oliynick.max.tea.core.debug.app.feature.presentation
 import com.oliynick.max.tea.core.debug.app.UIMessage
 import com.oliynick.max.tea.core.debug.app.domain.FilterOption
 import com.oliynick.max.tea.core.debug.app.domain.SnapshotId
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 
 @JvmInline
 value class UpdateDebugSettings(

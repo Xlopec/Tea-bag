@@ -21,7 +21,7 @@ package com.oliynick.max.tea.core.debug.app.feature.notification
 import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.misc.*
 import com.oliynick.max.tea.core.debug.app.state.Stopped
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.types.shouldBeSameInstanceAs

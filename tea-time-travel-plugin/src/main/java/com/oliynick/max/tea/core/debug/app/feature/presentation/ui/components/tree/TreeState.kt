@@ -33,7 +33,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.oliynick.max.tea.core.debug.app.domain.*
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 
 // todo: consider bottom-up value tree modification
 // assumption TreeState <-> Value (isomorphic)

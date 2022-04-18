@@ -24,7 +24,7 @@ import com.oliynick.max.tea.core.debug.app.feature.server.DoApplyState
 import com.oliynick.max.tea.core.debug.app.misc.*
 import com.oliynick.max.tea.core.debug.app.state.Started
 import com.oliynick.max.tea.core.debug.app.state.component
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.matchers.collections.shouldContainExactly

@@ -34,11 +34,11 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import com.oliynick.max.tea.core.debug.protocol.ApplyMessage
-import com.oliynick.max.tea.core.debug.protocol.ApplyState
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import com.oliynick.max.tea.core.debug.protocol.NotifyComponentAttached
-import com.oliynick.max.tea.core.debug.protocol.NotifyComponentSnapshot
+import io.github.xlopec.tea.core.debug.protocol.ApplyMessage
+import io.github.xlopec.tea.core.debug.protocol.ApplyState
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.NotifyComponentAttached
+import io.github.xlopec.tea.core.debug.protocol.NotifyComponentSnapshot
 import io.github.xlopec.tea.data.UUID
 import io.github.xlopec.tea.data.toHumanReadable
 import java.lang.reflect.Type

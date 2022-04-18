@@ -3,7 +3,7 @@ package com.oliynick.max.tea.core.debug.app.feature.storage
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.oliynick.max.tea.core.debug.app.domain.ComponentDebugState
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch

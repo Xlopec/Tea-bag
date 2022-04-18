@@ -20,7 +20,7 @@ package com.oliynick.max.tea.core.debug.app.state
 
 import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
 import com.oliynick.max.tea.core.debug.gson.GsonClientMessage
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 
 interface Server {
 

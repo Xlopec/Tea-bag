@@ -28,9 +28,9 @@ import com.oliynick.max.tea.core.debug.app.feature.notification.ComponentAttache
 import com.oliynick.max.tea.core.debug.app.feature.notification.OperationException
 import com.oliynick.max.tea.core.debug.app.state.Server
 import com.oliynick.max.tea.core.debug.gson.*
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
-import com.oliynick.max.tea.core.debug.protocol.NotifyClient
-import com.oliynick.max.tea.core.debug.protocol.NotifyServer
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.NotifyClient
+import io.github.xlopec.tea.core.debug.protocol.NotifyServer
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*

@@ -56,7 +56,7 @@ import com.oliynick.max.tea.core.debug.app.feature.storage.ExportSessions
 import com.oliynick.max.tea.core.debug.app.feature.storage.ImportSession
 import com.oliynick.max.tea.core.debug.app.state.*
 import com.oliynick.max.tea.core.debug.app.state.State
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.Flow

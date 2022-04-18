@@ -22,39 +22,37 @@
  * SOFTWARE.
  */
 
-package com.oliynick.max.tea.core.debug.protocol
+@file:Suppress("unused")
+
+package io.github.xlopec.tea.core.debug.protocol
+
+import io.github.xlopec.tea.data.UUID
 
 /**
- * Represents messages that should be consumed by debug server
+ * Message that notifies a debug server about component's state changes
  *
- * @param J implementation specific json type
+ * @param messageId message identifier
+ * @param componentId component identifier
+ * @param payload payload that tells a debug server how to process this message
+ * @param J json specific implementation
  */
-public sealed interface ServerMessage<out J>
+public data class NotifyServer<out J>(
+    val messageId: UUID,
+    val componentId: ComponentId,
+    val payload: ServerMessage<J>,
+)
 
 /**
- * Represents message that informs server about state changes
+ * Message that tells a client to apply changes
  *
- * @param message message that was applied to debug component
- * @param oldState old component's state
- * @param newState new component's state
- * @param commands commands that were calculated by component
- * @param J implementation specific json type
+ * @param id message identifier
+ * @param component component identifier
+ * @param message payload that tells client how to process this message
+ * @param J json specific implementation
  */
-public data class NotifyComponentSnapshot<out J>(
-    val message: J,
-    val oldState: J,
-    val newState: J,
-    val commands: Set<J>,
-) : ServerMessage<J>
+public data class NotifyClient<out J>(
+    val id: UUID,
+    val component: ComponentId,
+    val message: ClientMessage<J>,
+)
 
-/**
- * Notifies that new component attached to debug server
- *
- * @param state current component's state
- * @param commands commands that were used to initialize component
- * @param J implementation specific json type
- */
-public data class NotifyComponentAttached<out J>(
-    val state: J,
-    val commands: Set<J>,
-) : ServerMessage<J>

@@ -22,7 +22,7 @@ import com.oliynick.max.tea.core.debug.app.domain.*
 import com.oliynick.max.tea.core.debug.app.state.Server
 import com.oliynick.max.tea.core.debug.app.state.Started
 import com.oliynick.max.tea.core.debug.gson.GsonClientMessage
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentMap

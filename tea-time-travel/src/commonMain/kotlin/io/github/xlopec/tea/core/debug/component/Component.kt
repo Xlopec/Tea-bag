@@ -33,6 +33,11 @@ import io.github.xlopec.tea.core.*
 import io.github.xlopec.tea.core.debug.component.internal.mergeWith
 import io.github.xlopec.tea.core.debug.session.*
 import io.ktor.http.*
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
+import io.github.xlopec.tea.core.debug.protocol.NotifyComponentAttached
+import io.github.xlopec.tea.core.debug.protocol.NotifyComponentSnapshot
+import io.github.xlopec.tea.core.debug.protocol.NotifyServer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.RENDEZVOUS

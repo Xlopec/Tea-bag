@@ -4,7 +4,7 @@ import com.oliynick.max.tea.core.debug.app.ServerCommand
 import com.oliynick.max.tea.core.debug.app.domain.ServerAddress
 import com.oliynick.max.tea.core.debug.app.domain.Value
 import com.oliynick.max.tea.core.debug.app.state.Server
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 
 @JvmInline
 value class DoStartServer(

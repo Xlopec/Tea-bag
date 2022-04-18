@@ -5,7 +5,7 @@ import com.oliynick.max.tea.core.debug.app.Message
 import com.oliynick.max.tea.core.debug.app.NotifyCommand
 import com.oliynick.max.tea.core.debug.app.PluginException
 import com.oliynick.max.tea.core.debug.app.state.State
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 
 data class DoNotifyOperationException(
     val exception: PluginException,

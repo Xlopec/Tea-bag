@@ -37,7 +37,7 @@ import com.oliynick.max.tea.core.debug.app.feature.presentation.ui.screens.compo
 import com.oliynick.max.tea.core.debug.app.misc.javaPsiFacade
 import com.oliynick.max.tea.core.debug.app.state.Started
 import com.oliynick.max.tea.core.debug.app.state.component
-import com.oliynick.max.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
