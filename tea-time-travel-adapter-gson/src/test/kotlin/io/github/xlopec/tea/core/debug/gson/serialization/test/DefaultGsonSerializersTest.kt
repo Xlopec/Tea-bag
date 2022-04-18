@@ -27,8 +27,8 @@ package io.github.xlopec.tea.core.debug.gson.serialization.test
 import com.google.gson.JsonNull
 import com.google.gson.JsonPrimitive
 import com.google.gson.reflect.TypeToken
-import com.oliynick.max.tea.core.debug.gson.Gson
-import com.oliynick.max.tea.core.debug.gson.GsonClientMessage
+import io.github.xlopec.tea.core.debug.gson.Gson
+import io.github.xlopec.tea.core.debug.gson.GsonClientMessage
 import io.github.xlopec.tea.core.debug.protocol.ApplyMessage
 import io.github.xlopec.tea.core.debug.protocol.ApplyState
 import io.github.xlopec.tea.core.debug.protocol.ClientMessage
@@ -40,10 +40,10 @@ import io.github.xlopec.tea.core.debug.protocol.NotifyServer
 import io.github.xlopec.tea.core.debug.protocol.ServerMessage
 import io.github.xlopec.tea.data.UUID
 import io.github.xlopec.tea.core.debug.gson.serialization.data.Singleton
-import io.oliynick.max.tea.core.data.Id
-import io.oliynick.max.tea.core.data.Name
-import io.oliynick.max.tea.core.data.Photo
-import io.oliynick.max.tea.core.data.User
+import io.github.xlopec.tea.data.Id
+import io.github.xlopec.tea.data.Name
+import io.github.xlopec.tea.data.Photo
+import io.github.xlopec.tea.data.User
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull

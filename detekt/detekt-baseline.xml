@@ -3,7 +3,7 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
-    <ID>ComplexMethod:Updater.kt$fun updateForUiMessage( message: UIMessage, state: State ): UpdateWith&lt;State, Command></ID>
+    <ID>ComplexMethod:Updater.kt$fun updateForUiMessage( message: UIMessage, state: State ): Update&lt;State, Command></ID>
     <ID>ConstructorParameterNaming:Transitions.kt$ChildTransitionState$val _contentAlpha: State&lt;Float></ID>
     <ID>ConstructorParameterNaming:Transitions.kt$ChildTransitionState$val _listItemOffsetY: State&lt;Dp></ID>
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _cornerRadius: State&lt;Dp></ID>
@@ -59,43 +59,47 @@
     <ID>MaxLineLength:AppTheme.kt$val secondaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant)</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
     <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>
-    <ID>NewLineAtEndOfFile:Adapters.kt$com.oliynick.max.reader.app.serialization.Adapters.kt</ID>
-    <ID>NewLineAtEndOfFile:AndroidAppComponent.kt$com.max.reader.app.AndroidAppComponent.kt</ID>
-    <ID>NewLineAtEndOfFile:Annotations.kt$com.oliynick.max.reader.app.Annotations.kt</ID>
-    <ID>NewLineAtEndOfFile:ArticleDetailsModule.kt$com.oliynick.max.reader.app.feature.article.details.ArticleDetailsModule.kt</ID>
-    <ID>NewLineAtEndOfFile:ComponentException.kt$com.oliynick.max.tea.core.misc.ComponentException.kt</ID>
-    <ID>NewLineAtEndOfFile:ComponentTest.kt$com.oliynick.max.tea.core.component.ComponentTest.kt</ID>
-    <ID>NewLineAtEndOfFile:ComposeAnnotations.kt$com.oliynick.max.reader.app.ComposeAnnotations.kt</ID>
-    <ID>NewLineAtEndOfFile:CompositionsLogger.kt$com.max.reader.app.ui.misc.CompositionsLogger.kt</ID>
+    <ID>NewLineAtEndOfFile:Adapters.kt$io.github.xlopec.reader.app.serialization.Adapters.kt</ID>
+    <ID>NewLineAtEndOfFile:AndroidAppComponent.kt$io.github.xlopec.reader.app.AndroidAppComponent.kt</ID>
+    <ID>NewLineAtEndOfFile:Annotations.kt$io.github.xlopec.reader.app.Annotations.kt</ID>
+    <ID>NewLineAtEndOfFile:ArticleDetailsModule.kt$io.github.xlopec.reader.app.feature.article.details.ArticleDetailsModule.kt</ID>
+    <ID>NewLineAtEndOfFile:ComponentException.kt$io.github.xlopec.tea.core.misc.ComponentException.kt</ID>
+    <ID>NewLineAtEndOfFile:ComponentTest.kt$io.github.xlopec.tea.core.component.ComponentTest.kt</ID>
+    <ID>NewLineAtEndOfFile:ComposeAnnotations.kt$io.github.xlopec.reader.app.ComposeAnnotations.kt</ID>
+    <ID>NewLineAtEndOfFile:CompositionsLogger.kt$io.github.xlopec.reader.app.ui.misc.CompositionsLogger.kt</ID>
     <ID>NewLineAtEndOfFile:Date.kt$io.github.xlopec.tea.data.Date.kt</ID>
-    <ID>NewLineAtEndOfFile:DebuggableComponentTest.kt$com.oliynick.max.tea.core.debug.component.DebuggableComponentTest.kt</ID>
+    <ID>NewLineAtEndOfFile:DebuggableComponentTest.kt$io.github.xlopec.tea.core.debug.component.DebuggableComponentTest.kt</ID>
     <ID>NewLineAtEndOfFile:Either.kt$io.github.xlopec.tea.data.Either.kt</ID>
-    <ID>NewLineAtEndOfFile:Environment.kt$com.oliynick.max.reader.app.Environment.kt</ID>
-    <ID>NewLineAtEndOfFile:ExportImportTest.kt$com.oliynick.max.tea.core.debug.app.feature.storage.ExportImportTest.kt</ID>
-    <ID>NewLineAtEndOfFile:IosAnnotations.kt$com.oliynick.max.reader.app.IosAnnotations.kt</ID>
-    <ID>NewLineAtEndOfFile:LiveArticleDetailsResolver.kt$com.oliynick.max.reader.app.feature.article.details.LiveArticleDetailsResolver.kt</ID>
-    <ID>NewLineAtEndOfFile:LocalStorage.kt$com.oliynick.max.reader.app.feature.storage.LocalStorage.kt</ID>
-    <ID>NewLineAtEndOfFile:LocalStorageImpl.kt$com.oliynick.max.reader.app.feature.storage.LocalStorageImpl.kt</ID>
+    <ID>NewLineAtEndOfFile:Env.kt$io.github.xlopec.tea.core.Env.kt</ID>
+    <ID>NewLineAtEndOfFile:Environment.kt$io.github.xlopec.reader.app.Environment.kt</ID>
+    <ID>NewLineAtEndOfFile:ExportImportTest.kt$io.github.xlopec.tea.core.debug.app.feature.storage.ExportImportTest.kt</ID>
+    <ID>NewLineAtEndOfFile:ForeverWaitingResolver.kt$io.github.xlopec.tea.core.misc.ForeverWaitingResolver.kt</ID>
+    <ID>NewLineAtEndOfFile:IosAnnotations.kt$io.github.xlopec.reader.app.IosAnnotations.kt</ID>
+    <ID>NewLineAtEndOfFile:LiveArticleDetailsResolver.kt$io.github.xlopec.reader.app.feature.article.details.LiveArticleDetailsResolver.kt</ID>
+    <ID>NewLineAtEndOfFile:LocalStorage.kt$io.github.xlopec.reader.app.feature.storage.LocalStorage.kt</ID>
+    <ID>NewLineAtEndOfFile:LocalStorageImpl.kt$io.github.xlopec.reader.app.feature.storage.LocalStorageImpl.kt</ID>
     <ID>NewLineAtEndOfFile:MockResponses.kt$com.max.reader.environment.MockResponses.kt</ID>
-    <ID>NewLineAtEndOfFile:NavigationExtensionsTest.kt$com.oliynick.max.reader.app.NavigationExtensionsTest.kt</ID>
-    <ID>NewLineAtEndOfFile:NewsApi.kt$com.oliynick.max.reader.app.feature.article.list.NewsApi.kt</ID>
+    <ID>NewLineAtEndOfFile:NavigationExtensionsTest.kt$io.github.xlopec.reader.app.NavigationExtensionsTest.kt</ID>
+    <ID>NewLineAtEndOfFile:NewsApi.kt$io.github.xlopec.reader.app.feature.article.list.NewsApi.kt</ID>
     <ID>NewLineAtEndOfFile:PluginDependenciesSpecExt.kt$.PluginDependenciesSpecExt.kt</ID>
-    <ID>NewLineAtEndOfFile:PopScreen.kt$com.oliynick.max.reader.app.feature.navigation.PopScreen.kt</ID>
-    <ID>NewLineAtEndOfFile:Screens.kt$com.oliynick.max.reader.app.Screens.kt</ID>
-    <ID>NewLineAtEndOfFile:Thread.kt$com.oliynick.max.tea.core.misc.Thread.kt</ID>
+    <ID>NewLineAtEndOfFile:PopScreen.kt$io.github.xlopec.reader.app.feature.navigation.PopScreen.kt</ID>
+    <ID>NewLineAtEndOfFile:Screens.kt$io.github.xlopec.reader.app.Screens.kt</ID>
+    <ID>NewLineAtEndOfFile:Snapshot.kt$io.github.xlopec.tea.core.Snapshot.kt</ID>
+    <ID>NewLineAtEndOfFile:Thread.kt$io.github.xlopec.tea.core.misc.Thread.kt</ID>
     <ID>NewLineAtEndOfFile:UUID.kt$io.github.xlopec.tea.data.UUID.kt</ID>
+    <ID>NewLineAtEndOfFile:Updater.kt$io.github.xlopec.tea.core.Updater.kt</ID>
     <ID>NewLineAtEndOfFile:Url.kt$io.github.xlopec.tea.data.Url.kt</ID>
     <ID>NewLineAtEndOfFile:build.gradle.kts$.build.gradle.kts</ID>
-    <ID>NewLineAtEndOfFile:currentThreadName.kt$com.oliynick.max.tea.core.misc.currentThreadName.kt</ID>
+    <ID>NewLineAtEndOfFile:currentThreadName.kt$io.github.xlopec.tea.core.misc.currentThreadName.kt</ID>
     <ID>NewLineAtEndOfFile:multiplatform-library.gradle.kts$.multiplatform-library.gradle.kts</ID>
     <ID>NewLineAtEndOfFile:publish-convention.gradle.kts$.publish-convention.gradle.kts</ID>
     <ID>NewLineAtEndOfFile:published-multiplatform-library.gradle.kts$.published-multiplatform-library.gradle.kts</ID>
     <ID>NewLineAtEndOfFile:settings.gradle.kts$.settings.gradle.kts</ID>
-    <ID>NewLineAtEndOfFile:toJson.kt$com.oliynick.max.reader.app.feature.network.toJson.kt</ID>
+    <ID>NewLineAtEndOfFile:toJson.kt$io.github.xlopec.reader.app.feature.network.toJson.kt</ID>
     <ID>TooGenericExceptionCaught:NettyServer.kt$e: Throwable</ID>
     <ID>TooGenericExceptionCaught:NewsApiImpl.kt$NewsApiImpl$th: Throwable</ID>
     <ID>TooManyFunctions:ComponentTest.kt$ComponentTest</ID>
-    <ID>TooManyFunctions:RenderExtensions.kt$com.oliynick.max.tea.core.debug.app.feature.presentation.ui.components.misc.RenderExtensions.kt</ID>
+    <ID>TooManyFunctions:RenderExtensions.kt$io.github.xlopec.tea.core.debug.app.feature.presentation.ui.components.misc.RenderExtensions.kt</ID>
     <ID>TooManyFunctions:TempTest.kt$TempTest</ID>
     <ID>UndocumentedPublicClass:ComponentException.kt$ComponentException : IllegalStateException</ID>
     <ID>UndocumentedPublicClass:ComponentLogic.kt$AddItem : Message</ID>
@@ -108,26 +112,22 @@
     <ID>UndocumentedPublicClass:ComponentLogic.kt$TodoState</ID>
     <ID>UndocumentedPublicClass:ComponentLogic.kt$Updated : Message</ID>
     <ID>UndocumentedPublicClass:ComponentTest.kt$ComponentTest</ID>
-    <ID>UndocumentedPublicClass:ComponentTest.kt$ForeverWaitingResolver&lt;T></ID>
     <ID>UndocumentedPublicClass:Date.kt$Date</ID>
     <ID>UndocumentedPublicClass:Either.kt$Either&lt;out L, out R></ID>
     <ID>UndocumentedPublicClass:Either.kt$Left&lt;L> : Either</ID>
     <ID>UndocumentedPublicClass:Either.kt$Right&lt;R> : Either</ID>
+    <ID>UndocumentedPublicClass:ForeverWaitingResolver.kt$ForeverWaitingResolver&lt;T, M> : Resolver</ID>
+    <ID>UndocumentedPublicClass:Resolver.kt$ResolveCtx&lt;M></ID>
     <ID>UndocumentedPublicClass:TempTest.kt$ForeverWaitingResolver&lt;T></ID>
     <ID>UndocumentedPublicClass:TempTest.kt$TempTest</ID>
     <ID>UndocumentedPublicClass:UUID.kt$UUID</ID>
     <ID>UndocumentedPublicClass:Url.kt$Url</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@Suppress("RedundantSuspendModifier") suspend fun &lt;C> throwingResolver( c: C, ): Nothing</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S, C> CoroutineScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> ignoringMessageAsStateUpdate( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;M, S></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> messageAsCommand( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, M></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;M, S> throwingUpdater( m: M, s: S, ): Nothing</ID>
-    <ID>UndocumentedPublicFunction:Component.kt$fun &lt;S> messageAsStateUpdate( message: S, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, S></ID>
-    <ID>UndocumentedPublicFunction:ComponentLogic.kt$fun testUpdate(message: Message, state: TodoState): UpdateWith&lt;TodoState, Command></ID>
+    <ID>UndocumentedPublicFunction:Component.kt$public suspend operator fun &lt;T> Sink&lt;T>.invoke( elements: Iterable&lt;T>, ): Unit</ID>
+    <ID>UndocumentedPublicFunction:ComponentLogic.kt$fun testUpdate(message: Message, state: TodoState): Update&lt;TodoState, Command></ID>
     <ID>UndocumentedPublicFunction:ComponentLogic.kt$suspend fun testResolver(cmd: Command): Set&lt;Message></ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when attaching interceptor to component then original sequence of snapshots pipes through it`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component given initializer throws exception then it's handled by coroutine scope`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component given updater throws exception then it's handled by coroutine scope`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component given initializer throws exception then it is handled by coroutine scope`()</ID>
+    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component given updater throws exception then it is handled by coroutine scope`()</ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when collecting component with specific dispatcher then updater runs on this dispatcher`()</ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers then component is initialized only once`()</ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component has multiple consumers then it can serve multiple message sources`()</ID>
@@ -136,8 +136,6 @@
     <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when component receives input then it emits correct sequence of snapshots`()</ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when subscriber disconnects then component initializer is re-invoked`()</ID>
     <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when upstream receives new input then previous downstream is canceled`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ForeverWaitingResolver$suspend fun resolveForever( t: T, ): Nothing</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$fun ThrowingInitializer( th: Throwable, ): Initializer&lt;Nothing, Nothing></ID>
     <ID>UndocumentedPublicFunction:Date.kt$public actual fun Date.toMillis(): Long</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public actual fun fromMillis( millis: Long ): Date</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public actual fun now(): Date</ID>
@@ -155,6 +153,10 @@
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L> Either( ifSuccess: () -> L, ): Either&lt;L, Throwable></ID>
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L> Left( ifSuccess: () -> L, ): Left&lt;L></ID>
     <ID>UndocumentedPublicFunction:FlowExtensions.kt$@Deprecated("Bad api") @InternalTeaApi public suspend fun &lt;T> Flow&lt;T>.into( sendChannel: SendChannel&lt;T> )</ID>
+    <ID>UndocumentedPublicFunction:Helpers.kt$fun &lt;M, S, C> CoroutineScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
+    <ID>UndocumentedPublicFunction:Resolver.kt$public infix fun &lt;M> ResolveCtx&lt;M>.effects( action: suspend () -> Set&lt;M>, ): Job</ID>
+    <ID>UndocumentedPublicFunction:Resolver.kt$public inline infix fun &lt;M> ResolveCtx&lt;M>.effect( crossinline action: suspend () -> M?, ): Job</ID>
+    <ID>UndocumentedPublicFunction:Resolver.kt$public inline infix fun &lt;M> ResolveCtx&lt;M>.sideEffect( crossinline action: suspend () -> Unit, ): Job</ID>
     <ID>UndocumentedPublicFunction:TempTest.kt$ForeverWaitingResolver$suspend fun resolveForever( t: T, ): Nothing</ID>
     <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when attaching interceptor to component, then original sequence of snapshots pipes through it`()</ID>
     <ID>UndocumentedPublicFunction:TempTest.kt$TempTest$@Test fun `when collecting component, given initializer throws exception, then it's handled by coroutine scope`()</ID>
@@ -171,10 +173,10 @@
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S, C> TestDebugEnv( env: Env&lt;M, S, C>, settings: Settings&lt;M, S, JsonElement> = TestSettings() )</ID>
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S, C> TestScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> TestSettings( componentId: ComponentId = TestComponentId, converter: JsonSerializer&lt;JsonElement> = GsonSerializer(), url: Url = Localhost, sessionFactory: SessionFactory&lt;M, S, JsonElement> = { _, block -> TestDebugSession&lt;M, S>().apply { block() } } )</ID>
-    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> ignoringMessageAsStateUpdate( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;M, S></ID>
-    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> messageAsCommand( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, M></ID>
+    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> ignoringMessageAsStateUpdate( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): Update&lt;M, S></ID>
+    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> messageAsCommand( message: M, @Suppress("UNUSED_PARAMETER") state: S, ): Update&lt;S, M></ID>
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> throwingUpdater( m: M, s: S, ): Nothing</ID>
-    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;S> messageAsStateUpdate( message: S, @Suppress("UNUSED_PARAMETER") state: S, ): UpdateWith&lt;S, S></ID>
+    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;S> messageAsStateUpdate( message: S, @Suppress("UNUSED_PARAMETER") state: S, ): Update&lt;S, S></ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public actual fun RandomUUID(): UUID</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public actual fun UUID.toHumanReadable(): String</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public actual fun UUIDFrom( value: String ): UUID</ID>
@@ -186,6 +188,7 @@
     <ID>UndocumentedPublicFunction:Url.kt$public actual fun UrlFor( s: String ): Url</ID>
     <ID>UndocumentedPublicFunction:Url.kt$public expect fun Url.toExternalValue(): String</ID>
     <ID>UndocumentedPublicFunction:Url.kt$public expect fun UrlFor( s: String ): Url</ID>
+    <ID>UndocumentedPublicProperty:Component.kt$@ExperimentalTeaApi public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
     <ID>UndocumentedPublicProperty:ComponentLogic.kt$AddItem$val item: Item</ID>
     <ID>UndocumentedPublicProperty:ComponentLogic.kt$DoAddItem$val item: Item</ID>
     <ID>UndocumentedPublicProperty:ComponentLogic.kt$DoAddItem$val to: List&lt;Item> = emptyList()</ID>
@@ -195,12 +198,13 @@
     <ID>UndocumentedPublicProperty:ComponentLogic.kt$RemoveItem$val item: Item</ID>
     <ID>UndocumentedPublicProperty:ComponentLogic.kt$TodoState$val items: List&lt;Item> = emptyList()</ID>
     <ID>UndocumentedPublicProperty:ComponentLogic.kt$Updated$val items: List&lt;Item></ID>
-    <ID>UndocumentedPublicProperty:ComponentTest.kt$ForeverWaitingResolver$val messages: ReceiveChannel&lt;T> = _messages</ID>
-    <ID>UndocumentedPublicProperty:ComponentTest.kt$const val TestTimeoutMillis = 10 * 1000L</ID>
-    <ID>UndocumentedPublicProperty:ComponentTest.kt$inline val CoroutineScope.job: Job get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")</ID>
     <ID>UndocumentedPublicProperty:Either.kt$Left$val value: L</ID>
     <ID>UndocumentedPublicProperty:Either.kt$Right$val value: R</ID>
-    <ID>UndocumentedPublicProperty:Environment.kt$@ExperimentalTeaApi public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
+    <ID>UndocumentedPublicProperty:ForeverWaitingResolver.kt$ForeverWaitingResolver$val messages: ReceiveChannel&lt;T> = _messages</ID>
+    <ID>UndocumentedPublicProperty:Helpers.kt$const val TestTimeoutMillis = 10 * 1000L</ID>
+    <ID>UndocumentedPublicProperty:Helpers.kt$inline val CoroutineScope.job: Job get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")</ID>
+    <ID>UndocumentedPublicProperty:Resolver.kt$ResolveCtx$public val scope: CoroutineScope</ID>
+    <ID>UndocumentedPublicProperty:Resolver.kt$ResolveCtx$public val sink: Sink&lt;M></ID>
     <ID>UndocumentedPublicProperty:TempTest.kt$ForeverWaitingResolver$val messages: ReceiveChannel&lt;T> = _messages</ID>
     <ID>UndocumentedPublicProperty:TempTest.kt$const val TestTimeoutMillis = 10 * 1000L</ID>
     <ID>UndocumentedPublicProperty:TempTest.kt$inline val CoroutineScope.job: Job get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")</ID>

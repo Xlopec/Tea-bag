@@ -23,7 +23,7 @@
   ~ SOFTWARE.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.oliynick.max.reader">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="io.github.xlopec.reader">
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />

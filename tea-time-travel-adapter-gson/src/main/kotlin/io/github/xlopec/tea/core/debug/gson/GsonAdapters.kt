@@ -24,7 +24,7 @@
 
 @file:Suppress("UNCHECKED_CAST", "FunctionName")
 
-package com.oliynick.max.tea.core.debug.gson
+package io.github.xlopec.tea.core.debug.gson
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonDeserializationContext

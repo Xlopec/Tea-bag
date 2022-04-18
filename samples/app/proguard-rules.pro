@@ -99,7 +99,7 @@
 -keep class androidx.compose.runtime.Stable { *; }
 
 # FIXME R8 full mode works only if we're keeping everything from network module as is
-#-keep class com.oliynick.max.reader.network.** { *; }
+#-keep class io.github.xlopec.reader.network.** { *; }
 
 -assumenosideeffects public class androidx.compose.runtime.ComposerKt {
       boolean isTraceInProgress();

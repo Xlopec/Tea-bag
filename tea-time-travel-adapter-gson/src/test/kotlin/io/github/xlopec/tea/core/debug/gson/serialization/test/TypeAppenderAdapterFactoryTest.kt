@@ -24,7 +24,7 @@
 
 package io.github.xlopec.tea.core.debug.gson.serialization.test
 
-import com.oliynick.max.tea.core.debug.gson.Gson
+import io.github.xlopec.tea.core.debug.gson.Gson
 import io.github.xlopec.tea.core.debug.gson.serialization.data.A
 import io.github.xlopec.tea.core.debug.gson.serialization.data.Container
 import io.github.xlopec.tea.core.debug.gson.serialization.data.D
