@@ -37,7 +37,7 @@ import io.github.xlopec.tea.core.debug.component.Component
 import io.github.xlopec.tea.core.debug.gson.GsonSerializer
 import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
-import io.ktor.http.*
+import io.ktor.http.Url
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
 

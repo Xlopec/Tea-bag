@@ -29,12 +29,12 @@ import io.github.xlopec.tea.core.debug.protocol.ApplyMessage
 import io.github.xlopec.tea.core.debug.protocol.ClientMessage
 import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.core.debug.protocol.NotifyClient
-import io.kotlintest.shouldBe
 import io.github.xlopec.tea.data.Avatar
 import io.github.xlopec.tea.data.Id
 import io.github.xlopec.tea.data.Name
 import io.github.xlopec.tea.data.Photo
 import io.github.xlopec.tea.data.User
+import io.kotlintest.shouldBe
 import java.io.File
 import java.io.FileReader
 import java.util.UUID
