@@ -24,4 +24,4 @@
 
 package io.github.xlopec.tea.core.misc
 
-internal actual fun currentThreadName(): String = Thread.currentThread().name
+actual fun currentThreadName(): String = Thread.currentThread().name

@@ -24,4 +24,4 @@
 
 package io.github.xlopec.tea.core.misc
 
-internal expect fun currentThreadName(): String
+expect fun currentThreadName(): String
