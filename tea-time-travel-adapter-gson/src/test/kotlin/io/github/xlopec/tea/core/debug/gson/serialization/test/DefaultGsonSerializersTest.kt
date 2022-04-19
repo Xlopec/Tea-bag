@@ -29,6 +29,7 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.reflect.TypeToken
 import io.github.xlopec.tea.core.debug.gson.Gson
 import io.github.xlopec.tea.core.debug.gson.GsonClientMessage
+import io.github.xlopec.tea.core.debug.gson.serialization.data.Singleton
 import io.github.xlopec.tea.core.debug.protocol.ApplyMessage
 import io.github.xlopec.tea.core.debug.protocol.ApplyState
 import io.github.xlopec.tea.core.debug.protocol.ClientMessage
@@ -38,11 +39,10 @@ import io.github.xlopec.tea.core.debug.protocol.NotifyComponentAttached
 import io.github.xlopec.tea.core.debug.protocol.NotifyComponentSnapshot
 import io.github.xlopec.tea.core.debug.protocol.NotifyServer
 import io.github.xlopec.tea.core.debug.protocol.ServerMessage
-import io.github.xlopec.tea.data.UUID
-import io.github.xlopec.tea.core.debug.gson.serialization.data.Singleton
 import io.github.xlopec.tea.data.Id
 import io.github.xlopec.tea.data.Name
 import io.github.xlopec.tea.data.Photo
+import io.github.xlopec.tea.data.UUID
 import io.github.xlopec.tea.data.User
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
