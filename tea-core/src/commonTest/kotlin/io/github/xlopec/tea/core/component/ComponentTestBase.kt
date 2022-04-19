@@ -1,28 +1,4 @@
-/*
- * MIT License
- *
- * Copyright (c) 2022. Maksym Oliinyk.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
-package io.github.xlopec.tea.core.debug.component
+package io.github.xlopec.tea.core.component
 
 import io.github.xlopec.tea.core.Component
 import io.github.xlopec.tea.core.Env
@@ -32,67 +8,58 @@ import io.github.xlopec.tea.core.Regular
 import io.github.xlopec.tea.core.ShareOptions
 import io.github.xlopec.tea.core.Snapshot
 import io.github.xlopec.tea.core.command
-import io.github.xlopec.tea.core.debug.misc.TestDebugEnv
-import io.github.xlopec.tea.core.debug.misc.TestEnv
-import io.github.xlopec.tea.core.debug.misc.messageAsCommand
-import io.github.xlopec.tea.core.debug.misc.throwingResolver
-import io.github.xlopec.tea.core.debug.misc.throwingUpdater
+import io.github.xlopec.tea.core.effects
 import io.github.xlopec.tea.core.invoke
+import io.github.xlopec.tea.core.misc.CheckingUpdater
+import io.github.xlopec.tea.core.misc.ComponentException
+import io.github.xlopec.tea.core.misc.ForeverWaitingResolver
+import io.github.xlopec.tea.core.misc.NoOpResolver
+import io.github.xlopec.tea.core.misc.TestEnv
+import io.github.xlopec.tea.core.misc.ThrowingInitializer
+import io.github.xlopec.tea.core.misc.ThrowingResolver
+import io.github.xlopec.tea.core.misc.collectRanged
+import io.github.xlopec.tea.core.misc.currentThreadName
+import io.github.xlopec.tea.core.misc.runTestCancellingChildren
+import io.github.xlopec.tea.core.misc.size
 import io.github.xlopec.tea.core.noCommand
-import io.github.xlopec.tea.core.toComponentFlow
 import io.github.xlopec.tea.core.with
-import kotlin.Long.Companion.MAX_VALUE
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.math.abs
+import kotlin.test.Ignore
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
-import org.junit.Ignore
-import org.junit.Test
 
-class TempTest {
-
-    private val factory: (Env<Char, String, Char>) -> Component<Char, String, Char> = {
-        Component(TestDebugEnv(it))
-    }
+abstract class ComponentTestBase(
+    val factory: (env: Env<Char, String, Char>) -> Component<Char, String, Char>
+) {
 
     @Test
-    fun `when subscriber disconnects, then component initializer is re-invoked`() =
+    fun `when subscriber disconnects then component initializer is re-invoked`() =
         runTestCancellingChildren {
 
             var counter = 0
             val initial = Initial<String, Char>("", setOf())
-            val env = TestEnv<Char, String, Char>(
+            val env = TestEnv(
                 { counter++; initial },
-                ::noOpResolver,
+                NoOpResolver(),
                 { m, str -> (str + m).command(m) },
             )
 
@@ -105,49 +72,14 @@ class TempTest {
             assertEquals(2, counter, "Counter should be equal 2")
         }
 
-    @Test
-    fun `when upstream receives new input, then previous downstream is canceled`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
-
-            val env = TestEnv<Char, String, Char>(
-                Initializer(""),
-                ::noOpResolver,
-                ::messageAsCommand
-            )
-
-            val lastInitial = Initial("b", setOf('e'))
-
-            val initialStates = listOf(
-                Initial("", setOf('c')),
-                Initial("a", setOf('d')),
-                lastInitial
-            )
-
-            fun testInput(
-                input: Initial<String, Char>,
-            ) = input.commands.asFlow()
-                .onStart {
-                    if (input !== initialStates.last()) {
-                        delay(MAX_VALUE)
-                    }
-                }
-
-            val actualStates = env.toComponentFlow(initialStates.asFlow(), ::noOpSink, ::testInput)
-                .toList()
-
-            val (state, commands) = lastInitial
-            val expectedStates = initialStates + Regular(state, commands, state, commands.first())
-
-            assertContentEquals(expectedStates, actualStates)
-        }
 
     @Test
-    fun `when component receives input, then it emits correct sequence of snapshots`() =
+    fun `when component receives input then it emits correct sequence of snapshots`() =
         runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
-                ::throwingResolver,
+                ThrowingResolver(),
                 { m, _ -> m.toString().noCommand() }
             )
 
@@ -164,14 +96,14 @@ class TempTest {
         }
 
     @Test
-    fun `when component receives input, given recursive calculations, then it emits correct sequence of snapshots`() =
+    fun `when component receives input given recursive calculations then it emits correct sequence of snapshots`() =
         runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
-                { ch ->
+                { ch, ctx ->
                     // only message 'b' should be consumed
-                    if (ch == 'a') ('b'..'d').toSet() else setOf()
+                    ctx effects { if (ch == 'a') ('b'..'d').toSet() else setOf() }
                 },
                 { m, str -> (str + m).command(m) }
             )
@@ -187,12 +119,12 @@ class TempTest {
         }
 
     @Test
-    fun `when attaching interceptor to component, then original sequence of snapshots pipes through it`() =
+    fun `when attaching interceptor to component then original sequence of snapshots pipes through it`() =
         runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
-                { c -> setOf(c) },
+                { c, ctx -> ctx effects { setOf(c) } },
                 { m, _ -> m.toString().noCommand() },
             )
 
@@ -206,17 +138,19 @@ class TempTest {
         }
 
     @Test
-    fun `when component has multiple consumers, then snapshots are shared among them`() =
+    fun `when component has multiple consumers then snapshots are shared among them`() =
         runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
-                { ch ->
-                    if (ch == 'a') setOf(
-                        ch + 1,// only this message should be consumed
-                        ch + 2,
-                        ch + 3
-                    ) else setOf()
+                { ch, ctx ->
+                    ctx effects {
+                        if (ch == 'a') setOf(
+                            ch + 1,// only this message should be consumed
+                            ch + 2,
+                            ch + 3
+                        ) else setOf()
+                    }
                 },
                 { m, str -> (str + m).command(m) }
             )
@@ -245,17 +179,17 @@ class TempTest {
         }
 
     @Test
-    fun `when component has multiple consumers, then component is initialized only once`() =
+    fun `when component has multiple consumers then component is initialized only once`() =
         runTestCancellingChildren {
 
             var invocations = 0
             val env = TestEnv<Char, String, Char>(
                 { invocations++; yield(); Initial("bar", setOf()) },
-                ::throwingResolver,
+                ThrowingResolver(),
                 { _, s -> s.noCommand() },
                 // SharingStarted.Lazily since in case of default option replay
                 // cache will be disposed immediately causing test to fail
-                shareOptions = ShareOptions(Lazily, 1U)
+                shareOptions = ShareOptions(SharingStarted.Lazily, 1U)
             )
 
             val component = factory(env)
@@ -276,11 +210,11 @@ class TempTest {
     fun `test component's job gets canceled properly`() =
         runTestCancellingChildren {
 
-            val resolver = ForeverWaitingResolver<Char>()
+            val resolver = ForeverWaitingResolver<Char, Char>()
             val env = TestEnv(
                 Initializer(""),
-                resolver::resolveForever,
-                ::messageAsCommand
+                resolver,
+                { message, state -> state command message }
             )
 
             val messages = 'a'..'z'
@@ -296,12 +230,12 @@ class TempTest {
         }
 
     @Test
-    fun `when component has multiple consumers, then it can serve multiple message sources`() =
+    fun `when component has multiple consumers then it can serve multiple message sources`() =
         runTestCancellingChildren {
 
             val env = TestEnv<Char, String, Char>(
                 Initializer(""),
-                ::throwingResolver,
+                ThrowingResolver(),
                 { m, _ -> m.toString().noCommand() }
             )
 
@@ -352,38 +286,37 @@ class TempTest {
             val actualSnapshots2 = snapshots2Deferred.await()
             // performance gain is miserable for this case
             @Suppress("ConvertArgumentToSet")
-            assertContentEquals(
-                expectedSnapshots, actualSnapshots1, """
+            (assertContentEquals(
+        expectedSnapshots, actualSnapshots1, """
             snapshots1: $actualSnapshots1
             snapshots2: $actualSnapshots2
             expected: $expectedSnapshots
             diff: ${expectedSnapshots - actualSnapshots1}
             """.trimIndent()
-            )
+    ))
 
             // performance gain is miserable for this case
             @Suppress("ConvertArgumentToSet")
-            assertContentEquals(
-                expectedSnapshots, actualSnapshots2, """
+            (assertContentEquals(
+        expectedSnapshots, actualSnapshots2, """
             snapshots1: $actualSnapshots1
             snapshots2: $actualSnapshots2
             expected: $expectedSnapshots
             diff: ${expectedSnapshots - actualSnapshots2}
             """.trimIndent()
-            )
+    ))
         }
 
     @Test
-    fun `when collecting component, given updater throws exception, then it's handled by coroutine scope`() {
+    fun `when collecting component given updater throws exception then it is handled by coroutine scope`() {
         val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
 
-        val testEnv = scope.TestEnv<String, String, String>(
+        val component = Component(
             Initializer("", "a"),
-            ::throwingResolver,
-            ::throwingUpdater,
+            ThrowingResolver<String>(),
+            { m, s -> throw ComponentException("message=$m, state=$s") },
+            scope
         )
-
-        val component = Component(TestDebugEnv(testEnv))
 
         val job = scope.launch { component("").collect() }
 
@@ -396,19 +329,20 @@ class TempTest {
     }
 
     @Test
-    fun `when collecting component, given initializer throws exception, then it's handled by coroutine scope`() {
+    fun `when collecting component given initializer throws exception then it is handled by coroutine scope`() {
 
         val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
 
         val expectedException = RuntimeException("hello")
 
-        val testEnv = scope.TestEnv<String, String, String>(
-            ThrowingInitializer(expectedException),
-            ::throwingResolver,
-            ::throwingUpdater,
+        val component = Component(
+            Env<String, Nothing, Nothing>(
+                initializer = ThrowingInitializer(expectedException),
+                resolver = ThrowingResolver(),
+                updater = { _, s -> s },
+                scope = scope
+            )
         )
-
-        val component = Component(TestDebugEnv(testEnv))
 
         val job = scope.launch { component("").collect() }
 
@@ -422,76 +356,18 @@ class TempTest {
         assertTrue(!scope.isActive)
     }
 
-}
+    @Test
+    fun `when collecting component with specific dispatcher then updater runs on this dispatcher`() =
+        runTestCancellingChildren {
+            // All test schedulers use 'Test worker' as prefix, so to workaround this issue we use
+            // custom dispatcher with different thread naming strategy
+            val mainThreadNamePrefix = async { currentThreadName() }
+            val env = CoroutineScope(Dispatchers.Default).TestEnv<Char, String, Char>(
+                Initializer(""),
+                ThrowingResolver(),
+                CheckingUpdater(mainThreadNamePrefix.await())
+            )
 
-@Suppress("UNUSED_PARAMETER")
-private fun <T> noOpSink(t: T) = Unit
-
-fun ThrowingInitializer(
-    th: Throwable,
-): Initializer<Nothing, Nothing> = { throw th }
-
-/*private fun <M, S> CheckingUpdater(
-    mainThreadName: String,
-): Updater<M, S, Nothing> = { _, s ->
-
-    val actualThreadNamePrefix = currentThreadName().replaceAfterLast('@', "")
-    val mainThreadNamePrefix = mainThreadName.replaceAfterLast('@', "")
-
-    assertNotEquals(mainThreadNamePrefix, actualThreadNamePrefix)
-
-    s.noCommand()
-}*/
-
-@Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
-private suspend fun <T> noOpResolver(
-    m: T,
-): Set<Nothing> = setOf()
-
-class ForeverWaitingResolver<T> {
-
-    private val _messages = Channel<T>()
-
-    val messages: ReceiveChannel<T> = _messages
-
-    suspend fun resolveForever(
-        t: T,
-    ): Nothing {
-
-        try {
-            delay(MAX_VALUE)
-        } finally {
-            withContext(NonCancellable) {
-                _messages.send(t)
-            }
+            factory(env)('a'..'d').take('d' - 'a').collect()
         }
-
-        error("Improper cancellation, message=$t")
-    }
 }
-
-private val CharRange.size: Int
-    get() = 1 + abs(last - first)
-
-const val TestTimeoutMillis = 10 * 1000L
-
-/**
- * Same as [runTest] but cancels child jobs before leaving test.
- * This is useful when testing running [Component] since component's upstream doesn't get
- * destroyed until host scope is canceled
- */
-fun runTestCancellingChildren(
-    context: CoroutineContext = EmptyCoroutineContext,
-    dispatchTimeoutMs: Long = TestTimeoutMillis,
-    testBody: suspend TestScope.() -> Unit
-): TestResult = runTest(context, dispatchTimeoutMs) {
-    testBody()
-    job.cancelChildren()
-}
-
-inline val CoroutineScope.job: Job
-    get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")
-
-private suspend fun Component<Char, String, Char>.collectRanged(
-    messages: CharRange,
-) = this(messages).take(messages.size + 1/*plus initial snapshot*/).collect()

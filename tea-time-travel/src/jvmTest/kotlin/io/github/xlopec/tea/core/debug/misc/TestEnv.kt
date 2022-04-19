@@ -32,10 +32,7 @@ import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.Resolver
 import io.github.xlopec.tea.core.ShareOptions
 import io.github.xlopec.tea.core.ShareStateWhileSubscribed
-import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.Updater
-import io.github.xlopec.tea.core.command
-import io.github.xlopec.tea.core.debug.component.ComponentException
 import io.github.xlopec.tea.core.debug.component.DebugEnv
 import io.github.xlopec.tea.core.debug.component.Settings
 import io.github.xlopec.tea.core.debug.gson.GsonSerializer
@@ -43,9 +40,7 @@ import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
 import io.github.xlopec.tea.core.debug.session.Localhost
 import io.github.xlopec.tea.core.debug.session.SessionFactory
-import io.github.xlopec.tea.core.noCommand
 import io.ktor.http.Url
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.test.TestScope
 
 val TestComponentId = ComponentId("test")
@@ -66,7 +61,7 @@ fun <M, S> TestSettings(
     sessionFactory
 )
 
-fun <M, S, C> TestScope.TestEnv(
+fun <M, S, C> TestScope.TestBaseEnv(
     initializer: Initializer<S, C>,
     resolver: Resolver<C, M>,
     updater: Updater<M, S, C>,
@@ -86,38 +81,3 @@ fun <M, S, C> TestDebugEnv(
     env,
     settings
 )
-
-@OptIn(ExperimentalStdlibApi::class)
-val TestScope.coroutineDispatcher: CoroutineDispatcher
-    get() = coroutineContext[CoroutineDispatcher.Key]!!
-
-@Suppress("RedundantSuspendModifier")
-suspend fun <C> throwingResolver(
-    c: C,
-): Nothing =
-    throw ComponentException("Unexpected command $c")
-
-fun <M, S> throwingUpdater(
-    m: M,
-    s: S,
-): Nothing =
-    throw ComponentException("message=$m, state=$s")
-
-fun <S> messageAsStateUpdate(
-    message: S,
-    @Suppress("UNUSED_PARAMETER") state: S,
-): Update<S, S> =
-    message.noCommand()
-
-fun <M, S> messageAsCommand(
-    message: M,
-    @Suppress("UNUSED_PARAMETER") state: S,
-): Update<S, M> =
-    state command message
-
-fun <M, S> ignoringMessageAsStateUpdate(
-    message: M,
-    @Suppress("UNUSED_PARAMETER") state: S,
-): Update<M, S> =
-    message.noCommand()
-

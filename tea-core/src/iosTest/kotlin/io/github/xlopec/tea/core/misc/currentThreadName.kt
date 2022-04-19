@@ -26,4 +26,4 @@ package io.github.xlopec.tea.core.misc
 
 import platform.Foundation.NSThread
 
-internal actual fun currentThreadName(): String = NSThread.currentThread.toString()
+actual fun currentThreadName(): String = NSThread.currentThread.toString()

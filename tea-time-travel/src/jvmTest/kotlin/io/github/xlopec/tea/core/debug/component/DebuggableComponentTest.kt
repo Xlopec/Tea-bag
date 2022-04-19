@@ -22,192 +22,128 @@
  * SOFTWARE.
  */
 
-@file:Suppress("TestFunctionName")
-
 package io.github.xlopec.tea.core.debug.component
 
-/*import com.google.gson.JsonElement
+import com.google.gson.JsonElement
 import io.github.xlopec.tea.core.Env
 import io.github.xlopec.tea.core.Initial
+import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.Regular
-import io.github.xlopec.tea.core.Snapshot
-import io.github.xlopec.tea.core.component.Component
-import io.github.xlopec.tea.core.component.invoke
+import io.github.xlopec.tea.core.component.ComponentTestBase
 import io.github.xlopec.tea.core.debug.gson.GsonNotifyComponentAttached
 import io.github.xlopec.tea.core.debug.gson.GsonNotifyComponentSnapshot
-import io.github.xlopec.tea.core.debug.misc.*
-import io.github.xlopec.tea.core.debug.session.WebSocketSession
-import core.component.BasicComponentTest
-import core.scope.runBlockingInTestScope
-import io.kotlintest.matchers.boolean.shouldBeFalse
-import io.kotlintest.matchers.boolean.shouldBeTrue
-import io.kotlintest.matchers.collections.shouldContainExactly
-import io.kotlintest.matchers.numerics.shouldBeExactly
-import io.kotlintest.matchers.numerics.shouldNotBeExactly
-import io.kotlintest.matchers.types.shouldBeTypeOf
-import io.kotlintest.matchers.types.shouldNotBeNull
-import io.kotlintest.matchers.withClue
-import io.kotlintest.shouldBe
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
-import org.junit.Ignore
+import io.github.xlopec.tea.core.debug.misc.TestComponentId
+import io.github.xlopec.tea.core.debug.misc.TestDebugEnv
+import io.github.xlopec.tea.core.debug.misc.TestDebugSession
+import io.github.xlopec.tea.core.debug.misc.TestSerializer
+import io.github.xlopec.tea.core.debug.misc.TestSettings
+import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
+import io.github.xlopec.tea.core.invoke
+import io.github.xlopec.tea.core.misc.ThrowingResolver
+import io.github.xlopec.tea.core.misc.runTestCancellingChildren
+import io.github.xlopec.tea.core.noCommand
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toCollection
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
-import java.net.ConnectException
 
-public typealias StringSnapshot = Snapshot<String, String, String>
+class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEnv(env)) }) {
 
-@RunWith(JUnit4::class)
-@OptIn(InternalCoroutinesApi::class)
-@Ignore("Ignored due to https://youtrack.jetbrains.com/issue/KT-47195")
-internal class DebuggableComponentTest : BasicComponentTest(::ComponentFactory) {
+    @Test
+    fun `test debuggable component throws expected exception when it can't connect to a server`() {
+        runTestCancellingChildren {
+            val exceptions = mutableListOf<Throwable>()
+            val env = Env<Char, String, Char>(
+                Initializer(""),
+                ThrowingResolver(),
+                { m, _ -> m.toString().noCommand() },
+                CoroutineScope(Job() + CoroutineExceptionHandler { _, th -> exceptions += th })
+            )
 
-    private companion object {
+            runCatching {
 
-        fun ComponentFactory(
-            @Suppress("UNUSED_PARAMETER") scope: CoroutineScope,
-            env: Env<Char, String, Char>,
-        ): Component<Char, String, Char> = Component(TestDebugEnv(env = env))
+                val component = Component(
+                    TestDebugEnv(
+                        env = env,
+                        settings = TestSettings(sessionFactory = { _, _ -> throw ComponentException("Couldn't connect to debug server") })
+                    )
+                )
+                val job = env.scope.launch { component(flowOf('a')).collect() }
+
+                job.join()
+            }
+
+            assertFalse(env.scope.isActive)
+            assertTrue(exceptions.isNotEmpty())
+            assertIs<ComponentException>(exceptions.first())
+        }
     }
 
     @Test
-    fun `test debuggable component throws expected exception when it can't connect to a server`() =
-        runBlockingInTestScope {
-
-            val env = TestEnv()
-
-            val component = Component(
-                TestDebugEnv(
-                    env = env,
-                    serverSettings = TestServerSettings(sessionBuilder = ::WebSocketSession)
-                )
-            )
-
-            val job = env.scope.launch { component("a").collect() }
-
-            job.join()
-            job.isCancelled.shouldBeTrue()
-
-            val th = job.getCancellationException().cause
-
-            withClue("Cancellation cause $th") {
-                th.shouldNotBeNull()
-                th.shouldBeTypeOf<ConnectException>()
-            }
-
-            env.scope.isActive.shouldBeFalse()
-        }
-
-    @Test
     fun `test debuggable component sends the same sequence of events as the original component`() =
-        runBlockingInTestScope {
+        runTestCancellingChildren {
 
-            val testSession = TestDebugSession<String, String>()
+            val testSession = TestDebugSession<Char, String>()
             val component = Component(
                 TestDebugEnv(
-                    env = TestEnv(),
-                    serverSettings = TestServerSettings(
-                        sessionBuilder = { _, block -> testSession.apply { block() } }
+                    env = Env<Char, String, Char>(
+                        Initializer(""),
+                        ThrowingResolver(),
+                        { m, _ -> m.toString().noCommand() },
+                        this
+                    ),
+                    settings = TestSettings(
+                        sessionFactory = { _, block -> testSession.apply { block() } }
                     )
                 )
             )
-            val messages = arrayOf("a", "b", "c")
+            val messages = arrayOf('a', 'b', 'c')
             val actual = component(*messages).take(messages.size + 1)
                 .toCollection(ArrayList(messages.size + 1))
 
-            actual shouldBe listOf(
-                Initial("", emptySet()),
-                Regular("a", emptySet(), "", "a"),
-                Regular("b", emptySet(), "a", "b"),
-                Regular("c", emptySet(), "b", "c")
+            assertEquals(
+                listOf(
+                    Initial("", emptySet()),
+                    Regular("a", emptySet(), "", 'a'),
+                    Regular("b", emptySet(), "a", 'b'),
+                    Regular("c", emptySet(), "b", 'c')
+                ), actual
             )
+
+            assertTrue(testSession.packets.isNotEmpty())
 
             testSession.packets.forEachIndexed { index, elem ->
 
-                elem.componentId shouldBe TestComponentId
+                assertEquals(TestComponentId, elem.componentId)
 
                 when (val payload = elem.payload) {
                     is GsonNotifyComponentSnapshot -> {
-                        index shouldNotBeExactly 0
-                        fromJson(payload.message) shouldBe messages[index - 1]
-                        fromJson(payload.newState) shouldBe messages[index - 1]
+                        assertNotEquals(0, index)
+                        assertEquals(messages[index - 1], TestSerializer.fromJson(payload.message))
+                        assertEquals(messages[index - 1], TestSerializer.fromJson(payload.newState))
                     }
 
                     is GsonNotifyComponentAttached -> {
-                        index shouldBeExactly 0
-                        fromJson(payload.state) shouldBe ""
+                        assertEquals(0, index)
+                        assertEquals("", TestSerializer.fromJson(payload.state))
                     }
                 }
             }
         }
 
-    @Test
-    fun `test debuggable component processes server snapshots properly`() = runBlockingInTestScope {
-
-        val testSession = TestDebugSession<String, String>(states = flowOf("a"))
-        val component = Component(
-            TestDebugEnv(
-                env = TestEnv(
-                    initializer = { delay(Long.MAX_VALUE); error("shouldn't get here") }
-                ),
-                serverSettings = TestServerSettings(
-                    sessionBuilder = { _, block -> testSession.apply { block() } }
-                )
-            )
-        )
-
-        val expected = listOf<StringSnapshot>(
-            Initial("a", emptySet()),
-            Regular("b", emptySet(), "a", "b")
-        )
-
-        val actual = component("b")
-            .take(2)
-            .toCollection(ArrayList(2))
-
-        actual shouldContainExactly expected
-    }
-
-    @Test
-    @Ignore("race, can't make any assumptions regarding processing order")
-    fun `test debuggable component processes server messages properly`() = runBlockingInTestScope {
-
-        val serverMessages = Channel<String>()
-        val testSession =
-            TestDebugSession<String, String>(messages = serverMessages.consumeAsFlow())
-        val component = Component(
-            TestDebugEnv(
-                env = TestEnv(),
-                serverSettings = TestServerSettings(
-                    sessionBuilder = { _, block -> testSession.apply { block() } }
-                )
-            )
-        )
-
-        val expected = listOf<StringSnapshot>(
-            Initial("", emptySet()),
-            Regular("a", emptySet(), "", "a"),
-            Regular("b", emptySet(), "a", "b"),
-            Regular("c", emptySet(), "b", "c"),
-            Regular("d", emptySet(), "c", "d")
-        )
-
-        val actual = component(flowOf("a").onCompletion { serverMessages.send("b", "c", "d") })
-            .take(expected.size)
-            .toCollection(ArrayList(expected.size))
-
-        actual shouldContainExactly expected
-    }
-
 }
 
-private fun fromJson(
+private inline fun <reified T : Any> JsonSerializer<JsonElement>.fromJson(
     tree: JsonElement,
-) = TestSerializer.fromJsonTree(tree, String::class.java)
-
-private suspend fun <E> Channel<E>.send(
-    vararg e: E,
-) = e.forEach { elem -> send(elem) }
-*/
+) = fromJsonTree(tree, T::class)

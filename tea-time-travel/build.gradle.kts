@@ -66,6 +66,9 @@ kotlin {
         val jvmTest by getting {
             dependencies {
                 implementation(project(":tea-time-travel-adapter-gson"))
+                implementation(project(":tea-core")) {
+                    targetConfiguration = "testOutput"
+                }
             }
         }
 

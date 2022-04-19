@@ -29,15 +29,22 @@ package io.github.xlopec.tea.core.misc
 import io.github.xlopec.tea.core.Component
 import io.github.xlopec.tea.core.Env
 import io.github.xlopec.tea.core.Initializer
+import io.github.xlopec.tea.core.ResolveCtx
 import io.github.xlopec.tea.core.Resolver
 import io.github.xlopec.tea.core.ShareOptions
 import io.github.xlopec.tea.core.ShareStateWhileSubscribed
 import io.github.xlopec.tea.core.Updater
+import io.github.xlopec.tea.core.invoke
+import io.github.xlopec.tea.core.noCommand
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.math.abs
+import kotlin.test.assertNotEquals
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -73,3 +80,40 @@ fun <M, S, C> CoroutineScope.TestEnv(
     this,
     shareOptions
 )
+
+@Suppress("UNUSED_PARAMETER")
+fun noOpSink(t: Any?) = Unit
+
+fun ThrowingInitializer(
+    th: Throwable,
+): Initializer<Nothing, Nothing> = { throw th }
+
+fun <M, S> CheckingUpdater(
+    mainThreadName: String,
+): Updater<M, S, Nothing> = { _, s ->
+
+    val actualThreadNamePrefix = currentThreadName().replaceAfterLast('@', "")
+    val mainThreadNamePrefix = mainThreadName.replaceAfterLast('@', "")
+
+    assertNotEquals(mainThreadNamePrefix, actualThreadNamePrefix)
+
+    s.noCommand()
+}
+
+@Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
+suspend fun <C> NoOpResolver(): Resolver<C, Char> = object : Resolver<C, Char> {
+    override fun invoke(command: C, context: ResolveCtx<Char>) = Unit
+}
+
+val CharRange.size: Int
+    get() = 1 + abs(last - first)
+
+suspend fun Component<Char, String, Char>.collectRanged(
+    messages: CharRange,
+) = this(messages).take(messages.size + 1/*plus initial snapshot*/).collect()
+
+fun <T> ThrowingResolver() = object : Resolver<Any?, T> {
+    override fun invoke(command: Any?, context: ResolveCtx<T>) {
+        throw ComponentException("Unexpected command $command")
+    }
+}
