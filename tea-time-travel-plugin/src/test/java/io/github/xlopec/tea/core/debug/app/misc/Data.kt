@@ -18,22 +18,22 @@
 
 package io.github.xlopec.tea.core.debug.app.misc
 
-import io.github.xlopec.tea.core.debug.app.domain.CollectionWrapper
-import io.github.xlopec.tea.core.debug.app.domain.ComponentDebugState
-import io.github.xlopec.tea.core.debug.app.domain.DebugState
-import io.github.xlopec.tea.core.debug.app.domain.FilteredSnapshot
-import io.github.xlopec.tea.core.debug.app.domain.Null
-import io.github.xlopec.tea.core.debug.app.domain.OriginalSnapshot
-import io.github.xlopec.tea.core.debug.app.domain.ServerAddress
-import io.github.xlopec.tea.core.debug.app.domain.Settings
-import io.github.xlopec.tea.core.debug.app.domain.SnapshotId
-import io.github.xlopec.tea.core.debug.app.domain.SnapshotMeta
-import io.github.xlopec.tea.core.debug.app.domain.Valid
-import io.github.xlopec.tea.core.debug.app.domain.Value
-import io.github.xlopec.tea.core.debug.app.state.Server
-import io.github.xlopec.tea.core.debug.app.state.Started
 import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
+import io.github.xlopec.tea.time.travel.plugin.domain.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.domain.ComponentDebugState
+import io.github.xlopec.tea.time.travel.plugin.domain.DebugState
+import io.github.xlopec.tea.time.travel.plugin.domain.FilteredSnapshot
+import io.github.xlopec.tea.time.travel.plugin.domain.Null
+import io.github.xlopec.tea.time.travel.plugin.domain.OriginalSnapshot
+import io.github.xlopec.tea.time.travel.plugin.domain.ServerAddress
+import io.github.xlopec.tea.time.travel.plugin.domain.Settings
+import io.github.xlopec.tea.time.travel.plugin.domain.SnapshotId
+import io.github.xlopec.tea.time.travel.plugin.domain.SnapshotMeta
+import io.github.xlopec.tea.time.travel.plugin.domain.Valid
+import io.github.xlopec.tea.time.travel.plugin.domain.Value
+import io.github.xlopec.tea.time.travel.plugin.state.Server
+import io.github.xlopec.tea.time.travel.plugin.state.Started
 import java.time.LocalDateTime
 import java.util.UUID
 import kotlinx.collections.immutable.PersistentList
@@ -87,15 +87,15 @@ fun ComponentDebugState(
     state: Value = Null
 ) = componentId to ComponentDebugState(componentId, state, snapshots = snapshots, filteredSnapshots = filteredSnapshots)
 
-fun Started(
+fun StartedFromPairs(
     states: Iterable<Pair<ComponentId, ComponentDebugState>>
-) = Started(
+): Started = Started(
     TestSettings,
     DebugState(states.toMap().toPersistentMap()),
     StartedTestServerStub
 )
 
-fun Started(
+fun StartedFromPairs(
     vararg states: Pair<ComponentId, ComponentDebugState>
 ) = Started(
     TestSettings,

@@ -18,30 +18,37 @@
 
 package io.github.xlopec.tea.core.debug.app.feature.presentation
 
-import io.github.xlopec.tea.core.debug.app.domain.CollectionWrapper
-import io.github.xlopec.tea.core.debug.app.domain.ComponentDebugState
-import io.github.xlopec.tea.core.debug.app.domain.FilterOption
-import io.github.xlopec.tea.core.debug.app.domain.FilteredSnapshot
-import io.github.xlopec.tea.core.debug.app.domain.Null
-import io.github.xlopec.tea.core.debug.app.domain.OriginalSnapshot
-import io.github.xlopec.tea.core.debug.app.domain.SnapshotMeta
-import io.github.xlopec.tea.core.debug.app.domain.StringWrapper
-import io.github.xlopec.tea.core.debug.app.domain.Valid
-import io.github.xlopec.tea.core.debug.app.feature.server.DoApplyMessage
-import io.github.xlopec.tea.core.debug.app.feature.server.DoApplyState
 import io.github.xlopec.tea.core.debug.app.misc.ComponentDebugState
 import io.github.xlopec.tea.core.debug.app.misc.ComponentDebugStates
 import io.github.xlopec.tea.core.debug.app.misc.EmptyFilteredSnapshot
 import io.github.xlopec.tea.core.debug.app.misc.EmptyOriginalSnapshot
 import io.github.xlopec.tea.core.debug.app.misc.NonEmptyComponentDebugState
 import io.github.xlopec.tea.core.debug.app.misc.RandomSnapshotId
-import io.github.xlopec.tea.core.debug.app.misc.Started
+import io.github.xlopec.tea.core.debug.app.misc.StartedFromPairs
 import io.github.xlopec.tea.core.debug.app.misc.StartedTestServerStub
 import io.github.xlopec.tea.core.debug.app.misc.TestTimestamp1
 import io.github.xlopec.tea.core.debug.app.misc.times
-import io.github.xlopec.tea.core.debug.app.state.Started
-import io.github.xlopec.tea.core.debug.app.state.component
 import io.github.xlopec.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.plugin.domain.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.domain.ComponentDebugState
+import io.github.xlopec.tea.time.travel.plugin.domain.FilterOption
+import io.github.xlopec.tea.time.travel.plugin.domain.FilteredSnapshot
+import io.github.xlopec.tea.time.travel.plugin.domain.Null
+import io.github.xlopec.tea.time.travel.plugin.domain.OriginalSnapshot
+import io.github.xlopec.tea.time.travel.plugin.domain.SnapshotMeta
+import io.github.xlopec.tea.time.travel.plugin.domain.StringWrapper
+import io.github.xlopec.tea.time.travel.plugin.domain.Valid
+import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ApplyMessage
+import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ApplyState
+import io.github.xlopec.tea.time.travel.plugin.feature.presentation.RemoveAllSnapshots
+import io.github.xlopec.tea.time.travel.plugin.feature.presentation.RemoveComponent
+import io.github.xlopec.tea.time.travel.plugin.feature.presentation.RemoveSnapshots
+import io.github.xlopec.tea.time.travel.plugin.feature.presentation.UpdateFilter
+import io.github.xlopec.tea.time.travel.plugin.feature.presentation.updateForUiMessage
+import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyMessage
+import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyState
+import io.github.xlopec.tea.time.travel.plugin.state.Started
+import io.github.xlopec.tea.time.travel.plugin.state.component
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.matchers.collections.shouldContainExactly
@@ -69,13 +76,13 @@ internal class UpdateForUiMessageTest {
 
         val otherStates = ComponentDebugStates { strId -> NonEmptyComponentDebugState(ComponentId(strId), meta) }
         val pluginState =
-            Started(otherStates + NonEmptyComponentDebugState(id, meta))
+            StartedFromPairs(otherStates + NonEmptyComponentDebugState(id, meta))
 
         RemoveSnapshots(id, snapshotId)
         val (state, commands) = updateForUiMessage(RemoveSnapshots(id, snapshotId), pluginState)
 
         commands.shouldBeEmpty()
-        state shouldBe Started(otherStates + (id to ComponentDebugState(id, Null)))
+        state shouldBe StartedFromPairs(otherStates + (id to ComponentDebugState(id, Null)))
     }
 
     @Test
@@ -93,7 +100,7 @@ internal class UpdateForUiMessageTest {
             NonEmptyComponentDebugState(ComponentId(strId), SnapshotMeta(RandomSnapshotId(), TestTimestamp1))
         }
 
-        val pluginState = Started(
+        val pluginState = StartedFromPairs(
             otherStates + ComponentDebugState(
                 id,
                 (meta.take(hi).map(::EmptyOriginalSnapshot) + resultingOriginalSnapshots).toPersistentList(),
@@ -108,7 +115,7 @@ internal class UpdateForUiMessageTest {
         )
 
         commands.shouldBeEmpty()
-        state shouldBe Started(
+        state shouldBe StartedFromPairs(
             otherStates + ComponentDebugState(
                 id,
                 resultingOriginalSnapshots.toPersistentList(),
@@ -126,13 +133,13 @@ internal class UpdateForUiMessageTest {
 
         val otherStates = ComponentDebugStates { strId -> NonEmptyComponentDebugState(ComponentId(strId), meta) }
         val pluginState =
-            Started(otherStates + NonEmptyComponentDebugState(id, meta))
+            StartedFromPairs(otherStates + NonEmptyComponentDebugState(id, meta))
 
         RemoveAllSnapshots(id)
         val (state, commands) = updateForUiMessage(RemoveAllSnapshots(id), pluginState)
 
         commands.shouldBeEmpty()
-        state shouldBe Started(otherStates + (id to ComponentDebugState(id, Null)))
+        state shouldBe StartedFromPairs(otherStates + (id to ComponentDebugState(id, Null)))
 
     }
 
@@ -142,7 +149,7 @@ internal class UpdateForUiMessageTest {
         val removalComponentId = ComponentId("a")
         val otherStates = ComponentDebugStates()
 
-        val initialState = Started(
+        val initialState = StartedFromPairs(
             otherStates + NonEmptyComponentDebugState(
                 removalComponentId,
                 SnapshotMeta(RandomSnapshotId(), TestTimestamp1)
@@ -153,7 +160,7 @@ internal class UpdateForUiMessageTest {
         val (state, commands) = updateForUiMessage(RemoveComponent(removalComponentId), initialState)
 
         commands.shouldBeEmpty()
-        state shouldBe Started(otherStates)
+        state shouldBe StartedFromPairs(otherStates)
     }
 
     @Test
@@ -164,7 +171,7 @@ internal class UpdateForUiMessageTest {
         val value = StringWrapper("some value")
         val meta = SnapshotMeta(snapshotId, TestTimestamp1)
 
-        val initialState = Started(
+        val initialState = StartedFromPairs(
             ComponentDebugState(
                 componentId,
                 persistentListOf(OriginalSnapshot(meta, value, Null, CollectionWrapper(listOf()))),
@@ -187,7 +194,7 @@ internal class UpdateForUiMessageTest {
         val value = StringWrapper("some value")
         val meta = SnapshotMeta(snapshotId, TestTimestamp1)
 
-        val initialState = Started(
+        val initialState = StartedFromPairs(
             ComponentDebugState(
                 componentId,
                 persistentListOf(OriginalSnapshot(meta, Null, value, CollectionWrapper(listOf()))),
@@ -207,7 +214,7 @@ internal class UpdateForUiMessageTest {
 
         val componentId = ComponentId("a")
         val initialState =
-            Started(NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp1)))
+            StartedFromPairs(NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp1)))
 
         UpdateFilter(
             ComponentId("a"),
@@ -261,7 +268,7 @@ internal class UpdateForUiMessageTest {
         val componentId = ComponentId("a")
         val input = "abc"
         val initialState =
-            Started(NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp1)))
+            StartedFromPairs(NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp1)))
 
         UpdateFilter(
             ComponentId("a"),

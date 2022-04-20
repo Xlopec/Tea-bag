@@ -16,6 +16,8 @@
 
 package io.github.xlopec.tea.core.debug.app.misc
 
+import io.github.xlopec.tea.time.travel.plugin.misc.DiffCallback
+import io.github.xlopec.tea.time.travel.plugin.misc.replaceAll
 import io.kotlintest.matchers.collections.shouldContainExactly
 import org.junit.Test
 import org.junit.runner.RunWith

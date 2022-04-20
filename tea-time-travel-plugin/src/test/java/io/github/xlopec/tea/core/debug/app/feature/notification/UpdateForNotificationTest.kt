@@ -18,25 +18,34 @@
 
 package io.github.xlopec.tea.core.debug.app.feature.notification
 
-import io.github.xlopec.tea.core.debug.app.domain.CollectionWrapper
-import io.github.xlopec.tea.core.debug.app.domain.ComponentDebugState
-import io.github.xlopec.tea.core.debug.app.domain.DebugState
-import io.github.xlopec.tea.core.debug.app.domain.FilteredSnapshot
-import io.github.xlopec.tea.core.debug.app.domain.Null
-import io.github.xlopec.tea.core.debug.app.domain.OriginalSnapshot
-import io.github.xlopec.tea.core.debug.app.domain.SnapshotMeta
-import io.github.xlopec.tea.core.debug.app.domain.StringWrapper
 import io.github.xlopec.tea.core.debug.app.misc.ComponentDebugState
 import io.github.xlopec.tea.core.debug.app.misc.ComponentDebugStates
 import io.github.xlopec.tea.core.debug.app.misc.NonEmptyComponentDebugState
 import io.github.xlopec.tea.core.debug.app.misc.RandomSnapshotId
-import io.github.xlopec.tea.core.debug.app.misc.Started
+import io.github.xlopec.tea.core.debug.app.misc.StartedFromPairs
 import io.github.xlopec.tea.core.debug.app.misc.StartedTestServerStub
 import io.github.xlopec.tea.core.debug.app.misc.TestSettings
 import io.github.xlopec.tea.core.debug.app.misc.TestSnapshotId1
 import io.github.xlopec.tea.core.debug.app.misc.TestTimestamp1
-import io.github.xlopec.tea.core.debug.app.state.Stopped
 import io.github.xlopec.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.plugin.domain.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.domain.ComponentDebugState
+import io.github.xlopec.tea.time.travel.plugin.domain.DebugState
+import io.github.xlopec.tea.time.travel.plugin.domain.FilteredSnapshot
+import io.github.xlopec.tea.time.travel.plugin.domain.Null
+import io.github.xlopec.tea.time.travel.plugin.domain.OriginalSnapshot
+import io.github.xlopec.tea.time.travel.plugin.domain.SnapshotMeta
+import io.github.xlopec.tea.time.travel.plugin.domain.StringWrapper
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.AppendSnapshot
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.ComponentAttached
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.DoNotifyComponentAttached
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.DoWarnUnacceptableMessage
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.NotifyStarted
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.NotifyStopped
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.StateApplied
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.updateForNotification
+import io.github.xlopec.tea.time.travel.plugin.state.Started
+import io.github.xlopec.tea.time.travel.plugin.state.Stopped
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.types.shouldBeSameInstanceAs
@@ -54,7 +63,7 @@ internal class UpdateForNotificationTest {
 
         val (nextState, commands) = updateForNotification(NotifyStarted(StartedTestServerStub), Stopped(TestSettings))
 
-        nextState shouldBe io.github.xlopec.tea.core.debug.app.state.Started(
+        nextState shouldBe Started(
             TestSettings,
             DebugState(),
             StartedTestServerStub
@@ -67,7 +76,7 @@ internal class UpdateForNotificationTest {
 
         val (nextState, commands) = updateForNotification(
             NotifyStopped,
-            io.github.xlopec.tea.core.debug.app.state.Started(
+            Started(
                 TestSettings,
                 DebugState(),
                 StartedTestServerStub
@@ -91,7 +100,7 @@ internal class UpdateForNotificationTest {
 
         val (nextState, commands) = updateForNotification(
             AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper),
-            Started(otherStates)
+            StartedFromPairs(otherStates)
         )
 
         val expectedDebugState = ComponentDebugState(
@@ -101,7 +110,7 @@ internal class UpdateForNotificationTest {
             filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState, commandsWrapper))
         )
 
-        nextState shouldBe Started(otherStates + (componentId to expectedDebugState))
+        nextState shouldBe StartedFromPairs(otherStates + (componentId to expectedDebugState))
         commands.shouldBeEmpty()
     }
 
@@ -125,7 +134,7 @@ internal class UpdateForNotificationTest {
 
         val (nextState, commands) = updateForNotification(
             AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper),
-            Started(otherStates)
+            StartedFromPairs(otherStates)
         )
 
         val expectedDebugState = ComponentDebugState(
@@ -135,7 +144,7 @@ internal class UpdateForNotificationTest {
             filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState))
         )
 
-        nextState shouldBe Started(otherStates + (componentId to expectedDebugState))
+        nextState shouldBe StartedFromPairs(otherStates + (componentId to expectedDebugState))
         commands.shouldBeEmpty()
     }
 
@@ -154,19 +163,19 @@ internal class UpdateForNotificationTest {
 
         val (nextState, commands) = updateForNotification(
             StateApplied(componentId, newState),
-            Started(otherStates)
+            StartedFromPairs(otherStates)
         )
 
         val expectedDebugState = ComponentDebugState(componentId, newState)
 
-        nextState shouldBe Started(otherStates.takeLast(otherStates.size - 1) + (componentId to expectedDebugState))
+        nextState shouldBe StartedFromPairs(otherStates.takeLast(otherStates.size - 1) + (componentId to expectedDebugState))
         commands.shouldBeEmpty()
     }
 
     @Test
     fun `test when apply state and component doesn't exist then it doesn't get applied`() {
 
-        val state = Started(ComponentDebugStates())
+        val state = StartedFromPairs(ComponentDebugStates())
 
         val (nextState, commands) = updateForNotification(StateApplied(ComponentId("a"), StringWrapper("d")), state)
 
@@ -185,10 +194,10 @@ internal class UpdateForNotificationTest {
 
         val (nextState, commands) = updateForNotification(
             ComponentAttached(componentId, meta, state, collectionWrapper),
-            Started(otherStates)
+            StartedFromPairs(otherStates)
         )
 
-        nextState shouldBe Started(
+        nextState shouldBe StartedFromPairs(
             otherStates +
                     ComponentDebugState(
                         componentId = componentId,
