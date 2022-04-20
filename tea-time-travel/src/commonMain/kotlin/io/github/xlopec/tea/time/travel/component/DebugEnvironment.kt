@@ -27,8 +27,8 @@
 package io.github.xlopec.tea.time.travel.component
 
 import io.github.xlopec.tea.core.Env
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
-import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
 import io.github.xlopec.tea.time.travel.session.DebugSession
 import io.github.xlopec.tea.time.travel.session.SessionFactory
 import io.ktor.http.Url

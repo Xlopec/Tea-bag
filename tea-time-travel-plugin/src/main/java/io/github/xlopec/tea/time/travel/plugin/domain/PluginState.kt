@@ -16,10 +16,10 @@
 
 package io.github.xlopec.tea.time.travel.plugin.domain
 
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.plugin.misc.map
 import io.github.xlopec.tea.time.travel.plugin.state.filteredBy
 import io.github.xlopec.tea.time.travel.plugin.state.toFiltered
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.time.LocalDateTime
 import java.util.UUID
 import kotlinx.collections.immutable.PersistentList

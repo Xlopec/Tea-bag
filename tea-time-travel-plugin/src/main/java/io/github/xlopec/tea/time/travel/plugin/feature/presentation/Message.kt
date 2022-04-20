@@ -1,9 +1,9 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.presentation
 
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.plugin.UIMessage
 import io.github.xlopec.tea.time.travel.plugin.domain.FilterOption
 import io.github.xlopec.tea.time.travel.plugin.domain.SnapshotId
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 @JvmInline
 value class UpdateDebugSettings(

@@ -1,8 +1,6 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
 import com.intellij.openapi.project.Project
-import io.github.xlopec.tea.core.debug.protocol.ApplyMessage
-import io.github.xlopec.tea.core.debug.protocol.ApplyState
 import io.github.xlopec.tea.data.Either
 import io.github.xlopec.tea.data.mapL
 import io.github.xlopec.tea.time.travel.plugin.Message
@@ -17,6 +15,8 @@ import io.github.xlopec.tea.time.travel.plugin.feature.notification.StateApplied
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.StateAppliedBalloon
 import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.components.balloon.showBalloon
 import io.github.xlopec.tea.time.travel.plugin.toPluginException
+import io.github.xlopec.tea.time.travel.protocol.ApplyMessage
+import io.github.xlopec.tea.time.travel.protocol.ApplyState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.withContext

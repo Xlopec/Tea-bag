@@ -18,7 +18,6 @@ package io.github.xlopec.tea.time.travel.plugin.feature.notification
 
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.time.travel.plugin.Command
 import io.github.xlopec.tea.time.travel.plugin.InternalException
@@ -40,6 +39,7 @@ import io.github.xlopec.tea.time.travel.plugin.state.Stopped
 import io.github.xlopec.tea.time.travel.plugin.state.appendSnapshot
 import io.github.xlopec.tea.time.travel.plugin.state.updateComponents
 import io.github.xlopec.tea.time.travel.plugin.warnUnacceptableMessage
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 internal fun updateForNotification(
     message: NotificationMessage,

@@ -52,7 +52,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.plugin.Message
 import io.github.xlopec.tea.time.travel.plugin.feature.presentation.UpdateServerSettings
 import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.components.ActionIcons.Execute
@@ -77,6 +76,7 @@ import io.github.xlopec.tea.time.travel.plugin.state.Stopped
 import io.github.xlopec.tea.time.travel.plugin.state.Stopping
 import io.github.xlopec.tea.time.travel.plugin.state.component
 import io.github.xlopec.tea.time.travel.plugin.state.componentIds
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.io.File
 import kotlin.contracts.contract
 import kotlinx.coroutines.CoroutineScope

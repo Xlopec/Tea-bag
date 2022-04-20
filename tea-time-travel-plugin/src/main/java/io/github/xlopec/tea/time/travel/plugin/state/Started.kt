@@ -1,6 +1,5 @@
 package io.github.xlopec.tea.time.travel.plugin.state
 
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.plugin.domain.ComponentDebugState
 import io.github.xlopec.tea.time.travel.plugin.domain.ComponentMapping
 import io.github.xlopec.tea.time.travel.plugin.domain.DebugState
@@ -17,6 +16,7 @@ import io.github.xlopec.tea.time.travel.plugin.domain.applyTo
 import io.github.xlopec.tea.time.travel.plugin.domain.applyToWrapper
 import io.github.xlopec.tea.time.travel.plugin.domain.updateFilter
 import io.github.xlopec.tea.time.travel.plugin.misc.mapNotNull
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf

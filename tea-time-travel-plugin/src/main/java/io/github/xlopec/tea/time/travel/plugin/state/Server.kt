@@ -18,9 +18,9 @@
 
 package io.github.xlopec.tea.time.travel.plugin.state
 
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
 import io.github.xlopec.tea.time.travel.plugin.domain.ServerAddress
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 interface Server {
 

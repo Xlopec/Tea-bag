@@ -19,9 +19,6 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
 import com.google.gson.Gson
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
-import io.github.xlopec.tea.core.debug.protocol.NotifyClient
-import io.github.xlopec.tea.core.debug.protocol.NotifyServer
 import io.github.xlopec.tea.time.travel.gson.Gson
 import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
 import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentAttached
@@ -35,6 +32,9 @@ import io.github.xlopec.tea.time.travel.plugin.feature.notification.AppendSnapsh
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.ComponentAttached
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.OperationException
 import io.github.xlopec.tea.time.travel.plugin.state.Server
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.protocol.NotifyClient
+import io.github.xlopec.tea.time.travel.protocol.NotifyServer
 import io.ktor.server.application.install
 import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer

@@ -28,7 +28,6 @@ import io.github.xlopec.tea.core.debug.app.misc.StartedFromPairs
 import io.github.xlopec.tea.core.debug.app.misc.StartedTestServerStub
 import io.github.xlopec.tea.core.debug.app.misc.TestTimestamp1
 import io.github.xlopec.tea.core.debug.app.misc.times
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.plugin.domain.CollectionWrapper
 import io.github.xlopec.tea.time.travel.plugin.domain.ComponentDebugState
 import io.github.xlopec.tea.time.travel.plugin.domain.FilterOption
@@ -49,6 +48,7 @@ import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyState
 import io.github.xlopec.tea.time.travel.plugin.state.Started
 import io.github.xlopec.tea.time.travel.plugin.state.component
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.matchers.collections.shouldContainExactly

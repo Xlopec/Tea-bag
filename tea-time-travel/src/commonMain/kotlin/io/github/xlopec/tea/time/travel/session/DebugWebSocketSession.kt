@@ -24,15 +24,15 @@
 
 package io.github.xlopec.tea.time.travel.session
 
-import io.github.xlopec.tea.core.debug.protocol.ApplyMessage
-import io.github.xlopec.tea.core.debug.protocol.ApplyState
-import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
-import io.github.xlopec.tea.core.debug.protocol.NotifyClient
-import io.github.xlopec.tea.core.debug.protocol.NotifyServer
 import io.github.xlopec.tea.data.Either
 import io.github.xlopec.tea.data.Left
 import io.github.xlopec.tea.data.Right
 import io.github.xlopec.tea.time.travel.component.Settings
+import io.github.xlopec.tea.time.travel.protocol.ApplyMessage
+import io.github.xlopec.tea.time.travel.protocol.ApplyState
+import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
+import io.github.xlopec.tea.time.travel.protocol.NotifyClient
+import io.github.xlopec.tea.time.travel.protocol.NotifyServer
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.readText

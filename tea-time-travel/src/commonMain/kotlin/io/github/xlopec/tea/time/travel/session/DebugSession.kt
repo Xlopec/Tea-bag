@@ -24,7 +24,7 @@
 
 package io.github.xlopec.tea.time.travel.session
 
-import io.github.xlopec.tea.core.debug.protocol.NotifyServer
+import io.github.xlopec.tea.time.travel.protocol.NotifyServer
 import kotlinx.coroutines.flow.Flow
 
 /**

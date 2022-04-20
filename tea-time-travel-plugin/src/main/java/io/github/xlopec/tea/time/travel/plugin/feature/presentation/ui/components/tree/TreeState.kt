@@ -32,7 +32,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.plugin.domain.BooleanWrapper
 import io.github.xlopec.tea.time.travel.plugin.domain.CharWrapper
 import io.github.xlopec.tea.time.travel.plugin.domain.CollectionWrapper
@@ -44,6 +43,7 @@ import io.github.xlopec.tea.time.travel.plugin.domain.SnapshotMeta
 import io.github.xlopec.tea.time.travel.plugin.domain.StringWrapper
 import io.github.xlopec.tea.time.travel.plugin.domain.Type
 import io.github.xlopec.tea.time.travel.plugin.domain.Value
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 // todo: consider bottom-up value tree modification
 // assumption TreeState <-> Value (isomorphic)

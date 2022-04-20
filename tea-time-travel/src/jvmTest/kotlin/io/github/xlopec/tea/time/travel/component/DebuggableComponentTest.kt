@@ -30,7 +30,6 @@ import io.github.xlopec.tea.core.Initial
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.Regular
 import io.github.xlopec.tea.core.component.ComponentTestBase
-import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
 import io.github.xlopec.tea.core.invoke
 import io.github.xlopec.tea.core.misc.ThrowingResolver
 import io.github.xlopec.tea.core.misc.runTestCancellingChildren
@@ -42,6 +41,7 @@ import io.github.xlopec.tea.time.travel.misc.TestDebugEnv
 import io.github.xlopec.tea.time.travel.misc.TestDebugSession
 import io.github.xlopec.tea.time.travel.misc.TestSerializer
 import io.github.xlopec.tea.time.travel.misc.TestSettings
+import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs

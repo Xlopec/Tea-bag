@@ -27,13 +27,13 @@
 package io.github.xlopec.tea.time.travel.component
 
 import io.github.xlopec.tea.core.*
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
-import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
-import io.github.xlopec.tea.core.debug.protocol.NotifyComponentAttached
-import io.github.xlopec.tea.core.debug.protocol.NotifyComponentSnapshot
-import io.github.xlopec.tea.core.debug.protocol.NotifyServer
 import io.github.xlopec.tea.data.RandomUUID
 import io.github.xlopec.tea.time.travel.component.internal.mergeWith
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
+import io.github.xlopec.tea.time.travel.protocol.NotifyComponentAttached
+import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
+import io.github.xlopec.tea.time.travel.protocol.NotifyServer
 import io.github.xlopec.tea.time.travel.session.DebugSession
 import io.github.xlopec.tea.time.travel.session.HttpClient
 import io.github.xlopec.tea.time.travel.session.Localhost

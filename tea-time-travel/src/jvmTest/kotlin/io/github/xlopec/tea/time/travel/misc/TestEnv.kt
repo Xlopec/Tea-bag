@@ -33,11 +33,11 @@ import io.github.xlopec.tea.core.Resolver
 import io.github.xlopec.tea.core.ShareOptions
 import io.github.xlopec.tea.core.ShareStateWhileSubscribed
 import io.github.xlopec.tea.core.Updater
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
-import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
 import io.github.xlopec.tea.time.travel.component.DebugEnv
 import io.github.xlopec.tea.time.travel.component.Settings
 import io.github.xlopec.tea.time.travel.gson.GsonSerializer
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
 import io.github.xlopec.tea.time.travel.session.Localhost
 import io.github.xlopec.tea.time.travel.session.SessionFactory
 import io.ktor.http.Url
