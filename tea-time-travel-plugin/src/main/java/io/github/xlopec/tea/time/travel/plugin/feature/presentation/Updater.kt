@@ -18,7 +18,6 @@ package io.github.xlopec.tea.time.travel.plugin.feature.presentation
 
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.time.travel.plugin.Command
 import io.github.xlopec.tea.time.travel.plugin.UIMessage
@@ -38,6 +37,7 @@ import io.github.xlopec.tea.time.travel.plugin.state.updateFilter
 import io.github.xlopec.tea.time.travel.plugin.state.updateServerSettings
 import io.github.xlopec.tea.time.travel.plugin.state.updateSettings
 import io.github.xlopec.tea.time.travel.plugin.warnUnacceptableMessage
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 fun updateForUiMessage(
     message: UIMessage,

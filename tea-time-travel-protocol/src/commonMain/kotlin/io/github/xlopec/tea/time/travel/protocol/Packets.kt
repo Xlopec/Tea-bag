@@ -24,7 +24,7 @@
 
 @file:Suppress("unused")
 
-package io.github.xlopec.tea.core.debug.protocol
+package io.github.xlopec.tea.time.travel.protocol
 
 import io.github.xlopec.tea.data.UUID
 

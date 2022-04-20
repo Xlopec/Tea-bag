@@ -18,7 +18,6 @@
 
 package io.github.xlopec.tea.core.debug.app.misc
 
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
 import io.github.xlopec.tea.time.travel.plugin.domain.CollectionWrapper
 import io.github.xlopec.tea.time.travel.plugin.domain.ComponentDebugState
@@ -34,6 +33,7 @@ import io.github.xlopec.tea.time.travel.plugin.domain.Valid
 import io.github.xlopec.tea.time.travel.plugin.domain.Value
 import io.github.xlopec.tea.time.travel.plugin.state.Server
 import io.github.xlopec.tea.time.travel.plugin.state.Started
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.time.LocalDateTime
 import java.util.UUID
 import kotlinx.collections.immutable.PersistentList

@@ -17,10 +17,6 @@
 package io.github.xlopec.tea.core.debug.app.domain.serialization
 
 import com.google.gson.JsonElement
-import io.github.xlopec.tea.core.debug.protocol.ApplyMessage
-import io.github.xlopec.tea.core.debug.protocol.ClientMessage
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
-import io.github.xlopec.tea.core.debug.protocol.NotifyClient
 import io.github.xlopec.tea.data.Avatar
 import io.github.xlopec.tea.data.Id
 import io.github.xlopec.tea.data.Name
@@ -34,6 +30,10 @@ import io.github.xlopec.tea.time.travel.plugin.domain.StringWrapper
 import io.github.xlopec.tea.time.travel.plugin.domain.Type
 import io.github.xlopec.tea.time.travel.plugin.feature.server.toJsonElement
 import io.github.xlopec.tea.time.travel.plugin.feature.server.toValue
+import io.github.xlopec.tea.time.travel.protocol.ApplyMessage
+import io.github.xlopec.tea.time.travel.protocol.ClientMessage
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.protocol.NotifyClient
 import io.kotlintest.shouldBe
 import java.io.File
 import java.io.FileReader

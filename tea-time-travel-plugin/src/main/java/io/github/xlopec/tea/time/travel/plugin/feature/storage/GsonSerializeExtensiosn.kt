@@ -2,7 +2,6 @@ package io.github.xlopec.tea.time.travel.plugin.feature.storage
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.data.UUID
 import io.github.xlopec.tea.data.toHumanReadable
 import io.github.xlopec.tea.time.travel.plugin.domain.ComponentDebugState
@@ -13,6 +12,7 @@ import io.github.xlopec.tea.time.travel.plugin.feature.server.toCollectionWrappe
 import io.github.xlopec.tea.time.travel.plugin.feature.server.toJsonArray
 import io.github.xlopec.tea.time.travel.plugin.feature.server.toJsonElement
 import io.github.xlopec.tea.time.travel.plugin.feature.server.toValue
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.collections.immutable.mutate

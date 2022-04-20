@@ -29,7 +29,7 @@ package io.github.xlopec.tea.time.travel.gson
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
-import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
+import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
 import kotlin.reflect.KClass
 
 /**

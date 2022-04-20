@@ -33,10 +33,10 @@ import io.github.xlopec.reader.app.serialization.PersistentSetSerializer
 import io.github.xlopec.tea.core.Component
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.ShareStateWhileSubscribed
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
-import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
 import io.github.xlopec.tea.time.travel.component.Component
 import io.github.xlopec.tea.time.travel.gson.GsonSerializer
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
 import io.ktor.http.Url
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet

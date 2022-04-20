@@ -27,7 +27,6 @@ import io.github.xlopec.tea.core.debug.app.misc.StartedTestServerStub
 import io.github.xlopec.tea.core.debug.app.misc.TestSettings
 import io.github.xlopec.tea.core.debug.app.misc.TestSnapshotId1
 import io.github.xlopec.tea.core.debug.app.misc.TestTimestamp1
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.plugin.domain.CollectionWrapper
 import io.github.xlopec.tea.time.travel.plugin.domain.ComponentDebugState
 import io.github.xlopec.tea.time.travel.plugin.domain.DebugState
@@ -46,6 +45,7 @@ import io.github.xlopec.tea.time.travel.plugin.feature.notification.StateApplied
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.updateForNotification
 import io.github.xlopec.tea.time.travel.plugin.state.Started
 import io.github.xlopec.tea.time.travel.plugin.state.Stopped
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.kotlintest.matchers.collections.shouldBeEmpty
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.types.shouldBeSameInstanceAs

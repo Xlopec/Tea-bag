@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.tea.core.debug.protocol
+package io.github.xlopec.tea.time.travel.protocol
 
 /**
  * Represents messages that should be applied by client

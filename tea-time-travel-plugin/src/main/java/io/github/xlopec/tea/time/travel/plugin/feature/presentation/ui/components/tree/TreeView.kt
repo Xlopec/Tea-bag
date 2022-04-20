@@ -76,7 +76,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiClass
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PsiNavigateUtil
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.plugin.domain.BooleanWrapper
 import io.github.xlopec.tea.time.travel.plugin.domain.CharWrapper
 import io.github.xlopec.tea.time.travel.plugin.domain.CollectionWrapper
@@ -105,6 +104,7 @@ import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.component
 import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.components.misc.toReadableStringDetailed
 import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.screens.component.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.misc.javaPsiFacade
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 typealias TreeFormatter = (Node) -> String
 

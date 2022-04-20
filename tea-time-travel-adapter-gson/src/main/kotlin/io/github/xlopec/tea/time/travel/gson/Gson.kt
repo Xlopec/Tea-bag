@@ -29,15 +29,15 @@ package io.github.xlopec.tea.time.travel.gson
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
-import io.github.xlopec.tea.core.debug.protocol.ApplyMessage
-import io.github.xlopec.tea.core.debug.protocol.ApplyState
-import io.github.xlopec.tea.core.debug.protocol.ClientMessage
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
-import io.github.xlopec.tea.core.debug.protocol.NotifyComponentAttached
-import io.github.xlopec.tea.core.debug.protocol.NotifyComponentSnapshot
-import io.github.xlopec.tea.core.debug.protocol.NotifyServer
-import io.github.xlopec.tea.core.debug.protocol.ServerMessage
 import io.github.xlopec.tea.data.UUID
+import io.github.xlopec.tea.time.travel.protocol.ApplyMessage
+import io.github.xlopec.tea.time.travel.protocol.ApplyState
+import io.github.xlopec.tea.time.travel.protocol.ClientMessage
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.protocol.NotifyComponentAttached
+import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
+import io.github.xlopec.tea.time.travel.protocol.NotifyServer
+import io.github.xlopec.tea.time.travel.protocol.ServerMessage
 
 /**
  * Type alias a for Gson specific [ClientMessage]

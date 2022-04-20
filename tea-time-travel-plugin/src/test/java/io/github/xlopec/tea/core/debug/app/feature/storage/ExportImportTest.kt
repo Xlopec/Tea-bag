@@ -8,7 +8,6 @@ import io.github.xlopec.tea.core.debug.app.misc.TestSnapshotId1
 import io.github.xlopec.tea.core.debug.app.misc.TestSnapshotId2
 import io.github.xlopec.tea.core.debug.app.misc.TestTimestamp1
 import io.github.xlopec.tea.core.debug.app.misc.TestTimestamp2
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.plugin.domain.CollectionWrapper
 import io.github.xlopec.tea.time.travel.plugin.domain.ComponentDebugState
 import io.github.xlopec.tea.time.travel.plugin.domain.Filter
@@ -20,6 +19,7 @@ import io.github.xlopec.tea.time.travel.plugin.domain.updateFilter
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.toComponentDebugState
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.toJsonObject
 import io.github.xlopec.tea.time.travel.plugin.state.toFiltered
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlin.test.assertEquals
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Test

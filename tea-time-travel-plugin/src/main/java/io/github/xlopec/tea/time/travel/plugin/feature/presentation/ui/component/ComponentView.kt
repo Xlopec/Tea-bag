@@ -23,7 +23,6 @@ import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PsiNavigateUtil
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.plugin.Message
 import io.github.xlopec.tea.time.travel.plugin.domain.ComponentDebugState
 import io.github.xlopec.tea.time.travel.plugin.domain.Filter
@@ -70,6 +69,7 @@ import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.screens.c
 import io.github.xlopec.tea.time.travel.plugin.misc.javaPsiFacade
 import io.github.xlopec.tea.time.travel.plugin.state.Started
 import io.github.xlopec.tea.time.travel.plugin.state.component
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.awt.event.MouseEvent
 import javax.swing.JCheckBox
 import javax.swing.JPanel

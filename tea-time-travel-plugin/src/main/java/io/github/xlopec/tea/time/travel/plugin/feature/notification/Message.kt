@@ -1,6 +1,5 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.notification
 
-import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.plugin.Command
 import io.github.xlopec.tea.time.travel.plugin.NotificationMessage
 import io.github.xlopec.tea.time.travel.plugin.PluginException
@@ -10,6 +9,7 @@ import io.github.xlopec.tea.time.travel.plugin.domain.SnapshotMeta
 import io.github.xlopec.tea.time.travel.plugin.domain.Value
 import io.github.xlopec.tea.time.travel.plugin.state.Server
 import io.github.xlopec.tea.time.travel.plugin.toPluginException
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 data class OperationException(
     val exception: PluginException,
