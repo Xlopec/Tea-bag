@@ -17,13 +17,6 @@
 package io.github.xlopec.tea.core.debug.app.domain.serialization
 
 import com.google.gson.JsonElement
-import io.github.xlopec.tea.core.debug.app.domain.CollectionWrapper
-import io.github.xlopec.tea.core.debug.app.domain.Property
-import io.github.xlopec.tea.core.debug.app.domain.Ref
-import io.github.xlopec.tea.core.debug.app.domain.StringWrapper
-import io.github.xlopec.tea.core.debug.app.domain.Type
-import io.github.xlopec.tea.core.debug.app.feature.server.toJsonElement
-import io.github.xlopec.tea.core.debug.app.feature.server.toValue
 import io.github.xlopec.tea.core.debug.protocol.ApplyMessage
 import io.github.xlopec.tea.core.debug.protocol.ClientMessage
 import io.github.xlopec.tea.core.debug.protocol.ComponentId
@@ -34,6 +27,13 @@ import io.github.xlopec.tea.data.Name
 import io.github.xlopec.tea.data.Photo
 import io.github.xlopec.tea.data.User
 import io.github.xlopec.tea.time.travel.gson.Gson
+import io.github.xlopec.tea.time.travel.plugin.domain.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.domain.Property
+import io.github.xlopec.tea.time.travel.plugin.domain.Ref
+import io.github.xlopec.tea.time.travel.plugin.domain.StringWrapper
+import io.github.xlopec.tea.time.travel.plugin.domain.Type
+import io.github.xlopec.tea.time.travel.plugin.feature.server.toJsonElement
+import io.github.xlopec.tea.time.travel.plugin.feature.server.toValue
 import io.kotlintest.shouldBe
 import java.io.File
 import java.io.FileReader

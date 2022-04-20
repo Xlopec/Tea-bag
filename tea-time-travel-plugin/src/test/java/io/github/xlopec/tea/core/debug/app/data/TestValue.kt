@@ -1,12 +1,12 @@
 package io.github.xlopec.tea.core.debug.app.data
 
 import com.google.gson.internal.LazilyParsedNumber
-import io.github.xlopec.tea.core.debug.app.domain.CollectionWrapper
-import io.github.xlopec.tea.core.debug.app.domain.NumberWrapper
-import io.github.xlopec.tea.core.debug.app.domain.Property
-import io.github.xlopec.tea.core.debug.app.domain.Ref
-import io.github.xlopec.tea.core.debug.app.domain.StringWrapper
-import io.github.xlopec.tea.core.debug.app.domain.Type
+import io.github.xlopec.tea.time.travel.plugin.domain.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.domain.NumberWrapper
+import io.github.xlopec.tea.time.travel.plugin.domain.Property
+import io.github.xlopec.tea.time.travel.plugin.domain.Ref
+import io.github.xlopec.tea.time.travel.plugin.domain.StringWrapper
+import io.github.xlopec.tea.time.travel.plugin.domain.Type
 
 val TestUserValue = Ref(
     Type.of("com.max.oliynick.Test"),

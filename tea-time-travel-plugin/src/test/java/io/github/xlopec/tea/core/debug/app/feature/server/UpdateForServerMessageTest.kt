@@ -18,18 +18,23 @@
 
 package io.github.xlopec.tea.core.debug.app.feature.server
 
-import io.github.xlopec.tea.core.debug.app.domain.DebugState
-import io.github.xlopec.tea.core.debug.app.domain.ServerAddress
-import io.github.xlopec.tea.core.debug.app.domain.isValid
-import io.github.xlopec.tea.core.debug.app.domain.value
-import io.github.xlopec.tea.core.debug.app.feature.notification.DoWarnUnacceptableMessage
 import io.github.xlopec.tea.core.debug.app.misc.SettingsGen
 import io.github.xlopec.tea.core.debug.app.misc.StartedTestServerStub
 import io.github.xlopec.tea.core.debug.app.misc.TestSettings
-import io.github.xlopec.tea.core.debug.app.state.Started
-import io.github.xlopec.tea.core.debug.app.state.Starting
-import io.github.xlopec.tea.core.debug.app.state.Stopped
-import io.github.xlopec.tea.core.debug.app.state.Stopping
+import io.github.xlopec.tea.time.travel.plugin.domain.DebugState
+import io.github.xlopec.tea.time.travel.plugin.domain.ServerAddress
+import io.github.xlopec.tea.time.travel.plugin.domain.isValid
+import io.github.xlopec.tea.time.travel.plugin.domain.value
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.DoWarnUnacceptableMessage
+import io.github.xlopec.tea.time.travel.plugin.feature.server.DoStartServer
+import io.github.xlopec.tea.time.travel.plugin.feature.server.DoStopServer
+import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
+import io.github.xlopec.tea.time.travel.plugin.feature.server.StopServer
+import io.github.xlopec.tea.time.travel.plugin.feature.server.updateForServerMessage
+import io.github.xlopec.tea.time.travel.plugin.state.Started
+import io.github.xlopec.tea.time.travel.plugin.state.Starting
+import io.github.xlopec.tea.time.travel.plugin.state.Stopped
+import io.github.xlopec.tea.time.travel.plugin.state.Stopping
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.types.shouldBeSameInstanceAs
 import io.kotlintest.properties.forAll

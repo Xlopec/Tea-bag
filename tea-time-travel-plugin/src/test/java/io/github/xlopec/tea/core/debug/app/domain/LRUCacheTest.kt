@@ -16,7 +16,7 @@
 
 package io.github.xlopec.tea.core.debug.app.domain
 
-import io.github.xlopec.tea.core.debug.app.misc.LruCache
+import io.github.xlopec.tea.time.travel.plugin.misc.LruCache
 import io.kotlintest.matchers.types.shouldBeSameInstanceAs
 import io.kotlintest.shouldBe
 import org.junit.Test
