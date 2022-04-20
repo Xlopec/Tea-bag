@@ -31,11 +31,11 @@ import io.github.xlopec.tea.core.Initial
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.Regular
 import io.github.xlopec.tea.core.command
+import io.github.xlopec.tea.core.computeSnapshots
 import io.github.xlopec.tea.core.misc.NoOpResolver
 import io.github.xlopec.tea.core.misc.TestEnv
 import io.github.xlopec.tea.core.misc.TestTimeoutMillis
 import io.github.xlopec.tea.core.misc.noOpSink
-import io.github.xlopec.tea.core.toComponentFlow
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlinx.coroutines.delay
@@ -73,7 +73,7 @@ class ComponentTest : ComponentTestBase(::Component) {
                     }
                 }
 
-            val actualStates = env.toComponentFlow(initialStates.asFlow(), ::noOpSink, ::testInput)
+            val actualStates = env.computeSnapshots(initialStates.asFlow(), ::noOpSink, ::testInput)
                 .toList()
 
             val (state, commands) = lastInitial

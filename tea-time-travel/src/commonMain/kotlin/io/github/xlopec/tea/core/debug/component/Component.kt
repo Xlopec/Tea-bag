@@ -92,41 +92,34 @@ public fun <M, S, C, J> Component(
 ): Component<M, S, C> {
 
     val input = Channel<M>(RENDEZVOUS)
-    val upstream = debugEnv.toComponentFlow(input)
+    val upstream = debugEnv.computeSnapshots(input)
         .shareIn(debugEnv.env.scope, debugEnv.env.shareOptions)
 
-    return { messages -> upstream.withMessageCollector(messages, input::send) }
+    return { messages -> upstream.attachMessageCollector(messages, input::send) }
 }
 
-private fun <M, S, C, J> DebugEnv<M, S, C, J>.toComponentFlow(
+private fun <M, S, C, J> DebugEnv<M, S, C, J>.computeSnapshots(
     input: Channel<M>,
 ): Flow<Snapshot<M, S, C>> =
     debugSession { sink ->
-
-        val initialSnapshots = mergeInitialSnapshots(this@toComponentFlow, states)
-        val messagesForSnapshot =
-            messagesForInitialSnapshot(input.receiveAsFlow(), this@toComponentFlow, messages)
-
-        env.toComponentFlow(initialSnapshots, input::send, messagesForSnapshot)
-            .onEach { snapshot -> notifyServer(this@toComponentFlow, snapshot) }
+        env.computeSnapshots(mergeInitialSnapshots(states), input::send, mergeMessages(input.receiveAsFlow(), messages))
+            .onEach { snapshot -> notifyServer(this@computeSnapshots, snapshot) }
             .collect(sink::invoke)
     }
 
 // todo refactor when multi-receivers KEEP is ready
-private fun <M, S, C, J> mergeInitialSnapshots(
-    debugEnv: DebugEnv<M, S, C, J>,
+private fun <M, S, C, J> DebugEnv<M, S, C, J>.mergeInitialSnapshots(
     debugStates: Flow<S>,
-) = debugEnv.env.initial().mergeWith(debugStates.toSnapshots())
+) = env.initial().mergeWith(debugStates.toInitialSnapshots())
 
 // todo refactor when multi-receivers KEEP is ready
-private fun <M, S, C, J> messagesForInitialSnapshot(
-    input: Flow<M>,
-    debugEnv: DebugEnv<M, S, C, J>,
-    debugMessages: Flow<M>,
+private fun <M, S, C, J> DebugEnv<M, S, C, J>.mergeMessages(
+    originalInput: Flow<M>,
+    debugInput: Flow<M>,
 ): (Initial<S, C>) -> Flow<M> = { initial ->
-    debugEnv.env.resolveAsFlow(initial.commands)
-        .mergeWith(input)
-        .mergeWith(debugMessages)
+    env.resolveAsFlow(initial.commands)
+        .mergeWith(originalInput)
+        .mergeWith(debugInput)
 }
 
 // todo refactor when multi-receivers KEEP is ready
@@ -135,13 +128,14 @@ private fun <M, S, C, J> DebugEnv<M, S, C, J>.debugSession(
 ): Flow<Snapshot<M, S, C>> =
     channelFlow { settings.sessionFactory(settings) { block(channel::send) } }
 
-private fun <S> Flow<S>.toSnapshots(): Flow<Initial<S, Nothing>> =
+private fun <S> Flow<S>.toInitialSnapshots(): Flow<Initial<S, Nothing>> =
     // TODO what if we want to start from Regular snapshot?
     map { s -> Initial(s, setOf()) }
 
 /**
  * Notifies server about state changes
  */
+// TODO context(DebugSession<M, S, J>, DebugEnv<M, S, C, J>)
 private suspend fun <M, S, C, J> DebugSession<M, S, J>.notifyServer(
     env: DebugEnv<M, S, C, J>,
     snapshot: Snapshot<M, S, C>,
@@ -152,15 +146,15 @@ private suspend fun <M, S, C, J> DebugSession<M, S, J>.notifyServer(
 private fun <M, S, C, J> JsonSerializer<J>.toServerMessage(
     snapshot: Snapshot<M, S, C>,
 ) = when (snapshot) {
-    is Initial -> NotifyComponentAttached(toJsonTree(snapshot.currentState), toCommandSet(snapshot.commands))
+    is Initial -> NotifyComponentAttached(toJsonTree(snapshot.currentState), toCommandsSet(snapshot.commands))
     is Regular -> NotifyComponentSnapshot(
         toJsonTree(snapshot.message),
         toJsonTree(snapshot.previousState),
         toJsonTree(snapshot.currentState),
-        toCommandSet(snapshot.commands),
+        toCommandsSet(snapshot.commands),
     )
 }
 
-private fun <C, J> JsonSerializer<J>.toCommandSet(
+private fun <C, J> JsonSerializer<J>.toCommandsSet(
     s: Set<C>
 ): Set<J> = s.mapTo(HashSet(s.size), ::toJsonTree)
