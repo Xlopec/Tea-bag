@@ -22,27 +22,25 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.tea.core.debug.component.internal
+package io.github.xlopec.tea.time.travel.misc
 
-import kotlinx.coroutines.coroutineScope
+import com.google.gson.JsonElement
+import io.github.xlopec.tea.core.debug.gson.GsonNotifyServer
+import io.github.xlopec.tea.time.travel.session.DebugSession
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.emptyFlow
 
-internal fun <T> Flow<T>.mergeWith(
-    another: Flow<T>
-): Flow<T> = channelFlow {
-    coroutineScope {
-        launch {
-            another.collect {
-                send(it)
-            }
-        }
+internal class TestDebugSession<M, S>(
+    override val messages: Flow<M> = emptyFlow(),
+    override val states: Flow<S> = emptyFlow()
+) : DebugSession<M, S, JsonElement> {
 
-        launch {
-            collect {
-                send(it)
-            }
-        }
+    private val _packets = mutableListOf<GsonNotifyServer>()
+
+    val packets: List<GsonNotifyServer> = _packets
+
+    override suspend fun invoke(packet: GsonNotifyServer) {
+        _packets += packet
     }
+
 }

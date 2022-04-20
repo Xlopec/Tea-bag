@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.tea.core.debug.component
+package io.github.xlopec.tea.time.travel.component
 
 import com.google.gson.JsonElement
 import io.github.xlopec.tea.core.Env
@@ -32,16 +32,16 @@ import io.github.xlopec.tea.core.Regular
 import io.github.xlopec.tea.core.component.ComponentTestBase
 import io.github.xlopec.tea.core.debug.gson.GsonNotifyComponentAttached
 import io.github.xlopec.tea.core.debug.gson.GsonNotifyComponentSnapshot
-import io.github.xlopec.tea.core.debug.misc.TestComponentId
-import io.github.xlopec.tea.core.debug.misc.TestDebugEnv
-import io.github.xlopec.tea.core.debug.misc.TestDebugSession
-import io.github.xlopec.tea.core.debug.misc.TestSerializer
-import io.github.xlopec.tea.core.debug.misc.TestSettings
 import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
 import io.github.xlopec.tea.core.invoke
 import io.github.xlopec.tea.core.misc.ThrowingResolver
 import io.github.xlopec.tea.core.misc.runTestCancellingChildren
 import io.github.xlopec.tea.core.noCommand
+import io.github.xlopec.tea.time.travel.misc.TestComponentId
+import io.github.xlopec.tea.time.travel.misc.TestDebugEnv
+import io.github.xlopec.tea.time.travel.misc.TestDebugSession
+import io.github.xlopec.tea.time.travel.misc.TestSerializer
+import io.github.xlopec.tea.time.travel.misc.TestSettings
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs

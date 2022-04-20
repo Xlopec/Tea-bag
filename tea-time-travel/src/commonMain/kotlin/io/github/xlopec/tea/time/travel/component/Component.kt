@@ -24,17 +24,21 @@
 
 @file:Suppress("FunctionName", "KDocUnresolvedReference")
 
-package io.github.xlopec.tea.core.debug.component
+package io.github.xlopec.tea.time.travel.component
 
 import io.github.xlopec.tea.core.*
-import io.github.xlopec.tea.core.debug.component.internal.mergeWith
 import io.github.xlopec.tea.core.debug.protocol.ComponentId
 import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
 import io.github.xlopec.tea.core.debug.protocol.NotifyComponentAttached
 import io.github.xlopec.tea.core.debug.protocol.NotifyComponentSnapshot
 import io.github.xlopec.tea.core.debug.protocol.NotifyServer
-import io.github.xlopec.tea.core.debug.session.*
 import io.github.xlopec.tea.data.RandomUUID
+import io.github.xlopec.tea.time.travel.component.internal.mergeWith
+import io.github.xlopec.tea.time.travel.session.DebugSession
+import io.github.xlopec.tea.time.travel.session.HttpClient
+import io.github.xlopec.tea.time.travel.session.Localhost
+import io.github.xlopec.tea.time.travel.session.SessionFactory
+import io.github.xlopec.tea.time.travel.session.session
 import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel

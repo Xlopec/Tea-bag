@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.tea.core.debug.component
+package io.github.xlopec.tea.time.travel.component
 
 class ComponentException(message: String? = null, cause: Throwable? = null) :
     IllegalStateException(message, cause)
