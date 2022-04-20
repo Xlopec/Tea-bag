@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.BottomNavigation
@@ -51,8 +52,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import com.google.accompanist.insets.navigationBarsPadding
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.MessageHandler
@@ -96,6 +98,9 @@ fun HomeScreen(
     SwipeRefresh(
         state = rememberSwipeRefreshState(state.loadable.isRefreshing),
         swipeEnabled = state.isRefreshable,
+        indicator = { indicatorState, dp ->
+            SwipeRefreshIndicator(refreshTriggerDistance = dp, state = indicatorState, refreshingOffset = 40.dp)
+        },
         onRefresh = { onMessage(RefreshArticles(state.id)) },
     ) {
         val scrollTrigger = remember(state.id) { mutableStateOf(0) }

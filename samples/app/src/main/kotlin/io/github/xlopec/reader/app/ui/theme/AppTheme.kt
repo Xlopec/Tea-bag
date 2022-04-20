@@ -30,7 +30,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import com.google.accompanist.insets.ProvideWindowInsets
 
 @Composable
 fun AppTheme(
@@ -41,9 +40,7 @@ fun AppTheme(
         colors = appColors(isDarkModeEnabled),
         typography = Typography,
     ) {
-        ProvideWindowInsets {
-            content()
-        }
+        content()
     }
 }
 

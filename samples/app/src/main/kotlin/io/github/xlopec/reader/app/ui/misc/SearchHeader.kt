@@ -25,6 +25,7 @@
 package io.github.xlopec.reader.app.ui.misc
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -46,7 +47,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.input.ImeAction.Companion.Search
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.statusBarsPadding
 
 @Composable
 fun SearchHeader(

@@ -26,8 +26,6 @@
 
 rootProject.name = "Tea-bag"
 
-enableFeaturePreview("VERSION_CATALOGS")
-
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -49,95 +47,74 @@ include(
 dependencyResolutionManagement {
     versionCatalogs {
 
-        create("tea") {
-            alias("core").to("io.github.xlopec", "tea-core").withoutVersion()
-        }
-
         create("libs") {
 
             version("ktor", "2.0.0")
             version("coroutines", "1.6.1")
-            version("compose", "1.2.0-alpha04")
-            version("accompanist", "0.24.1-alpha")
+            version("compose", "1.2.0-alpha08")
+            version("accompanist", "0.24.6-alpha")
             version("sqldelight", "1.5.3")
 
             // Testing
 
-            alias("junit").to("junit:junit:4.13.2")
+            library("junit", "junit:junit:4.13.2")
 
-            alias("kotlin-test")
-                .to("org.jetbrains.kotlin", "kotlin-test")
+            library("kotlin-test", "org.jetbrains.kotlin", "kotlin-test")
                 .withoutVersion()
 
-            alias("compose-test-junit")
-                .to("androidx.compose.ui", "ui-test-junit4")
+            library("compose-test-junit", "androidx.compose.ui", "ui-test-junit4")
                 .versionRef("compose")
 
-            alias("compose-test-manifest")
-                .to("androidx.compose.ui", "ui-test-manifest")
+            library("compose-test-manifest", "androidx.compose.ui", "ui-test-manifest")
                 .versionRef("compose")
 
-            alias("android-test-orchestrator")
-                .to("androidx.test:orchestrator:1.4.1")
+            library("android-test-orchestrator", "androidx.test:orchestrator:1.4.1")
 
-            alias("android-test-runner").to("androidx.test:orchestrator:1.4.1")
+            library("android-test-runner", "androidx.test:orchestrator:1.4.1")
 
             // Coroutines
 
-            alias("coroutines-core")
-                .to("org.jetbrains.kotlinx", "kotlinx-coroutines-core")
+            library("coroutines-core", "org.jetbrains.kotlinx", "kotlinx-coroutines-core")
                 .versionRef("coroutines")
 
-            alias("coroutines-android")
-                .to("org.jetbrains.kotlinx", "kotlinx-coroutines-android")
+            library("coroutines-android", "org.jetbrains.kotlinx", "kotlinx-coroutines-android")
                 .versionRef("coroutines")
 
-            alias("coroutines-swing")
-                .to("org.jetbrains.kotlinx", "kotlinx-coroutines-swing")
+            library("coroutines-swing", "org.jetbrains.kotlinx", "kotlinx-coroutines-swing")
                 .versionRef("coroutines")
 
-            alias("coroutines-test")
-                .to("org.jetbrains.kotlinx", "kotlinx-coroutines-test")
+            library("coroutines-test", "org.jetbrains.kotlinx", "kotlinx-coroutines-test")
                 .versionRef("coroutines")
 
             // Standard library
 
-            alias("stdlib")
-                .to("org.jetbrains.kotlin", "kotlin-stdlib")
+            library("stdlib", "org.jetbrains.kotlin", "kotlin-stdlib")
                 .withoutVersion()
 
-            alias("stdlib-reflect")
-                .to("org.jetbrains.kotlin", "kotlin-reflect")
+            library("stdlib-reflect", "org.jetbrains.kotlin", "kotlin-reflect")
                 .withoutVersion()
 
             // Ktor server
 
-            alias("ktor-server-core")
-                .to("io.ktor", "ktor-server-core")
+            library("ktor-server-core", "io.ktor", "ktor-server-core")
                 .versionRef("ktor")
 
-            alias("ktor-server-netty")
-                .to("io.ktor", "ktor-server-netty")
+            library("ktor-server-netty", "io.ktor", "ktor-server-netty")
                 .versionRef("ktor")
 
-            alias("ktor-server-websockets")
-                .to("io.ktor", "ktor-server-websockets")
+            library("ktor-server-websockets", "io.ktor", "ktor-server-websockets")
                 .versionRef("ktor")
 
-            alias("ktor-server-headers")
-                .to("io.ktor", "ktor-server-conditional-headers")
+            library("ktor-server-headers", "io.ktor", "ktor-server-conditional-headers")
                 .versionRef("ktor")
 
-            alias("ktor-server-logging-jvm")
-                .to("io.ktor", "ktor-server-call-logging-jvm")
+            library("ktor-server-logging-jvm", "io.ktor", "ktor-server-call-logging-jvm")
                 .versionRef("ktor")
 
-            alias("ktor-server-tests")
-                .to("io.ktor", "ktor-server-tests")
+            library("ktor-server-tests", "io.ktor", "ktor-server-tests")
                 .versionRef("ktor")
 
-            alias("ktor-client-mock-jvm")
-                .to("io.ktor", "ktor-client-mock-jvm")
+            library("ktor-client-mock-jvm", "io.ktor", "ktor-client-mock-jvm")
                 .versionRef("ktor")
 
             bundle(
@@ -153,77 +130,60 @@ dependencyResolutionManagement {
 
             // Ktor client
 
-            alias("ktor-client-core")
-                .to("io.ktor", "ktor-client-core")
+            library("ktor-client-core", "io.ktor", "ktor-client-core")
                 .versionRef("ktor")
 
-            alias("ktor-client-ios")
-                .to("io.ktor", "ktor-client-darwin")
+            library("ktor-client-ios", "io.ktor", "ktor-client-darwin")
                 .versionRef("ktor")
 
-            alias("ktor-client-websockets")
-                .to("io.ktor", "ktor-client-websockets")
+            library("ktor-client-websockets", "io.ktor", "ktor-client-websockets")
                 .versionRef("ktor")
 
-            alias("ktor-client-cio")
-                .to("io.ktor", "ktor-client-cio")
+            library("ktor-client-cio", "io.ktor", "ktor-client-cio")
                 .versionRef("ktor")
 
-            alias("ktor-client-logging")
-                .to("io.ktor", "ktor-client-logging")
+            library("ktor-client-logging", "io.ktor", "ktor-client-logging")
                 .versionRef("ktor")
 
-            alias("ktor-client-gson")
-                .to("io.ktor", "ktor-client-gson")
+            library("ktor-client-gson", "io.ktor", "ktor-client-gson")
                 .versionRef("ktor")
 
-            alias("ktor-client-negotiation")
-                .to("io.ktor", "ktor-client-content-negotiation")
+            library("ktor-client-negotiation", "io.ktor", "ktor-client-content-negotiation")
                 .versionRef("ktor")
 
-            alias("ktor-serialization-json")
-                .to("io.ktor", "ktor-serialization-kotlinx-json")
+            library("ktor-serialization-json", "io.ktor", "ktor-serialization-kotlinx-json")
                 .versionRef("ktor")
 
             // Compose
 
-            alias("compose-ui")
-                .to("androidx.compose.ui", "ui")
+            library("compose-ui", "androidx.compose.ui", "ui")
                 .versionRef("compose")
 
-            alias("compose-foundation")
-                .to("androidx.compose.foundation", "foundation")
+            library("compose-foundation", "androidx.compose.foundation", "foundation")
                 .versionRef("compose")
 
-            alias("compose-foundation-layout")
-                .to("androidx.compose.foundation", "foundation-layout")
+            library("compose-foundation-layout", "androidx.compose.foundation", "foundation-layout")
                 .versionRef("compose")
 
-            alias("compose-material")
-                .to("androidx.compose.material", "material")
+            library("compose-material", "androidx.compose.material", "material")
                 .versionRef("compose")
 
-            alias("compose-icons")
-                .to("androidx.compose.material", "material-icons-extended")
+            library("compose-icons", "androidx.compose.material", "material-icons-extended")
                 .versionRef("compose")
 
-            alias("compose-tooling")
-                .to("androidx.compose.ui", "ui-tooling")
+            library("compose-tooling", "androidx.compose.ui", "ui-tooling")
                 .versionRef("compose")
 
-            alias("compose-runtime")
-                .to("androidx.compose.runtime", "runtime")
+            library("compose-runtime", "androidx.compose.runtime", "runtime")
                 .versionRef("compose")
 
-            alias("compose-animation")
-                .to("androidx.compose.animation", "animation")
+            library("compose-animation", "androidx.compose.animation", "animation")
                 .versionRef("compose")
 
-            alias("compose-compiler")
-                .to("androidx.compose.compiler", "compiler")
+            library("compose-compiler", "androidx.compose.compiler", "compiler")
                 .versionRef("compose")
 
-            alias("compose-activity").to("androidx.activity:activity-compose:1.5.0-alpha03")
+            library("compose-activity", "androidx.activity:activity-compose:1.6.0-alpha01")
 
             bundle(
                 "compose",
@@ -242,21 +202,18 @@ dependencyResolutionManagement {
 
             // Accompanist
 
-            alias("accompanist-insets")
-                .to("com.google.accompanist", "accompanist-insets")
+            library("accompanist-ui-controller", "com.google.accompanist", "accompanist-systemuicontroller")
                 .versionRef("accompanist")
 
-            alias("accompanist-swiperefresh")
-                .to("com.google.accompanist", "accompanist-swiperefresh")
+            library("accompanist-swiperefresh", "com.google.accompanist", "accompanist-swiperefresh")
                 .versionRef("accompanist")
 
-            alias("accompanist-flow-layout")
-                .to("com.google.accompanist", "accompanist-flowlayout")
+            library("accompanist-flow-layout", "com.google.accompanist", "accompanist-flowlayout")
                 .versionRef("accompanist")
 
             bundle("accompanist",
                 listOf(
-                    "accompanist-insets",
+                    "accompanist-ui-controller",
                     "accompanist-swiperefresh",
                     "accompanist-flow-layout"
                 )
@@ -264,36 +221,34 @@ dependencyResolutionManagement {
 
             // Coil
 
-            alias("coil").to("io.coil-kt:coil-compose:1.4.0")
+            library("coil", "io.coil-kt:coil-compose:1.4.0")
 
             // App compat
 
-            alias("appcompat").to("androidx.appcompat:appcompat:1.4.1")
+            library("appcompat", "androidx.appcompat:appcompat:1.6.0-alpha01")
 
             // Collections
 
-            alias("collections-immutable").to("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
+            library("collections-immutable", "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 
             // Atomicfu
 
-            alias("atomicfu").to("org.jetbrains.kotlinx:atomicfu:0.17.2")
+            library("atomicfu", "org.jetbrains.kotlinx:atomicfu:0.17.2")
 
             // Logging
 
-            alias("logging").to("ch.qos.logback:logback-classic:1.2.10")
+            library("logging", "ch.qos.logback:logback-classic:1.2.10")
 
             // Gson
 
-            alias("gson").to("com.google.code.gson:gson:2.8.9")
+            library("gson", "com.google.code.gson:gson:2.8.9")
 
             // Sqldelight
 
-            alias("sqldelight-driver-android")
-                .to("com.squareup.sqldelight", "android-driver")
+            library("sqldelight-driver-android", "com.squareup.sqldelight", "android-driver")
                 .versionRef("sqldelight")
 
-            alias("sqldelight-driver-native")
-                .to("com.squareup.sqldelight", "native-driver")
+            library("sqldelight-driver-native", "com.squareup.sqldelight", "native-driver")
                 .versionRef("sqldelight")
         }
     }

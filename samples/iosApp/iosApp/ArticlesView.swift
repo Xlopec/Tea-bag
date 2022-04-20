@@ -170,7 +170,7 @@ struct RowItem: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+/*struct ContentView_Previews: PreviewProvider {
     
     static private let filter = Filter(type: FilterType.favorite, query: "", sources: [])
     static private let article = Article(url: URL(string: "www.google.com")!, title: "Title", author: nil, description: nil, urlToImage: nil, published: Date(), isFavorite: true, source: nil)
@@ -183,7 +183,7 @@ struct ContentView_Previews: PreviewProvider {
         
         ArticlesView(state: state, handler: { _ in }, searchHintText: "Search in articles", headingText: "Feed")
     }
-}
+}*/
 
 private extension Exception {
     var displayMessage: String { return th.message }
