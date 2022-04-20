@@ -58,6 +58,7 @@ public data class ResolveCtx<in M> internal constructor(
  */
 public typealias Sink<T> = suspend (T) -> Unit
 
+@ExperimentalTeaApi
 public infix fun <M> ResolveCtx<M>.effects(
     action: suspend () -> Set<M>,
 ): Job {
@@ -67,6 +68,7 @@ public infix fun <M> ResolveCtx<M>.effects(
     return scope.launch { sink(action()) }
 }
 
+@ExperimentalTeaApi
 public inline infix fun <M> ResolveCtx<M>.effect(
     crossinline action: suspend () -> M?,
 ): Job {
@@ -76,6 +78,7 @@ public inline infix fun <M> ResolveCtx<M>.effect(
     return scope.launch { action()?.also { sink(it) } }
 }
 
+@ExperimentalTeaApi
 public inline infix fun <M> ResolveCtx<M>.sideEffect(
     crossinline action: suspend () -> Unit,
 ): Job {

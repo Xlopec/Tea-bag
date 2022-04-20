@@ -50,7 +50,7 @@ nexusPublishing {
         }
     }
 
-    useStaging.set(libraryVersion !is Snapshot)
+    useStaging.set(!libraryVersion.isSnapshot)
 }
 
 allprojects {

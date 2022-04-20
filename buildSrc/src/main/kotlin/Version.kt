@@ -143,6 +143,8 @@ fun Version(
         )
     }
 
+val Version.isSnapshot: Boolean get() = this is Snapshot
+
 private fun Regex.groupValues(
     s: String,
 ) = (find(s) ?: error("Couldn't parse string '$s' for regex '$pattern'")).groupValues
