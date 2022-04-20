@@ -64,7 +64,7 @@ public infix fun <M> ResolveCtx<M>.effects(
     contract {
         callsInPlace(action, InvocationKind.EXACTLY_ONCE)
     }
-    return scope.launch { sink.invoke(action()) }
+    return scope.launch { sink(action()) }
 }
 
 public inline infix fun <M> ResolveCtx<M>.effect(
@@ -102,3 +102,11 @@ public suspend inline infix fun <C, M> C.effect(
     }
     return setOfNotNull(action(this))
 }
+
+public suspend operator fun <T> Sink<T>.invoke(
+    elements: Iterable<T>,
+): Unit = elements.forEach { t -> invoke(t) }
+
+public suspend operator fun <T> Sink<T>.invoke(
+    vararg elements: T,
+): Unit = elements.forEach { t -> invoke(t) }

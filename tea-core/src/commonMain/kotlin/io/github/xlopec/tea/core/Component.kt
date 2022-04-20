@@ -92,6 +92,7 @@ public val ShareStateWhileSubscribed: ShareOptions =
  * @param M message
  * @param S state
  */
+@ExperimentalTeaApi
 public fun <M, S, C> Component<M, S, C>.observeSnapshots(): Flow<Snapshot<M, S, C>> =
     this(emptyFlow())
 
@@ -101,6 +102,7 @@ public fun <M, S, C> Component<M, S, C>.observeSnapshots(): Flow<Snapshot<M, S, 
  * @receiver component to transform
  * @param S state
  */
+@ExperimentalTeaApi
 public fun <S> Component<*, S, *>.observeStates(): Flow<S> =
     observeSnapshots().map { snapshot -> snapshot.currentState }
 
@@ -110,6 +112,7 @@ public fun <S> Component<*, S, *>.observeStates(): Flow<S> =
  * @receiver component to transform
  * @param C command
  */
+@ExperimentalTeaApi
 public fun <M, S, C> Component<M, S, C>.observeCommands(): Flow<Set<C>> =
     observeSnapshots().map { snapshot -> snapshot.commands }
 
@@ -122,6 +125,7 @@ public fun <M, S, C> Component<M, S, C>.observeCommands(): Flow<Set<C>> =
  * @param M message
  * @param S state
  */
+@ExperimentalTeaApi
 public fun <M, S, C> Component<M, S, C>.states(): ((Flow<M>) -> Flow<S>) =
     { input -> this(input).map { snapshot -> snapshot.currentState } }
 
@@ -134,6 +138,7 @@ public fun <M, S, C> Component<M, S, C>.states(): ((Flow<M>) -> Flow<S>) =
  * @param M message
  * @param S state
  */
+@ExperimentalTeaApi
 public operator fun <M, S, C> Component<M, S, C>.invoke(
     vararg messages: M,
 ): Flow<Snapshot<M, S, C>> = this(flowOf(*messages))
@@ -147,6 +152,7 @@ public operator fun <M, S, C> Component<M, S, C>.invoke(
  * @param M message
  * @param S state
  */
+@ExperimentalTeaApi
 public operator fun <M, S, C> Component<M, S, C>.invoke(
     messages: Iterable<M>,
 ): Flow<Snapshot<M, S, C>> = this(messages.asFlow())
@@ -160,6 +166,7 @@ public operator fun <M, S, C> Component<M, S, C>.invoke(
  * @param M message
  * @param S state
  */
+@ExperimentalTeaApi
 public operator fun <M, S, C> Component<M, S, C>.invoke(
     message: M,
 ): Flow<Snapshot<M, S, C>> = this(flowOf(message))
@@ -172,6 +179,7 @@ public operator fun <M, S, C> Component<M, S, C>.invoke(
  * @param M message
  * @param S state
  */
+@ExperimentalTeaApi
 public infix fun <M, S, C> Component<M, S, C>.with(
     interceptor: Interceptor<M, S, C>,
 ): Component<M, S, C> =
@@ -226,14 +234,14 @@ public fun <M, S, C> Component(
 
     val input = Channel<M>(RENDEZVOUS)
 
-    fun messagesForSnapshot(
-        startFrom: Initial<S, C>,
-    ) = toMessagesFlow(startFrom.commands, input.receiveAsFlow())
+    fun messagesForInitialSnapshot(
+        initial: Initial<S, C>,
+    ) = toMessagesFlow(initial.commands, input.receiveAsFlow())
 
-    val componentFlow = toComponentFlow(initial(), input::send, ::messagesForSnapshot)
+    val upstream = computeSnapshots(initial(), input::send, ::messagesForInitialSnapshot)
         .shareIn(scope, shareOptions)
 
-    return { messages -> componentFlow.withMessageCollector(messages, input::send) }
+    return { messages -> upstream.attachMessageCollector(messages, input::send) }
 }
 
 /**
@@ -246,24 +254,23 @@ public fun <M, S, C> Component(
  * @param input function that will transform each [initial snapshot][Initial] into flow of messages
  */
 @InternalTeaApi
-public fun <M, S, C> Env<M, S, C>.toComponentFlow(
+public fun <M, S, C> Env<M, S, C>.computeSnapshots(
     initials: Flow<Initial<S, C>>,
     sink: Sink<M>,
     input: (Initial<S, C>) -> Flow<M>,
 ): Flow<Snapshot<M, S, C>> =
-    initials.flatMapLatest { initial -> toComputationFlow(input(initial), initial, sink) }
+    initials.flatMapLatest { initial -> computeSnapshots(initial, input(initial), sink) }
 
 /**
- * Emits snapshots emitted by receiver flow without any transformation
- * while collecting messages input
+ * Emits snapshots emitted by receiver flow without any transformation while collecting messages input
  */
 @InternalTeaApi
-public fun <M, S, C> Flow<Snapshot<M, S, C>>.withMessageCollector(
+public fun <M, S, C> Flow<Snapshot<M, S, C>>.attachMessageCollector(
     messages: Flow<M>,
     sink: Sink<M>,
 ): Flow<Snapshot<M, S, C>> = channelFlow {
     launch {
-        // redirects input to sink
+        // start collector coroutine that redirects messages to sink
         messages.collect(sink::invoke)
     }
     collect(::send)
@@ -280,26 +287,30 @@ public fun <S, C> Env<*, S, C>.initial(): Flow<Initial<S, C>> =
 /**
  * For each new message from [input] calculates next [application state, message and commands][Regular].
  * This function resolves messages from commands. Sink is fed with resolved messages. Flow emission starts
- * from [startFrom] snapshot
+ * from [initial] snapshot
+ *
+ * @param initial initial snapshot state
+ * @param input incoming messages for processing
+ * @param sink sink that consumes resolved messages
  */
 @InternalTeaApi
-public fun <M, S, C> Env<M, S, C>.toComputationFlow(
+public fun <M, S, C> Env<M, S, C>.computeSnapshots(
+    initial: Initial<S, C>,
     input: Flow<M>,
-    startFrom: Initial<S, C>,
     sink: Sink<M>,
 ): Flow<Snapshot<M, S, C>> =
     // channel flow is for parallel decomposition
     channelFlow {
-        var current: Snapshot<M, S, C> = startFrom
-        val callContext = ResolveCtx(sink, this@channelFlow)
+        var current: Snapshot<M, S, C> = initial
+        val context = ResolveCtx(sink, this@channelFlow)
 
         input
             .map { message -> nextSnapshot(current, message) }
             .onEach { regular -> current = regular }
-            .onEach { regular -> resolver.resolveAll(callContext, regular.commands) }
+            .onEach { regular -> resolver.resolve(context, regular.commands) }
             .collect(::send)
 
-    }.startFrom(startFrom)
+    }.startFrom(initial)
 
 /**
  * Calculates next snapshot for given arguments on [Env.scope] dispatcher
@@ -333,7 +344,7 @@ public fun <T> Flow<T>.shareIn(
 @InternalTeaApi
 public fun <M, S, C> Env<M, S, C>.resolveAsFlow(
     commands: Iterable<C>,
-): Flow<M> = channelFlow { resolver.resolveAll(ResolveCtx(::send, this), commands) }
+): Flow<M> = channelFlow { resolver.resolve(ResolveCtx(::send, this), commands) }
 
 /**
  * Merges messages flow produced by [initialCommands] and [messages] into single messages flow
@@ -343,14 +354,10 @@ private fun <M, S, C> Env<M, S, C>.toMessagesFlow(
     messages: Flow<M>,
 ): Flow<M> = resolveAsFlow(initialCommands).mergeWith(messages)
 
-private fun <M, C> Resolver<C, M>.resolveAll(
+private fun <M, C> Resolver<C, M>.resolve(
     callContext: ResolveCtx<M>,
     commands: Iterable<C>,
 ) = commands.forEach { command -> this(command, callContext) }
-
-public suspend operator fun <T> Sink<T>.invoke(
-    elements: Iterable<T>,
-): Unit = elements.forEach { t -> invoke(t) }
 
 private suspend fun <M, S, C> Env<M, S, C>.update(
     message: M,
