@@ -22,37 +22,47 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.tea.core.debug.session
+@file:Suppress("FunctionName")
 
-import io.github.xlopec.tea.core.debug.protocol.NotifyServer
-import kotlinx.coroutines.flow.Flow
+package io.github.xlopec.tea.time.travel.component
+
+import io.github.xlopec.tea.core.Env
+import io.github.xlopec.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
+import io.github.xlopec.tea.time.travel.session.DebugSession
+import io.github.xlopec.tea.time.travel.session.SessionFactory
+import io.ktor.http.Url
 
 /**
- * Debug session with ability to observe messages and states from
- * debug server and ability to send notifications
+ * Same as [environment][Env] but with extra settings
  *
+ * @param env see [environment][Env]
+ * @param settings server settings to use
+ * @param M message type
+ * @param S state type
+ * @param C command type
+ * @param J json tree type
+ */
+public data class DebugEnv<M, S, C, J>(
+    val env: Env<M, S, C>,
+    val settings: Settings<M, S, J>
+)
+
+/**
+ * Holds server settings such as component identifier,
+ * json serializer, debug server url and so on
+ *
+ * @param id component identifier
+ * @param url debug server url
+ * @param serializer json serializer
+ * @param sessionFactory a function that for a given server settings creates a new [debug session][DebugSession]
  * @param M message type
  * @param S state type
  * @param J json tree type
  */
-public interface DebugSession<M, S, J> {
-
-    /**
-     * Messages to be consumed by debuggable component
-     */
-    public val messages: Flow<M>
-
-    /**
-     * States that must replace any current state of
-     * debuggable component
-     */
-    public val states: Flow<S>
-
-    /**
-     * Sends packet to debug server
-     */
-    public suspend operator fun invoke(
-        packet: NotifyServer<J>
-    )
-
-}
+public data class Settings<M, S, J>(
+    val id: ComponentId,
+    val serializer: JsonSerializer<J>,
+    val url: Url,
+    val sessionFactory: SessionFactory<M, S, J>
+)

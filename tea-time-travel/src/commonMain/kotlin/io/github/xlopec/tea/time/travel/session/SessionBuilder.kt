@@ -24,9 +24,9 @@
 
 @file:Suppress("FunctionName")
 
-package io.github.xlopec.tea.core.debug.session
+package io.github.xlopec.tea.time.travel.session
 
-import io.github.xlopec.tea.core.debug.component.Settings
+import io.github.xlopec.tea.time.travel.component.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.ws
