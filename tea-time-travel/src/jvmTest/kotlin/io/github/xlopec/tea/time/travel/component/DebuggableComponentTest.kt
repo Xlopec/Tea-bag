@@ -30,13 +30,13 @@ import io.github.xlopec.tea.core.Initial
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.Regular
 import io.github.xlopec.tea.core.component.ComponentTestBase
-import io.github.xlopec.tea.core.debug.gson.GsonNotifyComponentAttached
-import io.github.xlopec.tea.core.debug.gson.GsonNotifyComponentSnapshot
 import io.github.xlopec.tea.core.debug.protocol.JsonSerializer
 import io.github.xlopec.tea.core.invoke
 import io.github.xlopec.tea.core.misc.ThrowingResolver
 import io.github.xlopec.tea.core.misc.runTestCancellingChildren
 import io.github.xlopec.tea.core.noCommand
+import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentAttached
+import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentSnapshot
 import io.github.xlopec.tea.time.travel.misc.TestComponentId
 import io.github.xlopec.tea.time.travel.misc.TestDebugEnv
 import io.github.xlopec.tea.time.travel.misc.TestDebugSession

@@ -25,7 +25,7 @@
 package io.github.xlopec.tea.time.travel.misc
 
 import com.google.gson.JsonElement
-import io.github.xlopec.tea.core.debug.gson.GsonNotifyServer
+import io.github.xlopec.tea.time.travel.gson.GsonNotifyServer
 import io.github.xlopec.tea.time.travel.session.DebugSession
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow

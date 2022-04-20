@@ -32,8 +32,8 @@ import io.github.xlopec.tea.core.debug.app.domain.Valid
 import io.github.xlopec.tea.core.debug.app.domain.Value
 import io.github.xlopec.tea.core.debug.app.state.Server
 import io.github.xlopec.tea.core.debug.app.state.Started
-import io.github.xlopec.tea.core.debug.gson.GsonClientMessage
 import io.github.xlopec.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
 import java.time.LocalDateTime
 import java.util.UUID
 import kotlinx.collections.immutable.PersistentList

@@ -24,7 +24,7 @@
 
 @file:Suppress("FunctionName")
 
-package io.github.xlopec.tea.core.debug.gson
+package io.github.xlopec.tea.time.travel.gson
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

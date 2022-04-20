@@ -22,14 +22,11 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.tea.core.debug.gson.serialization.test
+package io.github.xlopec.tea.time.travel.gson.serialization.test
 
 import com.google.gson.JsonNull
 import com.google.gson.JsonPrimitive
 import com.google.gson.reflect.TypeToken
-import io.github.xlopec.tea.core.debug.gson.Gson
-import io.github.xlopec.tea.core.debug.gson.GsonClientMessage
-import io.github.xlopec.tea.core.debug.gson.serialization.data.Singleton
 import io.github.xlopec.tea.core.debug.protocol.ApplyMessage
 import io.github.xlopec.tea.core.debug.protocol.ApplyState
 import io.github.xlopec.tea.core.debug.protocol.ClientMessage
@@ -44,6 +41,9 @@ import io.github.xlopec.tea.data.Name
 import io.github.xlopec.tea.data.Photo
 import io.github.xlopec.tea.data.UUID
 import io.github.xlopec.tea.data.User
+import io.github.xlopec.tea.time.travel.gson.Gson
+import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
+import io.github.xlopec.tea.time.travel.gson.serialization.data.Singleton
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull

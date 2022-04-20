@@ -19,8 +19,8 @@
 package io.github.xlopec.tea.core.debug.app.state
 
 import io.github.xlopec.tea.core.debug.app.domain.ServerAddress
-import io.github.xlopec.tea.core.debug.gson.GsonClientMessage
 import io.github.xlopec.tea.core.debug.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
 
 interface Server {
 

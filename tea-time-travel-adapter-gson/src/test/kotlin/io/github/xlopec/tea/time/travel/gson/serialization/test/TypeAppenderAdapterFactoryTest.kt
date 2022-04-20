@@ -22,17 +22,17 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.tea.core.debug.gson.serialization.test
+package io.github.xlopec.tea.time.travel.gson.serialization.test
 
-import io.github.xlopec.tea.core.debug.gson.Gson
-import io.github.xlopec.tea.core.debug.gson.serialization.data.A
-import io.github.xlopec.tea.core.debug.gson.serialization.data.Container
-import io.github.xlopec.tea.core.debug.gson.serialization.data.D
-import io.github.xlopec.tea.core.debug.gson.serialization.data.PolyA
-import io.github.xlopec.tea.core.debug.gson.serialization.data.PolyB
-import io.github.xlopec.tea.core.debug.gson.serialization.data.PolyContainer
-import io.github.xlopec.tea.core.debug.gson.serialization.serializer.MapDeserializer
-import io.github.xlopec.tea.core.debug.gson.serialization.serializer.PersistentListSerializer
+import io.github.xlopec.tea.time.travel.gson.Gson
+import io.github.xlopec.tea.time.travel.gson.serialization.data.A
+import io.github.xlopec.tea.time.travel.gson.serialization.data.Container
+import io.github.xlopec.tea.time.travel.gson.serialization.data.D
+import io.github.xlopec.tea.time.travel.gson.serialization.data.PolyA
+import io.github.xlopec.tea.time.travel.gson.serialization.data.PolyB
+import io.github.xlopec.tea.time.travel.gson.serialization.data.PolyContainer
+import io.github.xlopec.tea.time.travel.gson.serialization.serializer.MapDeserializer
+import io.github.xlopec.tea.time.travel.gson.serialization.serializer.PersistentListSerializer
 import kotlin.test.assertEquals
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
