@@ -25,6 +25,7 @@
 package io.github.xlopec.reader.app.feature.filter
 
 import io.github.xlopec.reader.app.AppException
+import io.github.xlopec.reader.app.FilterUpdated
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.domain.Filter
 import io.github.xlopec.reader.app.domain.Query
@@ -50,8 +51,12 @@ fun updateFilters(
         is LoadSources -> state.toLoadUpdate(message.id)
         is ToggleSourceSelection -> state.toToggleSelectionUpdate(message.sourceId)
         is ClearSelection -> state.toClearSelectionUpdate()
-        is InputChanged -> state.toInputChangedUpdate(message.query)
     }
+
+fun updateFilters(
+    message: FilterUpdated,
+    state: FiltersState,
+) = if (message.filter.type == state.filter.type) state.toFilterChangedUpdate(message.filter) else state.noCommand()
 
 private fun FiltersState.toToggleSelectionUpdate(
     sourceId: SourceId,
@@ -64,9 +69,9 @@ private fun selectToggleOperation(
     sources: PersistentSet<SourceId>,
 ) = if (id in sources) PersistentSet<SourceId>::remove else PersistentSet<SourceId>::add
 
-private fun FiltersState.toInputChangedUpdate(
-    query: Query?,
-) = updatedFilter { copy(query = query) }.noCommand()
+private fun FiltersState.toFilterChangedUpdate(
+    filter: Filter,
+) = updatedFilter { filter }.noCommand()
 
 private fun FiltersState.toClearSelectionUpdate() =
     updatedFilter { copy(sources = persistentHashSetOf()) }.noCommand()

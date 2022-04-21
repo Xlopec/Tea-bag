@@ -63,7 +63,7 @@ inline val AppState.screen: ScreenState
     get() = screens.screen
 
 inline fun <reified T : ScreenState> AppState.updateScreen(
-    id: ScreenId?,
+    id: ScreenId? = null,
     noinline how: (T) -> Update<T, Command>,
 ): Update<AppState, Command> {
 

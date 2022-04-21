@@ -37,11 +37,6 @@ sealed interface FilterMessage : ScreenMessage {
     val id: ScreenId
 }
 
-data class InputChanged(
-    override val id: ScreenId,
-    val query: Query?
-) : FilterMessage
-
 @JvmInline
 value class LoadSources(
     override val id: ScreenId,

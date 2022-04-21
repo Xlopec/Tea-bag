@@ -91,8 +91,3 @@ value*/data class OnShareArticle(
     override val id: Nothing?
         get() = null
 }
-
-data class FilterUpdated(
-    override val id: ScreenId,
-    val filter: Filter,
-) : ArticlesMessage
