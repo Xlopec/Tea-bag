@@ -52,7 +52,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.mouseClickable
 import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -386,7 +385,6 @@ private fun ExpandableNode(
 
 val ProjectLocal = compositionLocalOf<Project> { error("Nothing") }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ActionsPopup(
     state: TreeState,

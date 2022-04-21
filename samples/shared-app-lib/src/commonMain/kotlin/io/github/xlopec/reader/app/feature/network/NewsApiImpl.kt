@@ -23,7 +23,6 @@
  */
 
 @file:Suppress("FunctionName")
-@file:OptIn(InternalAPI::class)
 
 package io.github.xlopec.reader.app.feature.network
 
@@ -52,11 +51,9 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ParametersBuilder
 import io.ktor.http.URLProtocol.Companion.HTTPS
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.util.InternalAPI
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -135,7 +132,6 @@ private suspend fun ClientRequestException.toAppException(): AppException =
         this
     )
 
-@OptIn(ExperimentalSerializationApi::class)
 private suspend fun ClientRequestException.errorMessage() = withContext(IO) {
     Json.decodeFromString<JsonElement>(response.bodyAsText())
         .jsonObject["message"]
