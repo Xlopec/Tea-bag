@@ -76,5 +76,4 @@ internal class LRUCacheTest {
 
         lru.size shouldBe 5U
     }
-
 }

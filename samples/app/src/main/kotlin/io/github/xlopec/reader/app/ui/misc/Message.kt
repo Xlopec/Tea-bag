@@ -60,7 +60,7 @@ fun RowMessage(
             text = message,
             textAlign = TextAlign.Center
         )
-        
+
         IconButton(onClick = onClick) {
             Icon(imageVector = Default.Replay, contentDescription = "Retry")
         }

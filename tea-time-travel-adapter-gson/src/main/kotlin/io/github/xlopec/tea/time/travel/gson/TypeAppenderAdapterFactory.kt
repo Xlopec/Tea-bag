@@ -99,7 +99,6 @@ internal object TypeAppenderAdapterFactory : TypeAdapterFactory {
                 }
             }
     }
-
 }
 
 private fun <T> T?.toJsonTree(

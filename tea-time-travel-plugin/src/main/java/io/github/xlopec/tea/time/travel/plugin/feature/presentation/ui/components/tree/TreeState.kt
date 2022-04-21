@@ -166,7 +166,7 @@ private fun Ref.toRenderTree(
     )
 }
 
-//todo rework
+// todo rework
 fun Value.toRenderTree(id: Int = 0, expanded: Boolean = true): Node =
     when (this) {
         is BooleanWrapper, is CharWrapper, is NumberWrapper, is StringWrapper, Null -> Leaf(

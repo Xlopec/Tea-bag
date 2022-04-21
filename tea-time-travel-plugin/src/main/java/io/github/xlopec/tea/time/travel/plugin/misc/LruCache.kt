@@ -73,5 +73,4 @@ class LruCache<K, V>(val capacity: UInt) {
 
         cache[0] = elem
     }
-
 }

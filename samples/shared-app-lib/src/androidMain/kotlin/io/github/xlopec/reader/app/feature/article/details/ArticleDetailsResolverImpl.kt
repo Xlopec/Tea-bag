@@ -56,5 +56,4 @@ fun ArticleDetailsResolver(
 
             return emptySet()
         }
-
     }

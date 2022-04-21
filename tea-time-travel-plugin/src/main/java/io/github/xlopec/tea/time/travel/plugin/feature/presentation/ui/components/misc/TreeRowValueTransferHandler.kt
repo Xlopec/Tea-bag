@@ -22,7 +22,7 @@ import javax.swing.JComponent
 import javax.swing.JTree
 import javax.swing.TransferHandler
 
-class TreeRowValueTransferHandler (
+class TreeRowValueTransferHandler(
     var formatter: ValueFormatter
 ) : TransferHandler() {
     override fun getSourceActions(c: JComponent?): Int = COPY

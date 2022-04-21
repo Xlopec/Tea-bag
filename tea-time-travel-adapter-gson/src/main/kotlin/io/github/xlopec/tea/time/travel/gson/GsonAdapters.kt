@@ -130,7 +130,6 @@ internal object ServerMessageAdapter : JsonSerializer<GsonServerMessage>,
 
     private fun JsonElement.asNotifyComponentAttached() =
         NotifyComponentAttached(asJsonObject["state"], asJsonObject["commands"].asJsonArray.toJsonElementSet())
-
 }
 
 internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
@@ -177,7 +176,6 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
         ApplyMessage(asJsonObject["message"])
 
     private fun JsonElement.asApplyState() = ApplyState(asJsonObject["state"])
-
 }
 
 private inline fun JsonObject(

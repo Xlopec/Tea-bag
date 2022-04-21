@@ -362,7 +362,6 @@ private fun ExpandableNode(
 
         Spacer(Modifier.width(SpaceSmall))
 
-
         Row {
             if (node.childrenCount > 0) {
                 Image(

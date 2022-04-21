@@ -234,5 +234,4 @@ internal class UpdateForNotificationTest {
         state shouldBeSameInstanceAs initialState
         commands.shouldContainExactly(DoWarnUnacceptableMessage(message, initialState))
     }
-
 }

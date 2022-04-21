@@ -36,4 +36,3 @@ interface DefaultMouseListener : MouseListener {
     override fun mouseClicked(e: MouseEvent) {
     }
 }
-

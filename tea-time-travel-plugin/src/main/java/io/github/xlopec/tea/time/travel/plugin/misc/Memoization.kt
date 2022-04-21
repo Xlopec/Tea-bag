@@ -16,7 +16,7 @@
 
 package io.github.xlopec.tea.time.travel.plugin.misc
 
-//todo implement empty static instance with a factory method
+// todo implement empty static instance with a factory method
 data class Key7(
     val a1: Any?,
     val a2: Any? = null,
@@ -40,5 +40,4 @@ inline fun <A1, A2, R> memoize(
             p2: A2
         ): R =
             cache.getOrPut(Key7(p1, p2)) { f(p1, p2) }
-
     }

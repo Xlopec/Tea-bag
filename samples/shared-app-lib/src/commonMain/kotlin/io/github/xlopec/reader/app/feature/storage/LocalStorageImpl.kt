@@ -260,7 +260,7 @@ private fun Filter.toSqlQuery(): String {
 private fun SqlPreparedStatement.bindValues(
     filter: Filter,
 ) {
-    val boundInput = filter.query?.value?.let { "%${it}%" }
+    val boundInput = filter.query?.value?.let { "%$it%" }
 
     if (boundInput != null) {
         bindString(1, boundInput)

@@ -67,4 +67,3 @@ fun createBalloon(
         .setCornerToPointerDistance(30)
         .setCloseButtonEnabled(true)
         .createBalloon()
-

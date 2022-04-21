@@ -54,5 +54,4 @@ public interface DebugSession<M, S, J> {
     public suspend operator fun invoke(
         packet: NotifyServer<J>
     )
-
 }

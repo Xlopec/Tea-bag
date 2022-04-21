@@ -8,7 +8,7 @@ import java.io.File
 data class DoExportSessions(
     val dir: File,
     val sessions: Collection<ComponentDebugState>
-): StoreCommand
+) : StoreCommand
 
 @JvmInline
 value class DoImportSession(

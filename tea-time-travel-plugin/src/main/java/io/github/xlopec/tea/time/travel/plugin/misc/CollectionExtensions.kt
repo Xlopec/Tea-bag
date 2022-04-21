@@ -30,7 +30,6 @@ interface DiffCallback<in T1, in T2> {
         oldItem: T1,
         newItem: T2
     ): Boolean
-
 }
 
 interface UpdateCallback<in T1, in T2> {
@@ -51,7 +50,6 @@ interface UpdateCallback<in T1, in T2> {
         item: T1,
         index: Int
     ) = Unit
-
 }
 
 /**

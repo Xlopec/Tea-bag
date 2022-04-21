@@ -52,7 +52,7 @@ dependencyResolutionManagement {
             version("ktor", "2.0.0")
             version("coroutines", "1.6.1")
             version("compose", "1.2.0-alpha08")
-            version("accompanist", "0.24.6-alpha")
+            version("accompanist", "0.24.7-alpha")
             version("sqldelight", "1.5.3")
 
             // Testing
@@ -202,9 +202,6 @@ dependencyResolutionManagement {
 
             // Accompanist
 
-            library("accompanist-ui-controller", "com.google.accompanist", "accompanist-systemuicontroller")
-                .versionRef("accompanist")
-
             library("accompanist-swiperefresh", "com.google.accompanist", "accompanist-swiperefresh")
                 .versionRef("accompanist")
 
@@ -213,7 +210,6 @@ dependencyResolutionManagement {
 
             bundle("accompanist",
                 listOf(
-                    "accompanist-ui-controller",
                     "accompanist-swiperefresh",
                     "accompanist-flow-layout"
                 )
@@ -241,7 +237,7 @@ dependencyResolutionManagement {
 
             // Gson
 
-            library("gson", "com.google.code.gson:gson:2.8.9")
+            library("gson", "com.google.code.gson:gson:2.9.0")
 
             // Sqldelight
 

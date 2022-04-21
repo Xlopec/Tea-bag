@@ -83,7 +83,6 @@ data class ComponentDebugState(
             """.trimIndent()
         }
     }
-
 }
 
 fun ComponentDebugState.updateFilter(

@@ -81,7 +81,7 @@ internal class DefaultGsonSerializersTest {
         val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
 
         assertEquals(message, fromJson)
-        //fromJson shouldBe message
+        // fromJson shouldBe message
     }
 
     @Test
@@ -146,7 +146,7 @@ internal class DefaultGsonSerializersTest {
             val fromJson = fromJson(json, ClientMessage::class.java)
 
             assertEquals(applyMessage, fromJson)
-            //fromJson shouldBe applyMessage
+            // fromJson shouldBe applyMessage
         }
     }
 
@@ -168,7 +168,7 @@ internal class DefaultGsonSerializersTest {
         )
 
         assertEquals(nullableList, fromJson)
-        //fromJson shouldBe nullableList
+        // fromJson shouldBe nullableList
     }
 
     @Test
@@ -178,7 +178,7 @@ internal class DefaultGsonSerializersTest {
         val fromJson = gsonSerializer.fromJson(json, Any::class.java)
 
         assertNull(fromJson)
-        //fromJson shouldBe null
+        // fromJson shouldBe null
     }
 
     @Test
@@ -191,7 +191,7 @@ internal class DefaultGsonSerializersTest {
             val fromJson = fromJson(json, ClientMessage::class.java)
 
             assertEquals(applyMessage, fromJson)
-            //fromJson shouldBe applyMessage
+            // fromJson shouldBe applyMessage
         }
     }
 
@@ -203,7 +203,7 @@ internal class DefaultGsonSerializersTest {
             val fromJson = fromJson(json, Singleton::class.java)
 
             assertIs<Singleton>(fromJson)
-            //fromJson should beInstanceOf(Singleton::class)
+            // fromJson should beInstanceOf(Singleton::class)
         }
     }
 
@@ -219,9 +219,8 @@ internal class DefaultGsonSerializersTest {
         val fromJson = fromJson(json, NotifyServer::class.java)
 
         assertEquals(message, fromJson)
-        //fromJson shouldBe message
+        // fromJson shouldBe message
     }
-
 }
 
 @Suppress("TestFunctionName")
@@ -232,4 +231,3 @@ private fun NotifyClient(
     ComponentId("test"),
     message
 )
-

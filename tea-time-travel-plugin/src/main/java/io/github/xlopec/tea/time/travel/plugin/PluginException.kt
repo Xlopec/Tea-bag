@@ -95,12 +95,12 @@ private val Throwable.isMissingDependenciesException
 private val Throwable.isNetworkException
     // some of IO exceptions
     get() = findCause { th ->
-        th is TimeoutException
-                || th is TimeoutCancellationException
-                || th is UnknownHostException
-                || th is SSLException
-                || th is SocketTimeoutException
-                || th is ProtocolException
-                || th is UnresolvedAddressException
-                || th is SocketException
+        th is TimeoutException ||
+                th is TimeoutCancellationException ||
+                th is UnknownHostException ||
+                th is SSLException ||
+                th is SocketTimeoutException ||
+                th is ProtocolException ||
+                th is UnresolvedAddressException ||
+                th is SocketException
     } != null

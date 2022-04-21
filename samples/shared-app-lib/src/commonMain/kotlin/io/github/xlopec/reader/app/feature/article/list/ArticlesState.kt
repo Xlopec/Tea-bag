@@ -71,7 +71,6 @@ data class ArticlesState(
             articles: PersistentList<Article> = persistentListOf(),
         ) = ArticlesState(id, filter, Loadable.newLoading(articles))
     }
-
 }
 
 fun ArticlesState.toLoadingNext() =

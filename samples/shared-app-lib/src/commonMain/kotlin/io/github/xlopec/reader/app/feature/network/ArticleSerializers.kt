@@ -48,7 +48,6 @@ object AuthorSerializer : KSerializer<Author?> {
         encoder.encodeNullableString(value?.value)
 
     override fun deserialize(decoder: Decoder): Author? = Author.tryCreate(decoder.decodeString())
-
 }
 
 object DescriptionSerializer : KSerializer<Description?> {
@@ -61,7 +60,6 @@ object DescriptionSerializer : KSerializer<Description?> {
 
     override fun deserialize(decoder: Decoder): Description? =
         Description.tryCreate(decoder.decodeString())
-
 }
 
 object TitleSerializer : KSerializer<Title> {
@@ -71,7 +69,6 @@ object TitleSerializer : KSerializer<Title> {
 
     override fun serialize(encoder: Encoder, value: Title) = encoder.encodeString(value.value)
     override fun deserialize(decoder: Decoder): Title = Title(decoder.decodeString())
-
 }
 
 expect fun Date.toJson(): String
@@ -88,7 +85,6 @@ object CommonDateSerializer : KSerializer<Date> {
 
     override fun deserialize(decoder: Decoder): Date =
         decoder.decodeString().toDate()
-
 }
 
 object UrlSerializer : KSerializer<Url> {
@@ -100,5 +96,4 @@ object UrlSerializer : KSerializer<Url> {
         encoder.encodeString(value.toExternalValue())
 
     override fun deserialize(decoder: Decoder): Url = UrlFor(decoder.decodeString())
-
 }

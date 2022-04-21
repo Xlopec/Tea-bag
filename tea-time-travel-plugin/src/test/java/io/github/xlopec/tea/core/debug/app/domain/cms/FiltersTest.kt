@@ -62,7 +62,7 @@ internal class FiltersTest {
         val filtered = (RegexPredicate("com\\.example\\.Test", false) as Valid).t.applyTo(ref)
 
         assertEquals(ref, filtered)
-        //filtered shouldBe ref
+        // filtered shouldBe ref
     }
 
     @Test
@@ -161,8 +161,6 @@ internal class FiltersTest {
             setOf(promitiveProperty)
         )*/
     }
-
-
 }
 
 private fun UnsafeRegexPredicate(

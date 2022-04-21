@@ -27,5 +27,4 @@ interface PluginSettingsNotifier {
     fun onSettingsUpdated(
         isDetailedToStringEnabled: Boolean
     )
-
 }

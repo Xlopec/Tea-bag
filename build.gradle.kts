@@ -31,7 +31,7 @@ installGitHooks()
 
 plugins {
     kotlin("jvm")
-    id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    id("io.gitlab.arturbosch.detekt") // version "1.20.0"
     id("com.github.ben-manes.versions")
     id("io.github.gradle-nexus.publish-plugin")
 }
@@ -66,12 +66,14 @@ allprojects {
 
     optIn(DefaultOptIns)
 
+    dependencies {
+        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.19.0")
+    }
+
     tasks.withType<Test>().all {
         reports {
-            html.destination =
-                File("${rootProject.buildDir}/junit-reports/${project.name}/html")
-            junitXml.destination =
-                File("${rootProject.buildDir}/junit-reports/${project.name}/xml")
+            html.outputLocation.set(File("${rootProject.buildDir}/junit-reports/${project.name}/html"))
+            junitXml.outputLocation.set(File("${rootProject.buildDir}/junit-reports/${project.name}/xml"))
         }
     }
 }
@@ -117,4 +119,5 @@ val detektFormat by tasks.registering(Detekt::class) {
     exclude("**/resources/**", "**/build/**")
 
     config.setFrom(detektConfig)
+    baseline.set(detektBaseline)
 }

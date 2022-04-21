@@ -57,43 +57,14 @@
     <ID>MaxLineLength:AppTheme.kt$val secondaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant)</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
     <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>
-    <ID>NewLineAtEndOfFile:Adapters.kt$io.github.xlopec.reader.app.serialization.Adapters.kt</ID>
-    <ID>NewLineAtEndOfFile:AndroidAppComponent.kt$io.github.xlopec.reader.app.AndroidAppComponent.kt</ID>
-    <ID>NewLineAtEndOfFile:Annotations.kt$io.github.xlopec.reader.app.Annotations.kt</ID>
-    <ID>NewLineAtEndOfFile:ArticleDetailsModule.kt$io.github.xlopec.reader.app.feature.article.details.ArticleDetailsModule.kt</ID>
-    <ID>NewLineAtEndOfFile:ComponentException.kt$io.github.xlopec.tea.core.misc.ComponentException.kt</ID>
-    <ID>NewLineAtEndOfFile:ComposeAnnotations.kt$io.github.xlopec.reader.app.ComposeAnnotations.kt</ID>
-    <ID>NewLineAtEndOfFile:CompositionsLogger.kt$io.github.xlopec.reader.app.ui.misc.CompositionsLogger.kt</ID>
-    <ID>NewLineAtEndOfFile:Date.kt$io.github.xlopec.tea.data.Date.kt</ID>
-    <ID>NewLineAtEndOfFile:Either.kt$io.github.xlopec.tea.data.Either.kt</ID>
-    <ID>NewLineAtEndOfFile:Env.kt$io.github.xlopec.tea.core.Env.kt</ID>
-    <ID>NewLineAtEndOfFile:Environment.kt$io.github.xlopec.reader.app.Environment.kt</ID>
-    <ID>NewLineAtEndOfFile:ExportImportTest.kt$io.github.xlopec.tea.core.debug.app.feature.storage.ExportImportTest.kt</ID>
-    <ID>NewLineAtEndOfFile:ForeverWaitingResolver.kt$io.github.xlopec.tea.core.misc.ForeverWaitingResolver.kt</ID>
-    <ID>NewLineAtEndOfFile:IosAnnotations.kt$io.github.xlopec.reader.app.IosAnnotations.kt</ID>
-    <ID>NewLineAtEndOfFile:LiveArticleDetailsResolver.kt$io.github.xlopec.reader.app.feature.article.details.LiveArticleDetailsResolver.kt</ID>
-    <ID>NewLineAtEndOfFile:LocalStorage.kt$io.github.xlopec.reader.app.feature.storage.LocalStorage.kt</ID>
-    <ID>NewLineAtEndOfFile:LocalStorageImpl.kt$io.github.xlopec.reader.app.feature.storage.LocalStorageImpl.kt</ID>
-    <ID>NewLineAtEndOfFile:NavigationExtensionsTest.kt$io.github.xlopec.reader.app.NavigationExtensionsTest.kt</ID>
-    <ID>NewLineAtEndOfFile:NewsApi.kt$io.github.xlopec.reader.app.feature.article.list.NewsApi.kt</ID>
-    <ID>NewLineAtEndOfFile:PluginDependenciesSpecExt.kt$.PluginDependenciesSpecExt.kt</ID>
-    <ID>NewLineAtEndOfFile:PopScreen.kt$io.github.xlopec.reader.app.feature.navigation.PopScreen.kt</ID>
-    <ID>NewLineAtEndOfFile:Resolver.kt$io.github.xlopec.tea.core.Resolver.kt</ID>
-    <ID>NewLineAtEndOfFile:Screens.kt$io.github.xlopec.reader.app.Screens.kt</ID>
-    <ID>NewLineAtEndOfFile:Snapshot.kt$io.github.xlopec.tea.core.Snapshot.kt</ID>
-    <ID>NewLineAtEndOfFile:Thread.kt$io.github.xlopec.tea.core.misc.Thread.kt</ID>
-    <ID>NewLineAtEndOfFile:UUID.kt$io.github.xlopec.tea.data.UUID.kt</ID>
-    <ID>NewLineAtEndOfFile:Updater.kt$io.github.xlopec.tea.core.Updater.kt</ID>
-    <ID>NewLineAtEndOfFile:Url.kt$io.github.xlopec.tea.data.Url.kt</ID>
-    <ID>NewLineAtEndOfFile:build.gradle.kts$.build.gradle.kts</ID>
-    <ID>NewLineAtEndOfFile:currentThreadName.kt$io.github.xlopec.tea.core.misc.currentThreadName.kt</ID>
-    <ID>NewLineAtEndOfFile:multiplatform-library.gradle.kts$.multiplatform-library.gradle.kts</ID>
-    <ID>NewLineAtEndOfFile:publish-convention.gradle.kts$.publish-convention.gradle.kts</ID>
-    <ID>NewLineAtEndOfFile:published-multiplatform-library.gradle.kts$.published-multiplatform-library.gradle.kts</ID>
-    <ID>NewLineAtEndOfFile:settings.gradle.kts$.settings.gradle.kts</ID>
-    <ID>NewLineAtEndOfFile:toJson.kt$io.github.xlopec.reader.app.feature.network.toJson.kt</ID>
+    <ID>MaximumLineLength:io.github.xlopec.reader.app.ui.theme.AppTheme.kt:55</ID>
+    <ID>MaximumLineLength:io.github.xlopec.tea.core.debug.app.domain.cms.FiltersTest.kt:114</ID>
+    <ID>MaximumLineLength:io.github.xlopec.tea.core.debug.app.misc.CollectionExtensionsTest.kt:53</ID>
+    <ID>NoWildcardImports:io.github.reader.app.ui.screens.article.ArticlesPreview.kt:38</ID>
+    <ID>NoWildcardImports:io.github.xlopec.reader.app.ui.screens.AppView.kt:29</ID>
+    <ID>NoWildcardImports:io.github.xlopec.tea.time.travel.plugin.domain.Filter.kt:21</ID>
+    <ID>NoWildcardImports:io.github.xlopec.tea.time.travel.plugin.domain.Filter.kt:22</ID>
     <ID>TooGenericExceptionCaught:NettyServer.kt$e: Throwable</ID>
-    <ID>TooGenericExceptionCaught:NewsApiImpl.kt$NewsApiImpl$th: Throwable</ID>
     <ID>TooManyFunctions:ComponentTestBase.kt$ComponentTestBase</ID>
     <ID>TooManyFunctions:RenderExtensions.kt$io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.components.misc.RenderExtensions.kt</ID>
     <ID>UndocumentedPublicClass:AppResolver.kt$AppResolver&lt;Env></ID>
@@ -304,8 +275,8 @@
     <ID>UndocumentedPublicFunction:DefaultDocumentListener.kt$DefaultDocumentListener$fun onValueUpdated(value: String)</ID>
     <ID>UndocumentedPublicFunction:DefaultDocumentListener.kt$inline fun DefaultDocumentListener( crossinline l: (String) -> Unit ): DocumentListener</ID>
     <ID>UndocumentedPublicFunction:DiffingListModel.kt$DiffingListModel$fun swap(new: List&lt;E>)</ID>
-    <ID>UndocumentedPublicFunction:Either.kt$//@OptIn(ExperimentalContracts::class) public operator fun &lt;L> Either&lt;L, *>.component1(): L?</ID>
-    <ID>UndocumentedPublicFunction:Either.kt$//@OptIn(ExperimentalContracts::class) public operator fun &lt;R> Either&lt;*, R>.component2(): R?</ID>
+    <ID>UndocumentedPublicFunction:Either.kt$// @OptIn(ExperimentalContracts::class) public operator fun &lt;L> Either&lt;L, *>.component1(): L?</ID>
+    <ID>UndocumentedPublicFunction:Either.kt$// @OptIn(ExperimentalContracts::class) public operator fun &lt;R> Either&lt;*, R>.component2(): R?</ID>
     <ID>UndocumentedPublicFunction:Either.kt$@JvmName("LeftUnit") public inline fun Left( ifSuccess: () -> Unit, ): Left&lt;Nothing?></ID>
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R, T, F> Either&lt;L, R>.bimap( left: (L) -> T, right: (R) -> F ): Either&lt;T, F></ID>
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R, T> Either&lt;L, R>.fold( left: (L) -> T, right: (R) -> T ): T</ID>
@@ -404,7 +375,7 @@
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S, C> TestScope.TestBaseEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> TestSettings( componentId: ComponentId = TestComponentId, converter: JsonSerializer&lt;JsonElement> = GsonSerializer(), url: Url = Localhost, sessionFactory: SessionFactory&lt;M, S, JsonElement> = { _, block -> TestDebugSession&lt;M, S>().apply { block() } } )</ID>
     <ID>UndocumentedPublicFunction:Thread.kt$expect fun currentThreadName(): String</ID>
-    <ID>UndocumentedPublicFunction:TreeState.kt$//todo rework fun Value.toRenderTree(id: Int = 0, expanded: Boolean = true): Node</ID>
+    <ID>UndocumentedPublicFunction:TreeState.kt$// todo rework fun Value.toRenderTree(id: Int = 0, expanded: Boolean = true): Node</ID>
     <ID>UndocumentedPublicFunction:TreeState.kt$fun FilteredSnapshot.toRenderTree( id: Int, expanded: Boolean, ): SnapshotINode</ID>
     <ID>UndocumentedPublicFunction:TreeState.kt$fun Iterable&lt;FilteredSnapshot>.toRenderTree( expanded: Boolean = false, ): List&lt;SnapshotINode></ID>
     <ID>UndocumentedPublicFunction:TreeView.kt$@Composable fun PopupItem( painter: Painter, text: String, onClick: () -> Unit, )</ID>

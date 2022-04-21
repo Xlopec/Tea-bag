@@ -121,6 +121,4 @@ class TestNewsApi(
 
     override val isIdleNow: Boolean
         get() = runBlocking(dispatcher) { articlesMockData.isEmpty() && sourcesMockData.isEmpty() }
-
 }
-

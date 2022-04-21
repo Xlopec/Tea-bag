@@ -70,9 +70,7 @@ class RenderTreeRenderer private constructor(
             text = transformer(payload, tree.model, formatter)
             icon = payload.icon
         }
-
 }
-
 
 private fun toReadableStateString(
     renderTree: RenderTree,

@@ -59,7 +59,7 @@ internal class TypeAppenderAdapterFactoryTest {
         val fromJson = fromJson(json, A::class.java)
 
         assertEquals(message, fromJson)
-        //fromJson shouldBe message
+        // fromJson shouldBe message
     }
 
     @Test
@@ -70,7 +70,7 @@ internal class TypeAppenderAdapterFactoryTest {
         val fromJson = fromJson(json, String::class.java)
 
         assertEquals(message, fromJson)
-        //fromJson shouldBe message
+        // fromJson shouldBe message
     }
 
     @Test
@@ -86,7 +86,7 @@ internal class TypeAppenderAdapterFactoryTest {
             val fromJson = fromJson(json, Container::class.java)
 
             assertEquals(container, fromJson)
-            //fromJson shouldBe container
+            // fromJson shouldBe container
         }
 
     @Test
@@ -102,7 +102,6 @@ internal class TypeAppenderAdapterFactoryTest {
             val fromJson = fromJson(json, PolyContainer::class.java)
 
             assertEquals(container, fromJson)
-            //fromJson shouldBe container
+            // fromJson shouldBe container
         }
-
 }

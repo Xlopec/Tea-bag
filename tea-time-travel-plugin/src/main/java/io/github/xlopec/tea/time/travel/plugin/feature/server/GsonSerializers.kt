@@ -95,4 +95,3 @@ internal fun JsonPrimitive.toNumberValue(): NumberWrapper = NumberWrapper(asNumb
 
 internal fun Iterable<JsonElement>.toCollectionWrapper(): CollectionWrapper =
     CollectionWrapper(map { it.asJsonObject.toRef() })
-

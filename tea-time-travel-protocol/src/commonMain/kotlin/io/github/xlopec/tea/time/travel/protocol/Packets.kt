@@ -55,4 +55,3 @@ public data class NotifyClient<out J>(
     val component: ComponentId,
     val message: ClientMessage<J>,
 )
-

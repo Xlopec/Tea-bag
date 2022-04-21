@@ -72,7 +72,6 @@ abstract class ComponentTestBase(
             assertEquals(2, counter, "Counter should be equal 2")
         }
 
-
     @Test
     fun `when component receives input then it emits correct sequence of snapshots`() =
         runTestCancellingChildren {
@@ -146,7 +145,7 @@ abstract class ComponentTestBase(
                 { ch, ctx ->
                     ctx effects {
                         if (ch == 'a') setOf(
-                            ch + 1,// only this message should be consumed
+                            ch + 1, // only this message should be consumed
                             ch + 2,
                             ch + 3
                         ) else setOf()

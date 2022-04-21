@@ -62,7 +62,7 @@ fun SearchHeader(
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     Card(
-        modifier = modifier//rm
+        modifier = modifier // rm
             .statusBarsPadding()
             .fillMaxWidth(),
         elevation = elevation,

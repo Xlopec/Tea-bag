@@ -41,7 +41,6 @@ private object AppUpdaterImpl : AppUpdater {
             is StoreMessage -> updateForStoreMessage(message, state)
             is ServerMessage -> updateForServerMessage(message, state)
         }
-
 }
 
 internal fun warnUnacceptableMessage(

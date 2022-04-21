@@ -85,7 +85,6 @@ data class Alpha(
         ) = AlphaRegexp.groupValues(rawTag)
             .let { group -> Alpha(rawTag, group.toMajorMinorPatch(), group[4].toInt()) }
     }
-
 }
 
 data class ReleaseCandidate(
@@ -109,7 +108,6 @@ data class ReleaseCandidate(
                 )
             }
     }
-
 }
 
 data class Stable(
@@ -121,7 +119,6 @@ data class Stable(
             rawTag: String,
         ) = Stable(rawTag, StableRegexp.groupValues(rawTag).toMajorMinorPatch())
     }
-
 }
 
 fun Version(
@@ -184,7 +181,7 @@ fun Version.toVersionName(): String =
     when (this) {
         is Snapshot -> commit?.let { sha -> "${sha.take(CommitHashLength)}-SNAPSHOT" } ?: "SNAPSHOT"
         is Alpha -> "${mainVersion.versionName}-alpha$alpha"
-        is ReleaseCandidate -> "${mainVersion.versionName}-${alpha?.let { "alpha$it-" } ?: ""}rc${candidate}"
+        is ReleaseCandidate -> "${mainVersion.versionName}-${alpha?.let { "alpha$it-" } ?: ""}rc$candidate"
         is Stable -> mainVersion.versionName
     }
 
@@ -195,4 +192,4 @@ fun Version.toOssrhDeploymentUri(): URI =
     }
 
 val MajorMinorPatch.versionName
-    get() = "${major}.${minor}.${patch}"
+    get() = "$major.$minor.$patch"

@@ -42,7 +42,6 @@ interface FiltersResolver<Env> {
     suspend fun Env.resolve(
         command: FilterCommand,
     ): Set<FilterMessage>
-
 }
 
 fun <Env> FiltersResolver(): FiltersResolver<Env>

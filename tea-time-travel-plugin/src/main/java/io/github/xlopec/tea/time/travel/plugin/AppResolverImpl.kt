@@ -44,5 +44,4 @@ private class AppResolverImpl<Env> :
             }.fold(::setOfNotNull, ::setOf)
         }
     }
-
 }

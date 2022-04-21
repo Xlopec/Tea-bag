@@ -83,7 +83,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         cancel()
         super.onDestroy()
     }
-
 }
 
 private val Collection<Command>.hasCloseCommand: Boolean

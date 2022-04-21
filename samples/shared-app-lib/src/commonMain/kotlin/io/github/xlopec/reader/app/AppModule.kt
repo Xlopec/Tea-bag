@@ -40,5 +40,4 @@ fun <Env> AppModule(): AppModule<Env> where Env : ArticlesResolver<Env>,
     object : AppModule<Env>,
         AppUpdater<Env> by AppUpdater(),
         AppResolver<Env> by AppResolver() {
-
     }

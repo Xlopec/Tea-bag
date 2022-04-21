@@ -44,7 +44,6 @@ object SourceIdSerializer : KSerializer<SourceId> {
         encoder.encodeString(value.value)
 
     override fun deserialize(decoder: Decoder) = SourceId(decoder.decodeString())
-
 }
 
 object SourceNameSerializer : KSerializer<SourceName> {
@@ -56,7 +55,6 @@ object SourceNameSerializer : KSerializer<SourceName> {
         encoder.encodeNullableString(value.value)
 
     override fun deserialize(decoder: Decoder) = SourceName(decoder.decodeString())
-
 }
 
 object SourceDescriptionSerializer : KSerializer<SourceDescription?> {
@@ -68,5 +66,4 @@ object SourceDescriptionSerializer : KSerializer<SourceDescription?> {
         encoder.encodeNullableString(value?.value)
 
     override fun deserialize(decoder: Decoder) = tryCreate(decoder.decodeString(), ::SourceDescription)
-
 }

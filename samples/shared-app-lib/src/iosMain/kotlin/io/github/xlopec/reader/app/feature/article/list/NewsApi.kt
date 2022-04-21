@@ -25,7 +25,7 @@
 package io.github.xlopec.reader.app.feature.article.list
 
 import io.github.xlopec.reader.app.feature.network.NewsApiImpl
-import io.ktor.client.engine.darwin.*
+import io.ktor.client.engine.darwin.Darwin
 import platform.Foundation.NSLocale
 import platform.Foundation.countryCode
 import platform.Foundation.currentLocale

@@ -120,7 +120,7 @@ fun NavigationStack.floatGroup(
     tabIdx: Int,
     tabId: ScreenId
 ): NavigationStack {
-    require(tabIdx in indices) { "Tab index out of bounds, bounds=${indices}, index=$tabIdx" }
+    require(tabIdx in indices) { "Tab index out of bounds, bounds=$indices, index=$tabIdx" }
 
     var bottomGroupIdx = 0
 

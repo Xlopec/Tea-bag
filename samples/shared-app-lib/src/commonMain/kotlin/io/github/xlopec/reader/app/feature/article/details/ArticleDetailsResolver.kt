@@ -31,5 +31,4 @@ fun interface ArticleDetailsResolver {
     suspend fun resolve(
         command: ArticleDetailsCommand
     ): Set<Message>
-
 }

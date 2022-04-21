@@ -26,4 +26,4 @@ inline fun <M, S1, S2> ((Flow<M>) -> Flow<S1>).mapS(
 inline fun <M, S1, S2> ((Flow<M>) -> Flow<S1>).mapNullableS(
     crossinline mapper: (S1) -> S2?
 ): ((Flow<M>) -> Flow<S2>) =
-    { input -> this(input).mapNotNull { s1 -> mapper(s1) }}
+    { input -> this(input).mapNotNull { s1 -> mapper(s1) } }

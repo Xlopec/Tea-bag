@@ -42,5 +42,4 @@ internal class TestDebugSession<M, S>(
     override suspend fun invoke(packet: GsonNotifyServer) {
         _packets += packet
     }
-
 }

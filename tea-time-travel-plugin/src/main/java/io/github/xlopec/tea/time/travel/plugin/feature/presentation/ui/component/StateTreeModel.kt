@@ -42,7 +42,6 @@ class StateTreeModel private constructor(
                 delegate.swap(value)
             }
         }
-
 }
 
 private fun DefaultTreeModel.swap(

@@ -55,5 +55,4 @@ private class StorageResolverImpl(
 
     private fun DoStoreSettings.storeSettings() =
         Left { properties.settings = settings }
-
 }

@@ -31,6 +31,6 @@ fun updateArticleDetails(
     message: ArticleDetailsMessage,
     screen: ArticleDetailsState,
 ): Update<ArticleDetailsState, ArticleDetailsCommand> =
-    when(message) {
+    when (message) {
         is OpenInBrowser -> screen command DoOpenArticle(screen.article)
     }

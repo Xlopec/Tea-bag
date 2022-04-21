@@ -60,5 +60,4 @@ private class GsonSerializer(
         json: String,
         cl: KClass<T>
     ): T = gson.fromJson(json, cl.java)
-
 }

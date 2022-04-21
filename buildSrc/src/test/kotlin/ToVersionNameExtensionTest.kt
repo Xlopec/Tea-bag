@@ -100,7 +100,6 @@ internal class ToVersionNameExtensionTest {
     @Test
     fun `when convert to version name, given parse release version from invalid tag, then parse exception thrown`() =
         shouldThrowForEach<IllegalStateException>(Stable::fromTag, "v1.2.3-rc1", "1.2.3")
-
 }
 
 // todo rewrite using kotest property tests
