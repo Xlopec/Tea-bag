@@ -70,8 +70,8 @@ private suspend fun NewsApi.resolveSources(
 ) = command effect {
     fetchNewsSources().fold(
         left = {
-            SourcesLoaded(id,
-                it.sources.mapToPersistentList(SourceResponseElement::toSource))
+            SourcesLoadSuccess(id,
+                               it.sources.mapToPersistentList(SourceResponseElement::toSource))
         },
         right = { SourcesLoadException(id, it) }
     )

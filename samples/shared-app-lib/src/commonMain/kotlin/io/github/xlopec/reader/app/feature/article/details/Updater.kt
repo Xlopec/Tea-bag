@@ -27,10 +27,9 @@ package io.github.xlopec.reader.app.feature.article.details
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 
-fun updateArticleDetails(
+fun ArticleDetailsState.toArticleDetailsUpdate(
     message: ArticleDetailsMessage,
-    screen: ArticleDetailsState,
 ): Update<ArticleDetailsState, ArticleDetailsCommand> =
     when (message) {
-        is OpenInBrowser -> screen command DoOpenArticle(screen.article)
+        is OpenInBrowser -> this command DoOpenArticle(article)
     }

@@ -57,12 +57,14 @@ data class SuggestionsLoaded(
     val suggestions: ImmutableList<Query>,
 ) : FilterMessage
 
+sealed interface SourcesLoadResult : FilterMessage
+
+data class SourcesLoadSuccess(
+    override val id: ScreenId,
+    val sources: ImmutableList<Source>,
+) : SourcesLoadResult
+
 data class SourcesLoadException(
     override val id: ScreenId,
     val exception: AppException
-) : FilterMessage
-
-data class SourcesLoaded(
-    override val id: ScreenId,
-    val sources: ImmutableList<Source>,
-) : FilterMessage
+) : SourcesLoadResult

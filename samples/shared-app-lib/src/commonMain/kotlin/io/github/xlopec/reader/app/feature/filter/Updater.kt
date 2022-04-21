@@ -40,17 +40,15 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentHashSetOf
 
-fun updateFilters(
+fun FiltersState.toFiltersUpdate(
     message: FilterMessage,
-    state: FiltersState,
 ): Update<FiltersState, FilterCommand> =
     when (message) {
-        is SuggestionsLoaded -> state.toLoadedUpdate(message.suggestions)
-        is SourcesLoaded -> state.toPreviewUpdate(message.sources)
-        is SourcesLoadException -> state.toExceptionUpdate(message.exception)
-        is LoadSources -> state.toLoadUpdate(message.id)
-        is ToggleSourceSelection -> state.toToggleSelectionUpdate(message.sourceId)
-        is ClearSelection -> state.toClearSelectionUpdate()
+        is SuggestionsLoaded -> onLoaded(message.suggestions)
+        is LoadSources -> onLoad(message.id)
+        is SourcesLoadResult -> onSourcesLoadResult(message)
+        is ToggleSourceSelection -> onToggleSelection(message.sourceId)
+        is ClearSelection -> onClearSelection()
     }
 
 fun updateFilters(
@@ -58,7 +56,7 @@ fun updateFilters(
     state: FiltersState,
 ) = if (message.filter.type == state.filter.type) state.toFilterChangedUpdate(message.filter) else state.noCommand()
 
-private fun FiltersState.toToggleSelectionUpdate(
+private fun FiltersState.onToggleSelection(
     sourceId: SourceId,
 ) = updatedFilter {
     copy(sources = selectToggleOperation(sourceId, sources)(sources, sourceId))
@@ -73,22 +71,29 @@ private fun FiltersState.toFilterChangedUpdate(
     filter: Filter,
 ) = updatedFilter { filter }.noCommand()
 
-private fun FiltersState.toClearSelectionUpdate() =
+private fun FiltersState.onClearSelection() =
     updatedFilter { copy(sources = persistentHashSetOf()) }.noCommand()
 
-private fun FiltersState.toLoadUpdate(
+private fun FiltersState.onLoad(
     id: ScreenId,
 ) = command(DoLoadSources(id))
 
-private fun FiltersState.toExceptionUpdate(
+private fun FiltersState.onSourcesLoadResult(
+    result: SourcesLoadResult
+) = when(result) {
+    is SourcesLoadException -> onSourcesLoadException(result.exception)
+    is SourcesLoadSuccess -> onSourcesLoaded(result.sources)
+}
+
+private fun FiltersState.onSourcesLoadException(
     exception: AppException,
 ) = copy(sourcesState = sourcesState.toException(exception)).noCommand()
 
-private fun FiltersState.toPreviewUpdate(
+private fun FiltersState.onSourcesLoaded(
     sources: ImmutableList<Source>,
 ) = copy(sourcesState = sourcesState.toPreview(sources)).noCommand()
 
-private fun FiltersState.toLoadedUpdate(
+private fun FiltersState.onLoaded(
     suggestions: ImmutableList<Query>,
 ) = copy(suggestions = suggestions).noCommand()
 

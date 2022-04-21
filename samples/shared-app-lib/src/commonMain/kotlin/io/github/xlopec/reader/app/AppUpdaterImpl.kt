@@ -31,12 +31,14 @@ import io.github.xlopec.reader.app.command.DoLog
 import io.github.xlopec.reader.app.command.DoStoreDarkMode
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsMessage
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
-import io.github.xlopec.reader.app.feature.article.details.updateArticleDetails
+import io.github.xlopec.reader.app.feature.article.details.toArticleDetailsUpdate
 import io.github.xlopec.reader.app.feature.article.list.ArticlesMessage
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
+import io.github.xlopec.reader.app.feature.article.list.toArticlesUpdate
 import io.github.xlopec.reader.app.feature.article.list.updateArticles
 import io.github.xlopec.reader.app.feature.filter.FilterMessage
 import io.github.xlopec.reader.app.feature.filter.FiltersState
+import io.github.xlopec.reader.app.feature.filter.toFiltersUpdate
 import io.github.xlopec.reader.app.feature.filter.updateFilters
 import io.github.xlopec.reader.app.feature.navigation.Navigation
 import io.github.xlopec.reader.app.feature.navigation.navigate
@@ -62,29 +64,28 @@ private fun updateScreen(
 ): Update<AppState, Command> =
     when (message) {
         is FilterMessage -> state.updateScreen<FiltersState>(message.id) { screen ->
-            updateFilters(message, screen)
+            screen.toFiltersUpdate(message)
         }
         is ArticlesMessage -> state.updateScreen<ArticlesState>(message.id) { screen ->
-            updateArticles(message, screen)
+            screen.toArticlesUpdate(message)
         }
         is ArticleDetailsMessage -> state.updateScreen<ArticleDetailsState>(message.id) { screen ->
-            updateArticleDetails(message, screen)
+            screen.toArticleDetailsUpdate(message)
         }
         is SettingsMessage -> state.toSettingsUpdate(message)
         is FilterUpdated -> state.updateScreen<ScreenState> { screen ->
-            updateFilters(screen, message)
+            screen.toFiltersBroadcastUpdate(message)
         }
         is Log -> state.toLogUpdate(message)
         else -> error("Unknown screen message, was $message")
     }
 
-private fun updateFilters(
-    screen: ScreenState,
+private fun ScreenState.toFiltersBroadcastUpdate(
     message: FilterUpdated
-) = when (screen) {
-    is ArticlesState -> updateArticles(message, screen)
-    is FiltersState -> updateFilters(message, screen)
-    else -> screen.noCommand()
+) = when (this) {
+    is ArticlesState -> updateArticles(message, this)
+    is FiltersState -> updateFilters(message, this)
+    else -> noCommand()
 }
 
 private fun AppState.toLogUpdate(
