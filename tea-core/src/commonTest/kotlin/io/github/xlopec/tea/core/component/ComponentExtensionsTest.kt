@@ -121,5 +121,4 @@ internal class ComponentExtensionsTest {
 
             assertContains(messages, expectedMessage)
         }
-
 }

@@ -115,7 +115,6 @@ class ComponentView private constructor(
             return ComponentView(initial, id, project, component, scope)
                 .apply { scope.launch { render(id, component) } }
         }
-
     }
 
     lateinit var root: JPanel
@@ -200,9 +199,9 @@ class ComponentView private constructor(
 
         val newFormatter = state.formatter
 
-        if (newFormatter !== snapshotRenderer.formatter
-            || newFormatter !== stateRenderer.formatter
-            || newFormatter !== transferHandler.formatter
+        if (newFormatter !== snapshotRenderer.formatter ||
+            newFormatter !== stateRenderer.formatter ||
+            newFormatter !== transferHandler.formatter
         ) {
             snapshotRenderer.formatter = newFormatter
             stateRenderer.formatter = newFormatter
@@ -232,7 +231,6 @@ class ComponentView private constructor(
         regexCheckBox.isSelected = filter.option === FilterOption.REGEX
         wordsCheckBox.isSelected = filter.option === FilterOption.WORDS
     }
-
 }
 
 private inline val ComponentViewState.formatter: ValueFormatter

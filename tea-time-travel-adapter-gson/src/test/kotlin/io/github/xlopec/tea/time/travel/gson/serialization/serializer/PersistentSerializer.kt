@@ -67,7 +67,6 @@ internal object PersistentListSerializer : JsonSerializer<PersistentList<*>>,
             add(context.serialize(v))
         }
     }
-
 }
 
 private inline val Class<*>.isJsonPrimitive: Boolean

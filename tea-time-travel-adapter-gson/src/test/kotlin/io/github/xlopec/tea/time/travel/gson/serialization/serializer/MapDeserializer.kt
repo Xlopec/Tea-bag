@@ -48,5 +48,4 @@ internal object MapDeserializer : JsonDeserializer<Map<*, *>> {
                 )
             }
     }
-
 }

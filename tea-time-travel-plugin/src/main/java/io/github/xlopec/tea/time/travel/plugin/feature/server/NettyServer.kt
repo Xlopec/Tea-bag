@@ -80,7 +80,6 @@ class NettyServer(
         withContext(IO) {
             stop(1, 1)
         }
-
 }
 
 private fun NettyAppEngine(
@@ -149,7 +148,6 @@ private suspend fun processIncomingFrame(
                     message.toNotification(packet.componentId, SnapshotMeta())
                 )
             }
-
         } catch (e: Throwable) {
             events.emit(OperationException(e))
         }

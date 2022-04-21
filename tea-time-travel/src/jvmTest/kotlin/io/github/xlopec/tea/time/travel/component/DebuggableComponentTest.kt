@@ -141,7 +141,6 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
                 }
             }
         }
-
 }
 
 private inline fun <reified T : Any> JsonSerializer<JsonElement>.fromJson(

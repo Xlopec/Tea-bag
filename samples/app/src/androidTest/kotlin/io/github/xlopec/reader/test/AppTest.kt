@@ -99,7 +99,6 @@ internal class AppTest {
 
         onNode(hasTestTag(ArticleTestTag(TestUrl))).assertIsDisplayed()
     }
-
 }
 
 private val TestUrl = URL("https://www.google.com")

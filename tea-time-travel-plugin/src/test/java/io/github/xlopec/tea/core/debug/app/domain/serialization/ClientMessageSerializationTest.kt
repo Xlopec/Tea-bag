@@ -128,5 +128,4 @@ internal class ClientMessageSerializationTest {
             )
         )
     }
-
 }

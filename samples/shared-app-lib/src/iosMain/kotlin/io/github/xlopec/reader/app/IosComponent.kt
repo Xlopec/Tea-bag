@@ -72,7 +72,6 @@ class IosComponent(
 
         return Cancellation { renderScope.cancel() }
     }
-
 }
 
 private fun AppComponent(

@@ -68,7 +68,6 @@ fun ComponentTab(
                     contentDescription = "Close tab"
                 )
             }
-
         }
     }
 }

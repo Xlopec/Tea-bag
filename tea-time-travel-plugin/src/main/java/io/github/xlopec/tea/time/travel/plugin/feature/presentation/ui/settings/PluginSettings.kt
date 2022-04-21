@@ -55,5 +55,4 @@ class PluginSettings(
     override fun createComponent(): JComponent = root
 
     override fun enableSearch(option: String?): Runnable? = null
-
 }

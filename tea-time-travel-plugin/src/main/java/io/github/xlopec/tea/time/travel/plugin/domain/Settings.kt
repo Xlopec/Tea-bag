@@ -40,7 +40,7 @@ value class Port(
     val value: Int
 )
 
-//todo add remote call timeout
+// todo add remote call timeout
 data class Settings(
     val host: Validated<Host>,
     val port: Validated<Port>,

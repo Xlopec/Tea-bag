@@ -31,5 +31,4 @@ interface ArticlesResolver<Env> {
     suspend fun Env.resolve(
         command: ArticlesCommand
     ): Set<Message>
-
 }

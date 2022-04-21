@@ -68,6 +68,4 @@ internal class PolyA : Poly {
     override fun hashCode(): Int {
         return property.hashCode()
     }
-
-
 }

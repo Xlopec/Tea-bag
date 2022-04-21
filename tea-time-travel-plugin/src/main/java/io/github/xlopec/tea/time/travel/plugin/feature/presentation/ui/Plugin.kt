@@ -317,7 +317,6 @@ private fun State.canStart(): Boolean {
     return this is Stopped && canStart
 }
 
-
 private val State.serverActionIcon: Painter
     @Composable get() = when (this) {
         is Stopped, is Starting -> Execute

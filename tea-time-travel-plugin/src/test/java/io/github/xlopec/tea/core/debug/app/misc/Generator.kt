@@ -46,7 +46,6 @@ object HostGen : Gen<Validated<Host>> {
                     Host.of("www.google.com")!!
             )
     )
-
 }
 
 object PortGen : Gen<Validated<Port>> {
@@ -68,7 +67,6 @@ object PortGen : Gen<Validated<Port>> {
                     Port(100)
             )
     )
-
 }
 
 val SettingsGen = Gen.bind(HostGen, PortGen) { h, p -> Settings(h, p, false) }

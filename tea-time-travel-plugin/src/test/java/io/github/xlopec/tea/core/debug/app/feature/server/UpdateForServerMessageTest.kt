@@ -53,8 +53,8 @@ internal class UpdateForServerMessageTest {
             val (state, commands) = updateForServerMessage(StartServer, stopped)
 
             if (settings.host.isValid() && settings.port.isValid()) {
-                state == Starting(settings)
-                        && commands == setOf(DoStartServer(ServerAddress(settings.host.value!!, settings.port.value!!)))
+                state == Starting(settings) &&
+                        commands == setOf(DoStartServer(ServerAddress(settings.host.value!!, settings.port.value!!)))
             } else {
                 state === stopped && commands.isEmpty()
             }
@@ -79,5 +79,4 @@ internal class UpdateForServerMessageTest {
         state shouldBeSameInstanceAs initialState
         commands.shouldContainExactly(DoWarnUnacceptableMessage(StopServer, initialState))
     }
-
 }

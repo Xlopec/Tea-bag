@@ -33,5 +33,4 @@ fun interface AppResolver<Env> {
         command: Command,
         context: ResolveCtx<Message>
     )
-
 }

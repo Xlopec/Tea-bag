@@ -49,5 +49,3 @@ class InternalException(
     override val message: String,
     cause: Throwable,
 ) : AppException(message, cause)
-
-

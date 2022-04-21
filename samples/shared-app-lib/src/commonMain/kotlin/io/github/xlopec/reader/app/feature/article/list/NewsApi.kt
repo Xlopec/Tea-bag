@@ -49,5 +49,4 @@ interface NewsApi {
     ): Either<ArticleResponse, AppException>
 
     suspend fun fetchNewsSources(): Either<SourcesResponse, AppException>
-
 }

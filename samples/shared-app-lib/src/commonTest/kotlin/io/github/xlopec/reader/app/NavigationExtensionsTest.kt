@@ -83,7 +83,6 @@ class NavigationExtensionsTest {
             persistentListOf<ScreenState>().floatGroup(-1, RandomUUID())
         }
     }
-
 }
 
 private data class TestNestedScreen(

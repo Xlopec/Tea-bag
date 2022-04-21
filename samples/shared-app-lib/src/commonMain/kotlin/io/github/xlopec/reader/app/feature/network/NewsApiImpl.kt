@@ -96,7 +96,7 @@ private fun HttpClient(
     engine: HttpClientEngineFactory<HttpClientEngineConfig>,
     logLevel: LogLevel,
 ) = HttpClient(engine) {
-
+    expectSuccess = true
     install(ContentNegotiation) {
         json(json = Json {
             ignoreUnknownKeys = true
@@ -136,8 +136,7 @@ private suspend fun ClientRequestException.toAppException(): AppException =
     )
 
 @OptIn(ExperimentalSerializationApi::class)
-private suspend fun ClientRequestException.errorMessage(
-) = withContext(IO) {
+private suspend fun ClientRequestException.errorMessage() = withContext(IO) {
     Json.decodeFromString<JsonElement>(response.bodyAsText())
         .jsonObject["message"]
         ?.jsonPrimitive

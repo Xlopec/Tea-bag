@@ -36,7 +36,6 @@ interface DefaultDocumentListener : DocumentListener {
     }
 
     fun onValueUpdated(value: String) = Unit
-
 }
 
 inline fun DefaultDocumentListener(

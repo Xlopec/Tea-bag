@@ -29,5 +29,3 @@ internal fun exportSessions(
     state: Started
 ): Update<State, Command> =
     state command DoExportSessions(message.dir, message.ids.map(state.debugState::component))
-
-

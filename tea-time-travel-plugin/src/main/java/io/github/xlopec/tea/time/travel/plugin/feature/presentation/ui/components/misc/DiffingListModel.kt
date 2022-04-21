@@ -59,5 +59,4 @@ class DiffingListModel<E>(private val diff: DiffCallback<E, E>) : AbstractListMo
     fun swap(new: List<E>) {
         delegate.replaceAll(new, diff)
     }
-
 }

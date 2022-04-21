@@ -85,7 +85,6 @@ private fun applyMessage(
     return state command DoApplyMessage(message.componentId, m, state.server)
 }
 
-
 private fun removeSnapshots(
     componentId: ComponentId,
     ids: Set<SnapshotId>,

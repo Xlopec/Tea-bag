@@ -22,7 +22,7 @@ private class NotificationResolverImpl(
     override suspend fun resolve(
         command: NotifyCommand
     ): Left<Nothing?> =
-        when(command) {
+        when (command) {
             is DoNotifyOperationException -> command.notifyException()
             is DoWarnUnacceptableMessage -> command.warn()
             is DoNotifyComponentAttached -> command.notifyAttached()

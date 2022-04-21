@@ -49,7 +49,7 @@ class SnapshotTreeModel private constructor(
             newItem: FilteredSnapshot,
             newIndex: Int
         ) {
-            //fixme mutate instead
+            // fixme mutate instead
             rootNode.remove(oldIndex)
             delegate.insertNodeInto(newItem.toComponentSubTree(), rootNode, oldIndex)
         }
@@ -84,7 +84,6 @@ class SnapshotTreeModel private constructor(
     override fun getRoot() = rootNode
 
     operator fun get(i: Int) = logicalNodes[i]
-
 }
 
 private fun FilteredSnapshot.toComponentSubTree(): DefaultMutableTreeNode =

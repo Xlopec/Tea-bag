@@ -24,5 +24,4 @@ fun interface AppResolver<Env> {
         command: Command,
         ctx: ResolveCtx<Message>
     )
-
 }

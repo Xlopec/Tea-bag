@@ -140,7 +140,6 @@ internal class UpdateForUiMessageTest {
 
         commands.shouldBeEmpty()
         state shouldBe StartedFromPairs(otherStates + (id to ComponentDebugState(id, Null)))
-
     }
 
     @Test
@@ -301,5 +300,4 @@ internal class UpdateForUiMessageTest {
             }
         }
     }
-
 }

@@ -87,7 +87,7 @@ public inline fun <L, R, T> Either<L, R>.mapR(
     right: (R) -> T
 ): Either<L, T> = bimap({ it }, right)
 
-//@OptIn(ExperimentalContracts::class)
+// @OptIn(ExperimentalContracts::class)
 public operator fun <L> Either<L, *>.component1(): L? {
     // contracts aren't supported for operator functions,
     // check for more info https://youtrack.jetbrains.com/issue/KT-32313
@@ -98,7 +98,7 @@ public operator fun <L> Either<L, *>.component1(): L? {
     return (this as? Left)?.value
 }
 
-//@OptIn(ExperimentalContracts::class)
+// @OptIn(ExperimentalContracts::class)
 public operator fun <R> Either<*, R>.component2(): R? {
     // contracts aren't supported for operator functions,
     // check for more info https://youtrack.jetbrains.com/issue/KT-32313

@@ -73,7 +73,6 @@ internal class DebugWebSocketSession<M : Any, S : Any, J>(
         is ApplyMessage<J> -> Left(fromJsonTree(message.message, mClass))
         is ApplyState<J> -> Right(fromJsonTree(message.state, sClass))
     }
-
 }
 
 private fun <S> Flow<Either<*, S>>.states(): Flow<S> =

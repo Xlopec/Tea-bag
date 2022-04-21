@@ -25,5 +25,4 @@ fun interface AppUpdater {
         message: Message,
         state: State
     ): Update<State, Command>
-
 }

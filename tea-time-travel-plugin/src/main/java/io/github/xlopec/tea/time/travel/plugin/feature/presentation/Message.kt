@@ -31,7 +31,6 @@ data class RemoveSnapshots(
         componentId: ComponentId,
         id: SnapshotId
     ) : this(componentId, setOf(id))
-
 }
 
 @JvmInline

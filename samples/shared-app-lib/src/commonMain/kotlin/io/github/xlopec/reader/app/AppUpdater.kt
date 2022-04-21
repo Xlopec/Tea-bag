@@ -33,5 +33,4 @@ fun interface AppUpdater<Env> {
         message: Message,
         state: AppState
     ): Update<AppState, Command>
-
 }

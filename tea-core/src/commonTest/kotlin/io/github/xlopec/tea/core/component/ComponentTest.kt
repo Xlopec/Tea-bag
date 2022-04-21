@@ -81,5 +81,4 @@ class ComponentTest : ComponentTestBase(::Component) {
 
             assertContentEquals(expectedStates, actualStates)
         }
-
 }

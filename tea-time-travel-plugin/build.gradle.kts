@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-
 import org.jetbrains.compose.compose
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PublishPluginTask

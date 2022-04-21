@@ -72,7 +72,6 @@ class ExportImportSerializationTest {
 
         assertEquals(actualDebugState, expectedDebugState)
     }
-
 }
 
 private val TestComponentId = ComponentId("some id")

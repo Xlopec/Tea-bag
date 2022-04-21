@@ -99,7 +99,7 @@ val Project.artifactsDir: File
             root = root.rootProject
         }
 
-        return root.buildDir.resolve("artifacts/${name}")
+        return root.buildDir.resolve("artifacts/$name")
     }
 
 val Project.projectHooksDir: File

@@ -196,7 +196,6 @@ private fun Ref.toJTree(
         acc
     }
 
-
 /*private fun CollectionWrapper.toRenderTree(
     parent: RenderTree = ValueNode(this)
 ) = value.mapIndexed { index, value ->
@@ -253,7 +252,6 @@ private fun Value.tryAppendSubTree(parent: RenderTree): RenderTree? =
         is Null
         -> null
     }*/
-
 
 private operator fun DefaultMutableTreeNode.plusAssign(children: Iterable<MutableTreeNode>) =
     children.forEach(::add)
