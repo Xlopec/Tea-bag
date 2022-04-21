@@ -38,21 +38,20 @@ import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
 
-fun updateArticles(
+fun ArticlesState.toArticlesUpdate(
     message: ArticlesMessage,
-    state: ArticlesState,
 ): Update<ArticlesState, Command> =
     when (message) {
-        is ArticlesLoaded -> state.toPreviewUpdate(message.page)
-        is LoadNextArticles -> state.toLoadNextUpdate()
-        is LoadArticles -> state.toLoadUpdate()
-        is RefreshArticles -> state.toRefreshUpdate()
-        is ArticlesOperationException -> state.toOperationExceptionUpdate(message)
-        is ToggleArticleIsFavorite -> state.toToggleFavoriteUpdate(message.article)
-        is ArticleUpdated -> state.toUpdateAllArticlesUpdate(message.article)
-        is OnShareArticle -> state.toShareArticleUpdate(message.article)
-        is SyncScrollPosition -> state.toSyncScrollStateUpdate(message)
-        is FilterLoaded -> state.toLoadUpdate(message.filter)
+        is ArticlesLoaded -> toPreviewUpdate(message.page)
+        is LoadNextArticles -> toLoadNextUpdate()
+        is LoadArticles -> toLoadUpdate()
+        is RefreshArticles -> toRefreshUpdate()
+        is ArticlesOperationException -> toOperationExceptionUpdate(message)
+        is ToggleArticleIsFavorite -> toToggleFavoriteUpdate(message.article)
+        is ArticleUpdated -> toUpdateAllArticlesUpdate(message.article)
+        is OnShareArticle -> toShareArticleUpdate(message.article)
+        is SyncScrollPosition -> toSyncScrollStateUpdate(message)
+        is FilterLoaded -> toLoadUpdate(message.filter)
     }
 
 fun updateArticles(
