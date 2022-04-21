@@ -63,3 +63,7 @@ data class Filter(
         const val StoreSourcesLimit = 20U
     }
 }
+
+fun Filter.query(
+    query: Query?
+) = copy(query = query)

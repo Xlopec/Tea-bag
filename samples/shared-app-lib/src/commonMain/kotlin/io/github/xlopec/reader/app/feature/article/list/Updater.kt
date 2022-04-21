@@ -24,6 +24,7 @@
 
 package io.github.xlopec.reader.app.feature.article.list
 
+import io.github.xlopec.reader.app.FilterUpdated
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.domain.Article
 import io.github.xlopec.reader.app.domain.Filter
@@ -50,10 +51,14 @@ fun updateArticles(
         is ToggleArticleIsFavorite -> state.toToggleFavoriteUpdate(message.article)
         is ArticleUpdated -> state.toUpdateAllArticlesUpdate(message.article)
         is OnShareArticle -> state.toShareArticleUpdate(message.article)
-        is FilterUpdated -> state.toFilterUpdate(message.filter)
         is SyncScrollPosition -> state.toSyncScrollStateUpdate(message)
         is FilterLoaded -> state.toLoadUpdate(message.filter)
     }
+
+fun updateArticles(
+    message: FilterUpdated,
+    state: ArticlesState,
+) = if (message.filter.type == state.filter.type) state.toFilterUpdate(message.filter) else state.noCommand()
 
 private fun ArticlesState.toOperationExceptionUpdate(
     message: ArticlesOperationException,
@@ -72,8 +77,10 @@ private fun ArticlesState.toLoadCommand(
 
 private fun ArticlesState.toLoadUpdate(
     newFilter: Filter = filter,
-) = toLoading(filter = newFilter).command(toLoadCommand(FirstPage, newFilter),
-    DoStoreFilter(newFilter))
+) = toLoading(filter = newFilter).command(
+    toLoadCommand(FirstPage, newFilter),
+    DoStoreFilter(newFilter)
+)
 
 private fun ArticlesState.toLoadNextUpdate() =
     if (loadable.isPreview && loadable.hasMore && loadable.data.isNotEmpty() /*todo should we throw an error in this case?*/) {

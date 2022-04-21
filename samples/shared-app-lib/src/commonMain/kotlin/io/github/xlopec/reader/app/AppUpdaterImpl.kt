@@ -71,9 +71,21 @@ private fun updateScreen(
             updateArticleDetails(message, screen)
         }
         is SettingsMessage -> state.toSettingsUpdate(message)
+        is FilterUpdated -> state.updateScreen<ScreenState> { screen ->
+            updateFilters(screen, message)
+        }
         is Log -> state.toLogUpdate(message)
         else -> error("Unknown screen message, was $message")
     }
+
+private fun updateFilters(
+    screen: ScreenState,
+    message: FilterUpdated
+) = when (screen) {
+    is ArticlesState -> updateArticles(message, screen)
+    is FiltersState -> updateFilters(message, screen)
+    else -> screen.noCommand()
+}
 
 private fun AppState.toLogUpdate(
     message: Log

@@ -23,7 +23,7 @@
   ~ SOFTWARE.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="io.github.xlopec.reader">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="io.github.xlopec.shared">
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />

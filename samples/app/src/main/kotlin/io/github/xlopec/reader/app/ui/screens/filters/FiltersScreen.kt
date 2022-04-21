@@ -43,12 +43,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
+import io.github.xlopec.reader.app.FilterUpdated
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.domain.Query
-import io.github.xlopec.reader.app.feature.article.list.FilterUpdated
+import io.github.xlopec.reader.app.domain.query
 import io.github.xlopec.reader.app.feature.article.list.LoadArticles
 import io.github.xlopec.reader.app.feature.filter.FiltersState
-import io.github.xlopec.reader.app.feature.filter.InputChanged
 import io.github.xlopec.reader.app.feature.navigation.Pop
 import io.github.xlopec.reader.app.ui.misc.SearchHeader
 import io.github.xlopec.reader.app.ui.screens.article.toSearchHint
@@ -98,10 +98,6 @@ fun FiltersScreen(
         closeScreen = true
     }
 
-    LaunchedEffect(state.filter) {
-        handler(FilterUpdated(state.id, state.filter))
-    }
-
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -125,7 +121,7 @@ fun FiltersScreen(
                     inputText = state.filter.query?.value ?: "",
                     placeholderText = state.filter.type.toSearchHint(),
                     onQueryUpdate = {
-                        handler(InputChanged(state.id, Query.of(it)))
+                        handler(FilterUpdated(state.filter.query(Query.of(it))))
                     },
                     onSearch = {
                         performSearch = true
@@ -152,7 +148,7 @@ fun FiltersScreen(
                     suggestions = state.suggestions,
                     childTransitionState = childTransition
                 ) { suggestion ->
-                    handler(InputChanged(state.id, suggestion))
+                    handler(FilterUpdated(state.filter.query(suggestion)))
                     performSearch = true
                     closeScreen = true
                 }

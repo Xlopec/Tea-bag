@@ -25,6 +25,8 @@
 package io.github.xlopec.reader.app
 
 import io.github.xlopec.reader.app.command.Command
+import io.github.xlopec.reader.app.domain.Filter
+import kotlin.jvm.JvmInline
 
 interface Message
 
@@ -34,4 +36,9 @@ data class Log(
     val throwable: Throwable,
     val causedBy: Command,
     val id: ScreenId? = null,
+) : ScreenMessage
+
+@JvmInline
+value class FilterUpdated(
+    val filter: Filter,
 ) : ScreenMessage
