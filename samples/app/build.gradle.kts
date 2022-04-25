@@ -46,7 +46,7 @@ android {
 
     defaultConfig {
         applicationId = "io.github.xlopec.news.reader"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 31
         versionCode = 1
         versionName = "1.0"
