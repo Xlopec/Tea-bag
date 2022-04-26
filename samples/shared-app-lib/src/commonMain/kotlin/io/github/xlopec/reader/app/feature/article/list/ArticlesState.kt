@@ -29,8 +29,6 @@ package io.github.xlopec.reader.app.feature.article.list
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.TabScreen
-import io.github.xlopec.reader.app.domain.Article
-import io.github.xlopec.reader.app.domain.Filter
 import io.github.xlopec.reader.app.misc.Loadable
 import io.github.xlopec.reader.app.misc.remove
 import io.github.xlopec.reader.app.misc.replace
@@ -40,6 +38,8 @@ import io.github.xlopec.reader.app.misc.toLoadingNext
 import io.github.xlopec.reader.app.misc.toPreview
 import io.github.xlopec.reader.app.misc.toRefreshing
 import io.github.xlopec.reader.app.misc.updated
+import io.github.xlopec.reader.app.model.Article
+import io.github.xlopec.reader.app.model.Filter
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 

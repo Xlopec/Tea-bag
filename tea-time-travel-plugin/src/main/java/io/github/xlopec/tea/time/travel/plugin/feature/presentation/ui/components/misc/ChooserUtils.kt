@@ -20,19 +20,13 @@ import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
 import java.io.File
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
-inline fun Project.chooseFiles(
-    descriptor: FileChooserDescriptor,
-    crossinline callback: (List<File>) -> Unit
-) {
-    FileChooser.chooseFiles(descriptor, this, null, null) { virtualFiles ->
-        callback(virtualFiles.map { File(it.path) })
+suspend fun Project.chooseFile(
+    descriptor: FileChooserDescriptor
+) = suspendCoroutine<File> { continuation ->
+    FileChooser.chooseFile(descriptor, this, null, null) { virtualFile ->
+        continuation.resume(File(virtualFile.path))
     }
-}
-
-inline fun Project.chooseFile(
-    descriptor: FileChooserDescriptor,
-    crossinline callback: (File) -> Unit
-) = FileChooser.chooseFile(descriptor, this, null, null) { virtualFile ->
-    callback(File(virtualFile.path))
 }

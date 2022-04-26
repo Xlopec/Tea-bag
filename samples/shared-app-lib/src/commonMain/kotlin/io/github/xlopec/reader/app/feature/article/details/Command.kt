@@ -25,7 +25,7 @@
 package io.github.xlopec.reader.app.feature.article.details
 
 import io.github.xlopec.reader.app.command.Command
-import io.github.xlopec.reader.app.domain.Article
+import io.github.xlopec.reader.app.model.Article
 
 sealed interface ArticleDetailsCommand : Command
 

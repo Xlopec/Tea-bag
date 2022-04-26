@@ -65,7 +65,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.domain.Source
 import io.github.xlopec.reader.app.feature.filter.ClearSelection
 import io.github.xlopec.reader.app.feature.filter.FiltersState
 import io.github.xlopec.reader.app.feature.filter.LoadSources
@@ -76,6 +75,7 @@ import io.github.xlopec.reader.app.misc.Loading
 import io.github.xlopec.reader.app.misc.LoadingNext
 import io.github.xlopec.reader.app.misc.Preview
 import io.github.xlopec.reader.app.misc.Refreshing
+import io.github.xlopec.reader.app.model.Source
 import io.github.xlopec.reader.app.ui.misc.RowMessage
 
 @Composable

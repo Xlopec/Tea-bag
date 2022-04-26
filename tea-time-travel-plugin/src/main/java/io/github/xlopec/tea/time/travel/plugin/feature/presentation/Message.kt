@@ -1,8 +1,8 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.presentation
 
 import io.github.xlopec.tea.time.travel.plugin.UIMessage
-import io.github.xlopec.tea.time.travel.plugin.domain.FilterOption
-import io.github.xlopec.tea.time.travel.plugin.domain.SnapshotId
+import io.github.xlopec.tea.time.travel.plugin.model.FilterOption
+import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 @JvmInline

@@ -25,22 +25,15 @@ import io.github.xlopec.tea.time.travel.plugin.feature.notification.updateForNot
 import io.github.xlopec.tea.time.travel.plugin.feature.presentation.updateForUiMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.server.updateForServerMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.updateForStoreMessage
-import io.github.xlopec.tea.time.travel.plugin.state.State
+import io.github.xlopec.tea.time.travel.plugin.model.state.State
 
-fun AppUpdater(): AppUpdater = AppUpdaterImpl
-
-private object AppUpdaterImpl : AppUpdater {
-
-    override fun update(
-        message: Message,
-        state: State
-    ): Update<State, Command> =
-        when (message) {
-            is UIMessage -> updateForUiMessage(message, state)
-            is NotificationMessage -> updateForNotification(message, state)
-            is StoreMessage -> updateForStoreMessage(message, state)
-            is ServerMessage -> updateForServerMessage(message, state)
-        }
+fun AppUpdater(): AppUpdater = AppUpdater { message, state ->
+    when (message) {
+        is UIMessage -> updateForUiMessage(message, state)
+        is NotificationMessage -> updateForNotification(message, state)
+        is StoreMessage -> updateForStoreMessage(message, state)
+        is ServerMessage -> updateForServerMessage(message, state)
+    }
 }
 
 internal fun warnUnacceptableMessage(

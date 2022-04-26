@@ -43,7 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
-import io.github.xlopec.reader.app.domain.Query
+import io.github.xlopec.reader.app.model.Query
 
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.suggestionsSection(

@@ -7,13 +7,13 @@ import io.github.xlopec.tea.time.travel.plugin.Message
 import io.github.xlopec.tea.time.travel.plugin.NetworkException
 import io.github.xlopec.tea.time.travel.plugin.NotificationMessage
 import io.github.xlopec.tea.time.travel.plugin.ServerCommand
-import io.github.xlopec.tea.time.travel.plugin.domain.ServerAddress
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.NotifyStarted
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.NotifyStopped
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.OperationException
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.StateApplied
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.StateAppliedBalloon
 import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.components.balloon.showBalloon
+import io.github.xlopec.tea.time.travel.plugin.model.ServerAddress
 import io.github.xlopec.tea.time.travel.plugin.toPluginException
 import io.github.xlopec.tea.time.travel.protocol.ApplyMessage
 import io.github.xlopec.tea.time.travel.protocol.ApplyState

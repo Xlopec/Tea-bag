@@ -40,8 +40,8 @@ import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.component
 import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.settings.PluginSettingsNotifier
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StopServer
 import io.github.xlopec.tea.time.travel.plugin.misc.properties
-import io.github.xlopec.tea.time.travel.plugin.state.State
-import io.github.xlopec.tea.time.travel.plugin.state.Stopped
+import io.github.xlopec.tea.time.travel.plugin.model.state.State
+import io.github.xlopec.tea.time.travel.plugin.model.state.Stopped
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.cancel

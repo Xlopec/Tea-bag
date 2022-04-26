@@ -27,12 +27,12 @@ package io.github.xlopec.reader.app.feature.filter
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.FilterUpdated
 import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.domain.Filter
-import io.github.xlopec.reader.app.domain.Query
-import io.github.xlopec.reader.app.domain.Source
-import io.github.xlopec.reader.app.domain.SourceId
 import io.github.xlopec.reader.app.misc.toException
 import io.github.xlopec.reader.app.misc.toPreview
+import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.reader.app.model.Query
+import io.github.xlopec.reader.app.model.Source
+import io.github.xlopec.reader.app.model.SourceId
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
@@ -80,7 +80,7 @@ private fun FiltersState.onLoad(
 
 private fun FiltersState.onSourcesLoadResult(
     result: SourcesLoadResult
-) = when(result) {
+) = when (result) {
     is SourcesLoadException -> onSourcesLoadException(result.exception)
     is SourcesLoadSuccess -> onSourcesLoaded(result.sources)
 }

@@ -3,11 +3,11 @@ package io.github.xlopec.tea.time.travel.plugin.feature.notification
 import io.github.xlopec.tea.time.travel.plugin.Command
 import io.github.xlopec.tea.time.travel.plugin.NotificationMessage
 import io.github.xlopec.tea.time.travel.plugin.PluginException
-import io.github.xlopec.tea.time.travel.plugin.domain.CollectionWrapper
-import io.github.xlopec.tea.time.travel.plugin.domain.ComponentDebugState
-import io.github.xlopec.tea.time.travel.plugin.domain.SnapshotMeta
-import io.github.xlopec.tea.time.travel.plugin.domain.Value
-import io.github.xlopec.tea.time.travel.plugin.state.Server
+import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.ComponentDebugState
+import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
+import io.github.xlopec.tea.time.travel.plugin.model.Value
+import io.github.xlopec.tea.time.travel.plugin.model.state.Server
 import io.github.xlopec.tea.time.travel.plugin.toPluginException
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 

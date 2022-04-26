@@ -24,15 +24,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign.Companion.Justify
-import io.github.xlopec.tea.time.travel.plugin.domain.Invalid
 import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.components.modifier.noIndicationClickable
 import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.screens.component.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
-import io.github.xlopec.tea.time.travel.plugin.state.Started
-import io.github.xlopec.tea.time.travel.plugin.state.Starting
-import io.github.xlopec.tea.time.travel.plugin.state.State
-import io.github.xlopec.tea.time.travel.plugin.state.Stopped
-import io.github.xlopec.tea.time.travel.plugin.state.Stopping
+import io.github.xlopec.tea.time.travel.plugin.model.Invalid
+import io.github.xlopec.tea.time.travel.plugin.model.state.Started
+import io.github.xlopec.tea.time.travel.plugin.model.state.Starting
+import io.github.xlopec.tea.time.travel.plugin.model.state.State
+import io.github.xlopec.tea.time.travel.plugin.model.state.Stopped
+import io.github.xlopec.tea.time.travel.plugin.model.state.Stopping
 import java.util.Locale
 
 @Composable
@@ -47,7 +47,7 @@ fun InfoView(
     ) {
         when (state) {
             is Stopped -> InfoViewMessage(state.toDescription(),
-                uiEvents.takeIf { state.canStart })
+                                          uiEvents.takeIf { state.canStart })
             is Started -> InfoViewMessage(state.toDescription())
             is Starting -> InfoViewMessage(state.toDescription())
             is Stopping -> InfoViewMessage(state.toDescription())

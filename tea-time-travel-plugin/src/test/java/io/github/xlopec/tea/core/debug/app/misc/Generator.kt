@@ -16,12 +16,12 @@
 
 package io.github.xlopec.tea.core.debug.app.misc
 
-import io.github.xlopec.tea.time.travel.plugin.domain.Host
-import io.github.xlopec.tea.time.travel.plugin.domain.Invalid
-import io.github.xlopec.tea.time.travel.plugin.domain.Port
-import io.github.xlopec.tea.time.travel.plugin.domain.Settings
-import io.github.xlopec.tea.time.travel.plugin.domain.Valid
-import io.github.xlopec.tea.time.travel.plugin.domain.Validated
+import io.github.xlopec.tea.time.travel.plugin.model.Host
+import io.github.xlopec.tea.time.travel.plugin.model.Invalid
+import io.github.xlopec.tea.time.travel.plugin.model.Port
+import io.github.xlopec.tea.time.travel.plugin.model.Settings
+import io.github.xlopec.tea.time.travel.plugin.model.Valid
+import io.github.xlopec.tea.time.travel.plugin.model.Validated
 import io.kotlintest.properties.Gen
 
 val TestHost = Host.of("localhost")!!

@@ -58,7 +58,6 @@ import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.MessageHandler
-import io.github.xlopec.reader.app.domain.Filter
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.article.list.RefreshArticles
 import io.github.xlopec.reader.app.feature.article.list.ScrollState
@@ -71,6 +70,7 @@ import io.github.xlopec.reader.app.feature.navigation.Navigation
 import io.github.xlopec.reader.app.misc.isException
 import io.github.xlopec.reader.app.misc.isPreview
 import io.github.xlopec.reader.app.misc.isRefreshing
+import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.ui.misc.InsetAwareTopAppBar
 import io.github.xlopec.reader.app.ui.screens.article.ArticlesScreen
 import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Favorite
@@ -78,9 +78,9 @@ import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Feed
 import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Settings
 import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Trending
 import io.github.xlopec.reader.app.ui.screens.settings.SettingsScreen
-import io.github.xlopec.reader.app.domain.FilterType.Favorite as FavoriteQuery
-import io.github.xlopec.reader.app.domain.FilterType.Regular as RegularQuery
-import io.github.xlopec.reader.app.domain.FilterType.Trending as TrendingQuery
+import io.github.xlopec.reader.app.model.FilterType.Favorite as FavoriteQuery
+import io.github.xlopec.reader.app.model.FilterType.Regular as RegularQuery
+import io.github.xlopec.reader.app.model.FilterType.Trending as TrendingQuery
 
 enum class BottomMenuItem {
     Feed,

@@ -4,9 +4,9 @@ import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.time.travel.plugin.Command
 import io.github.xlopec.tea.time.travel.plugin.StoreMessage
-import io.github.xlopec.tea.time.travel.plugin.state.Started
-import io.github.xlopec.tea.time.travel.plugin.state.State
-import io.github.xlopec.tea.time.travel.plugin.state.component
+import io.github.xlopec.tea.time.travel.plugin.model.state.Started
+import io.github.xlopec.tea.time.travel.plugin.model.state.State
+import io.github.xlopec.tea.time.travel.plugin.model.state.component
 import io.github.xlopec.tea.time.travel.plugin.warnUnacceptableMessage
 
 internal fun updateForStoreMessage(

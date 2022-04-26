@@ -19,13 +19,13 @@
 package io.github.xlopec.tea.core.debug.app.domain.cms
 
 import com.google.gson.internal.LazilyParsedNumber
-import io.github.xlopec.tea.time.travel.plugin.domain.NumberWrapper
-import io.github.xlopec.tea.time.travel.plugin.domain.Property
-import io.github.xlopec.tea.time.travel.plugin.domain.Ref
-import io.github.xlopec.tea.time.travel.plugin.domain.RegexPredicate
-import io.github.xlopec.tea.time.travel.plugin.domain.Type
-import io.github.xlopec.tea.time.travel.plugin.domain.Valid
-import io.github.xlopec.tea.time.travel.plugin.domain.applyTo
+import io.github.xlopec.tea.time.travel.plugin.model.NumberWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Property
+import io.github.xlopec.tea.time.travel.plugin.model.Ref
+import io.github.xlopec.tea.time.travel.plugin.model.RegexPredicate
+import io.github.xlopec.tea.time.travel.plugin.model.Type
+import io.github.xlopec.tea.time.travel.plugin.model.Valid
+import io.github.xlopec.tea.time.travel.plugin.model.applyTo
 import kotlin.test.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith

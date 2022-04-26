@@ -30,8 +30,8 @@ import io.github.xlopec.tea.core.Snapshot
 import io.github.xlopec.tea.core.with
 import io.github.xlopec.tea.time.travel.plugin.misc.PluginId
 import io.github.xlopec.tea.time.travel.plugin.misc.settings
-import io.github.xlopec.tea.time.travel.plugin.state.State
-import io.github.xlopec.tea.time.travel.plugin.state.Stopped
+import io.github.xlopec.tea.time.travel.plugin.model.state.State
+import io.github.xlopec.tea.time.travel.plugin.model.state.Stopped
 import kotlinx.coroutines.Dispatchers.IO
 import com.intellij.openapi.diagnostic.Logger as PlatformLogger
 

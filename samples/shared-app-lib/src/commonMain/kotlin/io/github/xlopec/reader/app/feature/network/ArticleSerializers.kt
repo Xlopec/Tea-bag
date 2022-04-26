@@ -24,10 +24,10 @@
 
 package io.github.xlopec.reader.app.feature.network
 
-import io.github.xlopec.reader.app.domain.Author
-import io.github.xlopec.reader.app.domain.Description
-import io.github.xlopec.reader.app.domain.Title
-import io.github.xlopec.reader.app.domain.tryCreate
+import io.github.xlopec.reader.app.model.Author
+import io.github.xlopec.reader.app.model.Description
+import io.github.xlopec.reader.app.model.Title
+import io.github.xlopec.reader.app.model.tryCreate
 import io.github.xlopec.tea.data.Date
 import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.UrlFor

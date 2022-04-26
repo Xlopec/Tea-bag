@@ -45,11 +45,11 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import io.github.xlopec.reader.app.FilterUpdated
 import io.github.xlopec.reader.app.MessageHandler
-import io.github.xlopec.reader.app.domain.Query
-import io.github.xlopec.reader.app.domain.query
 import io.github.xlopec.reader.app.feature.article.list.LoadArticles
 import io.github.xlopec.reader.app.feature.filter.FiltersState
 import io.github.xlopec.reader.app.feature.navigation.Pop
+import io.github.xlopec.reader.app.model.Query
+import io.github.xlopec.reader.app.model.query
 import io.github.xlopec.reader.app.ui.misc.SearchHeader
 import io.github.xlopec.reader.app.ui.screens.article.toSearchHint
 import io.github.xlopec.reader.app.ui.screens.filters.ScreenAnimationState.Begin

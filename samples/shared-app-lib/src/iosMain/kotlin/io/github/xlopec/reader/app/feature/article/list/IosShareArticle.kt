@@ -26,7 +26,7 @@
 
 package io.github.xlopec.reader.app.feature.article.list
 
-import io.github.xlopec.reader.app.domain.Article
+import io.github.xlopec.reader.app.model.Article
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 

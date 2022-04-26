@@ -26,9 +26,9 @@ package io.github.xlopec.reader.app.feature.navigation
 
 import io.github.xlopec.reader.app.Message
 import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.domain.Article
-import io.github.xlopec.reader.app.domain.Filter
 import io.github.xlopec.reader.app.feature.settings.SettingsScreen
+import io.github.xlopec.reader.app.model.Article
+import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.tea.data.RandomUUID
 
 sealed interface Navigation : Message

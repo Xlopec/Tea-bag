@@ -27,8 +27,8 @@
 package io.github.xlopec.reader.app.feature.filter
 
 import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.domain.Filter
 import io.github.xlopec.reader.app.misc.Loadable
+import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.tea.core.command
 
 fun FiltersInitialUpdate(

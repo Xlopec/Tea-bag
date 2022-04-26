@@ -25,7 +25,7 @@
 package io.github.xlopec.reader.app
 
 import io.github.xlopec.reader.app.command.Command
-import io.github.xlopec.reader.app.domain.Filter
+import io.github.xlopec.reader.app.model.Filter
 import kotlin.jvm.JvmInline
 
 interface Message

@@ -24,7 +24,7 @@ import io.github.xlopec.tea.time.travel.plugin.Message
 import io.github.xlopec.tea.time.travel.plugin.PluginException
 import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.components.balloon.createErrorBalloon
 import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.components.balloon.createNotificationBalloon
-import io.github.xlopec.tea.time.travel.plugin.state.State
+import io.github.xlopec.tea.time.travel.plugin.model.state.State
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.util.Locale
 

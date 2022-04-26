@@ -30,11 +30,11 @@ import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.IO
 import io.github.xlopec.reader.app.InternalException
 import io.github.xlopec.reader.app.NetworkException
-import io.github.xlopec.reader.app.domain.Query
-import io.github.xlopec.reader.app.domain.SourceId
 import io.github.xlopec.reader.app.feature.article.list.NewsApi
 import io.github.xlopec.reader.app.feature.article.list.Paging
 import io.github.xlopec.reader.app.feature.article.list.nextPage
+import io.github.xlopec.reader.app.model.Query
+import io.github.xlopec.reader.app.model.SourceId
 import io.github.xlopec.tea.data.Either
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

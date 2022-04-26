@@ -62,6 +62,7 @@ object ActionIcons {
     val Export @Composable get() = painterResource("/images/export_dark.svg")
     val Execute @Composable get() = painterResource("/images/execute.svg")
     val Suspend @Composable get() = painterResource("/images/suspend.svg")
+    val Close @Composable get() = painterResource("/images/close.svg")
 
     val Expand @Composable get() = painterResource("/images/expand.svg")
     val Collapse @Composable get() = painterResource("/images/collapse.svg")

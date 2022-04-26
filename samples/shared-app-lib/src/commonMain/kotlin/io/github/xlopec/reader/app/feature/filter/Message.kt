@@ -27,9 +27,9 @@ package io.github.xlopec.reader.app.feature.filter
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.ScreenMessage
-import io.github.xlopec.reader.app.domain.Query
-import io.github.xlopec.reader.app.domain.Source
-import io.github.xlopec.reader.app.domain.SourceId
+import io.github.xlopec.reader.app.model.Query
+import io.github.xlopec.reader.app.model.Source
+import io.github.xlopec.reader.app.model.SourceId
 import kotlin.jvm.JvmInline
 import kotlinx.collections.immutable.ImmutableList
 

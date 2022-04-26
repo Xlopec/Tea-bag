@@ -5,13 +5,13 @@ import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.time.travel.plugin.Command
 import io.github.xlopec.tea.time.travel.plugin.ServerMessage
-import io.github.xlopec.tea.time.travel.plugin.domain.ServerAddress
-import io.github.xlopec.tea.time.travel.plugin.domain.Valid
-import io.github.xlopec.tea.time.travel.plugin.state.Started
-import io.github.xlopec.tea.time.travel.plugin.state.Starting
-import io.github.xlopec.tea.time.travel.plugin.state.State
-import io.github.xlopec.tea.time.travel.plugin.state.Stopped
-import io.github.xlopec.tea.time.travel.plugin.state.Stopping
+import io.github.xlopec.tea.time.travel.plugin.model.ServerAddress
+import io.github.xlopec.tea.time.travel.plugin.model.Valid
+import io.github.xlopec.tea.time.travel.plugin.model.state.Started
+import io.github.xlopec.tea.time.travel.plugin.model.state.Starting
+import io.github.xlopec.tea.time.travel.plugin.model.state.State
+import io.github.xlopec.tea.time.travel.plugin.model.state.Stopped
+import io.github.xlopec.tea.time.travel.plugin.model.state.Stopping
 import io.github.xlopec.tea.time.travel.plugin.warnUnacceptableMessage
 
 internal fun updateForServerMessage(

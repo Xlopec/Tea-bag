@@ -28,7 +28,7 @@ package io.github.xlopec.reader.app.feature.article.list
 
 import android.app.Application
 import android.content.Intent
-import io.github.xlopec.reader.app.domain.Article
+import io.github.xlopec.reader.app.model.Article
 
 class AndroidShareArticle(
     private val application: Application
