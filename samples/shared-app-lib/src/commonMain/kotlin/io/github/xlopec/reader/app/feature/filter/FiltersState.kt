@@ -26,10 +26,10 @@ package io.github.xlopec.reader.app.feature.filter
 
 import io.github.xlopec.reader.app.FullScreen
 import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.domain.Filter
-import io.github.xlopec.reader.app.domain.Query
-import io.github.xlopec.reader.app.domain.Source
 import io.github.xlopec.reader.app.misc.Loadable
+import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.reader.app.model.Query
+import io.github.xlopec.reader.app.model.Source
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 

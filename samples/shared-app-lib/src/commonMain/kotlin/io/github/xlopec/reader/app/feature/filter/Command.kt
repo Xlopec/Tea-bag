@@ -26,7 +26,7 @@ package io.github.xlopec.reader.app.feature.filter
 
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.command.Command
-import io.github.xlopec.reader.app.domain.FilterType
+import io.github.xlopec.reader.app.model.FilterType
 import kotlin.jvm.JvmInline
 
 sealed interface FilterCommand : Command

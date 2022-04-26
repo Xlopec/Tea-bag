@@ -17,7 +17,7 @@
 package io.github.xlopec.tea.time.travel.plugin
 
 import io.github.xlopec.tea.core.Update
-import io.github.xlopec.tea.time.travel.plugin.state.State
+import io.github.xlopec.tea.time.travel.plugin.model.state.State
 
 fun interface AppUpdater {
 

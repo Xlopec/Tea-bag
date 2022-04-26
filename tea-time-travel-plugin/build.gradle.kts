@@ -34,6 +34,12 @@ plugins {
     id("org.jetbrains.compose")
 }
 
+repositories {
+    maven {
+        setUrl("https://repo1.maven.org/maven2/")
+    }
+}
+
 intellij {
     version.set("2020.3")
     plugins.add("com.intellij.java")
@@ -80,9 +86,12 @@ dependencies {
     implementation(libs.stdlib)
     implementation(libs.stdlib.reflect)
 
-    implementation(compose.desktop.currentOs)
+    implementation(compose.desktop.currentOs) {
+        exclude("org.jetbrains.compose.material")
+    }
     @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
     implementation(compose.desktop.components.splitPane)
+    implementation("com.bybutter.compose:compose-jetbrains-theme")
     implementation(libs.logging)
 
     implementation(libs.bundles.ktor.server)

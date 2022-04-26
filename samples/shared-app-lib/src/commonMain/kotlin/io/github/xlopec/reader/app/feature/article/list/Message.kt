@@ -27,8 +27,8 @@ package io.github.xlopec.reader.app.feature.article.list
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.ScreenMessage
-import io.github.xlopec.reader.app.domain.Article
-import io.github.xlopec.reader.app.domain.Filter
+import io.github.xlopec.reader.app.model.Article
+import io.github.xlopec.reader.app.model.Filter
 
 import kotlin.jvm.JvmInline
 

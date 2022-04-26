@@ -44,6 +44,12 @@ include(
     ":samples:shared-app-lib"
 )
 
+includeBuild("compose-jetbrains-theme") {
+    dependencySubstitution {
+        substitute(module("com.bybutter.compose:compose-jetbrains-theme")).using(project(":"))
+    }
+}
+
 dependencyResolutionManagement {
     versionCatalogs {
 

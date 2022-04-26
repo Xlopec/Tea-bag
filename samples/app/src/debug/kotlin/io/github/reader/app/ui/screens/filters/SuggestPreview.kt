@@ -26,11 +26,11 @@ package io.github.reader.app.ui.screens.filters
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import io.github.xlopec.reader.app.domain.Filter
-import io.github.xlopec.reader.app.domain.FilterType
-import io.github.xlopec.reader.app.domain.Query
 import io.github.xlopec.reader.app.feature.filter.FiltersState
 import io.github.xlopec.reader.app.misc.Loadable
+import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.reader.app.model.FilterType
+import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.ui.screens.filters.FiltersScreen
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
 import java.util.UUID

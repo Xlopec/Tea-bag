@@ -30,10 +30,10 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import io.github.xlopec.reader.app.domain.Author
-import io.github.xlopec.reader.app.domain.Description
-import io.github.xlopec.reader.app.domain.Title
-import io.github.xlopec.reader.app.domain.tryCreate
+import io.github.xlopec.reader.app.model.Author
+import io.github.xlopec.reader.app.model.Description
+import io.github.xlopec.reader.app.model.Title
+import io.github.xlopec.reader.app.model.tryCreate
 import io.github.xlopec.tea.data.Date
 import io.github.xlopec.tea.data.Url
 import java.lang.reflect.Type

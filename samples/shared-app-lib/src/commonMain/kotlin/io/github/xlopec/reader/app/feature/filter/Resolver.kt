@@ -26,11 +26,11 @@
 
 package io.github.xlopec.reader.app.feature.filter
 
-import io.github.xlopec.reader.app.domain.Source
 import io.github.xlopec.reader.app.feature.article.list.NewsApi
 import io.github.xlopec.reader.app.feature.network.SourceResponseElement
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import io.github.xlopec.reader.app.misc.mapToPersistentList
+import io.github.xlopec.reader.app.model.Source
 import io.github.xlopec.tea.core.effect
 import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.UrlFor

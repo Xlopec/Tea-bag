@@ -24,10 +24,10 @@
 
 package io.github.xlopec.reader.app.feature.network
 
-import io.github.xlopec.reader.app.domain.SourceDescription
-import io.github.xlopec.reader.app.domain.SourceId
-import io.github.xlopec.reader.app.domain.SourceName
-import io.github.xlopec.reader.app.domain.tryCreate
+import io.github.xlopec.reader.app.model.SourceDescription
+import io.github.xlopec.reader.app.model.SourceId
+import io.github.xlopec.reader.app.model.SourceName
+import io.github.xlopec.reader.app.model.tryCreate
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

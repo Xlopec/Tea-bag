@@ -31,7 +31,7 @@ installGitHooks()
 
 plugins {
     kotlin("jvm")
-    id("io.gitlab.arturbosch.detekt") // version "1.20.0"
+    id("io.gitlab.arturbosch.detekt")
     id("com.github.ben-manes.versions")
     id("io.github.gradle-nexus.publish-plugin")
 }
@@ -90,7 +90,7 @@ val detektAll by tasks.registering(Detekt::class) {
     baseline.set(detektBaseline)
 
     include("**/*.kt", "**/*.kts")
-    exclude("resources/", "**/build/**", "**/test/java/**")
+    exclude("compose-jetbrains-theme/**", "resources/", "**/build/**", "**/test/java/**")
 
     reports {
         xml.required.set(false)
@@ -106,7 +106,7 @@ val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) 
     config.setFrom(detektConfig)
     baseline.set(detektBaseline)
     include("**/*.kt", "**/*.kts")
-    exclude("**/resources/**", "**/build/**")
+    exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
 }
 
 val detektFormat by tasks.registering(Detekt::class) {
@@ -116,7 +116,7 @@ val detektFormat by tasks.registering(Detekt::class) {
     setSource(files(projectDir))
 
     include("**/*.kt", "**/*.kts")
-    exclude("**/resources/**", "**/build/**")
+    exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
 
     config.setFrom(detektConfig)
     baseline.set(detektBaseline)

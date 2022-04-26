@@ -2,7 +2,7 @@ package io.github.xlopec.tea.time.travel.plugin.feature.storage
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import io.github.xlopec.tea.time.travel.plugin.domain.ComponentDebugState
+import io.github.xlopec.tea.time.travel.plugin.model.ComponentDebugState
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.io.BufferedReader
 import java.io.BufferedWriter

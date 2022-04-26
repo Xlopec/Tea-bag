@@ -26,11 +26,11 @@ package io.github.xlopec.reader.environment
 
 import androidx.compose.ui.test.IdlingResource
 import io.github.xlopec.reader.app.AppException
-import io.github.xlopec.reader.app.domain.Query
-import io.github.xlopec.reader.app.domain.SourceId
 import io.github.xlopec.reader.app.feature.article.list.Paging
 import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.network.SourcesResponse
+import io.github.xlopec.reader.app.model.Query
+import io.github.xlopec.reader.app.model.SourceId
 import io.github.xlopec.tea.data.Either
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.runBlocking

@@ -26,13 +26,13 @@
 
 package io.github.xlopec.reader.app.feature.storage
 
-import io.github.xlopec.reader.app.domain.Article
-import io.github.xlopec.reader.app.domain.Filter
-import io.github.xlopec.reader.app.domain.Filter.Companion.StoreSourcesLimit
-import io.github.xlopec.reader.app.domain.FilterType
-import io.github.xlopec.reader.app.domain.Query
 import io.github.xlopec.reader.app.feature.article.list.Page
 import io.github.xlopec.reader.app.feature.filter.FiltersState.Companion.StoreSuggestionsLimit
+import io.github.xlopec.reader.app.model.Article
+import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.reader.app.model.Filter.Companion.StoreSourcesLimit
+import io.github.xlopec.reader.app.model.FilterType
+import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.tea.data.Url
 import kotlinx.collections.immutable.ImmutableList
 

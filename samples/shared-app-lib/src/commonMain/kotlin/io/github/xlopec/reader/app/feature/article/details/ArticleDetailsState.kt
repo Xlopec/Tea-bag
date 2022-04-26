@@ -26,7 +26,7 @@ package io.github.xlopec.reader.app.feature.article.details
 
 import io.github.xlopec.reader.app.FullScreen
 import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.domain.Article
+import io.github.xlopec.reader.app.model.Article
 
 data class ArticleDetailsState(
     override val id: ScreenId,

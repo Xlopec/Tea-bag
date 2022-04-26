@@ -27,10 +27,10 @@
 package io.github.xlopec.reader.app.feature.article.list
 
 import io.github.xlopec.reader.app.AppException
-import io.github.xlopec.reader.app.domain.Query
-import io.github.xlopec.reader.app.domain.SourceId
 import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.network.SourcesResponse
+import io.github.xlopec.reader.app.model.Query
+import io.github.xlopec.reader.app.model.SourceId
 import io.github.xlopec.tea.data.Either
 import kotlinx.collections.immutable.ImmutableSet
 

@@ -19,7 +19,7 @@ package io.github.xlopec.tea.time.travel.plugin.misc
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.intellij.psi.JavaPsiFacade
-import io.github.xlopec.tea.time.travel.plugin.domain.Settings
+import io.github.xlopec.tea.time.travel.plugin.model.Settings
 
 const val PluginId = "io.github.xlopec.tea.core.plugin"
 

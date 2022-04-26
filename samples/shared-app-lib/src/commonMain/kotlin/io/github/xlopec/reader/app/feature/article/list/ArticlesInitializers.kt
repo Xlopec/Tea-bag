@@ -27,9 +27,9 @@
 package io.github.xlopec.reader.app.feature.article.list
 
 import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.domain.Filter
-import io.github.xlopec.reader.app.domain.FilterType
 import io.github.xlopec.reader.app.feature.article.list.Paging.Companion.FirstPage
+import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.tea.core.command
 
 internal fun ArticlesInitialUpdate(

@@ -27,9 +27,9 @@
 package io.github.xlopec.reader.app
 
 import io.github.xlopec.reader.app.command.Command
-import io.github.xlopec.reader.app.domain.FilterType.Regular
 import io.github.xlopec.reader.app.feature.article.list.ArticlesInitialUpdate
 import io.github.xlopec.reader.app.feature.navigation.NavigateToFeed
+import io.github.xlopec.reader.app.model.FilterType.Regular
 import io.github.xlopec.tea.core.Initial
 import io.github.xlopec.tea.core.Initializer
 

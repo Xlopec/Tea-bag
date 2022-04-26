@@ -1,8 +1,8 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.storage
 
 import io.github.xlopec.tea.time.travel.plugin.StoreCommand
-import io.github.xlopec.tea.time.travel.plugin.domain.ComponentDebugState
-import io.github.xlopec.tea.time.travel.plugin.domain.Settings
+import io.github.xlopec.tea.time.travel.plugin.model.ComponentDebugState
+import io.github.xlopec.tea.time.travel.plugin.model.Settings
 import java.io.File
 
 data class DoExportSessions(

@@ -28,9 +28,9 @@ package io.github.xlopec.reader.app.feature.navigation
 
 import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.command.Command
-import io.github.xlopec.reader.app.domain.FilterType
 import io.github.xlopec.reader.app.feature.article.list.ArticlesInitialUpdate
 import io.github.xlopec.reader.app.feature.settings.SettingsScreen
+import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.noCommand
 

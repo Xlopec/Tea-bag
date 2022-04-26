@@ -21,16 +21,16 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
-import io.github.xlopec.tea.time.travel.plugin.domain.BooleanWrapper
-import io.github.xlopec.tea.time.travel.plugin.domain.CharWrapper
-import io.github.xlopec.tea.time.travel.plugin.domain.CollectionWrapper
-import io.github.xlopec.tea.time.travel.plugin.domain.Null
-import io.github.xlopec.tea.time.travel.plugin.domain.NumberWrapper
-import io.github.xlopec.tea.time.travel.plugin.domain.Property
-import io.github.xlopec.tea.time.travel.plugin.domain.Ref
-import io.github.xlopec.tea.time.travel.plugin.domain.StringWrapper
-import io.github.xlopec.tea.time.travel.plugin.domain.Type
-import io.github.xlopec.tea.time.travel.plugin.domain.Value
+import io.github.xlopec.tea.time.travel.plugin.model.BooleanWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.CharWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Null
+import io.github.xlopec.tea.time.travel.plugin.model.NumberWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Property
+import io.github.xlopec.tea.time.travel.plugin.model.Ref
+import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Type
+import io.github.xlopec.tea.time.travel.plugin.model.Value
 
 internal fun Value.toJsonElement(): JsonElement =
     when (this) {
@@ -73,8 +73,8 @@ internal inline fun <T> Collection<T>.toJsonArray(
 internal fun JsonObject.toRef(): Ref {
 
     val entrySet = entrySet().filter { e -> e.key != "@type" }
-
-    val props = entrySet.mapTo(HashSet(entrySet.size)) { entry ->
+    // should be sorted to produce idempotent values
+    val props = entrySet.sortedBy { it.key }.mapTo(LinkedHashSet(entrySet.size)) { entry ->
         Property(
             entry.key,
             entry.value.toValue()
