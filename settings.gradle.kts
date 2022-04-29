@@ -160,6 +160,14 @@ dependencyResolutionManagement {
             library("ktor-serialization-json", "io.ktor", "ktor-serialization-kotlinx-json")
                 .versionRef("ktor")
 
+            // Serialization
+
+            library("serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").version("1.3.2")
+
+            // Multiplatform settings
+
+            library("settings-core", "com.russhwolf", "multiplatform-settings-no-arg").version("0.8.1")
+
             // Compose
 
             library("compose-ui", "androidx.compose.ui", "ui")
@@ -246,6 +254,9 @@ dependencyResolutionManagement {
             library("gson", "com.google.code.gson:gson:2.9.0")
 
             // Sqldelight
+
+            library("sqldelight-runtime", "com.squareup.sqldelight", "runtime")
+                .versionRef("sqldelight")
 
             library("sqldelight-driver-android", "com.squareup.sqldelight", "android-driver")
                 .versionRef("sqldelight")
