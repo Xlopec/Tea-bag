@@ -98,8 +98,7 @@ public data class ShareOptions(
 )
 
 @ExperimentalTeaApi
-public val ShareStateWhileSubscribed: ShareOptions =
-    ShareOptions(SharingStarted.WhileSubscribed(), 1U)
+public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)
 
 /**
  * Transforms component into flow of snapshots
@@ -110,7 +109,7 @@ public val ShareStateWhileSubscribed: ShareOptions =
  * @param S state
  */
 @ExperimentalTeaApi
-public fun <M, S, C> Component<M, S, C>.observeSnapshots(): Flow<Snapshot<M, S, C>> =
+public fun <M, S, C> Component<M, S, C>.toSnapshotsFlow(): Flow<Snapshot<M, S, C>> =
     this(emptyFlow())
 
 /**
@@ -120,8 +119,8 @@ public fun <M, S, C> Component<M, S, C>.observeSnapshots(): Flow<Snapshot<M, S, 
  * @param S state
  */
 @ExperimentalTeaApi
-public fun <S> Component<*, S, *>.observeStates(): Flow<S> =
-    observeSnapshots().map { snapshot -> snapshot.currentState }
+public fun <S> Component<*, S, *>.toStatesFlow(): Flow<S> =
+    toSnapshotsFlow().map { snapshot -> snapshot.currentState }
 
 /**
  * Transforms component into flow of commands
@@ -130,8 +129,8 @@ public fun <S> Component<*, S, *>.observeStates(): Flow<S> =
  * @param C command
  */
 @ExperimentalTeaApi
-public fun <M, S, C> Component<M, S, C>.observeCommands(): Flow<Set<C>> =
-    observeSnapshots().map { snapshot -> snapshot.commands }
+public fun <M, S, C> Component<M, S, C>.toCommandsFlow(): Flow<Set<C>> =
+    toSnapshotsFlow().map { snapshot -> snapshot.commands }
 
 /**
  * Transforms component into function that accepts messages and returns flow that
@@ -143,7 +142,7 @@ public fun <M, S, C> Component<M, S, C>.observeCommands(): Flow<Set<C>> =
  * @param S state
  */
 @ExperimentalTeaApi
-public fun <M, S, C> Component<M, S, C>.states(): ((Flow<M>) -> Flow<S>) =
+public fun <M, S, C> Component<M, S, C>.toStatesComponent(): ((Flow<M>) -> Flow<S>) =
     { input -> this(input).map { snapshot -> snapshot.currentState } }
 
 /**

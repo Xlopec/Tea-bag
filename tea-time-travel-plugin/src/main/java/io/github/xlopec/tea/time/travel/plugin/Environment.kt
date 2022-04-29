@@ -22,6 +22,7 @@ import io.github.xlopec.tea.time.travel.plugin.feature.notification.Notification
 import io.github.xlopec.tea.time.travel.plugin.feature.server.ServerCommandResolver
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.StorageResolver
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.newSingleThreadContext
@@ -34,6 +35,7 @@ interface Environment :
     NotificationResolver,
     CoroutineScope
 
+@OptIn(ObsoleteCoroutinesApi::class)
 @Suppress("FunctionName")
 fun Environment(
     properties: PropertiesComponent,
