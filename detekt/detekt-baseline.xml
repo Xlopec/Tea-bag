@@ -58,7 +58,7 @@
     <ID>MaxLineLength:AppTheme.kt$val secondaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant)</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
     <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>
-    <ID>MaximumLineLength:io.github.xlopec.reader.app.ui.theme.AppTheme.kt:55</ID>
+    <ID>MaximumLineLength:io.github.xlopec.reader.app.ui.theme.AppTheme.kt:54</ID>
     <ID>MaximumLineLength:io.github.xlopec.tea.core.debug.app.domain.cms.FiltersTest.kt:114</ID>
     <ID>MaximumLineLength:io.github.xlopec.tea.core.debug.app.misc.CollectionExtensionsTest.kt:53</ID>
     <ID>NoWildcardImports:io.github.reader.app.ui.screens.article.ArticlesPreview.kt:31</ID>

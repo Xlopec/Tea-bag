@@ -99,7 +99,6 @@ val AppState.currentTab: TabScreen
 
 expect fun AppState.popScreen(): Update<AppState, Command>
 
-// todo looks like we should extract class for navigation stack
 private fun checkInvariants(
     state: AppState,
 ) {

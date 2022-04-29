@@ -130,12 +130,10 @@ private fun <M, S, C, J> DebugEnv<M, S, C, J>.computeSnapshots(
             .collect(sink::invoke)
     }
 
-// todo refactor when multi-receivers KEEP is ready
 private fun <M, S, C, J> DebugEnv<M, S, C, J>.mergeInitialSnapshots(
     debugStates: Flow<S>,
 ) = env.initial().mergeWith(debugStates.toInitialSnapshots())
 
-// todo refactor when multi-receivers KEEP is ready
 private fun <M, S, C, J> DebugEnv<M, S, C, J>.mergeMessages(
     originalInput: Flow<M>,
     debugInput: Flow<M>,
@@ -145,7 +143,6 @@ private fun <M, S, C, J> DebugEnv<M, S, C, J>.mergeMessages(
         .mergeWith(debugInput)
 }
 
-// todo refactor when multi-receivers KEEP is ready
 private fun <M, S, C, J> DebugEnv<M, S, C, J>.debugSession(
     block: suspend DebugSession<M, S, J>.(input: Sink<Snapshot<M, S, C>>) -> Unit,
 ): Flow<Snapshot<M, S, C>> =

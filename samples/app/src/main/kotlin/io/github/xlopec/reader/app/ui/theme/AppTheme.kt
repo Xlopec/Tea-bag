@@ -48,7 +48,6 @@ fun AppTheme(
 private fun appColors(
     isDarkModeEnabled: Boolean
 ): Colors {
-    // todo refactor
     val primary by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.primary else DarkThemeColors.primary)
     val primaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.primaryVariant else DarkThemeColors.primaryVariant)
     val secondary by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondary else DarkThemeColors.secondary)
