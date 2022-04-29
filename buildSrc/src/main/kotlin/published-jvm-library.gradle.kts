@@ -61,6 +61,8 @@ val copyArtifacts by tasks.registering(Copy::class) {
     from(libsDir)
     into(artifactsDir)
 
+    mustRunAfter("publishToSonatype")
+
     group = "release"
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
 }

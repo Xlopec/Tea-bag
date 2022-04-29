@@ -58,6 +58,8 @@ val copyArtifacts by tasks.registering(Copy::class) {
     from(libsDir, distributionsDir)
     into(artifactsDir)
 
+    mustRunAfter("publishPlugin")
+
     group = "release"
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
 }
