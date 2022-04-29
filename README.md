@@ -5,7 +5,7 @@
 
 <img align="right" alt="Tea Bag Logo" height="200px" src="res/tea-bag-logo.png">
 
-Tea Bag is the simplest implementation of [TEA](https://guide.elm-lang.org/architecture/)
+Tea Bag is a simple implementation of [TEA](https://guide.elm-lang.org/architecture/)
 architecture written in Kotlin. This library is based on Kotlin's coroutines, extensively uses
 extension-based approach and supports both jvm and ios targets.
 
@@ -20,53 +20,56 @@ updater (`computeNewState`function), and UI (`renderSnapshot,` function). After 
 them to an appropriate `Component` builder overload.
 
 ```kotlin
+import io.github.xlopec.tea.core.Component
 import io.github.xlopec.tea.core.Initial
 import io.github.xlopec.tea.core.Regular
+import io.github.xlopec.tea.core.ResolveCtx
 import io.github.xlopec.tea.core.Snapshot
-import io.github.xlopec.tea.core.Component
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.invoke
 import io.github.xlopec.tea.core.sideEffect
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 
 /**Async initializer*/
 suspend fun initializer() =
-    Initial<String, String>("Hello", emptySet())
+  Initial<String, String>("Hello", emptySet())
 
 /**Some tracker*/
-suspend fun tracker(
-    event: String
-): Set<String> = event.sideEffect { println("Tracked: \"$event\"") }
+fun tracker(
+  event: String,
+  ctx: ResolveCtx<String>,
+) {
+  ctx sideEffect { println("Tracked: \"$event\"") }
+}
 
 /**App logic, just appends user message and passes it further to tracker*/
 fun computeNewState(
-    msg: String,
-    state: String
+  msg: String,
+  state: String
 ) = (state + msg) command msg
 
 /**Some UI, e.g. console*/
 suspend fun renderSnapshot(
-    snapshot: Snapshot<*, *, *>
+  snapshot: Snapshot<*, *, *>
 ) {
-    val description = when (snapshot) {
-        is Initial -> "Initial snapshot, $snapshot"
-        is Regular -> "Regular snapshot, $snapshot"
-    }
+  val description = when (snapshot) {
+    is Initial -> "Initial snapshot, $snapshot"
+    is Regular -> "Regular snapshot, $snapshot"
+  }
 
-    println(description)
+  println(description)
 }
 
 fun main() = runBlocking {
-    // Somewhere at the application level
-    val component = Component(
-        initializer = ::initializer,
-        resolver = ::tracker,
-        updater = ::computeNewState,
-        scope = this
-    )
-    // UI = component([message1, message2, ..., message N])
-    component(" ", "world").collect(::renderSnapshot)
+  // Somewhere at the application level
+  val component = Component(
+    initializer = ::initializer,
+    resolver = ::tracker,
+    updater = ::computeNewState,
+    scope = this
+  )
+  // UI = component([message1, message2, ..., message N])
+  component(" ", "world").collect(::renderSnapshot)
 }
 ```
 
