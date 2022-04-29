@@ -59,7 +59,6 @@ interface UpdateCallback<in T1, in T2> {
  * Might produce uncaught exceptions and poorly tested, so be careful.
  * Complexity is O(N + M)
  */
-// todo add batch updates and decision strategy
 inline fun <L : MutableList<T1>, T1, T2> L.replaceAll(
     replaceWith: List<T2>,
     diffCallback: DiffCallback<T1, T2>,
