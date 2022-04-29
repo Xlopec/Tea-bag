@@ -28,7 +28,7 @@ import com.intellij.ui.content.ContentFactory
 import io.github.xlopec.tea.core.Component
 import io.github.xlopec.tea.core.ExperimentalTeaApi
 import io.github.xlopec.tea.core.invoke
-import io.github.xlopec.tea.core.states
+import io.github.xlopec.tea.core.toStatesComponent
 import io.github.xlopec.tea.core.subscribeIn
 import io.github.xlopec.tea.time.travel.plugin.Command
 import io.github.xlopec.tea.time.travel.plugin.Environment
@@ -107,4 +107,4 @@ private fun ToolWindowContent(
     project: Project,
     component: Component<Message, State, Command>
 ): Content =
-    ContentFactory.SERVICE.getInstance().createContent(Plugin(project, component.states()), null, false)
+    ContentFactory.SERVICE.getInstance().createContent(Plugin(project, component.toStatesComponent()), null, false)

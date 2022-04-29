@@ -26,7 +26,7 @@
 
 package io.github.xlopec.reader.app
 
-import io.github.xlopec.tea.core.states
+import io.github.xlopec.tea.core.toStatesComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job
@@ -45,7 +45,7 @@ class IosComponent(
 ) {
     private val componentJob = Job()
     private val componentScope = CoroutineScope(Main + componentJob)
-    private val component = AppComponent(systemDarkModeEnabled, componentScope).states()
+    private val component = AppComponent(systemDarkModeEnabled, componentScope).toStatesComponent()
     private val messages = MutableSharedFlow<Message>()
 
     fun dispatch(

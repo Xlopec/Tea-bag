@@ -38,7 +38,7 @@ import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.FilterType.Favorite
 import io.github.xlopec.reader.app.model.FilterType.Regular
 import io.github.xlopec.reader.app.model.FilterType.Trending
-import io.github.xlopec.tea.core.effect
+import io.github.xlopec.reader.app.effect
 import io.github.xlopec.tea.data.Either
 import io.github.xlopec.tea.data.fold
 import kotlinx.collections.immutable.ImmutableList

@@ -51,7 +51,7 @@ import io.github.xlopec.reader.environment.ArticleResponse
 import io.github.xlopec.reader.environment.anyArticleRequest
 import io.github.xlopec.reader.environment.invoke
 import io.github.xlopec.reader.environment.setTestContent
-import io.github.xlopec.tea.core.states
+import io.github.xlopec.tea.core.toStatesComponent
 import io.github.xlopec.tea.data.RandomUUID
 import java.net.URL
 import java.util.Date
@@ -91,7 +91,7 @@ internal class AppTest {
                 AppComponent(
                     this,
                     AppInitializer(systemDarkModeEnabled = false, this)
-                ).states()
+                ).toStatesComponent()
             )
 
             resumeDispatcher()

@@ -57,8 +57,8 @@ dependencyResolutionManagement {
 
             version("ktor", "2.0.0")
             version("coroutines", "1.6.1")
-            version("compose", "1.2.0-alpha08")
-            version("accompanist", "0.24.7-alpha")
+            version("compose", "1.2.0-alpha04")
+            version("accompanist", "0.24.1-alpha")
             version("sqldelight", "1.5.3")
 
             // Testing

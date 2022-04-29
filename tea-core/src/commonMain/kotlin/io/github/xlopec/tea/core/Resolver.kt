@@ -44,6 +44,11 @@ import kotlinx.coroutines.launch
  */
 public typealias Resolver<C, M> = (command: C, context: ResolveCtx<M>) -> Unit
 
+/**
+ * This class represents a resolver context. [sink] and [scope] are used to resolve effects.
+ * [sink] should be used to consume resolved messages and [scope] should be used to launch long-running operations.
+ * Do ***not*** store references to [sink] or [scope] since they might be different between resolver invocations
+ */
 // todo replace with multi receivers
 public data class ResolveCtx<in M> internal constructor(
     public val sink: Sink<M>,
@@ -58,6 +63,9 @@ public data class ResolveCtx<in M> internal constructor(
  */
 public typealias Sink<T> = suspend (T) -> Unit
 
+/**
+ * Resolves [action] to set of messages using provided [resolver context][ResolveCtx]
+ */
 @ExperimentalTeaApi
 public infix fun <M> ResolveCtx<M>.effects(
     action: suspend () -> Set<M>,
@@ -68,6 +76,9 @@ public infix fun <M> ResolveCtx<M>.effects(
     return scope.launch { sink(action()) }
 }
 
+/**
+ * Resolves [action] to set of messages using provided [resolver context][ResolveCtx]
+ */
 @ExperimentalTeaApi
 public inline infix fun <M> ResolveCtx<M>.effect(
     crossinline action: suspend () -> M?,
@@ -78,6 +89,9 @@ public inline infix fun <M> ResolveCtx<M>.effect(
     return scope.launch { action()?.also { sink(it) } }
 }
 
+/**
+ * Resolves [action] to empty set of messages using provided [resolver context][ResolveCtx]
+ */
 @ExperimentalTeaApi
 public inline infix fun <M> ResolveCtx<M>.sideEffect(
     crossinline action: suspend () -> Unit,
@@ -86,24 +100,6 @@ public inline infix fun <M> ResolveCtx<M>.sideEffect(
         callsInPlace(action, InvocationKind.EXACTLY_ONCE)
     }
     return scope.launch { action() }
-}
-
-/**
- * Wrapper to perform side effect computations and possibly return a new message to be consumed by [Updater]
- *
- * @receiver command to be used to execute effect
- * @param C command
- * @param M message
- * @param action action to perform that might produce message to be consumed by a component
- * @return set of messages to be consumed a component
- */
-public suspend inline infix fun <C, M> C.effect(
-    crossinline action: suspend C.() -> M?,
-): Set<M> {
-    contract {
-        callsInPlace(action, InvocationKind.EXACTLY_ONCE)
-    }
-    return setOfNotNull(action(this))
 }
 
 public suspend operator fun <T> Sink<T>.invoke(
