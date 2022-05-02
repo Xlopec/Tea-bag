@@ -42,3 +42,7 @@ kotlin {
 
     ios()
 }
+
+tasks.named<org.jetbrains.kotlin.gradle.testing.internal.KotlinTestReport>("allTests").configure {
+    destinationDir = testReportsDir
+}

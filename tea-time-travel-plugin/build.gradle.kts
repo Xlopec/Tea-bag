@@ -68,6 +68,13 @@ val allTests by tasks.creating(Task::class) {
     dependsOn("test")
 }
 
+tasks.withType<Test>().all {
+    reports {
+        html.outputLocation.set(htmlTestReportsDir)
+        junitXml.outputLocation.set(xmlTestReportsDir)
+    }
+}
+
 optIn(
     "kotlinx.coroutines.ExperimentalCoroutinesApi",
     "io.githux.xlopec.tea.core.ExperimentalTeaApi",
