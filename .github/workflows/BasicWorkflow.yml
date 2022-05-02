@@ -77,7 +77,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Publish artifacts
-        run: ./gradlew publishToSonatype closeSonatypeStagingRepository publishPlugin copyArtifacts
+        run: ./gradlew publishToSonatype closeSonatypeStagingRepository publishPlugin copyArtifacts --no-configure-on-demand
         env:
           GITHUB_TAG: ${{ steps.get_version.outputs.GITHUB_TAG }}
           OSSRH_USER: ${{ secrets.OSSRH_USER }}
