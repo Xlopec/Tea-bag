@@ -1,10 +1,10 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.notification
 
-import io.github.xlopec.tea.time.travel.plugin.Command
-import io.github.xlopec.tea.time.travel.plugin.Message
-import io.github.xlopec.tea.time.travel.plugin.NotifyCommand
-import io.github.xlopec.tea.time.travel.plugin.PluginException
-import io.github.xlopec.tea.time.travel.plugin.model.state.State
+import io.github.xlopec.tea.time.travel.plugin.integration.Command
+import io.github.xlopec.tea.time.travel.plugin.integration.Message
+import io.github.xlopec.tea.time.travel.plugin.integration.NotifyCommand
+import io.github.xlopec.tea.time.travel.plugin.integration.PluginException
+import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 data class DoNotifyOperationException(

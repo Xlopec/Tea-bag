@@ -2,12 +2,12 @@ package io.github.xlopec.tea.time.travel.plugin.feature.storage
 
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
-import io.github.xlopec.tea.time.travel.plugin.Command
-import io.github.xlopec.tea.time.travel.plugin.StoreMessage
-import io.github.xlopec.tea.time.travel.plugin.model.state.Started
-import io.github.xlopec.tea.time.travel.plugin.model.state.State
-import io.github.xlopec.tea.time.travel.plugin.model.state.component
-import io.github.xlopec.tea.time.travel.plugin.warnUnacceptableMessage
+import io.github.xlopec.tea.time.travel.plugin.integration.Command
+import io.github.xlopec.tea.time.travel.plugin.integration.StoreMessage
+import io.github.xlopec.tea.time.travel.plugin.model.Started
+import io.github.xlopec.tea.time.travel.plugin.model.State
+import io.github.xlopec.tea.time.travel.plugin.model.component
+import io.github.xlopec.tea.time.travel.plugin.integration.warnUnacceptableMessage
 
 internal fun updateForStoreMessage(
     message: StoreMessage,

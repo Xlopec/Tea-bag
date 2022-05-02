@@ -1,14 +1,14 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.notification
 
-import io.github.xlopec.tea.time.travel.plugin.Command
-import io.github.xlopec.tea.time.travel.plugin.NotificationMessage
-import io.github.xlopec.tea.time.travel.plugin.PluginException
+import io.github.xlopec.tea.time.travel.plugin.integration.Command
+import io.github.xlopec.tea.time.travel.plugin.integration.NotificationMessage
+import io.github.xlopec.tea.time.travel.plugin.integration.PluginException
 import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.ComponentDebugState
+import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
 import io.github.xlopec.tea.time.travel.plugin.model.Value
-import io.github.xlopec.tea.time.travel.plugin.model.state.Server
-import io.github.xlopec.tea.time.travel.plugin.toPluginException
+import io.github.xlopec.tea.time.travel.plugin.model.Server
+import io.github.xlopec.tea.time.travel.plugin.integration.toPluginException
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 data class OperationException(
@@ -53,5 +53,5 @@ data class ComponentAttached(
 
 @JvmInline
 value class ComponentImported(
-    val sessionState: ComponentDebugState
+    val sessionState: ComponentState
 ) : NotificationMessage

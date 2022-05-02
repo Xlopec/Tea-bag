@@ -2,7 +2,7 @@ package io.github.xlopec.tea.time.travel.plugin.feature.storage
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import io.github.xlopec.tea.time.travel.plugin.model.ComponentDebugState
+import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 
 internal suspend fun Gson.exportAll(
     file: File,
-    sessions: Iterable<ComponentDebugState>
+    sessions: Iterable<ComponentState>
 ) {
     coroutineScope {
         sessions.forEach { debugState ->
@@ -31,7 +31,7 @@ internal suspend fun Gson.exportAll(
 
 internal suspend fun Gson.export(
     file: File,
-    debugState: ComponentDebugState
+    debugState: ComponentState
 ) {
     withContext(IO) {
         BufferedWriter(FileWriter(file.generateFileName(debugState.id)))
@@ -43,7 +43,7 @@ internal suspend fun Gson.export(
 
 suspend fun Gson.import(
     file: File
-): ComponentDebugState = withContext(IO) {
+): ComponentState = withContext(IO) {
     BufferedReader(FileReader(file))
         .use { br -> fromJson(br, JsonObject::class.java) }
         .toComponentDebugState()

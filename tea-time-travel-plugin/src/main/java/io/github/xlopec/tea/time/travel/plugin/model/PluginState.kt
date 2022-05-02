@@ -16,18 +16,13 @@
 
 package io.github.xlopec.tea.time.travel.plugin.model
 
-import io.github.xlopec.tea.time.travel.plugin.misc.map
-import io.github.xlopec.tea.time.travel.plugin.model.state.filteredBy
-import io.github.xlopec.tea.time.travel.plugin.model.state.toFiltered
+import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.time.LocalDateTime
 import java.util.UUID
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentMapOf
 
-typealias ComponentMapping = PersistentMap<ComponentId, ComponentDebugState>
+typealias ComponentMapping = PersistentMap<ComponentId, ComponentState>
 
 @JvmInline
 value class SnapshotId(
@@ -56,52 +51,3 @@ data class FilteredSnapshot(
         require(message != null || state != null || commands != null) { "failed requirement $this" }
     }
 }
-
-data class ComponentDebugState(
-    val id: ComponentId,
-    val state: Value,
-    // fixme we should re-model this bit, invariant checks should reside inside a dedicated entity
-    val filter: Filter = Filter.empty(),
-    val snapshots: PersistentList<OriginalSnapshot> = persistentListOf(),
-    val filteredSnapshots: PersistentList<FilteredSnapshot> = persistentListOf()
-) {
-    /**
-     * Creates already reset debug state
-     */
-    constructor(
-        id: ComponentId,
-        state: Value,
-        snapshots: PersistentList<OriginalSnapshot>,
-    ) : this(id, state, Filter.empty(), snapshots, snapshots.map(OriginalSnapshot::toFiltered))
-
-    init {
-        require(filteredSnapshots.size <= snapshots.size) {
-            """
-            filteredSnapshots.size > snapshots.size,
-            snapshots=$snapshots",
-            filtered=$filteredSnapshots
-            """.trimIndent()
-        }
-    }
-}
-
-fun ComponentDebugState.updateFilter(
-    filterInput: String,
-    ignoreCase: Boolean,
-    option: FilterOption
-): ComponentDebugState = updateFilter(Filter.new(filterInput, option, ignoreCase))
-
-fun ComponentDebugState.updateFilter(
-    filter: Filter
-): ComponentDebugState {
-    val filtered = when (val validatedPredicate = filter.predicate) {
-        is Valid -> snapshots.filteredBy(validatedPredicate.t)
-        is Invalid -> filteredSnapshots
-    }
-
-    return copy(filter = filter, filteredSnapshots = filtered)
-}
-
-data class DebugState(
-    val components: ComponentMapping = persistentMapOf()
-)

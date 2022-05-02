@@ -19,26 +19,26 @@ package io.github.xlopec.tea.time.travel.plugin.feature.notification
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
-import io.github.xlopec.tea.time.travel.plugin.Command
-import io.github.xlopec.tea.time.travel.plugin.InternalException
-import io.github.xlopec.tea.time.travel.plugin.NotificationMessage
-import io.github.xlopec.tea.time.travel.plugin.PluginException
+import io.github.xlopec.tea.time.travel.plugin.integration.Command
+import io.github.xlopec.tea.time.travel.plugin.integration.InternalException
+import io.github.xlopec.tea.time.travel.plugin.integration.NotificationMessage
+import io.github.xlopec.tea.time.travel.plugin.integration.PluginException
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoStartServer
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoStopServer
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.DoStoreSettings
-import io.github.xlopec.tea.time.travel.plugin.model.ComponentDebugState
-import io.github.xlopec.tea.time.travel.plugin.model.DebugState
+import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
+import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
 import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
-import io.github.xlopec.tea.time.travel.plugin.model.Settings
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.plugin.model.Value
-import io.github.xlopec.tea.time.travel.plugin.model.state.Server
-import io.github.xlopec.tea.time.travel.plugin.model.state.Started
-import io.github.xlopec.tea.time.travel.plugin.model.state.Starting
-import io.github.xlopec.tea.time.travel.plugin.model.state.State
-import io.github.xlopec.tea.time.travel.plugin.model.state.Stopped
-import io.github.xlopec.tea.time.travel.plugin.model.state.appendSnapshot
-import io.github.xlopec.tea.time.travel.plugin.model.state.updateComponents
-import io.github.xlopec.tea.time.travel.plugin.warnUnacceptableMessage
+import io.github.xlopec.tea.time.travel.plugin.model.Server
+import io.github.xlopec.tea.time.travel.plugin.model.Started
+import io.github.xlopec.tea.time.travel.plugin.model.Starting
+import io.github.xlopec.tea.time.travel.plugin.model.State
+import io.github.xlopec.tea.time.travel.plugin.model.Stopped
+import io.github.xlopec.tea.time.travel.plugin.model.appendSnapshot
+import io.github.xlopec.tea.time.travel.plugin.model.updateComponents
+import io.github.xlopec.tea.time.travel.plugin.integration.warnUnacceptableMessage
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 internal fun updateForNotification(
@@ -149,7 +149,7 @@ private fun ComponentAttached.toSnapshot() = OriginalSnapshot(meta, null, state,
 private fun DebugState.componentOrNew(
     id: ComponentId,
     state: Value
-) = components[id] ?: ComponentDebugState(id, state)
+) = components[id] ?: ComponentState(id, state)
 
 private fun DoNotifyOperationException(
     message: OperationException,

@@ -1,13 +1,13 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.storage
 
-import io.github.xlopec.tea.time.travel.plugin.StoreCommand
-import io.github.xlopec.tea.time.travel.plugin.model.ComponentDebugState
-import io.github.xlopec.tea.time.travel.plugin.model.Settings
+import io.github.xlopec.tea.time.travel.plugin.integration.StoreCommand
+import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import java.io.File
 
 data class DoExportSessions(
     val dir: File,
-    val sessions: Collection<ComponentDebugState>
+    val sessions: Collection<ComponentState>
 ) : StoreCommand
 
 @JvmInline
