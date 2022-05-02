@@ -27,6 +27,10 @@ repositories {
     maven("https://plugins.gradle.org/m2/")
     google()
     mavenLocal()
+
+    maven {
+        setUrl("https://maven.pkg.jetbrains.space/public/p/compose/dev/")
+    }
 }
 
 plugins {

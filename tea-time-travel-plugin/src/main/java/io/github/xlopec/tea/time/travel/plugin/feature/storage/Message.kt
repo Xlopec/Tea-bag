@@ -1,6 +1,6 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.storage
 
-import io.github.xlopec.tea.time.travel.plugin.StoreMessage
+import io.github.xlopec.tea.time.travel.plugin.integration.StoreMessage
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.io.File
 

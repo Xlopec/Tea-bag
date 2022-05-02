@@ -2,8 +2,7 @@ package io.github.xlopec.tea.time.travel.plugin.feature.notification
 
 import com.intellij.openapi.project.Project
 import io.github.xlopec.tea.data.Left
-import io.github.xlopec.tea.time.travel.plugin.NotifyCommand
-import io.github.xlopec.tea.time.travel.plugin.feature.presentation.ui.components.balloon.showBalloon
+import io.github.xlopec.tea.time.travel.plugin.integration.NotifyCommand
 
 fun interface NotificationResolver {
     suspend fun resolve(

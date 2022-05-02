@@ -24,14 +24,14 @@ import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
 import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentAttached
 import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentSnapshot
 import io.github.xlopec.tea.time.travel.gson.GsonNotifyServer
-import io.github.xlopec.tea.time.travel.plugin.Message
+import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.AppendSnapshot
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.ComponentAttached
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.OperationException
-import io.github.xlopec.tea.time.travel.plugin.model.ServerAddress
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
-import io.github.xlopec.tea.time.travel.plugin.model.state.Server
+import io.github.xlopec.tea.time.travel.plugin.model.Server
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.protocol.NotifyClient
 import io.github.xlopec.tea.time.travel.protocol.NotifyServer

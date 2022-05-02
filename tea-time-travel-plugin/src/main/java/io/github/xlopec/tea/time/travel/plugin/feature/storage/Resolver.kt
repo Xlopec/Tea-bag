@@ -5,12 +5,12 @@ import com.google.gson.GsonBuilder
 import com.intellij.ide.util.PropertiesComponent
 import io.github.xlopec.tea.data.Either
 import io.github.xlopec.tea.data.Left
-import io.github.xlopec.tea.time.travel.plugin.NotificationMessage
-import io.github.xlopec.tea.time.travel.plugin.StoreCommand
+import io.github.xlopec.tea.time.travel.plugin.integration.NotificationMessage
+import io.github.xlopec.tea.time.travel.plugin.integration.StoreCommand
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.ComponentImported
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.OperationException
-import io.github.xlopec.tea.time.travel.plugin.misc.settings
-import io.github.xlopec.tea.time.travel.plugin.toPluginException
+import io.github.xlopec.tea.time.travel.plugin.util.settings
+import io.github.xlopec.tea.time.travel.plugin.integration.toPluginException
 
 fun interface StorageResolver {
     suspend fun resolveStoreCommand(
