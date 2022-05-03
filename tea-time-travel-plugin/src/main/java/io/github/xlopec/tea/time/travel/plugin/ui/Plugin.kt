@@ -40,23 +40,22 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import io.github.xlopec.tea.time.travel.plugin.integration.Message
-import io.github.xlopec.tea.time.travel.plugin.util.chooseFile
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginTheme
-import io.github.xlopec.tea.time.travel.plugin.feature.info.InfoView
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.Component
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTab
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
+import io.github.xlopec.tea.time.travel.plugin.feature.info.InfoView
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.ExportSessions
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.ImportSession
+import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.model.Started
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.component
 import io.github.xlopec.tea.time.travel.plugin.model.componentIds
+import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginTheme
+import io.github.xlopec.tea.time.travel.plugin.util.chooseFile
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.kanro.compose.jetbrains.control.JPanel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -73,7 +72,7 @@ fun Plugin(
                 JPanel(modifier = Modifier.fillMaxSize()) {
                     val messages = remember { MutableSharedFlow<Message>() }
                     val stateFlow = remember { component(messages) }
-                    val state = stateFlow.collectAsState(context = Main, initial = null).value
+                    val state = stateFlow.collectAsState(initial = null).value
 
                     if (state != null) {
                         val scope = rememberCoroutineScope()

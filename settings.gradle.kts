@@ -86,9 +86,6 @@ dependencyResolutionManagement {
             library("coroutines-android", "org.jetbrains.kotlinx", "kotlinx-coroutines-android")
                 .versionRef("coroutines")
 
-            library("coroutines-swing", "org.jetbrains.kotlinx", "kotlinx-coroutines-swing")
-                .versionRef("coroutines")
-
             library("coroutines-test", "org.jetbrains.kotlinx", "kotlinx-coroutines-test")
                 .versionRef("coroutines")
 
