@@ -93,11 +93,6 @@
 -dontwarn org.codehaus.**
 -dontwarn sun.**
 
-# R8 full mode
-
--keep class androidx.compose.runtime.Immutable { *; }
--keep class androidx.compose.runtime.Stable { *; }
-
 # FIXME R8 full mode works only if we're keeping everything from network module as is
 #-keep class io.github.xlopec.reader.network.** { *; }
 

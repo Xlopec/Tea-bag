@@ -32,7 +32,7 @@ struct ArticlesView: View {
                 handler(LoadArticles(id: state.id))
             }.onChange(of: searchText) { updatedSearchText in
                 // todo send request to fetch and show suggestions
-                handler(FilterUpdated(id: state.id, filter: Filter(type: state.filter.type, query: updatedSearchText, sources: [])))
+                handler(FilterUpdated(filter: Filter(type: state.filter.type, query: updatedSearchText, sources: [])))
             }
             
             let data = state.loadable.data as? Array<Article> ?? []
