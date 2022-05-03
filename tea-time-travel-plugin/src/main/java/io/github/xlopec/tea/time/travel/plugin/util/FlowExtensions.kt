@@ -27,13 +27,13 @@ fun <T> Flow<T>.mergeWith(other: Flow<T>): Flow<T> =
         coroutineScope {
             launch {
                 other.collect {
-                    offer(it)
+                    send(it)
                 }
             }
 
             launch {
                 collect {
-                    offer(it)
+                    send(it)
                 }
             }
         }

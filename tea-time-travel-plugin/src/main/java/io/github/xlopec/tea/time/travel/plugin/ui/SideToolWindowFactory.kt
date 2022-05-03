@@ -79,7 +79,7 @@ private val Project.settingsMessages: Flow<UpdateDebugSettings>
 
         connection.subscribe(PluginSettingsNotifier.TOPIC, object : PluginSettingsNotifier {
             override fun onSettingsUpdated(isDetailedToStringEnabled: Boolean) {
-                offer(UpdateDebugSettings(isDetailedToStringEnabled))
+                launch { send(UpdateDebugSettings(isDetailedToStringEnabled)) }
             }
         })
 

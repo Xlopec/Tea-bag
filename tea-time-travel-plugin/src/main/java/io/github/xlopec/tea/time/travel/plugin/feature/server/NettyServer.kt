@@ -112,7 +112,7 @@ private fun NettyAppEngine(
             webSocket("/") {
 
                 launch {
-                    calls.collect<RemoteCall> { call -> outgoing.processOutgoingCall(call, gson) }
+                    calls.collect { call -> outgoing.processOutgoingCall(call, gson) }
                 }
 
                 incoming.consumeAsFlow().filterIsInstance<Frame.Text>()

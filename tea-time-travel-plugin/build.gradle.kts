@@ -88,6 +88,20 @@ sourceSets {
     }
 }
 
+configurations.configureEach {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.jetbrains.kotlinx" && requested.module.name.startsWith("kotlinx-coroutines")) {
+            val forcedVersion = "1.5.2"
+            useVersion(forcedVersion)
+            // https://www.jetbrains.com/legal/third-party-software/?product=iic&version=2022.1
+            because("""
+                We must use bundled coroutines version, latest compatible coroutines dependency version 
+                for IJ 2022.1 is $forcedVersion, see https://www.jetbrains.com/legal/third-party-software/?product=iic&version=2022.1 
+            """.trimIndent())
+        }
+    }
+}
+
 dependencies {
 
     implementation(project(":tea-core"))
@@ -108,7 +122,6 @@ dependencies {
 
     implementation(libs.bundles.ktor.server)
     implementation(libs.coroutines.core)
-    implementation(libs.coroutines.swing)
     implementation(libs.collections.immutable)
 
     testImplementation(libs.ktor.server.tests)
