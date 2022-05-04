@@ -40,18 +40,41 @@ repositories {
     }
 }
 
+val supportedVersions = listOf(
+    IDEVersion(Product.IC, 2021, 1),
+    IDEVersion(Product.IC, 2021, 2),
+    IDEVersion(Product.IC, 2021, 3),
+    IDEVersion(Product.IC, 2022, 1),
+)
+
 intellij {
-    version.set("2020.3")
+    val idePath = getenvSafe("IJ_C")
+
+    if (isCiEnv || idePath == null) {
+        val ideVersion = supportedVersions.latest().versionName
+        logger.info("IDE of version $ideVersion will be used")
+        version.set(ideVersion)
+    } else {
+        logger.info("Local IDE distribution will be used located at $idePath")
+        localPath.set(idePath)
+    }
+
     plugins.add("com.intellij.java")
 }
 
+tasks.named<org.jetbrains.intellij.tasks.RunPluginVerifierTask>("runPluginVerifier") {
+    ideVersions.set(supportedVersions.map { it.versionName })
+}
+
 tasks.named<PatchPluginXmlTask>("patchPluginXml") {
-    setVersion(libraryVersion.toVersionName())
+    version.set(libraryVersion.toVersionName())
+    sinceBuild.set(supportedVersions.oldest().buildNumber)
 }
 
 tasks.named<PublishPluginTask>("publishPlugin") {
     token.set(ciVariable("PUBLISH_PLUGIN_TOKEN"))
     channels.set(PluginReleaseChannels)
+    dependsOn("runPluginVerifier")
 }
 
 val copyArtifacts by tasks.registering(Copy::class) {
@@ -94,10 +117,12 @@ configurations.configureEach {
             val forcedVersion = "1.5.2"
             useVersion(forcedVersion)
             // https://www.jetbrains.com/legal/third-party-software/?product=iic&version=2022.1
-            because("""
+            because(
+                """
                 We must use bundled coroutines version, latest compatible coroutines dependency version 
                 for IJ 2022.1 is $forcedVersion, see https://www.jetbrains.com/legal/third-party-software/?product=iic&version=2022.1 
-            """.trimIndent())
+            """.trimIndent()
+            )
         }
     }
 }

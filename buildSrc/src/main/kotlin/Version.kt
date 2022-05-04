@@ -133,9 +133,11 @@ fun Version(
         else -> error(
             "Invalid tag: $rawTag, release tag should be absent or match any of the following regular " +
                     "expressions: ${
-                        listOf(AlphaRegexp,
+                        listOf(
+                            AlphaRegexp,
                             ReleaseCandidateRegexp,
-                            StableRegexp).joinToString(transform = Regex::pattern)
+                            StableRegexp
+                        ).joinToString(transform = Regex::pattern)
                     }"
         )
     }
