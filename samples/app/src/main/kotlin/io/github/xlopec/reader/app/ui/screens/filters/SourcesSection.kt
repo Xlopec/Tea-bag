@@ -70,10 +70,10 @@ import io.github.xlopec.reader.app.feature.filter.FiltersState
 import io.github.xlopec.reader.app.feature.filter.LoadSources
 import io.github.xlopec.reader.app.feature.filter.ToggleSourceSelection
 import io.github.xlopec.reader.app.misc.Exception
+import io.github.xlopec.reader.app.misc.Idle
 import io.github.xlopec.reader.app.misc.Loadable
 import io.github.xlopec.reader.app.misc.Loading
 import io.github.xlopec.reader.app.misc.LoadingNext
-import io.github.xlopec.reader.app.misc.Preview
 import io.github.xlopec.reader.app.misc.Refreshing
 import io.github.xlopec.reader.app.model.Source
 import io.github.xlopec.reader.app.ui.misc.RowMessage
@@ -121,7 +121,7 @@ fun SourcesSection(
                     onClick = { handler(LoadSources(id)) }
                 )
             }
-            Loading, Refreshing, Preview -> {
+            Loading, Refreshing, Idle -> {
                 val infiniteTransition = rememberInfiniteTransition()
                 val alpha by infiniteTransition.animateFloat(
                     initialValue = 0f,
@@ -145,10 +145,10 @@ fun SourcesSection(
                 ) {
 
                     when {
-                        loadable == Preview && sources.data.isEmpty() -> emptySourceItems(
+                        loadable == Idle && sources.data.isEmpty() -> emptySourceItems(
                             onClick = { handler(LoadSources(id)) }
                         )
-                        loadable == Preview -> sourceItems(
+                        loadable == Idle -> sourceItems(
                             sources = sources.data,
                             onClick = { handler(ToggleSourceSelection(id, it.id)) },
                             state = state

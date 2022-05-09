@@ -68,7 +68,7 @@ import io.github.xlopec.reader.app.feature.navigation.NavigateToSettings
 import io.github.xlopec.reader.app.feature.navigation.NavigateToTrending
 import io.github.xlopec.reader.app.feature.navigation.Navigation
 import io.github.xlopec.reader.app.misc.isException
-import io.github.xlopec.reader.app.misc.isPreview
+import io.github.xlopec.reader.app.misc.isIdle
 import io.github.xlopec.reader.app.misc.isRefreshing
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.ui.misc.InsetAwareTopAppBar
@@ -248,4 +248,4 @@ private fun Filter.toMenuItem() = when (type) {
 }
 
 private val ArticlesState.isRefreshable: Boolean
-    get() = loadable.data.isNotEmpty() && (loadable.isPreview || loadable.isException)
+    get() = loadable.data.isNotEmpty() && (loadable.isIdle || loadable.isException)

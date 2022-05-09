@@ -55,7 +55,7 @@ object LoadingNext : LoadableState
 
 object Refreshing : LoadableState
 
-object Preview : LoadableState
+object Idle : LoadableState
 
 val Loadable<*>.isLoading: Boolean
     get() = loadableState === Loading
@@ -66,8 +66,8 @@ val Loadable<*>.isLoadingNext: Boolean
 val Loadable<*>.isRefreshing: Boolean
     get() = loadableState === Refreshing
 
-val Loadable<*>.isPreview: Boolean
-    get() = loadableState === Preview
+val Loadable<*>.isIdle: Boolean
+    get() = loadableState === Idle
 
 val Loadable<*>.isException: Boolean
     get() = loadableState is Exception
@@ -85,27 +85,27 @@ fun <T> Loadable<T>.toLoading() =
 fun <T> Loadable<T>.toRefreshing() =
     copy(loadableState = Refreshing)
 
-fun <T> Loadable<T>.toPreview(
+fun <T> Loadable<T>.toIdle(
     data: ImmutableList<T>,
-) = toPreview(Page(data = data, hasMore = false))
+) = toIdle(Page(data = data, hasMore = false))
 
-fun <T> Loadable<T>.toPreview(
+fun <T> Loadable<T>.toIdle(
     page: Page<T>,
 ): Loadable<T> =
     when (loadableState) {
         LoadingNext, is Exception -> {
             copy(
                 data = data.addAll(page.data),
-                loadableState = Preview,
+                loadableState = Idle,
                 hasMore = page.hasMore
             )
         }
         Loading, Refreshing -> copy(
             data = page.data.toPersistentList(),
-            loadableState = Preview,
+            loadableState = Idle,
             hasMore = page.hasMore
         )
-        Preview -> this
+        Idle -> this
     }
 
 fun <T> Loadable<T>.toException(

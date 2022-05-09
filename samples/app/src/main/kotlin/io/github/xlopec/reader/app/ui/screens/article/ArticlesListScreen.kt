@@ -80,10 +80,10 @@ import io.github.xlopec.reader.app.feature.article.list.ToggleArticleIsFavorite
 import io.github.xlopec.reader.app.feature.navigation.NavigateToArticleDetails
 import io.github.xlopec.reader.app.feature.navigation.NavigateToFilters
 import io.github.xlopec.reader.app.misc.Exception
+import io.github.xlopec.reader.app.misc.Idle
 import io.github.xlopec.reader.app.misc.LoadableState
 import io.github.xlopec.reader.app.misc.Loading
 import io.github.xlopec.reader.app.misc.LoadingNext
-import io.github.xlopec.reader.app.misc.Preview
 import io.github.xlopec.reader.app.misc.Refreshing
 import io.github.xlopec.reader.app.misc.isLoading
 import io.github.xlopec.reader.app.model.Article
@@ -194,7 +194,7 @@ private fun LazyListScope.loadableContent(
         is LoadingNext -> {
             ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
         }
-        is Preview, is Refreshing -> {
+        is Idle, is Refreshing -> {
             if (isEmpty) {
                 ColumnMessage(
                     modifier = Modifier

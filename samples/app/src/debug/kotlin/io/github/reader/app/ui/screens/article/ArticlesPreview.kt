@@ -27,6 +27,7 @@ package io.github.reader.app.ui.screens.article
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.misc.*
 import io.github.xlopec.reader.app.model.Article
@@ -47,17 +48,16 @@ import java.net.URL
 import java.util.UUID
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import androidx.compose.ui.tooling.preview.Preview as ComposePreview
 
 @Composable
-@ComposePreview("Articles search input field")
+@Preview("Articles search input field")
 fun ArticleSearchHeaderPreview() {
     ThemedPreview {
         ArticleSearchHeader(
             state = ArticlesState(
                 UUID.randomUUID(),
                 Filter(FilterType.Trending, Query.of("some input text")),
-                Loadable(persistentListOf(), false, Preview)
+                Loadable(persistentListOf(), false, Idle)
             ),
             onMessage = {}
         )
@@ -65,7 +65,7 @@ fun ArticleSearchHeaderPreview() {
 }
 
 @Composable
-@ComposePreview("Articles bottom action menu")
+@Preview("Articles bottom action menu")
 fun ArticleActionsPreview() {
     ThemedPreview {
         ArticleActions(
@@ -77,7 +77,7 @@ fun ArticleActionsPreview() {
 }
 
 @Composable
-@ComposePreview("Messages preview")
+@Preview("Messages preview")
 fun MessagePreview() {
     ThemedPreview {
         ColumnMessage(
@@ -89,14 +89,14 @@ fun MessagePreview() {
 }
 
 @Composable
-@ComposePreview("Articles screen preview")
+@Preview("Articles screen preview")
 fun ArticlesScreenPreview() {
     ThemedPreview {
         ArticlesScreen(
             state = ArticlesState(
                 FilterType.Trending,
                 PreviewArticles,
-                Preview
+                Idle
             ),
             ListState,
             Modifier
@@ -105,7 +105,7 @@ fun ArticlesScreenPreview() {
 }
 
 @Composable
-@ComposePreview("Articles screen loading next")
+@Preview("Articles screen loading next")
 fun ArticlesScreenLoadingNextPreview() {
     ThemedPreview {
         ArticlesScreen(
@@ -121,7 +121,7 @@ fun ArticlesScreenLoadingNextPreview() {
 }
 
 @Composable
-@ComposePreview("Articles screen loading")
+@Preview("Articles screen loading")
 fun ArticlesScreenLoadingPreview() {
     ThemedPreview {
         ArticlesScreen(
@@ -137,7 +137,7 @@ fun ArticlesScreenLoadingPreview() {
 }
 
 @Composable
-@ComposePreview("Articles screen refreshing")
+@Preview("Articles screen refreshing")
 fun ArticlesScreenRefreshingPreview() {
     ThemedPreview {
         ArticlesScreen(
@@ -153,7 +153,7 @@ fun ArticlesScreenRefreshingPreview() {
 }
 
 @Composable
-@ComposePreview("Article item")
+@Preview("Article item")
 fun ArticleItemPreview() {
     ThemedPreview {
         ArticleItem(

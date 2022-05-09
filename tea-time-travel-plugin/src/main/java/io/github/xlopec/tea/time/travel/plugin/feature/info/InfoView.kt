@@ -19,12 +19,10 @@ package io.github.xlopec.tea.time.travel.plugin.feature.info
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign.Companion.Justify
-import io.github.xlopec.tea.time.travel.plugin.ui.noIndicationClickable
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
 import io.github.xlopec.tea.time.travel.plugin.model.Invalid
@@ -33,6 +31,9 @@ import io.github.xlopec.tea.time.travel.plugin.model.Starting
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.Stopped
 import io.github.xlopec.tea.time.travel.plugin.model.Stopping
+import io.github.xlopec.tea.time.travel.plugin.ui.noIndicationClickable
+import io.kanro.compose.jetbrains.LocalTypography
+import io.kanro.compose.jetbrains.control.Text
 import java.util.Locale
 
 @Composable
@@ -60,6 +61,7 @@ private fun InfoViewMessage(
     messages: (MessageHandler)? = null,
 ) {
     Text(
+        style = LocalTypography.current.h3,
         text = description,
         textAlign = Justify,
         modifier = if (messages == null) Modifier else Modifier.noIndicationClickable {

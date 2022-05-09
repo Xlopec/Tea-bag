@@ -33,9 +33,9 @@ import io.github.xlopec.reader.app.misc.Loadable
 import io.github.xlopec.reader.app.misc.remove
 import io.github.xlopec.reader.app.misc.replace
 import io.github.xlopec.reader.app.misc.toException
+import io.github.xlopec.reader.app.misc.toIdle
 import io.github.xlopec.reader.app.misc.toLoading
 import io.github.xlopec.reader.app.misc.toLoadingNext
-import io.github.xlopec.reader.app.misc.toPreview
 import io.github.xlopec.reader.app.misc.toRefreshing
 import io.github.xlopec.reader.app.misc.updated
 import io.github.xlopec.reader.app.model.Article
@@ -85,7 +85,7 @@ fun ArticlesState.toRefreshing() =
 
 fun ArticlesState.toPreview(
     page: Page<Article>,
-): ArticlesState = copy(loadable = loadable.toPreview(page))
+): ArticlesState = copy(loadable = loadable.toIdle(page))
 
 fun ArticlesState.toException(
     cause: AppException,
