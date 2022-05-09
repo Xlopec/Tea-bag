@@ -16,27 +16,117 @@
 
 package io.github.xlopec.tea.time.travel.plugin.ui.theme
 
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.MaterialTheme.shapes
-import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.sp
+import com.intellij.ide.ui.UISettings
 import io.kanro.compose.jetbrains.JBTheme
+import io.kanro.compose.jetbrains.JBTypography
 import io.kanro.compose.jetbrains.color.PanelColors
+import io.kanro.compose.jetbrains.color.TextColors
 
 private val PreviewPanelColors = PanelColors(Color.Red, Color.Red, Color(45, 48, 50))
+
+@Suppress("unused")
+val JBTheme.contrastBorderColor: Color
+    @ReadOnlyComposable
+    @Composable
+    get() = LocalPluginColors.current.contrastBorderColor
 
 @Composable
 fun PluginTheme(
     content: @Composable () -> Unit,
 ) {
-    val swing = SwingColor()
+    val themeColors = PluginThemeColors()
+    val jbTypography = JBTypography(themeColors.textColors, UISettings.getInstance().fontSize)
 
-    JBTheme(panelColors = PanelColors(border = Color.Black, bgContent = swing.background, bgDialog = swing.background)) {
-        content()
+    JBTheme(
+        textColors = themeColors.textColors,
+        panelColors = themeColors.panelColors,
+        typography = jbTypography,
+        fieldColors = themeColors.fieldColors,
+        tabColors = themeColors.tabColors,
+        checkBoxColors = themeColors.checkBoxColors,
+        selectionColors = themeColors.selectionColors,
+        buttonColors = themeColors.buttonColors,
+        toolBarColors = themeColors.toolbarColors,
+        scrollColors = themeColors.scrollColors
+    ) {
+        CompositionLocalProvider(LocalPluginColors provides themeColors) {
+            content()
+        }
     }
+}
+
+private fun JBTypography(
+    textColors: TextColors,
+    defaultFontSize: Int
+): JBTypography {
+    val h2 = TextStyle(
+        color = textColors.default,
+        fontWeight = FontWeight.Normal,
+        fontSize = (defaultFontSize + 5).sp,
+    )
+
+    val h3 = TextStyle(
+        color = textColors.default,
+        fontWeight = FontWeight.Normal,
+        fontSize = (defaultFontSize + 3).sp,
+    )
+
+    val defaultFontFamily = FontFamily.Default
+
+    val default = TextStyle(
+        color = textColors.default,
+        fontWeight = FontWeight.Normal,
+        fontSize = defaultFontSize.sp,
+    )
+
+    val medium = TextStyle(
+        color = textColors.default,
+        fontWeight = FontWeight.Normal,
+        fontSize = (defaultFontSize - 1).sp,
+    )
+    val small = TextStyle(
+        color = textColors.default,
+        fontWeight = FontWeight.Normal,
+        fontSize = (defaultFontSize - 2).sp,
+    )
+    return JBTypography(
+        defaultFontFamily = defaultFontFamily,
+        h0 = TextStyle(
+            color = textColors.default,
+            fontWeight = FontWeight.Medium,
+            fontSize = (defaultFontSize + 12).sp
+        ),
+        h1 = TextStyle(
+            color = textColors.default,
+            fontWeight = FontWeight.Medium,
+            fontSize = (defaultFontSize + 9).sp
+        ),
+        h2 = h2,
+        h2Bold = h2.copy(fontWeight = FontWeight.Medium),
+        h3 = h3,
+        h3Bold = h3.copy(fontWeight = FontWeight.Medium),
+        default = default,
+        defaultBold = default.copy(fontWeight = FontWeight.Medium),
+        defaultUnderlined = default.copy(textDecoration = TextDecoration.Underline),
+        paragraph = TextStyle(
+            color = textColors.default,
+            fontWeight = FontWeight.Normal,
+            fontSize = defaultFontSize.sp,
+        ),
+        medium = medium,
+        mediumBold = medium.copy(fontWeight = FontWeight.Medium),
+        small = small,
+        smallUnderlined = small.copy(textDecoration = TextDecoration.Underline)
+    )
 }
 
 @Composable
@@ -46,32 +136,4 @@ fun PluginPreviewTheme(
     JBTheme(panelColors = PreviewPanelColors) {
         content()
     }
-}
-
-@Composable
-fun WidgetTheme(
-    content: @Composable () -> Unit,
-) {
-    val colors = lightColors(
-        onPrimary = Color.White,
-        primary = Color(70, 109, 148),
-        onSurface = Color.Black
-    )
-    val swingColor = SwingColor()
-
-    MaterialTheme(
-        colors = colors.copy(
-            background = swingColor.background,
-            onBackground = swingColor.onBackground,
-            surface = swingColor.background,
-            onSurface = swingColor.onBackground,
-        ),
-        typography = typography,
-        shapes = shapes.copy(
-            small = RoundedCornerShape(size = 0.dp),
-            medium = RoundedCornerShape(size = 0.dp),
-            large = RoundedCornerShape(size = 0.dp)
-        ),
-        content = content
-    )
 }

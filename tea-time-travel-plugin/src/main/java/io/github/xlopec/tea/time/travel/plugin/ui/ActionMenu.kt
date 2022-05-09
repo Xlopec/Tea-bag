@@ -1,6 +1,5 @@
 package io.github.xlopec.tea.time.travel.plugin.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +20,7 @@ import io.github.xlopec.tea.time.travel.plugin.model.Stopped
 import io.github.xlopec.tea.time.travel.plugin.model.Stopping
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons
 import io.kanro.compose.jetbrains.control.ActionButton
+import io.kanro.compose.jetbrains.control.Icon
 import kotlin.contracts.contract
 
 private val DisabledTintColor = Color(86, 86, 86)
@@ -71,7 +71,7 @@ internal fun ActionButton(
         enabled = enabled,
         onClick = onClick
     ) {
-        Image(
+        Icon(
             colorFilter = if (enabled) null else ColorFilter.tint(DisabledTintColor),
             painter = painter,
             contentDescription = contentDescription

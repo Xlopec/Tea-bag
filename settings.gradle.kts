@@ -185,6 +185,9 @@ dependencyResolutionManagement {
             library("compose-tooling", "androidx.compose.ui", "ui-tooling")
                 .versionRef("compose")
 
+            library("compose-tooling-preview", "androidx.compose.ui", "ui-tooling-preview")
+                .versionRef("compose")
+
             library("compose-runtime", "androidx.compose.runtime", "runtime")
                 .versionRef("compose")
 
@@ -194,7 +197,7 @@ dependencyResolutionManagement {
             library("compose-compiler", "androidx.compose.compiler", "compiler")
                 .versionRef("compose")
 
-            library("compose-activity", "androidx.activity:activity-compose:1.6.0-alpha01")
+            library("compose-activity", "androidx.activity:activity-compose:1.5.0-alpha03")
 
             bundle(
                 "compose",
@@ -208,6 +211,7 @@ dependencyResolutionManagement {
                     "compose-animation",
                     "compose-compiler",
                     "compose-activity",
+                    "compose-tooling-preview",
                 )
             )
 

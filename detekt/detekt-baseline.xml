@@ -48,12 +48,13 @@
     <ID>MagicNumber:LocalStorageImpl.kt$8</ID>
     <ID>MagicNumber:NettyServer.kt$10</ID>
     <ID>MagicNumber:NettyServer.kt$5</ID>
-    <ID>MagicNumber:PluginTheme.kt$109</ID>
-    <ID>MagicNumber:PluginTheme.kt$148</ID>
+    <ID>MagicNumber:PluginTheme.kt$12</ID>
+    <ID>MagicNumber:PluginTheme.kt$3</ID>
     <ID>MagicNumber:PluginTheme.kt$45</ID>
     <ID>MagicNumber:PluginTheme.kt$48</ID>
+    <ID>MagicNumber:PluginTheme.kt$5</ID>
     <ID>MagicNumber:PluginTheme.kt$50</ID>
-    <ID>MagicNumber:PluginTheme.kt$70</ID>
+    <ID>MagicNumber:PluginTheme.kt$9</ID>
     <ID>MagicNumber:TreeView.kt$90f</ID>
     <ID>MagicNumber:ValidatedTextField.kt$8080</ID>
     <ID>MaxLineLength:AppTheme.kt$val secondaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant)</ID>
@@ -62,7 +63,7 @@
     <ID>MaximumLineLength:io.github.xlopec.reader.app.ui.theme.AppTheme.kt:54</ID>
     <ID>MaximumLineLength:io.github.xlopec.tea.time.travel.plugin.feature.component.model.FiltersTest.kt:112</ID>
     <ID>MaximumLineLength:io.github.xlopec.tea.time.travel.plugin.util.CollectionExtensionsTest.kt:51</ID>
-    <ID>NoWildcardImports:io.github.reader.app.ui.screens.article.ArticlesPreview.kt:31</ID>
+    <ID>NoWildcardImports:io.github.reader.app.ui.screens.article.ArticlesPreview.kt:32</ID>
     <ID>NoWildcardImports:io.github.xlopec.reader.app.ui.screens.AppView.kt:29</ID>
     <ID>NoWildcardImports:io.github.xlopec.tea.time.travel.plugin.feature.component.model.Filter.kt:21</ID>
     <ID>NoWildcardImports:io.github.xlopec.tea.time.travel.plugin.feature.component.model.Filter.kt:33</ID>
@@ -138,6 +139,7 @@
     <ID>UndocumentedPublicClass:PluginState.kt$OriginalSnapshot</ID>
     <ID>UndocumentedPublicClass:PluginState.kt$SnapshotId</ID>
     <ID>UndocumentedPublicClass:PluginState.kt$SnapshotMeta</ID>
+    <ID>UndocumentedPublicClass:PluginThemeColors.kt$PluginThemeColors</ID>
     <ID>UndocumentedPublicClass:RemoteCall.kt$RemoteCall</ID>
     <ID>UndocumentedPublicClass:Resolver.kt$NotificationResolver</ID>
     <ID>UndocumentedPublicClass:Resolver.kt$ServerCommandResolver</ID>
@@ -153,7 +155,6 @@
     <ID>UndocumentedPublicClass:State.kt$State</ID>
     <ID>UndocumentedPublicClass:Stopped.kt$Stopped : State</ID>
     <ID>UndocumentedPublicClass:Stopping.kt$Stopping : State</ID>
-    <ID>UndocumentedPublicClass:SwingColor.kt$SwingColor</ID>
     <ID>UndocumentedPublicClass:UUID.kt$UUID</ID>
     <ID>UndocumentedPublicClass:Url.kt$Url</ID>
     <ID>UndocumentedPublicClass:Validated.kt$Invalid : Validated</ID>
@@ -239,7 +240,6 @@
     <ID>UndocumentedPublicFunction:Helpers.kt$fun &lt;T> ThrowingResolver()</ID>
     <ID>UndocumentedPublicFunction:Helpers.kt$fun ThrowingInitializer( th: Throwable, ): Initializer&lt;Nothing, Nothing></ID>
     <ID>UndocumentedPublicFunction:Helpers.kt$suspend fun Component&lt;Char, String, Char>.collectRanged( messages: CharRange, )</ID>
-    <ID>UndocumentedPublicFunction:Icons.kt$fun resource( path: String, )</ID>
     <ID>UndocumentedPublicFunction:InfoView.kt$@Composable fun InfoView( state: State, uiEvents: MessageHandler, )</ID>
     <ID>UndocumentedPublicFunction:LruCache.kt$LruCache$// todo add checks fun getOrPut( k: K, v: () -> V ): V</ID>
     <ID>UndocumentedPublicFunction:NoIndicationClickable.kt$fun Modifier.noIndicationClickable( onClick: () -> Unit, )</ID>
@@ -249,7 +249,7 @@
     <ID>UndocumentedPublicFunction:PluginSettingsNotifier.kt$PluginSettingsNotifier$fun onSettingsUpdated( isDetailedToStringEnabled: Boolean )</ID>
     <ID>UndocumentedPublicFunction:PluginTheme.kt$@Composable fun PluginPreviewTheme( content: @Composable () -> Unit )</ID>
     <ID>UndocumentedPublicFunction:PluginTheme.kt$@Composable fun PluginTheme( content: @Composable () -> Unit, )</ID>
-    <ID>UndocumentedPublicFunction:PluginTheme.kt$@Composable fun WidgetTheme( content: @Composable () -> Unit, )</ID>
+    <ID>UndocumentedPublicFunction:PluginThemeColors.kt$@Composable fun PluginThemeColors(): PluginThemeColors</ID>
     <ID>UndocumentedPublicFunction:Popups.kt$@Composable fun CopyActionItem( clipboard: AnnotatedString )</ID>
     <ID>UndocumentedPublicFunction:Popups.kt$@Composable fun JumpToSourcesActionItem( psiClass: PsiClass )</ID>
     <ID>UndocumentedPublicFunction:Popups.kt$@Composable fun LeafActionItems( value: Value )</ID>
@@ -291,7 +291,6 @@
     <ID>UndocumentedPublicFunction:Started.kt$inline fun Started.updateComponents( how: (mapping: ComponentMapping) -> ComponentMapping )</ID>
     <ID>UndocumentedPublicFunction:State.kt$fun State.updateServerSettings( settings: Settings )</ID>
     <ID>UndocumentedPublicFunction:State.kt$fun State.updateSettings( how: Settings.() -> Settings )</ID>
-    <ID>UndocumentedPublicFunction:SwingColor.kt$@Composable fun SwingColor(): SwingColor</ID>
     <ID>UndocumentedPublicFunction:Tab.kt$@Composable fun ComponentTab( id: ComponentId, selectedId: MutableState&lt;ComponentId>, state: DebugState, tabIndex: Int, events: MessageHandler )</ID>
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S, C> TestDebugEnv( env: Env&lt;M, S, C>, settings: Settings&lt;M, S, JsonElement> = TestSettings() )</ID>
     <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S, C> TestScope.TestBaseEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
@@ -363,13 +362,7 @@
     <ID>UndocumentedPublicProperty:Helpers.kt$const val TestTimeoutMillis = 10 * 1000L</ID>
     <ID>UndocumentedPublicProperty:Helpers.kt$inline val CoroutineScope.job: Job get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")</ID>
     <ID>UndocumentedPublicProperty:Helpers.kt$val CharRange.size: Int get() = 1 + abs(last - first)</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$@Deprecated("remove") val RemoveIcon by lazy { getIcon("remove") }</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$@Deprecated("remove") val RemoveIconC @Composable get() = bitmap("remove")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$@Deprecated("remove") val UpdateRunningAppIcon by lazy { getIcon("updateRunningApplication") }</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$@Deprecated("remove") val UpdateRunningAppIconC @Composable get() = bitmap("updateRunningApplication")</ID>
     <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Close @Composable get() = painterResource("/images/close.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val CloseDarkIcon by lazy { getIcon("close_dark") }</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val CloseDefaultIconC @Composable get() = bitmap("close")</ID>
     <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Collapse @Composable get() = painterResource("/images/collapse.svg")</ID>
     <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Copy @Composable get() = painterResource("/images/inlineCopy.svg")</ID>
     <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Execute @Composable get() = painterResource("/images/execute.svg")</ID>
@@ -380,13 +373,8 @@
     <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Suspend @Composable get() = painterResource("/images/suspend.svg")</ID>
     <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val UpdateRunningApplication @Composable get() = painterResource("/images/updateRunningApplication.svg")</ID>
     <ID>UndocumentedPublicProperty:Icons.kt$ValueIcon$val Class @Composable get() = painterResource("/images/class.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ValueIcon$val ClassIcon by lazy { getIcon("class") }</ID>
     <ID>UndocumentedPublicProperty:Icons.kt$ValueIcon$val Property @Composable get() = painterResource("/images/property.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ValueIcon$val PropertyIcon by lazy { getIcon("property") }</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ValueIcon$val PropertyIconC @Composable get() = bitmap("property")</ID>
     <ID>UndocumentedPublicProperty:Icons.kt$ValueIcon$val Snapshot @Composable get() = painterResource("/images/snapshotGutter.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ValueIcon$val VariableIcon by lazy { getIcon("variable") }</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ValueIcon$val WatchIcon by lazy { getIcon("watch") }</ID>
     <ID>UndocumentedPublicProperty:LruCache.kt$LruCache$val capacity: UInt</ID>
     <ID>UndocumentedPublicProperty:LruCache.kt$LruCache$val isEmpty: Boolean inline get() = size == 0U</ID>
     <ID>UndocumentedPublicProperty:LruCache.kt$LruCache$val size: UInt get() = realSize</ID>
@@ -437,6 +425,18 @@
     <ID>UndocumentedPublicProperty:PluginState.kt$SnapshotId$val value: UUID</ID>
     <ID>UndocumentedPublicProperty:PluginState.kt$SnapshotMeta$val id: SnapshotId</ID>
     <ID>UndocumentedPublicProperty:PluginState.kt$SnapshotMeta$val timestamp: LocalDateTime</ID>
+    <ID>UndocumentedPublicProperty:PluginTheme.kt$@Suppress("unused") val JBTheme.contrastBorderColor: Color @ReadOnlyComposable @Composable get() = LocalPluginColors.current.contrastBorderColor</ID>
+    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val buttonColors: ButtonColors</ID>
+    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val checkBoxColors: CheckBoxColors</ID>
+    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val contrastBorderColor: Color</ID>
+    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val fieldColors: FieldColors</ID>
+    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val panelColors: PanelColors</ID>
+    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val scrollColors: ScrollColors</ID>
+    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val selectionColors: SelectionColors</ID>
+    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val tabColors: TabColors</ID>
+    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val textColors: TextColors</ID>
+    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val toolbarColors: ToolBarColors</ID>
+    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$val LocalPluginColors = compositionLocalOf&lt;PluginThemeColors> { error("theme colors aren't provided") }</ID>
     <ID>UndocumentedPublicProperty:ProjectExtensions.kt$// todo reduce visibility inline var PropertiesComponent.isDetailedToStringEnabled: Boolean set(value) = setValue("$PluginId.isDetailedToStringEnabled", value) get() = getBoolean("$PluginId.isDetailedToStringEnabled", false)</ID>
     <ID>UndocumentedPublicProperty:ProjectExtensions.kt$const val PluginId = "io.github.xlopec.tea.core.plugin"</ID>
     <ID>UndocumentedPublicProperty:ProjectExtensions.kt$inline val Project.javaPsiFacade: JavaPsiFacade get() = JavaPsiFacade.getInstance(this)</ID>
@@ -459,8 +459,6 @@
     <ID>UndocumentedPublicProperty:Started.kt$inline val DebugState.componentIds: ImmutableSet&lt;ComponentId> get() = components.keys</ID>
     <ID>UndocumentedPublicProperty:State.kt$State$val settings: Settings</ID>
     <ID>UndocumentedPublicProperty:Stopped.kt$Stopped$val canStart: Boolean = settings.host.isValid() &amp;&amp; settings.port.isValid()</ID>
-    <ID>UndocumentedPublicProperty:SwingColor.kt$SwingColor$val background: Color</ID>
-    <ID>UndocumentedPublicProperty:SwingColor.kt$SwingColor$val onBackground: Color</ID>
     <ID>UndocumentedPublicProperty:TestEnv.kt$val TestComponentId = ComponentId("test")</ID>
     <ID>UndocumentedPublicProperty:TestEnv.kt$val TestSerializer = GsonSerializer()</ID>
     <ID>UndocumentedPublicProperty:Typography.kt$val typography = Typography( body1 = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 16.sp ), body2 = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 14.sp ), button = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.W500, fontSize = 14.sp ), caption = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 12.sp, ), subtitle1 = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 16.sp, color = Color.Gray ), subtitle2 = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 14.sp, color = Color.Gray ), )</ID>

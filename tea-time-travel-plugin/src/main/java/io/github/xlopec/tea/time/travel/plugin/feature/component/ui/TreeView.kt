@@ -50,7 +50,6 @@ import androidx.compose.foundation.mouseClickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
@@ -66,12 +65,6 @@ import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons.Expand
-import io.github.xlopec.tea.time.travel.plugin.ui.PreviewMode
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Class
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Property
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Snapshot
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
 import io.github.xlopec.tea.time.travel.plugin.model.BooleanWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.CharWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
@@ -83,8 +76,15 @@ import io.github.xlopec.tea.time.travel.plugin.model.Ref
 import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.Type
 import io.github.xlopec.tea.time.travel.plugin.model.Value
+import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons.Expand
+import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
+import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Class
+import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Property
+import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Snapshot
 import io.kanro.compose.jetbrains.JBTheme
+import io.kanro.compose.jetbrains.LocalTypography
 import io.kanro.compose.jetbrains.control.DropdownMenu
+import io.kanro.compose.jetbrains.control.Text
 
 typealias TreeFormatter = (Value) -> String
 typealias TreeSelectionState = MutableState<Any?>
@@ -191,6 +191,7 @@ private fun SnapshotSubTree(
         if (snapshot.message != null) {
 
             Text(
+                style = LocalTypography.current.defaultBold,
                 modifier = Modifier.fillMaxWidth().indentLevel(1),
                 text = "Message"
             )
@@ -200,6 +201,7 @@ private fun SnapshotSubTree(
 
         if (snapshot.state != null) {
             Text(
+                style = LocalTypography.current.defaultBold,
                 modifier = Modifier.fillMaxWidth().indentLevel(1),
                 text = "State"
             )
@@ -209,6 +211,7 @@ private fun SnapshotSubTree(
 
         if (snapshot.commands != null) {
             Text(
+                style = LocalTypography.current.defaultBold,
                 modifier = Modifier.fillMaxWidth().indentLevel(1),
                 text = "Commands"
             )
@@ -419,7 +422,6 @@ private val PreviewTreeRoot = Ref(
 private fun ValueTreePreviewExpandedShort() {
     PluginPreviewTheme {
         CompositionLocalProvider(
-            PreviewMode provides true,
             LocalInitialExpandState provides true
         ) {
             Tree(
@@ -436,7 +438,6 @@ private fun ValueTreePreviewExpandedShort() {
 private fun ValueTreePreviewExpandedLong() {
     PluginPreviewTheme {
         CompositionLocalProvider(
-            PreviewMode provides true,
             LocalInitialExpandState provides true
         ) {
             Tree(

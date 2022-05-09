@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,9 +21,6 @@ import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.App
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.ApplyState
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.RemoveAllSnapshots
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.RemoveSnapshots
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon
-import io.github.xlopec.tea.time.travel.plugin.util.javaPsiFacade
 import io.github.xlopec.tea.time.travel.plugin.model.BooleanWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.CharWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
@@ -35,8 +31,12 @@ import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
 import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.Type
 import io.github.xlopec.tea.time.travel.plugin.model.Value
+import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons
+import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon
+import io.github.xlopec.tea.time.travel.plugin.util.javaPsiFacade
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.kanro.compose.jetbrains.control.DropdownMenuItem
+import io.kanro.compose.jetbrains.control.Text
 
 @Composable
 fun ValuePopup(
