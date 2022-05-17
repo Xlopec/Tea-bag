@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-
 import org.jetbrains.compose.compose
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PublishPluginTask
@@ -35,23 +34,54 @@ plugins {
     id("org.jetbrains.compose")
 }
 
+repositories {
+    maven {
+        setUrl("https://repo1.maven.org/maven2/")
+    }
+}
+
+val supportedVersions = listOf(
+    IDEVersion(Product.IC, 2021, 1),
+    IDEVersion(Product.IC, 2021, 2),
+    IDEVersion(Product.IC, 2021, 3),
+    IDEVersion(Product.IC, 2022, 1),
+)
+
 intellij {
-    version.set("2020.3")
+    val idePath = getenvSafe("IJ_C")
+
+    if (isCiEnv || idePath == null) {
+        val ideVersion = supportedVersions.latest().versionName
+        logger.info("IDE of version $ideVersion will be used")
+        version.set(ideVersion)
+    } else {
+        logger.info("Local IDE distribution will be used located at $idePath")
+        localPath.set(idePath)
+    }
+
     plugins.add("com.intellij.java")
 }
 
+tasks.named<org.jetbrains.intellij.tasks.RunPluginVerifierTask>("runPluginVerifier") {
+    ideVersions.set(supportedVersions.map { it.versionName })
+}
+
 tasks.named<PatchPluginXmlTask>("patchPluginXml") {
-    setVersion(libraryVersion.toVersionName())
+    version.set(libraryVersion.toVersionName())
+    sinceBuild.set(supportedVersions.oldest().buildNumber)
 }
 
 tasks.named<PublishPluginTask>("publishPlugin") {
     token.set(ciVariable("PUBLISH_PLUGIN_TOKEN"))
     channels.set(PluginReleaseChannels)
+    dependsOn("runPluginVerifier")
 }
 
 val copyArtifacts by tasks.registering(Copy::class) {
     from(libsDir, distributionsDir)
     into(artifactsDir)
+
+    mustRunAfter("publishPlugin")
 
     group = "release"
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
@@ -61,12 +91,38 @@ val allTests by tasks.creating(Task::class) {
     dependsOn("test")
 }
 
-optIn("kotlinx.coroutines.ExperimentalCoroutinesApi", "com.oliynick.max.tea.core.ExperimentalTeaApi")
+tasks.withType<Test>().all {
+    reports {
+        html.outputLocation.set(htmlTestReportsDir)
+        junitXml.outputLocation.set(xmlTestReportsDir)
+    }
+}
+
+optIn(
+    "kotlinx.coroutines.ExperimentalCoroutinesApi",
+    "io.githux.xlopec.tea.core.ExperimentalTeaApi",
+)
 
 sourceSets {
     main {
         resources {
             srcDir("resources")
+        }
+    }
+}
+
+configurations.configureEach {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.jetbrains.kotlinx" && requested.module.name.startsWith("kotlinx-coroutines")) {
+            val forcedVersion = "1.5.2"
+            useVersion(forcedVersion)
+            // https://www.jetbrains.com/legal/third-party-software/?product=iic&version=2022.1
+            because(
+                """
+                We must use bundled coroutines version, latest compatible coroutines dependency version 
+                for IJ 2022.1 is $forcedVersion, see https://www.jetbrains.com/legal/third-party-software/?product=iic&version=2022.1 
+            """.trimIndent()
+            )
         }
     }
 }
@@ -81,14 +137,16 @@ dependencies {
     implementation(libs.stdlib)
     implementation(libs.stdlib.reflect)
 
-    implementation(compose.desktop.currentOs)
+    implementation(compose.desktop.currentOs) {
+        exclude("org.jetbrains.compose.material")
+    }
     @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
     implementation(compose.desktop.components.splitPane)
+    implementation("com.bybutter.compose:compose-jetbrains-theme")
     implementation(libs.logging)
 
     implementation(libs.bundles.ktor.server)
     implementation(libs.coroutines.core)
-    implementation(libs.coroutines.swing)
     implementation(libs.collections.immutable)
 
     testImplementation(libs.ktor.server.tests)

@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URL
+import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
     kotlin("jvm")
@@ -37,6 +37,13 @@ group = "io.github.xlopec"
 
 kotlin {
     explicitApi()
+}
+
+tasks.withType<Test>().all {
+    reports {
+        html.outputLocation.set(htmlTestReportsDir)
+        junitXml.outputLocation.set(xmlTestReportsDir)
+    }
 }
 
 val packSourcesJar by tasks.creating(Jar::class) {
@@ -60,6 +67,8 @@ val packJavadocJar by tasks.registering(Jar::class) {
 val copyArtifacts by tasks.registering(Copy::class) {
     from(libsDir)
     into(artifactsDir)
+
+    mustRunAfter("publishToSonatype")
 
     group = "release"
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"

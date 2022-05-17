@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import java.io.File
+import java.net.URL
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.provider.Provider
@@ -30,8 +32,6 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.GradleDokkaSourceSetBuilder
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.io.File
-import java.net.URL
 
 val DefaultOptIns = listOf(
     "kotlin.RequiresOptIn",

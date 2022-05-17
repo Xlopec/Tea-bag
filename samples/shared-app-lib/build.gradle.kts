@@ -38,7 +38,7 @@ tasks.withType<Test>().whenTaskAdded {
 
 kotlin {
 
-    optIn("kotlinx.serialization.ExperimentalSerializationApi", "com.oliynick.max.tea.core.ExperimentalTeaApi")
+    optIn("kotlinx.serialization.ExperimentalSerializationApi", "io.github.xlopec.tea.core.ExperimentalTeaApi")
 
     android()
 
@@ -64,21 +64,21 @@ kotlin {
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.logging)
-
                 implementation(libs.ktor.client.negotiation)
                 implementation(libs.ktor.serialization.json)
-
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2")
-                implementation("com.russhwolf:multiplatform-settings-no-arg:0.8.1")
-                implementation("com.squareup.sqldelight:runtime:1.5.3")
+                implementation(libs.serialization.core)
+                implementation(libs.settings.core)
+                implementation(libs.sqldelight.runtime)
             }
         }
+
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
             }
         }
+
         val androidMain by getting {
             dependencies {
                 implementation(libs.ktor.client.cio)
@@ -90,18 +90,21 @@ kotlin {
                 api(project(":tea-time-travel-adapter-gson"))
             }
         }
+
         val androidTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation(libs.junit)
             }
         }
+
         val iosMain by getting {
             dependencies {
                 implementation(libs.ktor.client.ios)
                 implementation(libs.sqldelight.driver.native)
             }
         }
+
         val iosTest by getting
     }
 }
@@ -110,13 +113,13 @@ android {
     compileSdk = 31
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdk = 21
+        minSdk = 23
         targetSdk = 31
     }
 }
 
 sqldelight {
     database("AppDatabase") {
-        packageName = "com.oliynick.max.reader.app.storage"
+        packageName = "io.github.xlopec.reader.app.storage"
     }
 }

@@ -22,14 +22,15 @@
  * SOFTWARE.
  */
 
-import org.gradle.api.Project
-import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.kotlin.dsl.get
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import java.net.URI
+import java.nio.file.Path
 import java.nio.file.Paths
+import org.gradle.api.Project
+import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.kotlin.dsl.get
 
 const val CommitHashLength = 6
 const val SonatypeProfileId = "1c78bd5d6fbb0c"
@@ -99,7 +100,7 @@ val Project.artifactsDir: File
             root = root.rootProject
         }
 
-        return root.buildDir.resolve("artifacts/${name}")
+        return root.buildDir.resolve("artifacts/$name")
     }
 
 val Project.projectHooksDir: File
@@ -126,6 +127,18 @@ val localBranch: String?
         .takeIf { it.exitValue() == 0 }
         ?.let { BufferedReader(InputStreamReader(it.inputStream)) }
         ?.let { it.use { reader -> reader.readLine().trim() } }
+
+val Project.testReportsPath: Path
+    get() = Paths.get(rootProject.buildDir.path, "junit-reports", project.name)
+
+val Project.testReportsDir: File
+    get() = testReportsPath.toFile()
+
+val Project.htmlTestReportsDir: File
+    get() = File(testReportsDir, "html")
+
+val Project.xmlTestReportsDir: File
+    get() = File(testReportsDir, "xml")
 
 fun Project.ciVariable(
     name: String,

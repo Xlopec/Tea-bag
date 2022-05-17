@@ -1,13 +1,13 @@
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.xlopec/tea-core?style=plastic&versionPrefix=1.0.0-alpha2)](https://mvnrepository.com/artifact/io.github.xlopec/tea-core)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.xlopec/tea-core?style=plastic&versionPrefix=1.0.0-alpha3)](https://mvnrepository.com/artifact/io.github.xlopec/tea-core)
 [![Jetbrains Market Place](https://img.shields.io/jetbrains/plugin/d/14254)](https://plugins.jetbrains.com/plugin/14254-time-travel-debugger)
 
 # TEA Bag
 
 <img align="right" alt="Tea Bag Logo" height="200px" src="res/tea-bag-logo.png">
 
-Tea Bag is the simplest implementation of [TEA](https://guide.elm-lang.org/architecture/)
+Tea Bag is a simple implementation of [TEA](https://guide.elm-lang.org/architecture/)
 architecture written in Kotlin. This library is based on Kotlin's coroutines, extensively uses
-extension-based approach and supports both jvm and ios targets.
+extension-based approach and supports both ```jvm``` and ```ios``` targets.
 
 This library isn't production ready yet and was originally intended as pet project to give TEA a
 try. Later I found that it'd be nice to make it simpler and more lightweight than analogs, add
@@ -20,53 +20,56 @@ updater (`computeNewState`function), and UI (`renderSnapshot,` function). After 
 them to an appropriate `Component` builder overload.
 
 ```kotlin
-import com.oliynick.max.tea.core.Initial
-import com.oliynick.max.tea.core.Regular
-import com.oliynick.max.tea.core.Snapshot
-import com.oliynick.max.tea.core.component.Component
-import com.oliynick.max.tea.core.component.command
-import com.oliynick.max.tea.core.component.invoke
-import com.oliynick.max.tea.core.component.sideEffect
-import kotlinx.coroutines.flow.collect
+import io.github.xlopec.tea.core.Component
+import io.github.xlopec.tea.core.Initial
+import io.github.xlopec.tea.core.Regular
+import io.github.xlopec.tea.core.ResolveCtx
+import io.github.xlopec.tea.core.Snapshot
+import io.github.xlopec.tea.core.command
+import io.github.xlopec.tea.core.invoke
+import io.github.xlopec.tea.core.sideEffect
 import kotlinx.coroutines.runBlocking
 
 /**Async initializer*/
 suspend fun initializer() =
-    Initial<String, String>("Hello", emptySet())
+  Initial<String, String>("Hello", emptySet())
 
 /**Some tracker*/
-suspend fun tracker(
-    event: String
-): Set<String> = event.sideEffect { println("Tracked: \"$event\"") }
+fun tracker(
+  event: String,
+  ctx: ResolveCtx<String>,
+) {
+  ctx sideEffect { println("Tracked: \"$event\"") }
+}
 
 /**App logic, just appends user message and passes it further to tracker*/
 fun computeNewState(
-    msg: String,
-    state: String
+  msg: String,
+  state: String
 ) = (state + msg) command msg
 
 /**Some UI, e.g. console*/
 suspend fun renderSnapshot(
-    snapshot: Snapshot<*, *, *>
+  snapshot: Snapshot<*, *, *>
 ) {
-    val description = when (snapshot) {
-        is Initial -> "Initial snapshot, $snapshot"
-        is Regular -> "Regular snapshot, $snapshot"
-    }
+  val description = when (snapshot) {
+    is Initial -> "Initial snapshot, $snapshot"
+    is Regular -> "Regular snapshot, $snapshot"
+  }
 
-    println(description)
+  println(description)
 }
 
 fun main() = runBlocking {
-    // Somewhere at the application level
-    val component = Component(
-        initializer = ::initializer,
-        resolver = ::tracker,
-        updater = ::computeNewState,
-        scope = this
-    )
-    // UI = component([message1, message2, ..., message N])
-    component(" ", "world").collect(::renderSnapshot)
+  // Somewhere at the application level
+  val component = Component(
+    initializer = ::initializer,
+    resolver = ::tracker,
+    updater = ::computeNewState,
+    scope = this
+  )
+  // UI = component([message1, message2, ..., message N])
+  component(" ", "world").collect(::renderSnapshot)
 }
 ```
 
@@ -88,7 +91,7 @@ as well.
 
 ## Main Features
 
-- **Multiplatform** this library supports jvm, iosX64 and iosArm64 targets
+- **Multiplatform** this library supports ```jvm```, ```iosX64``` and ```iosArm64``` targets
 - **Scalability** it is build on the top of a simple idea of having pure functions that operate on
   plain data separated from impure one. Those functions are building blocks and form testable
   components that can be combined to build complex applications
@@ -142,7 +145,7 @@ debugger (will try connecting to http://localhost:8080).
 ## Planned features and TODOs
 
 - Re-implement client-server communication protocol from scratch
-- Migrate from gson to kotlinx.serialization.json
+- Migrate from gson to `kotlinx.serialization.json`
 - Release v1.0.0
 - Add Github Wiki
 - Rework component builders and possibly replace it with some kind of DSL

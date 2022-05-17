@@ -45,8 +45,8 @@ android {
     compileSdk = 31
 
     defaultConfig {
-        applicationId = "com.oliinyk.max.news.reader"
-        minSdk = 21
+        applicationId = "io.github.xlopec.news.reader"
+        minSdk = 23
         targetSdk = 31
         versionCode = 1
         versionName = "1.0"
@@ -63,7 +63,7 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        named("release") {
             isShrinkResources = true
             isMinifyEnabled = true
             signingConfig = signingConfigs.getByName("release")
@@ -80,6 +80,10 @@ android {
 
     buildFeatures {
         compose = true
+        aidl = false
+        renderScript = false
+        resValues = false
+        shaders = false
     }
 
     composeOptions {
@@ -98,6 +102,12 @@ android {
 
         create("default") {
             dimension = "remote"
+        }
+    }
+
+    androidComponents {
+        beforeVariants(selector().withName("remoteRelease")) { builder ->
+            builder.enabled = false
         }
     }
 
@@ -129,14 +139,15 @@ dependencies {
 
     implementation(libs.appcompat)
 
-    implementation(libs.gson)
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.gson)
     implementation(libs.ktor.client.logging)
     implementation(libs.logging)
 
+    testImplementation(project(":tea-data"))
+    androidTestImplementation(project(":tea-data"))
+
     androidTestImplementation(libs.android.test.runner)
     androidTestUtil(libs.android.test.orchestrator)
     androidTestImplementation(libs.compose.test.junit)
-    debugImplementation(libs.compose.test.manifest)
 }

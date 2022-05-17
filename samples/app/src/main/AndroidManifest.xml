@@ -24,7 +24,7 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.max.reader">
+    package="io.github.xlopec.reader">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -39,7 +39,7 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name="com.max.reader.app.MainActivity"
+            android:name=".app.MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:exported="true"
             android:launchMode="singleInstance">

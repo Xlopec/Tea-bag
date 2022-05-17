@@ -31,7 +31,7 @@ installGitHooks()
 
 plugins {
     kotlin("jvm")
-    id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    id("io.gitlab.arturbosch.detekt")
     id("com.github.ben-manes.versions")
     id("io.github.gradle-nexus.publish-plugin")
 }
@@ -50,7 +50,7 @@ nexusPublishing {
         }
     }
 
-    useStaging.set(libraryVersion !is Snapshot)
+    useStaging.set(!libraryVersion.isSnapshot)
 }
 
 allprojects {
@@ -66,12 +66,14 @@ allprojects {
 
     optIn(DefaultOptIns)
 
+    dependencies {
+        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.19.0")
+    }
+
     tasks.withType<Test>().all {
         reports {
-            html.destination =
-                File("${rootProject.buildDir}/junit-reports/${project.name}/html")
-            junitXml.destination =
-                File("${rootProject.buildDir}/junit-reports/${project.name}/xml")
+            html.outputLocation.set(File("${rootProject.buildDir}/junit-reports/${project.name}/html"))
+            junitXml.outputLocation.set(File("${rootProject.buildDir}/junit-reports/${project.name}/xml"))
         }
     }
 }
@@ -88,7 +90,7 @@ val detektAll by tasks.registering(Detekt::class) {
     baseline.set(detektBaseline)
 
     include("**/*.kt", "**/*.kts")
-    exclude("resources/", "**/build/**", "**/test/java/**")
+    exclude("compose-jetbrains-theme/**", "resources/", "**/build/**", "**/test/java/**")
 
     reports {
         xml.required.set(false)
@@ -104,7 +106,7 @@ val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) 
     config.setFrom(detektConfig)
     baseline.set(detektBaseline)
     include("**/*.kt", "**/*.kts")
-    exclude("**/resources/**", "**/build/**")
+    exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
 }
 
 val detektFormat by tasks.registering(Detekt::class) {
@@ -114,7 +116,8 @@ val detektFormat by tasks.registering(Detekt::class) {
     setSource(files(projectDir))
 
     include("**/*.kt", "**/*.kts")
-    exclude("**/resources/**", "**/build/**")
+    exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
 
     config.setFrom(detektConfig)
+    baseline.set(detektBaseline)
 }

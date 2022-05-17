@@ -26,14 +26,27 @@ plugins {
     `published-multiplatform-library`
 }
 
+val prepareTestJar by tasks.creating(Jar::class) {
+    from(sourceSets.named("test").get().output)
+    archiveClassifier.set("test")
+}
+
+configurations {
+    register("testOutput")
+}
+
+artifacts {
+    add("testOutput", prepareTestJar)
+}
+
 kotlin {
 
     optIn(
         "kotlinx.coroutines.ExperimentalCoroutinesApi",
         "kotlinx.coroutines.FlowPreview",
         "kotlinx.coroutines.InternalCoroutinesApi",
-        "com.oliynick.max.tea.core.InternalTeaApi",
-        "com.oliynick.max.tea.core.ExperimentalTeaApi"
+        "io.github.xlopec.tea.core.InternalTeaApi",
+        "io.github.xlopec.tea.core.ExperimentalTeaApi"
     )
 
     sourceSets {

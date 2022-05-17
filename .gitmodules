@@ -1,0 +1,3 @@
+[submodule "compose-jetbrains-theme"]
+	path = compose-jetbrains-theme
+	url = https://github.com/ButterCam/compose-jetbrains-theme
