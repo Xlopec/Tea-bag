@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.xlopec/tea-core?style=plastic&versionPrefix=1.0.0-alpha2)](https://mvnrepository.com/artifact/io.github.xlopec/tea-core)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.xlopec/tea-core?style=plastic&versionPrefix=1.0.0-alpha3)](https://mvnrepository.com/artifact/io.github.xlopec/tea-core)
 [![Jetbrains Market Place](https://img.shields.io/jetbrains/plugin/d/14254)](https://plugins.jetbrains.com/plugin/14254-time-travel-debugger)
 
 # TEA Bag
@@ -7,7 +7,7 @@
 
 Tea Bag is a simple implementation of [TEA](https://guide.elm-lang.org/architecture/)
 architecture written in Kotlin. This library is based on Kotlin's coroutines, extensively uses
-extension-based approach and supports both jvm and ios targets.
+extension-based approach and supports both ```jvm``` and ```ios``` targets.
 
 This library isn't production ready yet and was originally intended as pet project to give TEA a
 try. Later I found that it'd be nice to make it simpler and more lightweight than analogs, add
@@ -91,7 +91,7 @@ as well.
 
 ## Main Features
 
-- **Multiplatform** this library supports jvm, iosX64 and iosArm64 targets
+- **Multiplatform** this library supports ```jvm```, ```iosX64``` and ```iosArm64``` targets
 - **Scalability** it is build on the top of a simple idea of having pure functions that operate on
   plain data separated from impure one. Those functions are building blocks and form testable
   components that can be combined to build complex applications
@@ -145,7 +145,7 @@ debugger (will try connecting to http://localhost:8080).
 ## Planned features and TODOs
 
 - Re-implement client-server communication protocol from scratch
-- Migrate from gson to kotlinx.serialization.json
+- Migrate from gson to `kotlinx.serialization.json`
 - Release v1.0.0
 - Add Github Wiki
 - Rework component builders and possibly replace it with some kind of DSL
