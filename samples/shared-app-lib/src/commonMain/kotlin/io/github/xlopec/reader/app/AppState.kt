@@ -43,12 +43,6 @@ data class AppState(
     val screens: NavigationStack,
 ) {
 
-    @Deprecated("Remove")
-    constructor(
-        screen: TabScreen,
-        isAppInDarkMode: Boolean
-    ) : this(Settings(isAppInDarkMode, false, false), persistentListOf(screen))
-
     constructor(
         screen: TabScreen,
         settings: Settings,

@@ -42,7 +42,7 @@ fun ArticlesState.toArticlesUpdate(
     message: ArticlesMessage,
 ): Update<ArticlesState, Command> =
     when (message) {
-        is ArticlesLoaded -> toPreviewUpdate(message.page)
+        is ArticlesLoaded -> toIdleUpdate(message.page)
         is LoadNextArticles -> toLoadNextUpdate()
         is LoadArticles -> toLoadUpdate()
         is RefreshArticles -> toRefreshUpdate()
@@ -63,9 +63,9 @@ private fun ArticlesState.toOperationExceptionUpdate(
     message: ArticlesOperationException,
 ) = toException(message.cause).noCommand()
 
-private fun ArticlesState.toPreviewUpdate(
+private fun ArticlesState.toIdleUpdate(
     page: Page<Article>,
-) = toPreview(page).noCommand()
+) = toIdle(page).noCommand()
 
 private fun ArticlesState.toRefreshUpdate() = toRefreshing() command toLoadCommand(FirstPage)
 
