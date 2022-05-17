@@ -83,7 +83,7 @@ fun ArticlesState.toLoading(
 fun ArticlesState.toRefreshing() =
     copy(loadable = loadable.toRefreshing())
 
-fun ArticlesState.toPreview(
+fun ArticlesState.toIdle(
     page: Page<Article>,
 ): ArticlesState = copy(loadable = loadable.toIdle(page))
 
