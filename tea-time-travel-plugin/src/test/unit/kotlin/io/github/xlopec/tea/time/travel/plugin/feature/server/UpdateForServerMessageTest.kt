@@ -21,14 +21,14 @@ package io.github.xlopec.tea.time.travel.plugin.feature.server
 import io.github.xlopec.tea.time.travel.plugin.data.SettingsGen
 import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
 import io.github.xlopec.tea.time.travel.plugin.data.TestSettings
-import io.github.xlopec.tea.time.travel.plugin.feature.notification.DoWarnUnacceptableMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.DoWarnUnacceptableMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
-import io.github.xlopec.tea.time.travel.plugin.model.isValid
 import io.github.xlopec.tea.time.travel.plugin.model.Started
 import io.github.xlopec.tea.time.travel.plugin.model.Starting
 import io.github.xlopec.tea.time.travel.plugin.model.Stopped
 import io.github.xlopec.tea.time.travel.plugin.model.Stopping
+import io.github.xlopec.tea.time.travel.plugin.model.isValid
 import io.github.xlopec.tea.time.travel.plugin.model.value
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.types.shouldBeSameInstanceAs

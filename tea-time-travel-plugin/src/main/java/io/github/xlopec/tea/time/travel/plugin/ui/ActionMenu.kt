@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
@@ -25,6 +26,10 @@ import kotlin.contracts.contract
 
 private val DisabledTintColor = Color(86, 86, 86)
 
+const val ImportButtonTag = "import button"
+const val ExportButtonTag = "export button"
+const val ServerActionButtonTag = "server action button"
+
 @Composable
 internal fun BottomActionMenu(
     onImportSession: (Started) -> Unit,
@@ -38,6 +43,7 @@ internal fun BottomActionMenu(
     ) {
 
         ActionButton(
+            modifier = Modifier.testTag(ImportButtonTag),
             enabled = state.canImport(),
             onClick = { onImportSession(state as Started) },
             painter = ActionIcons.Import,
@@ -45,6 +51,7 @@ internal fun BottomActionMenu(
         )
 
         ActionButton(
+            modifier = Modifier.testTag(ExportButtonTag),
             enabled = state.canExport(),
             onClick = { onExportSession(state as Started) },
             painter = ActionIcons.Export,
@@ -52,6 +59,7 @@ internal fun BottomActionMenu(
         )
 
         ActionButton(
+            modifier = Modifier.testTag(ServerActionButtonTag),
             enabled = state.isStarted() || state.canStart(),
             onClick = { events(if (state is Stopped) StartServer else StopServer) },
             painter = state.serverActionIcon,
@@ -62,12 +70,14 @@ internal fun BottomActionMenu(
 
 @Composable
 internal fun ActionButton(
+    modifier: Modifier,
     enabled: Boolean,
     painter: Painter,
     contentDescription: String,
     onClick: () -> Unit,
 ) {
     ActionButton(
+        modifier = modifier,
         enabled = enabled,
         onClick = onClick
     ) {

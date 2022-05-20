@@ -104,9 +104,16 @@ optIn(
 )
 
 sourceSets {
+
     main {
         resources {
             srcDir("resources")
+        }
+    }
+
+    test {
+        java {
+            setSrcDirs(listOf("src/test/integration/kotlin", "src/test/unit/kotlin"))
         }
     }
 }
@@ -152,4 +159,5 @@ dependencies {
     testImplementation(libs.ktor.server.tests)
     testImplementation(project(":tea-test"))
     testImplementation("io.kotlintest:kotlintest-assertions:3.4.2")
+    testImplementation(compose("org.jetbrains.compose.ui:ui-test-junit4"))
 }

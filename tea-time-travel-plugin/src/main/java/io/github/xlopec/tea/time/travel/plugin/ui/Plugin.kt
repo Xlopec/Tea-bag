@@ -61,37 +61,40 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
-fun Plugin(
+fun PluginSwingAdapter(
     project: Project,
     component: (Flow<Message>) -> Flow<State>,
 ) = ComposePanel()
     .apply {
         background = null
         setContent {
-            PluginTheme {
-                JPanel(modifier = Modifier.fillMaxSize()) {
-                    val messages = remember { MutableSharedFlow<Message>() }
-                    val stateFlow = remember { component(messages) }
-                    val state = stateFlow.collectAsState(initial = null).value
-
-                    if (state != null) {
-                        val scope = rememberCoroutineScope()
-                        val messageHandler = remember { scope.dispatcher(messages) }
-
-                        Plugin(project, state, messageHandler)
-                    }
-                }
-            }
+            Plugin(project, component)
         }
     }
 
-internal fun CoroutineScope.dispatcher(
-    messages: FlowCollector<Message>,
-): MessageHandler =
-    { message -> launch { messages.emit(message) } }
+@Composable
+fun Plugin(
+    project: Project,
+    component: (Flow<Message>) -> Flow<State>,
+) {
+    PluginTheme {
+        JPanel(modifier = Modifier.fillMaxSize()) {
+            val messages = remember { MutableSharedFlow<Message>() }
+            val stateFlow = remember { component(messages) }
+            val state = stateFlow.collectAsState(initial = null).value
+
+            if (state != null) {
+                val scope = rememberCoroutineScope()
+                val messageHandler = remember { scope.dispatcher(messages) }
+
+                Plugin(project, state, messageHandler)
+            }
+        }
+    }
+}
 
 @Composable
-private fun Plugin(
+fun Plugin(
     project: Project,
     state: State,
     events: MessageHandler,
@@ -130,6 +133,11 @@ private fun Plugin(
         }
     }
 }
+
+fun CoroutineScope.dispatcher(
+    messages: FlowCollector<Message>,
+): MessageHandler =
+    { message -> launch { messages.emit(message) } }
 
 private suspend fun Project.toImportSessionMessage() = ImportSession(chooseImportSessionFile())
 

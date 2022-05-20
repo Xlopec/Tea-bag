@@ -19,6 +19,7 @@
 package io.github.xlopec.tea.time.travel.plugin.integration
 
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.debug
 import com.intellij.openapi.diagnostic.trace
 import io.github.xlopec.tea.core.Component
@@ -28,31 +29,30 @@ import io.github.xlopec.tea.core.Interceptor
 import io.github.xlopec.tea.core.Regular
 import io.github.xlopec.tea.core.Snapshot
 import io.github.xlopec.tea.core.with
-import io.github.xlopec.tea.time.travel.plugin.util.PluginId
-import io.github.xlopec.tea.time.travel.plugin.util.settings
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.Stopped
+import io.github.xlopec.tea.time.travel.plugin.util.PluginId
+import io.github.xlopec.tea.time.travel.plugin.util.settings
 import kotlinx.coroutines.Dispatchers.IO
-import com.intellij.openapi.diagnostic.Logger as PlatformLogger
 
 fun PluginComponent(
     environment: Environment,
-    properties: PropertiesComponent,
+    initializer: Initializer<State, Command>,
 ): Component<Message, State, Command> =
     Component<Message, Command, State>(
-        initializer = AppInitializer(properties),
+        initializer = initializer,
         resolver = { c, ctx -> with(environment) { resolve(c, ctx) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment
-    ).with(Logger(PlatformLogger.getInstance(PluginId)))
+    ).with(LoggerInterceptor(Logger.getInstance(PluginId)))
 
-private fun AppInitializer(
+fun AppInitializer(
     properties: PropertiesComponent
 ): Initializer<State, Command> =
     Initializer(IO) { Initial(Stopped(properties.settings), emptySet()) }
 
-private fun Logger(
-    logger: PlatformLogger
+private fun LoggerInterceptor(
+    logger: Logger
 ): Interceptor<Message, State, Command> =
     { snapshot ->
         logger.info(snapshot.infoMessage)

@@ -18,6 +18,7 @@ import io.github.xlopec.tea.core.toStatesComponent
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.UpdateDebugSettings
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StopServer
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.PluginSettingsNotifier
+import io.github.xlopec.tea.time.travel.plugin.integration.AppInitializer
 import io.github.xlopec.tea.time.travel.plugin.integration.Command
 import io.github.xlopec.tea.time.travel.plugin.integration.Environment
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
@@ -45,7 +46,7 @@ class SideToolWindowFactory : ToolWindowFactory, DumbAware {
     ) {
         val events = MutableSharedFlow<Message>()
         val environment = Environment(project.properties, project, events)
-        val component = PluginComponent(environment, project.properties)
+        val component = PluginComponent(environment, AppInitializer(project.properties))
 
         toolWindow.contentManager.addContent(ToolWindowContent(project, component))
 
@@ -90,4 +91,4 @@ private fun ToolWindowContent(
     project: Project,
     component: Component<Message, State, Command>
 ): Content =
-    ContentFactory.SERVICE.getInstance().createContent(Plugin(project, component.toStatesComponent()), null, false)
+    ContentFactory.SERVICE.getInstance().createContent(PluginSwingAdapter(project, component.toStatesComponent()), null, false)

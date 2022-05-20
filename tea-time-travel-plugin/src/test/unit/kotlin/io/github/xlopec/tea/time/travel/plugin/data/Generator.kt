@@ -17,9 +17,9 @@
 package io.github.xlopec.tea.time.travel.plugin.data
 
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
-import io.github.xlopec.tea.time.travel.plugin.model.Invalid
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Port
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
+import io.github.xlopec.tea.time.travel.plugin.model.Invalid
 import io.github.xlopec.tea.time.travel.plugin.model.Valid
 import io.github.xlopec.tea.time.travel.plugin.model.Validated
 import io.kotlintest.properties.Gen

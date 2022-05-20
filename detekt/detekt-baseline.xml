@@ -17,46 +17,7 @@
     <ID>LongParameterList:SourcesSection.kt$( state: FiltersState, id: ScreenId, modifier: Modifier, sources: Loadable&lt;Source>, childTransitionState: ChildTransitionState, handler: MessageHandler, )</ID>
     <ID>LongParameterList:TreeView.kt$( level: Int, text: String, painter: Painter, node: Any, state: TreeSelectionState, expandedState: MutableState&lt;Boolean>, popupContent: @Composable () -> Unit, )</ID>
     <ID>LongParameterList:TreeView.kt$( level: Int, text: String, painter: Painter, node: Any, state: TreeSelectionState, popupContent: @Composable () -> Unit, )</ID>
-    <ID>MagicNumber:ActionMenu.kt$86</ID>
-    <ID>MagicNumber:Balloon.kt$15</ID>
-    <ID>MagicNumber:Balloon.kt$15_000L</ID>
-    <ID>MagicNumber:Balloon.kt$30</ID>
-    <ID>MagicNumber:CloseableTab.kt$5</ID>
-    <ID>MagicNumber:Colors.kt$0x33412E</ID>
-    <ID>MagicNumber:Colors.kt$0x704745</ID>
-    <ID>MagicNumber:Colors.kt$0xFFD00036</ID>
-    <ID>MagicNumber:Colors.kt$0xFFF70040</ID>
-    <ID>MagicNumber:Colors.kt$0xFFFFFFFF</ID>
-    <ID>MagicNumber:Colors.kt$0xbaeeba</ID>
-    <ID>MagicNumber:Colors.kt$0xffbd2b52</ID>
-    <ID>MagicNumber:Colors.kt$0xffcccc</ID>
-    <ID>MagicNumber:Colors.kt$0xffdb2a59</ID>
-    <ID>MagicNumber:Colors.kt$18</ID>
-    <ID>MagicNumber:Colors.kt$182</ID>
-    <ID>MagicNumber:Colors.kt$242</ID>
-    <ID>MagicNumber:Colors.kt$4</ID>
-    <ID>MagicNumber:Colors.kt$6</ID>
-    <ID>MagicNumber:ComponentTestBase.kt$ComponentTestBase$1_000</ID>
-    <ID>MagicNumber:ComponentTestBase.kt$ComponentTestBase$3</ID>
     <ID>MagicNumber:Date.kt$1000.0</ID>
-    <ID>MagicNumber:InsetAwareTopAppBar.kt$100</ID>
-    <ID>MagicNumber:InsetAwareTopAppBar.kt$100f</ID>
-    <ID>MagicNumber:LocalStorageImpl.kt$3</ID>
-    <ID>MagicNumber:LocalStorageImpl.kt$4</ID>
-    <ID>MagicNumber:LocalStorageImpl.kt$5</ID>
-    <ID>MagicNumber:LocalStorageImpl.kt$7</ID>
-    <ID>MagicNumber:LocalStorageImpl.kt$8</ID>
-    <ID>MagicNumber:NettyServer.kt$10</ID>
-    <ID>MagicNumber:NettyServer.kt$5</ID>
-    <ID>MagicNumber:PluginTheme.kt$12</ID>
-    <ID>MagicNumber:PluginTheme.kt$3</ID>
-    <ID>MagicNumber:PluginTheme.kt$45</ID>
-    <ID>MagicNumber:PluginTheme.kt$48</ID>
-    <ID>MagicNumber:PluginTheme.kt$5</ID>
-    <ID>MagicNumber:PluginTheme.kt$50</ID>
-    <ID>MagicNumber:PluginTheme.kt$9</ID>
-    <ID>MagicNumber:TreeView.kt$90f</ID>
-    <ID>MagicNumber:ValidatedTextField.kt$8080</ID>
     <ID>MaxLineLength:AppTheme.kt$val secondaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant)</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
     <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>
@@ -69,151 +30,18 @@
     <ID>NoWildcardImports:io.github.xlopec.tea.time.travel.plugin.feature.component.model.Filter.kt:33</ID>
     <ID>TooGenericExceptionCaught:NettyServer.kt$e: Throwable</ID>
     <ID>TooManyFunctions:ComponentTestBase.kt$ComponentTestBase</ID>
-    <ID>UndocumentedPublicClass:AppResolver.kt$AppResolver&lt;Env></ID>
-    <ID>UndocumentedPublicClass:AppUpdater.kt$AppUpdater</ID>
-    <ID>UndocumentedPublicClass:CollectionExtensions.kt$DiffCallback&lt;in T1, in T2></ID>
-    <ID>UndocumentedPublicClass:CollectionExtensions.kt$UpdateCallback&lt;in T1, in T2></ID>
-    <ID>UndocumentedPublicClass:Command.kt$Command</ID>
-    <ID>UndocumentedPublicClass:Command.kt$DoApplyMessage : ServerCommand</ID>
-    <ID>UndocumentedPublicClass:Command.kt$DoApplyState : ServerCommand</ID>
-    <ID>UndocumentedPublicClass:Command.kt$DoNotifyComponentAttached : NotifyCommand</ID>
-    <ID>UndocumentedPublicClass:Command.kt$DoNotifyOperationException : NotifyCommand</ID>
-    <ID>UndocumentedPublicClass:Command.kt$DoStartServer : ServerCommand</ID>
-    <ID>UndocumentedPublicClass:Command.kt$DoStopServer : ServerCommand</ID>
-    <ID>UndocumentedPublicClass:Command.kt$DoWarnUnacceptableMessage : NotifyCommand</ID>
-    <ID>UndocumentedPublicClass:Command.kt$NotifyCommand : Command</ID>
-    <ID>UndocumentedPublicClass:Command.kt$ServerCommand : Command</ID>
-    <ID>UndocumentedPublicClass:Command.kt$StoreCommand : Command</ID>
-    <ID>UndocumentedPublicClass:Commands.kt$DoExportSessions : StoreCommand</ID>
-    <ID>UndocumentedPublicClass:Commands.kt$DoImportSession : StoreCommand</ID>
-    <ID>UndocumentedPublicClass:Commands.kt$DoStoreSettings : StoreCommand</ID>
-    <ID>UndocumentedPublicClass:ComponentException.kt$ComponentException : IllegalStateException</ID>
-    <ID>UndocumentedPublicClass:ComponentState.kt$ComponentState</ID>
-    <ID>UndocumentedPublicClass:ComponentState.kt$DebugState</ID>
-    <ID>UndocumentedPublicClass:ComponentTest.kt$ComponentTest : ComponentTestBase</ID>
-    <ID>UndocumentedPublicClass:ComponentTestBase.kt$ComponentTestBase</ID>
     <ID>UndocumentedPublicClass:Date.kt$Date</ID>
-    <ID>UndocumentedPublicClass:DebuggableComponentTest.kt$DebuggableComponentTest : ComponentTestBase</ID>
     <ID>UndocumentedPublicClass:Either.kt$Either&lt;out L, out R></ID>
     <ID>UndocumentedPublicClass:Either.kt$Left&lt;L> : Either</ID>
     <ID>UndocumentedPublicClass:Either.kt$Right&lt;R> : Either</ID>
-    <ID>UndocumentedPublicClass:Environment.kt$Environment : AppUpdaterAppResolverServerCommandResolverStorageResolverNotificationResolverCoroutineScope</ID>
-    <ID>UndocumentedPublicClass:Filter.kt$Filter</ID>
-    <ID>UndocumentedPublicClass:Filter.kt$FilterOption</ID>
-    <ID>UndocumentedPublicClass:ForeverWaitingResolver.kt$ForeverWaitingResolver&lt;T, M> : Resolver</ID>
-    <ID>UndocumentedPublicClass:Icons.kt$ActionIcons</ID>
-    <ID>UndocumentedPublicClass:Icons.kt$ValueIcon</ID>
-    <ID>UndocumentedPublicClass:Message.kt$AppendSnapshot : NotificationMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$ApplyMessage : ComponentMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$ApplyState : ComponentMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$ComponentAttached : NotificationMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$ComponentImported : NotificationMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$ComponentMessage : Message</ID>
-    <ID>UndocumentedPublicClass:Message.kt$ExportSessions : StoreMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$ImportSession : StoreMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$Message</ID>
-    <ID>UndocumentedPublicClass:Message.kt$NotificationMessage : Message</ID>
-    <ID>UndocumentedPublicClass:Message.kt$NotifyStarted : NotificationMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$NotifyStopped : NotificationMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$OperationException : NotificationMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$RemoveAllSnapshots : ComponentMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$RemoveComponent : ComponentMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$RemoveSnapshots : ComponentMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$ServerMessage : Message</ID>
-    <ID>UndocumentedPublicClass:Message.kt$StartServer : ServerMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$StateApplied : NotificationMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$StopServer : ServerMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$StoreMessage : Message</ID>
-    <ID>UndocumentedPublicClass:Message.kt$UpdateDebugSettings : ComponentMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$UpdateFilter : ComponentMessage</ID>
-    <ID>UndocumentedPublicClass:Message.kt$UpdateServerSettings : ComponentMessage</ID>
-    <ID>UndocumentedPublicClass:NettyServer.kt$NettyServer : ApplicationEngineServer</ID>
-    <ID>UndocumentedPublicClass:PluginException.kt$InternalException : PluginException</ID>
-    <ID>UndocumentedPublicClass:PluginException.kt$MissingDependenciesException : PluginException</ID>
-    <ID>UndocumentedPublicClass:PluginException.kt$NetworkException : PluginException</ID>
-    <ID>UndocumentedPublicClass:PluginException.kt$PluginException : Throwable</ID>
-    <ID>UndocumentedPublicClass:PluginException.kt$UserException : PluginException</ID>
-    <ID>UndocumentedPublicClass:PluginSettings.kt$PluginSettings : SearchableConfigurable</ID>
-    <ID>UndocumentedPublicClass:PluginSettingsNotifier.kt$PluginSettingsNotifier</ID>
-    <ID>UndocumentedPublicClass:PluginState.kt$FilteredSnapshot</ID>
-    <ID>UndocumentedPublicClass:PluginState.kt$OriginalSnapshot</ID>
-    <ID>UndocumentedPublicClass:PluginState.kt$SnapshotId</ID>
-    <ID>UndocumentedPublicClass:PluginState.kt$SnapshotMeta</ID>
-    <ID>UndocumentedPublicClass:PluginThemeColors.kt$PluginThemeColors</ID>
-    <ID>UndocumentedPublicClass:RemoteCall.kt$RemoteCall</ID>
-    <ID>UndocumentedPublicClass:Resolver.kt$NotificationResolver</ID>
-    <ID>UndocumentedPublicClass:Resolver.kt$ServerCommandResolver</ID>
-    <ID>UndocumentedPublicClass:Resolver.kt$StorageResolver</ID>
-    <ID>UndocumentedPublicClass:Server.kt$Server</ID>
-    <ID>UndocumentedPublicClass:Settings.kt$Host</ID>
-    <ID>UndocumentedPublicClass:Settings.kt$Port</ID>
-    <ID>UndocumentedPublicClass:Settings.kt$ServerAddress</ID>
-    <ID>UndocumentedPublicClass:Settings.kt$Settings</ID>
-    <ID>UndocumentedPublicClass:SideToolWindowFactory.kt$SideToolWindowFactory : ToolWindowFactoryDumbAware</ID>
-    <ID>UndocumentedPublicClass:Started.kt$Started : State</ID>
-    <ID>UndocumentedPublicClass:Starting.kt$Starting : State</ID>
-    <ID>UndocumentedPublicClass:State.kt$State</ID>
-    <ID>UndocumentedPublicClass:Stopped.kt$Stopped : State</ID>
-    <ID>UndocumentedPublicClass:Stopping.kt$Stopping : State</ID>
     <ID>UndocumentedPublicClass:UUID.kt$UUID</ID>
     <ID>UndocumentedPublicClass:Url.kt$Url</ID>
-    <ID>UndocumentedPublicClass:Validated.kt$Invalid : Validated</ID>
-    <ID>UndocumentedPublicClass:Validated.kt$Valid&lt;out T> : Validated</ID>
-    <ID>UndocumentedPublicClass:Validated.kt$Validated&lt;out T></ID>
-    <ID>UndocumentedPublicClass:Value.kt$BooleanWrapper : Value</ID>
-    <ID>UndocumentedPublicClass:Value.kt$CharWrapper : Value</ID>
-    <ID>UndocumentedPublicClass:Value.kt$CollectionWrapper : Value</ID>
-    <ID>UndocumentedPublicClass:Value.kt$Null : Value</ID>
-    <ID>UndocumentedPublicClass:Value.kt$NumberWrapper : Value</ID>
-    <ID>UndocumentedPublicClass:Value.kt$Property</ID>
-    <ID>UndocumentedPublicClass:Value.kt$Ref : Value</ID>
-    <ID>UndocumentedPublicClass:Value.kt$StringWrapper : Value</ID>
-    <ID>UndocumentedPublicClass:Value.kt$Type</ID>
-    <ID>UndocumentedPublicClass:Value.kt$Value</ID>
-    <ID>UndocumentedPublicFunction:AppResolver.kt$AppResolver$fun Env.resolve( command: Command, ctx: ResolveCtx&lt;Message> )</ID>
-    <ID>UndocumentedPublicFunction:AppResolverImpl.kt$fun &lt;Env> AppResolver(): AppResolver&lt;Env></ID>
-    <ID>UndocumentedPublicFunction:AppUpdater.kt$AppUpdater$fun update( message: Message, state: State ): Update&lt;State, Command></ID>
-    <ID>UndocumentedPublicFunction:AppUpdaterImpl.kt$fun AppUpdater(): AppUpdater</ID>
-    <ID>UndocumentedPublicFunction:Balloon.kt$fun ComponentAttachedBalloon(componentId: ComponentId): Balloon</ID>
-    <ID>UndocumentedPublicFunction:Balloon.kt$fun ExceptionBalloon( cause: PluginException, operation: Command?, description: String?, ): Balloon</ID>
-    <ID>UndocumentedPublicFunction:Balloon.kt$fun Project.showBalloon(balloon: Balloon)</ID>
-    <ID>UndocumentedPublicFunction:Balloon.kt$fun StateAppliedBalloon( componentId: ComponentId ): Balloon</ID>
-    <ID>UndocumentedPublicFunction:Balloon.kt$fun UnacceptableMessageBalloon( message: Message, state: State ): Balloon</ID>
-    <ID>UndocumentedPublicFunction:Balloon.kt$fun createBalloon( html: String, icon: Icon, textColor: JBColor, fillColor: JBColor ): Balloon</ID>
-    <ID>UndocumentedPublicFunction:Balloon.kt$fun createErrorBalloon( html: String )</ID>
-    <ID>UndocumentedPublicFunction:Balloon.kt$fun createNotificationBalloon( html: String )</ID>
-    <ID>UndocumentedPublicFunction:ChooserUtils.kt$suspend fun Project.chooseFile( descriptor: FileChooserDescriptor )</ID>
-    <ID>UndocumentedPublicFunction:CollectionExtensions.kt$DiffCallback$fun areContentsTheSame( oldItem: T1, newItem: T2 ): Boolean</ID>
-    <ID>UndocumentedPublicFunction:CollectionExtensions.kt$DiffCallback$fun areItemsTheSame( oldItem: T1, newItem: T2 ): Boolean</ID>
-    <ID>UndocumentedPublicFunction:CollectionExtensions.kt$UpdateCallback$fun onContentUpdated( oldItem: T1, oldIndex: Int, newItem: T2, newIndex: Int )</ID>
-    <ID>UndocumentedPublicFunction:CollectionExtensions.kt$UpdateCallback$fun onItemInserted( item: T1, index: Int )</ID>
-    <ID>UndocumentedPublicFunction:CollectionExtensions.kt$UpdateCallback$fun onItemRemoved( item: T1, index: Int )</ID>
-    <ID>UndocumentedPublicFunction:CollectionExtensions.kt$fun &lt;L : MutableList&lt;T>, T> L.replaceAll( replaceWith: List&lt;T>, diffCallback: DiffCallback&lt;T, T>, update: UpdateCallback&lt;T, T>? = null ): L</ID>
-    <ID>UndocumentedPublicFunction:CollectionExtensions.kt$inline fun &lt;E, R> PersistentList&lt;E>.map( how: (E) -> R ): PersistentList&lt;R></ID>
-    <ID>UndocumentedPublicFunction:CollectionExtensions.kt$inline fun &lt;E, R> PersistentList&lt;E>.mapNotNull( how: (E) -> R? ): PersistentList&lt;R></ID>
-    <ID>UndocumentedPublicFunction:Component.kt$@OptIn(ExperimentalSplitPaneApi::class) @Composable fun Component( project: Project, settings: Settings, state: ComponentState, handler: MessageHandler, )</ID>
-    <ID>UndocumentedPublicFunction:ComponentState.kt$fun ComponentState.updateFilter( filter: Filter ): ComponentState</ID>
-    <ID>UndocumentedPublicFunction:ComponentState.kt$fun ComponentState.updateFilter( filterInput: String, ignoreCase: Boolean, option: FilterOption ): ComponentState</ID>
-    <ID>UndocumentedPublicFunction:ComponentTest.kt$ComponentTest$@Test fun `when upstream receives new input then previous downstream is canceled`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTestBase.kt$ComponentTestBase$@Test fun `when attaching interceptor to component then original sequence of snapshots pipes through it`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTestBase.kt$ComponentTestBase$@Test fun `when collecting component given initializer throws exception then it is handled by coroutine scope`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTestBase.kt$ComponentTestBase$@Test fun `when collecting component given updater throws exception then it is handled by coroutine scope`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTestBase.kt$ComponentTestBase$@Test fun `when collecting component with specific dispatcher then updater runs on this dispatcher`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTestBase.kt$ComponentTestBase$@Test fun `when component has multiple consumers then component is initialized only once`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTestBase.kt$ComponentTestBase$@Test fun `when component has multiple consumers then it can serve multiple message sources`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTestBase.kt$ComponentTestBase$@Test fun `when component has multiple consumers then snapshots are shared among them`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTestBase.kt$ComponentTestBase$@Test fun `when component receives input given recursive calculations then it emits correct sequence of snapshots`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTestBase.kt$ComponentTestBase$@Test fun `when component receives input then it emits correct sequence of snapshots`()</ID>
-    <ID>UndocumentedPublicFunction:ComponentTestBase.kt$ComponentTestBase$@Test fun `when subscriber disconnects then component initializer is re-invoked`()</ID>
-    <ID>UndocumentedPublicFunction:CompositionsLogger.kt$@Suppress("NOTHING_TO_INLINE") @Composable inline fun LogCompositions( tag: String )</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public actual fun Date.toMillis(): Long</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public actual fun fromMillis( millis: Long ): Date</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public actual fun now(): Date</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public expect fun Date.toMillis(): Long</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public expect fun fromMillis( millis: Long ): Date</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public expect fun now(): Date</ID>
-    <ID>UndocumentedPublicFunction:DebuggableComponentTest.kt$DebuggableComponentTest$@Test fun `test debuggable component sends the same sequence of events as the original component`()</ID>
-    <ID>UndocumentedPublicFunction:DebuggableComponentTest.kt$DebuggableComponentTest$@Test fun `test debuggable component throws expected exception when it can't connect to a server`()</ID>
     <ID>UndocumentedPublicFunction:Either.kt$// @OptIn(ExperimentalContracts::class) public operator fun &lt;L> Either&lt;L, *>.component1(): L?</ID>
     <ID>UndocumentedPublicFunction:Either.kt$// @OptIn(ExperimentalContracts::class) public operator fun &lt;R> Either&lt;*, R>.component2(): R?</ID>
     <ID>UndocumentedPublicFunction:Either.kt$@JvmName("LeftUnit") public inline fun Left( ifSuccess: () -> Unit, ): Left&lt;Nothing?></ID>
@@ -224,80 +52,8 @@
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R> Either( ifSuccess: () -> L, ifFailure: (th: Throwable) -> R ): Either&lt;L, R></ID>
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L> Either( ifSuccess: () -> L, ): Either&lt;L, Throwable></ID>
     <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L> Left( ifSuccess: () -> L, ): Left&lt;L></ID>
-    <ID>UndocumentedPublicFunction:Environment.kt$@OptIn(ObsoleteCoroutinesApi::class) @Suppress("FunctionName") fun Environment( properties: PropertiesComponent, project: Project, events: MutableSharedFlow&lt;Message>, ): Environment</ID>
-    <ID>UndocumentedPublicFunction:FileSerializers.kt$suspend fun Gson.import( file: File ): ComponentState</ID>
-    <ID>UndocumentedPublicFunction:Filter.kt$Filter.Companion$fun empty()</ID>
-    <ID>UndocumentedPublicFunction:Filter.kt$Filter.Companion$fun new( filter: String, option: FilterOption, ignoreCase: Boolean ): Filter</ID>
-    <ID>UndocumentedPublicFunction:Filter.kt$fun Predicate.applyToWrapper( wrapper: CollectionWrapper ): CollectionWrapper?</ID>
-    <ID>UndocumentedPublicFunction:Filter.kt$fun RegexPredicate( rawRegex: String, ignoreCase: Boolean ): Validated&lt;Predicate></ID>
-    <ID>UndocumentedPublicFunction:Filter.kt$fun SubstringPredicate( filter: String, ignoreCase: Boolean ): Predicate</ID>
-    <ID>UndocumentedPublicFunction:Filter.kt$fun WordsPredicate( filter: String, ignoreCase: Boolean ): Predicate</ID>
-    <ID>UndocumentedPublicFunction:FlowExtensions.kt$fun &lt;T> Flow&lt;T>.mergeWith(other: Flow&lt;T>): Flow&lt;T></ID>
-    <ID>UndocumentedPublicFunction:Helpers.kt$@Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER") suspend fun &lt;C> NoOpResolver(): Resolver&lt;C, Char></ID>
-    <ID>UndocumentedPublicFunction:Helpers.kt$@Suppress("UNUSED_PARAMETER") fun noOpSink(t: Any?)</ID>
-    <ID>UndocumentedPublicFunction:Helpers.kt$fun &lt;M, S, C> CoroutineScope.TestEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
-    <ID>UndocumentedPublicFunction:Helpers.kt$fun &lt;M, S> CheckingUpdater( mainThreadName: String, ): Updater&lt;M, S, Nothing></ID>
-    <ID>UndocumentedPublicFunction:Helpers.kt$fun &lt;T> ThrowingResolver()</ID>
-    <ID>UndocumentedPublicFunction:Helpers.kt$fun ThrowingInitializer( th: Throwable, ): Initializer&lt;Nothing, Nothing></ID>
-    <ID>UndocumentedPublicFunction:Helpers.kt$suspend fun Component&lt;Char, String, Char>.collectRanged( messages: CharRange, )</ID>
-    <ID>UndocumentedPublicFunction:InfoView.kt$@Composable fun InfoView( state: State, uiEvents: MessageHandler, )</ID>
-    <ID>UndocumentedPublicFunction:LruCache.kt$LruCache$// todo add checks fun getOrPut( k: K, v: () -> V ): V</ID>
-    <ID>UndocumentedPublicFunction:NoIndicationClickable.kt$fun Modifier.noIndicationClickable( onClick: () -> Unit, )</ID>
-    <ID>UndocumentedPublicFunction:Plugin.kt$fun Plugin( project: Project, component: (Flow&lt;Message>) -> Flow&lt;State>, )</ID>
-    <ID>UndocumentedPublicFunction:PluginComponent.kt$fun PluginComponent( environment: Environment, properties: PropertiesComponent, ): Component&lt;Message, State, Command></ID>
-    <ID>UndocumentedPublicFunction:PluginException.kt$fun Throwable.toPluginException(): PluginException</ID>
-    <ID>UndocumentedPublicFunction:PluginSettingsNotifier.kt$PluginSettingsNotifier$fun onSettingsUpdated( isDetailedToStringEnabled: Boolean )</ID>
-    <ID>UndocumentedPublicFunction:PluginTheme.kt$@Composable fun PluginPreviewTheme( content: @Composable () -> Unit )</ID>
-    <ID>UndocumentedPublicFunction:PluginTheme.kt$@Composable fun PluginTheme( content: @Composable () -> Unit, )</ID>
-    <ID>UndocumentedPublicFunction:PluginThemeColors.kt$@Composable fun PluginThemeColors(): PluginThemeColors</ID>
-    <ID>UndocumentedPublicFunction:Popups.kt$@Composable fun CopyActionItem( clipboard: AnnotatedString )</ID>
-    <ID>UndocumentedPublicFunction:Popups.kt$@Composable fun JumpToSourcesActionItem( psiClass: PsiClass )</ID>
-    <ID>UndocumentedPublicFunction:Popups.kt$@Composable fun LeafActionItems( value: Value )</ID>
-    <ID>UndocumentedPublicFunction:Popups.kt$@Composable fun PopupItem( painter: Painter, text: String, onClick: () -> Unit, )</ID>
-    <ID>UndocumentedPublicFunction:Popups.kt$@Composable fun RefActionItems( project: Project, type: Type )</ID>
-    <ID>UndocumentedPublicFunction:Popups.kt$@Composable fun SnapshotActionItems( componentId: ComponentId, snapshotId: SnapshotId, handler: MessageHandler )</ID>
-    <ID>UndocumentedPublicFunction:Popups.kt$@Composable fun ValuePopup( value: Value, formatter: TreeFormatter, project: Project, )</ID>
-    <ID>UndocumentedPublicFunction:RenderExtensions.kt$fun toReadableString( snapshot: FilteredSnapshot )</ID>
-    <ID>UndocumentedPublicFunction:RenderExtensions.kt$fun toReadableStringLong( value: Value ): String</ID>
-    <ID>UndocumentedPublicFunction:RenderExtensions.kt$fun toReadableStringShort( value: Value ): String</ID>
-    <ID>UndocumentedPublicFunction:Resolver.kt$NotificationResolver$suspend fun resolve( command: NotifyCommand ): Left&lt;Nothing?></ID>
-    <ID>UndocumentedPublicFunction:Resolver.kt$ServerCommandResolver$suspend fun resolveServerCommand( command: ServerCommand ): Either&lt;NotificationMessage?, OperationException></ID>
-    <ID>UndocumentedPublicFunction:Resolver.kt$StorageResolver$suspend fun resolveStoreCommand( command: StoreCommand ): Either&lt;NotificationMessage?, OperationException></ID>
-    <ID>UndocumentedPublicFunction:Resolver.kt$fun NotificationResolver( project: Project ): NotificationResolver</ID>
-    <ID>UndocumentedPublicFunction:Resolver.kt$fun ServerCommandResolver( project: Project, events: MutableSharedFlow&lt;Message>, ): ServerCommandResolver</ID>
-    <ID>UndocumentedPublicFunction:Resolver.kt$fun StorageResolver( properties: PropertiesComponent ): StorageResolver</ID>
     <ID>UndocumentedPublicFunction:Resolver.kt$public suspend operator fun &lt;T> Sink&lt;T>.invoke( elements: Iterable&lt;T>, ): Unit</ID>
     <ID>UndocumentedPublicFunction:Resolver.kt$public suspend operator fun &lt;T> Sink&lt;T>.invoke( vararg elements: T, ): Unit</ID>
-    <ID>UndocumentedPublicFunction:Server.kt$Server$suspend fun stop()</ID>
-    <ID>UndocumentedPublicFunction:Server.kt$Server$suspend operator fun invoke( component: ComponentId, message: GsonClientMessage )</ID>
-    <ID>UndocumentedPublicFunction:Settings.kt$Host.Companion$fun of( value: String? )</ID>
-    <ID>UndocumentedPublicFunction:Settings.kt$Settings.Companion$fun of( hostInput: String?, portInput: String?, isDetailedOutput: Boolean ): Settings</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun ComponentState.appendSnapshot( snapshot: OriginalSnapshot, state: Value ): ComponentState</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun ComponentState.removeSnapshots( ids: Set&lt;SnapshotId> ): ComponentState</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun ComponentState.removeSnapshots(): ComponentState</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun DebugState.component( id: ComponentId )</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun OriginalSnapshot.filteredBy( predicate: Predicate ): FilteredSnapshot?</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun OriginalSnapshot.toFiltered()</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun PersistentList&lt;OriginalSnapshot>.filteredBy( predicate: Predicate ): PersistentList&lt;FilteredSnapshot></ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun Started.message( componentId: ComponentId, snapshotId: SnapshotId )</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun Started.removeSnapshots( id: ComponentId )</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun Started.removeSnapshots( id: ComponentId, snapshots: Set&lt;SnapshotId> )</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun Started.snapshot( componentId: ComponentId, snapshotId: SnapshotId ): OriginalSnapshot</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun Started.state( componentId: ComponentId, snapshotId: SnapshotId )</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun Started.update( debugState: DebugState )</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun Started.updateComponent( id: ComponentId, how: (mapping: ComponentState) -> ComponentState? )</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$fun Started.updateFilter( id: ComponentId, filterInput: String, ignoreCase: Boolean, option: FilterOption )</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$inline fun DebugState.updateComponent( id: ComponentId, crossinline how: (mapping: ComponentState) -> ComponentState? )</ID>
-    <ID>UndocumentedPublicFunction:Started.kt$inline fun Started.updateComponents( how: (mapping: ComponentMapping) -> ComponentMapping )</ID>
-    <ID>UndocumentedPublicFunction:State.kt$fun State.updateServerSettings( settings: Settings )</ID>
-    <ID>UndocumentedPublicFunction:State.kt$fun State.updateSettings( how: Settings.() -> Settings )</ID>
-    <ID>UndocumentedPublicFunction:Tab.kt$@Composable fun ComponentTab( id: ComponentId, selectedId: MutableState&lt;ComponentId>, state: DebugState, tabIndex: Int, events: MessageHandler )</ID>
-    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S, C> TestDebugEnv( env: Env&lt;M, S, C>, settings: Settings&lt;M, S, JsonElement> = TestSettings() )</ID>
-    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S, C> TestScope.TestBaseEnv( initializer: Initializer&lt;S, C>, resolver: Resolver&lt;C, M>, updater: Updater&lt;M, S, C>, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
-    <ID>UndocumentedPublicFunction:TestEnv.kt$fun &lt;M, S> TestSettings( componentId: ComponentId = TestComponentId, converter: JsonSerializer&lt;JsonElement> = GsonSerializer(), url: Url = Localhost, sessionFactory: SessionFactory&lt;M, S, JsonElement> = { _, block -> TestDebugSession&lt;M, S>().apply { block() } } )</ID>
-    <ID>UndocumentedPublicFunction:Thread.kt$expect fun currentThreadName(): String</ID>
-    <ID>UndocumentedPublicFunction:TreeView.kt$@Composable fun Tree( modifier: Modifier = Modifier, root: Value, formatter: TreeFormatter, valuePopupContent: @Composable (Value) -> Unit, )</ID>
-    <ID>UndocumentedPublicFunction:TreeView.kt$@Composable fun Tree( modifier: Modifier = Modifier, roots: List&lt;FilteredSnapshot>, formatter: TreeFormatter, valuePopupContent: @Composable (Value) -> Unit, snapshotPopupContent: @Composable (FilteredSnapshot) -> Unit, )</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public actual fun RandomUUID(): UUID</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public actual fun UUID.toHumanReadable(): String</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public actual fun UUIDFrom( value: String ): UUID</ID>
@@ -305,188 +61,16 @@
     <ID>UndocumentedPublicFunction:UUID.kt$public expect fun RandomUUID(): UUID</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public expect fun UUID.toHumanReadable(): String</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public expect fun UUIDFrom( value: String ): UUID</ID>
-    <ID>UndocumentedPublicFunction:Updater.kt$fun updateForUiMessage( message: ComponentMessage, state: State ): Update&lt;State, Command></ID>
     <ID>UndocumentedPublicFunction:Url.kt$public actual fun Url.toExternalValue(): String</ID>
     <ID>UndocumentedPublicFunction:Url.kt$public actual fun UrlFor( s: String ): Url</ID>
     <ID>UndocumentedPublicFunction:Url.kt$public expect fun Url.toExternalValue(): String</ID>
     <ID>UndocumentedPublicFunction:Url.kt$public expect fun UrlFor( s: String ): Url</ID>
-    <ID>UndocumentedPublicFunction:Validated.kt$fun &lt;T> Validated&lt;T>.isValid(): Boolean</ID>
-    <ID>UndocumentedPublicFunction:Validated.kt$inline fun &lt;T, R> Validated&lt;T>.fold( valid: (Valid&lt;T>) -> R, invalid: (Invalid) -> R ): R</ID>
-    <ID>UndocumentedPublicFunction:Validated.kt$inline fun &lt;T, R> Validated&lt;T>.map( mapper: (T) -> R ): Validated&lt;R></ID>
-    <ID>UndocumentedPublicFunction:ValidatedTextField.kt$@Composable fun ValidatedTextField( validated: Validated&lt;*>, placeholder: String, modifier: Modifier = Modifier, onValueChange: (newValue: String) -> Unit, enabled: Boolean = true, )</ID>
-    <ID>UndocumentedPublicFunction:ValidatedTextField.kt$@Preview @Composable fun BottomActionMenuPreview()</ID>
-    <ID>UndocumentedPublicFunction:Value.kt$BooleanWrapper.Companion$fun of( value: Boolean )</ID>
-    <ID>UndocumentedPublicFunction:Value.kt$Type.Companion$fun of( any: Any )</ID>
-    <ID>UndocumentedPublicFunction:Value.kt$Type.Companion$fun of( name: String )</ID>
-    <ID>UndocumentedPublicFunction:currentThreadName.kt$actual fun currentThreadName(): String</ID>
-    <ID>UndocumentedPublicProperty:Colors.kt$val ErrorColor = Color(ExceptionBalloonFillColor.rgb)</ID>
-    <ID>UndocumentedPublicProperty:Colors.kt$val ExceptionBalloonFillColor = JBColor(0xffcccc, 0x704745)</ID>
-    <ID>UndocumentedPublicProperty:Colors.kt$val ExceptionBalloonIcon = AllIcons.General.NotificationError</ID>
-    <ID>UndocumentedPublicProperty:Colors.kt$val ExceptionBalloonTextColor = JBColor(Color.BLACK, Color(182, 182, 182))</ID>
-    <ID>UndocumentedPublicProperty:Colors.kt$val NotificationBalloonFillColor = JBColor(0xbaeeba, 0x33412E)</ID>
-    <ID>UndocumentedPublicProperty:Colors.kt$val NotificationBalloonIcon = AllIcons.General.NotificationInfo</ID>
-    <ID>UndocumentedPublicProperty:Colors.kt$val NotificationBalloonTextColor = JBColor(Color.BLACK, Color(182, 182, 182))</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoApplyMessage$val command: Value</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoApplyMessage$val id: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoApplyMessage$val server: Server</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoApplyState$val id: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoApplyState$val server: Server</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoApplyState$val state: Value</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoNotifyComponentAttached$val componentId: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoNotifyOperationException$val description: String?</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoNotifyOperationException$val exception: PluginException</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoNotifyOperationException$val operation: Command?</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoStartServer$val address: ServerAddress</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoStopServer$val server: Server</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoWarnUnacceptableMessage$val message: Message</ID>
-    <ID>UndocumentedPublicProperty:Command.kt$DoWarnUnacceptableMessage$val state: State</ID>
-    <ID>UndocumentedPublicProperty:Commands.kt$DoExportSessions$val dir: File</ID>
-    <ID>UndocumentedPublicProperty:Commands.kt$DoExportSessions$val sessions: Collection&lt;ComponentState></ID>
-    <ID>UndocumentedPublicProperty:Commands.kt$DoImportSession$val file: File</ID>
-    <ID>UndocumentedPublicProperty:Commands.kt$DoStoreSettings$val settings: Settings</ID>
     <ID>UndocumentedPublicProperty:Component.kt$@ExperimentalTeaApi public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
-    <ID>UndocumentedPublicProperty:ComponentState.kt$ComponentState$val filter: Filter = Filter.empty()</ID>
-    <ID>UndocumentedPublicProperty:ComponentState.kt$ComponentState$val filteredSnapshots: PersistentList&lt;FilteredSnapshot> = persistentListOf()</ID>
-    <ID>UndocumentedPublicProperty:ComponentState.kt$ComponentState$val id: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:ComponentState.kt$ComponentState$val snapshots: PersistentList&lt;OriginalSnapshot> = persistentListOf()</ID>
-    <ID>UndocumentedPublicProperty:ComponentState.kt$ComponentState$val state: Value</ID>
-    <ID>UndocumentedPublicProperty:ComponentState.kt$DebugState$val components: ComponentMapping = persistentMapOf()</ID>
-    <ID>UndocumentedPublicProperty:ComponentTestBase.kt$ComponentTestBase$val factory: (env: Env&lt;Char, String, Char>) -> Component&lt;Char, String, Char></ID>
-    <ID>UndocumentedPublicProperty:CompositionsLogger.kt$val LogCompositions = compositionLocalOf { false }</ID>
     <ID>UndocumentedPublicProperty:Either.kt$Left$val value: L</ID>
     <ID>UndocumentedPublicProperty:Either.kt$Right$val value: R</ID>
-    <ID>UndocumentedPublicProperty:Filter.kt$Filter$val ignoreCase: Boolean</ID>
-    <ID>UndocumentedPublicProperty:Filter.kt$Filter$val option: FilterOption</ID>
-    <ID>UndocumentedPublicProperty:Filter.kt$Filter$val predicate: Validated&lt;Predicate></ID>
-    <ID>UndocumentedPublicProperty:ForeverWaitingResolver.kt$ForeverWaitingResolver$val messages: ReceiveChannel&lt;T> = _messages</ID>
-    <ID>UndocumentedPublicProperty:Helpers.kt$const val TestTimeoutMillis = 10 * 1000L</ID>
-    <ID>UndocumentedPublicProperty:Helpers.kt$inline val CoroutineScope.job: Job get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")</ID>
-    <ID>UndocumentedPublicProperty:Helpers.kt$val CharRange.size: Int get() = 1 + abs(last - first)</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Close @Composable get() = painterResource("/images/close.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Collapse @Composable get() = painterResource("/images/collapse.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Copy @Composable get() = painterResource("/images/inlineCopy.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Execute @Composable get() = painterResource("/images/execute.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Expand @Composable get() = painterResource("/images/expand.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Export @Composable get() = painterResource("/images/export_dark.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Import @Composable get() = painterResource("/images/import_dark.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Remove @Composable get() = painterResource("/images/remove.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val Suspend @Composable get() = painterResource("/images/suspend.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ActionIcons$val UpdateRunningApplication @Composable get() = painterResource("/images/updateRunningApplication.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ValueIcon$val Class @Composable get() = painterResource("/images/class.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ValueIcon$val Property @Composable get() = painterResource("/images/property.svg")</ID>
-    <ID>UndocumentedPublicProperty:Icons.kt$ValueIcon$val Snapshot @Composable get() = painterResource("/images/snapshotGutter.svg")</ID>
-    <ID>UndocumentedPublicProperty:LruCache.kt$LruCache$val capacity: UInt</ID>
-    <ID>UndocumentedPublicProperty:LruCache.kt$LruCache$val isEmpty: Boolean inline get() = size == 0U</ID>
-    <ID>UndocumentedPublicProperty:LruCache.kt$LruCache$val size: UInt get() = realSize</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$AppendSnapshot$val commands: CollectionWrapper</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$AppendSnapshot$val componentId: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$AppendSnapshot$val message: Value</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$AppendSnapshot$val meta: SnapshotMeta</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$AppendSnapshot$val newState: Value</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$AppendSnapshot$val oldState: Value</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ApplyMessage$val componentId: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ApplyMessage$val snapshotId: SnapshotId</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ApplyState$val componentId: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ApplyState$val snapshotId: SnapshotId</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ComponentAttached$val commands: CollectionWrapper</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ComponentAttached$val componentId: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ComponentAttached$val meta: SnapshotMeta</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ComponentAttached$val state: Value</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ComponentImported$val sessionState: ComponentState</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ExportSessions$val dir: File</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ExportSessions$val ids: Collection&lt;ComponentId></ID>
-    <ID>UndocumentedPublicProperty:Message.kt$ImportSession$val file: File</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$NotifyStarted$val server: Server</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$OperationException$val description: String? = null</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$OperationException$val exception: PluginException</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$OperationException$val operation: Command? = null</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$RemoveAllSnapshots$val componentId: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$RemoveComponent$val componentId: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$RemoveSnapshots$val componentId: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$RemoveSnapshots$val ids: Set&lt;SnapshotId></ID>
-    <ID>UndocumentedPublicProperty:Message.kt$StateApplied$val componentId: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$StateApplied$val state: Value</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$UpdateDebugSettings$val isDetailedToStringEnabled: Boolean</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$UpdateFilter$val id: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$UpdateFilter$val ignoreCase: Boolean</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$UpdateFilter$val input: String</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$UpdateFilter$val option: FilterOption</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$UpdateServerSettings$val host: String</ID>
-    <ID>UndocumentedPublicProperty:Message.kt$UpdateServerSettings$val port: String</ID>
-    <ID>UndocumentedPublicProperty:PluginSettingsNotifier.kt$PluginSettingsNotifier.Companion$val TOPIC = Topic.create("Plugin Settings Notifier", PluginSettingsNotifier::class.java)</ID>
-    <ID>UndocumentedPublicProperty:PluginState.kt$FilteredSnapshot$val commands: CollectionWrapper? = null</ID>
-    <ID>UndocumentedPublicProperty:PluginState.kt$FilteredSnapshot$val message: Value? = null</ID>
-    <ID>UndocumentedPublicProperty:PluginState.kt$FilteredSnapshot$val meta: SnapshotMeta</ID>
-    <ID>UndocumentedPublicProperty:PluginState.kt$FilteredSnapshot$val state: Value? = null</ID>
-    <ID>UndocumentedPublicProperty:PluginState.kt$OriginalSnapshot$val commands: CollectionWrapper</ID>
-    <ID>UndocumentedPublicProperty:PluginState.kt$OriginalSnapshot$val message: Value?</ID>
-    <ID>UndocumentedPublicProperty:PluginState.kt$OriginalSnapshot$val meta: SnapshotMeta</ID>
-    <ID>UndocumentedPublicProperty:PluginState.kt$OriginalSnapshot$val state: Value</ID>
-    <ID>UndocumentedPublicProperty:PluginState.kt$SnapshotId$val value: UUID</ID>
-    <ID>UndocumentedPublicProperty:PluginState.kt$SnapshotMeta$val id: SnapshotId</ID>
-    <ID>UndocumentedPublicProperty:PluginState.kt$SnapshotMeta$val timestamp: LocalDateTime</ID>
-    <ID>UndocumentedPublicProperty:PluginTheme.kt$@Suppress("unused") val JBTheme.contrastBorderColor: Color @ReadOnlyComposable @Composable get() = LocalPluginColors.current.contrastBorderColor</ID>
-    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val buttonColors: ButtonColors</ID>
-    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val checkBoxColors: CheckBoxColors</ID>
-    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val contrastBorderColor: Color</ID>
-    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val fieldColors: FieldColors</ID>
-    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val panelColors: PanelColors</ID>
-    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val scrollColors: ScrollColors</ID>
-    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val selectionColors: SelectionColors</ID>
-    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val tabColors: TabColors</ID>
-    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val textColors: TextColors</ID>
-    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$PluginThemeColors$val toolbarColors: ToolBarColors</ID>
-    <ID>UndocumentedPublicProperty:PluginThemeColors.kt$val LocalPluginColors = compositionLocalOf&lt;PluginThemeColors> { error("theme colors aren't provided") }</ID>
-    <ID>UndocumentedPublicProperty:ProjectExtensions.kt$// todo reduce visibility inline var PropertiesComponent.isDetailedToStringEnabled: Boolean set(value) = setValue("$PluginId.isDetailedToStringEnabled", value) get() = getBoolean("$PluginId.isDetailedToStringEnabled", false)</ID>
-    <ID>UndocumentedPublicProperty:ProjectExtensions.kt$const val PluginId = "io.github.xlopec.tea.core.plugin"</ID>
-    <ID>UndocumentedPublicProperty:ProjectExtensions.kt$inline val Project.javaPsiFacade: JavaPsiFacade get() = JavaPsiFacade.getInstance(this)</ID>
-    <ID>UndocumentedPublicProperty:ProjectExtensions.kt$inline val Project.properties: PropertiesComponent get() = PropertiesComponent.getInstance(this)</ID>
-    <ID>UndocumentedPublicProperty:ProjectExtensions.kt$var PropertiesComponent.settings: Settings set(value) { host = value.host.input port = value.port.input isDetailedToStringEnabled = value.isDetailedOutput } get() = Settings.of(host, port, isDetailedToStringEnabled)</ID>
-    <ID>UndocumentedPublicProperty:RemoteCall.kt$RemoteCall$val callId: UUID</ID>
-    <ID>UndocumentedPublicProperty:RemoteCall.kt$RemoteCall$val component: ComponentId</ID>
-    <ID>UndocumentedPublicProperty:RemoteCall.kt$RemoteCall$val message: GsonClientMessage</ID>
-    <ID>UndocumentedPublicProperty:RenderExtensions.kt$val DATE_TIME_FORMATTER: DateTimeFormatter by lazy { DateTimeFormatter.ofLocalizedDateTime( FormatStyle.MEDIUM ) }</ID>
-    <ID>UndocumentedPublicProperty:Server.kt$Server$val address: ServerAddress</ID>
-    <ID>UndocumentedPublicProperty:Settings.kt$Host$val value: String</ID>
-    <ID>UndocumentedPublicProperty:Settings.kt$Port$val value: Int</ID>
-    <ID>UndocumentedPublicProperty:Settings.kt$ServerAddress$val host: Host</ID>
-    <ID>UndocumentedPublicProperty:Settings.kt$ServerAddress$val port: Port</ID>
-    <ID>UndocumentedPublicProperty:Settings.kt$Settings$val host: Validated&lt;Host></ID>
-    <ID>UndocumentedPublicProperty:Settings.kt$Settings$val isDetailedOutput: Boolean</ID>
-    <ID>UndocumentedPublicProperty:Settings.kt$Settings$val port: Validated&lt;Port></ID>
-    <ID>UndocumentedPublicProperty:Started.kt$Started$val debugState: DebugState</ID>
-    <ID>UndocumentedPublicProperty:Started.kt$Started$val server: Server</ID>
-    <ID>UndocumentedPublicProperty:Started.kt$inline val DebugState.componentIds: ImmutableSet&lt;ComponentId> get() = components.keys</ID>
-    <ID>UndocumentedPublicProperty:State.kt$State$val settings: Settings</ID>
-    <ID>UndocumentedPublicProperty:Stopped.kt$Stopped$val canStart: Boolean = settings.host.isValid() &amp;&amp; settings.port.isValid()</ID>
-    <ID>UndocumentedPublicProperty:TestEnv.kt$val TestComponentId = ComponentId("test")</ID>
-    <ID>UndocumentedPublicProperty:TestEnv.kt$val TestSerializer = GsonSerializer()</ID>
-    <ID>UndocumentedPublicProperty:Typography.kt$val typography = Typography( body1 = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 16.sp ), body2 = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 14.sp ), button = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.W500, fontSize = 14.sp ), caption = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 12.sp, ), subtitle1 = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 16.sp, color = Color.Gray ), subtitle2 = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 14.sp, color = Color.Gray ), )</ID>
     <ID>UndocumentedPublicProperty:Url.kt$public actual val Url.domain: String get() = host</ID>
     <ID>UndocumentedPublicProperty:Url.kt$public actual val Url.domain: String get() = host ?: error("No domain: ${toExternalValue()}")</ID>
     <ID>UndocumentedPublicProperty:Url.kt$public expect val Url.domain: String</ID>
-    <ID>UndocumentedPublicProperty:Validated.kt$Invalid$val message: String</ID>
-    <ID>UndocumentedPublicProperty:Validated.kt$Valid$val t: T</ID>
-    <ID>UndocumentedPublicProperty:Validated.kt$Validated$val input: String</ID>
-    <ID>UndocumentedPublicProperty:Validated.kt$inline val &lt;T> Validated&lt;T>?.value: T? get() = if (this is Valid) t else null</ID>
-    <ID>UndocumentedPublicProperty:Value.kt$BooleanWrapper$val value: Boolean</ID>
-    <ID>UndocumentedPublicProperty:Value.kt$CharWrapper$val value: Char</ID>
-    <ID>UndocumentedPublicProperty:Value.kt$CollectionWrapper$val items: List&lt;Value> = listOf()</ID>
-    <ID>UndocumentedPublicProperty:Value.kt$NumberWrapper$val value: Number</ID>
-    <ID>UndocumentedPublicProperty:Value.kt$Property$val name: String</ID>
-    <ID>UndocumentedPublicProperty:Value.kt$Property$val v: Value</ID>
-    <ID>UndocumentedPublicProperty:Value.kt$Ref$val properties: Set&lt;Property></ID>
-    <ID>UndocumentedPublicProperty:Value.kt$Ref$val type: Type</ID>
-    <ID>UndocumentedPublicProperty:Value.kt$StringWrapper$val value: String</ID>
-    <ID>UndocumentedPublicProperty:Value.kt$Type$val name: String</ID>
-    <ID>UndocumentedPublicProperty:Value.kt$inline val Value.isPrimitive: Boolean get() = when (this) { is CharWrapper, is NumberWrapper, is StringWrapper, is BooleanWrapper -> true Null, is CollectionWrapper, is Ref -> false }</ID>
-    <ID>UndocumentedPublicProperty:Value.kt$inline val Value.stringValue: String? get() = when (this) { is BooleanWrapper -> value.toString() is CharWrapper -> value.toString() is StringWrapper -> value is NumberWrapper -> value.toString() Null -> null.toString() is CollectionWrapper -> null is Ref -> null }</ID>
-    <ID>UndocumentedPublicProperty:ValueExtensions.kt$inline val BooleanWrapper.primitiveTypeName: String get() = value.javaClass.name</ID>
-    <ID>UndocumentedPublicProperty:ValueExtensions.kt$inline val CharWrapper.primitiveTypeName: String get() = value.javaClass.name</ID>
-    <ID>UndocumentedPublicProperty:ValueExtensions.kt$inline val NumberWrapper.primitiveTypeName: String get() = if (value.javaClass in PrimitiveNumbers) value.javaClass.name else "number"</ID>
-    <ID>UndocumentedPublicProperty:ValueExtensions.kt$inline val StringWrapper.primitiveTypeName: String get() = value.javaClass.name</ID>
-    <ID>UndocumentedPublicProperty:ValueExtensions.kt$inline val Value.primitiveTypeName: String? get() = when (this) { is NumberWrapper -> primitiveTypeName is CharWrapper -> primitiveTypeName is StringWrapper -> primitiveTypeName is BooleanWrapper -> primitiveTypeName Null, is CollectionWrapper, is Ref -> null }</ID>
-    <ID>UndocumentedPublicProperty:ValueExtensions.kt$val PrimitiveNumbers = setOf( Byte::class.java, Short::class.java, java.lang.Short::class.java, Integer::class.java, Long::class.java, java.lang.Long::class.java, Float::class.java, java.lang.Float::class.java, Double::class.java, java.lang.Double::class.java, Int::class.java )</ID>
     <ID>UnnecessaryAbstractClass:ComponentTestBase.kt$ComponentTestBase</ID>
   </CurrentIssues>
 </SmellBaseline>

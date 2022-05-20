@@ -19,20 +19,20 @@
 package io.github.xlopec.tea.time.travel.plugin.data
 
 import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
-import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
+import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.FilteredSnapshot
 import io.github.xlopec.tea.time.travel.plugin.model.Null
 import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
-import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
-import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
+import io.github.xlopec.tea.time.travel.plugin.model.Server
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
+import io.github.xlopec.tea.time.travel.plugin.model.Started
 import io.github.xlopec.tea.time.travel.plugin.model.Valid
 import io.github.xlopec.tea.time.travel.plugin.model.Value
-import io.github.xlopec.tea.time.travel.plugin.model.Server
-import io.github.xlopec.tea.time.travel.plugin.model.Started
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.time.LocalDateTime
 import java.util.UUID
