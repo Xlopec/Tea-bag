@@ -44,8 +44,8 @@ import kotlinx.collections.immutable.toPersistentMap
 val ValidTestSettings = Settings(Valid(TestHost.value, TestHost), Valid(TestPort.value.toString(), TestPort), false)
 
 val InvalidTestSettings = Settings(
-    host = Invalid("abc", "invalid host"),
-    port = Invalid("port", "Invalid port"),
+    host = Invalid("abc", "Provide host"),
+    port = Invalid("port", "Provide port"),
     isDetailedOutput = false
 )
 

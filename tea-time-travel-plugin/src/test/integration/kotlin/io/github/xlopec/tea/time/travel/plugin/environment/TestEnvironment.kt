@@ -1,6 +1,6 @@
 @file:Suppress("TestFunctionName")
 
-package io.github.xlopec.tea.time.travel.plugin.integration.environment
+package io.github.xlopec.tea.time.travel.plugin.environment
 
 import androidx.compose.ui.test.IdlingResource
 import com.intellij.openapi.project.Project

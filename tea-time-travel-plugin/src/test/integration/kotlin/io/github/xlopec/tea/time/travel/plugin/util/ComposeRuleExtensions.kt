@@ -1,10 +1,10 @@
-package io.github.xlopec.tea.time.travel.plugin.integration.util
+package io.github.xlopec.tea.time.travel.plugin.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
-import io.github.xlopec.tea.time.travel.plugin.integration.environment.TestEnvironment
+import io.github.xlopec.tea.time.travel.plugin.environment.TestEnvironment
 
 operator fun ComposeContentTestRule.invoke(
     body: ComposeContentTestRule.() -> Unit

@@ -1,4 +1,4 @@
-package io.github.xlopec.tea.time.travel.plugin.integration.environment
+package io.github.xlopec.tea.time.travel.plugin.environment
 
 import com.intellij.diagnostic.ActivityCategory
 import com.intellij.openapi.extensions.PluginDescriptor

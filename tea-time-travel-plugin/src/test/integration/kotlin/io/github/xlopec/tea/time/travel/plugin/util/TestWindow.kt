@@ -1,4 +1,4 @@
-package io.github.xlopec.tea.time.travel.plugin.integration.util
+package io.github.xlopec.tea.time.travel.plugin.util
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
