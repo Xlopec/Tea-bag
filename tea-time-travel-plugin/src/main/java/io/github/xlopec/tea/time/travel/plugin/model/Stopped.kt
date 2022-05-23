@@ -6,6 +6,7 @@ data class Stopped(
     override val settings: Settings
 ) : State {
     companion object
-
-    val canStart: Boolean = settings.host.isValid() && settings.port.isValid()
 }
+
+val Stopped.canStart: Boolean
+    get() = settings.host.isValid() && settings.port.isValid()

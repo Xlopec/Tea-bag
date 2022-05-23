@@ -12,10 +12,20 @@ operator fun ComposeContentTestRule.invoke(
     apply(body)
 }
 
+fun ComposeContentTestRule.setTestContent(
+    content: @Composable () -> Unit
+) {
+    setContent {
+        TestTheme {
+            content()
+        }
+    }
+}
+
 fun ComposeContentTestRule.setContentWithEnv(
     content: @Composable TestEnvironment.() -> Unit
 ) {
-    setContent {
+    setTestContent {
         val environment = remember { TestEnvironment() }
 
         DisposableEffect(Unit) {

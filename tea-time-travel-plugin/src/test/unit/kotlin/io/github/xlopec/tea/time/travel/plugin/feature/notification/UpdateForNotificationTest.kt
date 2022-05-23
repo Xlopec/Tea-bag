@@ -24,9 +24,9 @@ import io.github.xlopec.tea.time.travel.plugin.data.NonEmptyComponentDebugState
 import io.github.xlopec.tea.time.travel.plugin.data.RandomSnapshotId
 import io.github.xlopec.tea.time.travel.plugin.data.StartedFromPairs
 import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
-import io.github.xlopec.tea.time.travel.plugin.data.TestSettings
 import io.github.xlopec.tea.time.travel.plugin.data.TestSnapshotId1
 import io.github.xlopec.tea.time.travel.plugin.data.TestTimestamp1
+import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
 import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
@@ -53,10 +53,10 @@ internal class UpdateForNotificationTest {
     @Test
     fun `test when message is NotifyStarted then plugin goes to a Started state`() {
 
-        val (nextState, commands) = updateForNotification(NotifyStarted(StartedTestServerStub), Stopped(TestSettings))
+        val (nextState, commands) = updateForNotification(NotifyStarted(StartedTestServerStub), Stopped(ValidTestSettings))
 
         nextState shouldBe Started(
-            TestSettings,
+            ValidTestSettings,
             DebugState(),
             StartedTestServerStub
         )
@@ -69,13 +69,13 @@ internal class UpdateForNotificationTest {
         val (nextState, commands) = updateForNotification(
             NotifyStopped,
             Started(
-                TestSettings,
+                ValidTestSettings,
                 DebugState(),
                 StartedTestServerStub
             )
         )
 
-        nextState shouldBe Stopped(TestSettings)
+        nextState shouldBe Stopped(ValidTestSettings)
         commands.shouldBeEmpty()
     }
 
@@ -219,7 +219,7 @@ internal class UpdateForNotificationTest {
     @Test
     fun `test when illegal combination of message and state warning command is returned`() {
 
-        val initialState = Stopped(TestSettings)
+        val initialState = Stopped(ValidTestSettings)
         val message = StateApplied(ComponentId("a"), Null)
         val (state, commands) = updateForNotification(message, initialState)
 

@@ -25,6 +25,7 @@ import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.FilteredSnapshot
+import io.github.xlopec.tea.time.travel.plugin.model.Invalid
 import io.github.xlopec.tea.time.travel.plugin.model.Null
 import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
 import io.github.xlopec.tea.time.travel.plugin.model.Server
@@ -40,7 +41,13 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentMap
 
-val TestSettings = Settings(Valid(TestHost.value, TestHost), Valid(TestPort.value.toString(), TestPort), false)
+val ValidTestSettings = Settings(Valid(TestHost.value, TestHost), Valid(TestPort.value.toString(), TestPort), false)
+
+val InvalidTestSettings = Settings(
+    host = Invalid("abc", "invalid host"),
+    port = Invalid("port", "Invalid port"),
+    isDetailedOutput = false
+)
 
 val StartedTestServerStub = object : Server {
     override val address: ServerAddress = ServerAddress(TestHost, TestPort)
@@ -90,7 +97,7 @@ fun ComponentDebugState(
 fun StartedFromPairs(
     states: Iterable<Pair<ComponentId, ComponentState>>
 ): Started = Started(
-    TestSettings,
+    ValidTestSettings,
     DebugState(states.toMap().toPersistentMap()),
     StartedTestServerStub
 )
@@ -98,7 +105,7 @@ fun StartedFromPairs(
 fun StartedFromPairs(
     vararg states: Pair<ComponentId, ComponentState>
 ) = Started(
-    TestSettings,
+    ValidTestSettings,
     DebugState(states.toMap().toPersistentMap()),
     StartedTestServerStub
 )

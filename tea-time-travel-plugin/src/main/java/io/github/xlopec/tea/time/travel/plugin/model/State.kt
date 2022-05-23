@@ -17,6 +17,7 @@
 package io.github.xlopec.tea.time.travel.plugin.model
 
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
+import kotlin.contracts.contract
 
 sealed interface State {
     val settings: Settings
@@ -40,3 +41,33 @@ fun State.updateServerSettings(
         is Started -> copy(settings = settings)
         is Stopping -> copy(settings = settings)
     }
+
+fun State.canExport(): Boolean {
+    contract {
+        returns(true) implies (this@canExport is Started)
+    }
+
+    return isStarted() && debugState.components.isNotEmpty()
+}
+
+fun State.canStart(): Boolean {
+    contract {
+        returns(true) implies (this@canStart is Stopped)
+    }
+    return this is Stopped && canStart
+}
+
+fun State.canImport(): Boolean {
+    contract {
+        returns(true) implies (this@canImport is Started)
+    }
+
+    return isStarted()
+}
+
+fun State.isStarted(): Boolean {
+    contract {
+        returns(true) implies (this@isStarted is Started)
+    }
+    return this is Started
+}

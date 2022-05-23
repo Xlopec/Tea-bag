@@ -19,16 +19,19 @@ import io.github.xlopec.tea.time.travel.plugin.model.Starting
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.Stopped
 import io.github.xlopec.tea.time.travel.plugin.model.Stopping
+import io.github.xlopec.tea.time.travel.plugin.model.canExport
+import io.github.xlopec.tea.time.travel.plugin.model.canImport
+import io.github.xlopec.tea.time.travel.plugin.model.canStart
+import io.github.xlopec.tea.time.travel.plugin.model.isStarted
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons
 import io.kanro.compose.jetbrains.control.ActionButton
 import io.kanro.compose.jetbrains.control.Icon
-import kotlin.contracts.contract
 
 private val DisabledTintColor = Color(86, 86, 86)
 
-const val ImportButtonTag = "import button"
-const val ExportButtonTag = "export button"
-const val ServerActionButtonTag = "server action button"
+internal const val ImportButtonTag = "import button"
+internal const val ExportButtonTag = "export button"
+internal const val ServerActionButtonTag = "server action button"
 
 @Composable
 internal fun BottomActionMenu(
@@ -87,36 +90,6 @@ internal fun ActionButton(
             contentDescription = contentDescription
         )
     }
-}
-
-private fun State.canExport(): Boolean {
-    contract {
-        returns(true) implies (this@canExport is Started)
-    }
-
-    return isStarted() && debugState.components.isNotEmpty()
-}
-
-private fun State.canStart(): Boolean {
-    contract {
-        returns(true) implies (this@canStart is Stopped)
-    }
-    return this is Stopped && canStart
-}
-
-private fun State.canImport(): Boolean {
-    contract {
-        returns(true) implies (this@canImport is Started)
-    }
-
-    return isStarted()
-}
-
-private fun State.isStarted(): Boolean {
-    contract {
-        returns(true) implies (this@isStarted is Started)
-    }
-    return this is Started
 }
 
 private val State.serverActionIcon: Painter

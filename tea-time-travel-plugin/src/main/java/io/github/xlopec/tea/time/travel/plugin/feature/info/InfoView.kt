@@ -31,6 +31,7 @@ import io.github.xlopec.tea.time.travel.plugin.model.Starting
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.Stopped
 import io.github.xlopec.tea.time.travel.plugin.model.Stopping
+import io.github.xlopec.tea.time.travel.plugin.model.canStart
 import io.github.xlopec.tea.time.travel.plugin.ui.noIndicationClickable
 import io.kanro.compose.jetbrains.LocalTypography
 import io.kanro.compose.jetbrains.control.Text

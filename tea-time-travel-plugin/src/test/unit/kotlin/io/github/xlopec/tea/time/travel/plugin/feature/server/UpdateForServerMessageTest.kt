@@ -20,7 +20,7 @@ package io.github.xlopec.tea.time.travel.plugin.feature.server
 
 import io.github.xlopec.tea.time.travel.plugin.data.SettingsGen
 import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
-import io.github.xlopec.tea.time.travel.plugin.data.TestSettings
+import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.DoWarnUnacceptableMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
@@ -68,7 +68,7 @@ internal class UpdateForServerMessageTest {
     @Test
     fun `test when illegal combination of message and state warning command is returned`() {
 
-        val initialState = Stopped(TestSettings)
+        val initialState = Stopped(ValidTestSettings)
         val (state, commands) = updateForServerMessage(StopServer, initialState)
 
         state shouldBeSameInstanceAs initialState
