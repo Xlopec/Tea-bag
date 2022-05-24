@@ -10,7 +10,7 @@ import io.github.xlopec.tea.time.travel.plugin.data.TestSnapshotMeta1
 import io.github.xlopec.tea.time.travel.plugin.data.TestUserValue
 import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.environment.TestEnvironment
-import io.github.xlopec.tea.time.travel.plugin.environment.TestProject
+import io.github.xlopec.tea.time.travel.plugin.environment.TestPlatform
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTabTag
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTag
 import io.github.xlopec.tea.time.travel.plugin.feature.info.InfoViewTag
@@ -42,9 +42,8 @@ class StartPluginScenarios {
     fun `test info view displayed when user starts plugin given no components attach`() = rule {
         val environment = TestEnvironment()
         setContentWithEnv(environment) {
-
             Plugin(
-                project = TestProject(),
+                platform = TestPlatform(),
                 component = PluginComponent(environment, Initializer(Stopped(ValidTestSettings))).toStatesComponent(),
             )
         }
@@ -73,7 +72,7 @@ class StartPluginScenarios {
 
         setContentWithEnv(environment) {
             Plugin(
-                project = TestProject(),
+                platform = TestPlatform(),
                 component = component.toStatesComponent(),
                 messages = messages
             )

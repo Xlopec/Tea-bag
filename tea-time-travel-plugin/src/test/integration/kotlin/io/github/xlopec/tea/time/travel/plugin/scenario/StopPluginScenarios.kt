@@ -11,7 +11,7 @@ import io.github.xlopec.tea.time.travel.plugin.data.TestSnapshotMeta1
 import io.github.xlopec.tea.time.travel.plugin.data.TestUserValue
 import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.environment.TestEnvironment
-import io.github.xlopec.tea.time.travel.plugin.environment.TestProject
+import io.github.xlopec.tea.time.travel.plugin.environment.TestPlatform
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTabTag
@@ -50,9 +50,8 @@ class StopPluginScenarios {
         val environment = TestEnvironment()
 
         setContentWithEnv(environment) {
-
             Plugin(
-                project = TestProject(),
+                platform = TestPlatform(),
                 component = PluginComponent(environment, Initializer(started)).toStatesComponent(),
             )
         }
@@ -92,7 +91,7 @@ class StopPluginScenarios {
 
         setContentWithEnv(environment) {
             Plugin(
-                project = TestProject(),
+                platform = TestPlatform(),
                 component = component.toStatesComponent(),
                 messages = messages
             )

@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import com.intellij.openapi.project.Project
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
@@ -29,7 +28,7 @@ import org.jetbrains.compose.splitpane.rememberSplitPaneState
 private val SplitPaneMinContentHeight = 100.dp
 
 internal fun ComponentTag(
-    id: ComponentId
+    id: ComponentId,
 ) = "Component ${id.value}"
 
 internal typealias MessageHandler = (Message) -> Unit
@@ -37,7 +36,6 @@ internal typealias MessageHandler = (Message) -> Unit
 @OptIn(ExperimentalSplitPaneApi::class)
 @Composable
 internal fun Component(
-    project: Project,
     settings: Settings,
     state: ComponentState,
     handler: MessageHandler,
@@ -60,16 +58,18 @@ internal fun Component(
                     modifier = Modifier.fillMaxSize().jBorder(all = 1.dp, JBTheme.contrastBorderColor),
                     roots = state.filteredSnapshots,
                     formatter = formatter,
-                    valuePopupContent = { value -> ValuePopup(value, formatter, project) }
-                ) { snapshot -> SnapshotActionItems(state.id, snapshot.meta.id, handler) }
+                    valuePopupContent = { value -> ValuePopup(value, formatter) },
+                    snapshotPopupContent = { SnapshotActionItems(state.id, it.meta.id, handler) }
+                )
             }
 
             second(SplitPaneMinContentHeight) {
                 Tree(
                     modifier = Modifier.fillMaxSize().jBorder(all = 1.dp, JBTheme.contrastBorderColor),
                     root = state.state,
-                    formatter = formatter
-                ) { value -> ValuePopup(value, formatter, project) }
+                    formatter = formatter,
+                    valuePopupContent = { ValuePopup(it, formatter) }
+                )
             }
 
             splitter {
