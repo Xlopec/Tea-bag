@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package io.github.xlopec.tea.time.travel.plugin.feature.component.ui
 
 import androidx.compose.foundation.background
@@ -10,12 +12,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.intellij.openapi.project.Project
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.contrastBorderColor
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.kanro.compose.jetbrains.JBTheme
 import io.kanro.compose.jetbrains.control.jBorder
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
@@ -24,17 +28,21 @@ import org.jetbrains.compose.splitpane.rememberSplitPaneState
 
 private val SplitPaneMinContentHeight = 100.dp
 
-typealias MessageHandler = (Message) -> Unit
+internal fun ComponentTag(
+    id: ComponentId
+) = "Component ${id.value}"
+
+internal typealias MessageHandler = (Message) -> Unit
 
 @OptIn(ExperimentalSplitPaneApi::class)
 @Composable
-fun Component(
+internal fun Component(
     project: Project,
     settings: Settings,
     state: ComponentState,
     handler: MessageHandler,
 ) {
-    Column {
+    Column(modifier = Modifier.testTag(ComponentTag(state.id))) {
 
         FiltersHeader(
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),

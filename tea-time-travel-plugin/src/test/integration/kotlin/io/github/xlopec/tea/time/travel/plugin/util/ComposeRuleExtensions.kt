@@ -2,14 +2,16 @@ package io.github.xlopec.tea.time.travel.plugin.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import io.github.xlopec.tea.time.travel.plugin.environment.TestEnvironment
+import kotlinx.coroutines.runBlocking
 
 operator fun ComposeContentTestRule.invoke(
-    body: ComposeContentTestRule.() -> Unit
+    body: suspend ComposeContentTestRule.() -> Unit
 ) {
-    apply(body)
+    runBlocking {
+        body()
+    }
 }
 
 fun ComposeContentTestRule.setTestContent(
@@ -23,11 +25,10 @@ fun ComposeContentTestRule.setTestContent(
 }
 
 fun ComposeContentTestRule.setContentWithEnv(
-    content: @Composable TestEnvironment.() -> Unit
+    environment: TestEnvironment,
+    content: @Composable () -> Unit
 ) {
     setTestContent {
-        val environment = remember { TestEnvironment() }
-
         DisposableEffect(Unit) {
             registerIdlingResource(environment)
             onDispose {
@@ -35,6 +36,6 @@ fun ComposeContentTestRule.setContentWithEnv(
             }
         }
 
-        content(environment)
+        content()
     }
 }

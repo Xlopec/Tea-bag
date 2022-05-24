@@ -157,6 +157,7 @@ dependencies {
     implementation(libs.collections.immutable)
 
     testImplementation(libs.ktor.server.tests)
+    testImplementation(libs.coroutines.test)
     testImplementation(project(":tea-test"))
     testImplementation("io.kotlintest:kotlintest-assertions:3.4.2")
     testImplementation(compose("org.jetbrains.compose.ui:ui-test-junit4"))

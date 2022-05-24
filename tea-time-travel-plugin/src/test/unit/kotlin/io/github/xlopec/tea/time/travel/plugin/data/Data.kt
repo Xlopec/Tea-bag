@@ -61,6 +61,10 @@ val TestTimestamp2: LocalDateTime = LocalDateTime.of(2001, 2, 3, 4, 5)
 val TestSnapshotId1: SnapshotId = SnapshotId(UUID.fromString("3853fab6-f20c-11ea-adc1-0242ac120002"))
 val TestSnapshotId2: SnapshotId = SnapshotId(UUID.fromString("40811a0c-82ca-11ec-a8a3-0242ac120002"))
 
+val TestSnapshotMeta1 = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
+
+val TestComponentId = ComponentId("Test component id")
+
 inline fun ComponentDebugStates(
     range: CharRange = 'b'..'z',
     block: (strId: String) -> Pair<ComponentId, ComponentState> = { strId ->

@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign.Companion.Justify
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
@@ -37,13 +38,15 @@ import io.kanro.compose.jetbrains.LocalTypography
 import io.kanro.compose.jetbrains.control.Text
 import java.util.Locale
 
+internal const val InfoViewTag = "info view"
+
 @Composable
 fun InfoView(
     state: State,
     uiEvents: MessageHandler,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().testTag(InfoViewTag),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

@@ -68,7 +68,9 @@ fun PluginSwingAdapter(
     .apply {
         background = null
         setContent {
-            Plugin(project, component)
+            PluginTheme {
+                Plugin(project, component)
+            }
         }
     }
 
@@ -76,19 +78,17 @@ fun PluginSwingAdapter(
 fun Plugin(
     project: Project,
     component: (Flow<Message>) -> Flow<State>,
+    messages: MutableSharedFlow<Message> = MutableSharedFlow()
 ) {
-    PluginTheme {
-        JPanel(modifier = Modifier.fillMaxSize()) {
-            val messages = remember { MutableSharedFlow<Message>() }
-            val stateFlow = remember { component(messages) }
-            val state = stateFlow.collectAsState(initial = null).value
+    JPanel(modifier = Modifier.fillMaxSize()) {
+        val stateFlow = remember { component(messages) }
+        val state = stateFlow.collectAsState(initial = null).value
 
-            if (state != null) {
-                val scope = rememberCoroutineScope()
-                val messageHandler = remember { scope.dispatcher(messages) }
+        if (state != null) {
+            val scope = rememberCoroutineScope()
+            val messageHandler = remember { scope.dispatcher(messages) }
 
-                Plugin(project, state, messageHandler)
-            }
+            Plugin(project, state, messageHandler)
         }
     }
 }

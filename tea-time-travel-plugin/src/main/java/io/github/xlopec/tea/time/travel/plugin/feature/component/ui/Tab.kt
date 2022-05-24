@@ -1,15 +1,23 @@
+@file:Suppress("FunctionName")
+
 package io.github.xlopec.tea.time.travel.plugin.feature.component.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.RemoveComponent
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
 import io.github.xlopec.tea.time.travel.plugin.model.componentIds
 import io.github.xlopec.tea.time.travel.plugin.ui.control.CloseableTab
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
+internal fun ComponentTabTag(
+    id: ComponentId
+) = "component tab '${id.value}'"
+
 @Composable
-fun ComponentTab(
+internal fun ComponentTab(
     id: ComponentId,
     selectedId: MutableState<ComponentId>,
     state: DebugState,
@@ -17,6 +25,7 @@ fun ComponentTab(
     events: MessageHandler
 ) {
     CloseableTab(
+        modifier = Modifier.testTag(ComponentTabTag(id)),
         text = id.value,
         selected = id == selectedId.value,
         onSelect = { selectedId.value = id },
