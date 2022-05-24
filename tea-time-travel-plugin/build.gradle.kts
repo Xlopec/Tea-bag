@@ -100,7 +100,7 @@ tasks.withType<Test>().configureEach {
 
 optIn(
     "kotlinx.coroutines.ExperimentalCoroutinesApi",
-    "io.githux.xlopec.tea.core.ExperimentalTeaApi",
+    "io.github.xlopec.tea.core.ExperimentalTeaApi",
 )
 
 sourceSets {
