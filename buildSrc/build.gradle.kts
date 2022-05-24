@@ -39,7 +39,7 @@ plugins {
 }
 
 afterEvaluate {
-    tasks.withType<Test>().all {
+    tasks.withType<Test>().configureEach {
 
         val buildDir = File(rootProject.rootDir.parentFile, "build")
 

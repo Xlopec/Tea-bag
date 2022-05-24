@@ -70,7 +70,7 @@ allprojects {
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.19.0")
     }
 
-    tasks.withType<Test>().all {
+    tasks.withType<Test>().configureEach {
         reports {
             html.outputLocation.set(File("${rootProject.buildDir}/junit-reports/${project.name}/html"))
             junitXml.outputLocation.set(File("${rootProject.buildDir}/junit-reports/${project.name}/xml"))

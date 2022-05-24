@@ -39,7 +39,7 @@ kotlin {
     explicitApi()
 }
 
-tasks.withType<Test>().all {
+tasks.withType<Test>().configureEach {
     reports {
         html.outputLocation.set(htmlTestReportsDir)
         junitXml.outputLocation.set(xmlTestReportsDir)

@@ -91,7 +91,7 @@ val allTests by tasks.creating(Task::class) {
     dependsOn("test")
 }
 
-tasks.withType<Test>().all {
+tasks.withType<Test>().configureEach {
     reports {
         html.outputLocation.set(htmlTestReportsDir)
         junitXml.outputLocation.set(xmlTestReportsDir)
