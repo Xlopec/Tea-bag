@@ -62,10 +62,10 @@ import org.junit.Test
 internal class AppTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+    val rule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
-    fun testProgressIndicatorIsDisplayedOnStart() = composeTestRule {
+    fun testProgressIndicatorIsDisplayedOnStart() = rule {
         setContent {
             AppTheme(isDarkModeEnabled = true) {
                 ArticlesScreen(
@@ -82,7 +82,7 @@ internal class AppTest {
     }
 
     @Test
-    fun testArticlesListIsDisplayedCorrectly() = composeTestRule {
+    fun testArticlesListIsDisplayedCorrectly() = rule {
         setTestContent {
 
             anyArticleRequest() yields ArticleResponse(TestArticleElement)

@@ -130,6 +130,7 @@ dependencies {
     implementation(libs.stdlib.reflect)
 
     implementation(libs.coroutines.android)
+    implementation(libs.compose.activity)
 
     implementation(libs.bundles.compose)
     debugImplementation(libs.compose.tooling)
@@ -150,4 +151,5 @@ dependencies {
     androidTestImplementation(libs.android.test.runner)
     androidTestUtil(libs.android.test.orchestrator)
     androidTestImplementation(libs.compose.test.junit)
+    debugImplementation(libs.compose.test.manifest)
 }

@@ -27,7 +27,6 @@
     <ID>NoWildcardImports:io.github.reader.app.ui.screens.article.ArticlesPreview.kt:32</ID>
     <ID>NoWildcardImports:io.github.xlopec.reader.app.ui.screens.AppView.kt:29</ID>
     <ID>NoWildcardImports:io.github.xlopec.tea.time.travel.plugin.feature.component.model.Filter.kt:21</ID>
-    <ID>NoWildcardImports:io.github.xlopec.tea.time.travel.plugin.feature.component.model.Filter.kt:33</ID>
     <ID>TooGenericExceptionCaught:NettyServer.kt$e: Throwable</ID>
     <ID>TooManyFunctions:ComponentTestBase.kt$ComponentTestBase</ID>
     <ID>UndocumentedPublicClass:Date.kt$Date</ID>

@@ -38,6 +38,9 @@ repositories {
     maven {
         setUrl("https://repo1.maven.org/maven2/")
     }
+    maven {
+        setUrl("https://maven.pkg.jetbrains.space/public/p/compose/dev/")
+    }
 }
 
 val supportedVersions = listOf(
@@ -118,9 +121,17 @@ sourceSets {
     }
 }
 
+fun shouldUseForcedCoroutinesVersion(
+    configuration: Configuration,
+    details: DependencyResolveDetails,
+): Boolean =
+    !configuration.name.startsWith("test") &&
+            details.requested.group == "org.jetbrains.kotlinx" &&
+            details.requested.module.name.startsWith("kotlinx-coroutines")
+
 configurations.configureEach {
     resolutionStrategy.eachDependency {
-        if (requested.group == "org.jetbrains.kotlinx" && requested.module.name.startsWith("kotlinx-coroutines")) {
+        if (shouldUseForcedCoroutinesVersion(this@configureEach, this@eachDependency)) {
             val forcedVersion = "1.5.2"
             useVersion(forcedVersion)
             // https://www.jetbrains.com/legal/third-party-software/?product=iic&version=2022.1

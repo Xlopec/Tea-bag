@@ -55,10 +55,10 @@ dependencyResolutionManagement {
 
         create("libs") {
 
-            version("ktor", "2.0.0")
+            version("ktor", "2.0.1")
             version("coroutines", "1.6.1")
-            version("compose", "1.2.0-alpha04")
-            version("accompanist", "0.24.1-alpha")
+            version("compose", "1.2.0-beta02")
+            version("accompanist", "0.24.9-beta")
             version("sqldelight", "1.5.3")
 
             // Testing
@@ -66,6 +66,9 @@ dependencyResolutionManagement {
             library("junit", "junit:junit:4.13.2")
 
             library("kotlin-test", "org.jetbrains.kotlin", "kotlin-test")
+                .withoutVersion()
+
+            library("kotlin-test-annotations", "org.jetbrains.kotlin", "kotlin-test-annotations-common")
                 .withoutVersion()
 
             library("compose-test-junit", "androidx.compose.ui", "ui-test-junit4")
@@ -159,11 +162,11 @@ dependencyResolutionManagement {
 
             // Serialization
 
-            library("serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").version("1.3.2")
+            library("serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").version("1.3.3")
 
             // Multiplatform settings
 
-            library("settings-core", "com.russhwolf", "multiplatform-settings-no-arg").version("0.8.1")
+            library("settings-core", "com.russhwolf", "multiplatform-settings-no-arg").version("0.9")
 
             // Compose
 
@@ -197,7 +200,7 @@ dependencyResolutionManagement {
             library("compose-compiler", "androidx.compose.compiler", "compiler")
                 .versionRef("compose")
 
-            library("compose-activity", "androidx.activity:activity-compose:1.5.0-alpha03")
+            library("compose-activity", "androidx.activity:activity-compose:1.5.0-rc01")
 
             bundle(
                 "compose",
@@ -236,7 +239,7 @@ dependencyResolutionManagement {
 
             // App compat
 
-            library("appcompat", "androidx.appcompat:appcompat:1.6.0-alpha01")
+            library("appcompat", "androidx.appcompat:appcompat:1.6.0-alpha04")
 
             // Collections
 
