@@ -42,7 +42,7 @@ class SideToolWindowFactory : ToolWindowFactory, DumbAware {
     @OptIn(ExperimentalTeaApi::class)
     override fun createToolWindowContent(
         project: Project,
-        toolWindow: ToolWindow
+        toolWindow: ToolWindow,
     ) {
         val events = MutableSharedFlow<Message>()
         val environment = Environment(project.properties, project, events)
@@ -62,7 +62,7 @@ class SideToolWindowFactory : ToolWindowFactory, DumbAware {
  */
 private fun Environment.installResourcesDisposer(
     project: Project,
-    component: Component<Message, State, Command>
+    component: Component<Message, State, Command>,
 ) = launch {
     project.awaitDisposal()
     component(StopServer).takeWhile { it.currentState !is Stopped }.collect()
@@ -78,17 +78,20 @@ private val Project.settingsMessages: Flow<UpdateDebugSettings>
     get() = callbackFlow {
         val connection = messageBus.connect()
 
-        connection.subscribe(PluginSettingsNotifier.TOPIC, object : PluginSettingsNotifier {
-            override fun onSettingsUpdated(isDetailedToStringEnabled: Boolean) {
-                launch { send(UpdateDebugSettings(isDetailedToStringEnabled)) }
+        connection.subscribe(
+            PluginSettingsNotifier.TOPIC,
+            object : PluginSettingsNotifier {
+                override fun onSettingsUpdated(isDetailedToStringEnabled: Boolean) {
+                    launch { send(UpdateDebugSettings(isDetailedToStringEnabled)) }
+                }
             }
-        })
+        )
 
         awaitClose { connection.disconnect() }
     }
 
 private fun ToolWindowContent(
     project: Project,
-    component: Component<Message, State, Command>
+    component: Component<Message, State, Command>,
 ): Content =
     ContentFactory.SERVICE.getInstance().createContent(PluginSwingAdapter(project, component.toStatesComponent()), null, false)

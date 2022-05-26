@@ -69,9 +69,11 @@ internal class AppTest {
         setContent {
             AppTheme(isDarkModeEnabled = true) {
                 ArticlesScreen(
-                    ArticlesState.newLoading(RandomUUID(),
+                    ArticlesState.newLoading(
+                        RandomUUID(),
                         Filter(Regular, Query.of("Input text")),
-                        persistentListOf()),
+                        persistentListOf()
+                    ),
                     LazyListState(0, 0),
                     Modifier
                 ) {}

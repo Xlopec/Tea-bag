@@ -20,9 +20,7 @@
     <ID>MagicNumber:Date.kt$1000.0</ID>
     <ID>MaxLineLength:AppTheme.kt$val secondaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant)</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
-    <ID>MaxLineLength:FiltersTest.kt$FiltersTest$fun</ID>
     <ID>MaximumLineLength:io.github.xlopec.reader.app.ui.theme.AppTheme.kt:54</ID>
-    <ID>MaximumLineLength:io.github.xlopec.tea.time.travel.plugin.feature.component.model.FiltersTest.kt:112</ID>
     <ID>MaximumLineLength:io.github.xlopec.tea.time.travel.plugin.util.CollectionExtensionsTest.kt:51</ID>
     <ID>NoWildcardImports:io.github.reader.app.ui.screens.article.ArticlesPreview.kt:32</ID>
     <ID>NoWildcardImports:io.github.xlopec.reader.app.ui.screens.AppView.kt:29</ID>

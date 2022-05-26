@@ -305,6 +305,9 @@ formatting:
   StringTemplate:
     active: true
     autoCorrect: true
+  Wrapping:
+    # fixme wait for fix
+    active: false
 
 naming:
   active: true

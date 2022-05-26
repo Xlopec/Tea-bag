@@ -47,12 +47,12 @@ fun PluginComponent(
     ).with(LoggerInterceptor(Logger.getInstance(PluginId)))
 
 fun AppInitializer(
-    properties: PropertiesComponent
+    properties: PropertiesComponent,
 ): Initializer<State, Command> =
     Initializer(IO) { Initial(Stopped(properties.settings), emptySet()) }
 
 private fun LoggerInterceptor(
-    logger: Logger
+    logger: Logger,
 ): Interceptor<Message, State, Command> =
     { snapshot ->
         logger.info(snapshot.infoMessage)
@@ -73,9 +73,11 @@ private val Snapshot<*, *, *>.infoMessage: String
 
 private val Snapshot<*, *, *>.debugMessage: String
     get() = when (this) {
-        is Initial -> "Init class=${currentState?.javaClass}" +
-                if (commands.isEmpty()) "" else ", commands=${commands.joinToString { it?.javaClass.toString() }}"
-        is Regular -> """
+        is Initial ->
+            "Init class=${currentState?.javaClass}" +
+                    if (commands.isEmpty()) "" else ", commands=${commands.joinToString { it?.javaClass.toString() }}"
+        is Regular ->
+            """
         Regular with new state=${currentState?.javaClass},
         prev state=${previousState?.javaClass},
         caused by message=${message?.javaClass}
@@ -85,9 +87,10 @@ private val Snapshot<*, *, *>.debugMessage: String
 
 private val Snapshot<*, *, *>.traceMessage: String
     get() = when (this) {
-        is Initial -> "Init with state=$currentState" +
-                if (commands.isEmpty()) "" else ", commands=$commands"
-        is Regular -> """
+        is Initial ->
+            "Init with state=$currentState ${if (commands.isEmpty()) "" else ", commands=$commands}"}"
+        is Regular ->
+            """
         Regular with new state=$currentState,
         previousState state=$previousState,
         caused by message=$message

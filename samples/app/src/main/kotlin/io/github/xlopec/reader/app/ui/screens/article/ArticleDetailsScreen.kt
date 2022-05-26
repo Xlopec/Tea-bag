@@ -83,7 +83,8 @@ fun ArticleDetailsScreen(
                     } else {
                         onMessage(Pop)
                     }
-                })
+                }
+            )
         }, content = { innerPadding ->
 
             if (canGoBack) {
@@ -98,7 +99,8 @@ fun ArticleDetailsScreen(
                     .padding(innerPadding)
                     .fillMaxSize()
             )
-        })
+        }
+    )
 }
 
 @Composable
@@ -148,14 +150,24 @@ private fun AppWebView(
     settings.javaScriptEnabled = true
     settings.setSupportZoom(true)
     webChromeClient = object : WebChromeClient() {
-        override fun onReceivedTitle(view: WebView, title: String) =
+        override fun onReceivedTitle(
+            view: WebView,
+            title: String,
+        ) =
             titleUpdater(title)
 
-        override fun onProgressChanged(view: WebView, newProgress: Int) =
+        override fun onProgressChanged(
+            view: WebView,
+            newProgress: Int,
+        ) =
             progressUpdater(newProgress)
     }
     webViewClient = object : WebViewClient() {
-        override fun doUpdateVisitedHistory(view: WebView, url: String?, isReload: Boolean) {
+        override fun doUpdateVisitedHistory(
+            view: WebView,
+            url: String?,
+            isReload: Boolean,
+        ) {
             if (!isReload) {
                 backStackUpdater(view.canGoBack())
             }

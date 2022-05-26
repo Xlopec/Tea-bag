@@ -226,7 +226,8 @@ dependencyResolutionManagement {
             library("accompanist-flow-layout", "com.google.accompanist", "accompanist-flowlayout")
                 .versionRef("accompanist")
 
-            bundle("accompanist",
+            bundle(
+                "accompanist",
                 listOf(
                     "accompanist-swiperefresh",
                     "accompanist-flow-layout"

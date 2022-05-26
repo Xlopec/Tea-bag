@@ -13,7 +13,7 @@ import io.github.xlopec.tea.time.travel.plugin.ui.control.CloseableTab
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 internal fun ComponentTabTag(
-    id: ComponentId
+    id: ComponentId,
 ) = "component tab '${id.value}'"
 
 @Composable
@@ -22,7 +22,7 @@ internal fun ComponentTab(
     selectedId: MutableState<ComponentId>,
     state: DebugState,
     tabIndex: Int,
-    events: MessageHandler
+    events: MessageHandler,
 ) {
     CloseableTab(
         modifier = Modifier.testTag(ComponentTabTag(id)),
@@ -30,32 +30,33 @@ internal fun ComponentTab(
         selected = id == selectedId.value,
         onSelect = { selectedId.value = id },
         onClose = {
-        // select next left tab
+            // select next left tab
 
-        if (state.componentIds.size > 1) {
-            var nextSelectionIndex = (tabIndex - 1).coerceAtLeast(0)
+            if (state.componentIds.size > 1) {
+                var nextSelectionIndex = (tabIndex - 1).coerceAtLeast(0)
 
-            if (nextSelectionIndex == tabIndex) {
-                nextSelectionIndex = tabIndex + 1
+                if (nextSelectionIndex == tabIndex) {
+                    nextSelectionIndex = tabIndex + 1
+                }
+
+                check(nextSelectionIndex != tabIndex)
+
+                val nextSelectionId = state.componentIds.findIndexed { index, _ -> index == nextSelectionIndex }
+
+                if (nextSelectionId != null) {
+                    // if nextSelectionId is null, then it means we're
+                    // going to close the last tab
+                    selectedId.value = nextSelectionId
+                }
             }
 
-            check(nextSelectionIndex != tabIndex)
-
-            val nextSelectionId = state.componentIds.findIndexed { index, _ -> index == nextSelectionIndex }
-
-            if (nextSelectionId != null) {
-                // if nextSelectionId is null, then it means we're
-                // going to close the last tab
-                selectedId.value = nextSelectionId
-            }
+            events(RemoveComponent(id))
         }
-
-        events(RemoveComponent(id))
-    })
+    )
 }
 
 private inline fun <T> Set<T>.findIndexed(
-    predicate: (index: Int, t: T) -> Boolean
+    predicate: (index: Int, t: T) -> Boolean,
 ): T? {
     forEachIndexed { index, t ->
         if (predicate(index, t)) {

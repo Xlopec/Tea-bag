@@ -25,13 +25,13 @@ import com.intellij.ui.awt.RelativePoint
 import io.github.xlopec.tea.time.travel.plugin.integration.Command
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.integration.PluginException
+import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ExceptionBalloonFillColor
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ExceptionBalloonIcon
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ExceptionBalloonTextColor
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.NotificationBalloonFillColor
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.NotificationBalloonIcon
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.NotificationBalloonTextColor
-import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.awt.Insets
 import java.util.Locale
@@ -44,26 +44,28 @@ fun Project.showBalloon(balloon: Balloon) {
 }
 
 fun createNotificationBalloon(
-    html: String
-) = createBalloon(html,
-                  NotificationBalloonIcon,
-                  NotificationBalloonTextColor,
-                  NotificationBalloonFillColor
+    html: String,
+) = createBalloon(
+    html,
+    NotificationBalloonIcon,
+    NotificationBalloonTextColor,
+    NotificationBalloonFillColor
 )
 
 fun createErrorBalloon(
-    html: String
-) = createBalloon(html,
-                  ExceptionBalloonIcon,
-                  ExceptionBalloonTextColor,
-                  ExceptionBalloonFillColor
+    html: String,
+) = createBalloon(
+    html,
+    ExceptionBalloonIcon,
+    ExceptionBalloonTextColor,
+    ExceptionBalloonFillColor
 )
 
 fun createBalloon(
     html: String,
     icon: Icon,
     textColor: JBColor,
-    fillColor: JBColor
+    fillColor: JBColor,
 ): Balloon =
     JBPopupFactory.getInstance()
         .createHtmlTextBalloonBuilder(html, icon, textColor, fillColor, null)
@@ -82,7 +84,7 @@ fun ExceptionBalloon(
     createErrorBalloon(htmlDescription(cause, operation, description))
 
 fun StateAppliedBalloon(
-    componentId: ComponentId
+    componentId: ComponentId,
 ): Balloon =
     createNotificationBalloon(
         """<html>
@@ -101,7 +103,7 @@ fun ComponentAttachedBalloon(componentId: ComponentId): Balloon =
 
 fun UnacceptableMessageBalloon(
     message: Message,
-    state: State
+    state: State,
 ): Balloon =
     createErrorBalloon(
         """<html>
@@ -114,7 +116,7 @@ fun UnacceptableMessageBalloon(
 private fun htmlDescription(
     cause: PluginException,
     operation: Command?,
-    description: String?
+    description: String?,
 ): String =
     """<html>
         <p>An exception occurred ${(description ?: operation?.toString())?.let { ", $it" } ?: ""}</p>

@@ -14,11 +14,13 @@ val TestUserValue = Ref(
         Property("name", StringWrapper("Max")),
         Property("surname", StringWrapper("Oliynick")),
         Property(
-            "contacts", Ref(
+            "contacts",
+            Ref(
                 Type.of("com.max.oliynick.Contact"),
                 setOf(
                     Property(
-                        "site", Ref(
+                        "site",
+                        Ref(
                             Type.of("java.util.URL"),
                             setOf(
                                 Property("domain", StringWrapper("google")),

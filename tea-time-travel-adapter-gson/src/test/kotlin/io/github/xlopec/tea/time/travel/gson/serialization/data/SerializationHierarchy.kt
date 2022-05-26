@@ -35,10 +35,8 @@ internal data class C(
 internal data class D(
     val i: Int = 10,
     val c: C = C(),
-    val l: List<C?> = listOf(
-        C(), null),
-    val arrC: Array<C?> = arrayOf(
-        C(), null),
+    val l: List<C?> = listOf(C(), null),
+    val arrC: Array<C?> = arrayOf(C(), null),
     val nilC: C? = null,
     val nilMap: Map<String?, A?> = mapOf(null to C(), null to null, "some" to C(), "some" to null)
 ) : A() {

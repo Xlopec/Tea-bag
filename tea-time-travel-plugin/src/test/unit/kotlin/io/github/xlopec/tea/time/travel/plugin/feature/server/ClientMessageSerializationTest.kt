@@ -113,7 +113,8 @@ internal class ClientMessageSerializationTest {
                                         StringWrapper("6b1ece05-eefb-44fe-9313-892eb000f0ee")
                                     ),
                                     Property(
-                                        "criteria", Ref(
+                                        "criteria",
+                                        Ref(
                                             Type.of("com.max.weatherviewer.screens.feed.LoadCriteria\$Query"),
                                             setOf(Property("query", StringWrapper("android")))
                                         )

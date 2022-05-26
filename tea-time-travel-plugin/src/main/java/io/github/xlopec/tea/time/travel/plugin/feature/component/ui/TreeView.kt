@@ -163,7 +163,8 @@ private fun SubTree(
     is CharWrapper,
     is NumberWrapper,
     is BooleanWrapper,
-    Null -> LeafNode(level, text, Property, value, state) { valuePopupContent(value) }
+    Null,
+    -> LeafNode(level, text, Property, value, state) { valuePopupContent(value) }
     is CollectionWrapper -> CollectionSubTree(value, level, text, state) { valuePopupContent(value) }
     is Ref -> ReferenceSubTree(level, text, value, state) { valuePopupContent(value) }
 }
@@ -173,7 +174,7 @@ private fun SnapshotSubTree(
     snapshot: FilteredSnapshot,
     state: TreeSelectionState,
     valuePopupContent: @Composable (Value) -> Unit,
-    snapshotPopupContent: @Composable (FilteredSnapshot) -> Unit
+    snapshotPopupContent: @Composable (FilteredSnapshot) -> Unit,
 ) {
     val expanded = LocalInitialExpandState.current
     val expandState = remember { mutableStateOf(expanded) }
@@ -388,7 +389,7 @@ private val IndentPadding = 12.dp
 
 @Composable
 private fun Modifier.selected(
-    isSelected: Boolean
+    isSelected: Boolean,
 ) = background(if (isSelected) JBTheme.selectionColors.active else Color.Unspecified)
 
 private fun Modifier.indentLevel(
@@ -406,7 +407,8 @@ private val PreviewTreeRoot = Ref(
     Property("name", StringWrapper("Max")),
     Property("surname", StringWrapper("Oliynick")),
     Property(
-        "interests", CollectionWrapper(
+        "interests",
+        CollectionWrapper(
             listOf(
                 StringWrapper("Jetpack Compose"),
                 StringWrapper("Programming"),

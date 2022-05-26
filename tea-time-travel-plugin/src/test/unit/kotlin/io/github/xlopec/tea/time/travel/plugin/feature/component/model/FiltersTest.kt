@@ -60,7 +60,6 @@ internal class FiltersTest {
         val filtered = (RegexPredicate("com\\.example\\.Test", false) as Valid).t.applyTo(ref)
 
         assertEquals(ref, filtered)
-        // filtered shouldBe ref
     }
 
     @Test
@@ -73,15 +72,13 @@ internal class FiltersTest {
 
         val filtered = UnsafeRegexPredicate("com\\.example\\.another.*").applyTo(ref)
 
-        /*filtered shouldBe Ref(
-            Type.of("com.example.Test"),
-            setOf(testProperties.first())
-        )*/
-
-        assertEquals(Ref(
-            Type.of("com.example.Test"),
-            setOf(testProperties.first())
-        ), filtered)
+        assertEquals(
+            Ref(
+                Type.of("com.example.Test"),
+                setOf(testProperties.first())
+            ),
+            filtered
+        )
     }
 
     @Test
@@ -94,11 +91,6 @@ internal class FiltersTest {
 
         val filtered = UnsafeRegexPredicate(testProperties.first().name).applyTo(ref)
 
-        /*filtered shouldBe Ref(
-            Type.of("com.example.Test"),
-            setOf(testProperties.first())
-        )*/
-
         assertEquals(
             Ref(
                 Type.of("com.example.Test"),
@@ -109,7 +101,7 @@ internal class FiltersTest {
     }
 
     @Test
-    fun `test if number property contains some custom Number implementation, given regex is 'number' only this property remains in the Ref`() {
+    fun `test if number property contains custom Number implementation, given regex is 'number' only this property remains in the Ref`() {
 
         val promitiveProperty = Property("primitive", NumberWrapper(LazilyParsedNumber(10.toString())))
 
@@ -119,11 +111,6 @@ internal class FiltersTest {
         )
 
         val filtered = UnsafeRegexPredicate("number").applyTo(ref)
-
-        /*filtered shouldBe Ref(
-            Type.of("com.example.Test"),
-            setOf(promitiveProperty)
-        )*/
 
         assertEquals(
             Ref(
@@ -154,15 +141,10 @@ internal class FiltersTest {
             ),
             filtered
         )
-       /* filtered shouldBe Ref(
-            Type.of("com.example.Test"),
-            setOf(promitiveProperty)
-        )*/
     }
 }
 
 private fun UnsafeRegexPredicate(
     input: String,
-    ignoreCase: Boolean = false
-) =
-    (RegexPredicate(input, ignoreCase) as Valid).t
+    ignoreCase: Boolean = false,
+) = (RegexPredicate(input, ignoreCase) as Valid).t

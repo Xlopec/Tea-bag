@@ -95,11 +95,13 @@ private fun HttpClient(
 ) = HttpClient(engine) {
     expectSuccess = true
     install(ContentNegotiation) {
-        json(json = Json {
-            ignoreUnknownKeys = true
-            useAlternativeNames = false
-            isLenient = true
-        })
+        json(
+            json = Json {
+                ignoreUnknownKeys = true
+                useAlternativeNames = false
+                isLenient = true
+            }
+        )
     }
 
     Logging {
