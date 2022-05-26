@@ -104,8 +104,11 @@ tasks.withType<Test>().configureEach {
 optIn(
     "kotlinx.coroutines.ExperimentalCoroutinesApi",
     "io.github.xlopec.tea.core.ExperimentalTeaApi",
-    "-Xcontext-receivers",
 )
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.freeCompilerArgs += listOf("-Xcontext-receivers")
+}
 
 sourceSets {
 
