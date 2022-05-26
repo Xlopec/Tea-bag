@@ -32,10 +32,6 @@ plugins {
 
 version = "1.0.0"
 
-tasks.withType<Test>().whenTaskAdded {
-    onlyIf { !isCiEnv }
-}
-
 kotlin {
 
     optIn("kotlinx.serialization.ExperimentalSerializationApi", "io.github.xlopec.tea.core.ExperimentalTeaApi")

@@ -104,6 +104,7 @@ tasks.withType<Test>().configureEach {
 optIn(
     "kotlinx.coroutines.ExperimentalCoroutinesApi",
     "io.github.xlopec.tea.core.ExperimentalTeaApi",
+    "-Xcontext-receivers",
 )
 
 sourceSets {

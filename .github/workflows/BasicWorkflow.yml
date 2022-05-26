@@ -25,7 +25,7 @@ jobs:
       - name: Run static code analysis
         run: ./gradlew detektAll
 
-  Test:
+  Android-emulator-tests:
     env:
       DEFAULT_BRANCH: master
     needs: Check
@@ -34,6 +34,70 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      - uses: actions/cache@v1
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-29
+      - name: set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Run connected Android tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          profile: Nexus 6
+          script: ./gradlew samples:app:connectedCheck
+
+  Ios-tests:
+    env:
+      DEFAULT_BRANCH: master
+    needs: Check
+    runs-on: macos-11
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      - name: set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build IOS app
+        uses: sersoft-gmbh/xcodebuild-action@v1
+        with:
+          workspace: samples/iosApp/iosApp.xcworkspace
+          scheme: iosApp
+          destination: 'platform=iOS Simulator,name=iPhone 12 Pro'
+          configuration: Debug
+          action: build
+
+  Unit-tests:
+    env:
+      DEFAULT_BRANCH: master
+    needs: Check
+    runs-on: macos-11
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
       - name: set up JDK 11
         uses: actions/setup-java@v1
         with:
@@ -55,7 +119,7 @@ jobs:
   Deploy:
     env:
       DEFAULT_BRANCH: master
-    needs: Test
+    needs: [Unit-tests, Android-emulator-tests, Ios-tests]
     runs-on: macos-11
     # tags should be of the form:
     # <no-value> -> dev build
@@ -70,6 +134,10 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
       - name: set up JDK 11
         uses: actions/setup-java@v1
         with:

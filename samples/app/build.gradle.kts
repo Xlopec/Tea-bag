@@ -27,10 +27,6 @@ plugins {
     id("kotlin-android")
 }
 
-tasks.withType<Test>().whenTaskAdded {
-    onlyIf { !isCiEnv }
-}
-
 optIn(DefaultOptIns + "kotlinx.coroutines.ExperimentalCoroutinesApi")
 
 android {
