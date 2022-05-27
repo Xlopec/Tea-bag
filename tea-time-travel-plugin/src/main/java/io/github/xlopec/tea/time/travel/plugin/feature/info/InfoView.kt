@@ -27,11 +27,7 @@ import androidx.compose.ui.text.style.TextAlign.Companion.Justify
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
 import io.github.xlopec.tea.time.travel.plugin.model.Invalid
-import io.github.xlopec.tea.time.travel.plugin.model.Started
-import io.github.xlopec.tea.time.travel.plugin.model.Starting
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
-import io.github.xlopec.tea.time.travel.plugin.model.Stopping
 import io.github.xlopec.tea.time.travel.plugin.model.canStart
 import io.github.xlopec.tea.time.travel.plugin.ui.noIndicationClickable
 import io.kanro.compose.jetbrains.LocalTypography
@@ -50,12 +46,7 @@ fun InfoView(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        when (state) {
-            is Stopped -> InfoViewMessage(state.toDescription(), uiEvents.takeIf { state.canStart })
-            is Started -> InfoViewMessage(state.toDescription())
-            is Starting -> InfoViewMessage(state.toDescription())
-            is Stopping -> InfoViewMessage(state.toDescription())
-        }
+        InfoViewMessage(state.toDescription(), uiEvents.takeIf { state.canStart })
     }
 }
 
@@ -74,21 +65,13 @@ private fun InfoViewMessage(
     )
 }
 
-private fun Started.toDescription(): String {
-    require(debugState.components.isEmpty()) { "Non empty debug state, component=${debugState.components}" }
-    return "There are no attached components yet"
-}
-
-private fun Starting.toDescription() = "Debug server is starting on " +
-        "${settings.host.input}:${settings.port.input}"
-
-private fun Stopped.toDescription() =
-    if (canStart) "Debug server isn't running. Press to start"
-    else "Can't start debug server: ${
-        listOf(settings.port, settings.host)
-            .filterIsInstance<Invalid>()
-            .joinToString(postfix = "\n") { v -> v.message.replaceFirstChar { it.lowercase(Locale.getDefault()) } }
-    }"
-
-private fun Stopping.toDescription() = "Debug server is stopping on " +
-        "${settings.host.input}:${settings.port.input}"
+private fun State.toDescription(): String =
+    when {
+        server != null -> "There are no attached components yet"
+        canStart -> "Debug server isn't running. Press to start"
+        else -> "Can't start debug server: ${
+            listOf(settings.port, settings.host)
+                .filterIsInstance<Invalid>()
+                .joinToString(postfix = "\n") { v -> v.message.replaceFirstChar { it.lowercase(Locale.getDefault()) } }
+        }"
+    }

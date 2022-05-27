@@ -12,16 +12,16 @@ import io.github.xlopec.tea.time.travel.plugin.data.TestUserValue
 import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.environment.TestEnvironment
 import io.github.xlopec.tea.time.travel.plugin.environment.TestPlatform
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTabTag
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTag
 import io.github.xlopec.tea.time.travel.plugin.feature.info.InfoViewTag
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.integration.PluginComponent
 import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
+import io.github.xlopec.tea.time.travel.plugin.model.Debugger
 import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
-import io.github.xlopec.tea.time.travel.plugin.model.Started
+import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.ui.Plugin
 import io.github.xlopec.tea.time.travel.plugin.ui.ServerActionButtonTag
 import io.github.xlopec.tea.time.travel.plugin.util.invoke
@@ -46,7 +46,7 @@ class StopPluginScenarios {
      */
     @Test
     fun `test info view displayed when user stops plugin server given empty started state`() = rule {
-        val started = Started(ValidTestSettings, DebugState(), StartedTestServerStub)
+        val started = State(ValidTestSettings, server = StartedTestServerStub)
         val environment = TestEnvironment()
 
         setContentWithEnv(environment) {
@@ -74,9 +74,9 @@ class StopPluginScenarios {
      */
     @Test
     fun `test info view displayed when user stops plugin server given non-empty started state`() = rule {
-        val debugState = DebugState(
+        val debugger = Debugger(
             persistentMapOf(
-                TestComponentId to ComponentState(
+                TestComponentId to DebuggableComponent(
                     TestComponentId,
                     TestUserValue,
                     persistentListOf(OriginalSnapshot(TestSnapshotMeta1, null, TestUserValue, CollectionWrapper(TestUserValue)))
@@ -84,7 +84,7 @@ class StopPluginScenarios {
             )
         )
         val messages = MutableSharedFlow<Message>()
-        val started = Started(ValidTestSettings, debugState, StartedTestServerStub)
+        val started = State(ValidTestSettings, debugger, StartedTestServerStub)
         val environment = TestEnvironment()
 
         val component = PluginComponent(environment, Initializer(started))

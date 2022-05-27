@@ -24,7 +24,7 @@ import io.github.xlopec.tea.time.travel.plugin.integration.Environment
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.integration.PluginComponent
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
+import io.github.xlopec.tea.time.travel.plugin.model.isStarted
 import io.github.xlopec.tea.time.travel.plugin.util.mergeWith
 import io.github.xlopec.tea.time.travel.plugin.util.properties
 import kotlin.coroutines.resume
@@ -65,7 +65,7 @@ private fun Environment.installResourcesDisposer(
     component: Component<Message, State, Command>,
 ) = launch {
     project.awaitDisposal()
-    component(StopServer).takeWhile { it.currentState !is Stopped }.collect()
+    component(StopServer).takeWhile { it.currentState.isStarted }.collect()
     cancel()
 }
 

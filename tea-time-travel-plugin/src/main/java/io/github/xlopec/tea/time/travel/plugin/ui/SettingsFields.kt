@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.UpdateServerSettings
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
+import io.github.xlopec.tea.time.travel.plugin.model.areSettingsModifiable
 import io.github.xlopec.tea.time.travel.plugin.ui.control.ValidatedTextField
 
 internal const val HostFieldTag = "host field"
@@ -32,7 +32,7 @@ internal fun SettingsFields(
         onValueChange = { s ->
             events(UpdateServerSettings(host = s, port = state.settings.port.input))
         },
-        enabled = state.canModifySettings
+        enabled = state.areSettingsModifiable
     )
 
     Spacer(Modifier.height(12.dp))
@@ -46,9 +46,6 @@ internal fun SettingsFields(
         onValueChange = { s ->
             events(UpdateServerSettings(host = state.settings.host.input, port = s))
         },
-        enabled = state.canModifySettings
+        enabled = state.areSettingsModifiable
     )
 }
-
-private val State.canModifySettings
-    get() = this is Stopped

@@ -19,46 +19,42 @@ package io.github.xlopec.tea.time.travel.plugin.feature.notification
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
+import io.github.xlopec.tea.time.travel.plugin.feature.server.DoStartServer
+import io.github.xlopec.tea.time.travel.plugin.feature.server.DoStopServer
+import io.github.xlopec.tea.time.travel.plugin.feature.storage.DoStoreSettings
 import io.github.xlopec.tea.time.travel.plugin.integration.Command
 import io.github.xlopec.tea.time.travel.plugin.integration.InternalException
 import io.github.xlopec.tea.time.travel.plugin.integration.NotificationMessage
 import io.github.xlopec.tea.time.travel.plugin.integration.PluginException
-import io.github.xlopec.tea.time.travel.plugin.feature.server.DoStartServer
-import io.github.xlopec.tea.time.travel.plugin.feature.server.DoStopServer
-import io.github.xlopec.tea.time.travel.plugin.feature.storage.DoStoreSettings
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
+import io.github.xlopec.tea.time.travel.plugin.integration.warnUnacceptableMessage
+import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
+import io.github.xlopec.tea.time.travel.plugin.model.Debugger
 import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
-import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
-import io.github.xlopec.tea.time.travel.plugin.model.Value
 import io.github.xlopec.tea.time.travel.plugin.model.Server
-import io.github.xlopec.tea.time.travel.plugin.model.Started
-import io.github.xlopec.tea.time.travel.plugin.model.Starting
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
+import io.github.xlopec.tea.time.travel.plugin.model.Value
 import io.github.xlopec.tea.time.travel.plugin.model.appendSnapshot
 import io.github.xlopec.tea.time.travel.plugin.model.updateComponents
-import io.github.xlopec.tea.time.travel.plugin.integration.warnUnacceptableMessage
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 internal fun updateForNotification(
     message: NotificationMessage,
-    state: State
+    state: State,
 ): Update<State, Command> =
-    when {
-        message is NotifyStarted -> toStartedState(message.server, state.settings)
-        message is NotifyStopped -> toStoppedState(state.settings)
-        message is AppendSnapshot && state is Started -> appendSnapshot(message, state)
-        message is StateApplied && state is Started -> applyState(message, state)
-        message is ComponentAttached && state is Started -> attachComponent(message, state)
-        message is ComponentImported && state is Started -> appendComponent(message, state)
-        message is OperationException -> recoverFromException(message, state)
+    when (message) {
+        is NotifyStarted -> toStartedState(message.server, state)
+        is NotifyStopped -> toStoppedState(state)
+        is AppendSnapshot -> appendSnapshot(message, state)
+        is StateApplied -> applyState(message, state)
+        is ComponentAttached -> attachComponent(message, state)
+        is ComponentImported -> appendComponent(message, state)
+        is OperationException -> recoverFromException(message, state)
         else -> warnUnacceptableMessage(message, state)
     }
 
 private fun appendComponent(
     message: ComponentImported,
-    state: Started
+    state: State,
 ): Update<State, Command> =
 // overwrite any existing session for now
     // todo: show prompt dialog in future with options to merge, overwrite and cancel
@@ -68,26 +64,20 @@ private fun appendComponent(
 
 private fun toStartedState(
     server: Server,
-    settings: Settings
-): Update<Started, Command> =
-    Started(
-        settings,
-        DebugState(),
-        server
-    ).noCommand()
+    state: State,
+) = state.copy(server = server).noCommand()
 
 private fun toStoppedState(
-    settings: Settings
-): Update<Stopped, Command> =
-    Stopped(settings).noCommand()
+    state: State,
+) = state.copy(server = null).noCommand()
 
 private fun appendSnapshot(
     message: AppendSnapshot,
-    state: Started
+    state: State,
 ): Update<State, Command> {
 
     val snapshot = message.toSnapshot()
-    val updated = state.debugState.componentOrNew(message.componentId, message.newState)
+    val updated = state.debugger.componentOrNew(message.componentId, message.newState)
         .appendSnapshot(snapshot, message.newState)
 
     return state.updateComponents { mapping -> mapping.put(updated.id, updated) }
@@ -96,12 +86,12 @@ private fun appendSnapshot(
 
 private fun attachComponent(
     message: ComponentAttached,
-    state: Started
+    state: State,
 ): Update<State, Command> {
 
     val id = message.componentId
     val currentState = message.state
-    val componentState = state.debugState.componentOrNew(id, currentState)
+    val componentState = state.debugger.componentOrNew(id, currentState)
         .appendSnapshot(message.toSnapshot(), currentState)
 
     return state.updateComponents { mapping ->
@@ -114,10 +104,10 @@ private fun attachComponent(
 
 private fun applyState(
     message: StateApplied,
-    state: Started
+    state: State,
 ): Update<State, Command> {
 
-    val component = state.debugState.components[message.componentId] ?: return state.noCommand()
+    val component = state.debugger.components[message.componentId] ?: return state.noCommand()
     val updated = component.copy(state = message.state)
 
     return state.updateComponents { mapping -> mapping.put(updated.id, updated) }
@@ -126,11 +116,11 @@ private fun applyState(
 
 private fun recoverFromException(
     message: OperationException,
-    state: State
+    state: State,
 ): Update<State, Command> =
     when {
         isFatalProblem(message.exception, message.operation) -> notifyDeveloperException(message.exception)
-        message.operation is DoStartServer && state is Starting -> Stopped(state.settings) command DoNotifyOperationException(
+        message.operation is DoStartServer -> state.copy(server = null) command DoNotifyOperationException(
             message
         )
         else -> state command DoNotifyOperationException(message)
@@ -138,7 +128,7 @@ private fun recoverFromException(
 
 private fun isFatalProblem(
     th: PluginException,
-    op: Command?
+    op: Command?,
 ): Boolean =
     op is DoStopServer || op is DoStoreSettings || th is InternalException
 
@@ -146,10 +136,10 @@ private fun AppendSnapshot.toSnapshot() = OriginalSnapshot(meta, message, newSta
 
 private fun ComponentAttached.toSnapshot() = OriginalSnapshot(meta, null, state, commands)
 
-private fun DebugState.componentOrNew(
+private fun Debugger.componentOrNew(
     id: ComponentId,
-    state: Value
-) = components[id] ?: ComponentState(id, state)
+    state: Value,
+) = components[id] ?: DebuggableComponent(id, state)
 
 private fun DoNotifyOperationException(
     message: OperationException,

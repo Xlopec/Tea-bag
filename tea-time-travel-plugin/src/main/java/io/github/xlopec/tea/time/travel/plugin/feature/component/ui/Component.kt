@@ -14,9 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
+import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.contrastBorderColor
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.kanro.compose.jetbrains.JBTheme
@@ -37,7 +37,7 @@ internal typealias MessageHandler = (Message) -> Unit
 @Composable
 internal fun Component(
     settings: Settings,
-    state: ComponentState,
+    state: DebuggableComponent,
     handler: MessageHandler,
 ) {
     Column(modifier = Modifier.testTag(ComponentTag(state.id))) {

@@ -47,4 +47,4 @@ fun Environment(
     ServerCommandResolver by ServerCommandResolver(project, events),
     NotificationResolver by NotificationResolver(project),
     AppResolver<Environment> by AppResolver(),
-    CoroutineScope by CoroutineScope(SupervisorJob() + newSingleThreadContext("")) {}
+    CoroutineScope by CoroutineScope(SupervisorJob() + newSingleThreadContext("Plugin Thread")) {}

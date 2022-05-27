@@ -19,11 +19,11 @@
 package io.github.xlopec.tea.time.travel.plugin.data
 
 import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
+import io.github.xlopec.tea.time.travel.plugin.model.Debugger
 import io.github.xlopec.tea.time.travel.plugin.model.FilteredSnapshot
 import io.github.xlopec.tea.time.travel.plugin.model.Invalid
 import io.github.xlopec.tea.time.travel.plugin.model.Null
@@ -31,7 +31,7 @@ import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
 import io.github.xlopec.tea.time.travel.plugin.model.Server
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
-import io.github.xlopec.tea.time.travel.plugin.model.Started
+import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.Valid
 import io.github.xlopec.tea.time.travel.plugin.model.Value
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
@@ -67,7 +67,7 @@ val TestComponentId = ComponentId("Test component id")
 
 inline fun ComponentDebugStates(
     range: CharRange = 'b'..'z',
-    block: (strId: String) -> Pair<ComponentId, ComponentState> = { strId ->
+    block: (strId: String) -> Pair<ComponentId, DebuggableComponent> = { strId ->
         NonEmptyComponentDebugState(ComponentId(strId), SnapshotMeta(RandomSnapshotId(), TestTimestamp1))
     }
 ) = range
@@ -96,21 +96,21 @@ fun ComponentDebugState(
     snapshots: PersistentList<OriginalSnapshot> = persistentListOf(),
     filteredSnapshots: PersistentList<FilteredSnapshot> = persistentListOf(),
     state: Value = Null
-) = componentId to ComponentState(componentId, state, snapshots = snapshots, filteredSnapshots = filteredSnapshots)
+) = componentId to DebuggableComponent(componentId, state, snapshots = snapshots, filteredSnapshots = filteredSnapshots)
 
 fun StartedFromPairs(
-    states: Iterable<Pair<ComponentId, ComponentState>>
-): Started = Started(
+    states: Iterable<Pair<ComponentId, DebuggableComponent>>
+) = State(
     ValidTestSettings,
-    DebugState(states.toMap().toPersistentMap()),
+    Debugger(states.toMap().toPersistentMap()),
     StartedTestServerStub
 )
 
 fun StartedFromPairs(
-    vararg states: Pair<ComponentId, ComponentState>
-) = Started(
+    vararg states: Pair<ComponentId, DebuggableComponent>
+) = State(
     ValidTestSettings,
-    DebugState(states.toMap().toPersistentMap()),
+    Debugger(states.toMap().toPersistentMap()),
     StartedTestServerStub
 )
 

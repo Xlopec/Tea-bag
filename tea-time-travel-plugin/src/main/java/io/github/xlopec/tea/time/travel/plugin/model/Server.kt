@@ -25,10 +25,9 @@ import io.github.xlopec.tea.time.travel.protocol.ComponentId
 interface Server {
 
     val address: ServerAddress
-
     suspend operator fun invoke(
         component: ComponentId,
-        message: GsonClientMessage
+        message: GsonClientMessage,
     )
 
     suspend fun stop()

@@ -16,58 +16,94 @@
 
 package io.github.xlopec.tea.time.travel.plugin.model
 
+import io.github.xlopec.tea.time.travel.plugin.feature.component.model.FilterOption
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
-import kotlin.contracts.contract
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import java.time.LocalDateTime
+import java.util.UUID
 
-sealed interface State {
-    val settings: Settings
-}
+/**
+ * This class represents plugin state. If server isn't null, then it's started,
+ * it's considered to be in stopped state otherwise
+ */
+data class State(
+    val settings: Settings,
+    val debugger: Debugger = Debugger(),
+    val server: Server? = null,
+)
 
-fun State.updateSettings(
-    how: Settings.() -> Settings
-) = when (this) {
-    is Stopped -> copy(settings = settings.run(how))
-    is Starting -> copy(settings = settings.run(how))
-    is Started -> copy(settings = settings.run(how))
-    is Stopping -> copy(settings = settings.run(how))
-}
+@JvmInline
+value class SnapshotId(
+    val value: UUID
+)
 
-fun State.updateServerSettings(
-    settings: Settings
-) =
-    when (this) {
-        is Stopped -> copy(settings = settings)
-        is Starting -> copy(settings = settings)
-        is Started -> copy(settings = settings)
-        is Stopping -> copy(settings = settings)
-    }
+data class SnapshotMeta(
+    val id: SnapshotId,
+    val timestamp: LocalDateTime
+)
 
-fun State.canExport(): Boolean {
-    contract {
-        returns(true) implies (this@canExport is Started)
-    }
+val State.isStarted: Boolean
+    get() = server != null
 
-    return isStarted() && debugState.components.isNotEmpty()
-}
+val State.isStopped: Boolean
+    get() = !isStarted
 
-fun State.canStart(): Boolean {
-    contract {
-        returns(true) implies (this@canStart is Stopped)
-    }
-    return this is Stopped && canStart
-}
+val State.canStart: Boolean
+    get() = settings.host.isValid() && settings.port.isValid() && isStopped
 
-fun State.canImport(): Boolean {
-    contract {
-        returns(true) implies (this@canImport is Started)
-    }
+val State.canExport: Boolean
+    get() = debugger.components.isNotEmpty()
 
-    return isStarted()
-}
+val State.areSettingsModifiable: Boolean
+    get() = !isStarted
 
-fun State.isStarted(): Boolean {
-    contract {
-        returns(true) implies (this@isStarted is Started)
-    }
-    return this is Started
-}
+val State.hasAttachedComponents: Boolean
+    get() = isStarted && debugger.components.isNotEmpty()
+
+fun State.detailedOutputEnabled(
+    enabled: Boolean
+) = serverSettings(settings.copy(isDetailedOutput = enabled))
+
+fun State.serverSettings(
+    settings: Settings,
+) = copy(settings = settings)
+
+fun State.update(
+    debugger: Debugger
+) = copy(debugger = debugger)
+
+fun State.removeSnapshots(
+    id: ComponentId,
+    snapshots: Set<SnapshotId>
+) = updateComponents { mapping -> mapping.put(id, debugger.component(id).removeSnapshots(snapshots)) }
+
+fun State.removeSnapshots(
+    id: ComponentId
+) = updateComponents { mapping -> mapping.put(id, debugger.component(id).removeSnapshots()) }
+
+inline fun State.updateComponents(
+    how: (mapping: ComponentMapping) -> ComponentMapping
+) = update(debugger.copy(components = how(debugger.components)))
+
+fun State.updateComponent(
+    id: ComponentId,
+    how: (mapping: DebuggableComponent) -> DebuggableComponent?
+) = update(debugger.updateComponent(id, how))
+
+fun State.snapshot(
+    componentId: ComponentId,
+    snapshotId: SnapshotId
+): OriginalSnapshot = debugger.components[componentId]?.snapshots?.first { s -> s.meta.id == snapshotId }
+    ?: error("Couldn't find a snapshot $snapshotId for component $componentId, available components ${debugger.components}")
+
+fun State.state(
+    componentId: ComponentId,
+    snapshotId: SnapshotId
+) = snapshot(componentId, snapshotId).state
+
+fun State.updateFilter(
+    id: ComponentId,
+    filterInput: String,
+    ignoreCase: Boolean,
+    option: FilterOption
+) = updateComponent(id) { it.updateFilter(filterInput, ignoreCase, option) }

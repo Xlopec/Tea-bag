@@ -1,9 +1,9 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
-import io.github.xlopec.tea.time.travel.plugin.integration.ServerCommand
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
-import io.github.xlopec.tea.time.travel.plugin.model.Value
+import io.github.xlopec.tea.time.travel.plugin.integration.ServerCommand
 import io.github.xlopec.tea.time.travel.plugin.model.Server
+import io.github.xlopec.tea.time.travel.plugin.model.Value
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 @JvmInline

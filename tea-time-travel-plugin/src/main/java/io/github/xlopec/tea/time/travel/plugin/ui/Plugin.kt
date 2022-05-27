@@ -42,13 +42,15 @@ import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.Component
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTab
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.info.InfoView
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.ImportSession
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.integration.Platform
-import io.github.xlopec.tea.time.travel.plugin.model.Started
+import io.github.xlopec.tea.time.travel.plugin.model.Debugger
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.component
 import io.github.xlopec.tea.time.travel.plugin.model.componentIds
+import io.github.xlopec.tea.time.travel.plugin.model.hasAttachedComponents
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginTheme
 import io.kanro.compose.jetbrains.control.JPanel
 import kotlinx.coroutines.CoroutineScope
@@ -83,8 +85,8 @@ internal fun Plugin(
         val stateFlow = remember { component(messages) }
         val state = stateFlow.collectAsState(initial = null).value
 
-        CompositionLocalProvider(LocalPlatform provides platform) {
-            if (state != null) {
+        if (state != null) {
+            CompositionLocalProvider(LocalPlatform provides platform) {
                 val scope = rememberCoroutineScope()
                 val messageHandler = remember { scope.messageHandlerFor(messages) }
 
@@ -107,8 +109,8 @@ internal fun Plugin(
         Column(
             modifier = Modifier.weight(2f)
         ) {
-            if (state is Started && state.debugState.components.isNotEmpty()) {
-                ComponentsView(state, events)
+            if (state.hasAttachedComponents) {
+                ComponentsView(state.settings, state.debugger, events)
             } else {
                 InfoView(state, events)
             }
@@ -129,9 +131,9 @@ internal fun Plugin(
                 state = state,
                 events = events,
                 onImportSession = { scope.launch { events(ImportSession(platform.chooseSessionFile())) } },
-                onExportSession = { started ->
+                onExportSession = {
                     scope.launch {
-                        platform.chooseExportSessionDirectory(started.debugState.componentIds)?.also(events::invoke)
+                        platform.chooseExportSessionDirectory(state.debugger.componentIds)?.also(events::invoke)
                     }
                 }
             )
@@ -146,26 +148,29 @@ internal fun CoroutineScope.messageHandlerFor(
 
 @Composable
 private fun ComponentsView(
-    pluginState: Started,
+    settings: Settings,
+    debugger: Debugger,
     events: MessageHandler,
 ) {
-    require(pluginState.debugState.components.isNotEmpty())
+    require(debugger.components.isNotEmpty())
 
-    val selectedId = remember { mutableStateOf(pluginState.debugState.components.keys.first()) }
-    val selectedIndex by derivedStateOf { pluginState.debugState.components.keys.indexOf(selectedId.value) }
+    val selectedId = remember { mutableStateOf(debugger.components.keys.first()) }
+    val selectedIndex by derivedStateOf { debugger.components.keys.indexOf(selectedId.value) }
 
     require(selectedIndex >= 0) {
         """Inconsistency in tab indexing detected, 
                             |selected id: ${selectedId.value}, 
                             |selected index: $selectedIndex
-                            |component ids: ${pluginState.debugState.componentIds}"""".trimMargin()
+                            |component ids: ${debugger.componentIds}"""".trimMargin()
     }
 
     Row {
-        pluginState.debugState.componentIds.forEachIndexed { index, id ->
-            ComponentTab(id, selectedId, pluginState.debugState, index, events)
+        debugger.componentIds.forEachIndexed { index, id ->
+            ComponentTab(id, selectedId, debugger, index, events)
         }
     }
 
-    Component(pluginState.settings, pluginState.debugState.component(selectedId.value), events)
+    val component by derivedStateOf { debugger.component(selectedId.value) }
+
+    Component(settings, component, events)
 }

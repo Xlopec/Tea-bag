@@ -34,7 +34,7 @@ object ActionIcons {
     val UpdateRunningApplication @Composable get() = painterResource("/images/updateRunningApplication.svg")
     val Remove @Composable get() = painterResource("/images/remove.svg")
 
-    val Import @Composable get() = painterResource("/images/import_dark.svg")
+    val Import @Composable get() = painterResource("images/import_dark.svg")
     val Export @Composable get() = painterResource("/images/export_dark.svg")
     val Execute @Composable get() = painterResource("/images/execute.svg")
     val Suspend @Composable get() = painterResource("/images/suspend.svg")
@@ -44,5 +44,3 @@ object ActionIcons {
     val Collapse @Composable get() = painterResource("/images/collapse.svg")
     val Copy @Composable get() = painterResource("/images/inlineCopy.svg")
 }
-
-private const val StubImageSize = 80

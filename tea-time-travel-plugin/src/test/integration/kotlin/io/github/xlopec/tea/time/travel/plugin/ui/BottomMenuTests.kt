@@ -8,9 +8,8 @@ import io.github.xlopec.tea.time.travel.plugin.data.ComponentDebugStates
 import io.github.xlopec.tea.time.travel.plugin.data.InvalidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
 import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
-import io.github.xlopec.tea.time.travel.plugin.model.Started
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
+import io.github.xlopec.tea.time.travel.plugin.model.Debugger
+import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.util.invoke
 import io.github.xlopec.tea.time.travel.plugin.util.setTestContent
 import kotlinx.collections.immutable.toPersistentMap
@@ -28,12 +27,12 @@ class BottomMenuTests {
             BottomActionMenu(
                 onImportSession = {},
                 onExportSession = {},
-                state = Stopped(ValidTestSettings),
+                state = State(ValidTestSettings),
                 events = {}
             )
         }
 
-        onNode(hasTestTag(ImportButtonTag)).assertIsNotEnabled()
+        onNode(hasTestTag(ImportButtonTag)).assertIsEnabled()
         onNode(hasTestTag(ExportButtonTag)).assertIsNotEnabled()
         onNode(hasTestTag(ServerActionButtonTag)).assertIsEnabled()
     }
@@ -44,12 +43,12 @@ class BottomMenuTests {
             BottomActionMenu(
                 onImportSession = {},
                 onExportSession = {},
-                state = Stopped(InvalidTestSettings),
+                state = State(InvalidTestSettings),
                 events = {}
             )
         }
 
-        onNode(hasTestTag(ImportButtonTag)).assertIsNotEnabled()
+        onNode(hasTestTag(ImportButtonTag)).assertIsEnabled()
         onNode(hasTestTag(ExportButtonTag)).assertIsNotEnabled()
         onNode(hasTestTag(ServerActionButtonTag)).assertIsNotEnabled()
     }
@@ -60,7 +59,7 @@ class BottomMenuTests {
             BottomActionMenu(
                 onImportSession = {},
                 onExportSession = {},
-                state = Started(ValidTestSettings, DebugState(), StartedTestServerStub),
+                state = State(ValidTestSettings, server = StartedTestServerStub),
                 events = {}
             )
         }
@@ -73,7 +72,7 @@ class BottomMenuTests {
     @Test
     fun `test action buttons displayed correctly given a non-empty started state`() = rule {
         setTestContent {
-            val started = Started(ValidTestSettings, DebugState(ComponentDebugStates().toMap().toPersistentMap()), StartedTestServerStub)
+            val started = State(ValidTestSettings, Debugger(ComponentDebugStates().toMap().toPersistentMap()), StartedTestServerStub)
 
             BottomActionMenu(
                 onImportSession = {},

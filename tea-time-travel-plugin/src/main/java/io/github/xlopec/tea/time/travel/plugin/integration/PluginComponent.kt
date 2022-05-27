@@ -30,7 +30,6 @@ import io.github.xlopec.tea.core.Regular
 import io.github.xlopec.tea.core.Snapshot
 import io.github.xlopec.tea.core.with
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
 import io.github.xlopec.tea.time.travel.plugin.util.PluginId
 import io.github.xlopec.tea.time.travel.plugin.util.settings
 import kotlinx.coroutines.Dispatchers.IO
@@ -49,7 +48,7 @@ fun PluginComponent(
 fun AppInitializer(
     properties: PropertiesComponent,
 ): Initializer<State, Command> =
-    Initializer(IO) { Initial(Stopped(properties.settings), emptySet()) }
+    Initializer(IO) { Initial(State(properties.settings)) }
 
 private fun LoggerInterceptor(
     logger: Logger,

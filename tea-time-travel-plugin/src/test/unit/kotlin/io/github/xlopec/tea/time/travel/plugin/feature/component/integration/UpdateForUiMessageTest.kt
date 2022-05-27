@@ -28,16 +28,16 @@ import io.github.xlopec.tea.time.travel.plugin.data.StartedFromPairs
 import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
 import io.github.xlopec.tea.time.travel.plugin.data.TestTimestamp1
 import io.github.xlopec.tea.time.travel.plugin.data.times
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.FilterOption
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyState
 import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
 import io.github.xlopec.tea.time.travel.plugin.model.FilteredSnapshot
 import io.github.xlopec.tea.time.travel.plugin.model.Null
 import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
+import io.github.xlopec.tea.time.travel.plugin.model.Server
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
-import io.github.xlopec.tea.time.travel.plugin.model.Started
 import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.Valid
 import io.github.xlopec.tea.time.travel.plugin.model.component
@@ -75,7 +75,7 @@ internal class UpdateForUiMessageTest {
         val (state, commands) = updateForUiMessage(RemoveSnapshots(id, snapshotId), pluginState)
 
         commands.shouldBeEmpty()
-        state shouldBe StartedFromPairs(otherStates + (id to ComponentState(id, Null)))
+        state shouldBe StartedFromPairs(otherStates + (id to DebuggableComponent(id, Null)))
     }
 
     @Test
@@ -128,11 +128,10 @@ internal class UpdateForUiMessageTest {
         val pluginState =
             StartedFromPairs(otherStates + NonEmptyComponentDebugState(id, meta))
 
-        RemoveAllSnapshots(id)
         val (state, commands) = updateForUiMessage(RemoveAllSnapshots(id), pluginState)
 
         commands.shouldBeEmpty()
-        state shouldBe StartedFromPairs(otherStates + (id to ComponentState(id, Null)))
+        state shouldBe StartedFromPairs(otherStates + (id to DebuggableComponent(id, Null)))
     }
 
     @Test
@@ -225,9 +224,9 @@ internal class UpdateForUiMessageTest {
         )
 
         commands.shouldBeEmpty()
-        state.shouldBeInstanceOf<Started>()
+        state.server.shouldBeInstanceOf<Server>()
 
-        with((state as Started).debugState.component(componentId)) {
+        with(state.debugger.component(componentId)) {
             filter.should { filter ->
                 filter.ignoreCase.shouldBeFalse()
                 filter.option shouldBeSameInstanceAs FilterOption.SUBSTRING
@@ -279,9 +278,9 @@ internal class UpdateForUiMessageTest {
         )
 
         commands.shouldBeEmpty()
-        state.shouldBeInstanceOf<Started>()
+        state.server.shouldBeInstanceOf<Server>()
 
-        val component = (state as Started).debugState.component(componentId)
+        val component = state.debugger.component(componentId)
 
         component.filter.should { filter ->
             filter.ignoreCase.shouldBeFalse()

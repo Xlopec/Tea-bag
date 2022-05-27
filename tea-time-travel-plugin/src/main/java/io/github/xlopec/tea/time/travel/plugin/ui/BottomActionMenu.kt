@@ -14,13 +14,8 @@ import androidx.compose.ui.unit.dp
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StopServer
-import io.github.xlopec.tea.time.travel.plugin.model.Started
-import io.github.xlopec.tea.time.travel.plugin.model.Starting
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
-import io.github.xlopec.tea.time.travel.plugin.model.Stopping
 import io.github.xlopec.tea.time.travel.plugin.model.canExport
-import io.github.xlopec.tea.time.travel.plugin.model.canImport
 import io.github.xlopec.tea.time.travel.plugin.model.canStart
 import io.github.xlopec.tea.time.travel.plugin.model.isStarted
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons
@@ -35,8 +30,8 @@ internal const val ServerActionButtonTag = "server action button"
 
 @Composable
 internal fun BottomActionMenu(
-    onImportSession: (Started) -> Unit,
-    onExportSession: (Started) -> Unit,
+    onImportSession: () -> Unit,
+    onExportSession: () -> Unit,
     state: State,
     events: MessageHandler,
 ) {
@@ -47,26 +42,25 @@ internal fun BottomActionMenu(
 
         ActionButton(
             modifier = Modifier.testTag(ImportButtonTag),
-            enabled = state.canImport(),
-            onClick = { onImportSession(state as Started) },
             painter = ActionIcons.Import,
-            contentDescription = "Import session"
+            contentDescription = "Import session",
+            onClick = onImportSession,
         )
 
         ActionButton(
             modifier = Modifier.testTag(ExportButtonTag),
-            enabled = state.canExport(),
-            onClick = { onExportSession(state as Started) },
             painter = ActionIcons.Export,
-            contentDescription = "Export session"
+            contentDescription = "Export session",
+            onClick = onExportSession,
+            enabled = state.canExport
         )
 
         ActionButton(
             modifier = Modifier.testTag(ServerActionButtonTag),
-            enabled = state.isStarted() || state.canStart(),
-            onClick = { events(if (state is Stopped) StartServer else StopServer) },
             painter = state.serverActionIcon,
-            contentDescription = "Start/Stop server"
+            contentDescription = "Start/Stop server",
+            onClick = { events(if (state.isStarted) StopServer else StartServer) },
+            enabled = state.isStarted || state.canStart
         )
     }
 }
@@ -74,10 +68,10 @@ internal fun BottomActionMenu(
 @Composable
 internal fun ActionButton(
     modifier: Modifier,
-    enabled: Boolean,
     painter: Painter,
     contentDescription: String,
     onClick: () -> Unit,
+    enabled: Boolean = true,
 ) {
     ActionButton(
         modifier = modifier,
@@ -93,7 +87,5 @@ internal fun ActionButton(
 }
 
 private val State.serverActionIcon: Painter
-    @Composable get() = when (this) {
-        is Stopped, is Starting -> ActionIcons.Execute
-        is Started, is Stopping -> ActionIcons.Suspend
-    }
+    @Composable
+    get() = if (server == null) ActionIcons.Execute else ActionIcons.Suspend

@@ -18,7 +18,7 @@ import io.github.xlopec.tea.time.travel.plugin.feature.notification.ComponentAtt
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.integration.PluginComponent
 import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
+import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.ui.Plugin
 import io.github.xlopec.tea.time.travel.plugin.ui.ServerActionButtonTag
 import io.github.xlopec.tea.time.travel.plugin.util.invoke
@@ -44,7 +44,7 @@ class StartPluginScenarios {
         setContentWithEnv(environment) {
             Plugin(
                 platform = TestPlatform(),
-                component = PluginComponent(environment, Initializer(Stopped(ValidTestSettings))).toStatesComponent(),
+                component = PluginComponent(environment, Initializer(State(ValidTestSettings))).toStatesComponent(),
             )
         }
         // fixme should assertExists should be replaced with assertIsDisplayed
@@ -68,7 +68,7 @@ class StartPluginScenarios {
     fun `test components displayed when user starts plugin given a component attaches`() = rule {
         val environment = TestEnvironment()
         val messages = MutableSharedFlow<Message>()
-        val component = PluginComponent(environment, Initializer(Stopped(ValidTestSettings)))
+        val component = PluginComponent(environment, Initializer(State(ValidTestSettings)))
 
         setContentWithEnv(environment) {
             Plugin(

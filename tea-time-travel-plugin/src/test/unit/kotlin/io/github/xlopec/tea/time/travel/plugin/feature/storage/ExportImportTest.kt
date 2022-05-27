@@ -8,15 +8,15 @@ import io.github.xlopec.tea.time.travel.plugin.data.TestSnapshotId2
 import io.github.xlopec.tea.time.travel.plugin.data.TestTimestamp1
 import io.github.xlopec.tea.time.travel.plugin.data.TestTimestamp2
 import io.github.xlopec.tea.time.travel.plugin.data.TestUserValue
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.Filter
 import io.github.xlopec.tea.time.travel.plugin.feature.component.model.FilterOption
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.updateFilter
 import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
 import io.github.xlopec.tea.time.travel.plugin.model.Null
 import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
 import io.github.xlopec.tea.time.travel.plugin.model.toFiltered
+import io.github.xlopec.tea.time.travel.plugin.model.updateFilter
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlin.test.assertEquals
 import kotlinx.collections.immutable.persistentListOf
@@ -51,7 +51,7 @@ class ExportImportSerializationTest {
             commands = CollectionWrapper(listOf(TestUserValue, TestUserValue, TestUserValue))
         )
         // null and Null are different values and should be serialized-deserialized accordingly
-        val state = ComponentState(
+        val state = DebuggableComponent(
             id = TestComponentId,
             state = TestAppStateValue,
             filter = Filter.new("filter", FilterOption.WORDS, ignoreCase = true),

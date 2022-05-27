@@ -27,15 +27,13 @@ import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
 import io.github.xlopec.tea.time.travel.plugin.data.TestSnapshotId1
 import io.github.xlopec.tea.time.travel.plugin.data.TestTimestamp1
 import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
+import io.github.xlopec.tea.time.travel.plugin.integration.NotificationMessage
 import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
 import io.github.xlopec.tea.time.travel.plugin.model.FilteredSnapshot
-import io.github.xlopec.tea.time.travel.plugin.model.Null
 import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
-import io.github.xlopec.tea.time.travel.plugin.model.Started
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
+import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.kotlintest.matchers.collections.shouldBeEmpty
@@ -52,13 +50,11 @@ internal class UpdateForNotificationTest {
 
     @Test
     fun `test when message is NotifyStarted then plugin goes to a Started state`() {
+        val (nextState, commands) = updateForNotification(NotifyStarted(StartedTestServerStub), State(ValidTestSettings))
 
-        val (nextState, commands) = updateForNotification(NotifyStarted(StartedTestServerStub), Stopped(ValidTestSettings))
-
-        nextState shouldBe Started(
+        nextState shouldBe State(
             ValidTestSettings,
-            DebugState(),
-            StartedTestServerStub
+            server = StartedTestServerStub,
         )
         commands.shouldBeEmpty()
     }
@@ -68,20 +64,18 @@ internal class UpdateForNotificationTest {
 
         val (nextState, commands) = updateForNotification(
             NotifyStopped,
-            Started(
+            State(
                 ValidTestSettings,
-                DebugState(),
-                StartedTestServerStub
+                server = StartedTestServerStub,
             )
         )
 
-        nextState shouldBe Stopped(ValidTestSettings)
+        nextState shouldBe State(ValidTestSettings)
         commands.shouldBeEmpty()
     }
 
     @Test
     fun `test when append snapshot to non-existing component then it gets appended`() {
-
         val componentId = ComponentId("a")
         val message = StringWrapper("b")
         val oldState = StringWrapper("c")
@@ -95,7 +89,7 @@ internal class UpdateForNotificationTest {
             StartedFromPairs(otherStates)
         )
 
-        val expectedDebugState = ComponentState(
+        val expectedDebugState = DebuggableComponent(
             componentId,
             newState,
             snapshots = persistentListOf(OriginalSnapshot(meta, message, newState, commandsWrapper)),
@@ -108,7 +102,6 @@ internal class UpdateForNotificationTest {
 
     @Test
     fun `test when append snapshot to existing component then it gets appended`() {
-
         val otherStates = ComponentDebugStates('a'..'z') { strId ->
 
             val id = ComponentId(strId)
@@ -129,7 +122,7 @@ internal class UpdateForNotificationTest {
             StartedFromPairs(otherStates)
         )
 
-        val expectedDebugState = ComponentState(
+        val expectedDebugState = DebuggableComponent(
             componentId,
             newState,
             snapshots = persistentListOf(OriginalSnapshot(meta, message, newState, commandsWrapper)),
@@ -142,7 +135,6 @@ internal class UpdateForNotificationTest {
 
     @Test
     fun `test when apply state then it gets applied`() {
-
         val otherStates = ComponentDebugStates('a'..'z') { strId ->
             val id = ComponentId(strId)
 
@@ -158,7 +150,7 @@ internal class UpdateForNotificationTest {
             StartedFromPairs(otherStates)
         )
 
-        val expectedDebugState = ComponentState(componentId, newState)
+        val expectedDebugState = DebuggableComponent(componentId, newState)
 
         nextState shouldBe StartedFromPairs(otherStates.takeLast(otherStates.size - 1) + (componentId to expectedDebugState))
         commands.shouldBeEmpty()
@@ -166,7 +158,6 @@ internal class UpdateForNotificationTest {
 
     @Test
     fun `test when apply state and component doesn't exist then it doesn't get applied`() {
-
         val state = StartedFromPairs(ComponentDebugStates())
 
         val (nextState, commands) = updateForNotification(StateApplied(ComponentId("a"), StringWrapper("d")), state)
@@ -177,7 +168,6 @@ internal class UpdateForNotificationTest {
 
     @Test
     fun `test when append new component then it gets appended`() {
-
         val otherStates = ComponentDebugStates { strId -> ComponentDebugState(ComponentId(strId)) }
         val componentId = ComponentId("a")
         val state = StringWrapper("d")
@@ -218,9 +208,8 @@ internal class UpdateForNotificationTest {
 
     @Test
     fun `test when illegal combination of message and state warning command is returned`() {
-
-        val initialState = Stopped(ValidTestSettings)
-        val message = StateApplied(ComponentId("a"), Null)
+        val initialState = State(ValidTestSettings)
+        val message = object : NotificationMessage {}
         val (state, commands) = updateForNotification(message, initialState)
 
         state shouldBeSameInstanceAs initialState

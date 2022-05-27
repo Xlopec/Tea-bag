@@ -8,7 +8,7 @@ import io.github.xlopec.tea.time.travel.plugin.feature.server.toCollectionWrappe
 import io.github.xlopec.tea.time.travel.plugin.feature.server.toJsonArray
 import io.github.xlopec.tea.time.travel.plugin.feature.server.toJsonElement
 import io.github.xlopec.tea.time.travel.plugin.feature.server.toValue
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
+import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
 import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
@@ -18,8 +18,8 @@ import java.time.format.DateTimeFormatter
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
 
-internal fun JsonObject.toComponentDebugState(): ComponentState =
-    ComponentState(
+internal fun JsonObject.toComponentDebugState(): DebuggableComponent =
+    DebuggableComponent(
         ComponentId(this["id"].asString),
         this["state"].toValue(),
         this["snapshots"].asJsonArray.toSnapshots()
@@ -53,7 +53,7 @@ internal fun JsonArray.toSnapshots() =
         }
     }
 
-internal fun ComponentState.toJsonObject() = JsonObject().apply {
+internal fun DebuggableComponent.toJsonObject() = JsonObject().apply {
     addProperty("id", id.value)
     // should we really store state?
     add("state", state.toJsonElement())

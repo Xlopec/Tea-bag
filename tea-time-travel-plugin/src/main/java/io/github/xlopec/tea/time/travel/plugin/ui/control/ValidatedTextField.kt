@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Port
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
+import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.Valid
 import io.github.xlopec.tea.time.travel.plugin.model.Validated
 import io.github.xlopec.tea.time.travel.plugin.model.isValid
@@ -27,7 +27,7 @@ fun BottomActionMenuPreview() {
             BottomActionMenu(
                 onImportSession = {},
                 onExportSession = {},
-                state = Stopped(PreviewSettings),
+                state = State(PreviewSettings),
                 events = {}
             )
         }

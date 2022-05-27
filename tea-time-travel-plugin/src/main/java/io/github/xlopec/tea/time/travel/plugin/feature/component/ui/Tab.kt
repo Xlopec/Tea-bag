@@ -7,7 +7,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.RemoveComponent
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
+import io.github.xlopec.tea.time.travel.plugin.model.Debugger
 import io.github.xlopec.tea.time.travel.plugin.model.componentIds
 import io.github.xlopec.tea.time.travel.plugin.ui.control.CloseableTab
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
@@ -20,7 +20,7 @@ internal fun ComponentTabTag(
 internal fun ComponentTab(
     id: ComponentId,
     selectedId: MutableState<ComponentId>,
-    state: DebugState,
+    state: Debugger,
     tabIndex: Int,
     events: MessageHandler,
 ) {
