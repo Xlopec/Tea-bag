@@ -34,9 +34,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.WindowExceptionHandler
+import com.google.gson.GsonBuilder
+import com.intellij.diagnostic.AttachmentFactory
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.Component
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTab
@@ -52,20 +57,36 @@ import io.github.xlopec.tea.time.travel.plugin.model.component
 import io.github.xlopec.tea.time.travel.plugin.model.componentIds
 import io.github.xlopec.tea.time.travel.plugin.model.hasAttachedComponents
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginTheme
+import io.github.xlopec.tea.time.travel.plugin.util.PluginId
+import io.github.xlopec.tea.time.travel.plugin.util.toJson
 import io.kanro.compose.jetbrains.control.JPanel
+import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 
 internal val LocalPlatform = staticCompositionLocalOf<Platform> { error("No platform implementation provided") }
 
+@OptIn(ExperimentalComposeUiApi::class)
 internal fun PluginSwingAdapter(
     project: Project,
     component: (Flow<Message>) -> Flow<State>,
 ) = ComposePanel()
     .apply {
+        exceptionHandler = WindowExceptionHandler { th -> handleFatalException(component, th) }
         background = null
         setContent {
             PluginTheme {
@@ -173,4 +194,44 @@ private fun ComponentsView(
     val component by derivedStateOf { debugger.component(selectedId.value) }
 
     Component(settings, component, events)
+}
+
+private fun handleFatalException(
+    component: (Flow<Message>) -> Flow<State>,
+    th: Throwable,
+) {
+    runBlocking(Dispatchers.IO) {
+        val attachment = component.currentStateOrNull()
+            ?.let { createCrashLogFile(it) }
+            ?.let { AttachmentFactory.createAttachment(it, false) }
+
+        val logger = Logger.getInstance(PluginId)
+
+        if (attachment == null) {
+            logger.error("""
+                Fatal error occurred inside Tea Time Travel plugin, no plugin state dump available.
+                Please, fill a bug for this issue - $GithubIssuesLink with attached logs, stack traces, etc.
+            """.trimIndent(), th)
+        } else {
+            logger.error("""
+                Fatal error occurred inside Tea Time Travel plugin.
+                Please, fill a bug for this issue - $GithubIssuesLink with attached logs, stack traces, etc.
+            """.trimIndent(), th, attachment)
+        }
+    }
+}
+
+private const val GithubIssuesLink = "https://github.com/Xlopec/Tea-bag/issues"
+
+@OptIn(ExperimentalTime::class)
+private suspend fun ((Flow<Message>) -> Flow<State>).currentStateOrNull(
+    timeout: Duration = 1.seconds,
+) = withTimeoutOrNull(timeout) { invoke(flowOf()).first() }
+
+private suspend fun createCrashLogFile(
+    state: State,
+    timestamp: LocalDateTime = LocalDateTime.now(),
+) = withContext(Dispatchers.IO) {
+    File.createTempFile("tea-time-travel-crash-${DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(timestamp)}", ".json")
+        .also { GsonBuilder().create().toJson(state, it) }
 }

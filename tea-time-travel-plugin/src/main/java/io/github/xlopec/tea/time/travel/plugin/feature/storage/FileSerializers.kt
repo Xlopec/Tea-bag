@@ -3,12 +3,11 @@ package io.github.xlopec.tea.time.travel.plugin.feature.storage
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
+import io.github.xlopec.tea.time.travel.plugin.util.toJson
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.io.BufferedReader
-import java.io.BufferedWriter
 import java.io.File
 import java.io.FileReader
-import java.io.FileWriter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers.IO
@@ -32,14 +31,7 @@ internal suspend fun Gson.exportAll(
 internal suspend fun Gson.export(
     file: File,
     debugState: DebuggableComponent
-) {
-    withContext(IO) {
-        BufferedWriter(FileWriter(file.generateFileName(debugState.id)))
-            .use { bw ->
-                toJson(debugState.toJsonObject(), bw)
-            }
-    }
-}
+) = toJson(debugState.toJsonObject(), file.generateFileName(debugState.id))
 
 suspend fun Gson.import(
     file: File
