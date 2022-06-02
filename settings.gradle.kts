@@ -55,8 +55,8 @@ dependencyResolutionManagement {
 
         create("libs") {
 
-            version("ktor", "2.0.1")
-            version("coroutines", "1.6.1")
+            version("ktor", "2.0.2")
+            version("coroutines", "1.6.2")
             version("compose", "1.2.0-beta02")
             version("accompanist", "0.24.9-beta")
             version("sqldelight", "1.5.3")
@@ -248,7 +248,7 @@ dependencyResolutionManagement {
 
             // Atomicfu
 
-            library("atomicfu", "org.jetbrains.kotlinx:atomicfu:0.17.2")
+            library("atomicfu", "org.jetbrains.kotlinx:atomicfu:0.17.3")
 
             // Logging
 
