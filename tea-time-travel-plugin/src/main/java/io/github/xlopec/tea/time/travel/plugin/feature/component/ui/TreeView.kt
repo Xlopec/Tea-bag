@@ -107,6 +107,11 @@ fun Tree(
 
         Column(modifier = Modifier.fillMaxSize().verticalScroll(state)) {
             CompositionLocalProvider(LocalTreeFormatter provides formatter) {
+                Text(
+                    modifier = Modifier.padding(all = 4.dp),
+                    style = LocalTypography.current.defaultBold,
+                    text = "State"
+                )
                 SubTree(root, 0, formatter(root), selection, valuePopupContent)
             }
         }
@@ -136,6 +141,12 @@ fun Tree(
 
         Column(modifier = Modifier.fillMaxSize().verticalScroll(state)) {
             CompositionLocalProvider(LocalTreeFormatter provides formatter) {
+                Text(
+                    modifier = Modifier.padding(all = 4.dp),
+                    style = LocalTypography.current.defaultBold,
+                    text = "Snapshots"
+                )
+
                 roots.forEach { root ->
                     SnapshotSubTree(root, selection, valuePopupContent, snapshotPopupContent)
                 }
@@ -296,8 +307,8 @@ private fun LeafNode(
         TreeRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .indentLevel(level)
                 .selected(state.value === node)
+                .indentLevel(level)
                 // TODO: should handle both left and right clicks
                 .mouseClickable {
                     state.value = node
@@ -335,8 +346,8 @@ private fun ExpandableNode(
         TreeRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .indentLevel(level)
                 .selected(state.value === node)
+                .indentLevel(level)
                 .mouseClickable {
                     state.value = node
 
@@ -396,9 +407,9 @@ private fun Modifier.indentLevel(
     level: Int,
     step: Dp = IndentPadding,
 ) = padding(
-    start = Dp(step.value * level) + 2.dp,
+    start = Dp(step.value * level) + 4.dp,
     top = 2.dp,
-    end = 2.dp,
+    end = 4.dp,
     bottom = 2.dp
 )
 
