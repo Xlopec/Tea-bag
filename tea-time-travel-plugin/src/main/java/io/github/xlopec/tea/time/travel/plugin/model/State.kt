@@ -58,7 +58,7 @@ val State.areSettingsModifiable: Boolean
     get() = !isStarted
 
 val State.hasAttachedComponents: Boolean
-    get() = isStarted && debugger.components.isNotEmpty()
+    get() = debugger.components.isNotEmpty()
 
 fun State.detailedOutputEnabled(
     enabled: Boolean
