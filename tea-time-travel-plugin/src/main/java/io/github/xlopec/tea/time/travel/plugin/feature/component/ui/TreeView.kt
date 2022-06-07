@@ -37,6 +37,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -46,7 +47,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.mouseClickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.verticalScroll
@@ -64,6 +64,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.github.xlopec.tea.time.travel.plugin.model.BooleanWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.CharWrapper
@@ -81,6 +82,7 @@ import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Class
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Property
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Snapshot
+import io.github.xlopec.tea.time.travel.plugin.util.clickable
 import io.kanro.compose.jetbrains.JBTheme
 import io.kanro.compose.jetbrains.LocalTypography
 import io.kanro.compose.jetbrains.control.DropdownMenu
@@ -91,6 +93,11 @@ typealias TreeSelectionState = MutableState<Any?>
 
 private val LocalInitialExpandState = compositionLocalOf { false }
 private val LocalTreeFormatter = compositionLocalOf<TreeFormatter> { error("TreeFormatter wasn't provided") }
+
+/**
+ * Additional `y` offset so that when user opens DropDown menu the top most item isn't hovered by pointer input
+ */
+private val PointerCaptureInputAvoidanceOffset = DpOffset(0.dp, 3.dp)
 
 @Composable
 fun Tree(
@@ -296,10 +303,12 @@ private fun LeafNode(
 ) {
     Box {
         val showPopup = remember { mutableStateOf(false) }
+        val offset = remember { mutableStateOf(DpOffset(0.dp, 0.dp)) }
 
         DropdownMenu(
             onDismissRequest = { showPopup.value = false },
-            expanded = showPopup.value
+            expanded = showPopup.value,
+            offset = offset.value,
         ) {
             popupContent()
         }
@@ -310,10 +319,11 @@ private fun LeafNode(
                 .selected(state.value === node)
                 .indentLevel(level)
                 // TODO: should handle both left and right clicks
-                .mouseClickable {
+                .clickable { _, upOffset ->
                     state.value = node
 
                     if (buttons.isSecondaryPressed) {
+                        offset.value = upOffset + PointerCaptureInputAvoidanceOffset
                         showPopup.value = true
                     }
                 },
@@ -333,12 +343,14 @@ private fun ExpandableNode(
     expandedState: MutableState<Boolean>,
     popupContent: @Composable () -> Unit,
 ) {
-    Box {
+    BoxWithConstraints {
         val showPopup = remember { mutableStateOf(false) }
+        val offset = remember { mutableStateOf(DpOffset(0.dp, 0.dp)) }
 
         DropdownMenu(
             onDismissRequest = { showPopup.value = false },
-            expanded = showPopup.value
+            expanded = showPopup.value,
+            offset = offset.value,
         ) {
             popupContent()
         }
@@ -348,12 +360,13 @@ private fun ExpandableNode(
                 .fillMaxWidth()
                 .selected(state.value === node)
                 .indentLevel(level)
-                .mouseClickable {
+                .clickable { _, upOffset ->
                     state.value = node
 
                     if (buttons.isPrimaryPressed) {
                         expandedState.value = !expandedState.value
                     } else if (buttons.isSecondaryPressed) {
+                        offset.value = upOffset + PointerCaptureInputAvoidanceOffset
                         showPopup.value = true
                     }
                 },
