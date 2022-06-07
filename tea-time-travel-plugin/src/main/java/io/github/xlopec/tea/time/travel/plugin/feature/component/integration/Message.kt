@@ -1,7 +1,7 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.component.integration
 
 import io.github.xlopec.tea.time.travel.plugin.integration.ComponentMessage
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.FilterOption
+import io.github.xlopec.tea.time.travel.plugin.model.FilterOption
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 

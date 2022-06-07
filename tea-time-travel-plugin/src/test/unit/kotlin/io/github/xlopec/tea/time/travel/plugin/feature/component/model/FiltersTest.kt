@@ -22,8 +22,10 @@ import com.google.gson.internal.LazilyParsedNumber
 import io.github.xlopec.tea.time.travel.plugin.model.NumberWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.Property
 import io.github.xlopec.tea.time.travel.plugin.model.Ref
+import io.github.xlopec.tea.time.travel.plugin.model.RegexPredicate
 import io.github.xlopec.tea.time.travel.plugin.model.Type
 import io.github.xlopec.tea.time.travel.plugin.model.Valid
+import io.github.xlopec.tea.time.travel.plugin.model.applyTo
 import kotlin.test.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith

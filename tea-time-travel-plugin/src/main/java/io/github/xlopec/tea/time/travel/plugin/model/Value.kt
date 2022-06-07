@@ -16,6 +16,8 @@
 
 package io.github.xlopec.tea.time.travel.plugin.model
 
+import androidx.compose.runtime.Immutable
+
 @JvmInline
 value class Type private constructor(
     val name: String
@@ -40,6 +42,7 @@ data class Property(
     val v: Value
 )
 
+@Immutable
 sealed interface Value
 
 object Null : Value

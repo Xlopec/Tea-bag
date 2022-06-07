@@ -1,12 +1,12 @@
 package io.github.xlopec.tea.time.travel.plugin.model
 
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.Filter
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.FilterOption
+import androidx.compose.runtime.Immutable
 import io.github.xlopec.tea.time.travel.plugin.util.map
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
+@Immutable
 data class DebuggableComponent(
     val id: ComponentId,
     val state: Value,

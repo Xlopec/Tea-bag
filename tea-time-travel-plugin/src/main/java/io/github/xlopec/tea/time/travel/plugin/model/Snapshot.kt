@@ -1,11 +1,10 @@
 package io.github.xlopec.tea.time.travel.plugin.model
 
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.Predicate
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.applyTo
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.applyToWrapper
+import androidx.compose.runtime.Immutable
 import io.github.xlopec.tea.time.travel.plugin.util.mapNotNull
 import kotlinx.collections.immutable.PersistentList
 
+@Immutable
 data class OriginalSnapshot(
     val meta: SnapshotMeta,
     val message: Value?,
@@ -13,6 +12,7 @@ data class OriginalSnapshot(
     val commands: CollectionWrapper,
 )
 
+@Immutable
 data class FilteredSnapshot(
     val meta: SnapshotMeta,
     val message: Value? = null,

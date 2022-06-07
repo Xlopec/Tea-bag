@@ -8,8 +8,8 @@ import io.github.xlopec.tea.time.travel.plugin.data.TestSnapshotId2
 import io.github.xlopec.tea.time.travel.plugin.data.TestTimestamp1
 import io.github.xlopec.tea.time.travel.plugin.data.TestTimestamp2
 import io.github.xlopec.tea.time.travel.plugin.data.TestUserValue
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.Filter
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.FilterOption
+import io.github.xlopec.tea.time.travel.plugin.model.Filter
+import io.github.xlopec.tea.time.travel.plugin.model.FilterOption
 import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
 import io.github.xlopec.tea.time.travel.plugin.model.Null

@@ -115,6 +115,9 @@ val Project.detektConfig: File
 val Project.detektBaseline: File
     get() = Paths.get(rootDir.path, "detekt", "detekt-baseline.xml").toFile()
 
+val Project.metricsDir: File
+    get() = File(buildDir, "compose_metrics")
+
 val Project.hasKotlinMultiplatformPlugin: Boolean
     get() = plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")
 

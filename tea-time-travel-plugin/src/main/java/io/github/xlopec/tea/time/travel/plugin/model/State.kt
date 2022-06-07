@@ -16,7 +16,8 @@
 
 package io.github.xlopec.tea.time.travel.plugin.model
 
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.FilterOption
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.time.LocalDateTime
@@ -26,6 +27,7 @@ import java.util.UUID
  * This class represents plugin state. If server isn't null, then it's started,
  * it's considered to be in stopped state otherwise
  */
+@Stable
 data class State(
     val settings: Settings,
     val debugger: Debugger = Debugger(),
@@ -37,6 +39,7 @@ value class SnapshotId(
     val value: UUID
 )
 
+@Immutable
 data class SnapshotMeta(
     val id: SnapshotId,
     val timestamp: LocalDateTime

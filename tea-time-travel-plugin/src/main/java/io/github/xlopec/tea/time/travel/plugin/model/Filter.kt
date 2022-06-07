@@ -16,20 +16,10 @@
 
 @file:Suppress("FunctionName")
 
-package io.github.xlopec.tea.time.travel.plugin.feature.component.model
+package io.github.xlopec.tea.time.travel.plugin.model
 
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.FilterOption.*
-import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Invalid
-import io.github.xlopec.tea.time.travel.plugin.model.Null
-import io.github.xlopec.tea.time.travel.plugin.model.Property
-import io.github.xlopec.tea.time.travel.plugin.model.Ref
-import io.github.xlopec.tea.time.travel.plugin.model.Valid
-import io.github.xlopec.tea.time.travel.plugin.model.Validated
-import io.github.xlopec.tea.time.travel.plugin.model.Value
-import io.github.xlopec.tea.time.travel.plugin.model.map
-import io.github.xlopec.tea.time.travel.plugin.model.primitiveTypeName
-import io.github.xlopec.tea.time.travel.plugin.model.stringValue
+import androidx.compose.runtime.Immutable
+import io.github.xlopec.tea.time.travel.plugin.model.FilterOption.*
 import java.util.*
 
 typealias Predicate = (String) -> Boolean
@@ -43,6 +33,7 @@ enum class FilterOption {
 
 private val MatchAllValidatedPredicate: Validated<Predicate> = Valid("") { true }
 
+@Immutable
 class Filter private constructor(
     val option: FilterOption,
     val ignoreCase: Boolean,

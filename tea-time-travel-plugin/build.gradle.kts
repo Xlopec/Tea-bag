@@ -108,6 +108,15 @@ optIn(
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.freeCompilerArgs += listOf("-Xcontext-receivers")
+
+    if (project.findProperty("enableComposeCompilerLogs").toString().toBoolean()) {
+        kotlinOptions.freeCompilerArgs += listOf(
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${project.metricsDir.absolutePath}",
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${project.metricsDir.absolutePath}",
+        )
+    }
 }
 
 sourceSets {

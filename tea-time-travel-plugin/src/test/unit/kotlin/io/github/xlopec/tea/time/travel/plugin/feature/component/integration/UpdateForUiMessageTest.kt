@@ -28,7 +28,7 @@ import io.github.xlopec.tea.time.travel.plugin.data.StartedFromPairs
 import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
 import io.github.xlopec.tea.time.travel.plugin.data.TestTimestamp1
 import io.github.xlopec.tea.time.travel.plugin.data.times
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.FilterOption
+import io.github.xlopec.tea.time.travel.plugin.model.FilterOption
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyState
 import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
