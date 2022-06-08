@@ -74,6 +74,10 @@ android {
         resources.excludes.add("META-INF/*")
     }
 
+    lint {
+        baseline(file("lint-baseline.xml"))
+    }
+
     buildFeatures {
         compose = true
         aidl = false
@@ -130,6 +134,8 @@ dependencies {
 
     implementation(libs.bundles.compose)
     debugImplementation(libs.compose.tooling)
+
+    implementation(libs.compose.fonts)
 
     implementation(libs.bundles.accompanist)
     implementation(libs.coil)

@@ -218,6 +218,10 @@ dependencyResolutionManagement {
                 )
             )
 
+            // Downloadable fonts
+
+            library("compose-fonts", "androidx.compose.ui", "ui-text-google-fonts").version("1.2.0-beta01")
+
             // Accompanist
 
             library("accompanist-swiperefresh", "com.google.accompanist", "accompanist-swiperefresh")
