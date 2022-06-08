@@ -242,10 +242,6 @@ dependencyResolutionManagement {
 
             library("coil", "io.coil-kt:coil-compose:1.4.0")
 
-            // App compat
-
-            library("appcompat", "androidx.appcompat:appcompat:1.6.0-alpha04")
-
             // Collections
 
             library("collections-immutable", "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")

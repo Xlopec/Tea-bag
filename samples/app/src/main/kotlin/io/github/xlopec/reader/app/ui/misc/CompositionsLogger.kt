@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 val LocalLogCompositions = compositionLocalOf { false }
 
+@Suppress("NOTHING_TO_INLINE")
 @Composable
 inline fun LogCompositions(
     tag: String

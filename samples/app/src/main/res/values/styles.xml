@@ -25,11 +25,13 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="Theme.NewsReader" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="NewsReader">
         <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.Splash" parent="Theme.NewsReader">
+    <style name="NewsReader_Splash" parent="NewsReader">
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowDisablePreview">false</item>
         <item name="android:colorBackground">@color/colorBackground</item>

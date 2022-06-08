@@ -127,7 +127,6 @@ dependencies {
     implementation(project(":samples:shared-app-lib"))
 
     implementation(libs.stdlib)
-    implementation(libs.stdlib.reflect)
 
     implementation(libs.coroutines.android)
     implementation(libs.compose.activity)
@@ -139,8 +138,6 @@ dependencies {
 
     implementation(libs.bundles.accompanist)
     implementation(libs.coil)
-
-    implementation(libs.appcompat)
 
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.gson)
