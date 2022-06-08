@@ -6,6 +6,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
 
+// Ordering should be preserved, add tests for that
 typealias ComponentMapping = PersistentMap<ComponentId, DebuggableComponent>
 
 @Immutable
@@ -23,5 +24,4 @@ fun Debugger.component(
 inline fun Debugger.updateComponent(
     id: ComponentId,
     crossinline how: (mapping: DebuggableComponent) -> DebuggableComponent?
-) =
-    copy(components = components.builder().also { m -> m.computeIfPresent(id) { _, s -> how(s) } }.build())
+) = copy(components = components.builder().also { m -> m.computeIfPresent(id) { _, s -> how(s) } }.build())

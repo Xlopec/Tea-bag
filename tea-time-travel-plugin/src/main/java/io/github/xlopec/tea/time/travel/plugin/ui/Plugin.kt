@@ -28,8 +28,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,7 +51,6 @@ import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.integration.Platform
 import io.github.xlopec.tea.time.travel.plugin.model.Debugger
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.component
 import io.github.xlopec.tea.time.travel.plugin.model.componentIds
 import io.github.xlopec.tea.time.travel.plugin.model.hasAttachedComponents
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginTheme
@@ -175,25 +172,15 @@ private fun ComponentsView(
 ) {
     require(debugger.components.isNotEmpty())
 
-    val selectedId = remember { mutableStateOf(debugger.components.keys.first()) }
-    val selectedIndex by derivedStateOf { debugger.components.keys.indexOf(selectedId.value) }
-
-    require(selectedIndex >= 0) {
-        """Inconsistency in tab indexing detected, 
-                            |selected id: ${selectedId.value}, 
-                            |selected index: $selectedIndex
-                            |component ids: ${debugger.componentIds}"""".trimMargin()
-    }
+    val selectedComponent = remember { mutableStateOf(debugger.components.values.first()) }
 
     Row {
-        debugger.componentIds.forEachIndexed { index, id ->
-            ComponentTab(id, selectedId, debugger, index, events)
+        debugger.components.values.forEach { component ->
+            ComponentTab(component, selectedComponent, debugger, events)
         }
     }
 
-    val component by derivedStateOf { debugger.component(selectedId.value) }
-
-    Component(settings, component, events)
+    Component(settings, selectedComponent.value, events)
 }
 
 private fun handleFatalException(
