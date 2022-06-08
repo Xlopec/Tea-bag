@@ -35,6 +35,10 @@ fun DependencyHandlerScope.remoteImplementation(dependencyNotation: Any) {
     add("remoteImplementation", dependencyNotation)
 }
 
+fun DependencyHandlerScope.remoteApi(dependencyNotation: Any) {
+    add("remoteApi", dependencyNotation)
+}
+
 fun DependencyHandlerScope.integrationTestImplementation(dependencyNotation: Any) {
     add("integrationTestImplementation", dependencyNotation)
 }

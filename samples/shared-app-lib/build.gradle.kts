@@ -36,7 +36,9 @@ kotlin {
 
     optIn("kotlinx.serialization.ExperimentalSerializationApi", "io.github.xlopec.tea.core.ExperimentalTeaApi")
 
-    android()
+    android {
+        publishLibraryVariants("remoteRelease", "remoteDebug", "defaultRelease", "defaultDebug")
+    }
 
     ios()
 
@@ -78,12 +80,8 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.ktor.client.cio)
-                implementation(libs.ktor.client.gson)
-                implementation(libs.gson)
                 implementation(libs.compose.runtime)
                 implementation(libs.sqldelight.driver.android)
-                api(project(":tea-time-travel"))
-                api(project(":tea-time-travel-adapter-gson"))
             }
         }
 
@@ -111,6 +109,33 @@ android {
     defaultConfig {
         minSdk = 23
         targetSdk = 31
+    }
+
+    sourceSets {
+
+        maybeCreate("remote")
+            .java.srcDirs("remote/kotlin", "main/kotlin")
+
+        maybeCreate("default")
+            .java.srcDirs("default/kotlin", "main/kotlin")
+    }
+
+    flavorDimensions += "remote"
+    productFlavors {
+
+        create("remote") {
+            dimension = "remote"
+        }
+
+        create("default") {
+            dimension = "remote"
+        }
+    }
+
+    dependencies {
+        remoteApi(project(":tea-time-travel"))
+        remoteApi(project(":tea-time-travel-adapter-gson"))
+        remoteImplementation(libs.gson)
     }
 }
 

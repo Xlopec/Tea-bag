@@ -125,6 +125,7 @@ dependencies {
 
     implementation(project(":tea-core"))
     implementation(project(":samples:shared-app-lib"))
+    remoteImplementation(project(":samples:shared-app-lib"/*, configuration = "remote"*/))
 
     implementation(libs.stdlib)
 
@@ -140,7 +141,6 @@ dependencies {
     implementation(libs.coil)
 
     implementation(libs.ktor.client.cio)
-    implementation(libs.ktor.client.gson)
     implementation(libs.ktor.client.logging)
     implementation(libs.logging)
 

@@ -151,9 +151,6 @@ dependencyResolutionManagement {
             library("ktor-client-logging", "io.ktor", "ktor-client-logging")
                 .versionRef("ktor")
 
-            library("ktor-client-gson", "io.ktor", "ktor-client-gson")
-                .versionRef("ktor")
-
             library("ktor-client-negotiation", "io.ktor", "ktor-client-content-negotiation")
                 .versionRef("ktor")
 
