@@ -65,7 +65,7 @@ class StopPluginScenarios {
         onNode(hasTestTag(ComponentTag(TestComponentId))).assertExists()
 
         onNode(hasTestTag(ServerActionButtonTag)).performClick()
-        // fixme should assertExists should be replaced with assertIsDisplayed
+        // fixme assertExists should be replaced with assertIsDisplayed
         awaitIdle()
         onNode(hasTestTag(ComponentTabTag(TestComponentId))).assertExists()
         onNode(hasTestTag(ComponentTag(TestComponentId))).assertExists()

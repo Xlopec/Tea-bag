@@ -47,7 +47,7 @@ class StartPluginScenarios {
                 component = PluginComponent(environment, Initializer(State(ValidTestSettings))).toStatesComponent(),
             )
         }
-        // fixme should assertExists should be replaced with assertIsDisplayed
+        // fixme assertExists should be replaced with assertIsDisplayed
         onNode(hasTestTag(InfoViewTag)).assertExists()
 
         onNode(hasTestTag(ServerActionButtonTag)).performClick()
@@ -82,7 +82,7 @@ class StartPluginScenarios {
         onNode(hasTestTag(ComponentTabTag(TestComponentId))).assertDoesNotExist()
         onNode(hasTestTag(ComponentTag(TestComponentId))).assertDoesNotExist()
         onNode(hasTestTag(ServerActionButtonTag)).performClick()
-        // fixme should assertExists should be replaced with assertIsDisplayed
+        // fixme assertExists should be replaced with assertIsDisplayed
         onNode(hasTestTag(InfoViewTag)).assertExists()
 
         messages.emit(ComponentAttached(TestComponentId, TestSnapshotMeta1, TestUserValue, CollectionWrapper()))

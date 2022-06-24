@@ -26,8 +26,7 @@
  * This custom tree view implementation is a temp solution, it'll be removed
  * when officially supported composable tree view implementation is released
  */
-@file:OptIn(ExperimentalFoundationApi::class)
-@file:Suppress("FunctionName")
+@file:OptIn(ExperimentalFoundationApi::class) @file:Suppress("FunctionName")
 
 package io.github.xlopec.tea.time.travel.plugin.feature.component.ui
 
@@ -41,6 +40,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -57,6 +57,14 @@ import io.kanro.compose.jetbrains.control.Text
 
 typealias TreeFormatter = (Value) -> String
 typealias TreeSelectionState = MutableState<Any?>
+
+internal fun Tag(
+    value: Value
+) = "value: ${value.stringValue}"
+
+internal fun Tag(
+    meta: SnapshotMeta
+) = "filtered snapshot: ${meta.id}/${meta.timestamp}"
 
 internal val LocalInitialExpandState = compositionLocalOf { false }
 private val LocalTreeFormatter = compositionLocalOf<TreeFormatter> { error("TreeFormatter wasn't provided") }
@@ -82,9 +90,7 @@ fun Tree(
         Column(modifier = Modifier.fillMaxSize().verticalScroll(state)) {
             CompositionLocalProvider(LocalTreeFormatter provides formatter) {
                 Text(
-                    modifier = Modifier.padding(all = 4.dp),
-                    style = LocalTypography.current.defaultBold,
-                    text = "State"
+                    modifier = Modifier.padding(all = 4.dp), style = LocalTypography.current.defaultBold, text = "State"
                 )
                 SubTree(root, 0, formatter(root), selection, valuePopupContent)
             }
@@ -92,9 +98,7 @@ fun Tree(
 
         VerticalScrollbar(
             modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-            adapter = rememberScrollbarAdapter(
-                scrollState = state
-            )
+            adapter = rememberScrollbarAdapter(scrollState = state)
         )
     }
 }
@@ -128,8 +132,7 @@ fun Tree(
         }
 
         VerticalScrollbar(
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-            adapter = rememberScrollbarAdapter(
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(), adapter = rememberScrollbarAdapter(
                 scrollState = state
             )
         )
@@ -144,12 +147,15 @@ private fun SubTree(
     state: TreeSelectionState,
     valuePopupContent: @Composable (Value) -> Unit,
 ) = when (value) {
-    is StringWrapper,
-    is CharWrapper,
-    is NumberWrapper,
-    is BooleanWrapper,
-    Null,
-    -> LeafNode(level, text, Property, value, state) { valuePopupContent(value) }
+    is StringWrapper, is CharWrapper, is NumberWrapper, is BooleanWrapper, Null -> LeafNode(
+        modifier = Modifier.fillMaxWidth().testTag(Tag(value)),
+        level = level,
+        text = text,
+        painter = Property,
+        node = value,
+        state = state,
+        popupContent = { valuePopupContent(value) }
+    )
     is CollectionWrapper -> CollectionSubTree(value, level, text, state) { valuePopupContent(value) }
     is Ref -> ReferenceSubTree(level, text, value, state) { valuePopupContent(value) }
 }
@@ -166,9 +172,26 @@ private fun SnapshotSubTree(
     val text = toReadableString(snapshot)
 
     if (snapshot.message == null && snapshot.state == null) {
-        LeafNode(0, text, Snapshot, snapshot, state) { snapshotPopupContent(snapshot) }
+        LeafNode(
+            modifier = Modifier.fillMaxWidth().testTag(Tag(snapshot.meta)),
+            level = 0,
+            text = text,
+            painter = Snapshot,
+            node = snapshot,
+            state = state,
+            popupContent = { snapshotPopupContent(snapshot) }
+        )
     } else {
-        ExpandableNode(0, text, Snapshot, snapshot, state, expandState) { snapshotPopupContent(snapshot) }
+        ExpandableNode(
+            modifier = Modifier.fillMaxWidth().testTag(Tag(snapshot.meta)),
+            level = 0,
+            text = text,
+            painter = Snapshot,
+            node = snapshot,
+            state = state,
+            expandedState = expandState,
+            popupContent = { snapshotPopupContent(snapshot) }
+        )
     }
 
     if (expandState.value) {
@@ -216,12 +239,29 @@ private fun ReferenceSubTree(
     valuePopupContent: @Composable (Value) -> Unit,
 ) {
     if (ref.properties.isEmpty()) {
-        LeafNode(level, text, Class, ref, state) { valuePopupContent(ref) }
+        LeafNode(
+            modifier = Modifier.fillMaxWidth().testTag(Tag(ref)),
+            level = level,
+            text = text,
+            painter = Class,
+            node = ref,
+            state = state,
+            popupContent = { valuePopupContent(ref) }
+        )
     } else {
         val expanded = LocalInitialExpandState.current
         val expandState = remember { mutableStateOf(expanded) }
 
-        ExpandableNode(level, text, Class, ref, state, expandState) { valuePopupContent(ref) }
+        ExpandableNode(
+            modifier = Modifier.fillMaxWidth().testTag(Tag(ref)),
+            level = level,
+            text = text,
+            painter = Class,
+            node = ref,
+            state = state,
+            expandedState = expandState,
+            popupContent = { valuePopupContent(ref) }
+        )
 
         if (expandState.value) {
             val formatter = LocalTreeFormatter.current
@@ -242,12 +282,29 @@ private fun CollectionSubTree(
     valuePopupContent: @Composable (Value) -> Unit,
 ) {
     if (collection.items.isEmpty()) {
-        LeafNode(level, text, Property, collection, state) { valuePopupContent(collection) }
+        LeafNode(
+            modifier = Modifier.fillMaxWidth().testTag(Tag(collection)),
+            level = level,
+            text = text,
+            painter = Property,
+            node = collection,
+            state = state,
+            popupContent = { valuePopupContent(collection) }
+        )
     } else {
         val expanded = LocalInitialExpandState.current
         val expandState = remember { mutableStateOf(expanded) }
 
-        ExpandableNode(level, text, Property, collection, state, expandState) { valuePopupContent(collection) }
+        ExpandableNode(
+            modifier = Modifier.fillMaxWidth().testTag(Tag(collection)),
+            level = level,
+            text = text,
+            painter = Property,
+            node = collection,
+            state = state,
+            expandedState = expandState,
+            popupContent = { valuePopupContent(collection) }
+        )
 
         if (expandState.value) {
             val formatter = LocalTreeFormatter.current
@@ -267,6 +324,7 @@ private fun LeafNode(
     node: Any,
     state: TreeSelectionState,
     popupContent: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Box {
         val showPopup = remember { mutableStateOf(false) }
@@ -281,10 +339,7 @@ private fun LeafNode(
         }
 
         TreeRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .selected(state.value === node)
-                .indentLevel(level)
+            modifier = modifier.selected(state.value === node).indentLevel(level)
                 // TODO: should handle both left and right clicks
                 .clickable { _, upOffset ->
                     state.value = node
@@ -293,9 +348,7 @@ private fun LeafNode(
                         offset.value = upOffset + PointerCaptureInputAvoidanceOffset
                         showPopup.value = true
                     }
-                },
-            text = text,
-            painter = painter
+                }, text = text, painter = painter
         )
     }
 }
@@ -309,8 +362,9 @@ private fun ExpandableNode(
     state: TreeSelectionState,
     expandedState: MutableState<Boolean>,
     popupContent: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    BoxWithConstraints {
+    BoxWithConstraints(modifier = modifier) {
         val showPopup = remember { mutableStateOf(false) }
         val offset = remember { mutableStateOf(DpOffset(0.dp, 0.dp)) }
 
@@ -324,7 +378,6 @@ private fun ExpandableNode(
 
         TreeRow(
             modifier = Modifier
-                .fillMaxWidth()
                 .selected(state.value === node)
                 .indentLevel(level)
                 .clickable { _, upOffset ->
@@ -345,8 +398,7 @@ private fun ExpandableNode(
                     painter = Expand,
                     contentDescription = null
                 )
-            }
-        )
+            })
     }
 }
 
@@ -364,7 +416,7 @@ private fun TreeRow(
         Image(
             modifier = Modifier.size(16.dp),
             painter = painter,
-            contentDescription = "Expandable row: $text"
+            contentDescription = null
         )
 
         Spacer(Modifier.width(4.dp))
@@ -387,8 +439,5 @@ private fun Modifier.indentLevel(
     level: Int,
     step: Dp = IndentPadding,
 ) = padding(
-    start = Dp(step.value * level) + 4.dp,
-    top = 2.dp,
-    end = 4.dp,
-    bottom = 2.dp
+    start = Dp(step.value * level) + 4.dp, top = 2.dp, end = 4.dp, bottom = 2.dp
 )
