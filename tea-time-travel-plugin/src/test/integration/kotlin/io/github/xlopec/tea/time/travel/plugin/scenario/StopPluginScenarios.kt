@@ -5,23 +5,14 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.performClick
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.toStatesComponent
-import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
-import io.github.xlopec.tea.time.travel.plugin.data.TestComponentId
-import io.github.xlopec.tea.time.travel.plugin.data.TestSnapshotMeta1
-import io.github.xlopec.tea.time.travel.plugin.data.TestUserValue
-import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
+import io.github.xlopec.tea.time.travel.plugin.data.*
 import io.github.xlopec.tea.time.travel.plugin.environment.TestEnvironment
 import io.github.xlopec.tea.time.travel.plugin.environment.TestPlatform
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTabTag
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTag
-import io.github.xlopec.tea.time.travel.plugin.feature.info.InfoViewTag
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.integration.PluginComponent
-import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
-import io.github.xlopec.tea.time.travel.plugin.model.Debugger
-import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
-import io.github.xlopec.tea.time.travel.plugin.model.State
+import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.plugin.ui.Plugin
 import io.github.xlopec.tea.time.travel.plugin.ui.ServerActionButtonTag
 import io.github.xlopec.tea.time.travel.plugin.util.invoke
@@ -39,38 +30,10 @@ class StopPluginScenarios {
 
     /**
      * Scenario:
-     * * Running plugin with no components attached
-     * * Check no components rendered
-     * * User clicks on `stop` button
-     * * Check info view displayed
-     */
-    @Test
-    fun `test info view displayed when user stops plugin server given empty started state`() = rule {
-        val started = State(ValidTestSettings, server = StartedTestServerStub)
-        val environment = TestEnvironment()
-
-        setContentWithEnv(environment) {
-            Plugin(
-                platform = TestPlatform(),
-                component = PluginComponent(environment, Initializer(started)).toStatesComponent(),
-            )
-        }
-        // fixme should assertExists should be replaced with assertIsDisplayed
-        onNode(hasTestTag(InfoViewTag)).assertExists()
-
-        onNode(hasTestTag(ServerActionButtonTag)).performClick()
-
-        awaitIdle()
-        onNode(hasTestTag(InfoViewTag)).assertExists()
-    }
-
-    /**
-     * Scenario:
      * * Running plugin with some components attached
      * * Check components rendered
      * * User clicks on `stop` button
-     * * Check info view displayed
-     * * Check component content is cleared
+     * * Check components are still present in the composition
      */
     @Test
     fun `test info view displayed when user stops plugin server given non-empty started state`() = rule {
@@ -104,8 +67,7 @@ class StopPluginScenarios {
         onNode(hasTestTag(ServerActionButtonTag)).performClick()
         // fixme should assertExists should be replaced with assertIsDisplayed
         awaitIdle()
-        onNode(hasTestTag(InfoViewTag)).assertExists()
-        onNode(hasTestTag(ComponentTabTag(TestComponentId))).assertDoesNotExist()
-        onNode(hasTestTag(ComponentTag(TestComponentId))).assertDoesNotExist()
+        onNode(hasTestTag(ComponentTabTag(TestComponentId))).assertExists()
+        onNode(hasTestTag(ComponentTag(TestComponentId))).assertExists()
     }
 }

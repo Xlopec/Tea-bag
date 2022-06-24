@@ -54,8 +54,8 @@ dependencyResolutionManagement {
     versionCatalogs {
 
         create("libs") {
-
-            version("ktor", "2.0.2")
+            // 2.0.2 breaks client
+            version("ktor", "2.0.0")
             version("coroutines", "1.6.2")
             version("compose", "1.2.0-beta02")
             version("accompanist", "0.24.9-beta")

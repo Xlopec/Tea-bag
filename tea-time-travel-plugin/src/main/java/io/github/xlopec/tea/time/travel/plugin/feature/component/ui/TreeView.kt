@@ -31,31 +31,9 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.component.ui
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -66,19 +44,8 @@ import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import io.github.xlopec.tea.time.travel.plugin.model.BooleanWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.CharWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.FilteredSnapshot
-import io.github.xlopec.tea.time.travel.plugin.model.Null
-import io.github.xlopec.tea.time.travel.plugin.model.NumberWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Property
-import io.github.xlopec.tea.time.travel.plugin.model.Ref
-import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Type
-import io.github.xlopec.tea.time.travel.plugin.model.Value
+import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons.Expand
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Class
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Property
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Snapshot
@@ -91,7 +58,7 @@ import io.kanro.compose.jetbrains.control.Text
 typealias TreeFormatter = (Value) -> String
 typealias TreeSelectionState = MutableState<Any?>
 
-private val LocalInitialExpandState = compositionLocalOf { false }
+internal val LocalInitialExpandState = compositionLocalOf { false }
 private val LocalTreeFormatter = compositionLocalOf<TreeFormatter> { error("TreeFormatter wasn't provided") }
 
 /**
@@ -425,52 +392,3 @@ private fun Modifier.indentLevel(
     end = 4.dp,
     bottom = 2.dp
 )
-
-private val PreviewTreeRoot = Ref(
-    Type.of("io.github.xlopec.Developer"),
-    Property("name", StringWrapper("Max")),
-    Property("surname", StringWrapper("Oliynick")),
-    Property(
-        "interests",
-        CollectionWrapper(
-            listOf(
-                StringWrapper("Jetpack Compose"),
-                StringWrapper("Programming"),
-                StringWrapper("FP")
-            )
-        )
-    ),
-    Property("emptyCollection", CollectionWrapper())
-)
-
-@Preview
-@Composable
-private fun ValueTreePreviewExpandedShort() {
-    PluginPreviewTheme {
-        CompositionLocalProvider(
-            LocalInitialExpandState provides true
-        ) {
-            Tree(
-                root = PreviewTreeRoot,
-                formatter = ::toReadableStringShort,
-                valuePopupContent = {}
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun ValueTreePreviewExpandedLong() {
-    PluginPreviewTheme {
-        CompositionLocalProvider(
-            LocalInitialExpandState provides true
-        ) {
-            Tree(
-                root = PreviewTreeRoot,
-                formatter = ::toReadableStringLong,
-                valuePopupContent = {}
-            )
-        }
-    }
-}

@@ -7,7 +7,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.RemoveComponent
-import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
 import io.github.xlopec.tea.time.travel.plugin.model.Debugger
 import io.github.xlopec.tea.time.travel.plugin.ui.control.CloseableTab
 import io.github.xlopec.tea.time.travel.plugin.util.nextSelectionForClosingTab
@@ -19,31 +18,31 @@ internal fun ComponentTabTag(
 
 @Composable
 internal fun ComponentTab(
-    component: DebuggableComponent,
-    componentSelection: MutableState<DebuggableComponent>,
+    id: ComponentId,
+    currentSelection: MutableState<ComponentId>,
     debugger: Debugger,
     events: MessageHandler,
 ) {
     CloseableTab(
-        modifier = Modifier.testTag(ComponentTabTag(component.id)),
-        text = component.id.value,
-        selected = component.id == componentSelection.value.id,
-        onSelect = { componentSelection.value = component },
+        modifier = Modifier.testTag(ComponentTabTag(id)),
+        text = id.value,
+        selected = id == currentSelection.value,
+        onSelect = { currentSelection.value = id },
         onClose = {
-            componentSelection.value = debugger.nextSelectionForClosingTab(componentSelection.value, component)
-            events(RemoveComponent(component.id))
+            currentSelection.value = debugger.nextSelectionForClosingTab(currentSelection.value, id)
+            events(RemoveComponent(id))
         }
     )
 }
 
 /**
- * Returns next [component][DebuggableComponent] that should be selected among others after [closingTab] gets removed
+ * Returns next [component id][ComponentId] that should be selected among others after [closingTab] gets removed
  * from current [debugger][Debugger] instance
  **/
 internal fun Debugger.nextSelectionForClosingTab(
-    currentSelection: DebuggableComponent,
-    closingTab: DebuggableComponent,
-): DebuggableComponent {
+    currentSelection: ComponentId,
+    closingTab: ComponentId,
+): ComponentId {
     require(components.isNotEmpty()) { "Can't calculate next selection for empty set of components $this" }
-    return currentSelection.takeIf { it != closingTab } ?: components.nextSelectionForClosingTab(closingTab.id)
+    return currentSelection.takeIf { it != closingTab } ?: components.nextSelectionForClosingTab(closingTab)
 }

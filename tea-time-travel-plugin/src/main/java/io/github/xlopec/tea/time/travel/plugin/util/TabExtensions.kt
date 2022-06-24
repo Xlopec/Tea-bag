@@ -2,16 +2,16 @@ package io.github.xlopec.tea.time.travel.plugin.util
 
 import kotlinx.collections.immutable.PersistentMap
 
-internal fun <K, V> PersistentMap<K, V>.nextSelectionForClosingTab(
+internal fun <K> PersistentMap<K, *>.nextSelectionForClosingTab(
     closingTabKey: K
-): V {
+): K {
     val currentSelectionIndex = keys.indexOf(closingTabKey)
 
     require(currentSelectionIndex >= 0) {
         "There is no component $closingTabKey inside debugger instance, available components: $keys"
     }
 
-    return values[calculateNextSelectionIndex(currentSelectionIndex, size)]
+    return keys[calculateNextSelectionIndex(currentSelectionIndex, size)]
 }
 
 /**

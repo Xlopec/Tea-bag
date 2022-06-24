@@ -3,10 +3,10 @@ package io.github.xlopec.tea.time.travel.plugin.util
 import io.github.xlopec.tea.time.travel.plugin.data.ComponentDebugState
 import io.github.xlopec.tea.time.travel.plugin.data.TestComponentId
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
-import kotlin.test.assertEquals
-import kotlin.test.assertFails
 import kotlinx.collections.immutable.persistentMapOf
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFails
 
 class TabExtensionsTest {
 
@@ -47,23 +47,23 @@ class TabExtensionsTest {
         TestTabContent
             .map(Pair<String, *>::first).subList(1, TestTabContent.size)
             .forEachIndexed { index, k ->
-                assertEquals(mapping[TestTabContent[index].first], mapping.nextSelectionForClosingTab(k))
+                assertEquals(TestTabContent[index].first, mapping.nextSelectionForClosingTab(k))
             }
     }
 
     @Test
     fun `check next right tab is selected when closing tab 'a' given there is no tab to the left`() {
         assertEquals(
-            TestTabContent[1].second,
+            TestTabContent[1].first,
             persistentMapOf(*TestTabContent).nextSelectionForClosingTab(TestTabContent[0].first)
         )
     }
 
     @Test
     fun `check same tab is selected when closing tab given there single element in a map`() {
-        val (k, v) = TestTabContent.first()
+        val key = TestTabContent.first().first
 
-        assertEquals(v, persistentMapOf(TestTabContent.first()).nextSelectionForClosingTab(k))
+        assertEquals(key, persistentMapOf(TestTabContent.first()).nextSelectionForClosingTab(key))
     }
 
     @Test
