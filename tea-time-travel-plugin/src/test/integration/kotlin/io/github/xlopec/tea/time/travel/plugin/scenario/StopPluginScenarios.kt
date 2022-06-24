@@ -1,7 +1,7 @@
 package io.github.xlopec.tea.time.travel.plugin.scenario
 
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.toStatesComponent
@@ -30,17 +30,17 @@ class StopPluginScenarios {
 
     /**
      * Scenario:
-     * * Running plugin with some components attached
-     * * Check components rendered
-     * * User clicks on `stop` button
-     * * Check components are still present in the composition
+     * * Given a running plugin with some components attached
+     * * Then check components rendered
+     * * When user clicks on `stop` button
+     * * Then check components are still present in the composition
      */
     @Test
     fun `test info view displayed when user stops plugin server given non-empty started state`() = rule {
         val debugger = Debugger(
             persistentMapOf(
-                TestComponentId to DebuggableComponent(
-                    TestComponentId,
+                TestComponentId1 to DebuggableComponent(
+                    TestComponentId1,
                     TestUserValue,
                     persistentListOf(OriginalSnapshot(TestSnapshotMeta1, null, TestUserValue, CollectionWrapper(TestUserValue)))
                 )
@@ -61,13 +61,13 @@ class StopPluginScenarios {
         }
 
         awaitIdle()
-        onNode(hasTestTag(ComponentTabTag(TestComponentId))).assertExists()
-        onNode(hasTestTag(ComponentTag(TestComponentId))).assertExists()
+        onNodeWithTag(ComponentTabTag(TestComponentId1)).assertExists()
+        onNodeWithTag(ComponentTag(TestComponentId1)).assertExists()
 
-        onNode(hasTestTag(ServerActionButtonTag)).performClick()
+        onNodeWithTag(ServerActionButtonTag).performClick()
         // fixme assertExists should be replaced with assertIsDisplayed
         awaitIdle()
-        onNode(hasTestTag(ComponentTabTag(TestComponentId))).assertExists()
-        onNode(hasTestTag(ComponentTag(TestComponentId))).assertExists()
+        onNodeWithTag(ComponentTabTag(TestComponentId1)).assertExists()
+        onNodeWithTag(ComponentTag(TestComponentId1)).assertExists()
     }
 }

@@ -51,7 +51,8 @@ val TestSnapshotId2: SnapshotId = SnapshotId(UUID.fromString("40811a0c-82ca-11ec
 
 val TestSnapshotMeta1 = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
 
-val TestComponentId = ComponentId("Test component id")
+val TestComponentId1 = ComponentId("Test component id")
+val TestComponentId2 = ComponentId("Another Test component id")
 
 inline fun ComponentDebugStates(
     range: CharRange = 'b'..'z',

@@ -28,20 +28,15 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import io.github.xlopec.reader.app.AppComponent
 import io.github.xlopec.reader.app.AppInitializer
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.network.ArticleElement
 import io.github.xlopec.reader.app.feature.network.SourceElement
-import io.github.xlopec.reader.app.model.Author
-import io.github.xlopec.reader.app.model.Description
-import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.reader.app.model.*
 import io.github.xlopec.reader.app.model.FilterType.Regular
-import io.github.xlopec.reader.app.model.Query
-import io.github.xlopec.reader.app.model.SourceId
-import io.github.xlopec.reader.app.model.Title
 import io.github.xlopec.reader.app.ui.screens.AppView
 import io.github.xlopec.reader.app.ui.screens.article.ArticleTestTag
 import io.github.xlopec.reader.app.ui.screens.article.ArticlesScreen
@@ -53,11 +48,11 @@ import io.github.xlopec.reader.environment.invoke
 import io.github.xlopec.reader.environment.setTestContent
 import io.github.xlopec.tea.core.toStatesComponent
 import io.github.xlopec.tea.data.RandomUUID
-import java.net.URL
-import java.util.Date
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Rule
 import org.junit.Test
+import java.net.URL
+import java.util.*
 
 internal class AppTest {
 
@@ -80,7 +75,7 @@ internal class AppTest {
             }
         }
 
-        onNode(hasTestTag(ProgressIndicatorTag)).assertIsDisplayed()
+        onNodeWithTag(ProgressIndicatorTag).assertIsDisplayed()
     }
 
     @Test
@@ -99,7 +94,7 @@ internal class AppTest {
             resumeDispatcher()
         }
 
-        onNode(hasTestTag(ArticleTestTag(TestUrl))).assertIsDisplayed()
+        onNodeWithTag(ArticleTestTag(TestUrl)).assertIsDisplayed()
     }
 }
 

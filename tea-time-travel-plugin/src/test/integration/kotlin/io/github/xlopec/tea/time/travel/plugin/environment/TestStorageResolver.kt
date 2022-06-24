@@ -3,7 +3,7 @@ package io.github.xlopec.tea.time.travel.plugin.environment
 import androidx.compose.ui.test.IdlingResource
 import io.github.xlopec.tea.data.Either
 import io.github.xlopec.tea.data.Left
-import io.github.xlopec.tea.time.travel.plugin.data.TestComponentId
+import io.github.xlopec.tea.time.travel.plugin.data.TestComponentId1
 import io.github.xlopec.tea.time.travel.plugin.data.TestUserValue
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.ComponentImported
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.OperationException
@@ -20,7 +20,7 @@ class SimpleTestStorageResolver : TestStorageResolver {
     override suspend fun resolveStoreCommand(command: StoreCommand): Either<NotificationMessage?, OperationException> =
         when (command) {
             is DoExportSessions -> Left(null)
-            is DoImportSession -> Left(ComponentImported(DebuggableComponent(TestComponentId, TestUserValue)))
+            is DoImportSession -> Left(ComponentImported(DebuggableComponent(TestComponentId1, TestUserValue)))
             is DoStoreSettings -> Left(null)
             else -> error("can't get here")
         }

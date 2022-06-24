@@ -1,11 +1,11 @@
 package io.github.xlopec.tea.time.travel.plugin.scenario
 
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.toStatesComponent
-import io.github.xlopec.tea.time.travel.plugin.data.TestComponentId
+import io.github.xlopec.tea.time.travel.plugin.data.TestComponentId1
 import io.github.xlopec.tea.time.travel.plugin.data.TestSnapshotMeta1
 import io.github.xlopec.tea.time.travel.plugin.data.TestUserValue
 import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
@@ -34,9 +34,9 @@ class StartPluginScenarios {
 
     /**
      * Scenario:
-     * * Valid stopped state
-     * * User clicks on `start` button
-     * * Check info view displayed
+     * * Given a valid stopped state
+     * * When user clicks on `start` button
+     * * Then check info view displayed
      */
     @Test
     fun `test info view displayed when user starts plugin given no components attach`() = rule {
@@ -48,21 +48,21 @@ class StartPluginScenarios {
             )
         }
         // fixme assertExists should be replaced with assertIsDisplayed
-        onNode(hasTestTag(InfoViewTag)).assertExists()
+        onNodeWithTag(InfoViewTag).assertExists()
 
-        onNode(hasTestTag(ServerActionButtonTag)).performClick()
+        onNodeWithTag(ServerActionButtonTag).performClick()
 
         awaitIdle()
-        onNode(hasTestTag(InfoViewTag)).assertExists()
+        onNodeWithTag(InfoViewTag).assertExists()
     }
 
     /**
      * Scenario:
-     * * Valid stopped state
-     * * User clicks on `start` button
-     * * Check info view displayed
-     * * New component attaches to plugin
-     * * Tab and component content are rendered
+     * * Given a valid stopped state
+     * * When user clicks on `start` button
+     * * Then check info view displayed
+     * * When new component attaches to plugin
+     * * Then tab and component content are rendered
      */
     @Test
     fun `test components displayed when user starts plugin given a component attaches`() = rule {
@@ -79,16 +79,16 @@ class StartPluginScenarios {
         }
 
         awaitIdle()
-        onNode(hasTestTag(ComponentTabTag(TestComponentId))).assertDoesNotExist()
-        onNode(hasTestTag(ComponentTag(TestComponentId))).assertDoesNotExist()
-        onNode(hasTestTag(ServerActionButtonTag)).performClick()
+        onNodeWithTag(ComponentTabTag(TestComponentId1)).assertDoesNotExist()
+        onNodeWithTag(ComponentTag(TestComponentId1)).assertDoesNotExist()
+        onNodeWithTag(ServerActionButtonTag).performClick()
         // fixme assertExists should be replaced with assertIsDisplayed
-        onNode(hasTestTag(InfoViewTag)).assertExists()
+        onNodeWithTag(InfoViewTag).assertExists()
 
-        messages.emit(ComponentAttached(TestComponentId, TestSnapshotMeta1, TestUserValue, CollectionWrapper()))
+        messages.emit(ComponentAttached(TestComponentId1, TestSnapshotMeta1, TestUserValue, CollectionWrapper()))
 
         awaitIdle()
-        onNode(hasTestTag(ComponentTabTag(TestComponentId))).assertExists()
-        onNode(hasTestTag(ComponentTag(TestComponentId))).assertExists()
+        onNodeWithTag(ComponentTabTag(TestComponentId1)).assertExists()
+        onNodeWithTag(ComponentTag(TestComponentId1)).assertExists()
     }
 }

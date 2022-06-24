@@ -3,8 +3,8 @@ package io.github.xlopec.tea.time.travel.plugin.ui
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import io.github.xlopec.tea.time.travel.plugin.data.InvalidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
 import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
@@ -29,8 +29,8 @@ class SettingsFieldsTests {
             )
         }
 
-        onNode(hasTestTag(HostFieldTag)).assertTextEquals(settings.host.input).assertIsEnabled()
-        onNode(hasTestTag(PortFieldTag)).assertTextEquals(settings.port.input).assertIsEnabled()
+        onNodeWithTag(HostFieldTag).assertTextEquals(settings.host.input).assertIsEnabled()
+        onNodeWithTag(PortFieldTag).assertTextEquals(settings.port.input).assertIsEnabled()
     }
 
     @Test
@@ -43,8 +43,8 @@ class SettingsFieldsTests {
             )
         }
 
-        onNode(hasTestTag(HostFieldTag)).assertTextEquals(settings.host.input).assertIsEnabled()
-        onNode(hasTestTag(PortFieldTag)).assertTextEquals(settings.port.input).assertIsEnabled()
+        onNodeWithTag(HostFieldTag).assertTextEquals(settings.host.input).assertIsEnabled()
+        onNodeWithTag(PortFieldTag).assertTextEquals(settings.port.input).assertIsEnabled()
     }
 
     @Test
@@ -57,7 +57,7 @@ class SettingsFieldsTests {
             )
         }
 
-        onNode(hasTestTag(HostFieldTag)).assertTextEquals(settings.host.input).assertIsNotEnabled()
-        onNode(hasTestTag(PortFieldTag)).assertTextEquals(settings.port.input).assertIsNotEnabled()
+        onNodeWithTag(HostFieldTag).assertTextEquals(settings.host.input).assertIsNotEnabled()
+        onNodeWithTag(PortFieldTag).assertTextEquals(settings.port.input).assertIsNotEnabled()
     }
 }

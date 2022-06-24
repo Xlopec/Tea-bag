@@ -1,7 +1,7 @@
 package io.github.xlopec.tea.time.travel.plugin.util
 
 import io.github.xlopec.tea.time.travel.plugin.data.ComponentDebugState
-import io.github.xlopec.tea.time.travel.plugin.data.TestComponentId
+import io.github.xlopec.tea.time.travel.plugin.data.TestComponentId1
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlinx.collections.immutable.persistentMapOf
 import org.junit.Test
@@ -33,7 +33,7 @@ class TabExtensionsTest {
         assertEquals(ids, mapping.keys.toList())
 
         // add element
-        val (k, v) = ComponentDebugState(TestComponentId)
+        val (k, v) = ComponentDebugState(TestComponentId1)
         assertEquals(ids + k, mapping.put(k, v).keys.toList())
 
         // remove element

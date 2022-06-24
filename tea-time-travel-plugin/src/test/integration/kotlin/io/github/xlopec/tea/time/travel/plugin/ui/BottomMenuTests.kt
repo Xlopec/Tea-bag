@@ -2,8 +2,8 @@ package io.github.xlopec.tea.time.travel.plugin.ui
 
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import io.github.xlopec.tea.time.travel.plugin.data.ComponentDebugStates
 import io.github.xlopec.tea.time.travel.plugin.data.InvalidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
@@ -32,9 +32,9 @@ class BottomMenuTests {
             )
         }
 
-        onNode(hasTestTag(ImportButtonTag)).assertIsEnabled()
-        onNode(hasTestTag(ExportButtonTag)).assertIsNotEnabled()
-        onNode(hasTestTag(ServerActionButtonTag)).assertIsEnabled()
+        onNodeWithTag(ImportButtonTag).assertIsEnabled()
+        onNodeWithTag(ExportButtonTag).assertIsNotEnabled()
+        onNodeWithTag(ServerActionButtonTag).assertIsEnabled()
     }
 
     @Test
@@ -48,9 +48,9 @@ class BottomMenuTests {
             )
         }
 
-        onNode(hasTestTag(ImportButtonTag)).assertIsEnabled()
-        onNode(hasTestTag(ExportButtonTag)).assertIsNotEnabled()
-        onNode(hasTestTag(ServerActionButtonTag)).assertIsNotEnabled()
+        onNodeWithTag(ImportButtonTag).assertIsEnabled()
+        onNodeWithTag(ExportButtonTag).assertIsNotEnabled()
+        onNodeWithTag(ServerActionButtonTag).assertIsNotEnabled()
     }
 
     @Test
@@ -64,9 +64,9 @@ class BottomMenuTests {
             )
         }
 
-        onNode(hasTestTag(ImportButtonTag)).assertIsEnabled()
-        onNode(hasTestTag(ExportButtonTag)).assertIsNotEnabled()
-        onNode(hasTestTag(ServerActionButtonTag)).assertIsEnabled()
+        onNodeWithTag(ImportButtonTag).assertIsEnabled()
+        onNodeWithTag(ExportButtonTag).assertIsNotEnabled()
+        onNodeWithTag(ServerActionButtonTag).assertIsEnabled()
     }
 
     @Test
@@ -82,8 +82,8 @@ class BottomMenuTests {
             )
         }
 
-        onNode(hasTestTag(ImportButtonTag)).assertIsEnabled()
-        onNode(hasTestTag(ExportButtonTag)).assertIsEnabled()
-        onNode(hasTestTag(ServerActionButtonTag)).assertIsEnabled()
+        onNodeWithTag(ImportButtonTag).assertIsEnabled()
+        onNodeWithTag(ExportButtonTag).assertIsEnabled()
+        onNodeWithTag(ServerActionButtonTag).assertIsEnabled()
     }
 }
