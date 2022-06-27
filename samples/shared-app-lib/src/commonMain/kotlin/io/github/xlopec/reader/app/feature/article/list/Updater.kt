@@ -30,9 +30,7 @@ import io.github.xlopec.reader.app.feature.article.list.Paging.Companion.FirstPa
 import io.github.xlopec.reader.app.misc.isIdle
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter
-import io.github.xlopec.reader.app.model.FilterType.Favorite
-import io.github.xlopec.reader.app.model.FilterType.Regular
-import io.github.xlopec.reader.app.model.FilterType.Trending
+import io.github.xlopec.reader.app.model.FilterType.*
 import io.github.xlopec.reader.app.model.toggleFavorite
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
@@ -82,7 +80,7 @@ private fun ArticlesState.toLoadUpdate(
 )
 
 private fun ArticlesState.toLoadNextUpdate() =
-    if (loadable.isIdle && loadable.hasMore && loadable.data.isNotEmpty() /*todo should we throw an error in this case?*/) {
+    if (loadable.isIdle && loadable.hasMore) {
         toLoadingNext() command toLoadCommand(nextPage())
     } else {
         // just ignore the command
