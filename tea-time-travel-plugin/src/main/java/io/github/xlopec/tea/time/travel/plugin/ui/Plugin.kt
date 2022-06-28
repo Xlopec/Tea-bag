@@ -33,12 +33,13 @@ import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.Component
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTab
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.info.InfoView
-import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.ImportSession
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.integration.Platform
-import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.plugin.model.State
+import io.github.xlopec.tea.time.travel.plugin.model.component
+import io.github.xlopec.tea.time.travel.plugin.model.componentIds
+import io.github.xlopec.tea.time.travel.plugin.model.hasAttachedComponents
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginTheme
 import io.github.xlopec.tea.time.travel.plugin.util.PluginId
 import io.github.xlopec.tea.time.travel.plugin.util.toJson
@@ -105,7 +106,7 @@ internal fun Plugin(
             modifier = Modifier.weight(2f)
         ) {
             if (state.hasAttachedComponents) {
-                ComponentsView(state.settings, state.debugger, events)
+                ComponentsView(state, events)
             } else {
                 InfoView(state, events)
             }
@@ -117,7 +118,11 @@ internal fun Plugin(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            SettingsFields(state, events)
+            SettingsFields(
+                modifier = Modifier.fillMaxWidth(),
+                state = state,
+                handler = events
+            )
 
             val scope = rememberCoroutineScope()
             val platform = LocalPlatform.current
@@ -143,10 +148,11 @@ internal fun CoroutineScope.messageHandlerFor(
 
 @Composable
 private fun ComponentsView(
-    settings: Settings,
-    debugger: Debugger,
+    state: State,
     events: MessageHandler,
 ) {
+    val debugger = state.debugger
+
     require(debugger.components.isNotEmpty())
 
     val selectedId = remember { mutableStateOf(debugger.components.values.first().id) }
@@ -159,7 +165,7 @@ private fun ComponentsView(
 
     val selectedComponent = derivedStateOf { debugger.component(selectedId.value) }
 
-    Component(settings, selectedComponent.value, events)
+    Component(state, selectedComponent.value, events)
 }
 
 private fun handleFatalException(
@@ -174,15 +180,19 @@ private fun handleFatalException(
         val logger = Logger.getInstance(PluginId)
 
         if (attachment == null) {
-            logger.error("""
+            logger.error(
+                """
                 Fatal error occurred inside Tea Time Travel plugin, no plugin state dump available.
                 Please, fill a bug for this issue - $GithubIssuesLink with attached logs, stack traces, etc.
-            """.trimIndent(), th)
+            """.trimIndent(), th
+            )
         } else {
-            logger.error("""
+            logger.error(
+                """
                 Fatal error occurred inside Tea Time Travel plugin.
                 Please, fill a bug for this issue - $GithubIssuesLink with attached logs, stack traces, etc.
-            """.trimIndent(), th, attachment)
+            """.trimIndent(), th, attachment
+            )
         }
     }
 }

@@ -25,7 +25,7 @@ class SettingsFieldsTests {
         setTestContent {
             SettingsFields(
                 state = State(settings),
-                events = {}
+                handler = {}
             )
         }
 
@@ -39,7 +39,7 @@ class SettingsFieldsTests {
         setTestContent {
             SettingsFields(
                 state = State(settings),
-                events = {}
+                handler = {}
             )
         }
 
@@ -53,7 +53,7 @@ class SettingsFieldsTests {
         setTestContent {
             SettingsFields(
                 state = State(ValidTestSettings, server = StartedTestServerStub),
-                events = {}
+                handler = {}
             )
         }
 

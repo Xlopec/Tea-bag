@@ -156,8 +156,8 @@ private fun SubTree(
         state = state,
         popupContent = { valuePopupContent(value) }
     )
-    is CollectionWrapper -> CollectionSubTree(value, level, text, state) { valuePopupContent(value) }
-    is Ref -> ReferenceSubTree(level, text, value, state) { valuePopupContent(value) }
+    is CollectionWrapper -> CollectionSubTree(value, level, text, state, valuePopupContent)
+    is Ref -> ReferenceSubTree(level, text, value, state, valuePopupContent)
 }
 
 @Composable
@@ -326,7 +326,7 @@ private fun LeafNode(
     popupContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box {
+    BoxWithConstraints(modifier = modifier) {
         val showPopup = remember { mutableStateOf(false) }
         val offset = remember { mutableStateOf(DpOffset(0.dp, 0.dp)) }
 
@@ -339,7 +339,10 @@ private fun LeafNode(
         }
 
         TreeRow(
-            modifier = modifier.selected(state.value === node).indentLevel(level)
+            modifier = Modifier
+                .fillMaxWidth()
+                .selected(state.value === node)
+                .indentLevel(level)
                 // TODO: should handle both left and right clicks
                 .clickable { _, upOffset ->
                     state.value = node
@@ -348,7 +351,9 @@ private fun LeafNode(
                         offset.value = upOffset + PointerCaptureInputAvoidanceOffset
                         showPopup.value = true
                     }
-                }, text = text, painter = painter
+                },
+            text = text,
+            painter = painter
         )
     }
 }
@@ -378,6 +383,7 @@ private fun ExpandableNode(
 
         TreeRow(
             modifier = Modifier
+                .fillMaxWidth()
                 .selected(state.value === node)
                 .indentLevel(level)
                 .clickable { _, upOffset ->
