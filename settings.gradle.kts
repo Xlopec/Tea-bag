@@ -79,8 +79,6 @@ dependencyResolutionManagement {
 
             library("android-test-orchestrator", "androidx.test:orchestrator:1.4.1")
 
-            library("android-test-runner", "androidx.test:orchestrator:1.4.1")
-
             // Coroutines
 
             library("coroutines-core", "org.jetbrains.kotlinx", "kotlinx-coroutines-core")
