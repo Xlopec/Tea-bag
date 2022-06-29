@@ -8,9 +8,10 @@ import io.github.xlopec.tea.core.ResolveCtx
 import io.github.xlopec.tea.core.effects
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.ComponentImported
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.OperationException
+import io.github.xlopec.tea.time.travel.plugin.integration.FileException
+import io.github.xlopec.tea.time.travel.plugin.integration.InternalException
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.integration.StoreCommand
-import io.github.xlopec.tea.time.travel.plugin.integration.toPluginException
 import io.github.xlopec.tea.time.travel.plugin.util.settings
 
 fun interface StorageResolver {
@@ -46,7 +47,7 @@ private class StorageResolverImpl(
     private suspend fun DoExportSessions.exportSettings(): Either<OperationException, Nothing?> =
         Either.catch { gson.exportAll(dir, sessions) }
             .map { null }
-            .mapLeft { OperationException(it.toPluginException(), this, "couldn't export session to dir $dir") }
+            .mapLeft { OperationException(FileException("Couldn't export session to dir $dir", it), this) }
 
     private suspend fun DoImportSession.import(): Either<OperationException, ComponentImported> =
         gson.import(file)
@@ -64,5 +65,5 @@ private class StorageResolverImpl(
     private fun DoStoreSettings.storeSettings(): Either<OperationException, Nothing?> =
         Either.catch { properties.settings = settings }
             .map { null }
-            .mapLeft { OperationException(it, this, "Couldn't store plugin settings") }
+            .mapLeft { OperationException(InternalException("Plugin couldn't store settings", it), this) }
 }

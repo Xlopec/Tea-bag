@@ -3,25 +3,14 @@ package io.github.xlopec.tea.time.travel.plugin.feature.notification
 import io.github.xlopec.tea.time.travel.plugin.integration.Command
 import io.github.xlopec.tea.time.travel.plugin.integration.NotificationMessage
 import io.github.xlopec.tea.time.travel.plugin.integration.PluginException
-import io.github.xlopec.tea.time.travel.plugin.integration.toPluginException
-import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
-import io.github.xlopec.tea.time.travel.plugin.model.Server
-import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
-import io.github.xlopec.tea.time.travel.plugin.model.Value
+import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 data class OperationException(
     val exception: PluginException,
     val operation: Command? = null,
     val description: String? = null,
-) : NotificationMessage {
-    constructor(
-        raw: Throwable,
-        operation: Command? = null,
-        description: String? = null
-    ) : this(raw.toPluginException(), operation, description)
-}
+) : NotificationMessage
 
 @JvmInline
 value class NotifyStarted(
