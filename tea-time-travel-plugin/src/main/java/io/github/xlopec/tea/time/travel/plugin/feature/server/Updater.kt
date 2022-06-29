@@ -6,29 +6,29 @@ import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
 import io.github.xlopec.tea.time.travel.plugin.integration.Command
 import io.github.xlopec.tea.time.travel.plugin.integration.ServerMessage
-import io.github.xlopec.tea.time.travel.plugin.integration.warnUnacceptableMessage
+import io.github.xlopec.tea.time.travel.plugin.integration.onUnhandledMessage
 import io.github.xlopec.tea.time.travel.plugin.model.Server
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.Valid
 
-internal fun updateForServerMessage(
-    message: ServerMessage,
-    state: State
+internal fun State.onUpdateForServerMessage(
+    message: ServerMessage
 ): Update<State, Command> =
     when {
-        message === StartServer && state.server !is Server -> startServer(state)
-        message === StopServer && state.server is Server -> state command DoStopServer(state.server)
-        else -> warnUnacceptableMessage(message, state)
+        message === StartServer && server !is Server -> onStartServer()
+        message === StopServer && server is Server -> onStopServer(server)
+        else -> onUnhandledMessage(message)
     }
 
-private fun startServer(
-    state: State
-): Update<State, Command> {
+private fun State.onStopServer(server: Server) =
+    this command DoStopServer(server)
 
-    val host = state.settings.host
-    val port = state.settings.port
+private fun State.onStartServer(): Update<State, Command> {
+
+    val host = settings.host
+    val port = settings.port
 
     return if (host is Valid && port is Valid) {
-        state command DoStartServer(ServerAddress(host.t, port.t))
-    } else state.noCommand()
+        this command DoStartServer(ServerAddress(host.t, port.t))
+    } else noCommand()
 }

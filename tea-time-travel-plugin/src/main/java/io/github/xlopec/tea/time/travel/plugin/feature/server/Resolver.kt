@@ -62,7 +62,7 @@ private class ServerCommandResolverImpl(
             .mapLeft {
                 val message = "Plugin failed to stop debug server running on ${server.address.humanReadable}"
                 OperationException(NetworkException(it.message ?: message, it), this, message)
-            }.map { NotifyStopped }
+            }.map { ServerStopped }
 
     private suspend fun DoStartServer.start() =
         Either.catch {
@@ -75,12 +75,12 @@ private class ServerCommandResolverImpl(
             val message =
                 "Plugin failed to start debug server on address ${address.humanReadable}"
             OperationException(NetworkException(it.message ?: message, it), this, message)
-        }.map(::NotifyStarted)
+        }.map(::ServerStarted)
 
     private suspend fun DoApplyState.applyState() = Either.catch {
         server(id, ApplyState(state.toJsonElement()))
         project.showBalloon(StateAppliedBalloon(id))
-        StateApplied(id, state)
+        StateDeployed(id, state)
     }.mapLeft {
         OperationException(
             DebugServerException("Plugin failed to apply state to component ${id.value}", it),

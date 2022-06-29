@@ -35,5 +35,6 @@ private class NotificationResolverImpl(
         project.showBalloon(UnacceptableMessageBalloon(message, state))
 
     private fun DoNotifyOperationException.notifyException() =
+        // todo put data to 'Notifications'
         project.showBalloon(ExceptionBalloon(exception, operation, description))
 }

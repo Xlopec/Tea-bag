@@ -45,7 +45,7 @@ internal class UpdateForUiMessageTest {
             StartedFromPairs(otherStates + NonEmptyComponentDebugState(id, meta))
 
         RemoveSnapshots(id, snapshotId)
-        val (state, commands) = updateForUiMessage(RemoveSnapshots(id, snapshotId), pluginState)
+        val (state, commands) = pluginState.onUpdateForComponentMessage(RemoveSnapshots(id, snapshotId))
 
         assertTrue(commands.isEmpty())
         assertEquals(StartedFromPairs(otherStates + (id to DebuggableComponent(id, Null))), state)
@@ -75,9 +75,8 @@ internal class UpdateForUiMessageTest {
         )
 
         RemoveSnapshots(id, meta.take(hi).map { (id, _) -> id }.toSet())
-        val (state, commands) = updateForUiMessage(
-            RemoveSnapshots(id, meta.take(hi).map { (id, _) -> id }.toSet()),
-            pluginState
+        val (state, commands) = pluginState.onUpdateForComponentMessage(
+            RemoveSnapshots(id, meta.take(hi).map { (id, _) -> id }.toSet())
         )
 
         assertTrue(commands.isEmpty())
@@ -103,7 +102,7 @@ internal class UpdateForUiMessageTest {
         val pluginState =
             StartedFromPairs(otherStates + NonEmptyComponentDebugState(id, meta))
 
-        val (state, commands) = updateForUiMessage(RemoveAllSnapshots(id), pluginState)
+        val (state, commands) = pluginState.onUpdateForComponentMessage(RemoveAllSnapshots(id))
 
         assertTrue(commands.isEmpty())
         assertEquals(StartedFromPairs(otherStates + (id to DebuggableComponent(id, Null))), state)
@@ -123,7 +122,7 @@ internal class UpdateForUiMessageTest {
         )
 
         RemoveComponent(removalComponentId)
-        val (state, commands) = updateForUiMessage(RemoveComponent(removalComponentId), initialState)
+        val (state, commands) = initialState.onUpdateForComponentMessage(RemoveComponent(removalComponentId))
 
         assertTrue(commands.isEmpty())
         assertEquals(StartedFromPairs(otherStates), state)
@@ -146,7 +145,7 @@ internal class UpdateForUiMessageTest {
         )
 
         ApplyMessage(componentId, snapshotId)
-        val (state, commands) = updateForUiMessage(ApplyMessage(componentId, snapshotId), initialState)
+        val (state, commands) = initialState.onUpdateForComponentMessage(ApplyMessage(componentId, snapshotId))
 
         assertSame(initialState, state)
         assertEquals(setOf(DoApplyMessage(componentId, value, StartedTestServerStub)), commands)
@@ -169,7 +168,7 @@ internal class UpdateForUiMessageTest {
         )
 
         ApplyState(componentId, snapshotId)
-        val (state, commands) = updateForUiMessage(ApplyState(componentId, snapshotId), initialState)
+        val (state, commands) = initialState.onUpdateForComponentMessage(ApplyState(componentId, snapshotId))
 
         assertSame(initialState, state)
         assertEquals(setOf(DoApplyState(componentId, value, StartedTestServerStub)), commands)
@@ -188,14 +187,13 @@ internal class UpdateForUiMessageTest {
             ignoreCase = false,
             option = FilterOption.SUBSTRING
         )
-        val (state, commands) = updateForUiMessage(
+        val (state, commands) = initialState.onUpdateForComponentMessage(
             UpdateFilter(
                 ComponentId("a"),
                 "",
                 ignoreCase = false,
                 option = FilterOption.SUBSTRING
-            ),
-            initialState
+            )
         )
 
         assertTrue(commands.isEmpty())
@@ -234,14 +232,13 @@ internal class UpdateForUiMessageTest {
             ignoreCase = false,
             option = FilterOption.SUBSTRING
         )
-        val (state, commands) = updateForUiMessage(
+        val (state, commands) = initialState.onUpdateForComponentMessage(
             UpdateFilter(
                 ComponentId("a"),
                 input,
                 ignoreCase = false,
                 option = FilterOption.SUBSTRING
-            ),
-            initialState
+            )
         )
 
         assertTrue(commands.isEmpty())

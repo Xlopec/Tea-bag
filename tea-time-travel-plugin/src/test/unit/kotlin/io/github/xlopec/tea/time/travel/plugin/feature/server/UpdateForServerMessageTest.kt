@@ -77,7 +77,7 @@ internal class UpdateForServerMessageTest {
     fun `test the result is calculated properly given plugin state is Stopped and message is StartServer`() {
         TestSettings.forEach { settings ->
             val stopped = State(settings)
-            val (state, commands) = updateForServerMessage(StartServer, stopped)
+            val (state, commands) = stopped.onUpdateForServerMessage(StartServer)
 
             assertTrue("test failed for settings $settings") {
                 if (settings.host.isValid() && settings.port.isValid()) {
@@ -103,7 +103,7 @@ internal class UpdateForServerMessageTest {
 
             assertTrue("test failed for settings $settings") {
                 val pluginState = State(settings, server = StartedTestServerStub)
-                val (state, commands) = updateForServerMessage(StopServer, pluginState)
+                val (state, commands) = pluginState.onUpdateForServerMessage(StopServer)
 
                 state == pluginState && commands == setOf(DoStopServer(pluginState.server as Server))
             }
@@ -114,7 +114,7 @@ internal class UpdateForServerMessageTest {
     fun `test when illegal combination of message and state warning command is returned`() {
 
         val initialState = State(ValidTestSettings)
-        val (state, commands) = updateForServerMessage(StopServer, initialState)
+        val (state, commands) = initialState.onUpdateForServerMessage(StopServer)
 
         assertSame(initialState, state)
         assertEquals(setOf(DoWarnUnacceptableMessage(StopServer, initialState)), commands)

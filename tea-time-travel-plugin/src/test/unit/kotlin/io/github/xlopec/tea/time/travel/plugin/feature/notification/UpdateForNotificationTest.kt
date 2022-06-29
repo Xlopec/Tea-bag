@@ -35,9 +35,8 @@ internal class UpdateForNotificationTest {
 
     @Test
     fun `test when message is NotifyStarted then plugin goes to a Started state`() {
-        val (nextState, commands) = updateForNotification(
-            NotifyStarted(StartedTestServerStub),
-            State(ValidTestSettings)
+        val (nextState, commands) = State(ValidTestSettings).updateForNotificationMessage(
+            ServerStarted(StartedTestServerStub)
         )
 
         assertEquals(
@@ -52,12 +51,11 @@ internal class UpdateForNotificationTest {
     @Test
     fun `test when message is NotifyStopped then plugin goes to a Stopped state`() {
 
-        val (nextState, commands) = updateForNotification(
-            NotifyStopped,
-            State(
-                ValidTestSettings,
-                server = StartedTestServerStub,
-            )
+        val (nextState, commands) = State(
+            ValidTestSettings,
+            server = StartedTestServerStub,
+        ).updateForNotificationMessage(
+            ServerStopped
         )
 
         assertEquals(State(ValidTestSettings), nextState)
@@ -74,9 +72,8 @@ internal class UpdateForNotificationTest {
         val otherStates = ComponentDebugStates('b'..'z')
         val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
 
-        val (nextState, commands) = updateForNotification(
-            AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper),
-            StartedFromPairs(otherStates)
+        val (nextState, commands) = StartedFromPairs(otherStates).updateForNotificationMessage(
+            AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper)
         )
 
         val expectedDebugState = DebuggableComponent(
@@ -107,9 +104,8 @@ internal class UpdateForNotificationTest {
         val newState = StringWrapper("d")
         val commandsWrapper = CollectionWrapper(listOf())
 
-        val (nextState, commands) = updateForNotification(
-            AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper),
-            StartedFromPairs(otherStates)
+        val (nextState, commands) = StartedFromPairs(otherStates).updateForNotificationMessage(
+            AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper)
         )
 
         val expectedDebugState = DebuggableComponent(
@@ -135,9 +131,8 @@ internal class UpdateForNotificationTest {
         val componentId = ComponentId("a")
         val newState = StringWrapper("d")
 
-        val (nextState, commands) = updateForNotification(
-            StateApplied(componentId, newState),
-            StartedFromPairs(otherStates)
+        val (nextState, commands) = StartedFromPairs(otherStates).updateForNotificationMessage(
+            StateDeployed(componentId, newState)
         )
 
         val expectedDebugState = DebuggableComponent(componentId, newState)
@@ -153,7 +148,7 @@ internal class UpdateForNotificationTest {
     fun `test when apply state and component doesn't exist then it doesn't get applied`() {
         val state = StartedFromPairs(ComponentDebugStates())
 
-        val (nextState, commands) = updateForNotification(StateApplied(ComponentId("a"), StringWrapper("d")), state)
+        val (nextState, commands) = state.updateForNotificationMessage(StateDeployed(ComponentId("a"), StringWrapper("d")))
 
         assertSame(state, nextState)
         assertTrue(commands.isEmpty())
@@ -167,9 +162,8 @@ internal class UpdateForNotificationTest {
         val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
         val collectionWrapper = CollectionWrapper(listOf(StringWrapper("a")))
 
-        val (nextState, commands) = updateForNotification(
-            ComponentAttached(componentId, meta, state, collectionWrapper),
-            StartedFromPairs(otherStates)
+        val (nextState, commands) = StartedFromPairs(otherStates).updateForNotificationMessage(
+            ComponentAttached(componentId, meta, state, collectionWrapper)
         )
 
         assertEquals(
@@ -206,7 +200,7 @@ internal class UpdateForNotificationTest {
     fun `test when illegal combination of message and state warning command is returned`() {
         val initialState = State(ValidTestSettings)
         val message = object : NotificationMessage {}
-        val (state, commands) = updateForNotification(message, initialState)
+        val (state, commands) = initialState.updateForNotificationMessage(message)
 
         assertSame(initialState, state)
         assertEquals(setOf(DoWarnUnacceptableMessage(message, initialState)), commands)

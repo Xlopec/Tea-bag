@@ -13,11 +13,11 @@ data class OperationException(
 ) : NotificationMessage
 
 @JvmInline
-value class NotifyStarted(
+value class ServerStarted(
     val server: Server
 ) : NotificationMessage
 
-object NotifyStopped : NotificationMessage
+object ServerStopped : NotificationMessage
 
 data class AppendSnapshot(
     val componentId: ComponentId,
@@ -28,7 +28,7 @@ data class AppendSnapshot(
     val commands: CollectionWrapper,
 ) : NotificationMessage
 
-data class StateApplied(
+data class StateDeployed(
     val componentId: ComponentId,
     val state: Value
 ) : NotificationMessage
