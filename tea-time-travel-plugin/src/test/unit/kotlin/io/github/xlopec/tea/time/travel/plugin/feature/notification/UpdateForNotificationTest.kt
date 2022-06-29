@@ -18,45 +18,35 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.notification
 
-import io.github.xlopec.tea.time.travel.plugin.data.ComponentDebugState
-import io.github.xlopec.tea.time.travel.plugin.data.ComponentDebugStates
-import io.github.xlopec.tea.time.travel.plugin.data.NonEmptyComponentDebugState
-import io.github.xlopec.tea.time.travel.plugin.data.RandomSnapshotId
-import io.github.xlopec.tea.time.travel.plugin.data.StartedFromPairs
-import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
-import io.github.xlopec.tea.time.travel.plugin.data.TestSnapshotId1
-import io.github.xlopec.tea.time.travel.plugin.data.TestTimestamp1
-import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
+import io.github.xlopec.tea.time.travel.plugin.data.*
 import io.github.xlopec.tea.time.travel.plugin.integration.NotificationMessage
-import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
-import io.github.xlopec.tea.time.travel.plugin.model.FilteredSnapshot
-import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
-import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
-import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
-import io.kotlintest.matchers.collections.shouldBeEmpty
-import io.kotlintest.matchers.collections.shouldContainExactly
-import io.kotlintest.matchers.types.shouldBeSameInstanceAs
-import io.kotlintest.shouldBe
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import kotlin.test.assertEquals
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 @RunWith(JUnit4::class)
 internal class UpdateForNotificationTest {
 
     @Test
     fun `test when message is NotifyStarted then plugin goes to a Started state`() {
-        val (nextState, commands) = updateForNotification(NotifyStarted(StartedTestServerStub), State(ValidTestSettings))
-
-        nextState shouldBe State(
-            ValidTestSettings,
-            server = StartedTestServerStub,
+        val (nextState, commands) = updateForNotification(
+            NotifyStarted(StartedTestServerStub),
+            State(ValidTestSettings)
         )
-        commands.shouldBeEmpty()
+
+        assertEquals(
+            State(
+                ValidTestSettings,
+                server = StartedTestServerStub,
+            ), nextState
+        )
+        assertTrue(commands.isEmpty())
     }
 
     @Test
@@ -70,8 +60,8 @@ internal class UpdateForNotificationTest {
             )
         )
 
-        nextState shouldBe State(ValidTestSettings)
-        commands.shouldBeEmpty()
+        assertEquals(State(ValidTestSettings), nextState)
+        assertTrue(commands.isEmpty())
     }
 
     @Test
@@ -96,8 +86,8 @@ internal class UpdateForNotificationTest {
             filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState, commandsWrapper))
         )
 
-        nextState shouldBe StartedFromPairs(otherStates + (componentId to expectedDebugState))
-        commands.shouldBeEmpty()
+        assertEquals(StartedFromPairs(otherStates + (componentId to expectedDebugState)), nextState)
+        assertTrue(commands.isEmpty())
     }
 
     @Test
@@ -129,8 +119,8 @@ internal class UpdateForNotificationTest {
             filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState))
         )
 
-        nextState shouldBe StartedFromPairs(otherStates + (componentId to expectedDebugState))
-        commands.shouldBeEmpty()
+        assertEquals(StartedFromPairs(otherStates + (componentId to expectedDebugState)), nextState)
+        assertTrue(commands.isEmpty())
     }
 
     @Test
@@ -152,8 +142,11 @@ internal class UpdateForNotificationTest {
 
         val expectedDebugState = DebuggableComponent(componentId, newState)
 
-        nextState shouldBe StartedFromPairs(otherStates.takeLast(otherStates.size - 1) + (componentId to expectedDebugState))
-        commands.shouldBeEmpty()
+        assertEquals(
+            StartedFromPairs(otherStates.takeLast(otherStates.size - 1) + (componentId to expectedDebugState)),
+            nextState
+        )
+        assertTrue(commands.isEmpty())
     }
 
     @Test
@@ -162,8 +155,8 @@ internal class UpdateForNotificationTest {
 
         val (nextState, commands) = updateForNotification(StateApplied(ComponentId("a"), StringWrapper("d")), state)
 
-        nextState shouldBeSameInstanceAs state
-        commands.shouldBeEmpty()
+        assertSame(state, nextState)
+        assertTrue(commands.isEmpty())
     }
 
     @Test
@@ -179,31 +172,34 @@ internal class UpdateForNotificationTest {
             StartedFromPairs(otherStates)
         )
 
-        nextState shouldBe StartedFromPairs(
-            otherStates +
-                    ComponentDebugState(
-                        componentId = componentId,
-                        state = state,
-                        snapshots = persistentListOf(
-                            OriginalSnapshot(
-                                meta = meta,
-                                message = null,
-                                state = state,
-                                commands = collectionWrapper
-                            )
-                        ),
-                        filteredSnapshots = persistentListOf(
-                            FilteredSnapshot(
-                                meta = meta,
-                                message = null,
-                                state = state,
-                                commands = collectionWrapper
+        assertEquals(
+            StartedFromPairs(
+                otherStates +
+                        ComponentDebugState(
+                            componentId = componentId,
+                            state = state,
+                            snapshots = persistentListOf(
+                                OriginalSnapshot(
+                                    meta = meta,
+                                    message = null,
+                                    state = state,
+                                    commands = collectionWrapper
+                                )
+                            ),
+                            filteredSnapshots = persistentListOf(
+                                FilteredSnapshot(
+                                    meta = meta,
+                                    message = null,
+                                    state = state,
+                                    commands = collectionWrapper
+                                )
                             )
                         )
-                    )
+            ),
+            nextState
         )
 
-        commands.shouldContainExactly(DoNotifyComponentAttached(componentId))
+        assertEquals(setOf(DoNotifyComponentAttached(componentId)), commands)
     }
 
     @Test
@@ -212,7 +208,7 @@ internal class UpdateForNotificationTest {
         val message = object : NotificationMessage {}
         val (state, commands) = updateForNotification(message, initialState)
 
-        state shouldBeSameInstanceAs initialState
-        commands.shouldContainExactly(DoWarnUnacceptableMessage(message, initialState))
+        assertSame(initialState, state)
+        assertEquals(setOf(DoWarnUnacceptableMessage(message, initialState)), commands)
     }
 }

@@ -18,7 +18,10 @@
 
 package io.github.xlopec.tea.time.travel.plugin.data
 
+import com.google.gson.internal.LazilyParsedNumber
 import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.Port
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.plugin.model.*
@@ -28,6 +31,9 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentMap
 import java.time.LocalDateTime
 import java.util.*
+
+val TestHost = Host.of("localhost")!!
+val TestPort = Port(123)
 
 val ValidTestSettings = Settings(Valid(TestHost.value, TestHost), Valid(TestPort.value.toString(), TestPort), false)
 
@@ -42,16 +48,16 @@ val StartedTestServerStub = object : Server {
     override suspend fun stop() = Unit
     override suspend fun invoke(component: ComponentId, message: GsonClientMessage) = Unit
 }
-
 val TestTimestamp1: LocalDateTime = LocalDateTime.of(2000, 1, 1, 1, 1)
-val TestTimestamp2: LocalDateTime = LocalDateTime.of(2001, 2, 3, 4, 5)
 
+val TestTimestamp2: LocalDateTime = LocalDateTime.of(2001, 2, 3, 4, 5)
 val TestSnapshotId1: SnapshotId = SnapshotId(UUID.fromString("3853fab6-f20c-11ea-adc1-0242ac120001"))
+
 val TestSnapshotId2: SnapshotId = SnapshotId(UUID.fromString("40811a0c-82ca-11ec-a8a3-0242ac120002"))
 
 val TestSnapshotMeta1 = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
-
 val TestComponentId1 = ComponentId("Test component id")
+
 val TestComponentId2 = ComponentId("Another Test component id")
 
 inline fun ComponentDebugStates(
@@ -104,3 +110,50 @@ fun StartedFromPairs(
 )
 
 fun RandomSnapshotId() = SnapshotId(UUID.randomUUID())
+val TestUserValue = Ref(
+    Type.of("com.max.oliynick.Test"),
+    setOf(
+        Property("name", StringWrapper("Max")),
+        Property("surname", StringWrapper("Oliynick")),
+        Property(
+            "contacts",
+            Ref(
+                Type.of("com.max.oliynick.Contact"),
+                setOf(
+                    Property(
+                        "site",
+                        Ref(
+                            Type.of("java.util.URL"),
+                            setOf(
+                                Property("domain", StringWrapper("google")),
+                                // LazilyParsedNumber is workaround since Number != LazilyParsedNumber,
+                                // LazilyParsedNumber might be compared only with other lazily parsed numbers
+                                Property("port", NumberWrapper(LazilyParsedNumber(8080.toString()))),
+                                Property("protocol", StringWrapper("https"))
+                            ),
+                        )
+                    ),
+                )
+            )
+        ),
+        Property("position", StringWrapper("Developer")),
+    )
+)
+val TestAppStateValue =
+    Ref(
+        Type.of("app.State"),
+        setOf(
+            Property(
+                "users",
+                CollectionWrapper(
+                    listOf(
+                        TestUserValue,
+                        TestUserValue,
+                        TestUserValue,
+                        TestUserValue,
+                        TestUserValue,
+                    )
+                )
+            )
+        )
+    )

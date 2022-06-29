@@ -16,10 +16,10 @@
 
 package io.github.xlopec.tea.time.travel.plugin.util
 
-import io.kotlintest.matchers.collections.shouldContainExactly
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import kotlin.test.assertContentEquals
 
 @RunWith(JUnit4::class)
 internal class CollectionExtensionsTest {
@@ -42,7 +42,7 @@ internal class CollectionExtensionsTest {
 
         input.replaceAll(expected, DiffCallbackImp)
 
-        input shouldContainExactly expected
+        assertContentEquals(expected, input)
     }
 
     @Test
@@ -53,7 +53,7 @@ internal class CollectionExtensionsTest {
 
         input.replaceAll(expected, DiffCallbackImp)
 
-        input shouldContainExactly expected
+        assertContentEquals(expected, input)
     }
 
     @Test
@@ -64,7 +64,7 @@ internal class CollectionExtensionsTest {
 
         input.replaceAll(expected, DiffCallbackImp)
 
-        input shouldContainExactly expected
+        assertContentEquals(expected, input)
     }
 
     @Test
@@ -75,7 +75,7 @@ internal class CollectionExtensionsTest {
 
         input.replaceAll(expected, DiffCallbackImp)
 
-        input shouldContainExactly expected
+        assertContentEquals(expected, input)
     }
 
     @Test
@@ -86,7 +86,7 @@ internal class CollectionExtensionsTest {
 
         input.replaceAll(expected, DiffCallbackImp)
 
-        input shouldContainExactly expected
+        assertContentEquals(expected, input)
     }
 
     @Test
@@ -97,6 +97,6 @@ internal class CollectionExtensionsTest {
 
         input.replaceAll(expected, DiffCallbackImp)
 
-        input shouldContainExactly expected
+        assertContentEquals(expected, input)
     }
 }

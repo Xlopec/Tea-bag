@@ -18,44 +18,17 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.component.integration
 
-import io.github.xlopec.tea.time.travel.plugin.data.ComponentDebugState
-import io.github.xlopec.tea.time.travel.plugin.data.ComponentDebugStates
-import io.github.xlopec.tea.time.travel.plugin.data.EmptyFilteredSnapshot
-import io.github.xlopec.tea.time.travel.plugin.data.EmptyOriginalSnapshot
-import io.github.xlopec.tea.time.travel.plugin.data.NonEmptyComponentDebugState
-import io.github.xlopec.tea.time.travel.plugin.data.RandomSnapshotId
-import io.github.xlopec.tea.time.travel.plugin.data.StartedFromPairs
-import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
-import io.github.xlopec.tea.time.travel.plugin.data.TestTimestamp1
-import io.github.xlopec.tea.time.travel.plugin.data.times
-import io.github.xlopec.tea.time.travel.plugin.model.FilterOption
+import io.github.xlopec.tea.time.travel.plugin.data.*
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyState
-import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
-import io.github.xlopec.tea.time.travel.plugin.model.FilteredSnapshot
-import io.github.xlopec.tea.time.travel.plugin.model.Null
-import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
-import io.github.xlopec.tea.time.travel.plugin.model.Server
-import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
-import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Valid
-import io.github.xlopec.tea.time.travel.plugin.model.component
+import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
-import io.kotlintest.matchers.boolean.shouldBeFalse
-import io.kotlintest.matchers.collections.shouldBeEmpty
-import io.kotlintest.matchers.collections.shouldContainExactly
-import io.kotlintest.matchers.types.shouldBeInstanceOf
-import io.kotlintest.matchers.types.shouldBeSameInstanceAs
-import io.kotlintest.matchers.types.shouldNotBeNull
-import io.kotlintest.should
-import io.kotlintest.shouldBe
-import kotlin.test.assertEquals
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import kotlin.test.*
 
 @RunWith(JUnit4::class)
 internal class UpdateForUiMessageTest {
@@ -74,8 +47,8 @@ internal class UpdateForUiMessageTest {
         RemoveSnapshots(id, snapshotId)
         val (state, commands) = updateForUiMessage(RemoveSnapshots(id, snapshotId), pluginState)
 
-        commands.shouldBeEmpty()
-        state shouldBe StartedFromPairs(otherStates + (id to DebuggableComponent(id, Null)))
+        assertTrue(commands.isEmpty())
+        assertEquals(StartedFromPairs(otherStates + (id to DebuggableComponent(id, Null))), state)
     }
 
     @Test
@@ -107,13 +80,15 @@ internal class UpdateForUiMessageTest {
             pluginState
         )
 
-        commands.shouldBeEmpty()
-        state shouldBe StartedFromPairs(
-            otherStates + ComponentDebugState(
-                id,
-                resultingOriginalSnapshots.toPersistentList(),
-                resultingFilteredSnapshots.toPersistentList()
-            )
+        assertTrue(commands.isEmpty())
+        assertEquals(
+            StartedFromPairs(
+                otherStates + ComponentDebugState(
+                    id,
+                    resultingOriginalSnapshots.toPersistentList(),
+                    resultingFilteredSnapshots.toPersistentList()
+                )
+            ), state
         )
     }
 
@@ -130,8 +105,8 @@ internal class UpdateForUiMessageTest {
 
         val (state, commands) = updateForUiMessage(RemoveAllSnapshots(id), pluginState)
 
-        commands.shouldBeEmpty()
-        state shouldBe StartedFromPairs(otherStates + (id to DebuggableComponent(id, Null)))
+        assertTrue(commands.isEmpty())
+        assertEquals(StartedFromPairs(otherStates + (id to DebuggableComponent(id, Null))), state)
     }
 
     @Test
@@ -150,8 +125,8 @@ internal class UpdateForUiMessageTest {
         RemoveComponent(removalComponentId)
         val (state, commands) = updateForUiMessage(RemoveComponent(removalComponentId), initialState)
 
-        commands.shouldBeEmpty()
-        state shouldBe StartedFromPairs(otherStates)
+        assertTrue(commands.isEmpty())
+        assertEquals(StartedFromPairs(otherStates), state)
     }
 
     @Test
@@ -173,8 +148,8 @@ internal class UpdateForUiMessageTest {
         ApplyMessage(componentId, snapshotId)
         val (state, commands) = updateForUiMessage(ApplyMessage(componentId, snapshotId), initialState)
 
-        state shouldBeSameInstanceAs initialState
-        commands.shouldContainExactly(DoApplyMessage(componentId, value, StartedTestServerStub))
+        assertSame(initialState, state)
+        assertEquals(setOf(DoApplyMessage(componentId, value, StartedTestServerStub)), commands)
     }
 
     @Test
@@ -196,8 +171,8 @@ internal class UpdateForUiMessageTest {
         ApplyState(componentId, snapshotId)
         val (state, commands) = updateForUiMessage(ApplyState(componentId, snapshotId), initialState)
 
-        state shouldBeSameInstanceAs initialState
-        commands.shouldContainExactly(DoApplyState(componentId, value, StartedTestServerStub))
+        assertSame(initialState, state)
+        assertEquals(setOf(DoApplyState(componentId, value, StartedTestServerStub)), commands)
     }
 
     @Test
@@ -223,16 +198,14 @@ internal class UpdateForUiMessageTest {
             initialState
         )
 
-        commands.shouldBeEmpty()
-        state.server.shouldBeInstanceOf<Server>()
+        assertTrue(commands.isEmpty())
+        assertIs<Server>(state.server)
 
         with(state.debugger.component(componentId)) {
-            filter.should { filter ->
-                filter.ignoreCase.shouldBeFalse()
-                filter.option shouldBeSameInstanceAs FilterOption.SUBSTRING
-                filter.predicate.shouldBeInstanceOf<Valid<String>>()
-                filter.predicate.input shouldBe ""
-            }
+            assertFalse(filter.ignoreCase)
+            assertSame(FilterOption.SUBSTRING, filter.option)
+            assertIs<Valid<String>>(filter.predicate)
+            assertEquals("", filter.predicate.input)
 
             assertEquals(snapshots.size, filteredSnapshots.size)
 
@@ -240,16 +213,10 @@ internal class UpdateForUiMessageTest {
                 val s = snapshots[i]
                 val fs = filteredSnapshots[i]
 
-                fs.state shouldBe s.state
-                fs.message shouldBe s.message
-                fs.meta shouldBe s.meta
+                assertEquals(s.state, fs.state)
+                assertEquals(s.message, fs.message)
+                assertEquals(s.meta, fs.meta)
             }
-
-            /*snapshots.shouldForEach(filteredSnapshots) { s, fs ->
-                fs.state shouldBe s.state
-                fs.message shouldBe s.message
-                fs.meta shouldBe s.meta
-            }*/
         }
     }
 
@@ -277,19 +244,15 @@ internal class UpdateForUiMessageTest {
             initialState
         )
 
-        commands.shouldBeEmpty()
-        state.server.shouldBeInstanceOf<Server>()
+        assertTrue(commands.isEmpty())
+        assertIs<Server>(state.server)
 
         val component = state.debugger.component(componentId)
 
-        component.filter.should { filter ->
-            filter.ignoreCase.shouldBeFalse()
-            filter.option shouldBeSameInstanceAs FilterOption.SUBSTRING
+        assertFalse(component.filter.ignoreCase)
+        assertSame(FilterOption.SUBSTRING, component.filter.option)
 
-            filter.predicate.should { predicate ->
-                predicate.shouldNotBeNull()
-                predicate.shouldBeInstanceOf<Valid<String>>()
-            }
-        }
+        assertNotNull(component.filter.predicate)
+        assertIs<Valid<String>>(component.filter.predicate)
     }
 }

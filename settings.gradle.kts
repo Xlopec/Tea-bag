@@ -60,6 +60,7 @@ dependencyResolutionManagement {
             version("compose", "1.2.0-beta02")
             version("accompanist", "0.24.9-beta")
             version("sqldelight", "1.5.3")
+            version("arrow", "1.0.1")
 
             // Testing
 
@@ -252,6 +253,10 @@ dependencyResolutionManagement {
             // Gson
 
             library("gson", "com.google.code.gson:gson:2.9.0")
+
+            // Arrow Kt
+
+            library("arrow-core", "io.arrow-kt", "arrow-core").versionRef("arrow")
 
             // Sqldelight
 

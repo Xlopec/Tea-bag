@@ -17,29 +17,21 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
 import com.google.gson.JsonElement
-import io.github.xlopec.tea.data.Avatar
-import io.github.xlopec.tea.data.Id
-import io.github.xlopec.tea.data.Name
-import io.github.xlopec.tea.data.Photo
-import io.github.xlopec.tea.data.User
+import io.github.xlopec.tea.data.*
 import io.github.xlopec.tea.time.travel.gson.Gson
-import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Property
-import io.github.xlopec.tea.time.travel.plugin.model.Ref
-import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Type
+import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.protocol.ApplyMessage
 import io.github.xlopec.tea.time.travel.protocol.ClientMessage
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.protocol.NotifyClient
-import io.kotlintest.shouldBe
-import java.io.File
-import java.io.FileReader
-import java.util.UUID
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import java.io.File
+import java.io.FileReader
+import java.util.UUID
+import kotlin.test.assertEquals
 
 @RunWith(JUnit4::class)
 internal class ClientMessageSerializationTest {
@@ -60,7 +52,7 @@ internal class ClientMessageSerializationTest {
         val json = toJson(applyMessage)
         val fromJson = fromJson(json, ClientMessage::class.java)
 
-        applyMessage shouldBe fromJson
+        assertEquals(fromJson, applyMessage)
     }
 
     @Test
@@ -76,16 +68,16 @@ internal class ClientMessageSerializationTest {
         )
 
         val expectedMessageTree = toJsonTree(
-                NotifyClient(
-                        UUID.randomUUID(),
-                        ComponentId("test"),
-                        ApplyMessage(toJsonTree(user))
-                )
+            NotifyClient(
+                UUID.randomUUID(),
+                ComponentId("test"),
+                ApplyMessage(toJsonTree(user))
+            )
         )
 
         val actualMessageTree = expectedMessageTree.toValue().toJsonElement()
 
-        actualMessageTree shouldBe expectedMessageTree
+        assertEquals(expectedMessageTree, actualMessageTree)
     }
 
     @Test
@@ -98,25 +90,27 @@ internal class ClientMessageSerializationTest {
 
         val tree = gson.fromJson(FileReader(jsonFile), JsonElement::class.java)
 
-        tree.asJsonObject.toValue() shouldBe Ref(
-            Type.of("com.max.weatherviewer.app.State"),
-            setOf(
-                Property(
-                    "screens",
-                    CollectionWrapper(
-                        listOf(
-                            Ref(
-                                Type.of("com.max.weatherviewer.screens.feed.FeedLoading"),
-                                setOf(
-                                    Property(
-                                        "id",
-                                        StringWrapper("6b1ece05-eefb-44fe-9313-892eb000f0ee")
-                                    ),
-                                    Property(
-                                        "criteria",
-                                        Ref(
-                                            Type.of("com.max.weatherviewer.screens.feed.LoadCriteria\$Query"),
-                                            setOf(Property("query", StringWrapper("android")))
+        assertEquals(
+            Ref(
+                Type.of("com.max.weatherviewer.app.State"),
+                setOf(
+                    Property(
+                        "screens",
+                        CollectionWrapper(
+                            listOf(
+                                Ref(
+                                    Type.of("com.max.weatherviewer.screens.feed.FeedLoading"),
+                                    setOf(
+                                        Property(
+                                            "id",
+                                            StringWrapper("6b1ece05-eefb-44fe-9313-892eb000f0ee")
+                                        ),
+                                        Property(
+                                            "criteria",
+                                            Ref(
+                                                Type.of("com.max.weatherviewer.screens.feed.LoadCriteria\$Query"),
+                                                setOf(Property("query", StringWrapper("android")))
+                                            )
                                         )
                                     )
                                 )
@@ -124,7 +118,8 @@ internal class ClientMessageSerializationTest {
                         )
                     )
                 )
-            )
+            ),
+            tree.asJsonObject.toValue()
         )
     }
 }

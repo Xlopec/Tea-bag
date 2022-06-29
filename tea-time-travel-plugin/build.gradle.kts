@@ -167,6 +167,7 @@ dependencies {
 
     implementation(libs.stdlib)
     implementation(libs.stdlib.reflect)
+    implementation(libs.arrow.core)
 
     implementation(compose.desktop.currentOs) {
         exclude("org.jetbrains.compose.material")
@@ -184,6 +185,5 @@ dependencies {
     testImplementation(libs.coroutines.test)
     testImplementation(libs.kotlin.test)
     testImplementation(project(":tea-test"))
-    testImplementation("io.kotlintest:kotlintest-assertions:3.4.2")
     testImplementation(compose("org.jetbrains.compose.ui:ui-test-junit4"))
 }

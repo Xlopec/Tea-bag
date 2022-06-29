@@ -18,49 +18,97 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
-import io.github.xlopec.tea.time.travel.plugin.data.SettingsGen
 import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
 import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.DoWarnUnacceptableMessage
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.Port
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
-import io.github.xlopec.tea.time.travel.plugin.model.Server
-import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.isValid
-import io.github.xlopec.tea.time.travel.plugin.model.value
-import io.kotlintest.matchers.collections.shouldContainExactly
-import io.kotlintest.matchers.types.shouldBeSameInstanceAs
-import io.kotlintest.properties.forAll
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
+import io.github.xlopec.tea.time.travel.plugin.model.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import kotlin.test.assertEquals
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
+
+val TestHost = Host.of("localhost")!!
+val TestPort = Port(123)
+
+private val TestHosts = listOf(
+    Invalid("", ""),
+    Invalid("some", "message"),
+    Invalid("", ""),
+    Valid(
+        TestHost.value,
+        TestHost
+    ),
+    Invalid("some", "message"),
+    Valid(
+        "www.google.com",
+        Host.of("www.google.com")!!
+    )
+)
+
+private val TestPorts = listOf(
+    Invalid("", ""),
+    Invalid("some", "message"),
+    Invalid("", ""),
+    Valid(
+        TestPort.value.toString(),
+        TestPort
+    ),
+    Invalid("some", "message"),
+    Valid(
+        "100",
+        Port(100)
+    )
+)
+
+private val TestSettings = TestHosts.map { host ->
+    TestPorts.map { port -> Settings(host, port, false) }
+}.flatten()
 
 @RunWith(JUnit4::class)
 internal class UpdateForServerMessageTest {
 
     @Test
-    fun `test the result is calculated properly given plugin state is Stopped and message is StartServer`() =
-        forAll(SettingsGen) { settings ->
-
+    fun `test the result is calculated properly given plugin state is Stopped and message is StartServer`() {
+        TestSettings.forEach { settings ->
             val stopped = State(settings)
             val (state, commands) = updateForServerMessage(StartServer, stopped)
 
-            if (settings.host.isValid() && settings.port.isValid()) {
-                state === stopped &&
-                        commands == setOf(DoStartServer(ServerAddress(settings.host.value!!, settings.port.value!!)))
-            } else {
-                state === stopped && commands.isEmpty()
+            assertTrue("test failed for settings $settings") {
+                if (settings.host.isValid() && settings.port.isValid()) {
+                    state === stopped &&
+                            commands == setOf(
+                        DoStartServer(
+                            ServerAddress(
+                                settings.host.value!!,
+                                settings.port.value!!
+                            )
+                        )
+                    )
+                } else {
+                    state === stopped && commands.isEmpty()
+                }
             }
         }
+    }
 
     @Test
-    fun `test the result is calculated properly given plugin state is Started and message is StopServer`() =
-        forAll(SettingsGen) { settings ->
+    fun `test the result is calculated properly given plugin state is Started and message is StopServer`() {
+        TestSettings.forEach { settings ->
 
-            val pluginState = State(settings, server = StartedTestServerStub)
-            val (state, commands) = updateForServerMessage(StopServer, pluginState)
+            assertTrue("test failed for settings $settings") {
+                val pluginState = State(settings, server = StartedTestServerStub)
+                val (state, commands) = updateForServerMessage(StopServer, pluginState)
 
-            state == pluginState && commands == setOf(DoStopServer(pluginState.server as Server))
+                state == pluginState && commands == setOf(DoStopServer(pluginState.server as Server))
+            }
         }
+    }
 
     @Test
     fun `test when illegal combination of message and state warning command is returned`() {
@@ -68,7 +116,7 @@ internal class UpdateForServerMessageTest {
         val initialState = State(ValidTestSettings)
         val (state, commands) = updateForServerMessage(StopServer, initialState)
 
-        state shouldBeSameInstanceAs initialState
-        commands.shouldContainExactly(DoWarnUnacceptableMessage(StopServer, initialState))
+        assertSame(initialState, state)
+        assertEquals(setOf(DoWarnUnacceptableMessage(StopServer, initialState)), commands)
     }
 }
