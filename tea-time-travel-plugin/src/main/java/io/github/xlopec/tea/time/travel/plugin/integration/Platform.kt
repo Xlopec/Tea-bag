@@ -1,6 +1,7 @@
 package io.github.xlopec.tea.time.travel.plugin.integration
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -8,13 +9,14 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiClass
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.PsiNavigateUtil
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.PluginSettings
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.ExportSessions
 import io.github.xlopec.tea.time.travel.plugin.model.Type
 import io.github.xlopec.tea.time.travel.plugin.util.chooseFile
 import io.github.xlopec.tea.time.travel.plugin.util.javaPsiFacade
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
-import java.io.File
 import kotlinx.collections.immutable.ImmutableSet
+import java.io.File
 
 interface Platform {
 
@@ -31,6 +33,8 @@ interface Platform {
     fun navigateToSources(
         psiClass: PsiClass
     )
+
+    fun navigateToSettings()
 }
 
 fun Platform(
@@ -38,7 +42,7 @@ fun Platform(
 ): Platform = PlatformImpl(project)
 
 private class PlatformImpl(
-    project: Project,
+    private val project: Project,
 ) : Platform, Project by project {
 
     override suspend fun chooseSessionFile(): File =
@@ -62,6 +66,7 @@ private class PlatformImpl(
     override fun psiClassFor(type: Type): PsiClass? = javaPsiFacade.findClass(type.name, GlobalSearchScope.projectScope(this))
 
     override fun navigateToSources(psiClass: PsiClass) = PsiNavigateUtil.navigate(psiClass)
+    override fun navigateToSettings() = ShowSettingsUtil.getInstance().showSettingsDialog(project, PluginSettings::class.java)
 
     private val Project.baseVirtualDir: VirtualFile?
         get() = basePath?.let(LocalFileSystem.getInstance()::findFileByPath)

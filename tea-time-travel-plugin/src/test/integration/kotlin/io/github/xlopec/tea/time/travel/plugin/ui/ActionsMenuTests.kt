@@ -16,7 +16,7 @@ import kotlinx.collections.immutable.toPersistentMap
 import org.junit.Rule
 import org.junit.Test
 
-class BottomMenuTests {
+class ActionsMenuTests {
 
     @get:Rule
     val rule = createComposeRule()
@@ -24,11 +24,12 @@ class BottomMenuTests {
     @Test
     fun `test action buttons displayed correctly given a valid stopped state`() = rule {
         setTestContent {
-            BottomActionMenu(
+            ActionsMenu(
                 onImportSession = {},
                 onExportSession = {},
+                onSettingsAction = {},
+                onServerAction = {},
                 state = State(ValidTestSettings),
-                events = {}
             )
         }
 
@@ -40,11 +41,12 @@ class BottomMenuTests {
     @Test
     fun `test action buttons displayed correctly given an invalid stopped state`() = rule {
         setTestContent {
-            BottomActionMenu(
+            ActionsMenu(
                 onImportSession = {},
                 onExportSession = {},
+                onSettingsAction = {},
+                onServerAction = {},
                 state = State(InvalidTestSettings),
-                events = {}
             )
         }
 
@@ -56,11 +58,12 @@ class BottomMenuTests {
     @Test
     fun `test action buttons displayed correctly given an empty started state`() = rule {
         setTestContent {
-            BottomActionMenu(
+            ActionsMenu(
                 onImportSession = {},
                 onExportSession = {},
+                onSettingsAction = {},
+                onServerAction = {},
                 state = State(ValidTestSettings, server = StartedTestServerStub),
-                events = {}
             )
         }
 
@@ -72,13 +75,18 @@ class BottomMenuTests {
     @Test
     fun `test action buttons displayed correctly given a non-empty started state`() = rule {
         setTestContent {
-            val started = State(ValidTestSettings, Debugger(ComponentDebugStates().toMap().toPersistentMap()), StartedTestServerStub)
+            val started = State(
+                ValidTestSettings,
+                Debugger(ComponentDebugStates().toMap().toPersistentMap()),
+                StartedTestServerStub
+            )
 
-            BottomActionMenu(
+            ActionsMenu(
                 onImportSession = {},
                 onExportSession = {},
+                onSettingsAction = {},
+                onServerAction = {},
                 state = started,
-                events = {}
             )
         }
 

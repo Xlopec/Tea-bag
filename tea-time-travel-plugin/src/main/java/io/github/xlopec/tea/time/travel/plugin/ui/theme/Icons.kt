@@ -43,4 +43,6 @@ object ActionIcons {
     val Expand @Composable get() = painterResource("/images/expand.svg")
     val Collapse @Composable get() = painterResource("/images/collapse.svg")
     val Copy @Composable get() = painterResource("/images/inlineCopy.svg")
+
+    val Settings @Composable get() = painterResource("/images/settings_dark.svg")
 }

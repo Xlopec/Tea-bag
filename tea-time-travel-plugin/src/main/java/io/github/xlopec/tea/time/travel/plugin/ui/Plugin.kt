@@ -33,13 +33,13 @@ import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.Component
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTab
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.info.InfoView
+import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
+import io.github.xlopec.tea.time.travel.plugin.feature.server.StopServer
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.ImportSession
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.integration.Platform
+import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.component
-import io.github.xlopec.tea.time.travel.plugin.model.componentIds
-import io.github.xlopec.tea.time.travel.plugin.model.hasAttachedComponents
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginTheme
 import io.github.xlopec.tea.time.travel.plugin.util.PluginId
 import io.github.xlopec.tea.time.travel.plugin.util.toJson
@@ -95,7 +95,7 @@ internal fun Plugin(
 @Composable
 internal fun Plugin(
     state: State,
-    events: MessageHandler,
+    handler: MessageHandler,
 ) {
     Column(
         modifier = Modifier
@@ -106,9 +106,9 @@ internal fun Plugin(
             modifier = Modifier.weight(2f)
         ) {
             if (state.hasAttachedComponents) {
-                ComponentsView(state, events)
+                ComponentsView(state, handler)
             } else {
-                InfoView(state, events)
+                InfoView(state, handler)
             }
         }
 
@@ -116,26 +116,29 @@ internal fun Plugin(
 
         // settings section
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             SettingsFields(
                 modifier = Modifier.fillMaxWidth(),
                 state = state,
-                handler = events
+                handler = handler
             )
 
             val scope = rememberCoroutineScope()
             val platform = LocalPlatform.current
 
-            BottomActionMenu(
-                state = state,
-                events = events,
-                onImportSession = { scope.launch { events(ImportSession(platform.chooseSessionFile())) } },
+            ActionsMenu(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                onImportSession = { scope.launch { handler(ImportSession(platform.chooseSessionFile())) } },
                 onExportSession = {
                     scope.launch {
-                        platform.chooseExportSessionDirectory(state.debugger.componentIds)?.also(events::invoke)
+                        platform.chooseExportSessionDirectory(state.debugger.componentIds)?.also(handler::invoke)
                     }
-                }
+                },
+                onServerAction = { handler(if (state.isStarted) StopServer else StartServer) },
+                onSettingsAction = { platform.navigateToSettings() },
+                state = state
             )
         }
     }

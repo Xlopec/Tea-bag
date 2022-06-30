@@ -2,6 +2,7 @@ package io.github.xlopec.tea.time.travel.plugin.ui.control
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
@@ -11,7 +12,7 @@ import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.Valid
 import io.github.xlopec.tea.time.travel.plugin.model.Validated
 import io.github.xlopec.tea.time.travel.plugin.model.isValid
-import io.github.xlopec.tea.time.travel.plugin.ui.BottomActionMenu
+import io.github.xlopec.tea.time.travel.plugin.ui.ActionsMenu
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
 import io.kanro.compose.jetbrains.control.JPanel
 import io.kanro.compose.jetbrains.control.Text
@@ -24,11 +25,13 @@ private val PreviewSettings = Settings(Valid("192.168.1.1", Host.of("192.168.1.1
 fun BottomActionMenuPreview() {
     PluginPreviewTheme {
         JPanel {
-            BottomActionMenu(
+            ActionsMenu(
+                modifier = Modifier.fillMaxWidth(),
                 onImportSession = {},
                 onExportSession = {},
+                onServerAction = {},
+                onSettingsAction = {},
                 state = State(PreviewSettings),
-                events = {}
             )
         }
     }

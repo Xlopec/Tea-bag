@@ -2,18 +2,12 @@ package io.github.xlopec.tea.time.travel.plugin.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
-import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
-import io.github.xlopec.tea.time.travel.plugin.feature.server.StopServer
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.canExport
 import io.github.xlopec.tea.time.travel.plugin.model.canStart
@@ -22,23 +16,30 @@ import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons
 import io.kanro.compose.jetbrains.control.ActionButton
 import io.kanro.compose.jetbrains.control.Icon
 
-private val DisabledTintColor = Color(86, 86, 86)
-
 internal const val ImportButtonTag = "import button"
 internal const val ExportButtonTag = "export button"
+internal const val SettingsButtonTag = "settings button"
 internal const val ServerActionButtonTag = "server action button"
 
 @Composable
-internal fun BottomActionMenu(
+internal fun ActionsMenu(
     onImportSession: () -> Unit,
     onExportSession: () -> Unit,
+    onServerAction: () -> Unit,
+    onSettingsAction: () -> Unit,
     state: State,
-    events: MessageHandler,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.End)
     ) {
+        ActionButton(
+            modifier = Modifier.testTag(SettingsButtonTag),
+            painter = ActionIcons.Settings,
+            contentDescription = "Settings",
+            onClick = onSettingsAction,
+        )
 
         ActionButton(
             modifier = Modifier.testTag(ImportButtonTag),
@@ -59,7 +60,7 @@ internal fun BottomActionMenu(
             modifier = Modifier.testTag(ServerActionButtonTag),
             painter = state.serverActionIcon,
             contentDescription = "Start/Stop server",
-            onClick = { events(if (state.isStarted) StopServer else StartServer) },
+            onClick = onServerAction,
             enabled = state.isStarted || state.canStart
         )
     }
@@ -79,7 +80,6 @@ internal fun ActionButton(
         onClick = onClick
     ) {
         Icon(
-            colorFilter = if (enabled) null else ColorFilter.tint(DisabledTintColor),
             painter = painter,
             contentDescription = contentDescription
         )
