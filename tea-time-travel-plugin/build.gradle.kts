@@ -103,6 +103,7 @@ tasks.withType<Test>().configureEach {
 
 optIn(
     "kotlinx.coroutines.ExperimentalCoroutinesApi",
+    "androidx.compose.ui.ExperimentalComposeUiApi",
     "io.github.xlopec.tea.core.ExperimentalTeaApi",
 )
 

@@ -22,17 +22,13 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.debug
 import com.intellij.openapi.diagnostic.trace
-import io.github.xlopec.tea.core.Component
-import io.github.xlopec.tea.core.Initial
-import io.github.xlopec.tea.core.Initializer
-import io.github.xlopec.tea.core.Interceptor
-import io.github.xlopec.tea.core.Regular
-import io.github.xlopec.tea.core.Snapshot
-import io.github.xlopec.tea.core.with
+import io.github.xlopec.tea.core.*
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.util.PluginId
 import io.github.xlopec.tea.time.travel.plugin.util.settings
 import kotlinx.coroutines.Dispatchers.IO
+
+internal val PluginLogger = Logger.getInstance(PluginId)
 
 fun PluginComponent(
     environment: Environment,
@@ -43,7 +39,7 @@ fun PluginComponent(
         resolver = { c, ctx -> with(environment) { resolve(c, ctx) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment
-    ).with(LoggerInterceptor(Logger.getInstance(PluginId)))
+    ).with(LoggerInterceptor(PluginLogger))
 
 fun AppInitializer(
     properties: PropertiesComponent,

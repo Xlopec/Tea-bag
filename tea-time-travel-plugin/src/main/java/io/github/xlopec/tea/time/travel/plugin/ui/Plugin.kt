@@ -20,7 +20,6 @@ package io.github.xlopec.tea.time.travel.plugin.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
 import androidx.compose.ui.unit.dp
@@ -41,7 +40,6 @@ import io.github.xlopec.tea.time.travel.plugin.integration.Platform
 import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginTheme
-import io.github.xlopec.tea.time.travel.plugin.util.PluginId
 import io.github.xlopec.tea.time.travel.plugin.util.toJson
 import io.kanro.compose.jetbrains.control.JPanel
 import kotlinx.coroutines.*
@@ -55,9 +53,7 @@ import kotlin.time.ExperimentalTime
 
 internal val LocalPlatform = staticCompositionLocalOf<Platform> { error("No platform implementation provided") }
 
-@OptIn(ExperimentalComposeUiApi::class)
-internal fun PluginSwingAdapter(
-    project: Project,
+context (Logger, Project) internal fun PluginSwingAdapter(
     component: (Flow<Message>) -> Flow<State>,
 ) = ComposePanel()
     .apply {
@@ -65,7 +61,7 @@ internal fun PluginSwingAdapter(
         background = null
         setContent {
             PluginTheme {
-                val platform = remember { Platform(project) }
+                val platform = remember { Platform(this@Project, this@Logger) }
                 Plugin(platform, component)
             }
         }
@@ -171,7 +167,7 @@ private fun ComponentsView(
     Component(state, selectedComponent.value, events)
 }
 
-private fun handleFatalException(
+context (Logger) private fun handleFatalException(
     component: (Flow<Message>) -> Flow<State>,
     th: Throwable,
 ) {
@@ -180,17 +176,15 @@ private fun handleFatalException(
             ?.let { createCrashLogFile(it) }
             ?.let { AttachmentFactory.createAttachment(it, false) }
 
-        val logger = Logger.getInstance(PluginId)
-
         if (attachment == null) {
-            logger.error(
+            error(
                 """
                 Fatal error occurred inside Tea Time Travel plugin, no plugin state dump available.
                 Please, fill a bug for this issue - $GithubIssuesLink with attached logs, stack traces, etc.
             """.trimIndent(), th
             )
         } else {
-            logger.error(
+            error(
                 """
                 Fatal error occurred inside Tea Time Travel plugin.
                 Please, fill a bug for this issue - $GithubIssuesLink with attached logs, stack traces, etc.

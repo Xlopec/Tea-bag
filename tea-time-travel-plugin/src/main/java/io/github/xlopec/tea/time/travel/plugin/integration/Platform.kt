@@ -1,5 +1,6 @@
 package io.github.xlopec.tea.time.travel.plugin.integration
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
@@ -38,17 +39,19 @@ interface Platform {
 }
 
 fun Platform(
-    project: Project
-): Platform = PlatformImpl(project)
+    project: Project,
+    logger: Logger,
+): Platform = PlatformImpl(project, logger)
 
 private class PlatformImpl(
     private val project: Project,
-) : Platform, Project by project {
+    private val logger: Logger,
+) : Platform {
 
     override suspend fun chooseSessionFile(): File =
-        chooseFile(
+        project.chooseFile(
             FileChooserDescriptorFactory.createSingleFileDescriptor("json")
-                .withRoots(listOfNotNull(baseVirtualDir))
+                .withRoots(listOfNotNull(project.baseVirtualDir))
                 .withTitle("Choose Session to Import")
         )
 
@@ -63,19 +66,24 @@ private class PlatformImpl(
         }
     }
 
-    override fun psiClassFor(type: Type): PsiClass? = javaPsiFacade.findClass(type.name, GlobalSearchScope.projectScope(this))
+    override fun psiClassFor(type: Type): PsiClass? =
+        // findClass throws exception when indexing is in progress
+        runCatching { project.javaPsiFacade.findClass(type.name, GlobalSearchScope.projectScope(project)) }
+            .onFailure { logger.warn("Exception when searching for psi class for $type", it) }
+            .getOrNull()
 
     override fun navigateToSources(psiClass: PsiClass) = PsiNavigateUtil.navigate(psiClass)
-    override fun navigateToSettings() = ShowSettingsUtil.getInstance().showSettingsDialog(project, PluginSettings::class.java)
+    override fun navigateToSettings() =
+        ShowSettingsUtil.getInstance().showSettingsDialog(project, PluginSettings::class.java)
 
     private val Project.baseVirtualDir: VirtualFile?
         get() = basePath?.let(LocalFileSystem.getInstance()::findFileByPath)
 
     private suspend fun chooseExportSessionDir() =
-        chooseFile(
+        project.chooseFile(
             FileChooserDescriptorFactory.createSingleFolderDescriptor()
                 .withFileFilter(VirtualFile::isDirectory)
-                .withRoots(listOfNotNull(baseVirtualDir))
+                .withRoots(listOfNotNull(project.baseVirtualDir))
                 .withTitle("Choose Directory to Save Session")
         )
 
@@ -83,7 +91,7 @@ private class PlatformImpl(
         sessionIds: List<ComponentId>,
     ): List<ComponentId> {
         val option = Messages.showChooseDialog(
-            this,
+            project,
             "Select which session to export",
             "Export Session",
             null,
