@@ -26,13 +26,13 @@
 
 package io.github.xlopec.tea.data
 
-public actual typealias Url = java.net.URL
+public actual typealias Url = java.net.URI
 
 public actual fun UrlFor(
     s: String
-): Url = java.net.URL(s)
+): Url = java.net.URI(s)
 
-public actual fun Url.toExternalValue(): String = toExternalForm()
+public actual fun Url.toExternalValue(): String = toASCIIString()
 
 public actual val Url.domain: String
     get() = host

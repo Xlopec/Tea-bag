@@ -51,7 +51,7 @@ import io.github.xlopec.tea.data.RandomUUID
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Rule
 import org.junit.Test
-import java.net.URL
+import java.net.URI
 import java.util.*
 
 internal class AppTest {
@@ -98,7 +98,7 @@ internal class AppTest {
     }
 }
 
-private val TestUrl = URL("https://www.google.com")
+private val TestUrl = URI("https://www.google.com")
 
 private val TestDate = Date(2021, 11, 17)
 

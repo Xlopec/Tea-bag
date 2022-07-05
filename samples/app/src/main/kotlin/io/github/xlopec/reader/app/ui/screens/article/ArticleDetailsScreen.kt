@@ -55,6 +55,7 @@ import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
 import io.github.xlopec.reader.app.feature.article.details.OpenInBrowser
 import io.github.xlopec.reader.app.feature.navigation.Pop
 import io.github.xlopec.reader.app.ui.misc.ProgressInsetAwareTopAppBar
+import io.github.xlopec.tea.data.toExternalValue
 
 @Composable
 fun ArticleDetailsScreen(
@@ -67,7 +68,7 @@ fun ArticleDetailsScreen(
     val context = LocalContext.current
     val view = remember(screen.id) {
         AppWebView(context, titleUpdater, loadProgressUpdater, backStackUpdater)
-            .apply { loadUrl(screen.article.url.toExternalForm()) }
+            .apply { loadUrl(screen.article.url.toExternalValue()) }
     }
 
     Scaffold(
@@ -153,14 +154,12 @@ private fun AppWebView(
         override fun onReceivedTitle(
             view: WebView,
             title: String,
-        ) =
-            titleUpdater(title)
+        ) = titleUpdater(title)
 
         override fun onProgressChanged(
             view: WebView,
             newProgress: Int,
-        ) =
-            progressUpdater(newProgress)
+        ) = progressUpdater(newProgress)
     }
     webViewClient = object : WebViewClient() {
         override fun doUpdateVisitedHistory(

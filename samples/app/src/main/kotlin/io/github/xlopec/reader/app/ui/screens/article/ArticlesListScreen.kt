@@ -42,7 +42,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -68,6 +68,7 @@ import io.github.xlopec.reader.app.model.FilterType.*
 import io.github.xlopec.reader.app.ui.misc.ColumnMessage
 import io.github.xlopec.reader.app.ui.misc.SearchHeader
 import io.github.xlopec.tea.data.Url
+import io.github.xlopec.tea.data.toExternalValue
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -109,23 +110,30 @@ internal fun ArticleTestTag(
 private fun LazyListScope.articleItems(
     screen: ArticlesState,
     onMessage: MessageHandler,
-    onLastElement: () -> Unit = { onMessage(LoadNextArticles(screen.id)) },
 ) {
-
     val articles = screen.loadable.data
 
     require(articles.isNotEmpty()) { "Empty articles for screen=$screen" }
 
-    item {
+    val title = screen.filter.toScreenTitle()
+
+    item(
+        key = title,
+        contentType = screen.filter::class
+    ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start,
-            text = screen.filter.toScreenTitle(),
+            text = title,
             style = typography.subtitle1
         )
     }
 
-    itemsIndexed(articles, { _, item -> item.url.toExternalForm() }) { index, article ->
+    itemsIndexed(
+        items = articles,
+        key = { _, item -> item.url.toString() },
+        contentType = { _, item -> item::class }
+    ) { index, article ->
         Column(
             modifier = Modifier.semantics(mergeDescendants = true) {
                 testTag = ArticleTestTag(article.url)
@@ -138,9 +146,8 @@ private fun LazyListScope.articleItems(
             )
 
             if (index == articles.lastIndex) {
-                DisposableEffect(Unit) {
-                    onLastElement()
-                    onDispose { }
+                LaunchedEffect(Unit) {
+                    onMessage(LoadNextArticles(screen.id))
                 }
             }
         }
@@ -153,8 +160,10 @@ private fun LazyListScope.loadableContent(
     loadableState: LoadableState,
     filterType: FilterType,
     onMessage: MessageHandler,
-) = item {
-
+) = item(
+    key = loadableState::class.simpleName,
+    contentType = loadableState::class
+) {
     when (loadableState) {
         is Exception ->
             ArticlesError(
@@ -210,7 +219,10 @@ private fun ArticlesContent(
         userScrollEnabled = screen.loadable.data.isNotEmpty()
     ) {
 
-        item { ArticleSearchHeader(state = screen, onMessage = onMessage) }
+        item(
+            key = "header",
+            contentType = "header"
+        ) { ArticleSearchHeader(state = screen, onMessage = onMessage) }
 
         children()
     }
@@ -231,7 +243,7 @@ private fun ArticleImage(
         if (imageUrl != null) {
             Image(
                 painter = rememberImagePainter(
-                    data = imageUrl.toExternalForm(),
+                    data = imageUrl.toExternalValue(),
                 ) {
                     crossfade(true)
                 },
@@ -345,7 +357,7 @@ private fun ArticlesError(
 ) {
     ColumnMessage(
         modifier = modifier,
-        title = "Ooops, something went wrong",
+        title = "Oops, something went wrong",
         message = "Failed to load articles, message: '${message.toDisplayErrorMessage()}'",
         onClick = onRetry
     )
