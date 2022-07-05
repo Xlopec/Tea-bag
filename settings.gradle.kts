@@ -268,6 +268,10 @@ dependencyResolutionManagement {
 
             library("sqldelight-driver-native", "com.squareup.sqldelight", "native-driver")
                 .versionRef("sqldelight")
+
+            // Desugaring
+
+            library("desugar-jdk", "com.android.tools", "desugar_jdk_libs").version("1.1.5")
         }
     }
 }

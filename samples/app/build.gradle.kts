@@ -42,7 +42,7 @@ android {
 
     defaultConfig {
         applicationId = "io.github.xlopec.news.reader"
-        minSdk = 23
+        minSdk = 21
         targetSdk = 31
         versionCode = 1
         versionName = "1.0"
@@ -68,6 +68,12 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     packagingOptions {
@@ -125,7 +131,9 @@ dependencies {
 
     implementation(project(":tea-core"))
     implementation(project(":samples:shared-app-lib"))
-    remoteImplementation(project(":samples:shared-app-lib"/*, configuration = "remote"*/))
+    remoteImplementation(project(":samples:shared-app-lib"))
+
+    coreLibraryDesugaring(libs.desugar.jdk)
 
     implementation(libs.stdlib)
 

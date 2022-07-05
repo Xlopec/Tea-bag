@@ -36,6 +36,8 @@ kotlin {
 
     optIn("kotlinx.serialization.ExperimentalSerializationApi", "io.github.xlopec.tea.core.ExperimentalTeaApi")
 
+    // As soon as Compose will support stability annotations on composable functions, android target
+    // will be replaced with jvm target
     android {
         publishLibraryVariants("remoteRelease", "remoteDebug", "defaultRelease", "defaultDebug")
     }
@@ -107,8 +109,9 @@ android {
     compileSdk = 31
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdk = 23
+        minSdk = 21
         targetSdk = 31
+        consumerProguardFile("proguard-rules.pro")
     }
 
     sourceSets {
@@ -118,6 +121,12 @@ android {
 
         maybeCreate("default")
             .java.srcDirs("default/kotlin", "main/kotlin")
+    }
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     flavorDimensions += "remote"
@@ -136,6 +145,7 @@ android {
         remoteApi(project(":tea-time-travel"))
         remoteApi(project(":tea-time-travel-adapter-gson"))
         remoteImplementation(libs.gson)
+        coreLibraryDesugaring(libs.desugar.jdk)
     }
 }
 
