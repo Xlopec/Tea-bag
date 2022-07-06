@@ -25,6 +25,13 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("org.jetbrains.compose")
+}
+
+repositories {
+    maven {
+        url = JBComposeDevRepository
+    }
 }
 
 optIn(DefaultOptIns + "kotlinx.coroutines.ExperimentalCoroutinesApi")
@@ -124,6 +131,17 @@ android {
 
         maybeCreate("default")
             .java.srcDirs("default/kotlin", "main/kotlin")
+    }
+}
+
+afterEvaluate {
+    tasks.withType<Test>().configureEach {
+        description = "$description Also copies test reports to ${testReportsDir(name)}"
+
+        reports {
+            html.outputLocation.set(testReportsDir(name, "html"))
+            junitXml.outputLocation.set(testReportsDir(name, "xml"))
+        }
     }
 }
 

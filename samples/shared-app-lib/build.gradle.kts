@@ -1,3 +1,5 @@
+import org.jetbrains.compose.compose
+
 /*
  * MIT License
  *
@@ -28,16 +30,21 @@ plugins {
     id("com.android.library")
     id("com.squareup.sqldelight")
     kotlin("plugin.serialization")
+    id("org.jetbrains.compose")
 }
 
 version = "1.0.0"
+
+repositories {
+    maven {
+        url = JBComposeDevRepository
+    }
+}
 
 kotlin {
 
     optIn("kotlinx.serialization.ExperimentalSerializationApi", "io.github.xlopec.tea.core.ExperimentalTeaApi")
 
-    // As soon as Compose will support stability annotations on composable functions, android target
-    // will be replaced with jvm target
     android {
         publishAllLibraryVariants()
     }
@@ -69,6 +76,7 @@ kotlin {
                 implementation(libs.serialization.core)
                 implementation(libs.settings.core)
                 implementation(libs.sqldelight.runtime)
+                implementation(compose.runtime)
             }
         }
 
@@ -82,7 +90,6 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.ktor.client.cio)
-                implementation(libs.compose.runtime)
                 implementation(libs.sqldelight.driver.android)
             }
         }
@@ -106,11 +113,16 @@ kotlin {
 }
 
 tasks.named<TestReport>("allTests").configure {
-    destinationDir = testReportsDir("multiplatform")
+    val reportDir = testReportsDir("multiplatform")
+
+    description = "$description Also copies test reports to $reportDir"
+    destinationDir = reportDir
 }
 
 afterEvaluate {
     tasks.withType<Test>().configureEach {
+        description = "$description Also copies test reports to ${testReportsDir(name)}"
+
         reports {
             html.outputLocation.set(testReportsDir(name, "html"))
             junitXml.outputLocation.set(testReportsDir(name, "xml"))

@@ -40,12 +40,13 @@ plugins {
 
 afterEvaluate {
     tasks.withType<Test>().configureEach {
+        val buildDir = File(File(File(rootProject.rootDir.parentFile, "build"), "junit-reports"), project.name)
 
-        val buildDir = File(rootProject.rootDir.parentFile, "build")
+        description = "$description Also copies test reports to $buildDir"
 
         reports {
-            html.outputLocation.set(File("$buildDir/junit-reports/${project.name}/html"))
-            junitXml.outputLocation.set(File("$buildDir/junit-reports/${project.name}/xml"))
+            html.outputLocation.set(File(buildDir, "html"))
+            junitXml.outputLocation.set(File(buildDir, "xml"))
         }
     }
 }

@@ -36,10 +36,7 @@ plugins {
 
 repositories {
     maven {
-        setUrl("https://repo1.maven.org/maven2/")
-    }
-    maven {
-        setUrl("https://maven.pkg.jetbrains.space/public/p/compose/dev/")
+        url = JBComposeDevRepository
     }
 }
 

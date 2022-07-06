@@ -43,6 +43,9 @@ kotlin {
     ios()
 }
 
-tasks.named<org.jetbrains.kotlin.gradle.testing.internal.KotlinTestReport>("allTests").configure {
-    destinationDir = testReportsDir("multiplatform")
+tasks.named<TestReport>("allTests").configure {
+    val reportDir = testReportsDir("multiplatform")
+
+    description = "$description Also copies test reports to $reportDir"
+    destinationDir = reportDir
 }

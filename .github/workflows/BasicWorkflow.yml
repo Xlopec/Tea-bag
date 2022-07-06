@@ -57,7 +57,7 @@ jobs:
           profile: Nexus 6
           script: ./gradlew samples:app:connectedCheck
 
-  Ios-tests:
+  IOS-app-build:
     env:
       DEFAULT_BRANCH: master
     needs: Check
@@ -116,7 +116,7 @@ jobs:
   Deploy:
     env:
       DEFAULT_BRANCH: master
-    needs: [Unit-tests, Android-emulator-tests, Ios-tests]
+    needs: [Unit-tests, Android-emulator-tests, IOS-app-build]
     runs-on: macos-11
     # tags should be of the form:
     # <no-value> -> dev build
