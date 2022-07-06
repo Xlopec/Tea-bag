@@ -104,11 +104,8 @@ jobs:
           java-version: 11
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      # workaround for Gradle since it can't run buildSrc tests from default location
-      - name: Run buildSrc tests
-        run: ./gradlew -p buildSrc test
       - name: Run tests
-        run: ./gradlew allTests
+        run: ./gradlew check -x detekt
       - name: Archive test reports
         if: success() || failure()
         uses: actions/upload-artifact@v2

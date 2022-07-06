@@ -93,6 +93,9 @@ val Project.distributionsDir: File
     get() = buildDir.resolve("distributions")
 
 val Project.artifactsDir: File
+    get() = rootMostProject.buildDir.resolve(File("artifacts", name))
+
+val Project.rootMostProject: Project
     get() {
         var root = this
 
@@ -100,7 +103,7 @@ val Project.artifactsDir: File
             root = root.rootProject
         }
 
-        return root.buildDir.resolve(File("artifacts", name))
+        return root
     }
 
 val Project.projectHooksDir: File
@@ -132,7 +135,7 @@ val localBranch: String?
         ?.let { it.use { reader -> reader.readLine().trim() } }
 
 val Project.testReportsPath: Path
-    get() = Paths.get(rootProject.buildDir.path, "junit-reports", project.name)
+    get() = Paths.get(rootMostProject.buildDir.path, "junit-reports", project.name)
 
 val Project.testReportsDir: File
     get() = testReportsPath.toFile()
@@ -142,6 +145,10 @@ val Project.htmlTestReportsDir: File
 
 val Project.xmlTestReportsDir: File
     get() = File(testReportsDir, "xml")
+
+fun Project.testReportsDir(
+    vararg subdirs: String
+): File = File(testReportsDir, subdirs.joinToString(separator = File.separator))
 
 fun Project.ciVariable(
     name: String,

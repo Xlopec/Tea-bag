@@ -23,30 +23,27 @@
  */
 
 package io.github.xlopec.reader.app.serialization
-/*
 
-import com.max.reader.domain.Article
-import com.max.reader.domain.Description
-import com.max.reader.domain.Title
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.ScreenMessage
-import io.github.xlopec.reader.app.serialization.PersistentListSerializer
+import io.github.xlopec.reader.app.Settings
+import io.github.xlopec.reader.app.feature.article.list.ArticlesLoadable
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
-import io.github.xlopec.reader.app.feature.article.list.LoadArticlesFromScratch
-import io.github.xlopec.reader.app.domain.Query
-import io.github.xlopec.reader.app.feature.article.list.QueryType
-import io.github.xlopec.tea.core.debug.gson.Gson
-import io.github.xlopec.tea.core.debug.protocol.NotifyComponentAttached
-import io.github.xlopec.tea.core.debug.protocol.NotifyComponentSnapshot
-import io.github.xlopec.tea.core.debug.protocol.ServerMessage
-import io.kotlintest.shouldBe
+import io.github.xlopec.reader.app.feature.article.list.LoadArticles
+import io.github.xlopec.reader.app.misc.Idle
+import io.github.xlopec.reader.app.model.*
+import io.github.xlopec.tea.time.travel.gson.Gson
+import io.github.xlopec.tea.time.travel.protocol.NotifyComponentAttached
+import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
+import io.github.xlopec.tea.time.travel.protocol.ServerMessage
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import java.net.URL
+import java.net.URI
 import java.util.*
+import kotlin.test.assertEquals
 
 @RunWith(JUnit4::class)
 internal class AppStateSerializationTest {
@@ -58,71 +55,80 @@ internal class AppStateSerializationTest {
 
     private val previewScreenState = ArticlesState(
         UUID.randomUUID(),
-        Query("android", QueryType.Regular),
-        listOf(
-            Article(
-                URL("http://www.google.com"),
-                Title("test"),
-                null,
-                Description("test"),
-                null,
-                Date(),
-                false
-            )
-        ),
-        false,
-        ArticlesState.TransientState.Preview
+        Filter(FilterType.Regular, Query.of("android")),
+        ArticlesLoadable(
+            persistentListOf(
+                Article(
+                    url = URI("http://www.google.com"),
+                    title = Title("test"),
+                    author = null,
+                    description = Description("test"),
+                    urlToImage = null,
+                    published = Date(),
+                    isFavorite = false,
+                    source = null
+                )
+            ),
+            false,
+            Idle
+        )
     )
 
     private val loadingScreenState = ArticlesState.newLoading(
         UUID.randomUUID(),
-        Query("test", QueryType.Regular)
+        Filter(FilterType.Regular, Query.of("test"))
     )
 
     private val testState = AppState(
-        isInDarkMode = false,
         screens = persistentListOf(
             previewScreenState,
             loadingScreenState
+        ),
+        settings = Settings(
+            userDarkModeEnabled = true,
+            systemDarkModeEnabled = false,
+            syncWithSystemDarkModeEnabled = false
         )
     )
 
     @Test
-    fun `test NotifyComponentAttached is serializing correctly`() = with(gsonSerializer) {
+    fun `test NotifyComponentAttached is serialized correctly`() = with(gsonSerializer) {
 
-        val message = NotifyComponentAttached(toJsonTree(testState))
+        val message = NotifyComponentAttached(
+            state = toJsonTree(testState),
+            commands = setOf()
+        )
         val json = toJson(message)
 
         val fromJson = fromJson(json, ServerMessage::class.java)
 
-        fromJson shouldBe message
+        assertEquals(message, fromJson)
     }
 
     @Test
-    fun `test NotifyComponentSnapshot is serializing correctly`() = with(gsonSerializer) {
+    fun `test NotifyComponentSnapshot is serialized correctly`() = with(gsonSerializer) {
 
         val message = NotifyComponentSnapshot(
-            toJsonTree("Message"),
-            toJsonTree(testState),
-            toJsonTree(loadingScreenState)
+            message = toJsonTree("Message"),
+            oldState = toJsonTree(testState),
+            newState = toJsonTree(loadingScreenState),
+            commands = setOf()
         )
 
         val json = toJson(message)
         val fromJson = fromJson(json, ServerMessage::class.java)
 
-        fromJson shouldBe message
+        assertEquals(message, fromJson)
     }
 
     @Test
-    fun `test ScreenMessage is serializing correctly`() = with(gsonSerializer) {
+    fun `test ScreenMessage is serialized correctly`() = with(gsonSerializer) {
 
-        val message = LoadArticlesFromScratch(UUID.randomUUID())
+        val message = LoadArticles(UUID.randomUUID())
 
         val json = toJson(message)
         val fromJson = fromJson(json, ScreenMessage::class.java)
 
-        fromJson shouldBe message
+        assertEquals(message, fromJson)
     }
-
 }
-*/

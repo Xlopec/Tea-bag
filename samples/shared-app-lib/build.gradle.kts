@@ -39,7 +39,7 @@ kotlin {
     // As soon as Compose will support stability annotations on composable functions, android target
     // will be replaced with jvm target
     android {
-        publishLibraryVariants("remoteRelease", "remoteDebug", "defaultRelease", "defaultDebug")
+        publishAllLibraryVariants()
     }
 
     ios()
@@ -102,6 +102,19 @@ kotlin {
         }
 
         val iosTest by getting
+    }
+}
+
+tasks.named<TestReport>("allTests").configure {
+    destinationDir = testReportsDir("multiplatform")
+}
+
+afterEvaluate {
+    tasks.withType<Test>().configureEach {
+        reports {
+            html.outputLocation.set(testReportsDir(name, "html"))
+            junitXml.outputLocation.set(testReportsDir(name, "xml"))
+        }
     }
 }
 

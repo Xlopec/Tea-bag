@@ -39,13 +39,6 @@ kotlin {
     explicitApi()
 }
 
-tasks.withType<Test>().configureEach {
-    reports {
-        html.outputLocation.set(htmlTestReportsDir)
-        junitXml.outputLocation.set(xmlTestReportsDir)
-    }
-}
-
 val packSourcesJar by tasks.creating(Jar::class) {
     dependsOn(tasks.classes)
     archiveClassifier.set("sources")
