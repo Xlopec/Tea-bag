@@ -136,12 +136,7 @@ android {
 
 afterEvaluate {
     tasks.withType<Test>().configureEach {
-        description = "$description Also copies test reports to ${testReportsDir(name)}"
-
-        reports {
-            html.outputLocation.set(testReportsDir(name, "html"))
-            junitXml.outputLocation.set(testReportsDir(name, "xml"))
-        }
+        configureOutputLocation(testReportsDir(name, "html"), testReportsDir(name, "xml"))
     }
 }
 

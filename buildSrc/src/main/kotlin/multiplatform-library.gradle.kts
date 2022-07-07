@@ -44,8 +44,5 @@ kotlin {
 }
 
 tasks.named<TestReport>("allTests").configure {
-    val reportDir = testReportsDir("multiplatform")
-
-    description = "$description Also copies test reports to $reportDir"
-    destinationDir = reportDir
+    configureOutputLocation(testReportsDir("multiplatform"))
 }

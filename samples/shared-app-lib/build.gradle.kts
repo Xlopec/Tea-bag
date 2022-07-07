@@ -113,20 +113,12 @@ kotlin {
 }
 
 tasks.named<TestReport>("allTests").configure {
-    val reportDir = testReportsDir("multiplatform")
-
-    description = "$description Also copies test reports to $reportDir"
-    destinationDir = reportDir
+    configureOutputLocation(testReportsDir("multiplatform"))
 }
 
 afterEvaluate {
     tasks.withType<Test>().configureEach {
-        description = "$description Also copies test reports to ${testReportsDir(name)}"
-
-        reports {
-            html.outputLocation.set(testReportsDir(name, "html"))
-            junitXml.outputLocation.set(testReportsDir(name, "xml"))
-        }
+        configureOutputLocation(testReportsDir(name, "html"), testReportsDir(name, "xml"))
     }
 }
 

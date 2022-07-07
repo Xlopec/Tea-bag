@@ -72,11 +72,7 @@ allprojects {
 
     afterEvaluate {
         tasks.withType<Test>().configureEach {
-            description = "$description Also copies test reports to $testReportsDir"
-            reports {
-                html.outputLocation.set(htmlTestReportsDir)
-                junitXml.outputLocation.set(xmlTestReportsDir)
-            }
+            configureOutputLocation(htmlTestReportsDir, xmlTestReportsDir)
         }
     }
 }
