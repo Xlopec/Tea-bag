@@ -25,7 +25,7 @@
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
-    id("multiplatform-library")
+    id("multiplatform-library-convention")
     id("publish-convention")
 }
 
