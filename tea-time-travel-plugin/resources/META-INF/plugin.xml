@@ -24,13 +24,17 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <toolWindow anchor="right" icon="/icons/toolbar_plugin_icon.svg" factoryClass="io.github.xlopec.tea.time.travel.plugin.ui.SideToolWindowFactory"
+        <toolWindow anchor="right" icon="/icons/toolbar_plugin_icon.svg"
+                    factoryClass="io.github.xlopec.tea.time.travel.plugin.ui.SideToolWindowFactory"
                     id="Time Traveller"/>
 
         <projectConfigurable id="io.github.xlopec.tea.core.plugin"
-                             displayName="Time Traveller"
+                             displayName="Tea Time Traveller"
                              groupId="tools"
                              instance="io.github.xlopec.tea.time.travel.plugin.feature.settings.PluginSettings"/>
+
+        <notificationGroup id="Tea Time Traveller"
+                           displayType="BALLOON"/>
     </extensions>
 
     <actions>

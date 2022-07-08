@@ -16,6 +16,8 @@
 
 package io.github.xlopec.tea.time.travel.plugin.integration
 
+import java.io.File
+
 sealed class PluginException : Throwable {
     constructor(
         message: String,
@@ -59,5 +61,6 @@ class InternalException(
 
 class FileException(
     message: String,
-    cause: Throwable
+    cause: Throwable,
+    val forFile: File? = null,
 ) : PluginException(message, cause)

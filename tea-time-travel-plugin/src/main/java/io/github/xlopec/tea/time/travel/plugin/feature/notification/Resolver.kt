@@ -1,7 +1,11 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.notification
 
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
+import io.github.xlopec.tea.time.travel.plugin.integration.Command
 import io.github.xlopec.tea.time.travel.plugin.integration.NotifyCommand
+import io.github.xlopec.tea.time.travel.plugin.integration.PluginException
+import java.util.*
 
 fun interface NotificationResolver {
     fun resolve(
@@ -28,13 +32,40 @@ private class NotificationResolverImpl(
         }
     }
 
-    private fun DoNotifyComponentAttached.notifyAttached() =
-        project.showBalloon(ComponentAttachedBalloon(componentId))
+    private fun DoNotifyComponentAttached.notifyAttached() {
+        project.showNotification(
+            "New Client Attached",
+            "Component \"${componentId.value}\" attached",
+            NotificationType.INFORMATION
+        )
+    }
 
-    private fun DoWarnUnacceptableMessage.warn() =
-        project.showBalloon(UnacceptableMessageBalloon(message, state))
+    private fun DoWarnUnacceptableMessage.warn() {
+        project.showNotification(
+            "Tea Time Travel Plugin Exception",
+            "Message ${message.javaClass.simpleName} can't be applied to state ${state.javaClass.simpleName}",
+            NotificationType.WARNING
+        )
+    }
 
-    private fun DoNotifyOperationException.notifyException() =
-        // todo put data to 'Notifications'
-        project.showBalloon(ExceptionBalloon(exception, operation, description))
+    private fun DoNotifyOperationException.notifyException() {
+        project.showNotification(
+            "Tea Time Travel Plugin Exception",
+            exceptionDescription(exception, operation, description),
+            NotificationType.ERROR
+        )
+    }
 }
+
+private fun exceptionDescription(
+    cause: PluginException,
+    operation: Command?,
+    description: String?,
+): String = "Exception occurred: ${formattedCauseDescription(cause, operation, description)}"
+
+private fun formattedCauseDescription(
+    cause: PluginException,
+    operation: Command?,
+    description: String?
+) = (description ?: cause.message ?: operation?.javaClass?.simpleName ?: "unknown exception")
+    .replaceFirstChar { it.lowercase(Locale.ENGLISH) }

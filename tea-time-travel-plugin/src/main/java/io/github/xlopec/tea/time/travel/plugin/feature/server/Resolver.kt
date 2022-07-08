@@ -1,7 +1,6 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
 import arrow.core.Either
-import com.intellij.openapi.project.Project
 import io.github.xlopec.tea.core.ResolveCtx
 import io.github.xlopec.tea.core.effects
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.*
@@ -24,12 +23,10 @@ fun interface ServerCommandResolver {
 }
 
 fun ServerCommandResolver(
-    project: Project,
     events: MutableSharedFlow<Message>,
-): ServerCommandResolver = ServerCommandResolverImpl(project, events)
+): ServerCommandResolver = ServerCommandResolverImpl(events)
 
 private class ServerCommandResolverImpl(
-    private val project: Project,
     private val events: MutableSharedFlow<Message>,
 ) : ServerCommandResolver {
 
@@ -47,15 +44,6 @@ private class ServerCommandResolverImpl(
             }.fold(::setOf, ::setOfNotNull)
         }
     }
-
-    private suspend fun DoApplyMessage.applyMessage() =
-        Either.catch { server(id, ApplyMessage(command.toJsonElement())); null }
-            .mapLeft {
-                OperationException(
-                    DebugServerException("Plugin failed to apply message to component ${id.value}", it),
-                    this,
-                )
-            }
 
     private suspend fun DoStopServer.stop() =
         Either.catch { server.stop() }
@@ -77,9 +65,17 @@ private class ServerCommandResolverImpl(
             OperationException(NetworkException(it.message ?: message, it), this, message)
         }.map(::ServerStarted)
 
+    private suspend fun DoApplyMessage.applyMessage() =
+        Either.catch { server(id, ApplyMessage(command.toJsonElement())); null }
+            .mapLeft {
+                OperationException(
+                    DebugServerException("Plugin failed to apply message to component ${id.value}", it),
+                    this,
+                )
+            }
+
     private suspend fun DoApplyState.applyState() = Either.catch {
         server(id, ApplyState(state.toJsonElement()))
-        project.showBalloon(StateAppliedBalloon(id))
         StateDeployed(id, state)
     }.mapLeft {
         OperationException(

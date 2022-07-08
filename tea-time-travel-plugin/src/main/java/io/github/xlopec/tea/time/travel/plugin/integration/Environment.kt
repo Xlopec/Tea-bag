@@ -44,7 +44,7 @@ fun Environment(
 ): Environment = object : Environment,
     AppUpdater by AppUpdater(),
     StorageResolver by StorageResolver(properties),
-    ServerCommandResolver by ServerCommandResolver(project, events),
+    ServerCommandResolver by ServerCommandResolver(events),
     NotificationResolver by NotificationResolver(project),
     AppResolver<Environment> by AppResolver(),
     CoroutineScope by CoroutineScope(SupervisorJob() + newSingleThreadContext("Plugin Thread")) {}

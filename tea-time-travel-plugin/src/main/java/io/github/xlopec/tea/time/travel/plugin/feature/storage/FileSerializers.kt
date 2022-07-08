@@ -3,7 +3,7 @@ package io.github.xlopec.tea.time.travel.plugin.feature.storage
 import arrow.core.Either
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import io.github.xlopec.tea.time.travel.plugin.integration.UserException
+import io.github.xlopec.tea.time.travel.plugin.integration.FileException
 import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
 import io.github.xlopec.tea.time.travel.plugin.util.toJson
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
@@ -37,14 +37,14 @@ internal suspend fun Gson.export(
 
 internal suspend fun Gson.import(
     file: File
-): Either<UserException, DebuggableComponent> =
+): Either<FileException, DebuggableComponent> =
     Either.catch {
         withContext(IO) {
             BufferedReader(FileReader(file))
                 .use { br -> fromJson(br, JsonObject::class.java) }
                 .toComponentDebugState()
         }
-    }.mapLeft { UserException("Couldn't import session from ${file.absolutePath}. Check if file is valid", it) }
+    }.mapLeft { FileException("Couldn't import session from ${file.absolutePath}. Check if file is valid", it, file) }
 
 internal fun File.generateFileName(
     id: ComponentId,
