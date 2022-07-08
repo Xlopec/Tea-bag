@@ -25,8 +25,6 @@
 package io.github.xlopec.tea.time.travel.session
 
 import arrow.core.Either
-import io.github.xlopec.tea.data.Left
-import io.github.xlopec.tea.data.Right
 import io.github.xlopec.tea.time.travel.component.Settings
 import io.github.xlopec.tea.time.travel.protocol.*
 import io.ktor.websocket.*
@@ -63,10 +61,10 @@ internal class DebugWebSocketSession<M : Any, S : Any, J>(
 }
 
 private fun <S> Flow<Either<*, S>>.states(): Flow<S> =
-    filterIsInstance<Right<S>>().map { (s) -> s }
+    filterIsInstance<Either.Right<S>>().map { (s) -> s }
 
 private fun <M> Flow<Either<M, *>>.messages(): Flow<M> =
-    filterIsInstance<Left<M>>().map { (m) -> m }
+    filterIsInstance<Either.Left<M>>().map { (m) -> m }
 
 private fun <M, S, J> WebSocketSession.incomingPackets(
     settings: Settings<M, S, J>
