@@ -66,6 +66,7 @@ kotlin {
             dependencies {
                 api(project(":tea-core"))
                 api(project(":tea-data"))
+                api(libs.arrow.core)
                 api(libs.collections.immutable)
                 api(libs.coroutines.core)
                 implementation(libs.stdlib)

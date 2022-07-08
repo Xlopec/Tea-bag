@@ -43,6 +43,7 @@ kotlin {
                 implementation(project(":tea-data"))
                 implementation(project(":tea-time-travel-protocol"))
 
+                implementation(libs.arrow.core)
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.websockets)
                 implementation(libs.ktor.client.core)

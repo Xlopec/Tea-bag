@@ -35,7 +35,6 @@ import io.github.xlopec.reader.app.model.Source
 import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.UrlFor
 import io.github.xlopec.tea.data.domain
-import io.github.xlopec.tea.data.fold
 
 interface FiltersResolver<Env> {
 
@@ -69,13 +68,8 @@ private suspend fun NewsApi.resolveSources(
     command: DoLoadSources,
 ) = command effect {
     fetchNewsSources().fold(
-        left = {
-            SourcesLoadSuccess(
-                id,
-                it.sources.mapToPersistentList(SourceResponseElement::toSource)
-            )
-        },
-        right = { SourcesLoadException(id, it) }
+        { SourcesLoadException(id, it) },
+        { SourcesLoadSuccess(id, it.sources.mapToPersistentList(SourceResponseElement::toSource)) }
     )
 }
 

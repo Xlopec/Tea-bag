@@ -25,13 +25,13 @@
 package io.github.xlopec.reader.environment
 
 import androidx.compose.ui.test.IdlingResource
+import arrow.core.Either
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.feature.article.list.Paging
 import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.network.SourcesResponse
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.SourceId
-import io.github.xlopec.tea.data.Either
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -39,7 +39,7 @@ import kotlinx.coroutines.withContext
 
 typealias ArticlePredicate = (input: Query?, paging: Paging) -> Boolean
 
-typealias ArticleResponseProvider = suspend (input: Query?, paging: Paging) -> Either<ArticleResponse, AppException>
+typealias ArticleResponseProvider = suspend (input: Query?, paging: Paging) -> Either<AppException, ArticleResponse>
 
 data class ArticlesMockData(
     val predicate: ArticlePredicate,
@@ -48,7 +48,7 @@ data class ArticlesMockData(
 
 @JvmInline
 value class SourcesMockData(
-    val response: Either<SourcesResponse, AppException>,
+    val response: Either<AppException, SourcesResponse>,
 )
 
 class TestNewsApi(
@@ -65,12 +65,12 @@ class TestNewsApi(
     }
 
     override infix fun ArticlePredicate.yields(
-        result: Either<ArticleResponse, AppException>,
+        result: Either<AppException, ArticleResponse>,
     ) {
         articlesMockData += ArticlesMockData(this, { _, _ -> result })
     }
 
-    override fun yieldsSourcesResponse(result: Either<SourcesResponse, AppException>) {
+    override fun yieldsSourcesResponse(result: Either<AppException, SourcesResponse>) {
         sourcesMockData += SourcesMockData(result)
     }
 
@@ -78,7 +78,7 @@ class TestNewsApi(
         query: Query?,
         sources: ImmutableSet<SourceId>,
         paging: Paging,
-    ): Either<ArticleResponse, AppException> {
+    ): Either<AppException, ArticleResponse> {
         return dequeArticlesResponse(query, paging)
     }
 
@@ -86,11 +86,11 @@ class TestNewsApi(
         query: Query?,
         sources: ImmutableSet<SourceId>,
         paging: Paging,
-    ): Either<ArticleResponse, AppException> {
+    ): Either<AppException, ArticleResponse> {
         return dequeArticlesResponse(query, paging)
     }
 
-    override suspend fun fetchNewsSources(): Either<SourcesResponse, AppException> {
+    override suspend fun fetchNewsSources(): Either<AppException, SourcesResponse> {
         return dequeSourcesResponse()
     }
 

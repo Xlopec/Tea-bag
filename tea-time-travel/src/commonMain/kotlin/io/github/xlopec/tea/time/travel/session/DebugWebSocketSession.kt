@@ -24,27 +24,14 @@
 
 package io.github.xlopec.tea.time.travel.session
 
-import io.github.xlopec.tea.data.Either
+import arrow.core.Either
 import io.github.xlopec.tea.data.Left
 import io.github.xlopec.tea.data.Right
 import io.github.xlopec.tea.time.travel.component.Settings
-import io.github.xlopec.tea.time.travel.protocol.ApplyMessage
-import io.github.xlopec.tea.time.travel.protocol.ApplyState
-import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
-import io.github.xlopec.tea.time.travel.protocol.NotifyClient
-import io.github.xlopec.tea.time.travel.protocol.NotifyServer
-import io.ktor.websocket.Frame
-import io.ktor.websocket.WebSocketSession
-import io.ktor.websocket.readText
-import io.ktor.websocket.send
+import io.github.xlopec.tea.time.travel.protocol.*
+import io.ktor.websocket.*
+import kotlinx.coroutines.flow.*
 import kotlin.reflect.KClass
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.shareIn
 
 @PublishedApi
 internal class DebugWebSocketSession<M : Any, S : Any, J>(
@@ -70,8 +57,8 @@ internal class DebugWebSocketSession<M : Any, S : Any, J>(
     private fun JsonSerializer<J>.toCommand(
         packet: NotifyClient<J>
     ) = when (val message = packet.message) {
-        is ApplyMessage<J> -> Left(fromJsonTree(message.message, mClass))
-        is ApplyState<J> -> Right(fromJsonTree(message.state, sClass))
+        is ApplyMessage<J> -> Either.Left(fromJsonTree(message.message, mClass))
+        is ApplyState<J> -> Either.Right(fromJsonTree(message.state, sClass))
     }
 }
 

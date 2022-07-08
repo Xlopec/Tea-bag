@@ -28,7 +28,7 @@ package io.github.xlopec.tea.data
 
 import kotlin.jvm.JvmName
 
-@Deprecated("use arrow kt instead")
+@Deprecated("use arrow kt instead", ReplaceWith("Either<R, L>", "arrow.core.Either"))
 public sealed interface Either<out L, out R>
 
 public data class Left<L>(
