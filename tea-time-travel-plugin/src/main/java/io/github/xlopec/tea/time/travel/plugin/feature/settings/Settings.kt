@@ -42,13 +42,18 @@ class Host private constructor(
 @JvmInline
 value class Port(
     val value: Int
-)
+) {
+    init {
+        require(value > 0)
+    }
+}
 
 // todo add remote call timeout
 data class Settings(
     val host: Validated<Host>,
     val port: Validated<Port>,
-    val isDetailedOutput: Boolean
+    val isDetailedOutput: Boolean,
+    val clearSnapshotsOnAttach: Boolean,
 ) {
 
     companion object {
@@ -56,7 +61,8 @@ data class Settings(
         fun of(
             hostInput: String?,
             portInput: String?,
-            isDetailedOutput: Boolean
+            isDetailedOutput: Boolean,
+            clearLogsOnComponentAttach: Boolean
         ): Settings {
 
             val host = Host.of(hostInput)?.let { host -> Valid(hostInput ?: "", host) }
@@ -65,7 +71,7 @@ data class Settings(
             val port = portInput?.toIntOrNull()?.let(::Port)?.let { port -> Valid(portInput, port) }
                 ?: Invalid(portInput ?: "", "Invalid port")
 
-            return Settings(host, port, isDetailedOutput)
+            return Settings(host, port, isDetailedOutput, clearLogsOnComponentAttach)
         }
     }
 }

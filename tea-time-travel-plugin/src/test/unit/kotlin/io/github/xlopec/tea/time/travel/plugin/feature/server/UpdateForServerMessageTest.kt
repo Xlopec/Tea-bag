@@ -67,7 +67,7 @@ private val TestPorts = listOf(
 )
 
 private val TestSettings = TestHosts.map { host ->
-    TestPorts.map { port -> Settings(host, port, false) }
+    TestPorts.map { port -> Settings(host = host, port = port, isDetailedOutput = false, clearSnapshotsOnAttach = true) }
 }.flatten()
 
 @RunWith(JUnit4::class)

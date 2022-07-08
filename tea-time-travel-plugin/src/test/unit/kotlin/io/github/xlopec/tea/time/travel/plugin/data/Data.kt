@@ -35,12 +35,17 @@ import java.util.*
 val TestHost = Host.of("localhost")!!
 val TestPort = Port(123)
 
-val ValidTestSettings = Settings(Valid(TestHost.value, TestHost), Valid(TestPort.value.toString(), TestPort), false)
+val ValidTestSettings = Settings(
+    host = Valid(TestHost.value, TestHost), port = Valid(TestPort.value.toString(), TestPort),
+    isDetailedOutput = false,
+    clearSnapshotsOnAttach = true
+)
 
 val InvalidTestSettings = Settings(
     host = Invalid("abc", "Provide host"),
     port = Invalid("port", "Provide port"),
-    isDetailedOutput = false
+    isDetailedOutput = false,
+    clearSnapshotsOnAttach = true
 )
 
 val StartedTestServerStub = object : Server {
@@ -94,17 +99,19 @@ fun ComponentDebugState(
 ) = componentId to DebuggableComponent(componentId, state, snapshots = snapshots, filteredSnapshots = filteredSnapshots)
 
 fun StartedFromPairs(
-    states: Iterable<Pair<ComponentId, DebuggableComponent>>
+    settings: Settings,
+    states: Iterable<Pair<ComponentId, DebuggableComponent>>,
 ) = State(
-    ValidTestSettings,
+    settings,
     Debugger(states.toMap().toPersistentMap()),
     StartedTestServerStub
 )
 
 fun StartedFromPairs(
+    settings: Settings,
     vararg states: Pair<ComponentId, DebuggableComponent>
 ) = State(
-    ValidTestSettings,
+    settings,
     Debugger(states.toMap().toPersistentMap()),
     StartedTestServerStub
 )

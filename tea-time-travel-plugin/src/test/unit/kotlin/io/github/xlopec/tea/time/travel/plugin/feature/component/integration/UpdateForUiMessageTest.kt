@@ -42,13 +42,13 @@ internal class UpdateForUiMessageTest {
 
         val otherStates = ComponentDebugStates { strId -> NonEmptyComponentDebugState(ComponentId(strId), meta) }
         val pluginState =
-            StartedFromPairs(otherStates + NonEmptyComponentDebugState(id, meta))
+            StartedFromPairs(ValidTestSettings, otherStates + NonEmptyComponentDebugState(id, meta))
 
         RemoveSnapshots(id, snapshotId)
         val (state, commands) = pluginState.onUpdateForComponentMessage(RemoveSnapshots(id, snapshotId))
 
         assertTrue(commands.isEmpty())
-        assertEquals(StartedFromPairs(otherStates + (id to DebuggableComponent(id, Null))), state)
+        assertEquals(StartedFromPairs(ValidTestSettings, otherStates + (id to DebuggableComponent(id, Null))), state)
     }
 
     @Test
@@ -67,6 +67,7 @@ internal class UpdateForUiMessageTest {
         }
 
         val pluginState = StartedFromPairs(
+            ValidTestSettings,
             otherStates + ComponentDebugState(
                 id,
                 (meta.take(hi).map(::EmptyOriginalSnapshot) + resultingOriginalSnapshots).toPersistentList(),
@@ -82,6 +83,7 @@ internal class UpdateForUiMessageTest {
         assertTrue(commands.isEmpty())
         assertEquals(
             StartedFromPairs(
+                ValidTestSettings,
                 otherStates + ComponentDebugState(
                     id,
                     resultingOriginalSnapshots.toPersistentList(),
@@ -100,12 +102,12 @@ internal class UpdateForUiMessageTest {
 
         val otherStates = ComponentDebugStates { strId -> NonEmptyComponentDebugState(ComponentId(strId), meta) }
         val pluginState =
-            StartedFromPairs(otherStates + NonEmptyComponentDebugState(id, meta))
+            StartedFromPairs(ValidTestSettings, otherStates + NonEmptyComponentDebugState(id, meta))
 
         val (state, commands) = pluginState.onUpdateForComponentMessage(RemoveAllSnapshots(id))
 
         assertTrue(commands.isEmpty())
-        assertEquals(StartedFromPairs(otherStates + (id to DebuggableComponent(id, Null))), state)
+        assertEquals(StartedFromPairs(ValidTestSettings, otherStates + (id to DebuggableComponent(id, Null))), state)
     }
 
     @Test
@@ -115,6 +117,7 @@ internal class UpdateForUiMessageTest {
         val otherStates = ComponentDebugStates()
 
         val initialState = StartedFromPairs(
+            ValidTestSettings,
             otherStates + NonEmptyComponentDebugState(
                 removalComponentId,
                 SnapshotMeta(RandomSnapshotId(), TestTimestamp1)
@@ -125,7 +128,7 @@ internal class UpdateForUiMessageTest {
         val (state, commands) = initialState.onUpdateForComponentMessage(RemoveComponent(removalComponentId))
 
         assertTrue(commands.isEmpty())
-        assertEquals(StartedFromPairs(otherStates), state)
+        assertEquals(StartedFromPairs(ValidTestSettings, otherStates), state)
     }
 
     @Test
@@ -137,6 +140,7 @@ internal class UpdateForUiMessageTest {
         val meta = SnapshotMeta(snapshotId, TestTimestamp1)
 
         val initialState = StartedFromPairs(
+            ValidTestSettings,
             ComponentDebugState(
                 componentId,
                 persistentListOf(OriginalSnapshot(meta, value, Null, CollectionWrapper(listOf()))),
@@ -160,6 +164,7 @@ internal class UpdateForUiMessageTest {
         val meta = SnapshotMeta(snapshotId, TestTimestamp1)
 
         val initialState = StartedFromPairs(
+            ValidTestSettings,
             ComponentDebugState(
                 componentId,
                 persistentListOf(OriginalSnapshot(meta, Null, value, CollectionWrapper(listOf()))),
@@ -179,7 +184,7 @@ internal class UpdateForUiMessageTest {
 
         val componentId = ComponentId("a")
         val initialState =
-            StartedFromPairs(NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp1)))
+            StartedFromPairs(ValidTestSettings, NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp1)))
 
         UpdateFilter(
             ComponentId("a"),
@@ -224,7 +229,7 @@ internal class UpdateForUiMessageTest {
         val componentId = ComponentId("a")
         val input = "abc"
         val initialState =
-            StartedFromPairs(NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp1)))
+            StartedFromPairs(ValidTestSettings, NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp1)))
 
         UpdateFilter(
             ComponentId("a"),

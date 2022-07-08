@@ -23,7 +23,7 @@ import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 
 const val PluginId = "io.github.xlopec.tea.core.plugin"
 
-inline val Project.properties: PropertiesComponent
+val Project.properties: PropertiesComponent
     get() = PropertiesComponent.getInstance(this)
 
 var PropertiesComponent.settings: Settings
@@ -31,15 +31,20 @@ var PropertiesComponent.settings: Settings
         host = value.host.input
         port = value.port.input
         isDetailedToStringEnabled = value.isDetailedOutput
+        clearSnapshotsOnComponentAttach = value.clearSnapshotsOnAttach
     }
-    get() = Settings.of(host, port, isDetailedToStringEnabled)
+    get() = Settings.of(host, port, isDetailedToStringEnabled, clearSnapshotsOnComponentAttach)
 
 // todo reduce visibility
-inline var PropertiesComponent.isDetailedToStringEnabled: Boolean
+var PropertiesComponent.isDetailedToStringEnabled: Boolean
     set(value) = setValue("$PluginId.isDetailedToStringEnabled", value)
     get() = getBoolean("$PluginId.isDetailedToStringEnabled", false)
 
-inline val Project.javaPsiFacade: JavaPsiFacade
+var PropertiesComponent.clearSnapshotsOnComponentAttach: Boolean
+    set(value) = setValue("$PluginId.clearLogsOnComponentAttach", value)
+    get() = getBoolean("$PluginId.clearLogsOnComponentAttach", false)
+
+val Project.javaPsiFacade: JavaPsiFacade
     get() = JavaPsiFacade.getInstance(this)
 
 private var PropertiesComponent.host: String?

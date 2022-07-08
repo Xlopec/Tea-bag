@@ -33,7 +33,10 @@ fun State.onUpdateForComponentMessage(
     message: ComponentMessage,
 ): Update<State, Command> =
     when {
-        message is UpdateDebugSettings -> onUpdateDebugSettings(message.isDetailedToStringEnabled)
+        message is UpdateDebugSettings -> onUpdateDebugSettings(
+            message.isDetailedToStringEnabled,
+            message.clearSnapshotsOnComponentAttach
+        )
         message is UpdateServerSettings && !isStarted -> onUpdateServerSettings(message)
         message is RemoveSnapshots -> onRemoveSnapshots(message.componentId, message.ids)
         message is RemoveAllSnapshots -> onRemoveSnapshots(message.componentId)
@@ -46,15 +49,20 @@ fun State.onUpdateForComponentMessage(
 
 private fun State.onUpdateDebugSettings(
     isDetailedToStringEnabled: Boolean,
+    clearSnapshotsOnComponentAttach: Boolean,
 ): Update<State, DoStoreSettings> =
-    detailedOutputEnabled(isDetailedToStringEnabled) command { DoStoreSettings(settings) }
+    detailedOutputEnabled(
+        isDetailedToStringEnabled,
+        clearSnapshotsOnComponentAttach
+    ) command { DoStoreSettings(settings) }
 
 private fun State.onUpdateServerSettings(
     message: UpdateServerSettings,
 ): Update<State, DoStoreSettings> {
-    val settings = Settings.of(message.host, message.port, settings.isDetailedOutput)
+    val settings =
+        Settings.of(message.host, message.port, settings.isDetailedOutput, settings.clearSnapshotsOnAttach)
 
-    return serverSettings(settings) command { DoStoreSettings(settings) }
+    return updateSettings(settings) command { DoStoreSettings(settings) }
 }
 
 private fun State.onApplyState(
@@ -86,8 +94,7 @@ private fun State.onRemoveSnapshots(
 private fun State.onRemoveComponent(
     message: RemoveComponent,
 ): Update<State, Nothing> =
-    updateComponents { mapping -> mapping.remove(message.componentId) }
-        .noCommand()
+    updateComponents { remove(message.componentId) }.noCommand()
 
 private fun State.onUpdateFilter(
     message: UpdateFilter,

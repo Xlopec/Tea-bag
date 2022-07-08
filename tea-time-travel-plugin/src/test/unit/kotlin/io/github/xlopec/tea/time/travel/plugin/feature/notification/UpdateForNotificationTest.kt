@@ -35,9 +35,7 @@ internal class UpdateForNotificationTest {
 
     @Test
     fun `test when message is NotifyStarted then plugin goes to a Started state`() {
-        val (nextState, commands) = State(ValidTestSettings).updateForNotificationMessage(
-            ServerStarted(StartedTestServerStub)
-        )
+        val (nextState, commands) = State(ValidTestSettings).updateForNotificationMessage(ServerStarted(StartedTestServerStub))
 
         assertEquals(
             State(
@@ -54,9 +52,7 @@ internal class UpdateForNotificationTest {
         val (nextState, commands) = State(
             ValidTestSettings,
             server = StartedTestServerStub,
-        ).updateForNotificationMessage(
-            ServerStopped
-        )
+        ).updateForNotificationMessage(ServerStopped)
 
         assertEquals(State(ValidTestSettings), nextState)
         assertTrue(commands.isEmpty())
@@ -72,7 +68,7 @@ internal class UpdateForNotificationTest {
         val otherStates = ComponentDebugStates('b'..'z')
         val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
 
-        val (nextState, commands) = StartedFromPairs(otherStates).updateForNotificationMessage(
+        val (nextState, commands) = StartedFromPairs(ValidTestSettings, otherStates).updateForNotificationMessage(
             AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper)
         )
 
@@ -83,7 +79,7 @@ internal class UpdateForNotificationTest {
             filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState, commandsWrapper))
         )
 
-        assertEquals(StartedFromPairs(otherStates + (componentId to expectedDebugState)), nextState)
+        assertEquals(StartedFromPairs(ValidTestSettings, otherStates + (componentId to expectedDebugState)), nextState)
         assertTrue(commands.isEmpty())
     }
 
@@ -104,7 +100,7 @@ internal class UpdateForNotificationTest {
         val newState = StringWrapper("d")
         val commandsWrapper = CollectionWrapper(listOf())
 
-        val (nextState, commands) = StartedFromPairs(otherStates).updateForNotificationMessage(
+        val (nextState, commands) = StartedFromPairs(ValidTestSettings, otherStates).updateForNotificationMessage(
             AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper)
         )
 
@@ -115,7 +111,7 @@ internal class UpdateForNotificationTest {
             filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState))
         )
 
-        assertEquals(StartedFromPairs(otherStates + (componentId to expectedDebugState)), nextState)
+        assertEquals(StartedFromPairs(ValidTestSettings, otherStates + (componentId to expectedDebugState)), nextState)
         assertTrue(commands.isEmpty())
     }
 
@@ -131,22 +127,22 @@ internal class UpdateForNotificationTest {
         val componentId = ComponentId("a")
         val newState = StringWrapper("d")
 
-        val (nextState, commands) = StartedFromPairs(otherStates).updateForNotificationMessage(
+        val (nextState, commands) = StartedFromPairs(ValidTestSettings, otherStates).updateForNotificationMessage(
             StateDeployed(componentId, newState)
         )
 
         val expectedDebugState = DebuggableComponent(componentId, newState)
 
         assertEquals(
-            StartedFromPairs(otherStates.takeLast(otherStates.size - 1) + (componentId to expectedDebugState)),
+            StartedFromPairs(ValidTestSettings, otherStates.takeLast(otherStates.size - 1) + (componentId to expectedDebugState)),
             nextState
         )
         assertTrue(commands.isEmpty())
     }
 
     @Test
-    fun `test when apply state and component doesn't exist then it doesn't get applied`() {
-        val state = StartedFromPairs(ComponentDebugStates())
+    fun `test when apply state and component does not exist then it does not get applied`() {
+        val state = StartedFromPairs(ValidTestSettings, ComponentDebugStates())
 
         val (nextState, commands) = state.updateForNotificationMessage(StateDeployed(ComponentId("a"), StringWrapper("d")))
 
@@ -162,12 +158,18 @@ internal class UpdateForNotificationTest {
         val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
         val collectionWrapper = CollectionWrapper(listOf(StringWrapper("a")))
 
-        val (nextState, commands) = StartedFromPairs(otherStates).updateForNotificationMessage(
-            ComponentAttached(componentId, meta, state, collectionWrapper)
+        val (nextState, commands) = StartedFromPairs(ValidTestSettings, otherStates).updateForNotificationMessage(
+            ComponentAttached(
+                componentId,
+                meta,
+                state,
+                collectionWrapper
+            )
         )
 
         assertEquals(
             StartedFromPairs(
+                ValidTestSettings,
                 otherStates +
                         ComponentDebugState(
                             componentId = componentId,
@@ -194,6 +196,128 @@ internal class UpdateForNotificationTest {
         )
 
         assertEquals(setOf(DoNotifyComponentAttached(componentId)), commands)
+    }
+
+    @Test
+    fun `test when append component twice given clearSnapshotsOnAttach option enabled, then it's appended only once`() {
+        val componentId = ComponentId("a")
+        val state = StringWrapper("d")
+        val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
+
+        val message = ComponentAttached(componentId, meta, state, CollectionWrapper())
+        val settings = ValidTestSettings.copy(clearSnapshotsOnAttach = true)
+        val (state1, commands1) = StartedFromPairs(settings).updateForNotificationMessage(message)
+        val (state2, commands2) = state1.updateForNotificationMessage(message)
+
+        val expectedState = StartedFromPairs(
+            settings,
+            ComponentDebugState(
+                componentId = componentId,
+                state = state,
+                snapshots = persistentListOf(
+                    OriginalSnapshot(
+                        meta = meta,
+                        message = null,
+                        state = state,
+                        commands = CollectionWrapper()
+                    )
+                ),
+                filteredSnapshots = persistentListOf(
+                    FilteredSnapshot(
+                        meta = meta,
+                        message = null,
+                        state = state,
+                        commands = null
+                    )
+                )
+            )
+        )
+
+        assertEquals(expectedState, state1)
+        assertEquals(expectedState, state2)
+
+        assertEquals(setOf(DoNotifyComponentAttached(componentId)), commands1)
+        assertEquals(setOf(DoNotifyComponentAttached(componentId)), commands2)
+    }
+
+    @Test
+    fun `test when append component twice given clearSnapshotsOnAttach option disabled, then it's appended twice`() {
+        val componentId = ComponentId("a")
+        val state = StringWrapper("d")
+        val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
+
+        val message = ComponentAttached(componentId, meta, state, CollectionWrapper())
+        val settings = ValidTestSettings.copy(clearSnapshotsOnAttach = false)
+        val (state1, commands1) = StartedFromPairs(settings).updateForNotificationMessage(message)
+
+        assertEquals(
+            StartedFromPairs(
+                settings,
+                ComponentDebugState(
+                    componentId = componentId,
+                    state = state,
+                    snapshots = persistentListOf(
+                        OriginalSnapshot(
+                            meta = meta,
+                            message = null,
+                            state = state,
+                            commands = CollectionWrapper()
+                        )
+                    ),
+                    filteredSnapshots = persistentListOf(
+                        FilteredSnapshot(
+                            meta = meta,
+                            message = null,
+                            state = state,
+                            commands = null
+                        )
+                    )
+                )
+            ), state1
+        )
+
+        val (state2, commands2) = state1.updateForNotificationMessage(message)
+
+        assertEquals(
+            StartedFromPairs(
+                settings,
+                ComponentDebugState(
+                    componentId = componentId,
+                    state = state,
+                    snapshots = persistentListOf(
+                        OriginalSnapshot(
+                            meta = meta,
+                            message = null,
+                            state = state,
+                            commands = CollectionWrapper()
+                        ),
+                        OriginalSnapshot(
+                            meta = meta,
+                            message = null,
+                            state = state,
+                            commands = CollectionWrapper()
+                        )
+                    ),
+                    filteredSnapshots = persistentListOf(
+                        FilteredSnapshot(
+                            meta = meta,
+                            message = null,
+                            state = state,
+                            commands = null
+                        ),
+                        FilteredSnapshot(
+                            meta = meta,
+                            message = null,
+                            state = state,
+                            commands = null
+                        )
+                    )
+                )
+            ), state2
+        )
+
+        assertEquals(setOf(DoNotifyComponentAttached(componentId)), commands1)
+        assertEquals(setOf(DoNotifyComponentAttached(componentId)), commands2)
     }
 
     @Test

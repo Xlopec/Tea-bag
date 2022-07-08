@@ -18,10 +18,7 @@ package io.github.xlopec.tea.time.travel.plugin.feature.settings
 
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
-import io.github.xlopec.tea.time.travel.plugin.util.PluginId
-import io.github.xlopec.tea.time.travel.plugin.util.isDetailedToStringEnabled
-import io.github.xlopec.tea.time.travel.plugin.util.properties
-import io.github.xlopec.tea.time.travel.plugin.util.settings
+import io.github.xlopec.tea.time.travel.plugin.util.*
 import javax.swing.JCheckBox
 import javax.swing.JComponent
 
@@ -31,13 +28,18 @@ class PluginSettings(
 
     private lateinit var root: JComponent
     private lateinit var detailedToStringCheckBox: JCheckBox
+    private lateinit var clearComponentSnapshotsOnAttachCheckBox: JCheckBox
 
     init {
-        detailedToStringCheckBox.isSelected = project.properties.isDetailedToStringEnabled
+        val properties = project.properties
+
+        detailedToStringCheckBox.isSelected = properties.isDetailedToStringEnabled
+        clearComponentSnapshotsOnAttachCheckBox.isSelected = properties.clearSnapshotsOnComponentAttach
     }
 
     override fun isModified(): Boolean =
-        project.properties.settings.isDetailedOutput != detailedToStringCheckBox.isSelected
+        project.properties.settings.isDetailedOutput != detailedToStringCheckBox.isSelected ||
+                project.properties.clearSnapshotsOnComponentAttach != clearComponentSnapshotsOnAttachCheckBox.isSelected
 
     override fun getId(): String = PluginId
 
@@ -45,11 +47,13 @@ class PluginSettings(
 
     override fun apply() {
         project.messageBus.syncPublisher(PluginSettingsNotifier.TOPIC)
-            .onSettingsUpdated(detailedToStringCheckBox.isSelected)
+            .onSettingsUpdated(detailedToStringCheckBox.isSelected, clearComponentSnapshotsOnAttachCheckBox.isSelected)
     }
 
     override fun reset() {
-        detailedToStringCheckBox.isSelected = project.properties.isDetailedToStringEnabled
+        val properties = project.properties
+        detailedToStringCheckBox.isSelected = properties.isDetailedToStringEnabled
+        clearComponentSnapshotsOnAttachCheckBox.isSelected = properties.clearSnapshotsOnComponentAttach
     }
 
     override fun createComponent(): JComponent = root

@@ -64,10 +64,16 @@ val State.hasAttachedComponents: Boolean
     get() = debugger.components.isNotEmpty()
 
 fun State.detailedOutputEnabled(
-    enabled: Boolean
-) = serverSettings(settings.copy(isDetailedOutput = enabled))
+    detailedOutputEnabled: Boolean,
+    clearSnapshotsOnComponentAttach: Boolean,
+) = updateSettings(
+    settings.copy(
+        isDetailedOutput = detailedOutputEnabled,
+        clearSnapshotsOnAttach = clearSnapshotsOnComponentAttach
+    )
+)
 
-fun State.serverSettings(
+fun State.updateSettings(
     settings: Settings,
 ) = copy(settings = settings)
 
@@ -78,14 +84,14 @@ fun State.update(
 fun State.removeSnapshots(
     id: ComponentId,
     snapshots: Set<SnapshotId>
-) = updateComponents { mapping -> mapping.put(id, debugger.component(id).removeSnapshots(snapshots)) }
+) = updateComponents { put(id, debugger.component(id).removeSnapshots(snapshots)) }
 
 fun State.removeSnapshots(
     id: ComponentId
-) = updateComponents { mapping -> mapping.put(id, debugger.component(id).removeSnapshots()) }
+) = updateComponents { put(id, debugger.component(id).removeSnapshots()) }
 
 inline fun State.updateComponents(
-    how: (mapping: ComponentMapping) -> ComponentMapping
+    how: ComponentMapping.() -> ComponentMapping
 ) = update(debugger.copy(components = how(debugger.components)))
 
 fun State.updateComponent(

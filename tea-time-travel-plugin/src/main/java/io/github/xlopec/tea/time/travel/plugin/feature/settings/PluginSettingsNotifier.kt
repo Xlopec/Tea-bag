@@ -18,13 +18,14 @@ package io.github.xlopec.tea.time.travel.plugin.feature.settings
 
 import com.intellij.util.messages.Topic
 
-interface PluginSettingsNotifier {
+fun interface PluginSettingsNotifier {
 
     companion object {
         val TOPIC = Topic.create("Plugin Settings Notifier", PluginSettingsNotifier::class.java)
     }
 
     fun onSettingsUpdated(
-        isDetailedToStringEnabled: Boolean
+        isDetailedToStringEnabled: Boolean,
+        clearSnapshotsOnComponentAttach: Boolean,
     )
 }

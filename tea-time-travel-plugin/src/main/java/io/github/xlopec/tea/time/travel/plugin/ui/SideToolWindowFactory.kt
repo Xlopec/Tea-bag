@@ -73,9 +73,9 @@ private val Project.settingsMessages: Flow<UpdateDebugSettings>
 
         connection.subscribe(
             PluginSettingsNotifier.TOPIC,
-            object : PluginSettingsNotifier {
-                override fun onSettingsUpdated(isDetailedToStringEnabled: Boolean) {
-                    launch { send(UpdateDebugSettings(isDetailedToStringEnabled)) }
+            PluginSettingsNotifier { isDetailedToStringEnabled, clearSnapshotsOnComponentAttach ->
+                launch {
+                    send(UpdateDebugSettings(isDetailedToStringEnabled, clearSnapshotsOnComponentAttach))
                 }
             }
         )

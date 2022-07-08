@@ -5,9 +5,9 @@ import io.github.xlopec.tea.time.travel.plugin.model.FilterOption
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
-@JvmInline
-value class UpdateDebugSettings(
-    val isDetailedToStringEnabled: Boolean
+data class UpdateDebugSettings(
+    val isDetailedToStringEnabled: Boolean,
+    val clearSnapshotsOnComponentAttach: Boolean,
 ) : ComponentMessage
 
 data class UpdateServerSettings(

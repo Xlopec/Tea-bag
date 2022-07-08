@@ -18,7 +18,12 @@ import io.kanro.compose.jetbrains.control.JPanel
 import io.kanro.compose.jetbrains.control.Text
 import io.kanro.compose.jetbrains.control.TextField
 
-private val PreviewSettings = Settings(Valid("192.168.1.1", Host.of("192.168.1.1")!!), Valid("8080", Port(8080)), isDetailedOutput = false)
+private val PreviewSettings = Settings(
+    Valid("192.168.1.1", Host.of("192.168.1.1")!!),
+    Valid("8080", Port(8080)),
+    isDetailedOutput = false,
+    clearSnapshotsOnAttach = true
+)
 
 @Preview
 @Composable

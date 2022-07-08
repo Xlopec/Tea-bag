@@ -52,9 +52,7 @@ private fun State.onComponentImported(
 ): Update<State, Command> =
 // overwrite any existing session for now
     // todo: show prompt dialog in future with options to merge, overwrite and cancel
-    updateComponents { mapping ->
-        mapping.put(message.sessionState.id, message.sessionState)
-    }.noCommand()
+    updateComponents { put(message.sessionState.id, message.sessionState) }.noCommand()
 
 private fun State.onStarted(
     server: Server,
@@ -70,36 +68,26 @@ private fun State.onAppendSnapshot(
     val updated = debugger.componentOrNew(message.componentId, message.newState)
         .appendSnapshot(snapshot, message.newState)
 
-    return updateComponents { mapping -> mapping.put(updated.id, updated) }
-        .noCommand()
+    return updateComponents { put(updated.id, updated) }.noCommand()
 }
 
 private fun State.onComponentAttached(
     message: ComponentAttached,
 ): Update<State, Command> {
+    val id = message.id
+    val state = message.state
+    val componentState = if (settings.clearSnapshotsOnAttach) DebuggableComponent(id, state) else debugger.componentOrNew(id, state)
 
-    val id = message.componentId
-    val currentState = message.state
-    val componentState = debugger.componentOrNew(id, currentState)
-        .appendSnapshot(message.toSnapshot(), currentState)
-
-    return updateComponents { mapping ->
-        mapping.put(
-            componentState.id,
-            componentState
-        )
-    } command DoNotifyComponentAttached(id)
+    return updateComponents { put(id, componentState.appendSnapshot(message.toSnapshot(), state)) } command DoNotifyComponentAttached(id)
 }
 
 private fun State.onStateDeployed(
     message: StateDeployed,
 ): Update<State, Command> {
-
     val component = debugger.components[message.componentId] ?: return noCommand()
     val updated = component.copy(state = message.state)
 
-    return updateComponents { mapping -> mapping.put(updated.id, updated) }
-        .noCommand()
+    return updateComponents { put(updated.id, updated) }.noCommand()
 }
 
 private fun State.onOperationException(
