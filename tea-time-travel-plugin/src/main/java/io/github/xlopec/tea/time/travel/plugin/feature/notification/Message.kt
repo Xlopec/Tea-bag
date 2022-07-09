@@ -28,6 +28,7 @@ data class AppendSnapshot(
     val commands: CollectionWrapper,
 ) : NotificationMessage
 
+// todo we should either implement ack protocol or remove this message
 data class StateDeployed(
     val componentId: ComponentId,
     val state: Value
