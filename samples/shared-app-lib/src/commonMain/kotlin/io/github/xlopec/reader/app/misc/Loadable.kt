@@ -26,7 +26,6 @@ package io.github.xlopec.reader.app.misc
 
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.feature.article.list.Page
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -88,10 +87,6 @@ fun <T> Loadable<T>.toRefreshing(): Loadable<T> =
     copy(loadableState = Refreshing)
 
 fun <T> Loadable<T>.toIdle(
-    data: ImmutableList<T>,
-): Loadable<T> = toIdle(Page(data = data, hasMore = false))
-
-fun <T> Loadable<T>.toIdle(
     page: Page<T>,
 ): Loadable<T> =
     when (loadableState) {
@@ -110,7 +105,15 @@ fun <T> Loadable<T>.toIdle(
 
 fun <T> Loadable<T>.toException(
     cause: AppException,
-) = copy(loadableState = Exception(cause))
+): Loadable<T> =
+    when (loadableState) {
+        LoadingNext, is Exception, Idle -> copy(loadableState = Exception(cause))
+        Loading, Refreshing -> Loadable(
+            data = persistentListOf(),
+            loadableState = Exception(cause),
+            hasMore = false
+        )
+    }
 
 private fun Loadable<*>.checkCanLoadNextPage() {
     require(data.isNotEmpty()) {

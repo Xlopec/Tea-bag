@@ -99,7 +99,7 @@ private suspend fun LocalStorage.toArticlesMessage(
     either: Either<AppException, ArticleResponse>,
     command: DoLoadArticles,
 ) = either.fold(
-    { setOf(ArticlesOperationException(command.id, it), Log(it, command, command.id)) },
+    { setOf(ArticlesLoadException(command.id, it), Log(it, command, command.id)) },
     { setOf(ArticlesLoaded(command.id, toPage(it, command.paging))) },
 )
 

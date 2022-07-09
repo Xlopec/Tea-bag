@@ -34,6 +34,7 @@ import io.github.xlopec.reader.app.NetworkException
 import io.github.xlopec.reader.app.feature.article.list.NewsApi
 import io.github.xlopec.reader.app.feature.article.list.Paging
 import io.github.xlopec.reader.app.feature.article.list.nextPage
+import io.github.xlopec.reader.app.model.Country
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.SourceId
 import io.ktor.client.*
@@ -55,7 +56,7 @@ import kotlinx.serialization.json.*
 
 internal class NewsApiImpl(
     engine: HttpClientEngineFactory<HttpClientEngineConfig>,
-    private val countryCode: String,
+    private val country: Country,
 ) : NewsApi {
 
     private val httpClient by lazy { HttpClient(engine, LogLevel.ALL) }
@@ -73,7 +74,7 @@ internal class NewsApiImpl(
         sources: ImmutableSet<SourceId>,
         paging: Paging,
     ) = TryRequest {
-        httpClient.get(TopHeadlinesRequest(query, sources, paging, countryCode)).body<ArticleResponse>()
+        httpClient.get(TopHeadlinesRequest(query, sources, paging, country.takeIf { sources.isEmpty() })).body<ArticleResponse>()
     }
 
     override suspend fun fetchNewsSources() = TryRequest {
@@ -160,7 +161,7 @@ private fun EverythingRequest(
     path = "/v2/everything"
 ) {
     with(parameters) {
-        append("apiKey", ApiKey)
+        appendApiKey(ApiKey)
         appendPaging(paging)
         appendFiltering(query, sources)
     }
@@ -170,18 +171,30 @@ private fun TopHeadlinesRequest(
     query: Query?,
     sources: ImmutableSet<SourceId>,
     paging: Paging,
-    countryCode: String,
+    country: Country?,
 ) = HttpRequestBuilder(
     scheme = HTTPS.name,
     host = "newsapi.org",
     path = "/v2/top-headlines"
 ) {
     with(parameters) {
-        append("apiKey", ApiKey)
-        append("country", countryCode)
+        appendApiKey(ApiKey)
+        country?.also { appendCountry(it) }
         appendPaging(paging)
         appendFiltering(query, sources)
     }
+}
+
+private fun ParametersBuilder.appendApiKey(
+    apiKey: String
+) {
+    append("apiKey", apiKey)
+}
+
+private fun ParametersBuilder.appendCountry(
+    country: Country
+) {
+    append("country", country.code)
 }
 
 private fun ParametersBuilder.appendPaging(

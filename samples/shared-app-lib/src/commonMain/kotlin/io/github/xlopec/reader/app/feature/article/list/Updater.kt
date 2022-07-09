@@ -40,11 +40,10 @@ fun ArticlesState.toArticlesUpdate(
     message: ArticlesMessage,
 ): Update<ArticlesState, Command> =
     when (message) {
-        is ArticlesLoaded -> toIdleUpdate(message.page)
+        is ArticlesLoadResult -> onLoadResult(message)
         is LoadNextArticles -> toLoadNextUpdate()
         is LoadArticles -> toLoadUpdate()
         is RefreshArticles -> toRefreshUpdate()
-        is ArticlesOperationException -> toOperationExceptionUpdate(message)
         is ToggleArticleIsFavorite -> toToggleFavoriteUpdate(message.article)
         is ArticleUpdated -> toUpdateAllArticlesUpdate(message.article)
         is OnShareArticle -> toShareArticleUpdate(message.article)
@@ -57,11 +56,18 @@ fun updateArticles(
     state: ArticlesState,
 ) = if (message.filter.type == state.filter.type) state.toFilterUpdate(message.filter) else state.noCommand()
 
-private fun ArticlesState.toOperationExceptionUpdate(
-    message: ArticlesOperationException,
+private fun ArticlesState.onLoadResult(
+    message: ArticlesLoadResult
+) = when (message) {
+    is ArticlesLoadException -> onLoadException(message)
+    is ArticlesLoaded -> onLoaded(message.page)
+}
+
+private fun ArticlesState.onLoadException(
+    message: ArticlesLoadException,
 ) = toException(message.cause).noCommand()
 
-private fun ArticlesState.toIdleUpdate(
+private fun ArticlesState.onLoaded(
     page: Page<Article>,
 ) = toIdle(page).noCommand()
 

@@ -28,6 +28,7 @@ import android.app.Application
 import android.content.res.Configuration
 import android.os.Build
 import io.github.xlopec.reader.app.feature.network.NewsApiImpl
+import io.github.xlopec.reader.app.model.Country
 import io.ktor.client.engine.cio.CIO
 import java.util.Locale.ENGLISH
 
@@ -35,14 +36,13 @@ fun NewsApi(
     application: Application
 ): NewsApi = NewsApiImpl(CIO, application.countryCode)
 
-private inline val Application.countryCode: String
+private inline val Application.countryCode: Country
     get() = resources.configuration.countryCode
 
 @Suppress("DEPRECATION")
-private inline val Configuration.countryCode: String
-    get() =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            locales.get(0)?.country ?: ENGLISH.country
-        } else {
-            locale.country
-        }
+private inline val Configuration.countryCode: Country
+    get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        Country(locales.get(0)?.country ?: ENGLISH.country)
+    } else {
+        Country(locale.country)
+    }

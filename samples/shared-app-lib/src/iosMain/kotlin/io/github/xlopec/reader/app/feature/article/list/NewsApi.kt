@@ -25,9 +25,10 @@
 package io.github.xlopec.reader.app.feature.article.list
 
 import io.github.xlopec.reader.app.feature.network.NewsApiImpl
-import io.ktor.client.engine.darwin.Darwin
+import io.github.xlopec.reader.app.model.Country
+import io.ktor.client.engine.darwin.*
 import platform.Foundation.NSLocale
 import platform.Foundation.countryCode
 import platform.Foundation.currentLocale
 
-fun NewsApi(): NewsApi = NewsApiImpl(Darwin, NSLocale.currentLocale.countryCode ?: "en")
+fun NewsApi(): NewsApi = NewsApiImpl(Darwin, Country(NSLocale.currentLocale.countryCode ?: "en"))
