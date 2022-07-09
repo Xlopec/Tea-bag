@@ -32,12 +32,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -70,6 +65,7 @@ fun FiltersScreen(
     val childTransition = screenTransition.childTransitionState()
 
     val focusRequester = remember { FocusRequester() }
+    val inputState = remember { mutableStateOf(state.filter.query) }
 
     if (closeScreen) {
         LaunchedEffect(Unit) {
@@ -98,6 +94,12 @@ fun FiltersScreen(
         closeScreen = true
     }
 
+    if (closeScreen) {
+        LaunchedEffect(Unit) {
+            handler(FilterUpdated(state.filter.query(inputState.value)))
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -118,11 +120,9 @@ fun FiltersScreen(
                         )
                         .focusRequester(focusRequester),
                     elevation = headerTransition.elevation,
-                    inputText = state.filter.query?.value ?: "",
+                    inputText = inputState.value?.value ?: "",
                     placeholderText = state.filter.type.toSearchHint(),
-                    onQueryUpdate = {
-                        handler(FilterUpdated(state.filter.query(Query.of(it))))
-                    },
+                    onQueryUpdate = { inputState.value = Query.of(it) },
                     onSearch = {
                         performSearch = true
                         closeScreen = true
@@ -148,7 +148,7 @@ fun FiltersScreen(
                     suggestions = state.suggestions,
                     childTransitionState = childTransition
                 ) { suggestion ->
-                    handler(FilterUpdated(state.filter.query(suggestion)))
+                    inputState.value = suggestion
                     performSearch = true
                     closeScreen = true
                 }
