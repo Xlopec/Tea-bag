@@ -32,6 +32,7 @@ import io.github.xlopec.tea.time.travel.plugin.model.Value
 import io.github.xlopec.tea.time.travel.plugin.model.appendSnapshot
 import io.github.xlopec.tea.time.travel.plugin.model.updateComponents
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import java.util.*
 
 internal fun State.updateForNotificationMessage(
     message: NotificationMessage,
@@ -42,17 +43,66 @@ internal fun State.updateForNotificationMessage(
         is AppendSnapshot -> onAppendSnapshot(message)
         is StateDeployed -> onStateDeployed(message)
         is ComponentAttached -> onComponentAttached(message)
-        is ComponentImported -> onComponentImported(message)
+        is ComponentImportResult -> onComponentImportResult(message)
+        is ComponentExportResult -> onComponentExportResult(message)
         is OperationException -> onOperationException(message)
         else -> onUnhandledMessage(message)
     }
 
-private fun State.onComponentImported(
-    message: ComponentImported,
-): Update<State, Command> =
+private fun State.onComponentImportResult(
+    message: ComponentImportResult
+) = when (message) {
+    is ComponentImportFailure -> onComponentImportFailure(message)
+    is ComponentImportSuccess -> onComponentImportSuccess(message)
+}
+
+private fun State.onComponentImportFailure(
+    message: ComponentImportFailure
+) = command(
+    DoNotifyFileOperationFailure(
+        title = "Import failure",
+        description = formatExceptionDescription("Couldn't import session", message.exception, ". Check if file is valid"),
+        forFile = message.exception.forFile
+    )
+)
+
 // overwrite any existing session for now
-    // todo: show prompt dialog in future with options to merge, overwrite and cancel
-    updateComponents { put(message.sessionState.id, message.sessionState) }.noCommand()
+// todo: show prompt dialog in future with options to merge, overwrite and cancel
+private fun State.onComponentImportSuccess(
+    message: ComponentImportSuccess,
+): Update<State, Command> =
+    updateComponents { put(message.sessionState.id, message.sessionState) } command DoNotifyFileOperationSuccess(
+        title = "Import success",
+        description = "Session \"${message.sessionState.id.value}\" were imported",
+        forFile = message.from,
+    )
+
+private fun State.onComponentExportResult(
+    message: ComponentExportResult
+) = when (message) {
+    is ComponentExportFailure -> onExportFailure(message)
+    is ComponentExportSuccess -> onExportSuccess(message)
+}
+
+private fun State.onExportSuccess(
+    message: ComponentExportSuccess
+) = command(
+        DoNotifyFileOperationSuccess(
+            title = "Export success",
+            description = "Session \"${message.id.value}\" were exported",
+            forFile = message.file,
+        )
+    )
+
+private fun State.onExportFailure(
+    message: ComponentExportFailure
+) = command(
+        DoNotifyFileOperationFailure(
+            title = "Export failure",
+            description = formatExceptionDescription("Failed to export \"${message.id.value}\"", message.exception),
+            forFile = message.exception.forFile
+        ),
+    )
 
 private fun State.onStarted(
     server: Server,
@@ -135,3 +185,11 @@ private fun notifyDeveloperException(cause: Throwable): Nothing =
         "Unexpected exception. Please, inform developers about the problem",
         cause
     )
+
+internal fun formatExceptionDescription(
+    prefix: String,
+    exception: PluginException,
+    suffix: String = "",
+) = "$prefix${exception.message?.toSanitizedString()?.let { ", caused by \"$it\"" } ?: ""}$suffix"
+
+private fun String.toSanitizedString() = replaceFirstChar { it.lowercase(Locale.ROOT) }

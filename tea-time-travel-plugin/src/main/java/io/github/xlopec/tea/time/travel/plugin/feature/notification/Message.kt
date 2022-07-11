@@ -1,10 +1,12 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.notification
 
 import io.github.xlopec.tea.time.travel.plugin.integration.Command
+import io.github.xlopec.tea.time.travel.plugin.integration.FileException
 import io.github.xlopec.tea.time.travel.plugin.integration.NotificationMessage
 import io.github.xlopec.tea.time.travel.plugin.integration.PluginException
 import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import java.io.File
 
 data class OperationException(
     val exception: PluginException,
@@ -41,7 +43,25 @@ data class ComponentAttached(
     val commands: CollectionWrapper,
 ) : NotificationMessage
 
-@JvmInline
-value class ComponentImported(
+sealed interface ComponentImportResult : NotificationMessage
+
+data class ComponentImportSuccess(
+    val from: File,
     val sessionState: DebuggableComponent
-) : NotificationMessage
+) : ComponentImportResult
+
+data class ComponentImportFailure(
+    val exception: FileException,
+) : ComponentImportResult
+
+sealed interface ComponentExportResult : NotificationMessage
+
+data class ComponentExportSuccess(
+    val id: ComponentId,
+    val file: File,
+) : ComponentExportResult
+
+data class ComponentExportFailure(
+    val id: ComponentId,
+    val exception: FileException,
+) : ComponentExportResult

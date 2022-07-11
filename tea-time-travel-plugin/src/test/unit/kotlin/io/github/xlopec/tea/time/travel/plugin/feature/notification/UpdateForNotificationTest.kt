@@ -19,13 +19,17 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.notification
 
 import io.github.xlopec.tea.time.travel.plugin.data.*
+import io.github.xlopec.tea.time.travel.plugin.integration.FileException
 import io.github.xlopec.tea.time.travel.plugin.integration.NotificationMessage
 import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlinx.collections.immutable.persistentListOf
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import java.io.FileNotFoundException
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -33,13 +37,16 @@ import kotlin.test.assertTrue
 @RunWith(JUnit4::class)
 internal class UpdateForNotificationTest {
 
+    @get:Rule
+    internal var fileRule = TemporaryFolder()
+
     @Test
     fun `test when message is NotifyStarted then plugin goes to a Started state`() {
         val (nextState, commands) = State(ValidTestSettings).updateForNotificationMessage(ServerStarted(StartedTestServerStub))
 
         assertEquals(
             State(
-                ValidTestSettings,
+                settings = ValidTestSettings,
                 server = StartedTestServerStub,
             ), nextState
         )
@@ -50,7 +57,7 @@ internal class UpdateForNotificationTest {
     fun `test when message is NotifyStopped then plugin goes to a Stopped state`() {
 
         val (nextState, commands) = State(
-            ValidTestSettings,
+            settings = ValidTestSettings,
             server = StartedTestServerStub,
         ).updateForNotificationMessage(ServerStopped)
 
@@ -73,8 +80,8 @@ internal class UpdateForNotificationTest {
         )
 
         val expectedDebugState = DebuggableComponent(
-            componentId,
-            newState,
+            id = componentId,
+            state = newState,
             snapshots = persistentListOf(OriginalSnapshot(meta, message, newState, commandsWrapper)),
             filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState, commandsWrapper))
         )
@@ -105,8 +112,8 @@ internal class UpdateForNotificationTest {
         )
 
         val expectedDebugState = DebuggableComponent(
-            componentId,
-            newState,
+            id = componentId,
+            state = newState,
             snapshots = persistentListOf(OriginalSnapshot(meta, message, newState, commandsWrapper)),
             filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState))
         )
@@ -160,10 +167,10 @@ internal class UpdateForNotificationTest {
 
         val (nextState, commands) = StartedFromPairs(ValidTestSettings, otherStates).updateForNotificationMessage(
             ComponentAttached(
-                componentId,
-                meta,
-                state,
-                collectionWrapper
+                id = componentId,
+                meta = meta,
+                state = state,
+                commands = collectionWrapper
             )
         )
 
@@ -199,12 +206,153 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
+    fun `test when component import session and operation fails, then DoNotifyFileOperationFailure is produced`() {
+        val file = fileRule.newFile()
+        val fileException = FileException("import failure", FileNotFoundException("can't read file"), file)
+        val (state, commands) = StartedFromPairs(ValidTestSettings).updateForNotificationMessage(ComponentImportFailure(fileException))
+
+        assertEquals(StartedFromPairs(ValidTestSettings), state)
+        assertEquals(
+            setOf(
+                DoNotifyFileOperationFailure(
+                    "Import failure",
+                    formatExceptionDescription("Couldn't import session", fileException, ". Check if file is valid"),
+                    file
+                )
+            ),
+            commands
+        )
+    }
+
+    @Test
+    fun `test when component is imported, then it's appended and DoNotifyFileOperationSuccess is produced`() {
+        val id = ComponentId("a")
+        val componentState = StringWrapper("abc")
+        val importedFrom = fileRule.newFile()
+
+        val (state, commands) = StartedFromPairs(ValidTestSettings).updateForNotificationMessage(
+            ComponentImportSuccess(
+                from = importedFrom,
+                sessionState = DebuggableComponent(
+                    id = id,
+                    state = componentState
+                )
+            )
+        )
+
+        assertEquals(
+            StartedFromPairs(
+                ValidTestSettings,
+                ComponentDebugState(
+                    componentId = id,
+                    state = componentState,
+                )
+            ),
+            state
+        )
+
+        assertEquals(
+            setOf(
+                DoNotifyFileOperationSuccess(
+                    title = "Import success",
+                    description = "Session \"${id.value}\" were imported",
+                    forFile = importedFrom
+                )
+            ),
+            commands
+        )
+    }
+
+    @Test
+    fun `test when component export session and operation fails, then DoNotifyFileOperationFailure is produced`() {
+        val id = ComponentId("test component")
+        val file = fileRule.newFile()
+        val fileException = FileException("export failure", FileNotFoundException("no write permission"), file)
+        val (state, commands) = StartedFromPairs(ValidTestSettings).updateForNotificationMessage(ComponentExportFailure(id, fileException))
+
+        assertEquals(StartedFromPairs(ValidTestSettings), state)
+        assertEquals(
+            setOf(
+                DoNotifyFileOperationFailure(
+                    "Export failure",
+                    formatExceptionDescription("Failed to export \"${id.value}\"", fileException),
+                    file
+                )
+            ),
+            commands
+        )
+    }
+
+    @Test
+    fun `test when component export session, then DoNotifyFileOperationSuccess is produced`() {
+        val id = ComponentId("test component")
+        val file = fileRule.newFile()
+        val (state, commands) = StartedFromPairs(ValidTestSettings).updateForNotificationMessage(ComponentExportSuccess(id, file))
+
+        assertEquals(StartedFromPairs(ValidTestSettings), state)
+        assertEquals(
+            setOf(
+                DoNotifyFileOperationSuccess(
+                    "Export success",
+                    "Session \"${id.value}\" were exported",
+                    file
+                )
+            ),
+            commands
+        )
+    }
+
+    @Test
+    fun `test when component is imported, then it's rewritten for same session and DoNotifyComponentImported is produced`() {
+        val id = ComponentId("a")
+        val componentState = StringWrapper("abc")
+        val importedFrom = fileRule.newFile()
+
+        val (state, commands) = StartedFromPairs(
+            ValidTestSettings,
+            ComponentDebugState(
+                componentId = id,
+                state = NumberWrapper(10),
+            )
+        ).updateForNotificationMessage(
+            ComponentImportSuccess(
+                from = importedFrom,
+                sessionState = DebuggableComponent(
+                    id = id,
+                    state = componentState
+                )
+            )
+        )
+
+        assertEquals(
+            StartedFromPairs(
+                ValidTestSettings,
+                ComponentDebugState(
+                    componentId = id,
+                    state = componentState,
+                )
+            ),
+            state
+        )
+
+        assertEquals(
+            setOf(
+                DoNotifyFileOperationSuccess(
+                    title = "Import success",
+                    description = "Session \"${id.value}\" were imported",
+                    forFile = importedFrom
+                )
+            ), commands
+        )
+    }
+
+    @Test
     fun `test when append component twice given clearSnapshotsOnAttach option enabled, then it's appended only once`() {
         val componentId = ComponentId("a")
         val state = StringWrapper("d")
         val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
 
-        val message = ComponentAttached(componentId, meta, state, CollectionWrapper())
+        val message = ComponentAttached(id = componentId, meta = meta, state = state, commands = CollectionWrapper())
         val settings = ValidTestSettings.copy(clearSnapshotsOnAttach = true)
         val (state1, commands1) = StartedFromPairs(settings).updateForNotificationMessage(message)
         val (state2, commands2) = state1.updateForNotificationMessage(message)
@@ -246,7 +394,7 @@ internal class UpdateForNotificationTest {
         val state = StringWrapper("d")
         val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
 
-        val message = ComponentAttached(componentId, meta, state, CollectionWrapper())
+        val message = ComponentAttached(id = componentId, meta = meta, state = state, commands = CollectionWrapper())
         val settings = ValidTestSettings.copy(clearSnapshotsOnAttach = false)
         val (state1, commands1) = StartedFromPairs(settings).updateForNotificationMessage(message)
 

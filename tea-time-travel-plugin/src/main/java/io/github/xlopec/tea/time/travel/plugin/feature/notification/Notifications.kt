@@ -18,15 +18,25 @@ package io.github.xlopec.tea.time.travel.plugin.feature.notification
 
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.project.Project
 
 fun Project.showNotification(
     title: String,
     message: String,
-    type: NotificationType
+    type: NotificationType,
+    vararg actions: AnAction
+) = showNotification(title, message, type, listOf(*actions))
+
+fun Project.showNotification(
+    title: String,
+    message: String,
+    type: NotificationType,
+    actions: Iterable<AnAction>
 ) {
     NotificationGroupManager.getInstance()
         .getNotificationGroup("Tea Time Traveller")
         .createNotification(title, message, type)
+        .addActions(actions as? MutableCollection<out AnAction> ?: actions.toMutableList() as MutableCollection<out AnAction>)
         .notify(this)
 }
