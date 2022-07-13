@@ -101,9 +101,10 @@ fun ComponentDebugState(
 fun StartedFromPairs(
     settings: Settings,
     states: Iterable<Pair<ComponentId, DebuggableComponent>>,
+    activeComponent: ComponentId? = states.toList().firstOrNull()?.first,
 ) = State(
     settings,
-    Debugger(states.toMap().toPersistentMap()),
+    Debugger(components = states.toMap().toPersistentMap(), activeComponent = activeComponent),
     StartedTestServerStub
 )
 

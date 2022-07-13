@@ -1,4 +1,4 @@
-package io.github.xlopec.tea.time.travel.plugin.util
+package io.github.xlopec.tea.time.travel.plugin.model
 
 import io.github.xlopec.tea.time.travel.plugin.data.ComponentDebugState
 import io.github.xlopec.tea.time.travel.plugin.data.TestComponentId1
@@ -8,7 +8,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 
-class TabExtensionsTest {
+class DebuggerExtensionsTest {
 
     private companion object {
         private val TestTabContent = arrayOf(

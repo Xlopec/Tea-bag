@@ -42,13 +42,13 @@ internal class UpdateForUiMessageTest {
 
         val otherStates = ComponentDebugStates { strId -> NonEmptyComponentDebugState(ComponentId(strId), meta) }
         val pluginState =
-            StartedFromPairs(ValidTestSettings, otherStates + NonEmptyComponentDebugState(id, meta))
+            StartedFromPairs(settings = ValidTestSettings, states = otherStates + NonEmptyComponentDebugState(id, meta))
 
         RemoveSnapshots(id, snapshotId)
         val (state, commands) = pluginState.onUpdateForComponentMessage(RemoveSnapshots(id, snapshotId))
 
         assertTrue(commands.isEmpty())
-        assertEquals(StartedFromPairs(ValidTestSettings, otherStates + (id to DebuggableComponent(id, Null))), state)
+        assertEquals(StartedFromPairs(settings = ValidTestSettings, states = otherStates + (id to DebuggableComponent(id, Null))), state)
     }
 
     @Test
@@ -102,12 +102,12 @@ internal class UpdateForUiMessageTest {
 
         val otherStates = ComponentDebugStates { strId -> NonEmptyComponentDebugState(ComponentId(strId), meta) }
         val pluginState =
-            StartedFromPairs(ValidTestSettings, otherStates + NonEmptyComponentDebugState(id, meta))
+            StartedFromPairs(settings = ValidTestSettings, states = otherStates + NonEmptyComponentDebugState(id, meta))
 
         val (state, commands) = pluginState.onUpdateForComponentMessage(RemoveAllSnapshots(id))
 
         assertTrue(commands.isEmpty())
-        assertEquals(StartedFromPairs(ValidTestSettings, otherStates + (id to DebuggableComponent(id, Null))), state)
+        assertEquals(StartedFromPairs(settings = ValidTestSettings, states = otherStates + (id to DebuggableComponent(id, Null))), state)
     }
 
     @Test
@@ -128,7 +128,7 @@ internal class UpdateForUiMessageTest {
         val (state, commands) = initialState.onUpdateForComponentMessage(RemoveComponent(removalComponentId))
 
         assertTrue(commands.isEmpty())
-        assertEquals(StartedFromPairs(ValidTestSettings, otherStates), state)
+        assertEquals(StartedFromPairs(settings = ValidTestSettings, states = otherStates), state)
     }
 
     @Test
@@ -204,7 +204,7 @@ internal class UpdateForUiMessageTest {
         assertTrue(commands.isEmpty())
         assertIs<Server>(state.server)
 
-        with(state.debugger.component(componentId)) {
+        with(state.debugger.componentOrThrow(componentId)) {
             assertFalse(filter.ignoreCase)
             assertSame(FilterOption.SUBSTRING, filter.option)
             assertIs<Valid<String>>(filter.predicate)
@@ -249,7 +249,7 @@ internal class UpdateForUiMessageTest {
         assertTrue(commands.isEmpty())
         assertIs<Server>(state.server)
 
-        val component = state.debugger.component(componentId)
+        val component = state.debugger.componentOrThrow(componentId)
 
         assertFalse(component.filter.ignoreCase)
         assertSame(FilterOption.SUBSTRING, component.filter.option)

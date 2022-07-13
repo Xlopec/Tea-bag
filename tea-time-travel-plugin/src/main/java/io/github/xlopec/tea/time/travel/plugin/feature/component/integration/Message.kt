@@ -50,5 +50,10 @@ data class ApplyState(
 
 @JvmInline
 value class RemoveComponent(
-    val componentId: ComponentId
+    val id: ComponentId
+) : ComponentMessage
+
+@JvmInline
+value class SelectComponent(
+    val id: ComponentId
 ) : ComponentMessage

@@ -21,7 +21,7 @@ import androidx.compose.runtime.Stable
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 /**
  * This class represents plugin state. If server isn't null, then it's started,
@@ -77,28 +77,6 @@ fun State.updateSettings(
     settings: Settings,
 ) = copy(settings = settings)
 
-fun State.update(
-    debugger: Debugger
-) = copy(debugger = debugger)
-
-fun State.removeSnapshots(
-    id: ComponentId,
-    snapshots: Set<SnapshotId>
-) = updateComponents { put(id, debugger.component(id).removeSnapshots(snapshots)) }
-
-fun State.removeSnapshots(
-    id: ComponentId
-) = updateComponents { put(id, debugger.component(id).removeSnapshots()) }
-
-inline fun State.updateComponents(
-    how: ComponentMapping.() -> ComponentMapping
-) = update(debugger.copy(components = how(debugger.components)))
-
-fun State.updateComponent(
-    id: ComponentId,
-    how: (mapping: DebuggableComponent) -> DebuggableComponent?
-) = update(debugger.updateComponent(id, how))
-
 fun State.snapshot(
     componentId: ComponentId,
     snapshotId: SnapshotId
@@ -110,9 +88,6 @@ fun State.state(
     snapshotId: SnapshotId
 ) = snapshot(componentId, snapshotId).state
 
-fun State.updateFilter(
-    id: ComponentId,
-    filterInput: String,
-    ignoreCase: Boolean,
-    option: FilterOption
-) = updateComponent(id) { it.updateFilter(filterInput, ignoreCase, option) }
+fun State.debugger(
+    debugger: Debugger
+) = copy(debugger = debugger)

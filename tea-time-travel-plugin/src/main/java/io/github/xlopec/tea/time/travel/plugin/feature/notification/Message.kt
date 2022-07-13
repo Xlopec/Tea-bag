@@ -32,7 +32,7 @@ data class AppendSnapshot(
 
 // todo we should either implement ack protocol or remove this message
 data class StateDeployed(
-    val componentId: ComponentId,
+    val id: ComponentId,
     val state: Value
 ) : NotificationMessage
 

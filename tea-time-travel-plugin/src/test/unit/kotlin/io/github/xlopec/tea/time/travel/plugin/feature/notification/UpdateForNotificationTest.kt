@@ -75,7 +75,7 @@ internal class UpdateForNotificationTest {
         val otherStates = ComponentDebugStates('b'..'z')
         val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
 
-        val (nextState, commands) = StartedFromPairs(ValidTestSettings, otherStates).updateForNotificationMessage(
+        val (nextState, commands) = StartedFromPairs(settings = ValidTestSettings, states = otherStates).updateForNotificationMessage(
             AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper)
         )
 
@@ -86,7 +86,7 @@ internal class UpdateForNotificationTest {
             filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState, commandsWrapper))
         )
 
-        assertEquals(StartedFromPairs(ValidTestSettings, otherStates + (componentId to expectedDebugState)), nextState)
+        assertEquals(StartedFromPairs(settings = ValidTestSettings, states = otherStates + (componentId to expectedDebugState)), nextState)
         assertTrue(commands.isEmpty())
     }
 
@@ -107,7 +107,7 @@ internal class UpdateForNotificationTest {
         val newState = StringWrapper("d")
         val commandsWrapper = CollectionWrapper(listOf())
 
-        val (nextState, commands) = StartedFromPairs(ValidTestSettings, otherStates).updateForNotificationMessage(
+        val (nextState, commands) = StartedFromPairs(settings = ValidTestSettings, states = otherStates).updateForNotificationMessage(
             AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper)
         )
 
@@ -118,7 +118,7 @@ internal class UpdateForNotificationTest {
             filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState))
         )
 
-        assertEquals(StartedFromPairs(ValidTestSettings, otherStates + (componentId to expectedDebugState)), nextState)
+        assertEquals(StartedFromPairs(settings = ValidTestSettings, states = otherStates + (componentId to expectedDebugState)), nextState)
         assertTrue(commands.isEmpty())
     }
 
@@ -134,14 +134,20 @@ internal class UpdateForNotificationTest {
         val componentId = ComponentId("a")
         val newState = StringWrapper("d")
 
-        val (nextState, commands) = StartedFromPairs(ValidTestSettings, otherStates).updateForNotificationMessage(
-            StateDeployed(componentId, newState)
-        )
+        val (nextState, commands) = StartedFromPairs(
+            settings = ValidTestSettings,
+            activeComponent = componentId,
+            states = otherStates
+        ).updateForNotificationMessage(StateDeployed(componentId, newState))
 
         val expectedDebugState = DebuggableComponent(componentId, newState)
 
         assertEquals(
-            StartedFromPairs(ValidTestSettings, otherStates.takeLast(otherStates.size - 1) + (componentId to expectedDebugState)),
+            StartedFromPairs(
+                settings = ValidTestSettings,
+                activeComponent = componentId,
+                states = otherStates.takeLast(otherStates.size - 1) + (componentId to expectedDebugState)
+            ),
             nextState
         )
         assertTrue(commands.isEmpty())
@@ -149,7 +155,7 @@ internal class UpdateForNotificationTest {
 
     @Test
     fun `test when apply state and component does not exist then it does not get applied`() {
-        val state = StartedFromPairs(ValidTestSettings, ComponentDebugStates())
+        val state = StartedFromPairs(settings = ValidTestSettings, states = ComponentDebugStates())
 
         val (nextState, commands) = state.updateForNotificationMessage(StateDeployed(ComponentId("a"), StringWrapper("d")))
 
@@ -165,7 +171,7 @@ internal class UpdateForNotificationTest {
         val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
         val collectionWrapper = CollectionWrapper(listOf(StringWrapper("a")))
 
-        val (nextState, commands) = StartedFromPairs(ValidTestSettings, otherStates).updateForNotificationMessage(
+        val (nextState, commands) = StartedFromPairs(settings = ValidTestSettings, states = otherStates).updateForNotificationMessage(
             ComponentAttached(
                 id = componentId,
                 meta = meta,
@@ -176,8 +182,9 @@ internal class UpdateForNotificationTest {
 
         assertEquals(
             StartedFromPairs(
-                ValidTestSettings,
-                otherStates +
+                settings = ValidTestSettings,
+                activeComponent = componentId,
+                states = otherStates +
                         ComponentDebugState(
                             componentId = componentId,
                             state = state,

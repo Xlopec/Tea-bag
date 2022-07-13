@@ -41,6 +41,7 @@ fun State.onUpdateForComponentMessage(
         message is RemoveSnapshots -> onRemoveSnapshots(message.componentId, message.ids)
         message is RemoveAllSnapshots -> onRemoveSnapshots(message.componentId)
         message is RemoveComponent -> onRemoveComponent(message)
+        message is SelectComponent -> onSelectComponent(message.id)
         message is ApplyMessage && server is Server -> onApplyMessage(message, server)
         message is ApplyState && server is Server -> onApplyState(message, server)
         message is UpdateFilter -> onUpdateFilter(message)
@@ -81,25 +82,28 @@ private fun State.onApplyMessage(
 }
 
 private fun State.onRemoveSnapshots(
-    componentId: ComponentId,
+    id: ComponentId,
     ids: Set<SnapshotId>,
 ): Update<State, Nothing> =
-    removeSnapshots(componentId, ids).noCommand()
+    debugger(debugger.removeSnapshots(id, ids)).noCommand()
 
 private fun State.onRemoveSnapshots(
-    componentId: ComponentId,
+    id: ComponentId,
 ): Update<State, Nothing> =
-    removeSnapshots(componentId).noCommand()
+    debugger(debugger.removeSnapshots(id)).noCommand()
 
 private fun State.onRemoveComponent(
     message: RemoveComponent,
-): Update<State, Nothing> =
-    updateComponents { remove(message.componentId) }.noCommand()
+): Update<State, Nothing> = debugger(debugger.removeComponent(message.id)).noCommand()
+
+private fun State.onSelectComponent(
+    id: ComponentId
+) = debugger(debugger.selectComponent(id)).noCommand()
 
 private fun State.onUpdateFilter(
     message: UpdateFilter,
 ): Update<State, Nothing> =
-    updateFilter(message.id, message.input, message.ignoreCase, message.option).noCommand()
+    debugger(debugger.updateFilter(message.id, message.input, message.ignoreCase, message.option)).noCommand()
 
 private fun State.state(
     message: ApplyState,

@@ -6,7 +6,7 @@ import io.github.xlopec.tea.time.travel.plugin.integration.Command
 import io.github.xlopec.tea.time.travel.plugin.integration.StoreMessage
 import io.github.xlopec.tea.time.travel.plugin.integration.onUnhandledMessage
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.component
+import io.github.xlopec.tea.time.travel.plugin.model.componentOrThrow
 
 internal fun State.onUpdateForStoreMessage(
     message: StoreMessage,
@@ -24,4 +24,4 @@ internal fun State.onImportSession(
 internal fun State.onExportSessions(
     message: ExportSessions
 ): Update<State, Command> =
-    this command DoExportSessions(message.dir, message.ids.map(debugger::component))
+    this command DoExportSessions(message.dir, message.ids.map(debugger::componentOrThrow))

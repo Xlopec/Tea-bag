@@ -23,14 +23,7 @@ import io.github.xlopec.tea.time.travel.plugin.feature.server.DoStartServer
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoStopServer
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.DoStoreSettings
 import io.github.xlopec.tea.time.travel.plugin.integration.*
-import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
-import io.github.xlopec.tea.time.travel.plugin.model.Debugger
-import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
-import io.github.xlopec.tea.time.travel.plugin.model.Server
-import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Value
-import io.github.xlopec.tea.time.travel.plugin.model.appendSnapshot
-import io.github.xlopec.tea.time.travel.plugin.model.updateComponents
+import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.util.*
 
@@ -71,7 +64,7 @@ private fun State.onComponentImportFailure(
 private fun State.onComponentImportSuccess(
     message: ComponentImportSuccess,
 ): Update<State, Command> =
-    updateComponents { put(message.sessionState.id, message.sessionState) } command DoNotifyFileOperationSuccess(
+    debugger(debugger.attachComponent(message.sessionState.id, message.sessionState)) command DoNotifyFileOperationSuccess(
         title = "Import success",
         description = "Session \"${message.sessionState.id.value}\" were imported",
         forFile = message.from,
@@ -87,22 +80,22 @@ private fun State.onComponentExportResult(
 private fun State.onExportSuccess(
     message: ComponentExportSuccess
 ) = command(
-        DoNotifyFileOperationSuccess(
-            title = "Export success",
-            description = "Session \"${message.id.value}\" were exported",
-            forFile = message.file,
-        )
+    DoNotifyFileOperationSuccess(
+        title = "Export success",
+        description = "Session \"${message.id.value}\" were exported",
+        forFile = message.file,
     )
+)
 
 private fun State.onExportFailure(
     message: ComponentExportFailure
 ) = command(
-        DoNotifyFileOperationFailure(
-            title = "Export failure",
-            description = formatExceptionDescription("Failed to export \"${message.id.value}\"", message.exception),
-            forFile = message.exception.forFile
-        ),
-    )
+    DoNotifyFileOperationFailure(
+        title = "Export failure",
+        description = formatExceptionDescription("Failed to export \"${message.id.value}\"", message.exception),
+        forFile = message.exception.forFile
+    ),
+)
 
 private fun State.onStarted(
     server: Server,
@@ -112,32 +105,27 @@ private fun State.onStopped() = copy(server = null).noCommand()
 
 private fun State.onAppendSnapshot(
     message: AppendSnapshot,
-): Update<State, Command> {
-
-    val snapshot = message.toSnapshot()
-    val updated = debugger.componentOrNew(message.componentId, message.newState)
-        .appendSnapshot(snapshot, message.newState)
-
-    return updateComponents { put(updated.id, updated) }.noCommand()
-}
+): Update<State, Command> = debugger(debugger.appendSnapshot(message.componentId, message.toSnapshot(), message.newState)).noCommand()
 
 private fun State.onComponentAttached(
     message: ComponentAttached,
-): Update<State, Command> {
-    val id = message.id
-    val state = message.state
-    val componentState = if (settings.clearSnapshotsOnAttach) DebuggableComponent(id, state) else debugger.componentOrNew(id, state)
-
-    return updateComponents { put(id, componentState.appendSnapshot(message.toSnapshot(), state)) } command DoNotifyComponentAttached(id)
-}
+): Update<State, Command> =
+    debugger(
+        debugger.attachComponent(
+            id = message.id,
+            state = message.state,
+            snapshot = message.toSnapshot(),
+            clearSnapshotsOnAttach = settings.clearSnapshotsOnAttach
+        )
+    ) command DoNotifyComponentAttached(message.id)
 
 private fun State.onStateDeployed(
     message: StateDeployed,
 ): Update<State, Command> {
-    val component = debugger.components[message.componentId] ?: return noCommand()
+    val component = debugger.components[message.id] ?: return noCommand()
     val updated = component.copy(state = message.state)
 
-    return updateComponents { put(updated.id, updated) }.noCommand()
+    return debugger(debugger.updateComponent(updated.id, updated)).noCommand()
 }
 
 private fun State.onOperationException(
