@@ -45,8 +45,16 @@ fun Debugger.appendSnapshot(
     id: ComponentId,
     snapshot: OriginalSnapshot,
     newState: Value,
+    maxRetainedSnapshots: PositiveNumber,
 ): Debugger {
-    val updated = componentOrNew(id, newState).appendSnapshot(snapshot, newState)
+    val component = componentOrNew(id, newState)
+    val normalizedComponent = if (component.exceedsMaxRetainedSnapshots(maxRetainedSnapshots)) {
+        component.removeSnapshotAt(0)
+    } else {
+        component
+    }
+
+    val updated = normalizedComponent.appendSnapshot(snapshot, newState)
 
     return updateComponent(updated.id, updated)
 }
@@ -136,6 +144,10 @@ private fun calculateNextSelectionIndex(
     }
     return (currentSelectionIndex - 1).takeIf { it >= 0 } ?: ((currentSelectionIndex + 1) % size)
 }
+
+private fun DebuggableComponent.exceedsMaxRetainedSnapshots(
+    maxRetainedSnapshots: PositiveNumber,
+) = snapshots.size >= maxRetainedSnapshots.value.toInt()
 
 private operator fun <T> Collection<T>.get(
     i: Int

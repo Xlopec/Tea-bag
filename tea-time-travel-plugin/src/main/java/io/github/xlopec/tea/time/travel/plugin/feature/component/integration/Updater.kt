@@ -35,7 +35,8 @@ fun State.onUpdateForComponentMessage(
     when {
         message is UpdateDebugSettings -> onUpdateDebugSettings(
             message.isDetailedToStringEnabled,
-            message.clearSnapshotsOnComponentAttach
+            message.clearSnapshotsOnComponentAttach,
+            message.maxRetainedSnapshots,
         )
         message is UpdateServerSettings && !isStarted -> onUpdateServerSettings(message)
         message is RemoveSnapshots -> onRemoveSnapshots(message.componentId, message.ids)
@@ -48,22 +49,27 @@ fun State.onUpdateForComponentMessage(
         else -> onUnhandledMessage(message)
     }
 
+// todo UpdateDebugSettings and UpdateServerSettings should be merged into a single message
 private fun State.onUpdateDebugSettings(
     isDetailedToStringEnabled: Boolean,
     clearSnapshotsOnComponentAttach: Boolean,
+    maxRetainedSnapshots: PositiveNumber,
 ): Update<State, DoStoreSettings> =
-    detailedOutputEnabled(
-        isDetailedToStringEnabled,
-        clearSnapshotsOnComponentAttach
-    ) command { DoStoreSettings(settings) }
+    settings(isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxRetainedSnapshots) command { DoStoreSettings(settings) }
 
 private fun State.onUpdateServerSettings(
     message: UpdateServerSettings,
 ): Update<State, DoStoreSettings> {
     val settings =
-        Settings.of(message.host, message.port, settings.isDetailedOutput, settings.clearSnapshotsOnAttach)
+        Settings.fromInput(
+            message.host,
+            message.port,
+            settings.isDetailedOutput,
+            settings.clearSnapshotsOnAttach,
+            settings.maxRetainedSnapshots.value
+        )
 
-    return updateSettings(settings) command { DoStoreSettings(settings) }
+    return settings(settings) command { DoStoreSettings(settings) }
 }
 
 private fun State.onApplyState(

@@ -63,17 +63,19 @@ val State.areSettingsModifiable: Boolean
 val State.hasAttachedComponents: Boolean
     get() = debugger.components.isNotEmpty()
 
-fun State.detailedOutputEnabled(
+fun State.settings(
     detailedOutputEnabled: Boolean,
     clearSnapshotsOnComponentAttach: Boolean,
-) = updateSettings(
+    maxRetainedSnapshots: PositiveNumber,
+) = settings(
     settings.copy(
         isDetailedOutput = detailedOutputEnabled,
-        clearSnapshotsOnAttach = clearSnapshotsOnComponentAttach
+        clearSnapshotsOnAttach = clearSnapshotsOnComponentAttach,
+        maxRetainedSnapshots = maxRetainedSnapshots
     )
 )
 
-fun State.updateSettings(
+fun State.settings(
     settings: Settings,
 ) = copy(settings = settings)
 

@@ -20,8 +20,15 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.intellij.psi.JavaPsiFacade
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings.Companion.DefaultRetainedSnapshots
+import io.github.xlopec.tea.time.travel.plugin.model.PositiveNumber
 
 const val PluginId = "io.github.xlopec.tea.core.plugin"
+private const val DetailedToStringKey = "$PluginId.isDetailedToStringEnabled"
+private const val ClearLogsKey = "$PluginId.clearLogsOnComponentAttach"
+private const val HostKey = "$PluginId.host"
+private const val PortKey = "$PluginId.port"
+private const val MaxRetainedSnapshotsKey = "$PluginId.maxRetainedSnapshots"
 
 val Project.properties: PropertiesComponent
     get() = PropertiesComponent.getInstance(this)
@@ -32,25 +39,30 @@ var PropertiesComponent.settings: Settings
         port = value.port.input
         isDetailedToStringEnabled = value.isDetailedOutput
         clearSnapshotsOnComponentAttach = value.clearSnapshotsOnAttach
+        maxRetainedSnapshots = value.maxRetainedSnapshots
     }
-    get() = Settings.of(host, port, isDetailedToStringEnabled, clearSnapshotsOnComponentAttach)
+    get() = Settings.fromInput(host, port, isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxRetainedSnapshots.value)
 
 // todo reduce visibility
 var PropertiesComponent.isDetailedToStringEnabled: Boolean
-    set(value) = setValue("$PluginId.isDetailedToStringEnabled", value)
-    get() = getBoolean("$PluginId.isDetailedToStringEnabled", false)
+    set(value) = setValue(DetailedToStringKey, value)
+    get() = getBoolean(DetailedToStringKey, false)
 
 var PropertiesComponent.clearSnapshotsOnComponentAttach: Boolean
-    set(value) = setValue("$PluginId.clearLogsOnComponentAttach", value)
-    get() = getBoolean("$PluginId.clearLogsOnComponentAttach", false)
+    set(value) = setValue(ClearLogsKey, value)
+    get() = getBoolean(ClearLogsKey, false)
+
+var PropertiesComponent.maxRetainedSnapshots: PositiveNumber
+    set(value) = setValue(MaxRetainedSnapshotsKey, value.value.toInt(), DefaultRetainedSnapshots.value.toInt())
+    get() = PositiveNumber.of(getInt(MaxRetainedSnapshotsKey, DefaultRetainedSnapshots.value.toInt()))
 
 val Project.javaPsiFacade: JavaPsiFacade
     get() = JavaPsiFacade.getInstance(this)
 
 private var PropertiesComponent.host: String?
-    set(value) = setValue("$PluginId.host", value)
-    get() = getValue("$PluginId.host")
+    set(value) = setValue(HostKey, value)
+    get() = getValue(HostKey)
 
 private var PropertiesComponent.port: String?
-    set(value) = setValue("$PluginId.port", value)
-    get() = getValue("$PluginId.port")
+    set(value) = setValue(PortKey, value)
+    get() = getValue(PortKey)

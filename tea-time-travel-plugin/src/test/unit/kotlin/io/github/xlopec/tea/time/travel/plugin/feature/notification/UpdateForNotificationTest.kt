@@ -41,7 +41,7 @@ internal class UpdateForNotificationTest {
     internal var fileRule = TemporaryFolder()
 
     @Test
-    fun `test when message is NotifyStarted then plugin goes to a Started state`() {
+    fun `when message is NotifyStarted then plugin goes to a Started state`() {
         val (nextState, commands) = State(ValidTestSettings).updateForNotificationMessage(ServerStarted(StartedTestServerStub))
 
         assertEquals(
@@ -54,7 +54,7 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when message is NotifyStopped then plugin goes to a Stopped state`() {
+    fun `when message is NotifyStopped then plugin goes to a Stopped state`() {
 
         val (nextState, commands) = State(
             settings = ValidTestSettings,
@@ -66,7 +66,7 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when append snapshot to non-existing component then it gets appended`() {
+    fun `when append snapshot to non-existing component then it gets appended`() {
         val componentId = ComponentId("a")
         val message = StringWrapper("b")
         val oldState = StringWrapper("c")
@@ -91,7 +91,7 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when append snapshot to existing component then it gets appended`() {
+    fun `when append snapshot to existing component then it gets appended`() {
         val otherStates = ComponentDebugStates('a'..'z') { strId ->
 
             val id = ComponentId(strId)
@@ -123,7 +123,35 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when apply state then it gets applied`() {
+    fun `when append snapshot to component and snapshots number exceeds max retained number, then first snapshot is removed`() {
+        val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
+        val componentId = ComponentId("a")
+        val message = StringWrapper("b")
+        val oldState = StringWrapper("c")
+        val newState = StringWrapper("d")
+        val commandsWrapper = CollectionWrapper(listOf())
+
+        val settings = ValidTestSettings.copy(maxRetainedSnapshots = PositiveNumber.of(1))
+        val (nextState, commands) = StartedFromPairs(settings, ComponentDebugState(componentId))
+            .updateForNotificationMessage(AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper))
+
+        val expectedDebugState = DebuggableComponent(
+            id = componentId,
+            state = newState,
+            snapshots = persistentListOf(OriginalSnapshot(meta, message, newState, commandsWrapper)),
+            filteredSnapshots = persistentListOf(FilteredSnapshot(meta, message, newState))
+        )
+
+        assertEquals(
+            StartedFromPairs(settings, componentId to expectedDebugState),
+            nextState
+        )
+
+        assertEquals(setOf(), commands)
+    }
+
+    @Test
+    fun `when apply state then it gets applied`() {
         val otherStates = ComponentDebugStates('a'..'z') { strId ->
             val id = ComponentId(strId)
 
@@ -154,7 +182,7 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when apply state and component does not exist then it does not get applied`() {
+    fun `when apply state and component does not exist then it does not get applied`() {
         val state = StartedFromPairs(settings = ValidTestSettings, states = ComponentDebugStates())
 
         val (nextState, commands) = state.updateForNotificationMessage(StateDeployed(ComponentId("a"), StringWrapper("d")))
@@ -164,7 +192,7 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when append new component then it gets appended`() {
+    fun `when append new component then it gets appended`() {
         val otherStates = ComponentDebugStates { strId -> ComponentDebugState(ComponentId(strId)) }
         val componentId = ComponentId("a")
         val state = StringWrapper("d")
@@ -213,7 +241,7 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when component import session and operation fails, then DoNotifyFileOperationFailure is produced`() {
+    fun `when component import session and operation fails, then DoNotifyFileOperationFailure is produced`() {
         val file = fileRule.newFile()
         val fileException = FileException("import failure", FileNotFoundException("can't read file"), file)
         val (state, commands) = StartedFromPairs(ValidTestSettings).updateForNotificationMessage(ComponentImportFailure(fileException))
@@ -232,7 +260,7 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when component is imported, then it's appended and DoNotifyFileOperationSuccess is produced`() {
+    fun `when component is imported, then it's appended and DoNotifyFileOperationSuccess is produced`() {
         val id = ComponentId("a")
         val componentState = StringWrapper("abc")
         val importedFrom = fileRule.newFile()
@@ -271,8 +299,8 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when component export session and operation fails, then DoNotifyFileOperationFailure is produced`() {
-        val id = ComponentId("test component")
+    fun `when component export session and operation fails, then DoNotifyFileOperationFailure is produced`() {
+        val id = ComponentId("component")
         val file = fileRule.newFile()
         val fileException = FileException("export failure", FileNotFoundException("no write permission"), file)
         val (state, commands) = StartedFromPairs(ValidTestSettings).updateForNotificationMessage(ComponentExportFailure(id, fileException))
@@ -291,8 +319,8 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when component export session, then DoNotifyFileOperationSuccess is produced`() {
-        val id = ComponentId("test component")
+    fun `when component export session, then DoNotifyFileOperationSuccess is produced`() {
+        val id = ComponentId("component")
         val file = fileRule.newFile()
         val (state, commands) = StartedFromPairs(ValidTestSettings).updateForNotificationMessage(ComponentExportSuccess(id, file))
 
@@ -310,7 +338,7 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when component is imported, then it's rewritten for same session and DoNotifyComponentImported is produced`() {
+    fun `when component is imported, then it's rewritten for same session and DoNotifyComponentImported is produced`() {
         val id = ComponentId("a")
         val componentState = StringWrapper("abc")
         val importedFrom = fileRule.newFile()
@@ -354,7 +382,7 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when append component twice given clearSnapshotsOnAttach option enabled, then it's appended only once`() {
+    fun `when append component twice given clearSnapshotsOnAttach option enabled, then it's appended only once`() {
         val componentId = ComponentId("a")
         val state = StringWrapper("d")
         val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
@@ -396,7 +424,7 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when append component twice given clearSnapshotsOnAttach option disabled, then it's appended twice`() {
+    fun `when append component twice given clearSnapshotsOnAttach option disabled, then it's appended twice`() {
         val componentId = ComponentId("a")
         val state = StringWrapper("d")
         val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
@@ -476,7 +504,7 @@ internal class UpdateForNotificationTest {
     }
 
     @Test
-    fun `test when illegal combination of message and state warning command is returned`() {
+    fun `when illegal combination of message and state warning command is returned`() {
         val initialState = State(ValidTestSettings)
         val message = object : NotificationMessage {}
         val (state, commands) = initialState.updateForNotificationMessage(message)

@@ -17,6 +17,7 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.settings
 
 import io.github.xlopec.tea.time.travel.plugin.model.Invalid
+import io.github.xlopec.tea.time.travel.plugin.model.PositiveNumber
 import io.github.xlopec.tea.time.travel.plugin.model.Valid
 import io.github.xlopec.tea.time.travel.plugin.model.Validated
 
@@ -54,15 +55,19 @@ data class Settings(
     val port: Validated<Port>,
     val isDetailedOutput: Boolean,
     val clearSnapshotsOnAttach: Boolean,
+    val maxRetainedSnapshots: PositiveNumber = DefaultRetainedSnapshots,
 ) {
 
     companion object {
 
-        fun of(
+        val DefaultRetainedSnapshots = PositiveNumber.of(200U)
+
+        fun fromInput(
             hostInput: String?,
             portInput: String?,
             isDetailedOutput: Boolean,
-            clearLogsOnComponentAttach: Boolean
+            clearLogsOnComponentAttach: Boolean,
+            maxRetainedSnapshots: UInt,
         ): Settings {
 
             val host = Host.of(hostInput)?.let { host -> Valid(hostInput ?: "", host) }
@@ -71,7 +76,7 @@ data class Settings(
             val port = portInput?.toIntOrNull()?.let(::Port)?.let { port -> Valid(portInput, port) }
                 ?: Invalid(portInput ?: "", "Invalid port")
 
-            return Settings(host, port, isDetailedOutput, clearLogsOnComponentAttach)
+            return Settings(host, port, isDetailedOutput, clearLogsOnComponentAttach, PositiveNumber.of(maxRetainedSnapshots))
         }
     }
 }

@@ -24,7 +24,6 @@ import io.github.xlopec.tea.time.travel.plugin.feature.server.DoStopServer
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.DoStoreSettings
 import io.github.xlopec.tea.time.travel.plugin.integration.*
 import io.github.xlopec.tea.time.travel.plugin.model.*
-import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import java.util.*
 
 internal fun State.updateForNotificationMessage(
@@ -105,7 +104,14 @@ private fun State.onStopped() = copy(server = null).noCommand()
 
 private fun State.onAppendSnapshot(
     message: AppendSnapshot,
-): Update<State, Command> = debugger(debugger.appendSnapshot(message.componentId, message.toSnapshot(), message.newState)).noCommand()
+): Update<State, Command> = debugger(
+    debugger.appendSnapshot(
+        id = message.componentId,
+        snapshot = message.toSnapshot(),
+        newState = message.newState,
+        maxRetainedSnapshots = settings.maxRetainedSnapshots
+    )
+).noCommand()
 
 private fun State.onComponentAttached(
     message: ComponentAttached,
@@ -158,11 +164,6 @@ private fun isFatalProblem(
 private fun AppendSnapshot.toSnapshot() = OriginalSnapshot(meta, message, newState, commands)
 
 private fun ComponentAttached.toSnapshot() = OriginalSnapshot(meta, null, state, commands)
-
-private fun Debugger.componentOrNew(
-    id: ComponentId,
-    state: Value,
-) = components[id] ?: DebuggableComponent(id, state)
 
 private fun DoNotifyOperationException(
     message: OperationException,

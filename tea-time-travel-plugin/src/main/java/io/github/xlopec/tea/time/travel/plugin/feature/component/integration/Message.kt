@@ -2,12 +2,15 @@ package io.github.xlopec.tea.time.travel.plugin.feature.component.integration
 
 import io.github.xlopec.tea.time.travel.plugin.integration.ComponentMessage
 import io.github.xlopec.tea.time.travel.plugin.model.FilterOption
+import io.github.xlopec.tea.time.travel.plugin.model.PositiveNumber
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
+// todo UpdateDebugSettings and UpdateServerSettings should be merged into a single message
 data class UpdateDebugSettings(
     val isDetailedToStringEnabled: Boolean,
     val clearSnapshotsOnComponentAttach: Boolean,
+    val maxRetainedSnapshots: PositiveNumber,
 ) : ComponentMessage
 
 data class UpdateServerSettings(

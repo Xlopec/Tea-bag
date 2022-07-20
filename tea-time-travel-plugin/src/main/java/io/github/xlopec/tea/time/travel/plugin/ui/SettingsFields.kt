@@ -119,7 +119,7 @@ private fun SettingsFieldsPreview() {
                     host = Valid("localhost", Host.of("localhost")!!),
                     port = Valid("8080", Port(8080)),
                     isDetailedOutput = false,
-                    clearSnapshotsOnAttach = true
+                    clearSnapshotsOnAttach = true,
                 )
             ),
             handler = {},
