@@ -6,17 +6,23 @@ import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
+/**
+ * Represents state of a component under debug.
+ *
+ * Invariants:
+ * * filteredSnapshots.size <= snapshots.size
+ * * filteredSnapshots.ids in snapshots.ids
+ */
 @Immutable
 data class DebuggableComponent(
     val id: ComponentId,
     val state: Value,
-    // fixme we should re-model this bit, invariant checks should reside inside a dedicated entity
     val filter: Filter = Filter.empty(),
     val snapshots: PersistentList<OriginalSnapshot> = persistentListOf(),
     val filteredSnapshots: PersistentList<FilteredSnapshot> = persistentListOf()
 ) {
     /**
-     * Creates already reset debug state
+     * Creates a DebuggableComponent with reset state
      */
     constructor(
         id: ComponentId,

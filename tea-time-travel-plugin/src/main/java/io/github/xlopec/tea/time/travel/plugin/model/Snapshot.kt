@@ -50,4 +50,4 @@ fun OriginalSnapshot.filteredBy(
 fun PersistentList<OriginalSnapshot>.filteredBy(
     predicate: Predicate,
 ): PersistentList<FilteredSnapshot> =
-    mapNotNull { o -> o.filteredBy(predicate) }
+    mapNotNull { it.filteredBy(predicate) }

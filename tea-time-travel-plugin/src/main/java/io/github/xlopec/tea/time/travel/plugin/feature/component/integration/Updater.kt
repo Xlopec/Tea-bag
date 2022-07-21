@@ -21,6 +21,8 @@ import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyState
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.Port
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.DoStoreSettings
 import io.github.xlopec.tea.time.travel.plugin.integration.Command
@@ -49,28 +51,19 @@ fun State.onUpdateForComponentMessage(
         else -> onUnhandledMessage(message)
     }
 
-// todo UpdateDebugSettings and UpdateServerSettings should be merged into a single message
 private fun State.onUpdateDebugSettings(
     isDetailedToStringEnabled: Boolean,
     clearSnapshotsOnComponentAttach: Boolean,
     maxRetainedSnapshots: PositiveNumber,
 ): Update<State, DoStoreSettings> =
-    settings(isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxRetainedSnapshots) command { DoStoreSettings(settings) }
+    settings(settings.update(isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxRetainedSnapshots)) command {
+        DoStoreSettings(settings)
+    }
 
 private fun State.onUpdateServerSettings(
     message: UpdateServerSettings,
-): Update<State, DoStoreSettings> {
-    val settings =
-        Settings.fromInput(
-            message.host,
-            message.port,
-            settings.isDetailedOutput,
-            settings.clearSnapshotsOnAttach,
-            settings.maxRetainedSnapshots.value
-        )
-
-    return settings(settings) command { DoStoreSettings(settings) }
-}
+): Update<State, DoStoreSettings> =
+    settings(settings.update(message.host, message.port)) command { DoStoreSettings(settings) }
 
 private fun State.onApplyState(
     message: ApplyState,
@@ -118,3 +111,26 @@ private fun State.state(
 private fun State.messageFor(
     message: ApplyMessage,
 ) = snapshot(message.componentId, message.snapshotId).message
+
+private fun Settings.update(
+    hostInput: String?,
+    portInput: String?,
+): Settings {
+    val host = Host.of(hostInput)?.let { host -> Valid(hostInput ?: "", host) }
+        ?: Invalid(hostInput ?: "", "Host can't be blank or empty")
+
+    val port = portInput?.toIntOrNull()?.let(::Port)?.let { port -> Valid(portInput, port) }
+        ?: Invalid(portInput ?: "", "Invalid port")
+
+    return copy(host = host, port = port)
+}
+
+private fun Settings.update(
+    isDetailedOutput: Boolean = this.isDetailedOutput,
+    clearSnapshotsOnAttach: Boolean = this.clearSnapshotsOnAttach,
+    maxRetainedSnapshots: PositiveNumber = this.maxRetainedSnapshots,
+): Settings = copy(
+    isDetailedOutput = isDetailedOutput,
+    clearSnapshotsOnAttach = clearSnapshotsOnAttach,
+    maxRetainedSnapshots = maxRetainedSnapshots
+)
