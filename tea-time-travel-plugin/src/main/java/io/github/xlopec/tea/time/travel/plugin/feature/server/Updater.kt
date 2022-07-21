@@ -1,5 +1,7 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
+import arrow.core.zip
+import arrow.typeclasses.Semigroup
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
@@ -9,7 +11,6 @@ import io.github.xlopec.tea.time.travel.plugin.integration.ServerMessage
 import io.github.xlopec.tea.time.travel.plugin.integration.onUnhandledMessage
 import io.github.xlopec.tea.time.travel.plugin.model.Server
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Valid
 
 internal fun State.onUpdateForServerMessage(
     message: ServerMessage
@@ -24,11 +25,9 @@ private fun State.onStopServer(server: Server) =
     this command DoStopServer(server)
 
 private fun State.onStartServer(): Update<State, Command> {
+    val command = settings.host.value.zip(Semigroup.string(), settings.port.value) { host, port ->
+        DoStartServer(ServerAddress(host, port))
+    }.fold({ null }, { it }) ?: return noCommand()
 
-    val host = settings.host
-    val port = settings.port
-
-    return if (host is Valid && port is Valid) {
-        this command DoStartServer(ServerAddress(host.t, port.t))
-    } else noCommand()
+    return command(command)
 }

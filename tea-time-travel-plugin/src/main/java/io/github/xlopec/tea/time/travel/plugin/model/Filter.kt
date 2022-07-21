@@ -19,6 +19,8 @@
 package io.github.xlopec.tea.time.travel.plugin.model
 
 import androidx.compose.runtime.Immutable
+import arrow.core.Valid
+import arrow.core.Validated
 import io.github.xlopec.tea.time.travel.plugin.model.FilterOption.*
 import java.util.*
 
@@ -31,13 +33,13 @@ enum class FilterOption {
     WORDS
 }
 
-private val MatchAllValidatedPredicate: Validated<Predicate> = Valid("") { true }
+private val MatchAllValidatedPredicate: Input<String, Predicate> = Input("", Valid(value = { true }))
 
 @Immutable
 class Filter private constructor(
     val option: FilterOption,
     val ignoreCase: Boolean,
-    val predicate: Validated<Predicate>
+    val predicate: Input<String, Predicate>
 ) {
 
     companion object {
@@ -60,13 +62,13 @@ class Filter private constructor(
                 SUBSTRING -> Filter(
                     SUBSTRING,
                     ignoreCase,
-                    Valid(filter, SubstringPredicate(filter, ignoreCase))
+                    Input(filter, Valid(SubstringPredicate(filter, ignoreCase)))
                 )
                 REGEX -> Filter(REGEX, ignoreCase, RegexPredicate(filter, ignoreCase))
                 WORDS -> Filter(
                     WORDS,
                     ignoreCase,
-                    Valid(filter, WordsPredicate(filter, ignoreCase))
+                    Input(filter, Valid(WordsPredicate(filter, ignoreCase)))
                 )
             }
         }
@@ -114,24 +116,19 @@ private val ALL_MATCH_IGNORING_CASE_REGEX = Regex(".*", RegexOption.IGNORE_CASE)
 fun RegexPredicate(
     rawRegex: String,
     ignoreCase: Boolean
-): Validated<Predicate> {
+): Input<String, Predicate> {
 
-    val validated = if (rawRegex.isEmpty()) {
-        Valid(rawRegex, if (ignoreCase) ALL_MATCH_IGNORING_CASE_REGEX else ALL_MATCH_REGEX)
-    } else {
-        runCatching { Regex(rawRegex, if (ignoreCase) IGNORE_CASE_SET else emptySet()) }.fold(
-            onSuccess = { rgx -> Valid(rawRegex, rgx) },
-            onFailure = { th ->
-                Invalid(
-                    rawRegex,
-                    th.message
-                        ?: "Invalid regular expression"
-                )
-            }
-        )
-    }
+    @Suppress("SuspiciousCallableReferenceInLambda")
+    val validatedRegex = Validated.catch {
+        when {
+            rawRegex.isEmpty() && ignoreCase -> ALL_MATCH_IGNORING_CASE_REGEX
+            rawRegex.isEmpty() && !ignoreCase -> ALL_MATCH_REGEX
+            else -> Regex(rawRegex, if (ignoreCase) IGNORE_CASE_SET else emptySet())
+        }
+    }.mapLeft { th -> th.message ?: "Invalid regular expression" }
+        .map { regex -> regex::matches }
 
-    return validated.map { regex -> regex::matches }
+    return Input(rawRegex, validatedRegex)
 }
 
 /**

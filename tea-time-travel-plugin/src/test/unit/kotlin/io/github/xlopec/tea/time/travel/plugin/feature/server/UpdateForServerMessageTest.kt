@@ -18,6 +18,9 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
+import arrow.core.Invalid
+import arrow.core.Valid
+import arrow.core.valueOr
 import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
 import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.DoWarnUnacceptableMessage
@@ -33,36 +36,36 @@ import kotlin.test.assertEquals
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
-val TestHost = Host.of("localhost")!!
+val TestHost = Host.newOrNull("localhost")!!
 val TestPort = Port(123)
 
 private val TestHosts = listOf(
-    Invalid("", ""),
-    Invalid("some", "message"),
-    Invalid("", ""),
-    Valid(
+    Input("", Invalid("")),
+    Input("some", Invalid("message")),
+    Input("", Invalid("")),
+    Input(
         TestHost.value,
-        TestHost
+        Valid(TestHost)
     ),
-    Invalid("some", "message"),
-    Valid(
+    Input("some", Invalid("message")),
+    Input(
         "www.google.com",
-        Host.of("www.google.com")!!
+        Valid(Host.newOrNull("www.google.com")!!)
     )
 )
 
 private val TestPorts = listOf(
-    Invalid("", ""),
-    Invalid("some", "message"),
-    Invalid("", ""),
-    Valid(
+    Input("", Invalid("")),
+    Input("some", Invalid("message")),
+    Input("", Invalid("")),
+    Input(
         TestPort.value.toString(),
-        TestPort
+        Valid(TestPort)
     ),
-    Invalid("some", "message"),
-    Valid(
+    Input("some", Invalid("message")),
+    Input(
         "100",
-        Port(100)
+        Valid(Port(100))
     )
 )
 
@@ -80,15 +83,10 @@ internal class UpdateForServerMessageTest {
             val (state, commands) = stopped.onUpdateForServerMessage(StartServer)
 
             assertTrue("test failed for settings $settings") {
-                if (settings.host.isValid() && settings.port.isValid()) {
+                if (settings.host.value.isValid && settings.port.value.isValid) {
                     state === stopped &&
                             commands == setOf(
-                        DoStartServer(
-                            ServerAddress(
-                                settings.host.value!!,
-                                settings.port.value!!
-                            )
-                        )
+                        DoStartServer(ServerAddress(settings.host.value.valueOr(::error), settings.port.value.valueOr(::error)))
                     )
                 } else {
                     state === stopped && commands.isEmpty()

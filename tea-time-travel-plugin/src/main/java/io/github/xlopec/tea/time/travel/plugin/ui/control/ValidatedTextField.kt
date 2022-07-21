@@ -5,13 +5,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import arrow.core.Valid
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Port
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
+import io.github.xlopec.tea.time.travel.plugin.model.Input
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Valid
-import io.github.xlopec.tea.time.travel.plugin.model.Validated
-import io.github.xlopec.tea.time.travel.plugin.model.isValid
 import io.github.xlopec.tea.time.travel.plugin.ui.ActionsMenu
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
 import io.kanro.compose.jetbrains.control.JPanel
@@ -19,8 +18,8 @@ import io.kanro.compose.jetbrains.control.Text
 import io.kanro.compose.jetbrains.control.TextField
 
 private val PreviewSettings = Settings(
-    Valid("192.168.1.1", Host.of("192.168.1.1")!!),
-    Valid("8080", Port(8080)),
+    Input("192.168.1.1", Valid(Host.newOrNull("192.168.1.1")!!)),
+    Input("8080", Valid(Port(8080))),
     isDetailedOutput = false,
     clearSnapshotsOnAttach = true
 )
@@ -44,7 +43,7 @@ fun BottomActionMenuPreview() {
 
 @Composable
 fun ValidatedTextField(
-    validated: Validated<*>,
+    validated: Input<String, *>,
     placeholder: String,
     modifier: Modifier = Modifier,
     onValueChange: (newValue: String) -> Unit,
@@ -55,7 +54,7 @@ fun ValidatedTextField(
         value = validated.input,
         onValueChange = { onValueChange(it) },
         placeholder = { Text(text = placeholder) },
-        isError = !validated.isValid(),
+        isError = validated.value.isInvalid,
         singleLine = true,
         enabled = enabled
     )
@@ -67,7 +66,7 @@ private fun ValidatedTextFieldPreview() {
     PluginPreviewTheme {
         JPanel(modifier = Modifier.fillMaxSize()) {
             ValidatedTextField(
-                validated = Valid("text field input", "input"),
+                validated = Input("text field input", Valid("input")),
                 placeholder = "Placeholder",
                 modifier = Modifier,
                 onValueChange = {}

@@ -50,11 +50,7 @@ fun DebuggableComponent.updateFilter(
 fun DebuggableComponent.updateFilter(
     filter: Filter
 ): DebuggableComponent {
-    val filtered = when (val validatedPredicate = filter.predicate) {
-        is Valid -> snapshots.filteredBy(validatedPredicate.t)
-        is Invalid -> filteredSnapshots
-    }
-
+    val filtered = filter.predicate.value.fold({ filteredSnapshots }, { snapshots.filteredBy(it) })
     return copy(filter = filter, filteredSnapshots = filtered)
 }
 
@@ -62,12 +58,7 @@ fun DebuggableComponent.appendSnapshot(
     snapshot: OriginalSnapshot,
     state: Value
 ): DebuggableComponent {
-
-    val filtered = when (val validatedPredicate = filter.predicate) {
-        is Valid -> snapshot.filteredBy(validatedPredicate.t)
-        is Invalid -> snapshot.toFiltered()
-    }
-
+    val filtered = filter.predicate.value.fold({ snapshot.toFiltered() }, { snapshot.filteredBy(it) })
     return copy(
         snapshots = snapshots.add(snapshot),
         filteredSnapshots = filtered?.let(filteredSnapshots::add) ?: filteredSnapshots,

@@ -18,18 +18,13 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.component.model
 
+import arrow.core.Valid
 import com.google.gson.internal.LazilyParsedNumber
-import io.github.xlopec.tea.time.travel.plugin.model.NumberWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Property
-import io.github.xlopec.tea.time.travel.plugin.model.Ref
-import io.github.xlopec.tea.time.travel.plugin.model.RegexPredicate
-import io.github.xlopec.tea.time.travel.plugin.model.Type
-import io.github.xlopec.tea.time.travel.plugin.model.Valid
-import io.github.xlopec.tea.time.travel.plugin.model.applyTo
-import kotlin.test.assertEquals
+import io.github.xlopec.tea.time.travel.plugin.model.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import kotlin.test.assertEquals
 
 @RunWith(JUnit4::class)
 internal class FiltersTest {
@@ -59,7 +54,7 @@ internal class FiltersTest {
             testProperties
         )
 
-        val filtered = (RegexPredicate("com\\.example\\.Test", false) as Valid).t.applyTo(ref)
+        val filtered = (RegexPredicate("com\\.example\\.Test", false).value as Valid<Predicate>).value.applyTo(ref)
 
         assertEquals(ref, filtered)
     }
@@ -149,4 +144,4 @@ internal class FiltersTest {
 private fun UnsafeRegexPredicate(
     input: String,
     ignoreCase: Boolean = false,
-) = (RegexPredicate(input, ignoreCase) as Valid).t
+) = (RegexPredicate(input, ignoreCase).value as Valid).value

@@ -11,13 +11,14 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import arrow.core.Valid
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.UpdateServerSettings
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Port
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
+import io.github.xlopec.tea.time.travel.plugin.model.Input
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Valid
 import io.github.xlopec.tea.time.travel.plugin.model.areSettingsModifiable
 import io.github.xlopec.tea.time.travel.plugin.ui.control.ValidatedTextField
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
@@ -116,8 +117,8 @@ private fun SettingsFieldsPreview() {
             modifier = Modifier.fillMaxWidth(),
             state = State(
                 settings = Settings(
-                    host = Valid("localhost", Host.of("localhost")!!),
-                    port = Valid("8080", Port(8080)),
+                    host = Input("localhost", Valid(Host.newOrNull("localhost")!!)),
+                    port = Input("8080", Valid(Port(8080))),
                     isDetailedOutput = false,
                     clearSnapshotsOnAttach = true,
                 )

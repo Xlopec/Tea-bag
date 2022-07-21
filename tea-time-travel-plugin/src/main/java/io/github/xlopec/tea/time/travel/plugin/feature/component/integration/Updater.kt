@@ -21,9 +21,7 @@ import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyState
-import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
-import io.github.xlopec.tea.time.travel.plugin.feature.settings.Port
-import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.*
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.DoStoreSettings
 import io.github.xlopec.tea.time.travel.plugin.integration.Command
 import io.github.xlopec.tea.time.travel.plugin.integration.ComponentMessage
@@ -115,15 +113,7 @@ private fun State.messageFor(
 private fun Settings.update(
     hostInput: String?,
     portInput: String?,
-): Settings {
-    val host = Host.of(hostInput)?.let { host -> Valid(hostInput ?: "", host) }
-        ?: Invalid(hostInput ?: "", "Host can't be blank or empty")
-
-    val port = portInput?.toIntOrNull()?.let(::Port)?.let { port -> Valid(portInput, port) }
-        ?: Invalid(portInput ?: "", "Invalid port")
-
-    return copy(host = host, port = port)
-}
+): Settings = copy(host = ValidatedHost(hostInput), port = ValidatedPort(portInput))
 
 private fun Settings.update(
     isDetailedOutput: Boolean = this.isDetailedOutput,

@@ -32,11 +32,11 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign.Companion.Justify
 import androidx.compose.ui.unit.sp
+import arrow.core.zip
+import arrow.typeclasses.Semigroup
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
-import io.github.xlopec.tea.time.travel.plugin.model.Invalid
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.canStart
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons
 import io.kanro.compose.jetbrains.control.ActionButton
 import io.kanro.compose.jetbrains.control.Icon
@@ -73,16 +73,20 @@ private fun State.toContent(
 ): InfoViewContent =
     when {
         server != null -> serverRunningContent()
-        canStart -> serverCanRunContent(handler)
-        else -> invalidSettingsContent()
+        else -> toNonRunningContent(handler)
     }
 
-private fun State.invalidSettingsContent() = InfoViewContent(
-    description = "Can't start debug server: ${
-        listOf(settings.port, settings.host)
-            .filterIsInstance<Invalid>()
-            .joinToString(postfix = "\n") { v -> v.message.replaceFirstChar { it.lowercase(Locale.getDefault()) } }
-    }")
+private fun State.toNonRunningContent(
+    handler: MessageHandler
+) = settings.host.value.mapLeft { "${it.lowercase()},\n" }
+    .zip(Semigroup.string(), settings.port.value.mapLeft(String::lowercase)) { _, _ -> serverCanRunContent(handler) }
+    .fold(fe = ::invalidSettingsContent, fa = { it })
+
+private fun invalidSettingsContent(
+    description: String
+) = InfoViewContent(description = "Can't start debug server: $description")
+
+private fun String.lowercase() = replaceFirstChar { it.lowercase(Locale.getDefault()) }
 
 private fun serverRunningContent() = InfoViewContent(description = "There are no attached components yet")
 

@@ -18,6 +18,8 @@
 
 package io.github.xlopec.tea.time.travel.plugin.data
 
+import arrow.core.Invalid
+import arrow.core.Valid
 import com.google.gson.internal.LazilyParsedNumber
 import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
@@ -32,18 +34,18 @@ import kotlinx.collections.immutable.toPersistentMap
 import java.time.LocalDateTime
 import java.util.*
 
-val TestHost = Host.of("localhost")!!
+val TestHost = Host.newOrNull("localhost")!!
 val TestPort = Port(123)
 
 val ValidTestSettings = Settings(
-    host = Valid(TestHost.value, TestHost), port = Valid(TestPort.value.toString(), TestPort),
+    host = Input(TestHost.value, Valid(TestHost)), port = Input(TestPort.value.toString(), Valid(TestPort)),
     isDetailedOutput = false,
     clearSnapshotsOnAttach = true
 )
 
 val InvalidTestSettings = Settings(
-    host = Invalid("abc", "Provide host"),
-    port = Invalid("port", "Provide port"),
+    host = Input("abc", Invalid("Provide host")),
+    port = Input("port", Invalid("Provide port")),
     isDetailedOutput = false,
     clearSnapshotsOnAttach = true
 )

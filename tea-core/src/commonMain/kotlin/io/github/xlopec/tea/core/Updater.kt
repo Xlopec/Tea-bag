@@ -143,4 +143,4 @@ public infix fun <S, C> S.command(
  * @param S state to combine with command
  * @return [Update] instance with given state and empty set of commands
  */
-public fun <S> S.noCommand(): Update<S, Nothing> = this to emptySet()
+public fun <S> S.noCommand(): Update<S, Nothing> = this to setOf()

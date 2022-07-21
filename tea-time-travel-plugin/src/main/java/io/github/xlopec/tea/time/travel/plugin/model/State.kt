@@ -38,7 +38,7 @@ val State.isStopped: Boolean
     get() = !isStarted
 
 val State.canStart: Boolean
-    get() = settings.host.isValid() && settings.port.isValid() && isStopped
+    get() = settings.host.value.isValid && settings.port.value.isValid && isStopped
 
 val State.canExport: Boolean
     get() = debugger.components.isNotEmpty()

@@ -18,6 +18,7 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.component.integration
 
+import arrow.core.Valid
 import io.github.xlopec.tea.time.travel.plugin.data.*
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyState
@@ -207,7 +208,7 @@ internal class UpdateForUiMessageTest {
         with(state.debugger.componentOrThrow(componentId)) {
             assertFalse(filter.ignoreCase)
             assertSame(FilterOption.SUBSTRING, filter.option)
-            assertIs<Valid<String>>(filter.predicate)
+            assertIs<Valid<String>>(filter.predicate.value)
             assertEquals("", filter.predicate.input)
 
             assertEquals(snapshots.size, filteredSnapshots.size)
@@ -255,6 +256,6 @@ internal class UpdateForUiMessageTest {
         assertSame(FilterOption.SUBSTRING, component.filter.option)
 
         assertNotNull(component.filter.predicate)
-        assertIs<Valid<String>>(component.filter.predicate)
+        assertIs<Valid<String>>(component.filter.predicate.value)
     }
 }

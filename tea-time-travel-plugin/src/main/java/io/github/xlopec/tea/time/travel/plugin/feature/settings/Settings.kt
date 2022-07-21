@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package io.github.xlopec.tea.time.travel.plugin.feature.settings
 
-import io.github.xlopec.tea.time.travel.plugin.model.Invalid
+import arrow.core.Validated
+import io.github.xlopec.tea.time.travel.plugin.model.Input
 import io.github.xlopec.tea.time.travel.plugin.model.PositiveNumber
-import io.github.xlopec.tea.time.travel.plugin.model.Valid
-import io.github.xlopec.tea.time.travel.plugin.model.Validated
 
 data class ServerAddress(
     val host: Host,
@@ -32,7 +33,7 @@ class Host private constructor(
 
     companion object {
 
-        fun of(
+        fun newOrNull(
             value: String?
         ) = value
             ?.takeUnless { host -> host.isEmpty() || host.isBlank() }
@@ -51,8 +52,8 @@ value class Port(
 
 // todo add remote call timeout
 data class Settings(
-    val host: Validated<Host>,
-    val port: Validated<Port>,
+    val host: Input<String, Host>,
+    val port: Input<String, Port>,
     val isDetailedOutput: Boolean,
     val clearSnapshotsOnAttach: Boolean,
     val maxRetainedSnapshots: PositiveNumber = DefaultRetainedSnapshots,
@@ -68,15 +69,20 @@ data class Settings(
             isDetailedOutput: Boolean,
             clearLogsOnComponentAttach: Boolean,
             maxRetainedSnapshots: UInt,
-        ): Settings {
-
-            val host = Host.of(hostInput)?.let { host -> Valid(hostInput ?: "", host) }
-                ?: Invalid(hostInput ?: "", "Host can't be blank or empty")
-
-            val port = portInput?.toIntOrNull()?.let(::Port)?.let { port -> Valid(portInput, port) }
-                ?: Invalid(portInput ?: "", "Invalid port")
-
-            return Settings(host, port, isDetailedOutput, clearLogsOnComponentAttach, PositiveNumber.of(maxRetainedSnapshots))
-        }
+        ) = Settings(
+            ValidatedHost(hostInput),
+            ValidatedPort(portInput),
+            isDetailedOutput,
+            clearLogsOnComponentAttach,
+            PositiveNumber.of(maxRetainedSnapshots)
+        )
     }
 }
+
+fun ValidatedHost(
+    input: String?
+) = Input(input ?: "", Validated.fromNullable(Host.newOrNull(input)) { "Host can't be blank or empty" })
+
+fun ValidatedPort(
+    input: String?
+) = Input(input ?: "", Validated.fromNullable(input?.toIntOrNull()?.let(::Port)) { "Invalid port" })
