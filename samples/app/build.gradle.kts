@@ -45,12 +45,12 @@ android {
             keyAlias = getenvSafe("KEY_ALIAS")
         }
     }
-    compileSdk = 31
+    compileSdk = 32
 
     defaultConfig {
         applicationId = "io.github.xlopec.news.reader"
         minSdk = 21
-        targetSdk = 31
+        targetSdk = 32
         versionCode = 1
         versionName = "1.0"
 
@@ -154,6 +154,7 @@ dependencies {
     implementation(libs.compose.activity)
 
     implementation(libs.bundles.compose)
+    implementation(libs.compose.compiler)
     debugImplementation(libs.compose.tooling)
 
     implementation(libs.compose.fonts)

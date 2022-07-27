@@ -57,7 +57,8 @@ dependencyResolutionManagement {
             // 2.0.2 breaks client
             version("ktor", "2.0.0")
             version("coroutines", "1.6.2")
-            version("compose", "1.2.0-beta02")
+            version("compose", "1.2.0")
+            version("compose-compiler", "1.3.0-rc01")
             version("accompanist", "0.24.9-beta")
             version("sqldelight", "1.5.3")
             version("arrow", "1.0.1")
@@ -194,7 +195,7 @@ dependencyResolutionManagement {
                 .versionRef("compose")
 
             library("compose-compiler", "androidx.compose.compiler", "compiler")
-                .versionRef("compose")
+                .versionRef("compose-compiler")
 
             library("compose-activity", "androidx.activity:activity-compose:1.5.0-rc01")
 
@@ -208,7 +209,6 @@ dependencyResolutionManagement {
                     "compose-icons",
                     "compose-runtime",
                     "compose-animation",
-                    "compose-compiler",
                     "compose-activity",
                     "compose-tooling-preview",
                 )
