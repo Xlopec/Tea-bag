@@ -36,6 +36,7 @@ const val CommitHashLength = 6
 const val SonatypeProfileId = "1c78bd5d6fbb0c"
 val NexusUrl = URI("https://s01.oss.sonatype.org/service/local/")
 val SnapshotNexusUrl = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+val JBComposeDevRepository = URI("https://maven.pkg.jetbrains.space/public/p/compose/dev/")
 
 val isCiEnv: Boolean
     get() = getenvSafe("CI")?.toBoolean() == true
@@ -93,6 +94,9 @@ val Project.distributionsDir: File
     get() = buildDir.resolve("distributions")
 
 val Project.artifactsDir: File
+    get() = rootMostProject.buildDir.resolve(File("artifacts", name))
+
+val Project.rootMostProject: Project
     get() {
         var root = this
 
@@ -100,7 +104,7 @@ val Project.artifactsDir: File
             root = root.rootProject
         }
 
-        return root.buildDir.resolve("artifacts/$name")
+        return root
     }
 
 val Project.projectHooksDir: File
@@ -114,6 +118,9 @@ val Project.detektConfig: File
 
 val Project.detektBaseline: File
     get() = Paths.get(rootDir.path, "detekt", "detekt-baseline.xml").toFile()
+
+val Project.metricsDir: File
+    get() = File(buildDir, "compose_metrics")
 
 val Project.hasKotlinMultiplatformPlugin: Boolean
     get() = plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")
@@ -129,7 +136,7 @@ val localBranch: String?
         ?.let { it.use { reader -> reader.readLine().trim() } }
 
 val Project.testReportsPath: Path
-    get() = Paths.get(rootProject.buildDir.path, "junit-reports", project.name)
+    get() = Paths.get(rootMostProject.buildDir.path, "junit-reports", project.name)
 
 val Project.testReportsDir: File
     get() = testReportsPath.toFile()
@@ -139,6 +146,10 @@ val Project.htmlTestReportsDir: File
 
 val Project.xmlTestReportsDir: File
     get() = File(testReportsDir, "xml")
+
+fun Project.testReportsDir(
+    vararg subdirs: String
+): File = File(testReportsDir, subdirs.joinToString(separator = File.separator))
 
 fun Project.ciVariable(
     name: String,

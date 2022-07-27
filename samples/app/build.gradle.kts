@@ -25,10 +25,13 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("org.jetbrains.compose")
 }
 
-tasks.withType<Test>().whenTaskAdded {
-    onlyIf { !isCiEnv }
+repositories {
+    maven {
+        url = JBComposeDevRepository
+    }
 }
 
 optIn(DefaultOptIns + "kotlinx.coroutines.ExperimentalCoroutinesApi")
@@ -46,7 +49,7 @@ android {
 
     defaultConfig {
         applicationId = "io.github.xlopec.news.reader"
-        minSdk = 23
+        minSdk = 21
         targetSdk = 31
         versionCode = 1
         versionName = "1.0"
@@ -74,8 +77,18 @@ android {
         }
     }
 
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
     packagingOptions {
         resources.excludes.add("META-INF/*")
+    }
+
+    lint {
+        baseline(file("lint-baseline.xml"))
     }
 
     buildFeatures {
@@ -121,33 +134,42 @@ android {
     }
 }
 
+afterEvaluate {
+    tasks.withType<Test>().configureEach {
+        configureOutputLocation(testReportsDir(name, "html"), testReportsDir(name, "xml"))
+    }
+}
+
 dependencies {
 
     implementation(project(":tea-core"))
     implementation(project(":samples:shared-app-lib"))
+    remoteImplementation(project(":samples:shared-app-lib"))
+
+    coreLibraryDesugaring(libs.desugar.jdk)
 
     implementation(libs.stdlib)
-    implementation(libs.stdlib.reflect)
 
     implementation(libs.coroutines.android)
+    implementation(libs.compose.activity)
 
     implementation(libs.bundles.compose)
     debugImplementation(libs.compose.tooling)
 
+    implementation(libs.compose.fonts)
+    implementation(libs.splashscreen)
+
     implementation(libs.bundles.accompanist)
     implementation(libs.coil)
 
-    implementation(libs.appcompat)
-
     implementation(libs.ktor.client.cio)
-    implementation(libs.ktor.client.gson)
     implementation(libs.ktor.client.logging)
     implementation(libs.logging)
 
     testImplementation(project(":tea-data"))
     androidTestImplementation(project(":tea-data"))
 
-    androidTestImplementation(libs.android.test.runner)
     androidTestUtil(libs.android.test.orchestrator)
     androidTestImplementation(libs.compose.test.junit)
+    debugImplementation(libs.compose.test.manifest)
 }

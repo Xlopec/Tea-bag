@@ -55,6 +55,7 @@ import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
 import io.github.xlopec.reader.app.feature.article.details.OpenInBrowser
 import io.github.xlopec.reader.app.feature.navigation.Pop
 import io.github.xlopec.reader.app.ui.misc.ProgressInsetAwareTopAppBar
+import io.github.xlopec.tea.data.toExternalValue
 
 @Composable
 fun ArticleDetailsScreen(
@@ -67,7 +68,7 @@ fun ArticleDetailsScreen(
     val context = LocalContext.current
     val view = remember(screen.id) {
         AppWebView(context, titleUpdater, loadProgressUpdater, backStackUpdater)
-            .apply { loadUrl(screen.article.url.toExternalForm()) }
+            .apply { loadUrl(screen.article.url.toExternalValue()) }
     }
 
     Scaffold(
@@ -83,7 +84,8 @@ fun ArticleDetailsScreen(
                     } else {
                         onMessage(Pop)
                     }
-                })
+                }
+            )
         }, content = { innerPadding ->
 
             if (canGoBack) {
@@ -98,7 +100,8 @@ fun ArticleDetailsScreen(
                     .padding(innerPadding)
                     .fillMaxSize()
             )
-        })
+        }
+    )
 }
 
 @Composable
@@ -148,14 +151,22 @@ private fun AppWebView(
     settings.javaScriptEnabled = true
     settings.setSupportZoom(true)
     webChromeClient = object : WebChromeClient() {
-        override fun onReceivedTitle(view: WebView, title: String) =
-            titleUpdater(title)
+        override fun onReceivedTitle(
+            view: WebView,
+            title: String,
+        ) = titleUpdater(title)
 
-        override fun onProgressChanged(view: WebView, newProgress: Int) =
-            progressUpdater(newProgress)
+        override fun onProgressChanged(
+            view: WebView,
+            newProgress: Int,
+        ) = progressUpdater(newProgress)
     }
     webViewClient = object : WebViewClient() {
-        override fun doUpdateVisitedHistory(view: WebView, url: String?, isReload: Boolean) {
+        override fun doUpdateVisitedHistory(
+            view: WebView,
+            url: String?,
+            isReload: Boolean,
+        ) {
             if (!isReload) {
                 backStackUpdater(view.canGoBack())
             }

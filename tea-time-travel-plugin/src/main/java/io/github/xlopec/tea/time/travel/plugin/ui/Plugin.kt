@@ -18,83 +18,80 @@
 
 package io.github.xlopec.tea.time.travel.plugin.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
 import androidx.compose.ui.unit.dp
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import androidx.compose.ui.window.WindowExceptionHandler
+import com.google.gson.GsonBuilder
+import com.intellij.diagnostic.AttachmentFactory
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.VirtualFile
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.Component
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTab
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.info.InfoView
-import io.github.xlopec.tea.time.travel.plugin.feature.storage.ExportSessions
+import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
+import io.github.xlopec.tea.time.travel.plugin.feature.server.StopServer
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.ImportSession
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
-import io.github.xlopec.tea.time.travel.plugin.model.Started
+import io.github.xlopec.tea.time.travel.plugin.integration.Platform
+import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.component
-import io.github.xlopec.tea.time.travel.plugin.model.componentIds
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginTheme
-import io.github.xlopec.tea.time.travel.plugin.util.chooseFile
-import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.plugin.util.toJson
 import io.kanro.compose.jetbrains.control.JPanel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
 
-fun Plugin(
-    project: Project,
+internal val LocalPlatform = staticCompositionLocalOf<Platform> { error("No platform implementation provided") }
+
+context (Logger, Project) internal fun PluginSwingAdapter(
     component: (Flow<Message>) -> Flow<State>,
 ) = ComposePanel()
     .apply {
+        exceptionHandler = WindowExceptionHandler { th -> handleFatalException(component, th) }
         background = null
         setContent {
             PluginTheme {
-                JPanel(modifier = Modifier.fillMaxSize()) {
-                    val messages = remember { MutableSharedFlow<Message>() }
-                    val stateFlow = remember { component(messages) }
-                    val state = stateFlow.collectAsState(initial = null).value
-
-                    if (state != null) {
-                        val scope = rememberCoroutineScope()
-                        val messageHandler = remember { scope.dispatcher(messages) }
-
-                        Plugin(project, state, messageHandler)
-                    }
-                }
+                val platform = remember { Platform(this@Project, this@Logger) }
+                Plugin(platform, component)
             }
         }
     }
 
-internal fun CoroutineScope.dispatcher(
-    messages: FlowCollector<Message>,
-): MessageHandler =
-    { message -> launch { messages.emit(message) } }
+@Composable
+internal fun Plugin(
+    platform: Platform,
+    component: (Flow<Message>) -> Flow<State>,
+    messages: MutableSharedFlow<Message> = remember { MutableSharedFlow() },
+) {
+    JPanel(modifier = Modifier.fillMaxSize()) {
+        val stateFlow = remember { component(messages) }
+        val state = stateFlow.collectAsState(initial = null).value
+
+        if (state != null) {
+            CompositionLocalProvider(LocalPlatform provides platform) {
+                val scope = rememberCoroutineScope()
+                val messageHandler = remember { scope.messageHandlerFor(messages) }
+
+                Plugin(state, messageHandler)
+            }
+        }
+    }
+}
 
 @Composable
-private fun Plugin(
-    project: Project,
+internal fun Plugin(
     state: State,
-    events: MessageHandler,
+    handler: MessageHandler,
 ) {
     Column(
         modifier = Modifier
@@ -104,10 +101,10 @@ private fun Plugin(
         Column(
             modifier = Modifier.weight(2f)
         ) {
-            if (state is Started && state.debugState.components.isNotEmpty()) {
-                ComponentsView(project, state, events)
+            if (state.hasAttachedComponents) {
+                ComponentsView(state, handler)
             } else {
-                InfoView(state, events)
+                InfoView(state, handler)
             }
         }
 
@@ -115,100 +112,96 @@ private fun Plugin(
 
         // settings section
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            SettingsFields(state, events)
+            SettingsFields(
+                modifier = Modifier.fillMaxWidth(),
+                state = state,
+                handler = handler
+            )
 
             val scope = rememberCoroutineScope()
+            val platform = LocalPlatform.current
 
-            BottomActionMenu(
-                state = state,
-                events = events,
-                onImportSession = { scope.launch { events(project.toImportSessionMessage()) } },
-                onExportSession = { started -> scope.launch { project.toExportSessionsMessage(started)?.also(events::invoke) } }
+            ActionsMenu(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                onImportSession = { scope.launch { handler(ImportSession(platform.chooseSessionFile())) } },
+                onExportSession = {
+                    scope.launch {
+                        platform.chooseExportSessionDirectory(state.debugger.componentIds)?.also(handler::invoke)
+                    }
+                },
+                onServerAction = { handler(if (state.isStarted) StopServer else StartServer) },
+                onSettingsAction = { platform.navigateToSettings() },
+                state = state
             )
         }
     }
 }
 
-private suspend fun Project.toImportSessionMessage() = ImportSession(chooseImportSessionFile())
+internal fun CoroutineScope.messageHandlerFor(
+    messages: FlowCollector<Message>,
+): MessageHandler =
+    { message -> launch { messages.emit(message) } }
 
 @Composable
 private fun ComponentsView(
-    project: Project,
-    pluginState: Started,
-    events: MessageHandler
+    state: State,
+    events: MessageHandler,
 ) {
-    require(pluginState.debugState.components.isNotEmpty())
+    val debugger = state.debugger
 
-    val selectedId = remember { mutableStateOf(pluginState.debugState.components.keys.first()) }
-    val selectedIndex by derivedStateOf { pluginState.debugState.components.keys.indexOf(selectedId.value) }
-
-    require(selectedIndex >= 0) {
-        """Inconsistency in tab indexing detected, 
-                            |selected id: ${selectedId.value}, 
-                            |selected index: $selectedIndex
-                            |component ids: ${pluginState.debugState.componentIds}"""".trimMargin()
-    }
+    require(debugger.components.isNotEmpty())
+    requireNotNull(debugger.activeComponent)
 
     Row {
-        pluginState.debugState.componentIds.forEachIndexed { index, id ->
-            ComponentTab(id, selectedId, pluginState.debugState, index, events)
+        debugger.components.values.forEach { component ->
+            ComponentTab(component.id, debugger.activeComponent, events)
         }
     }
 
-    Component(project, pluginState.settings, pluginState.debugState.component(selectedId.value), events)
+    Component(state, debugger.componentOrThrow(debugger.activeComponent), events)
 }
 
-private suspend fun Project.toExportSessionsMessage(
-    state: Started,
-): ExportSessions? {
-    val componentIds = state.debugState.componentIds
-    // if there is no ambiguity regarding what session we should store - don't show chooser popup
-    val exportSelection = if (componentIds.size > 1) chooseComponentsForExport(componentIds.toList()) else componentIds
+context (Logger) private fun handleFatalException(
+    component: (Flow<Message>) -> Flow<State>,
+    th: Throwable,
+) {
+    runBlocking(Dispatchers.IO) {
+        val attachment = component.currentStateOrNull()
+            ?.let { createCrashLogFile(it) }
+            ?.let { AttachmentFactory.createAttachment(it, false) }
 
-    return if (exportSelection.isNotEmpty()) {
-        ExportSessions(exportSelection, chooseExportSessionDir())
-    } else {
-        null
+        if (attachment == null) {
+            error(
+                """
+                Fatal error occurred inside Tea Time Travel plugin, no plugin state dump available.
+                Please, fill a bug for this issue - $GithubIssuesLink with attached logs, stack traces, etc.
+            """.trimIndent(), th
+            )
+        } else {
+            error(
+                """
+                Fatal error occurred inside Tea Time Travel plugin.
+                Please, fill a bug for this issue - $GithubIssuesLink with attached logs, stack traces, etc.
+            """.trimIndent(), th, attachment
+            )
+        }
     }
 }
 
-private val Project.baseVirtualDir: VirtualFile?
-    get() = basePath?.let(LocalFileSystem.getInstance()::findFileByPath)
+private const val GithubIssuesLink = "https://github.com/Xlopec/Tea-bag/issues"
 
-private suspend fun Project.chooseExportSessionDir() =
-    chooseFile(
-        FileChooserDescriptorFactory.createSingleFolderDescriptor()
-            .withFileFilter(VirtualFile::isDirectory)
-            .withRoots(listOfNotNull(baseVirtualDir))
-            .withTitle("Choose Directory to Save Session")
-    )
+@OptIn(ExperimentalTime::class)
+private suspend fun ((Flow<Message>) -> Flow<State>).currentStateOrNull(
+    timeout: Duration = 1.seconds,
+) = withTimeoutOrNull(timeout) { invoke(flowOf()).first() }
 
-private suspend fun Project.chooseImportSessionFile() =
-    chooseFile(
-        FileChooserDescriptorFactory.createSingleFileDescriptor("json")
-            .withRoots(listOfNotNull(baseVirtualDir))
-            .withTitle("Choose Session to Import")
-    )
-
-private fun Project.chooseComponentsForExport(
-    sessionIds: List<ComponentId>,
-): List<ComponentId> {
-    val option = Messages.showChooseDialog(
-        this,
-        "Select which session to export",
-        "Export Session",
-        null,
-        arrayOf("All", *sessionIds.map(ComponentId::value).toTypedArray()),
-        "All"
-    )
-
-    return when (option) {
-        // cancel
-        -1 -> listOf()
-        // all
-        0 -> sessionIds
-        else -> sessionIds.subList(option - 1, option)
-    }
+private suspend fun createCrashLogFile(
+    state: State,
+    timestamp: LocalDateTime = LocalDateTime.now(),
+) = withContext(Dispatchers.IO) {
+    File.createTempFile("tea-time-travel-crash-${DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(timestamp)}", ".json")
+        .also { GsonBuilder().create().toJson(state, it) }
 }

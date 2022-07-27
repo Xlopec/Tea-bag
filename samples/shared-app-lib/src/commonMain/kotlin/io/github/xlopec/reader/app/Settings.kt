@@ -24,7 +24,9 @@
 
 package io.github.xlopec.reader.app
 
-@ImmutableType
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class Settings(
     val userDarkModeEnabled: Boolean,
     val systemDarkModeEnabled: Boolean,

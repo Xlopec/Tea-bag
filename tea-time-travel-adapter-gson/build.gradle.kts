@@ -23,7 +23,7 @@
  */
 
 plugins {
-    `published-jvm-library`
+    `published-jvm-library-convention`
 }
 
 tasks.test {

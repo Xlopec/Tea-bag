@@ -46,7 +46,7 @@ kotlin {
                 api(libs.coroutines.core)
                 api(libs.coroutines.test)
                 api(libs.kotlin.test)
-                api("org.jetbrains.kotlin:kotlin-test-annotations-common:1.6.10")
+                api(libs.kotlin.test.annotations)
                 implementation(project(":tea-core"))
                 api(project(":tea-data"))
             }

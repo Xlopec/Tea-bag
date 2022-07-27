@@ -1,55 +1,49 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.storage
 
+import arrow.core.Either
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.*
+import io.github.xlopec.tea.time.travel.plugin.integration.FileException
+import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
+import io.github.xlopec.tea.time.travel.plugin.util.foldSuper
+import io.github.xlopec.tea.time.travel.plugin.util.toJson
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.withContext
 import java.io.BufferedReader
-import java.io.BufferedWriter
 import java.io.File
 import java.io.FileReader
-import java.io.FileWriter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
-internal suspend fun Gson.exportAll(
-    file: File,
-    sessions: Iterable<ComponentState>
-) {
-    coroutineScope {
-        sessions.forEach { debugState ->
-            launch {
-                export(file, debugState)
-            }
-        }
-    }
-}
 
 internal suspend fun Gson.export(
     file: File,
-    debugState: ComponentState
-) {
+    debugState: DebuggableComponent
+): ComponentExportResult =
     withContext(IO) {
-        BufferedWriter(FileWriter(file.generateFileName(debugState.id)))
-            .use { bw ->
-                toJson(debugState.toJsonObject(), bw)
-            }
+        Either.catch {
+            toJson(debugState.toJsonObject(), file)
+            ComponentExportSuccess(debugState.id, file)
+        }.mapLeft {
+            ComponentExportFailure(debugState.id, FileException("Couldn't export session to file $file", it, file))
+        }.foldSuper()
     }
-}
 
-suspend fun Gson.import(
+internal suspend fun Gson.import(
     file: File
-): ComponentState = withContext(IO) {
-    BufferedReader(FileReader(file))
-        .use { br -> fromJson(br, JsonObject::class.java) }
-        .toComponentDebugState()
-}
+): ComponentImportResult =
+    withContext(IO) {
+        Either.catch {
+            ComponentImportSuccess(file, BufferedReader(FileReader(file))
+                .use { br -> fromJson(br, JsonObject::class.java) }
+                .toComponentDebugState())
+        }.mapLeft {
+            ComponentImportFailure(FileException("Couldn't import session from ${file.absolutePath}", it, file))
+        }.foldSuper()
+    }
 
-internal fun File.generateFileName(
+internal fun File.generateFileNameForExport(
     id: ComponentId,
     timestamp: LocalDateTime = LocalDateTime.now()
 ) = File(this, "${id.value} session on ${DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(timestamp)}.json")

@@ -16,6 +16,9 @@
 
 package io.github.xlopec.tea.time.travel.plugin.integration
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 sealed interface Command
 
 /*sealed*/ interface StoreCommand : Command

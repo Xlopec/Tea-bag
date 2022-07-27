@@ -28,20 +28,15 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import io.github.xlopec.reader.app.AppComponent
 import io.github.xlopec.reader.app.AppInitializer
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.network.ArticleElement
 import io.github.xlopec.reader.app.feature.network.SourceElement
-import io.github.xlopec.reader.app.model.Author
-import io.github.xlopec.reader.app.model.Description
-import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.reader.app.model.*
 import io.github.xlopec.reader.app.model.FilterType.Regular
-import io.github.xlopec.reader.app.model.Query
-import io.github.xlopec.reader.app.model.SourceId
-import io.github.xlopec.reader.app.model.Title
 import io.github.xlopec.reader.app.ui.screens.AppView
 import io.github.xlopec.reader.app.ui.screens.article.ArticleTestTag
 import io.github.xlopec.reader.app.ui.screens.article.ArticlesScreen
@@ -53,36 +48,38 @@ import io.github.xlopec.reader.environment.invoke
 import io.github.xlopec.reader.environment.setTestContent
 import io.github.xlopec.tea.core.toStatesComponent
 import io.github.xlopec.tea.data.RandomUUID
-import java.net.URL
-import java.util.Date
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Rule
 import org.junit.Test
+import java.net.URI
+import java.util.*
 
 internal class AppTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+    val rule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
-    fun testProgressIndicatorIsDisplayedOnStart() = composeTestRule {
+    fun testProgressIndicatorIsDisplayedOnStart() = rule {
         setContent {
             AppTheme(isDarkModeEnabled = true) {
                 ArticlesScreen(
-                    ArticlesState.newLoading(RandomUUID(),
+                    ArticlesState.newLoading(
+                        RandomUUID(),
                         Filter(Regular, Query.of("Input text")),
-                        persistentListOf()),
+                        persistentListOf()
+                    ),
                     LazyListState(0, 0),
                     Modifier
                 ) {}
             }
         }
 
-        onNode(hasTestTag(ProgressIndicatorTag)).assertIsDisplayed()
+        onNodeWithTag(ProgressIndicatorTag).assertIsDisplayed()
     }
 
     @Test
-    fun testArticlesListIsDisplayedCorrectly() = composeTestRule {
+    fun testArticlesListIsDisplayedCorrectly() = rule {
         setTestContent {
 
             anyArticleRequest() yields ArticleResponse(TestArticleElement)
@@ -97,11 +94,11 @@ internal class AppTest {
             resumeDispatcher()
         }
 
-        onNode(hasTestTag(ArticleTestTag(TestUrl))).assertIsDisplayed()
+        onNodeWithTag(ArticleTestTag(TestUrl)).assertIsDisplayed()
     }
 }
 
-private val TestUrl = URL("https://www.google.com")
+private val TestUrl = URI("https://www.google.com")
 
 private val TestDate = Date(2021, 11, 17)
 

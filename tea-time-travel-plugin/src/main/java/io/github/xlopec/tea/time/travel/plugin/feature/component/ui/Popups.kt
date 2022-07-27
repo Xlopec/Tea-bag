@@ -1,11 +1,7 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.component.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,27 +9,15 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiClass
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.util.PsiNavigateUtil
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.ApplyMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.ApplyState
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.RemoveAllSnapshots
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.RemoveSnapshots
-import io.github.xlopec.tea.time.travel.plugin.model.BooleanWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.CharWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Null
-import io.github.xlopec.tea.time.travel.plugin.model.NumberWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Ref
-import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
-import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Type
-import io.github.xlopec.tea.time.travel.plugin.model.Value
+import io.github.xlopec.tea.time.travel.plugin.model.*
+import io.github.xlopec.tea.time.travel.plugin.ui.LocalPlatform
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon
-import io.github.xlopec.tea.time.travel.plugin.util.javaPsiFacade
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.kanro.compose.jetbrains.control.DropdownMenuItem
 import io.kanro.compose.jetbrains.control.Text
@@ -42,18 +26,17 @@ import io.kanro.compose.jetbrains.control.Text
 fun ValuePopup(
     value: Value,
     formatter: TreeFormatter,
-    project: Project,
 ) {
     when (value) {
         is CollectionWrapper -> CopyActionItem(AnnotatedString(formatter(value)))
-        is Ref -> RefActionItems(project, value.type)
+        is Ref -> RefActionItems(value.type)
         Null, is BooleanWrapper, is CharWrapper, is NumberWrapper, is StringWrapper -> LeafActionItems(value)
     }
 }
 
 @Composable
 fun LeafActionItems(
-    value: Value
+    value: Value,
 ) {
 
     val clipboardValue = value.clipboardValue
@@ -67,7 +50,7 @@ fun LeafActionItems(
 
 @Composable
 fun CopyActionItem(
-    clipboard: AnnotatedString
+    clipboard: AnnotatedString,
 ) {
     val clipboardManager = LocalClipboardManager.current
 
@@ -78,25 +61,26 @@ fun CopyActionItem(
 
 @Composable
 fun RefActionItems(
-    project: Project,
-    type: Type
+    type: Type,
 ) {
-    val facade = project.javaPsiFacade
-
-    val psiClass = facade.findClass(type.name, GlobalSearchScope.projectScope(project)) ?: return
-
     Column {
         CopyActionItem(AnnotatedString(type.name))
-        JumpToSourcesActionItem(psiClass)
+
+        val psiClass = LocalPlatform.current.psiClassFor(type)
+
+        if (psiClass != null) {
+            JumpToSourcesActionItem(psiClass)
+        }
     }
 }
 
 @Composable
 fun JumpToSourcesActionItem(
-    psiClass: PsiClass
+    psiClass: PsiClass,
 ) {
+    val platform = LocalPlatform.current
     PopupItem(ValueIcon.Class, "Jump to sources") {
-        PsiNavigateUtil.navigate(psiClass)
+        platform.navigateToSources(psiClass)
     }
 }
 
@@ -104,20 +88,35 @@ fun JumpToSourcesActionItem(
 fun SnapshotActionItems(
     componentId: ComponentId,
     snapshotId: SnapshotId,
-    handler: MessageHandler
+    serverStarted: Boolean,
+    handler: MessageHandler,
 ) {
     Column {
-        PopupItem(ActionIcons.Remove, "Delete all") {
+        PopupItem(
+            painter = ActionIcons.Remove,
+            text = "Delete all"
+        ) {
             handler(RemoveAllSnapshots(componentId))
         }
-        PopupItem(ActionIcons.Remove, "Delete") {
+        PopupItem(
+            painter = ActionIcons.Remove,
+            text = "Delete"
+        ) {
             handler(RemoveSnapshots(componentId, snapshotId))
         }
-        PopupItem(ActionIcons.UpdateRunningApplication, "Apply state") {
-            handler(ApplyState(componentId, snapshotId))
-        }
-        PopupItem(ActionIcons.UpdateRunningApplication, "Apply message") {
-            handler(ApplyMessage(componentId, snapshotId))
+        if (serverStarted) {
+            PopupItem(
+                painter = ActionIcons.UpdateRunningApplication,
+                text = "Deploy state to all connected clients",
+            ) {
+                handler(ApplyState(componentId, snapshotId))
+            }
+            PopupItem(
+                painter = ActionIcons.UpdateRunningApplication,
+                text = "Deploy message to all connected clients",
+            ) {
+                handler(ApplyMessage(componentId, snapshotId))
+            }
         }
     }
 }
@@ -126,9 +125,13 @@ fun SnapshotActionItems(
 fun PopupItem(
     painter: Painter,
     text: String,
+    enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
-    DropdownMenuItem(onClick = onClick) {
+    DropdownMenuItem(
+        onClick = onClick,
+        enabled = enabled
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(4.dp),

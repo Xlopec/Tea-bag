@@ -26,9 +26,9 @@
 
 package io.github.xlopec.reader.environment
 
+import arrow.core.Either
 import io.github.xlopec.reader.app.feature.network.ArticleElement
 import io.github.xlopec.reader.app.feature.network.ArticleResponse
-import io.github.xlopec.tea.data.Left
 import kotlinx.coroutines.delay
 
 fun foreverWaitingResponse(): ArticleResponseProvider = { _, _ ->
@@ -40,8 +40,8 @@ fun anyArticleRequest(): ArticlePredicate = { _, _ -> true }
 
 fun ArticleResponse(
     vararg articles: ArticleElement
-): Left<ArticleResponse> =
-    Left(
+): Either.Right<ArticleResponse> =
+    Either.Right(
         ArticleResponse(
             articles.size,
             articles.toList()

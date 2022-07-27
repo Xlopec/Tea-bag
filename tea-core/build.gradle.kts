@@ -23,7 +23,7 @@
  */
 
 plugins {
-    `published-multiplatform-library`
+    `published-multiplatform-library-convention`
 }
 
 val prepareTestJar by tasks.creating(Jar::class) {

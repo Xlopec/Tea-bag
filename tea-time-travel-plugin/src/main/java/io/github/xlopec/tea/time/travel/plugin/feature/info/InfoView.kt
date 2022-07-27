@@ -19,72 +19,100 @@ package io.github.xlopec.tea.time.travel.plugin.feature.info
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign.Companion.Justify
+import androidx.compose.ui.unit.sp
+import arrow.core.zip
+import arrow.typeclasses.Semigroup
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
-import io.github.xlopec.tea.time.travel.plugin.model.Invalid
-import io.github.xlopec.tea.time.travel.plugin.model.Started
-import io.github.xlopec.tea.time.travel.plugin.model.Starting
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
-import io.github.xlopec.tea.time.travel.plugin.model.Stopping
-import io.github.xlopec.tea.time.travel.plugin.ui.noIndicationClickable
-import io.kanro.compose.jetbrains.LocalTypography
+import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons
+import io.kanro.compose.jetbrains.control.ActionButton
+import io.kanro.compose.jetbrains.control.Icon
 import io.kanro.compose.jetbrains.control.Text
-import java.util.Locale
+import java.util.*
+
+internal const val InfoViewTag = "info view"
 
 @Composable
 fun InfoView(
     state: State,
-    uiEvents: MessageHandler,
+    handler: MessageHandler,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().testTag(InfoViewTag),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        when (state) {
-            is Stopped -> InfoViewMessage(state.toDescription(), uiEvents.takeIf { state.canStart })
-            is Started -> InfoViewMessage(state.toDescription())
-            is Starting -> InfoViewMessage(state.toDescription())
-            is Stopping -> InfoViewMessage(state.toDescription())
-        }
+        val content = remember(state.server, state.settings) { state.toContent(handler) }
+
+        Text(text = content.description, textAlign = Justify, inlineContent = content.inlineContent)
     }
 }
 
-@Composable
-private fun InfoViewMessage(
-    description: String,
-    messages: (MessageHandler)? = null,
+private data class InfoViewContent(
+    val description: AnnotatedString,
+    val inlineContent: Map<String, InlineTextContent> = mapOf(),
 ) {
-    Text(
-        style = LocalTypography.current.h3,
-        text = description,
-        textAlign = Justify,
-        modifier = if (messages == null) Modifier else Modifier.noIndicationClickable {
-            messages(StartServer)
+    constructor(description: String) : this(AnnotatedString(description))
+}
+
+private fun State.toContent(
+    handler: MessageHandler
+): InfoViewContent =
+    when {
+        server != null -> serverRunningContent()
+        else -> toNonRunningContent(handler)
+    }
+
+private fun State.toNonRunningContent(
+    handler: MessageHandler
+) = settings.host.value.mapLeft { "${it.lowercase()},\n" }
+    .zip(Semigroup.string(), settings.port.value.mapLeft(String::lowercase)) { _, _ -> serverCanRunContent(handler) }
+    .fold(fe = ::invalidSettingsContent, fa = { it })
+
+private fun invalidSettingsContent(
+    description: String
+) = InfoViewContent(description = "Can't start debug server: $description")
+
+private fun String.lowercase() = replaceFirstChar { it.lowercase(Locale.getDefault()) }
+
+private fun serverRunningContent() = InfoViewContent(description = "There are no attached components yet")
+
+private fun serverCanRunContent(handler: MessageHandler): InfoViewContent {
+    val text = buildAnnotatedString {
+        append("Debug server isn't running. Press ")
+        appendInlineContent("run_icon")
+        append(" to start")
+    }
+
+    val inlineContent = mapOf(
+        "run_icon" to InlineTextContent(
+            Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
+        ) {
+            ActionButton(
+                modifier = Modifier.fillMaxSize(),
+                onClick = { handler(StartServer) }
+            ) {
+                Icon(
+                    painter = ActionIcons.Execute,
+                    modifier = Modifier.fillMaxSize(),
+                    contentDescription = "Start server"
+                )
+            }
         }
     )
+
+    return InfoViewContent(description = text, inlineContent = inlineContent)
 }
-
-private fun Started.toDescription(): String {
-    require(debugState.components.isEmpty()) { "Non empty debug state, component=${debugState.components}" }
-    return "There are no attached components yet"
-}
-
-private fun Starting.toDescription() = "Debug server is starting on " +
-        "${settings.host.input}:${settings.port.input}"
-
-private fun Stopped.toDescription() =
-    if (canStart) "Debug server isn't running. Press to start"
-    else "Can't start debug server: ${
-        listOf(settings.port, settings.host)
-            .filterIsInstance<Invalid>()
-            .joinToString(postfix = "\n") { v -> v.message.replaceFirstChar { it.lowercase(Locale.getDefault()) } }
-    }"
-
-private fun Stopping.toDescription() = "Debug server is stopping on " +
-        "${settings.host.input}:${settings.port.input}"

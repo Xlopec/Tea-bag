@@ -16,14 +16,7 @@
 
 package io.github.xlopec.tea.time.travel.plugin.integration
 
-import java.net.ProtocolException
-import java.net.SocketException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
-import java.nio.channels.UnresolvedAddressException
-import java.util.concurrent.TimeoutException
-import javax.net.ssl.SSLException
-import kotlinx.coroutines.TimeoutCancellationException
+import java.io.File
 
 sealed class PluginException : Throwable {
     constructor(
@@ -41,6 +34,16 @@ sealed class PluginException : Throwable {
     ) : super(message, cause, enableSuppression, writableStackTrace)
 }
 
+class DebugServerException(
+    message: String,
+    cause: Throwable
+) : PluginException(message, cause)
+
+class PacketDecodeException(
+    message: String,
+    cause: Throwable
+) : PluginException(message, cause)
+
 class UserException(
     message: String,
     cause: Throwable
@@ -51,56 +54,13 @@ class NetworkException(
     cause: Throwable
 ) : PluginException(message, cause)
 
-class MissingDependenciesException(
-    message: String,
-    cause: Throwable
-) : PluginException(message, cause)
-
 class InternalException(
     message: String,
     cause: Throwable
 ) : PluginException(message, cause)
 
-fun Throwable.toPluginException(): PluginException {
-    if (this is PluginException) {
-        return this
-    }
-
-    return when {
-        isMissingDependenciesException -> MissingDependenciesException(message!!, this)
-        isNetworkException -> NetworkException(message ?: "Network exception occurred", this)
-        else -> InternalException(message ?: "Internal exception occurred", this)
-    }
-}
-
-private inline fun Throwable.findCause(
-    crossinline predicate: (Throwable) -> Boolean
-): Throwable? {
-    var cause: Throwable? = this
-
-    while (cause != null) {
-        if (predicate(cause)) {
-            return cause
-        }
-
-        cause = cause.cause
-    }
-
-    return null
-}
-
-private val Throwable.isMissingDependenciesException
-    get() = findCause { it is ClassNotFoundException } != null
-
-private val Throwable.isNetworkException
-    // some of IO exceptions
-    get() = findCause { th ->
-        th is TimeoutException ||
-                th is TimeoutCancellationException ||
-                th is UnknownHostException ||
-                th is SSLException ||
-                th is SocketTimeoutException ||
-                th is ProtocolException ||
-                th is UnresolvedAddressException ||
-                th is SocketException
-    } != null
+class FileException(
+    message: String,
+    cause: Throwable,
+    val forFile: File? = null,
+) : PluginException(message, cause)

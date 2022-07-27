@@ -118,7 +118,8 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
                     Regular("a", emptySet(), "", 'a'),
                     Regular("b", emptySet(), "a", 'b'),
                     Regular("c", emptySet(), "b", 'c')
-                ), actual
+                ),
+                actual
             )
 
             assertTrue(testSession.packets.isNotEmpty())

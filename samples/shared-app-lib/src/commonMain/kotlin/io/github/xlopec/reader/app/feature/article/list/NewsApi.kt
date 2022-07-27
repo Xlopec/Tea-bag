@@ -26,12 +26,12 @@
 
 package io.github.xlopec.reader.app.feature.article.list
 
+import arrow.core.Either
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.network.SourcesResponse
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.SourceId
-import io.github.xlopec.tea.data.Either
 import kotlinx.collections.immutable.ImmutableSet
 
 interface NewsApi {
@@ -40,13 +40,13 @@ interface NewsApi {
         query: Query?,
         sources: ImmutableSet<SourceId>,
         paging: Paging
-    ): Either<ArticleResponse, AppException>
+    ): Either<AppException, ArticleResponse>
 
     suspend fun fetchTopHeadlines(
         query: Query?,
         sources: ImmutableSet<SourceId>,
         paging: Paging
-    ): Either<ArticleResponse, AppException>
+    ): Either<AppException, ArticleResponse>
 
-    suspend fun fetchNewsSources(): Either<SourcesResponse, AppException>
+    suspend fun fetchNewsSources(): Either<AppException, SourcesResponse>
 }

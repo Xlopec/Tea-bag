@@ -49,9 +49,9 @@ internal class TypeAppenderAdapterFactoryTest {
     }
 
     @Test
-    fun `test class hierarchy gets serialized correctly`() = with(Gson {
-        registerTypeAdapter(Map::class.java, MapDeserializer)
-    }) {
+    fun `test class hierarchy gets serialized correctly`() = with(
+        Gson { registerTypeAdapter(Map::class.java, MapDeserializer) }
+    ) {
 
         val message = D()
         val json = toJson(message)
@@ -75,9 +75,9 @@ internal class TypeAppenderAdapterFactoryTest {
 
     @Test
     fun `test AppenderFactory delegates serialization to a user defined serializer`() =
-        with(Gson {
-            registerTypeAdapter(PersistentList::class.java, PersistentListSerializer)
-        }) {
+        with(
+            Gson { registerTypeAdapter(PersistentList::class.java, PersistentListSerializer) }
+        ) {
 
             val container = Container(persistentListOf("a", "b", "c"))
 
@@ -91,9 +91,9 @@ internal class TypeAppenderAdapterFactoryTest {
 
     @Test
     fun `test AppenderFactory serializes polymorphic values`() =
-        with(Gson {
-            registerTypeAdapter(PersistentList::class.java, PersistentListSerializer)
-        }) {
+        with(
+            Gson { registerTypeAdapter(PersistentList::class.java, PersistentListSerializer) }
+        ) {
 
             val container = PolyContainer(persistentListOf(PolyA(), PolyB()))
 

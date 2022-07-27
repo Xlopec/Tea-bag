@@ -6,6 +6,7 @@ import io.github.xlopec.tea.time.travel.plugin.integration.NotifyCommand
 import io.github.xlopec.tea.time.travel.plugin.integration.PluginException
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import java.io.File
 
 data class DoNotifyOperationException(
     val exception: PluginException,
@@ -20,5 +21,17 @@ data class DoWarnUnacceptableMessage(
 
 @JvmInline
 value class DoNotifyComponentAttached(
-    val componentId: ComponentId
+    val id: ComponentId
+) : NotifyCommand
+
+data class DoNotifyFileOperationSuccess(
+    val title: String,
+    val description: String,
+    val forFile: File? = null,
+) : NotifyCommand
+
+data class DoNotifyFileOperationFailure(
+    val title: String,
+    val description: String,
+    val forFile: File? = null,
 ) : NotifyCommand

@@ -30,8 +30,9 @@ import io.kanro.compose.jetbrains.JBTheme
 import io.kanro.compose.jetbrains.JBTypography
 import io.kanro.compose.jetbrains.color.PanelColors
 import io.kanro.compose.jetbrains.color.TextColors
+import io.kanro.compose.jetbrains.control.JPanel
 
-private val PreviewPanelColors = PanelColors(Color.Red, Color.Red, Color(45, 48, 50))
+private val PreviewPanelColors = PanelColors(Color.Black, Color.Gray, Color(45, 48, 50))
 
 @Suppress("unused")
 val JBTheme.contrastBorderColor: Color
@@ -134,6 +135,8 @@ fun PluginPreviewTheme(
     content: @Composable () -> Unit
 ) {
     JBTheme(panelColors = PreviewPanelColors) {
-        content()
+        JPanel {
+            content()
+        }
     }
 }

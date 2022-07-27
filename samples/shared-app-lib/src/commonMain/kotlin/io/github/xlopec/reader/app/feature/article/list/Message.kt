@@ -61,15 +61,17 @@ data class ToggleArticleIsFavorite(
     val article: Article,
 ) : ArticlesMessage
 
+sealed interface ArticlesLoadResult : ArticlesMessage
+
 data class ArticlesLoaded(
     override val id: ScreenId,
     val page: Page<Article>,
-) : ArticlesMessage
+) : ArticlesLoadResult
 
-data class ArticlesOperationException(
+data class ArticlesLoadException(
     override val id: ScreenId?,
     val cause: AppException,
-) : ArticlesMessage
+) : ArticlesLoadResult
 
 @JvmInline
 value class ArticleUpdated(

@@ -24,7 +24,9 @@
 
 package io.github.xlopec.reader.app
 
-@ImmutableType
+import androidx.compose.runtime.Immutable
+
+@Immutable
 sealed interface ScreenState {
     val id: ScreenId
 }

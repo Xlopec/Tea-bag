@@ -51,8 +51,10 @@ public annotation class ExperimentalTeaApi
 @MustBeDocumented
 @Retention(value = AnnotationRetention.BINARY)
 @RequiresOptIn(level = RequiresOptIn.Level.ERROR)
-@Target(AnnotationTarget.TYPEALIAS,
+@Target(
+    AnnotationTarget.TYPEALIAS,
     AnnotationTarget.PROPERTY,
     AnnotationTarget.FUNCTION,
-    AnnotationTarget.CLASS)
+    AnnotationTarget.CLASS
+)
 public annotation class InternalTeaApi

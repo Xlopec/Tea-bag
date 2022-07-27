@@ -20,24 +20,23 @@ package io.github.xlopec.tea.time.travel.plugin.integration
 
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
+import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.onUpdateForComponentMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.DoWarnUnacceptableMessage
-import io.github.xlopec.tea.time.travel.plugin.feature.notification.updateForNotification
-import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.updateForUiMessage
-import io.github.xlopec.tea.time.travel.plugin.feature.server.updateForServerMessage
-import io.github.xlopec.tea.time.travel.plugin.feature.storage.updateForStoreMessage
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.updateForNotificationMessage
+import io.github.xlopec.tea.time.travel.plugin.feature.server.onUpdateForServerMessage
+import io.github.xlopec.tea.time.travel.plugin.feature.storage.onUpdateForStoreMessage
 import io.github.xlopec.tea.time.travel.plugin.model.State
 
 fun AppUpdater(): AppUpdater = AppUpdater { message, state ->
     when (message) {
-        is ComponentMessage -> updateForUiMessage(message, state)
-        is NotificationMessage -> updateForNotification(message, state)
-        is StoreMessage -> updateForStoreMessage(message, state)
-        is ServerMessage -> updateForServerMessage(message, state)
+        is ComponentMessage -> state.onUpdateForComponentMessage(message)
+        is NotificationMessage -> state.updateForNotificationMessage(message)
+        is StoreMessage -> state.onUpdateForStoreMessage(message)
+        is ServerMessage -> state.onUpdateForServerMessage(message)
     }
 }
 
-internal fun warnUnacceptableMessage(
-    message: Message,
-    state: State
+internal fun State.onUnhandledMessage(
+    message: Message
 ): Update<State, Command> =
-    state command DoWarnUnacceptableMessage(message, state)
+    this command DoWarnUnacceptableMessage(message, this)

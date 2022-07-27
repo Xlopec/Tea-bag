@@ -19,102 +19,108 @@ package io.github.xlopec.tea.time.travel.plugin.feature.component.integration
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
-import io.github.xlopec.tea.time.travel.plugin.integration.Command
-import io.github.xlopec.tea.time.travel.plugin.integration.ComponentMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyState
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.*
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.DoStoreSettings
-import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
-import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
-import io.github.xlopec.tea.time.travel.plugin.model.Started
-import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
-import io.github.xlopec.tea.time.travel.plugin.model.removeSnapshots
-import io.github.xlopec.tea.time.travel.plugin.model.snapshot
-import io.github.xlopec.tea.time.travel.plugin.model.state
-import io.github.xlopec.tea.time.travel.plugin.model.updateComponents
-import io.github.xlopec.tea.time.travel.plugin.model.updateFilter
-import io.github.xlopec.tea.time.travel.plugin.model.updateServerSettings
-import io.github.xlopec.tea.time.travel.plugin.model.updateSettings
-import io.github.xlopec.tea.time.travel.plugin.integration.warnUnacceptableMessage
+import io.github.xlopec.tea.time.travel.plugin.integration.Command
+import io.github.xlopec.tea.time.travel.plugin.integration.ComponentMessage
+import io.github.xlopec.tea.time.travel.plugin.integration.onUnhandledMessage
+import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
-fun updateForUiMessage(
+fun State.onUpdateForComponentMessage(
     message: ComponentMessage,
-    state: State
 ): Update<State, Command> =
     when {
-        message is UpdateDebugSettings -> updateDebugSettings(message.isDetailedToStringEnabled, state)
-        message is UpdateServerSettings && state is Stopped -> updateServerSettings(message, state)
-        message is RemoveSnapshots && state is Started -> removeSnapshots(message.componentId, message.ids, state)
-        message is RemoveAllSnapshots && state is Started -> removeSnapshots(message.componentId, state)
-        message is RemoveComponent && state is Started -> removeComponent(message, state)
-        message is ApplyMessage && state is Started -> applyMessage(message, state)
-        message is ApplyState && state is Started -> applyState(message, state)
-        message is UpdateFilter && state is Started -> updateFilter(message, state)
-        else -> warnUnacceptableMessage(message, state)
+        message is UpdateDebugSettings -> onUpdateDebugSettings(
+            message.isDetailedToStringEnabled,
+            message.clearSnapshotsOnComponentAttach,
+            message.maxRetainedSnapshots,
+        )
+        message is UpdateServerSettings && !isStarted -> onUpdateServerSettings(message)
+        message is RemoveSnapshots -> onRemoveSnapshots(message.componentId, message.ids)
+        message is RemoveAllSnapshots -> onRemoveSnapshots(message.componentId)
+        message is RemoveComponent -> onRemoveComponent(message)
+        message is SelectComponent -> onSelectComponent(message.id)
+        message is ApplyMessage && server is Server -> onApplyMessage(message, server)
+        message is ApplyState && server is Server -> onApplyState(message, server)
+        message is UpdateFilter -> onUpdateFilter(message)
+        else -> onUnhandledMessage(message)
     }
 
-private fun updateDebugSettings(
+private fun State.onUpdateDebugSettings(
     isDetailedToStringEnabled: Boolean,
-    state: State
+    clearSnapshotsOnComponentAttach: Boolean,
+    maxRetainedSnapshots: PositiveNumber,
 ): Update<State, DoStoreSettings> =
-    state.updateSettings { copy(isDetailedOutput = isDetailedToStringEnabled) } command { DoStoreSettings(settings) }
+    settings(settings.update(isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxRetainedSnapshots)) command {
+        DoStoreSettings(settings)
+    }
 
-private fun updateServerSettings(
+private fun State.onUpdateServerSettings(
     message: UpdateServerSettings,
-    state: State
-): Update<State, DoStoreSettings> {
-    val settings = Settings.of(message.host, message.port, state.settings.isDetailedOutput)
+): Update<State, DoStoreSettings> =
+    settings(settings.update(message.host, message.port)) command { DoStoreSettings(settings) }
 
-    return state.updateServerSettings(settings) command { DoStoreSettings(settings) }
-}
-
-private fun applyState(
+private fun State.onApplyState(
     message: ApplyState,
-    state: Started
+    server: Server,
 ): Update<State, Command> =
-    state command DoApplyState(message.componentId, state.state(message), state.server)
+    this command DoApplyState(message.componentId, state(message), server)
 
-private fun applyMessage(
+private fun State.onApplyMessage(
     message: ApplyMessage,
-    state: Started
+    server: Server,
 ): Update<State, Command> {
-    val m = state.messageFor(message) ?: return state.noCommand()
+    val m = messageFor(message) ?: return noCommand()
 
-    return state command DoApplyMessage(message.componentId, m, state.server)
+    return this command DoApplyMessage(message.componentId, m, server)
 }
 
-private fun removeSnapshots(
-    componentId: ComponentId,
+private fun State.onRemoveSnapshots(
+    id: ComponentId,
     ids: Set<SnapshotId>,
-    state: Started
 ): Update<State, Nothing> =
-    state.removeSnapshots(componentId, ids).noCommand()
+    debugger(debugger.removeSnapshots(id, ids)).noCommand()
 
-private fun removeSnapshots(
-    componentId: ComponentId,
-    state: Started
+private fun State.onRemoveSnapshots(
+    id: ComponentId,
 ): Update<State, Nothing> =
-    state.removeSnapshots(componentId).noCommand()
+    debugger(debugger.removeSnapshots(id)).noCommand()
 
-private fun removeComponent(
+private fun State.onRemoveComponent(
     message: RemoveComponent,
-    state: Started
-): Update<State, Nothing> =
-    state.updateComponents { mapping -> mapping.remove(message.componentId) }
-        .noCommand()
+): Update<State, Nothing> = debugger(debugger.removeComponent(message.id)).noCommand()
 
-private fun updateFilter(
+private fun State.onSelectComponent(
+    id: ComponentId
+) = debugger(debugger.selectComponent(id)).noCommand()
+
+private fun State.onUpdateFilter(
     message: UpdateFilter,
-    state: Started
 ): Update<State, Nothing> =
-    state.updateFilter(message.id, message.input, message.ignoreCase, message.option).noCommand()
+    debugger(debugger.updateFilter(message.id, message.input, message.ignoreCase, message.option)).noCommand()
 
-private fun Started.state(
-    message: ApplyState
+private fun State.state(
+    message: ApplyState,
 ) = state(message.componentId, message.snapshotId)
 
-private fun Started.messageFor(
-    message: ApplyMessage
+private fun State.messageFor(
+    message: ApplyMessage,
 ) = snapshot(message.componentId, message.snapshotId).message
+
+private fun Settings.update(
+    hostInput: String?,
+    portInput: String?,
+): Settings = copy(host = ValidatedHost(hostInput), port = ValidatedPort(portInput))
+
+private fun Settings.update(
+    isDetailedOutput: Boolean = this.isDetailedOutput,
+    clearSnapshotsOnAttach: Boolean = this.clearSnapshotsOnAttach,
+    maxRetainedSnapshots: PositiveNumber = this.maxRetainedSnapshots,
+): Settings = copy(
+    isDetailedOutput = isDetailedOutput,
+    clearSnapshotsOnAttach = clearSnapshotsOnAttach,
+    maxRetainedSnapshots = maxRetainedSnapshots
+)

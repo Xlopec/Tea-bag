@@ -16,27 +16,54 @@
 
 package io.github.xlopec.tea.time.travel.plugin.model
 
+import androidx.compose.runtime.Stable
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
-sealed interface State {
-    val settings: Settings
-}
+/**
+ * This class represents plugin state. If server isn't null, then it's started,
+ * it's considered to be in stopped state otherwise
+ */
+@Stable
+data class State(
+    val settings: Settings,
+    val debugger: Debugger = Debugger(),
+    val server: Server? = null,
+)
 
-fun State.updateSettings(
-    how: Settings.() -> Settings
-) = when (this) {
-    is Stopped -> copy(settings = settings.run(how))
-    is Starting -> copy(settings = settings.run(how))
-    is Started -> copy(settings = settings.run(how))
-    is Stopping -> copy(settings = settings.run(how))
-}
+val State.isStarted: Boolean
+    get() = server != null
 
-fun State.updateServerSettings(
-    settings: Settings
-) =
-    when (this) {
-        is Stopped -> copy(settings = settings)
-        is Starting -> copy(settings = settings)
-        is Started -> copy(settings = settings)
-        is Stopping -> copy(settings = settings)
-    }
+val State.isStopped: Boolean
+    get() = !isStarted
+
+val State.canStart: Boolean
+    get() = settings.host.value.isValid && settings.port.value.isValid && isStopped
+
+val State.canExport: Boolean
+    get() = debugger.components.isNotEmpty()
+
+val State.areSettingsModifiable: Boolean
+    get() = !isStarted
+
+val State.hasAttachedComponents: Boolean
+    get() = debugger.components.isNotEmpty()
+
+fun State.settings(
+    settings: Settings,
+) = copy(settings = settings)
+
+fun State.snapshot(
+    componentId: ComponentId,
+    snapshotId: SnapshotId
+): OriginalSnapshot = debugger.components[componentId]?.snapshots?.first { s -> s.meta.id == snapshotId }
+    ?: error("Couldn't find a snapshot $snapshotId for component $componentId, available components ${debugger.components}")
+
+fun State.state(
+    componentId: ComponentId,
+    snapshotId: SnapshotId
+) = snapshot(componentId, snapshotId).state
+
+fun State.debugger(
+    debugger: Debugger
+) = copy(debugger = debugger)

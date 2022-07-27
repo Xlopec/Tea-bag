@@ -41,7 +41,7 @@ private fun ShareIntent(
 ): Intent =
     Intent().apply {
         action = Intent.ACTION_SEND
-        putExtra(Intent.EXTRA_TEXT, article.url.toExternalForm())
+        putExtra(Intent.EXTRA_TEXT, article.url.toASCIIString())
         type = "text/plain"
         putExtra(Intent.EXTRA_TITLE, article.title.value)
     }.let { intent ->

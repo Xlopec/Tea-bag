@@ -26,6 +26,7 @@
 
 package io.github.xlopec.reader.app.feature.network
 
+import arrow.core.Either
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.IO
 import io.github.xlopec.reader.app.InternalException
@@ -33,37 +34,29 @@ import io.github.xlopec.reader.app.NetworkException
 import io.github.xlopec.reader.app.feature.article.list.NewsApi
 import io.github.xlopec.reader.app.feature.article.list.Paging
 import io.github.xlopec.reader.app.feature.article.list.nextPage
+import io.github.xlopec.reader.app.model.Country
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.SourceId
-import io.github.xlopec.tea.data.Either
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.engine.HttpClientEngineConfig
-import io.ktor.client.engine.HttpClientEngineFactory
-import io.ktor.client.plugins.ClientRequestException
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.get
-import io.ktor.client.request.invoke
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ParametersBuilder
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import io.ktor.http.URLProtocol.Companion.HTTPS
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.util.network.UnresolvedAddressException
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.util.network.*
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 
 internal class NewsApiImpl(
     engine: HttpClientEngineFactory<HttpClientEngineConfig>,
-    private val countryCode: String,
+    private val country: Country,
 ) : NewsApi {
 
     private val httpClient by lazy { HttpClient(engine, LogLevel.ALL) }
@@ -72,7 +65,7 @@ internal class NewsApiImpl(
         query: Query?,
         sources: ImmutableSet<SourceId>,
         paging: Paging,
-    ) = Try {
+    ) = TryRequest {
         httpClient.get(EverythingRequest(query, sources, paging)).body<ArticleResponse>()
     }
 
@@ -80,11 +73,11 @@ internal class NewsApiImpl(
         query: Query?,
         sources: ImmutableSet<SourceId>,
         paging: Paging,
-    ) = Try {
-        httpClient.get(TopHeadlinesRequest(query, sources, paging, countryCode)).body<ArticleResponse>()
+    ) = TryRequest {
+        httpClient.get(TopHeadlinesRequest(query, sources, paging, country.takeIf { sources.isEmpty() })).body<ArticleResponse>()
     }
 
-    override suspend fun fetchNewsSources() = Try {
+    override suspend fun fetchNewsSources() = TryRequest {
         httpClient.get(SourcesRequest).body<SourcesResponse>()
     }
 }
@@ -95,11 +88,13 @@ private fun HttpClient(
 ) = HttpClient(engine) {
     expectSuccess = true
     install(ContentNegotiation) {
-        json(json = Json {
-            ignoreUnknownKeys = true
-            useAlternativeNames = false
-            isLenient = true
-        })
+        json(
+            json = Json {
+                ignoreUnknownKeys = true
+                useAlternativeNames = false
+                isLenient = true
+            }
+        )
     }
 
     Logging {
@@ -107,9 +102,9 @@ private fun HttpClient(
     }
 }
 
-private suspend inline fun <T> Try(
+private suspend inline fun <T> TryRequest(
     ifSuccess: () -> T,
-) = Either(ifSuccess) { it.toAppException() }
+) = Either.catch(ifSuccess).mapLeft { it.toAppException() }
 
 private suspend fun Throwable.toAppException(): AppException =
     wrap { raw ->
@@ -166,7 +161,7 @@ private fun EverythingRequest(
     path = "/v2/everything"
 ) {
     with(parameters) {
-        append("apiKey", ApiKey)
+        appendApiKey(ApiKey)
         appendPaging(paging)
         appendFiltering(query, sources)
     }
@@ -176,18 +171,30 @@ private fun TopHeadlinesRequest(
     query: Query?,
     sources: ImmutableSet<SourceId>,
     paging: Paging,
-    countryCode: String,
+    country: Country?,
 ) = HttpRequestBuilder(
     scheme = HTTPS.name,
     host = "newsapi.org",
     path = "/v2/top-headlines"
 ) {
     with(parameters) {
-        append("apiKey", ApiKey)
-        append("country", countryCode)
+        appendApiKey(ApiKey)
+        country?.also { appendCountry(it) }
         appendPaging(paging)
         appendFiltering(query, sources)
     }
+}
+
+private fun ParametersBuilder.appendApiKey(
+    apiKey: String
+) {
+    append("apiKey", apiKey)
+}
+
+private fun ParametersBuilder.appendCountry(
+    country: Country
+) {
+    append("country", country.code)
 }
 
 private fun ParametersBuilder.appendPaging(

@@ -1,21 +1,26 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.storage
 
+import arrow.core.Either
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.intellij.ide.util.PropertiesComponent
-import io.github.xlopec.tea.data.Either
-import io.github.xlopec.tea.data.Left
-import io.github.xlopec.tea.time.travel.plugin.integration.NotificationMessage
-import io.github.xlopec.tea.time.travel.plugin.integration.StoreCommand
-import io.github.xlopec.tea.time.travel.plugin.feature.notification.ComponentImported
+import io.github.xlopec.tea.core.ResolveCtx
+import io.github.xlopec.tea.core.effects
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.ComponentExportResult
+import io.github.xlopec.tea.time.travel.plugin.feature.notification.ComponentImportResult
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.OperationException
+import io.github.xlopec.tea.time.travel.plugin.integration.InternalException
+import io.github.xlopec.tea.time.travel.plugin.integration.Message
+import io.github.xlopec.tea.time.travel.plugin.integration.StoreCommand
 import io.github.xlopec.tea.time.travel.plugin.util.settings
-import io.github.xlopec.tea.time.travel.plugin.integration.toPluginException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 fun interface StorageResolver {
-    suspend fun resolveStoreCommand(
-        command: StoreCommand
-    ): Either<NotificationMessage?, OperationException>
+    fun resolveStoreCommand(
+        command: StoreCommand,
+        ctx: ResolveCtx<Message>,
+    )
 }
 
 fun StorageResolver(
@@ -27,32 +32,30 @@ private class StorageResolverImpl(
     private val gson: Gson = GsonBuilder().serializeNulls().create(),
 ) : StorageResolver {
 
-    override suspend fun resolveStoreCommand(
-        command: StoreCommand
-    ): Either<NotificationMessage?, OperationException> =
-        when (command) {
-            is DoExportSessions -> command.exportSettings()
-            is DoImportSession -> command.import()
-            is DoStoreSettings -> command.storeSettings()
-            else -> error("can't get here")
+    override fun resolveStoreCommand(
+        command: StoreCommand,
+        ctx: ResolveCtx<Message>,
+    ) {
+        ctx.effects {
+            when (command) {
+                is DoExportSessions -> command.exportSettings()
+                is DoImportSession -> command.import()
+                is DoStoreSettings -> command.storeSettings()
+                else -> error("can't get here")
+            }
         }
+    }
 
-    suspend fun DoExportSessions.exportSettings() = Either(
-        { gson.exportAll(dir, sessions); null },
-        { OperationException(it.toPluginException(), this, "couldn't export session to dir $dir") }
-    )
+    private suspend fun DoExportSessions.exportSettings(): Set<ComponentExportResult> = coroutineScope {
+        sessions.map { debugState -> async { gson.export(dir.generateFileNameForExport(debugState.id), debugState) } }
+            .mapTo(mutableSetOf()) { it.await() }
+    }
 
-    suspend fun DoImportSession.import() = Either(
-        { ComponentImported(gson.import(file)) },
-        {
-            OperationException(
-                it.toPluginException(),
-                this,
-                "couldn't import session from ${file.absolutePath}. Check if file is valid"
-            )
-        }
-    )
+    private suspend fun DoImportSession.import(): Set<ComponentImportResult> = setOf(gson.import(file))
 
-    private fun DoStoreSettings.storeSettings() =
-        Left { properties.settings = settings }
+    private fun DoStoreSettings.storeSettings(): Set<OperationException> =
+        Either.catch { properties.settings = settings }
+            .mapLeft { OperationException(InternalException("Plugin couldn't store settings", it), this) }
+            .fold({ it }, { null })
+            .let(::setOfNotNull)
 }
