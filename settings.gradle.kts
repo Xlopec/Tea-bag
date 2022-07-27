@@ -56,10 +56,10 @@ dependencyResolutionManagement {
         create("libs") {
             // 2.0.2 breaks client
             version("ktor", "2.0.0")
-            version("coroutines", "1.6.2")
-            version("compose", "1.2.0")
+            version("coroutines", "1.6.4")
+            version("compose", "1.3.0-alpha02")
             version("compose-compiler", "1.3.0-rc01")
-            version("accompanist", "0.24.9-beta")
+            version("accompanist", "0.24.13-rc")
             version("sqldelight", "1.5.3")
             version("arrow", "1.0.1")
 
@@ -197,7 +197,7 @@ dependencyResolutionManagement {
             library("compose-compiler", "androidx.compose.compiler", "compiler")
                 .versionRef("compose-compiler")
 
-            library("compose-activity", "androidx.activity:activity-compose:1.5.0-rc01")
+            library("compose-activity", "androidx.activity:activity-compose:1.6.0-alpha05")
 
             bundle(
                 "compose",
@@ -220,7 +220,7 @@ dependencyResolutionManagement {
 
             // Splash screen
 
-            library("splashscreen", "androidx.core", "core-splashscreen").version("1.0.0-rc01")
+            library("splashscreen", "androidx.core", "core-splashscreen").version("1.0.0")
 
             // Accompanist
 

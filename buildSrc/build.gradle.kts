@@ -55,8 +55,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10")
     implementation("com.android.tools.build:gradle:7.2.1")
     implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.7.0")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.6.21")
-    implementation("org.jetbrains.kotlin:kotlin-serialization:1.6.21")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.7.10")
+    implementation("org.jetbrains.kotlin:kotlin-serialization:1.7.10")
     implementation("com.squareup.sqldelight:gradle-plugin:1.5.3")
     // versions after 1.2.0-alpha01-dev745 aren't compatible with kotlin 1.7.10
     implementation("org.jetbrains.compose:compose-gradle-plugin:1.2.0-alpha01-dev745")
