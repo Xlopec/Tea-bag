@@ -159,7 +159,7 @@ dependencyResolutionManagement {
 
             // Serialization
 
-            library("serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").version("1.3.3")
+            library("serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").version("1.4.0-RC")
 
             // Multiplatform settings
 
@@ -248,7 +248,7 @@ dependencyResolutionManagement {
 
             // Atomicfu
 
-            library("atomicfu", "org.jetbrains.kotlinx:atomicfu:0.17.3")
+            library("atomicfu", "org.jetbrains.kotlinx:atomicfu:0.18.3")
 
             // Logging
 
