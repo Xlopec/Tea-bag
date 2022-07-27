@@ -157,6 +157,7 @@ dependencies {
     debugImplementation(libs.compose.tooling)
 
     implementation(libs.compose.fonts)
+    implementation(libs.splashscreen)
 
     implementation(libs.bundles.accompanist)
     implementation(libs.coil)

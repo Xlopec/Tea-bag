@@ -218,6 +218,10 @@ dependencyResolutionManagement {
 
             library("compose-fonts", "androidx.compose.ui", "ui-text-google-fonts").version("1.2.0-beta01")
 
+            // Splash screen
+
+            library("splashscreen", "androidx.core", "core-splashscreen").version("1.0.0-rc01")
+
             // Accompanist
 
             library("accompanist-swiperefresh", "com.google.accompanist", "accompanist-swiperefresh")

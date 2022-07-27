@@ -57,8 +57,10 @@ class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
         super.onCreate(savedInstanceState)
         window.setupAppWindow()
 
+        val statesComponent = component.toStatesComponent()
+
         setContent {
-            AppView(component.toStatesComponent())
+            AppView(statesComponent)
         }
 
         launch {
@@ -67,7 +69,7 @@ class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
                 .collect { finishAfterTransition() }
         }
 
-        component.toStatesComponent().subscribeIn(systemDarkModeChanges, this)
+        statesComponent.subscribeIn(systemDarkModeChanges, this)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

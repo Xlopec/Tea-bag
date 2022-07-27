@@ -31,12 +31,12 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
-    <style name="NewsReader_Splash" parent="NewsReader">
+    <style name="NewsReader_Splash" parent="Theme.SplashScreen">
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowDisablePreview">false</item>
         <item name="android:colorBackground">@color/colorBackground</item>
-        <item name="android:windowAnimationStyle">@null</item>
-        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="windowSplashScreenBackground">@color/colorBackground</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/NewsReader</item>
     </style>
 
 </resources>
