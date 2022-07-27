@@ -240,7 +240,7 @@ dependencyResolutionManagement {
 
             // Coil
 
-            library("coil", "io.coil-kt:coil-compose:1.4.0")
+            library("coil", "io.coil-kt:coil-compose:2.1.0")
 
             // Collections
 
