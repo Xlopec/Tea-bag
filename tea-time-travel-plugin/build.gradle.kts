@@ -45,6 +45,7 @@ val supportedVersions = listOf(
     IDEVersion(Product.IC, 2021, 2),
     IDEVersion(Product.IC, 2021, 3),
     IDEVersion(Product.IC, 2022, 1),
+    IDEVersion(Product.IC, 2022, 2),
 )
 
 intellij {

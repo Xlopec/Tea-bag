@@ -54,7 +54,7 @@ afterEvaluate {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21")
     implementation("com.android.tools.build:gradle:7.0.0")
-    implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.6.0")
+    implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.7.0")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.6.21")
     implementation("org.jetbrains.kotlin:kotlin-serialization:1.6.21")
     implementation("com.squareup.sqldelight:gradle-plugin:1.5.3")
