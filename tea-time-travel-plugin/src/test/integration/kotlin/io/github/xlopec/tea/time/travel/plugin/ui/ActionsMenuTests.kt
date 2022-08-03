@@ -63,7 +63,7 @@ class ActionsMenuTests {
                 onExportSession = {},
                 onSettingsAction = {},
                 onServerAction = {},
-                state = State(ValidTestSettings, server = StartedTestServerStub),
+                state = State(debugger = Debugger(settings = ValidTestSettings), server = StartedTestServerStub),
             )
         }
 
@@ -76,8 +76,7 @@ class ActionsMenuTests {
     fun `test action buttons displayed correctly given a non-empty started state`() = rule {
         setTestContent {
             val started = State(
-                ValidTestSettings,
-                Debugger(ComponentDebugStates().toMap().toPersistentMap()),
+                Debugger(ValidTestSettings, ComponentDebugStates().toMap().toPersistentMap()),
                 StartedTestServerStub
             )
 

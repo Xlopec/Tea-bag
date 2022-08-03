@@ -6,8 +6,8 @@ value class PositiveNumber private constructor(
 ) : Comparable<PositiveNumber> {
 
     companion object {
-        const val Min = 1U
-        const val Max = UInt.MAX_VALUE
+        val Min = PositiveNumber(1U)
+        val Max = PositiveNumber(UInt.MAX_VALUE)
 
         fun of(
             value: Int
@@ -15,10 +15,18 @@ value class PositiveNumber private constructor(
 
         fun of(
             value: UInt
-        ) = PositiveNumber(value.coerceAtLeast(Min))
+        ) = PositiveNumber(value.coerceAtLeast(Min.value))
     }
 
     override fun compareTo(
         other: PositiveNumber
     ): Int = value.compareTo(other.value)
 }
+
+fun Int.toPositive(): PositiveNumber = PositiveNumber.of(this)
+
+fun UInt.toPositive(): PositiveNumber = PositiveNumber.of(this)
+
+fun PositiveNumber.toInt(): Int = value.toInt()
+
+fun PositiveNumber.toUInt(): UInt = value

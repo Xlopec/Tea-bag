@@ -25,7 +25,7 @@ private fun State.onStopServer(server: Server) =
     this command DoStopServer(server)
 
 private fun State.onStartServer(): Update<State, Command> {
-    val command = settings.host.value.zip(Semigroup.string(), settings.port.value) { host, port ->
+    val command = debugger.settings.host.value.zip(Semigroup.string(), debugger.settings.port.value) { host, port ->
         DoStartServer(ServerAddress(host, port))
     }.fold({ null }, { it }) ?: return noCommand()
 

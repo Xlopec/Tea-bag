@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import io.github.xlopec.tea.time.travel.plugin.data.InvalidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
 import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
+import io.github.xlopec.tea.time.travel.plugin.model.Debugger
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.util.invoke
 import io.github.xlopec.tea.time.travel.plugin.util.setTestContent
@@ -52,7 +53,7 @@ class SettingsFieldsTests {
         val settings = ValidTestSettings
         setTestContent {
             SettingsFields(
-                state = State(ValidTestSettings, server = StartedTestServerStub),
+                state = State(debugger = Debugger(settings = settings), server = StartedTestServerStub),
                 handler = {}
             )
         }

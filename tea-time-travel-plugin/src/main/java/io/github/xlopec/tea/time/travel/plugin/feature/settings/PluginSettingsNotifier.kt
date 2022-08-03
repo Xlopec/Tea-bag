@@ -28,6 +28,6 @@ fun interface PluginSettingsNotifier {
     fun onSettingsUpdated(
         isDetailedToStringEnabled: Boolean,
         clearSnapshotsOnComponentAttach: Boolean,
-        maxRetainedSnapshots: PositiveNumber,
+        maxSnapshots: PositiveNumber,
     )
 }

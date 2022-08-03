@@ -21,6 +21,7 @@ package io.github.xlopec.tea.time.travel.plugin.feature.settings
 import arrow.core.Validated
 import io.github.xlopec.tea.time.travel.plugin.model.Input
 import io.github.xlopec.tea.time.travel.plugin.model.PositiveNumber
+import io.github.xlopec.tea.time.travel.plugin.model.toPositive
 
 data class ServerAddress(
     val host: Host,
@@ -56,25 +57,25 @@ data class Settings(
     val port: Input<String, Port>,
     val isDetailedOutput: Boolean,
     val clearSnapshotsOnAttach: Boolean,
-    val maxRetainedSnapshots: PositiveNumber = DefaultRetainedSnapshots,
+    val maxSnapshots: PositiveNumber = DefaultMaxSnapshots,
 ) {
 
     companion object {
 
-        val DefaultRetainedSnapshots = PositiveNumber.of(200U)
+        val DefaultMaxSnapshots = PositiveNumber.of(200U)
 
         fun fromInput(
             hostInput: String?,
             portInput: String?,
             isDetailedOutput: Boolean,
             clearLogsOnComponentAttach: Boolean,
-            maxRetainedSnapshots: UInt,
+            maxSnapshots: UInt,
         ) = Settings(
             ValidatedHost(hostInput),
             ValidatedPort(portInput),
             isDetailedOutput,
             clearLogsOnComponentAttach,
-            PositiveNumber.of(maxRetainedSnapshots)
+            maxSnapshots.toPositive()
         )
     }
 }

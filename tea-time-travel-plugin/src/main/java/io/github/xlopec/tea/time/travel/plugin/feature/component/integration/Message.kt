@@ -10,7 +10,7 @@ import io.github.xlopec.tea.time.travel.protocol.ComponentId
 data class UpdateDebugSettings(
     val isDetailedToStringEnabled: Boolean,
     val clearSnapshotsOnComponentAttach: Boolean,
-    val maxRetainedSnapshots: PositiveNumber,
+    val maxSnapshots: PositiveNumber,
 ) : ComponentMessage
 
 data class UpdateServerSettings(

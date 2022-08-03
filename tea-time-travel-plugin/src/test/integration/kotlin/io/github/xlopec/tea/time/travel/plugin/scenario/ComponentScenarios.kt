@@ -2,8 +2,11 @@
 
 package io.github.xlopec.tea.time.travel.plugin.scenario
 
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.toStatesComponent
 import io.github.xlopec.tea.time.travel.plugin.data.*
@@ -52,6 +55,7 @@ class ComponentScenarios {
 
         setContentWithEnv(environment) {
             val debugger = Debugger(
+                ValidTestSettings,
                 persistentMapOf(
                     ComponentDebugState(idA),
                     ComponentDebugState(idB),
@@ -63,7 +67,7 @@ class ComponentScenarios {
                 platform = TestPlatform(),
                 component = PluginComponent(
                     environment,
-                    Initializer(State(ValidTestSettings, debugger, StartedTestServerStub))
+                    Initializer(State(debugger, StartedTestServerStub))
                 ).toStatesComponent(),
                 messages = messages
             )
@@ -114,6 +118,7 @@ class ComponentScenarios {
 
         setContentWithEnv(environment) {
             val debugger = Debugger(
+                ValidTestSettings,
                 persistentMapOf(
                     ComponentDebugState(idA),
                     ComponentDebugState(idB),
@@ -125,7 +130,7 @@ class ComponentScenarios {
                 platform = TestPlatform(),
                 component = PluginComponent(
                     environment,
-                    Initializer(State(ValidTestSettings, debugger, StartedTestServerStub))
+                    Initializer(State(debugger, StartedTestServerStub))
                 ).toStatesComponent(),
                 messages = messages
             )
@@ -159,6 +164,7 @@ class ComponentScenarios {
 
         setContentWithEnv(environment) {
             val debugger = Debugger(
+                ValidTestSettings,
                 persistentMapOf(
                     ComponentDebugState(
                         TestComponentId1,
@@ -187,7 +193,7 @@ class ComponentScenarios {
                 platform = TestPlatform(),
                 component = PluginComponent(
                     environment,
-                    Initializer(State(ValidTestSettings, debugger, StartedTestServerStub))
+                    Initializer(State(debugger, StartedTestServerStub))
                 ).toStatesComponent(),
                 messages = messages
             )

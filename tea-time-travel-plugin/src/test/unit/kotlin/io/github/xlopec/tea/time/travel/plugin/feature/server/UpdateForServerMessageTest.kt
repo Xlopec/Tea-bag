@@ -28,7 +28,10 @@ import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Port
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
-import io.github.xlopec.tea.time.travel.plugin.model.*
+import io.github.xlopec.tea.time.travel.plugin.model.Debugger
+import io.github.xlopec.tea.time.travel.plugin.model.Input
+import io.github.xlopec.tea.time.travel.plugin.model.Server
+import io.github.xlopec.tea.time.travel.plugin.model.State
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -100,7 +103,7 @@ internal class UpdateForServerMessageTest {
         TestSettings.forEach { settings ->
 
             assertTrue("test failed for settings $settings") {
-                val pluginState = State(settings, server = StartedTestServerStub)
+                val pluginState = State(debugger = Debugger(settings = settings), server = StartedTestServerStub)
                 val (state, commands) = pluginState.onUpdateForServerMessage(StopServer)
 
                 state == pluginState && commands == setOf(DoStopServer(pluginState.server as Server))

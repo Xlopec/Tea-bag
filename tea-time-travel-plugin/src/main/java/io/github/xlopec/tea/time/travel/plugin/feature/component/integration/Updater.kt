@@ -21,7 +21,6 @@ import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyState
-import io.github.xlopec.tea.time.travel.plugin.feature.settings.*
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.DoStoreSettings
 import io.github.xlopec.tea.time.travel.plugin.integration.Command
 import io.github.xlopec.tea.time.travel.plugin.integration.ComponentMessage
@@ -36,7 +35,7 @@ fun State.onUpdateForComponentMessage(
         message is UpdateDebugSettings -> onUpdateDebugSettings(
             message.isDetailedToStringEnabled,
             message.clearSnapshotsOnComponentAttach,
-            message.maxRetainedSnapshots,
+            message.maxSnapshots,
         )
         message is UpdateServerSettings && !isStarted -> onUpdateServerSettings(message)
         message is RemoveSnapshots -> onRemoveSnapshots(message.componentId, message.ids)
@@ -52,22 +51,22 @@ fun State.onUpdateForComponentMessage(
 private fun State.onUpdateDebugSettings(
     isDetailedToStringEnabled: Boolean,
     clearSnapshotsOnComponentAttach: Boolean,
-    maxRetainedSnapshots: PositiveNumber,
+    maxSnapshots: PositiveNumber,
 ): Update<State, DoStoreSettings> =
-    settings(settings.update(isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxRetainedSnapshots)) command {
-        DoStoreSettings(settings)
+    debugger(debugger.settings(isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxSnapshots)) command {
+        DoStoreSettings(debugger.settings)
     }
 
 private fun State.onUpdateServerSettings(
     message: UpdateServerSettings,
 ): Update<State, DoStoreSettings> =
-    settings(settings.update(message.host, message.port)) command { DoStoreSettings(settings) }
+    debugger(debugger.settings(message.host, message.port)) command { DoStoreSettings(debugger.settings) }
 
 private fun State.onApplyState(
     message: ApplyState,
     server: Server,
 ): Update<State, Command> =
-    this command DoApplyState(message.componentId, state(message), server)
+    command(DoApplyState(message.componentId, state(message), server))
 
 private fun State.onApplyMessage(
     message: ApplyMessage,
@@ -75,7 +74,7 @@ private fun State.onApplyMessage(
 ): Update<State, Command> {
     val m = messageFor(message) ?: return noCommand()
 
-    return this command DoApplyMessage(message.componentId, m, server)
+    return command(DoApplyMessage(message.componentId, m, server))
 }
 
 private fun State.onRemoveSnapshots(
@@ -109,18 +108,3 @@ private fun State.state(
 private fun State.messageFor(
     message: ApplyMessage,
 ) = snapshot(message.componentId, message.snapshotId).message
-
-private fun Settings.update(
-    hostInput: String?,
-    portInput: String?,
-): Settings = copy(host = ValidatedHost(hostInput), port = ValidatedPort(portInput))
-
-private fun Settings.update(
-    isDetailedOutput: Boolean = this.isDetailedOutput,
-    clearSnapshotsOnAttach: Boolean = this.clearSnapshotsOnAttach,
-    maxRetainedSnapshots: PositiveNumber = this.maxRetainedSnapshots,
-): Settings = copy(
-    isDetailedOutput = isDetailedOutput,
-    clearSnapshotsOnAttach = clearSnapshotsOnAttach,
-    maxRetainedSnapshots = maxRetainedSnapshots
-)

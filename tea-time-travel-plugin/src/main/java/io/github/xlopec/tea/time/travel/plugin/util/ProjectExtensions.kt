@@ -20,15 +20,17 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.intellij.psi.JavaPsiFacade
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
-import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings.Companion.DefaultRetainedSnapshots
+import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings.Companion.DefaultMaxSnapshots
 import io.github.xlopec.tea.time.travel.plugin.model.PositiveNumber
+import io.github.xlopec.tea.time.travel.plugin.model.toInt
+import io.github.xlopec.tea.time.travel.plugin.model.toUInt
 
 const val PluginId = "io.github.xlopec.tea.core.plugin"
 private const val DetailedToStringKey = "$PluginId.isDetailedToStringEnabled"
 private const val ClearLogsKey = "$PluginId.clearLogsOnComponentAttach"
 private const val HostKey = "$PluginId.host"
 private const val PortKey = "$PluginId.port"
-private const val MaxRetainedSnapshotsKey = "$PluginId.maxRetainedSnapshots"
+private const val MaxSnapshotsKey = "$PluginId.maxSnapshots"
 
 val Project.properties: PropertiesComponent
     get() = PropertiesComponent.getInstance(this)
@@ -39,9 +41,9 @@ var PropertiesComponent.settings: Settings
         port = value.port.input
         isDetailedToStringEnabled = value.isDetailedOutput
         clearSnapshotsOnComponentAttach = value.clearSnapshotsOnAttach
-        maxRetainedSnapshots = value.maxRetainedSnapshots
+        maxSnapshots = value.maxSnapshots
     }
-    get() = Settings.fromInput(host, port, isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxRetainedSnapshots.value)
+    get() = Settings.fromInput(host, port, isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxSnapshots.toUInt())
 
 // todo reduce visibility
 var PropertiesComponent.isDetailedToStringEnabled: Boolean
@@ -52,9 +54,9 @@ var PropertiesComponent.clearSnapshotsOnComponentAttach: Boolean
     set(value) = setValue(ClearLogsKey, value)
     get() = getBoolean(ClearLogsKey, false)
 
-var PropertiesComponent.maxRetainedSnapshots: PositiveNumber
-    set(value) = setValue(MaxRetainedSnapshotsKey, value.value.toInt(), DefaultRetainedSnapshots.value.toInt())
-    get() = PositiveNumber.of(getInt(MaxRetainedSnapshotsKey, DefaultRetainedSnapshots.value.toInt()))
+var PropertiesComponent.maxSnapshots: PositiveNumber
+    set(value) = setValue(MaxSnapshotsKey, value.toInt(), DefaultMaxSnapshots.toInt())
+    get() = PositiveNumber.of(getInt(MaxSnapshotsKey, DefaultMaxSnapshots.toInt()))
 
 val Project.javaPsiFacade: JavaPsiFacade
     get() = JavaPsiFacade.getInstance(this)

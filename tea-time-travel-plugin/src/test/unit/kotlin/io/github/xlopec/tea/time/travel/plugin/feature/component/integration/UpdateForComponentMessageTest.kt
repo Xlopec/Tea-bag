@@ -22,7 +22,9 @@ import arrow.core.Valid
 import io.github.xlopec.tea.time.travel.plugin.data.*
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyState
+import io.github.xlopec.tea.time.travel.plugin.feature.storage.DoStoreSettings
 import io.github.xlopec.tea.time.travel.plugin.model.*
+import io.github.xlopec.tea.time.travel.plugin.util.map
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -32,10 +34,10 @@ import org.junit.runners.JUnit4
 import kotlin.test.*
 
 @RunWith(JUnit4::class)
-internal class UpdateForUiMessageTest {
+internal class UpdateForComponentMessageTest {
 
     @Test
-    fun `test when remove snapshot by id and plugin state is Started then snapshot gets removed`() {
+    fun `when remove snapshot by id and plugin state is Started then snapshot gets removed`() {
 
         val snapshotId = RandomSnapshotId()
         val meta = SnapshotMeta(snapshotId, TestTimestamp1)
@@ -53,7 +55,7 @@ internal class UpdateForUiMessageTest {
     }
 
     @Test
-    fun `test when remove snapshot by ids and plugin state is Started then snapshot gets removed`() {
+    fun `when remove snapshot by ids and plugin state is Started then snapshot gets removed`() {
 
         val iterations = 100
         val hi = 50
@@ -95,7 +97,7 @@ internal class UpdateForUiMessageTest {
     }
 
     @Test
-    fun `test when remove all snapshots and plugin state is Started then all snapshots for the component are removed`() {
+    fun `when remove all snapshots and plugin state is Started then all snapshots for the component are removed`() {
 
         val snapshotId = RandomSnapshotId()
         val meta = SnapshotMeta(snapshotId, TestTimestamp1)
@@ -112,7 +114,7 @@ internal class UpdateForUiMessageTest {
     }
 
     @Test
-    fun `test when remove component and plugin state is Started then that component is removed`() {
+    fun `when remove component and plugin state is Started then that component is removed`() {
 
         val removalComponentId = ComponentId("a")
         val otherStates = ComponentDebugStates()
@@ -133,7 +135,7 @@ internal class UpdateForUiMessageTest {
     }
 
     @Test
-    fun `test when apply message and plugin state is Started then a proper Value is found and correct command is returned`() {
+    fun `when apply message and plugin state is Started then a proper Value is found and correct command is returned`() {
 
         val componentId = ComponentId("a")
         val snapshotId = RandomSnapshotId()
@@ -157,7 +159,7 @@ internal class UpdateForUiMessageTest {
     }
 
     @Test
-    fun `test when apply state and plugin state is Started then a proper Value is found and correct command is returned`() {
+    fun `when apply state and plugin state is Started then a proper Value is found and correct command is returned`() {
 
         val componentId = ComponentId("a")
         val snapshotId = RandomSnapshotId()
@@ -181,7 +183,7 @@ internal class UpdateForUiMessageTest {
     }
 
     @Test
-    fun `test when update filter with empty substring and SUBSTRING option and plugin state is Started then it's updated properly`() {
+    fun `when update filter with empty substring and SUBSTRING option and plugin state is Started then it's updated properly`() {
 
         val componentId = ComponentId("a")
         val initialState =
@@ -225,7 +227,7 @@ internal class UpdateForUiMessageTest {
     }
 
     @Test
-    fun `test when update filter with non empty substring and SUBSTRING option and plugin state is Started then it's updated properly`() {
+    fun `when update filter with non empty substring and SUBSTRING option and plugin state is Started then it's updated properly`() {
 
         val componentId = ComponentId("a")
         val input = "abc"
@@ -257,5 +259,48 @@ internal class UpdateForUiMessageTest {
 
         assertNotNull(component.filter.predicate)
         assertIs<Valid<String>>(component.filter.predicate.value)
+    }
+
+    @Test
+    fun `when change max retained number setting and snapshots number that number, then extra snapshots are removed`() {
+        val maxSnapshots = 1.toPositive()
+        val metas = (0..100).map { SnapshotMeta(RandomSnapshotId(), TestTimestamp1) }
+        val originalSnapshots =
+            metas.map { OriginalSnapshot(meta = it, message = null, state = Null, commands = CollectionWrapper()) }.toPersistentList()
+        val filteredSnapshots = originalSnapshots.map { it.toFiltered() }.take(originalSnapshots.size / 2).toPersistentList()
+        val id = ComponentId("a")
+
+        val (nextState, commands) = StartedFromPairs(
+            ValidTestSettings,
+            ComponentDebugState(id, snapshots = originalSnapshots, filteredSnapshots = filteredSnapshots, state = Null),
+        )
+            .onUpdateForComponentMessage(
+                UpdateDebugSettings(
+                    isDetailedToStringEnabled = true,
+                    clearSnapshotsOnComponentAttach = true,
+                    maxSnapshots = maxSnapshots
+                )
+            )
+
+        assertTrue(
+            nextState.debugger.components.all { it.value.snapshots.size.toPositive() <= maxSnapshots },
+            "Constraints failed for ${nextState.debugger.components.brokenComponents(maxSnapshots)}"
+        )
+
+        val expectedDebugState = DebuggableComponent(
+            id = id,
+            state = Null,
+            snapshots = originalSnapshots.drop(originalSnapshots.size - maxSnapshots.toInt()).toPersistentList(),
+            filteredSnapshots = persistentListOf()
+        )
+        val expectedSettings =
+            ValidTestSettings.copy(isDetailedOutput = true, clearSnapshotsOnAttach = true, maxSnapshots = maxSnapshots)
+
+        assertEquals(
+            StartedFromPairs(expectedSettings, id to expectedDebugState),
+            nextState
+        )
+
+        assertEquals(setOf(DoStoreSettings(expectedSettings)), commands)
     }
 }

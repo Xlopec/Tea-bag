@@ -38,6 +38,7 @@ class StopPluginScenarios {
     @Test
     fun `test info view displayed when user stops plugin server given non-empty started state`() = rule {
         val debugger = Debugger(
+            ValidTestSettings,
             persistentMapOf(
                 TestComponentId1 to DebuggableComponent(
                     TestComponentId1,
@@ -47,7 +48,7 @@ class StopPluginScenarios {
             )
         )
         val messages = MutableSharedFlow<Message>()
-        val started = State(ValidTestSettings, debugger, StartedTestServerStub)
+        val started = State(debugger, StartedTestServerStub)
         val environment = TestEnvironment()
 
         val component = PluginComponent(environment, Initializer(started))

@@ -36,7 +36,6 @@ interface Environment :
     CoroutineScope
 
 @OptIn(ObsoleteCoroutinesApi::class)
-@Suppress("FunctionName")
 fun Environment(
     properties: PropertiesComponent,
     project: Project,

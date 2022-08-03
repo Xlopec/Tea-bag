@@ -66,14 +66,6 @@ fun DebuggableComponent.appendSnapshot(
     )
 }
 
-fun DebuggableComponent.removeSnapshotAt(
-    index: Int
-): DebuggableComponent =
-    copy(
-        snapshots = snapshots.removeAt(index),
-        filteredSnapshots = filteredSnapshots.removeAt(index),
-    )
-
 fun DebuggableComponent.removeSnapshots(
     ids: Set<SnapshotId>
 ): DebuggableComponent =

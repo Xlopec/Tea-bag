@@ -46,7 +46,7 @@ internal fun Component(
 
         val splitterState = rememberSplitPaneState()
         val formatter: TreeFormatter =
-            if (state.settings.isDetailedOutput) ::toReadableStringLong else ::toReadableStringShort
+            if (state.debugger.settings.isDetailedOutput) ::toReadableStringLong else ::toReadableStringShort
 
         VerticalSplitPane(splitPaneState = splitterState) {
             first(SplitPaneMinContentHeight) {

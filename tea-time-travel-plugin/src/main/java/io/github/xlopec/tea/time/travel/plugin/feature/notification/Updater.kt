@@ -33,6 +33,7 @@ internal fun State.updateForNotificationMessage(
         is ServerStarted -> onStarted(message.server)
         is ServerStopped -> onStopped()
         is AppendSnapshot -> onAppendSnapshot(message)
+        // fixme this might not work
         is StateDeployed -> onStateDeployed(message)
         is ComponentAttached -> onComponentAttached(message)
         is ComponentImportResult -> onComponentImportResult(message)
@@ -109,7 +110,6 @@ private fun State.onAppendSnapshot(
         id = message.componentId,
         snapshot = message.toSnapshot(),
         newState = message.newState,
-        maxRetainedSnapshots = settings.maxRetainedSnapshots
     )
 ).noCommand()
 
@@ -121,7 +121,6 @@ private fun State.onComponentAttached(
             id = message.id,
             state = message.state,
             snapshot = message.toSnapshot(),
-            clearSnapshotsOnAttach = settings.clearSnapshotsOnAttach
         )
     ) command DoNotifyComponentAttached(message.id)
 

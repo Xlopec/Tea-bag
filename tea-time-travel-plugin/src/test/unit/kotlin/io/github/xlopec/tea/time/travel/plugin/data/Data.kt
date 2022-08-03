@@ -105,18 +105,16 @@ fun StartedFromPairs(
     states: Iterable<Pair<ComponentId, DebuggableComponent>>,
     activeComponent: ComponentId? = states.toList().firstOrNull()?.first,
 ) = State(
-    settings,
-    Debugger(components = states.toMap().toPersistentMap(), activeComponent = activeComponent),
-    StartedTestServerStub
+    debugger = Debugger(settings = settings, components = states.toMap().toPersistentMap(), activeComponent = activeComponent),
+    server = StartedTestServerStub
 )
 
 fun StartedFromPairs(
     settings: Settings,
     vararg states: Pair<ComponentId, DebuggableComponent>
 ) = State(
-    settings,
-    Debugger(states.toMap().toPersistentMap()),
-    StartedTestServerStub
+    debugger = Debugger(settings = settings, components = states.toMap().toPersistentMap()),
+    server = StartedTestServerStub
 )
 
 fun RandomSnapshotId() = SnapshotId(UUID.randomUUID())

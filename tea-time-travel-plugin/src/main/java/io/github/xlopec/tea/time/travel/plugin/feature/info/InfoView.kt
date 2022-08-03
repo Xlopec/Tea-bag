@@ -55,7 +55,7 @@ fun InfoView(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val content = remember(state.server, state.settings) { state.toContent(handler) }
+        val content = remember(state.server, state.debugger.settings) { state.toContent(handler) }
 
         Text(text = content.description, textAlign = Justify, inlineContent = content.inlineContent)
     }
@@ -78,8 +78,8 @@ private fun State.toContent(
 
 private fun State.toNonRunningContent(
     handler: MessageHandler
-) = settings.host.value.mapLeft { "${it.lowercase()},\n" }
-    .zip(Semigroup.string(), settings.port.value.mapLeft(String::lowercase)) { _, _ -> serverCanRunContent(handler) }
+) = debugger.settings.host.value.mapLeft { "${it.lowercase()},\n" }
+    .zip(Semigroup.string(), debugger.settings.port.value.mapLeft(String::lowercase)) { _, _ -> serverCanRunContent(handler) }
     .fold(fe = ::invalidSettingsContent, fa = { it })
 
 private fun invalidSettingsContent(

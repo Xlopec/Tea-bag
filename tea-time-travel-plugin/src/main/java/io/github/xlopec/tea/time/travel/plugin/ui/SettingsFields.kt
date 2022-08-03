@@ -66,10 +66,10 @@ internal fun SettingsFields(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(HostFieldTag),
-                validated = state.settings.host,
+                validated = state.debugger.settings.host,
                 placeholder = HostFieldPlaceholder,
                 onValueChange = { s ->
-                    handler(UpdateServerSettings(host = s, port = state.settings.port.input))
+                    handler(UpdateServerSettings(host = s, port = state.debugger.settings.port.input))
                 },
                 enabled = state.areSettingsModifiable
             )
@@ -98,10 +98,10 @@ internal fun SettingsFields(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(PortFieldTag),
-                validated = state.settings.port,
+                validated = state.debugger.settings.port,
                 placeholder = PortFieldPlaceholder,
                 onValueChange = { s ->
-                    handler(UpdateServerSettings(host = state.settings.host.input, port = s))
+                    handler(UpdateServerSettings(host = state.debugger.settings.host.input, port = s))
                 },
                 enabled = state.areSettingsModifiable
             )

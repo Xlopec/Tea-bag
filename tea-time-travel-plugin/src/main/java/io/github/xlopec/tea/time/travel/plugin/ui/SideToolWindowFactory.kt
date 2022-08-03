@@ -73,9 +73,9 @@ private val Project.settingsMessages: Flow<UpdateDebugSettings>
 
         connection.subscribe(
             PluginSettingsNotifier.TOPIC,
-            PluginSettingsNotifier { isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxRetainedSnapshots ->
+            PluginSettingsNotifier { isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxSnapshots ->
                 launch {
-                    send(UpdateDebugSettings(isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxRetainedSnapshots))
+                    send(UpdateDebugSettings(isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxSnapshots))
                 }
             }
         )

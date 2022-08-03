@@ -46,7 +46,7 @@ internal class UpdateForNotificationTest {
 
         assertEquals(
             State(
-                settings = ValidTestSettings,
+                debugger = Debugger(settings = ValidTestSettings),
                 server = StartedTestServerStub,
             ), nextState
         )
@@ -57,7 +57,7 @@ internal class UpdateForNotificationTest {
     fun `when message is NotifyStopped then plugin goes to a Stopped state`() {
 
         val (nextState, commands) = State(
-            settings = ValidTestSettings,
+            debugger = Debugger(settings = ValidTestSettings),
             server = StartedTestServerStub,
         ).updateForNotificationMessage(ServerStopped)
 
@@ -131,7 +131,7 @@ internal class UpdateForNotificationTest {
         val newState = StringWrapper("d")
         val commandsWrapper = CollectionWrapper(listOf())
 
-        val settings = ValidTestSettings.copy(maxRetainedSnapshots = PositiveNumber.of(1))
+        val settings = ValidTestSettings.copy(maxSnapshots = 1.toPositive())
         val (nextState, commands) = StartedFromPairs(settings, ComponentDebugState(componentId))
             .updateForNotificationMessage(AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper))
 

@@ -19,6 +19,8 @@ package io.github.xlopec.tea.time.travel.plugin.feature.settings
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
 import io.github.xlopec.tea.time.travel.plugin.model.PositiveNumber
+import io.github.xlopec.tea.time.travel.plugin.model.toInt
+import io.github.xlopec.tea.time.travel.plugin.model.toPositive
 import io.github.xlopec.tea.time.travel.plugin.util.*
 import javax.swing.JCheckBox
 import javax.swing.JComponent
@@ -32,22 +34,22 @@ class PluginSettings(
     private lateinit var root: JComponent
     private lateinit var detailedToStringCheckBox: JCheckBox
     private lateinit var clearComponentSnapshotsOnAttachCheckBox: JCheckBox
-    private lateinit var maxNumberOfRetainedSnapshots: JSpinner
+    private lateinit var maxNumberOfSnapshots: JSpinner
 
     init {
         with(project.properties) {
             detailedToStringCheckBox.isSelected = isDetailedToStringEnabled
             clearComponentSnapshotsOnAttachCheckBox.isSelected = clearSnapshotsOnComponentAttach
-            maxNumberOfRetainedSnapshots.model =
-                SpinnerNumberModel(maxRetainedSnapshots.value.toInt(), PositiveNumber.Min.toInt(), Int.MAX_VALUE, 1)
-            maxNumberOfRetainedSnapshots.value = maxRetainedSnapshots.value.toInt()
+            maxNumberOfSnapshots.model =
+                SpinnerNumberModel(maxSnapshots.toInt(), PositiveNumber.Min.toInt(), Int.MAX_VALUE, PositiveNumber.Min.toInt())
+            maxNumberOfSnapshots.value = maxSnapshots.toInt()
         }
     }
 
     override fun isModified(): Boolean = with(project.properties) {
         isDetailedToStringEnabled != detailedToStringCheckBox.isSelected ||
                 clearSnapshotsOnComponentAttach != clearComponentSnapshotsOnAttachCheckBox.isSelected ||
-                maxRetainedSnapshots != maxNumberOfRetainedSnapshots.value
+                maxSnapshots != maxNumberOfSnapshots.value
     }
 
     override fun getId(): String = PluginId
@@ -59,7 +61,7 @@ class PluginSettings(
             .onSettingsUpdated(
                 detailedToStringCheckBox.isSelected,
                 clearComponentSnapshotsOnAttachCheckBox.isSelected,
-                PositiveNumber.of(maxNumberOfRetainedSnapshots.value as Int)
+                (maxNumberOfSnapshots.value as Int).toPositive()
             )
     }
 
@@ -67,7 +69,7 @@ class PluginSettings(
         with(project.properties) {
             detailedToStringCheckBox.isSelected = isDetailedToStringEnabled
             clearComponentSnapshotsOnAttachCheckBox.isSelected = clearSnapshotsOnComponentAttach
-            maxNumberOfRetainedSnapshots.value = maxRetainedSnapshots.value.toInt()
+            maxNumberOfSnapshots.value = maxSnapshots.toInt()
         }
     }
 

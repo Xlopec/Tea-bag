@@ -26,10 +26,11 @@ import io.github.xlopec.tea.time.travel.protocol.ComponentId
  */
 @Stable
 data class State(
-    val settings: Settings,
-    val debugger: Debugger = Debugger(),
+    val debugger: Debugger,
     val server: Server? = null,
-)
+) {
+    constructor(settings: Settings) : this(Debugger(settings))
+}
 
 val State.isStarted: Boolean
     get() = server != null
@@ -38,7 +39,7 @@ val State.isStopped: Boolean
     get() = !isStarted
 
 val State.canStart: Boolean
-    get() = settings.host.value.isValid && settings.port.value.isValid && isStopped
+    get() = debugger.settings.host.value.isValid && debugger.settings.port.value.isValid && isStopped
 
 val State.canExport: Boolean
     get() = debugger.components.isNotEmpty()
@@ -48,10 +49,6 @@ val State.areSettingsModifiable: Boolean
 
 val State.hasAttachedComponents: Boolean
     get() = debugger.components.isNotEmpty()
-
-fun State.settings(
-    settings: Settings,
-) = copy(settings = settings)
 
 fun State.snapshot(
     componentId: ComponentId,
