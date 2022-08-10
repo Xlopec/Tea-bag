@@ -153,15 +153,15 @@ private fun ComponentsView(
     val debugger = state.debugger
 
     require(debugger.components.isNotEmpty())
-    requireNotNull(debugger.activeComponent)
+    requireNotNull(debugger.selectedComponent)
 
     Row {
         debugger.components.values.forEach { component ->
-            ComponentTab(component.id, debugger.activeComponent, events)
+            ComponentTab(component.id, debugger.selectedComponent, events)
         }
     }
 
-    Component(state, debugger.componentOrThrow(debugger.activeComponent), events)
+    Component(state, debugger.componentOrThrow(debugger.selectedComponent), events)
 }
 
 context (Logger) private fun handleFatalException(

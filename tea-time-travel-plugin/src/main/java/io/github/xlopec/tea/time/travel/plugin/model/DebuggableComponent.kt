@@ -66,6 +66,25 @@ fun DebuggableComponent.appendSnapshot(
     )
 }
 
+fun DebuggableComponent.dropExtraSnapshots(
+    maxSnapshots: UInt
+): DebuggableComponent {
+    var filteredSnapshots = filteredSnapshots
+    var snapshots = snapshots
+
+    while (snapshots.size.toUInt() > maxSnapshots) {
+        val temp = snapshots.first()
+        snapshots = snapshots.removeAt(0)
+        // Works only when filtered snapshots preserve original snapshots ordering
+        if (temp.meta == filteredSnapshots.firstOrNull()?.meta) {
+            filteredSnapshots = filteredSnapshots.removeAt(0)
+        }
+    }
+
+    return takeIf { it.snapshots === snapshots && it.filteredSnapshots === filteredSnapshots }
+        ?: copy(snapshots = snapshots, filteredSnapshots = filteredSnapshots)
+}
+
 fun DebuggableComponent.removeSnapshots(
     ids: Set<SnapshotId>
 ): DebuggableComponent =

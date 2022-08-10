@@ -17,11 +17,11 @@ typealias ComponentMapping = PersistentMap<ComponentId, DebuggableComponent>
 data class Debugger(
     val settings: Settings,
     val components: ComponentMapping = persistentMapOf(),
-    val activeComponent: ComponentId? = components.values.firstOrNull()?.id
+    val selectedComponent: ComponentId? = components.values.firstOrNull()?.id
 ) {
     init {
-        require(activeComponent == null || activeComponent in components) {
-            "constraints violation, active=$activeComponent, keys=${components.keys.map(ComponentId::value)}}"
+        require((selectedComponent == null && components.isEmpty()) || selectedComponent in components) {
+            "constraints violation, active selection=$selectedComponent, keys=${components.keys.map(ComponentId::value)}}"
         }
         require(components.values.all { it.snapshots.size.toPInt() <= settings.maxSnapshots }) {
             "constraints violation, maxSnapshots=${settings.maxSnapshots.value}, components=${
@@ -56,21 +56,28 @@ fun Debugger.appendSnapshot(
     snapshot: OriginalSnapshot,
     newState: Value,
 ) = putComponent(
-    id,
-    componentOrNew(id, newState).dropExtraSnapshots(maxOf(settings.maxSnapshots.toUInt(), 1U) - 1U).appendSnapshot(snapshot, newState)
+    id = id,
+    component = getComponentOrNew(id, newState)
+        .dropExtraSnapshots(maxOf(settings.maxSnapshots.toUInt(), 1U) - 1U)
+        .appendSnapshot(snapshot, newState),
+    selectedComponent = selectedComponent ?: id,
 )
 
 fun Debugger.attachComponent(
     id: ComponentId,
     component: DebuggableComponent
-) = putComponent(id, component.dropExtraSnapshots(settings.maxSnapshots.toUInt())).selectComponent(id)
+) = putComponent(
+    id = id,
+    component = component.dropExtraSnapshots(settings.maxSnapshots.toUInt()),
+    selectedComponent = id,
+)
 
 fun Debugger.attachComponent(
     id: ComponentId,
     state: Value,
     snapshot: OriginalSnapshot,
 ): Debugger {
-    val componentState = if (settings.clearSnapshotsOnAttach) DebuggableComponent(id, state) else componentOrNew(id, state)
+    val componentState = if (settings.clearSnapshotsOnAttach) DebuggableComponent(id, state) else getComponentOrNew(id, state)
     // todo add option to disable component selection on attach
     return attachComponent(id, componentState.appendSnapshot(snapshot, state))
 }
@@ -85,7 +92,8 @@ fun Debugger.updateFilter(
 fun Debugger.putComponent(
     id: ComponentId,
     component: DebuggableComponent,
-) = copy(components = components.put(id, component))
+    selectedComponent: ComponentId,
+) = copy(components = components.put(id, component), selectedComponent = selectedComponent)
 
 fun Debugger.updateComponent(
     id: ComponentId,
@@ -94,11 +102,11 @@ fun Debugger.updateComponent(
 
 fun Debugger.removeComponent(
     id: ComponentId
-) = copy(components = components.remove(id), activeComponent = nextSelectionForClosingTab(id))
+) = copy(components = components.remove(id), selectedComponent = nextSelectionForClosingTab(id))
 
 fun Debugger.selectComponent(
     id: ComponentId
-) = copy(activeComponent = id)
+) = copy(selectedComponent = id)
 
 fun Debugger.settings(
     isDetailedOutput: Boolean,
@@ -134,14 +142,14 @@ internal fun Debugger.nextSelectionForClosingTab(
     // if activeComponent != closingTab, then we don't need to recalculate tab
     // if nextSelectionForClosingTab returns closingTab, then our components ComponentsMapping will be cleared, tab selection should be
     // reset as well
-    return activeComponent.takeIf { it != closingTab } ?: components.nextSelectionForClosingTab(closingTab).takeIf { it != closingTab }
+    return selectedComponent.takeIf { it != closingTab } ?: components.nextSelectionForClosingTab(closingTab).takeIf { it != closingTab }
 }
 
 internal fun ComponentMapping.brokenComponents(
     maxSnapshots: PInt
 ) = values.filter { it.snapshots.size.toPInt() > maxSnapshots }
 
-private fun Debugger.componentOrNew(
+private fun Debugger.getComponentOrNew(
     id: ComponentId,
     state: Value,
 ) = components[id] ?: DebuggableComponent(id, state)
@@ -155,25 +163,6 @@ private fun ComponentMapping.dropExtraSnapshots(
     keys.forEach { key ->
         it[key] = it[key]!!.dropExtraSnapshots(maxSnapshots.toUInt())
     }
-}
-
-private fun DebuggableComponent.dropExtraSnapshots(
-    maxSnapshots: UInt
-): DebuggableComponent {
-    var filteredSnapshots = filteredSnapshots
-    var snapshots = snapshots
-    // [0..UInt.MAX] > [1..UInt.MAX]
-    while (snapshots.size.toUInt() > maxSnapshots) {
-        val temp = snapshots.first()
-        snapshots = snapshots.removeAt(0)
-        // Works only when filtered snapshots preserve original snapshots ordering
-        if (temp.meta == filteredSnapshots.firstOrNull()?.meta) {
-            filteredSnapshots = filteredSnapshots.removeAt(0)
-        }
-    }
-
-    return takeIf { it.snapshots === snapshots && it.filteredSnapshots === filteredSnapshots }
-        ?: copy(snapshots = snapshots, filteredSnapshots = filteredSnapshots)
 }
 
 internal fun <K> PersistentMap<K, *>.nextSelectionForClosingTab(

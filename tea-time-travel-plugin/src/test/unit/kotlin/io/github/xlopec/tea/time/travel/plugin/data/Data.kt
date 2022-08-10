@@ -105,7 +105,7 @@ fun StartedFromPairs(
     states: Iterable<Pair<ComponentId, DebuggableComponent>>,
     activeComponent: ComponentId? = states.toList().firstOrNull()?.first,
 ) = State(
-    debugger = Debugger(settings = settings, components = states.toMap().toPersistentMap(), activeComponent = activeComponent),
+    debugger = Debugger(settings = settings, components = states.toMap().toPersistentMap(), selectedComponent = activeComponent),
     server = StartedTestServerStub
 )
 
