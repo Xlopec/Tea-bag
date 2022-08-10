@@ -23,7 +23,7 @@ data class Debugger(
         require(activeComponent == null || activeComponent in components) {
             "constraints violation, active=$activeComponent, keys=${components.keys.map(ComponentId::value)}}"
         }
-        require(components.values.all { it.snapshots.size.toPositive() <= settings.maxSnapshots }) {
+        require(components.values.all { it.snapshots.size.toPInt() <= settings.maxSnapshots }) {
             "constraints violation, maxSnapshots=${settings.maxSnapshots.value}, components=${
                 components.brokenComponents(settings.maxSnapshots).joinToString { "${it.id.value} -> ${it.snapshots.size}" }
             }"
@@ -103,7 +103,7 @@ fun Debugger.selectComponent(
 fun Debugger.settings(
     isDetailedOutput: Boolean,
     clearSnapshotsOnAttach: Boolean,
-    maxSnapshots: PositiveNumber,
+    maxSnapshots: PInt,
 ): Debugger = copy(
     settings = settings.copy(
         isDetailedOutput = isDetailedOutput,
@@ -138,8 +138,8 @@ internal fun Debugger.nextSelectionForClosingTab(
 }
 
 internal fun ComponentMapping.brokenComponents(
-    maxSnapshots: PositiveNumber
-) = values.filter { it.snapshots.size.toPositive() > maxSnapshots }
+    maxSnapshots: PInt
+) = values.filter { it.snapshots.size.toPInt() > maxSnapshots }
 
 private fun Debugger.componentOrNew(
     id: ComponentId,
@@ -147,7 +147,7 @@ private fun Debugger.componentOrNew(
 ) = components[id] ?: DebuggableComponent(id, state)
 
 private fun ComponentMapping.dropExtraSnapshots(
-    maxSnapshots: PositiveNumber
+    maxSnapshots: PInt
 ): ComponentMapping = mutate {
     // fixme throws ConcurrentModificationException, see https://github.com/Kotlin/kotlinx.collections.immutable/issues/68
     // it.replaceAll { _, u -> u.dropExtraSnapshots(maxSnapshots) }

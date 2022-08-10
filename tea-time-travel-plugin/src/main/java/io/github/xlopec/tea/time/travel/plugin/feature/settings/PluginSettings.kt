@@ -18,9 +18,9 @@ package io.github.xlopec.tea.time.travel.plugin.feature.settings
 
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
-import io.github.xlopec.tea.time.travel.plugin.model.PositiveNumber
+import io.github.xlopec.tea.time.travel.plugin.model.PInt
 import io.github.xlopec.tea.time.travel.plugin.model.toInt
-import io.github.xlopec.tea.time.travel.plugin.model.toPositive
+import io.github.xlopec.tea.time.travel.plugin.model.toPInt
 import io.github.xlopec.tea.time.travel.plugin.util.*
 import javax.swing.JCheckBox
 import javax.swing.JComponent
@@ -41,7 +41,7 @@ class PluginSettings(
             detailedToStringCheckBox.isSelected = isDetailedToStringEnabled
             clearComponentSnapshotsOnAttachCheckBox.isSelected = clearSnapshotsOnComponentAttach
             maxNumberOfSnapshots.model =
-                SpinnerNumberModel(maxSnapshots.toInt(), PositiveNumber.Min.toInt(), Int.MAX_VALUE, PositiveNumber.Min.toInt())
+                SpinnerNumberModel(maxSnapshots.toInt(), PInt.MIN_VALUE.toInt(), Int.MAX_VALUE, PInt.MIN_VALUE.toInt())
             maxNumberOfSnapshots.value = maxSnapshots.toInt()
         }
     }
@@ -61,7 +61,7 @@ class PluginSettings(
             .onSettingsUpdated(
                 detailedToStringCheckBox.isSelected,
                 clearComponentSnapshotsOnAttachCheckBox.isSelected,
-                (maxNumberOfSnapshots.value as Int).toPositive()
+                (maxNumberOfSnapshots.value as Int).toPInt()
             )
     }
 

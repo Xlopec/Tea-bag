@@ -131,7 +131,7 @@ internal class UpdateForNotificationTest {
         val newState = StringWrapper("d")
         val commandsWrapper = CollectionWrapper(listOf())
 
-        val settings = ValidTestSettings.copy(maxSnapshots = 1.toPositive())
+        val settings = ValidTestSettings.copy(maxSnapshots = 1.toPInt())
         val (nextState, commands) = StartedFromPairs(settings, ComponentDebugState(componentId))
             .updateForNotificationMessage(AppendSnapshot(componentId, meta, message, oldState, newState, commandsWrapper))
 

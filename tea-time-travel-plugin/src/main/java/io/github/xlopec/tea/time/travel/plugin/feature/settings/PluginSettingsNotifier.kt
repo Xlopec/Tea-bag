@@ -17,7 +17,7 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.settings
 
 import com.intellij.util.messages.Topic
-import io.github.xlopec.tea.time.travel.plugin.model.PositiveNumber
+import io.github.xlopec.tea.time.travel.plugin.model.PInt
 
 fun interface PluginSettingsNotifier {
 
@@ -28,6 +28,6 @@ fun interface PluginSettingsNotifier {
     fun onSettingsUpdated(
         isDetailedToStringEnabled: Boolean,
         clearSnapshotsOnComponentAttach: Boolean,
-        maxSnapshots: PositiveNumber,
+        maxSnapshots: PInt,
     )
 }

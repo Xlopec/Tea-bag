@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.JavaPsiFacade
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings.Companion.DefaultMaxSnapshots
-import io.github.xlopec.tea.time.travel.plugin.model.PositiveNumber
+import io.github.xlopec.tea.time.travel.plugin.model.PInt
 import io.github.xlopec.tea.time.travel.plugin.model.toInt
 import io.github.xlopec.tea.time.travel.plugin.model.toUInt
 
@@ -54,9 +54,9 @@ var PropertiesComponent.clearSnapshotsOnComponentAttach: Boolean
     set(value) = setValue(ClearLogsKey, value)
     get() = getBoolean(ClearLogsKey, false)
 
-var PropertiesComponent.maxSnapshots: PositiveNumber
+var PropertiesComponent.maxSnapshots: PInt
     set(value) = setValue(MaxSnapshotsKey, value.toInt(), DefaultMaxSnapshots.toInt())
-    get() = PositiveNumber.of(getInt(MaxSnapshotsKey, DefaultMaxSnapshots.toInt()))
+    get() = PInt.of(getInt(MaxSnapshotsKey, DefaultMaxSnapshots.toInt()))
 
 val Project.javaPsiFacade: JavaPsiFacade
     get() = JavaPsiFacade.getInstance(this)

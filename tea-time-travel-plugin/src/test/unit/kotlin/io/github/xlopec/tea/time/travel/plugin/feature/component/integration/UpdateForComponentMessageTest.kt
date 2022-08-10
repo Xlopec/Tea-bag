@@ -263,7 +263,7 @@ internal class UpdateForComponentMessageTest {
 
     @Test
     fun `when change max retained number setting and snapshots number that number, then extra snapshots are removed`() {
-        val maxSnapshots = 1.toPositive()
+        val maxSnapshots = 1.toPInt()
         val metas = (0..100).map { SnapshotMeta(RandomSnapshotId(), TestTimestamp1) }
         val originalSnapshots =
             metas.map { OriginalSnapshot(meta = it, message = null, state = Null, commands = CollectionWrapper()) }.toPersistentList()
@@ -283,7 +283,7 @@ internal class UpdateForComponentMessageTest {
             )
 
         assertTrue(
-            nextState.debugger.components.all { it.value.snapshots.size.toPositive() <= maxSnapshots },
+            nextState.debugger.components.all { it.value.snapshots.size.toPInt() <= maxSnapshots },
             "Constraints failed for ${nextState.debugger.components.brokenComponents(maxSnapshots)}"
         )
 

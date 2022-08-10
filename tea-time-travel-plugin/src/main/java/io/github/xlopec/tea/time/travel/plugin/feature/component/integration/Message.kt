@@ -2,7 +2,7 @@ package io.github.xlopec.tea.time.travel.plugin.feature.component.integration
 
 import io.github.xlopec.tea.time.travel.plugin.integration.ComponentMessage
 import io.github.xlopec.tea.time.travel.plugin.model.FilterOption
-import io.github.xlopec.tea.time.travel.plugin.model.PositiveNumber
+import io.github.xlopec.tea.time.travel.plugin.model.PInt
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
@@ -10,7 +10,7 @@ import io.github.xlopec.tea.time.travel.protocol.ComponentId
 data class UpdateDebugSettings(
     val isDetailedToStringEnabled: Boolean,
     val clearSnapshotsOnComponentAttach: Boolean,
-    val maxSnapshots: PositiveNumber,
+    val maxSnapshots: PInt,
 ) : ComponentMessage
 
 data class UpdateServerSettings(

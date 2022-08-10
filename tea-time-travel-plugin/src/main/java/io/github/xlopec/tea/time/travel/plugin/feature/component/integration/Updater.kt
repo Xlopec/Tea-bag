@@ -51,7 +51,7 @@ fun State.onUpdateForComponentMessage(
 private fun State.onUpdateDebugSettings(
     isDetailedToStringEnabled: Boolean,
     clearSnapshotsOnComponentAttach: Boolean,
-    maxSnapshots: PositiveNumber,
+    maxSnapshots: PInt,
 ): Update<State, DoStoreSettings> =
     debugger(debugger.settings(isDetailedToStringEnabled, clearSnapshotsOnComponentAttach, maxSnapshots)) command {
         DoStoreSettings(debugger.settings)
