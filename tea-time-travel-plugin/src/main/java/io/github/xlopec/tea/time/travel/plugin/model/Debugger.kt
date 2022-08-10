@@ -57,13 +57,13 @@ fun Debugger.appendSnapshot(
     newState: Value,
 ) = putComponent(
     id,
-    componentOrNew(id, newState).dropExtraSnapshots(settings.maxSnapshots).appendSnapshot(snapshot, newState)
+    componentOrNew(id, newState).dropExtraSnapshots(maxOf(settings.maxSnapshots.toUInt(), 1U) - 1U).appendSnapshot(snapshot, newState)
 )
 
 fun Debugger.attachComponent(
     id: ComponentId,
     component: DebuggableComponent
-) = putComponent(id, component.dropExtraSnapshots(settings.maxSnapshots)).selectComponent(id)
+) = putComponent(id, component.dropExtraSnapshots(settings.maxSnapshots.toUInt())).selectComponent(id)
 
 fun Debugger.attachComponent(
     id: ComponentId,
@@ -153,17 +153,17 @@ private fun ComponentMapping.dropExtraSnapshots(
     // it.replaceAll { _, u -> u.dropExtraSnapshots(maxSnapshots) }
     val keys = keys
     keys.forEach { key ->
-        it[key] = it[key]!!.dropExtraSnapshots(maxSnapshots)
+        it[key] = it[key]!!.dropExtraSnapshots(maxSnapshots.toUInt())
     }
 }
 
 private fun DebuggableComponent.dropExtraSnapshots(
-    maxSnapshots: PositiveNumber
+    maxSnapshots: UInt
 ): DebuggableComponent {
     var filteredSnapshots = filteredSnapshots
     var snapshots = snapshots
     // [0..UInt.MAX] > [1..UInt.MAX]
-    while (snapshots.size.toUInt() > maxSnapshots.toUInt()) {
+    while (snapshots.size.toUInt() > maxSnapshots) {
         val temp = snapshots.first()
         snapshots = snapshots.removeAt(0)
         // Works only when filtered snapshots preserve original snapshots ordering
