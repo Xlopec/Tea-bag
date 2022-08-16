@@ -149,7 +149,7 @@ private class PluginThemeColorsImpl : PluginThemeColors {
     private val getSelectionColors: SelectionColors
         get() = SelectionColors(
             active = getColor("Tree.selectionBackground"),
-            inactive = getColor("Tree.selectionInactiveBackground"),
+            inactive = getColor("Tree.selectionBorderColor"),
             hover = getColor("ActionButton.hoverBackground"),
             lightActive = getColor("Tree.selectionBackground"),
             lightInactive = getColor("Tree.selectionBackground"),
