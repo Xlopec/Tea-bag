@@ -160,9 +160,23 @@ dependencies {
     implementation(libs.stdlib.reflect)
     implementation(libs.arrow.core)
 
-    implementation(compose.desktop.currentOs) {
+    // FIXME this is a temporary workaround
+    implementation(compose.desktop.macos_arm64) {
         exclude("org.jetbrains.compose.material")
     }
+    implementation(compose.desktop.macos_x64) {
+        exclude("org.jetbrains.compose.material")
+    }
+    implementation(compose.desktop.linux_x64) {
+        exclude("org.jetbrains.compose.material")
+    }
+    implementation(compose.desktop.linux_arm64) {
+        exclude("org.jetbrains.compose.material")
+    }
+    implementation(compose.desktop.windows_x64) {
+        exclude("org.jetbrains.compose.material")
+    }
+
     @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
     implementation(compose.desktop.components.splitPane)
     implementation("com.bybutter.compose:compose-jetbrains-theme")
