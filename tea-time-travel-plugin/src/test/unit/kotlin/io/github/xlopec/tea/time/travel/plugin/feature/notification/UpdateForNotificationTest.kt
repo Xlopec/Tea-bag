@@ -237,7 +237,7 @@ internal class UpdateForNotificationTest {
             nextState
         )
 
-        assertEquals(setOf(DoNotifyComponentAttached(componentId)), commands)
+        assertEquals(setOf(DoNotifyComponentAttached(id = componentId, isComponentReattached = false)), commands)
     }
 
     @Test
@@ -419,8 +419,8 @@ internal class UpdateForNotificationTest {
         assertEquals(expectedState, state1)
         assertEquals(expectedState, state2)
 
-        assertEquals(setOf(DoNotifyComponentAttached(componentId)), commands1)
-        assertEquals(setOf(DoNotifyComponentAttached(componentId)), commands2)
+        assertEquals(setOf(DoNotifyComponentAttached(id = componentId, isComponentReattached = false)), commands1)
+        assertEquals(setOf(DoNotifyComponentAttached(id = componentId, isComponentReattached = true)), commands2)
     }
 
     @Test
@@ -499,8 +499,8 @@ internal class UpdateForNotificationTest {
             ), state2
         )
 
-        assertEquals(setOf(DoNotifyComponentAttached(componentId)), commands1)
-        assertEquals(setOf(DoNotifyComponentAttached(componentId)), commands2)
+        assertEquals(setOf(DoNotifyComponentAttached(id = componentId, isComponentReattached = false)), commands1)
+        assertEquals(setOf(DoNotifyComponentAttached(id = componentId, isComponentReattached = true)), commands2)
     }
 
     @Test

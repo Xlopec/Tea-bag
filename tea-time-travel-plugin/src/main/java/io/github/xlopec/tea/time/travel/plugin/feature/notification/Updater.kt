@@ -113,6 +113,7 @@ private fun State.onAppendSnapshot(
     )
 ).noCommand()
 
+// fixme we go through this flow even when we just apply state from debugger
 private fun State.onComponentAttached(
     message: ComponentAttached,
 ): Update<State, Command> =
@@ -122,7 +123,7 @@ private fun State.onComponentAttached(
             state = message.state,
             snapshot = message.toSnapshot(),
         )
-    ) command DoNotifyComponentAttached(message.id)
+    ) command DoNotifyComponentAttached(id = message.id, isComponentReattached = message.id in debugger.componentIds)
 
 private fun State.onStateDeployed(
     message: StateDeployed,

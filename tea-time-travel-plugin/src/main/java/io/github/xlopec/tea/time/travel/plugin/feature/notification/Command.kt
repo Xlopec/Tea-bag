@@ -19,9 +19,9 @@ data class DoWarnUnacceptableMessage(
     val state: State
 ) : NotifyCommand
 
-@JvmInline
-value class DoNotifyComponentAttached(
-    val id: ComponentId
+data class DoNotifyComponentAttached(
+    val id: ComponentId,
+    val isComponentReattached: Boolean,
 ) : NotifyCommand
 
 data class DoNotifyFileOperationSuccess(

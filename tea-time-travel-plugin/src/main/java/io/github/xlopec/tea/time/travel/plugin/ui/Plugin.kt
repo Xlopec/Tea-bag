@@ -133,7 +133,7 @@ internal fun Plugin(
                     }
                 },
                 onServerAction = { handler(if (state.isStarted) StopServer else StartServer) },
-                onSettingsAction = { platform.navigateToSettings() },
+                onSettingsAction = { scope.launch { platform.navigateToSettings() } },
                 state = state
             )
         }

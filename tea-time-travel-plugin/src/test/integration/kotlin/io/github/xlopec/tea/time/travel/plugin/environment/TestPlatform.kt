@@ -18,15 +18,15 @@ class TestPlatform : Platform {
         TODO("Not yet implemented")
     }
 
-    override fun psiClassFor(type: Type): PsiClass? {
+    override suspend fun psiClassFor(type: Type): PsiClass? {
         TODO("Not yet implemented")
     }
 
-    override fun navigateToSources(psiClass: PsiClass) {
+    override suspend fun navigateToSources(psiClass: PsiClass) {
         TODO("Not yet implemented")
     }
 
-    override fun navigateToSettings() {
+    override suspend fun navigateToSettings() {
         TODO("Not yet implemented")
     }
 }

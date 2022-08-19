@@ -4,6 +4,7 @@ import com.intellij.openapi.project.IndexNotReadyException
 import io.github.xlopec.tea.time.travel.plugin.model.Type
 import io.github.xlopec.tea.time.travel.plugin.util.LoggerStub
 import io.github.xlopec.tea.time.travel.plugin.util.ProjectStub
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertIs
 import kotlin.test.assertNull
@@ -11,7 +12,7 @@ import kotlin.test.assertNull
 class PlatformTest {
 
     @Test
-    fun `test psiClassFor returns null and logs exception when exception occurs internally`() {
+    fun `test psiClassFor returns null and logs exception when exception occurs internally`() = runTest {
         val project = object : ProjectStub() {
             override fun <T> getService(p0: Class<T>): T = throw IndexNotReadyException.create()
         }

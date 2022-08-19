@@ -44,7 +44,7 @@ private class NotificationResolverImpl(
     private fun DoNotifyComponentAttached.showComponentAttachedNotification() {
         project.showNotification(
             "New Client Attached",
-            "Component \"${id.value}\" attached",
+            "Component \"${id.value}\" ${"re".takeIf { isComponentReattached } ?: ""}attached",
             NotificationType.INFORMATION
         )
     }

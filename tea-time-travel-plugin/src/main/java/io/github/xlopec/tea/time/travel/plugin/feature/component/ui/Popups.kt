@@ -2,7 +2,7 @@ package io.github.xlopec.tea.time.travel.plugin.feature.component.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -21,6 +21,7 @@ import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.kanro.compose.jetbrains.control.DropdownMenuItem
 import io.kanro.compose.jetbrains.control.Text
+import kotlinx.coroutines.launch
 
 @Composable
 fun ValuePopup(
@@ -65,11 +66,17 @@ fun RefActionItems(
 ) {
     Column {
         CopyActionItem(AnnotatedString(type.name))
+        val platform = LocalPlatform.current
+        val psiClass = remember { mutableStateOf<PsiClass?>(null) }
 
-        val psiClass = LocalPlatform.current.psiClassFor(type)
+        LaunchedEffect(Unit) {
+            psiClass.value = platform.psiClassFor(type)
+        }
 
-        if (psiClass != null) {
-            JumpToSourcesActionItem(psiClass)
+        val currentPsiClass = psiClass.value
+
+        if (currentPsiClass != null) {
+            JumpToSourcesActionItem(currentPsiClass)
         }
     }
 }
@@ -79,8 +86,11 @@ fun JumpToSourcesActionItem(
     psiClass: PsiClass,
 ) {
     val platform = LocalPlatform.current
+    val scope = rememberCoroutineScope()
     PopupItem(ValueIcon.Class, "Jump to sources") {
-        platform.navigateToSources(psiClass)
+        scope.launch {
+            platform.navigateToSources(psiClass)
+        }
     }
 }
 
