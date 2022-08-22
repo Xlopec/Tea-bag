@@ -13,14 +13,11 @@ import com.intellij.util.PsiNavigateUtil
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.PluginSettings
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.ExportSessions
 import io.github.xlopec.tea.time.travel.plugin.model.Type
-import io.github.xlopec.tea.time.travel.plugin.util.Edt
 import io.github.xlopec.tea.time.travel.plugin.util.chooseFile
 import io.github.xlopec.tea.time.travel.plugin.util.javaPsiFacade
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.File
+import kotlinx.collections.immutable.ImmutableSet
 
 interface Platform {
 
@@ -30,15 +27,15 @@ interface Platform {
         ids: ImmutableSet<ComponentId>,
     ): ExportSessions?
 
-    suspend fun psiClassFor(
+    fun psiClassFor(
         type: Type
     ): PsiClass?
 
-    suspend fun navigateToSources(
+    fun navigateToSources(
         psiClass: PsiClass
     )
 
-    suspend fun navigateToSettings()
+    fun navigateToSettings()
 }
 
 fun Platform(
@@ -52,35 +49,32 @@ private class PlatformImpl(
 ) : Platform {
 
     override suspend fun chooseSessionFile(): File =
-        withContext(Dispatchers.Edt) {
-            project.chooseFile(
-                FileChooserDescriptorFactory.createSingleFileDescriptor("json")
-                    .withRoots(listOfNotNull(project.baseVirtualDir))
-                    .withTitle("Choose Session to Import")
-            )
-        }
+        project.chooseFile(
+            FileChooserDescriptorFactory.createSingleFileDescriptor("json")
+                .withRoots(listOfNotNull(project.baseVirtualDir))
+                .withTitle("Choose Session to Import")
+        )
 
-    override suspend fun chooseExportSessionDirectory(ids: ImmutableSet<ComponentId>): ExportSessions? = withContext(Dispatchers.Edt) {
+    override suspend fun chooseExportSessionDirectory(ids: ImmutableSet<ComponentId>): ExportSessions? {
         // if there is no ambiguity regarding what session we should store - don't show chooser popup
         val exportSelection = if (ids.size > 1) chooseComponentsForExport(ids.toList()) else ids
 
-        if (exportSelection.isNotEmpty()) {
+        return if (exportSelection.isNotEmpty()) {
             ExportSessions(exportSelection, chooseExportSessionDir())
         } else {
             null
         }
     }
 
-    override suspend fun psiClassFor(type: Type): PsiClass? =
+    override fun psiClassFor(type: Type): PsiClass? =
         // findClass throws exception when indexing is in progress
         runCatching { project.javaPsiFacade.findClass(type.name, GlobalSearchScope.projectScope(project)) }
             .onFailure { logger.warn("Exception when searching for psi class for $type", it) }
             .getOrNull()
 
-    override suspend fun navigateToSources(psiClass: PsiClass) = PsiNavigateUtil.navigate(psiClass)
-    override suspend fun navigateToSettings() = withContext(Dispatchers.Edt) {
+    override fun navigateToSources(psiClass: PsiClass) = PsiNavigateUtil.navigate(psiClass)
+    override fun navigateToSettings() =
         ShowSettingsUtil.getInstance().showSettingsDialog(project, PluginSettings::class.java)
-    }
 
     private val Project.baseVirtualDir: VirtualFile?
         get() = basePath?.let(LocalFileSystem.getInstance()::findFileByPath)

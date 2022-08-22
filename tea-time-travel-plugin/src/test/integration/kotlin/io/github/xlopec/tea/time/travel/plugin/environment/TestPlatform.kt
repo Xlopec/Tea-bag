@@ -5,8 +5,8 @@ import io.github.xlopec.tea.time.travel.plugin.feature.storage.ExportSessions
 import io.github.xlopec.tea.time.travel.plugin.integration.Platform
 import io.github.xlopec.tea.time.travel.plugin.model.Type
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
-import kotlinx.collections.immutable.ImmutableSet
 import java.io.File
+import kotlinx.collections.immutable.ImmutableSet
 
 class TestPlatform : Platform {
 
@@ -18,15 +18,15 @@ class TestPlatform : Platform {
         TODO("Not yet implemented")
     }
 
-    override suspend fun psiClassFor(type: Type): PsiClass? {
+    override fun psiClassFor(type: Type): PsiClass? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun navigateToSources(psiClass: PsiClass) {
+    override fun navigateToSources(psiClass: PsiClass) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun navigateToSettings() {
+    override fun navigateToSettings() {
         TODO("Not yet implemented")
     }
 }
