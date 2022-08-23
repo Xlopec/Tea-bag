@@ -36,16 +36,14 @@ interface Environment :
     CoroutineScope
 
 @OptIn(ObsoleteCoroutinesApi::class)
-@Suppress("FunctionName")
 fun Environment(
     properties: PropertiesComponent,
     project: Project,
     events: MutableSharedFlow<Message>,
-): Environment =
-    object : Environment,
-        AppUpdater by AppUpdater(),
-        StorageResolver by StorageResolver(properties),
-        ServerCommandResolver by ServerCommandResolver(project, events),
-        NotificationResolver by NotificationResolver(project),
-        AppResolver<Environment> by AppResolver(),
-        CoroutineScope by CoroutineScope(SupervisorJob() + newSingleThreadContext("")) {}
+): Environment = object : Environment,
+    AppUpdater by AppUpdater(),
+    StorageResolver by StorageResolver(properties),
+    ServerCommandResolver by ServerCommandResolver(events),
+    NotificationResolver by NotificationResolver(project),
+    AppResolver<Environment> by AppResolver(),
+    CoroutineScope by CoroutineScope(SupervisorJob() + newSingleThreadContext("Plugin Thread")) {}

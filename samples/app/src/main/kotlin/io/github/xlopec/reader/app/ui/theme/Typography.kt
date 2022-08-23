@@ -25,73 +25,87 @@
 package io.github.xlopec.reader.app.ui.theme
 
 import androidx.compose.material.Typography
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
 import io.github.xlopec.reader.R
 
-private val Montserrat = FontFamily(
-    Font(R.font.montserrat_regular),
-    Font(R.font.montserrat_medium, FontWeight.W500),
-    Font(R.font.montserrat_semibold, FontWeight.W600)
+@OptIn(ExperimentalTextApi::class)
+val GmsFontProvider = GoogleFont.Provider(
+    providerAuthority = "com.google.android.gms.fonts",
+    providerPackage = "com.google.android.gms",
+    certificates = R.array.com_google_android_gms_fonts_certs
 )
 
-private val Domine = FontFamily(
-    fonts = listOf(
-        Font(R.font.domine_regular),
-        Font(R.font.domine_bold, FontWeight.Bold)
-    )
+@OptIn(ExperimentalTextApi::class)
+private val Roboto = FontFamily(
+    androidx.compose.ui.text.googlefonts.Font(
+        googleFont = GoogleFont("Roboto"),
+        fontProvider = GmsFontProvider,
+        weight = FontWeight.Normal
+    ),
+    androidx.compose.ui.text.googlefonts.Font(
+        googleFont = GoogleFont("Roboto"),
+        fontProvider = GmsFontProvider,
+        weight = FontWeight.Bold
+    ),
+    androidx.compose.ui.text.googlefonts.Font(
+        googleFont = GoogleFont("Roboto"),
+        fontProvider = GmsFontProvider,
+        weight = FontWeight.Medium
+    ),
 )
 
 val Typography = Typography(
     h4 = TextStyle(
-        fontFamily = Montserrat,
+        fontFamily = Roboto,
         fontWeight = FontWeight.W600,
         fontSize = 30.sp
     ),
     h5 = TextStyle(
-        fontFamily = Montserrat,
+        fontFamily = Roboto,
         fontWeight = FontWeight.W600,
         fontSize = 24.sp
     ),
     h6 = TextStyle(
-        fontFamily = Montserrat,
+        fontFamily = Roboto,
         fontWeight = FontWeight.W600,
         fontSize = 20.sp
     ),
     subtitle1 = TextStyle(
-        fontFamily = Montserrat,
+        fontFamily = Roboto,
         fontWeight = FontWeight.W600,
         fontSize = 16.sp
     ),
     subtitle2 = TextStyle(
-        fontFamily = Montserrat,
+        fontFamily = Roboto,
         fontWeight = FontWeight.W500,
         fontSize = 14.sp
     ),
     body1 = TextStyle(
-        fontFamily = Domine,
+        fontFamily = Roboto,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp
     ),
     body2 = TextStyle(
-        fontFamily = Montserrat,
+        fontFamily = Roboto,
         fontSize = 14.sp
     ),
     button = TextStyle(
-        fontFamily = Montserrat,
+        fontFamily = Roboto,
         fontWeight = FontWeight.W500,
         fontSize = 14.sp
     ),
     caption = TextStyle(
-        fontFamily = Montserrat,
+        fontFamily = Roboto,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp
     ),
     overline = TextStyle(
-        fontFamily = Montserrat,
+        fontFamily = Roboto,
         fontWeight = FontWeight.W500,
         fontSize = 12.sp
     )

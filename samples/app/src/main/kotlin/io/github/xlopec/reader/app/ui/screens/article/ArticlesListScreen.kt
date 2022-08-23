@@ -27,37 +27,22 @@
 package io.github.xlopec.reader.app.ui.screens.article
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
+import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.typography
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -72,31 +57,20 @@ import coil.compose.rememberImagePainter
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.feature.article.list.ArticlesState
-import io.github.xlopec.reader.app.feature.article.list.LoadArticles
-import io.github.xlopec.reader.app.feature.article.list.LoadNextArticles
-import io.github.xlopec.reader.app.feature.article.list.OnShareArticle
-import io.github.xlopec.reader.app.feature.article.list.ToggleArticleIsFavorite
+import io.github.xlopec.reader.app.feature.article.list.*
 import io.github.xlopec.reader.app.feature.navigation.NavigateToArticleDetails
 import io.github.xlopec.reader.app.feature.navigation.NavigateToFilters
-import io.github.xlopec.reader.app.misc.Exception
-import io.github.xlopec.reader.app.misc.Idle
-import io.github.xlopec.reader.app.misc.LoadableState
-import io.github.xlopec.reader.app.misc.Loading
-import io.github.xlopec.reader.app.misc.LoadingNext
-import io.github.xlopec.reader.app.misc.Refreshing
-import io.github.xlopec.reader.app.misc.isLoading
+import io.github.xlopec.reader.app.misc.*
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.FilterType
-import io.github.xlopec.reader.app.model.FilterType.Favorite
-import io.github.xlopec.reader.app.model.FilterType.Regular
-import io.github.xlopec.reader.app.model.FilterType.Trending
+import io.github.xlopec.reader.app.model.FilterType.*
 import io.github.xlopec.reader.app.ui.misc.ColumnMessage
 import io.github.xlopec.reader.app.ui.misc.SearchHeader
 import io.github.xlopec.tea.data.Url
+import io.github.xlopec.tea.data.toExternalValue
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 
 internal const val ProgressIndicatorTag = "Progress Indicator"
 
@@ -136,23 +110,30 @@ internal fun ArticleTestTag(
 private fun LazyListScope.articleItems(
     screen: ArticlesState,
     onMessage: MessageHandler,
-    onLastElement: () -> Unit = { onMessage(LoadNextArticles(screen.id)) },
 ) {
-
     val articles = screen.loadable.data
 
     require(articles.isNotEmpty()) { "Empty articles for screen=$screen" }
 
-    item {
+    val title = screen.filter.toScreenTitle()
+
+    item(
+        key = title,
+        contentType = screen.filter::class
+    ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start,
-            text = screen.filter.toScreenTitle(),
+            text = title,
             style = typography.subtitle1
         )
     }
 
-    itemsIndexed(articles, { _, item -> item.url.toExternalForm() }) { index, article ->
+    itemsIndexed(
+        items = articles,
+        key = { _, item -> item.url.toString() },
+        contentType = { _, item -> item::class }
+    ) { index, article ->
         Column(
             modifier = Modifier.semantics(mergeDescendants = true) {
                 testTag = ArticleTestTag(article.url)
@@ -165,9 +146,8 @@ private fun LazyListScope.articleItems(
             )
 
             if (index == articles.lastIndex) {
-                DisposableEffect(Unit) {
-                    onLastElement()
-                    onDispose { }
+                LaunchedEffect(Unit) {
+                    onMessage(LoadNextArticles(screen.id))
                 }
             }
         }
@@ -180,20 +160,19 @@ private fun LazyListScope.loadableContent(
     loadableState: LoadableState,
     filterType: FilterType,
     onMessage: MessageHandler,
-) = item {
-
+) = item(
+    key = loadableState::class.simpleName,
+    contentType = loadableState::class
+) {
     when (loadableState) {
         is Exception ->
             ArticlesError(
                 modifier = if (isEmpty) Modifier.fillParentMaxSize() else Modifier.fillParentMaxWidth(),
-                id = id,
                 message = loadableState.th.readableMessage,
-                onMessage = onMessage
+                onRetry = { onMessage(if (isEmpty) LoadArticles(id) else LoadNextArticles(id)) }
             )
         is Loading -> ArticlesProgress(modifier = Modifier.fillParentMaxSize())
-        is LoadingNext -> {
-            ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
-        }
+        is LoadingNext -> ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
         is Idle, is Refreshing -> {
             if (isEmpty) {
                 ColumnMessage(
@@ -202,9 +181,8 @@ private fun LazyListScope.loadableContent(
                         .padding(16.dp),
                     title = "No articles",
                     message = filterType.toEmptyStateDescription(),
-                ) {
-                    onMessage(LoadArticles(id))
-                }
+                    onClick = { onMessage(LoadArticles(id)) }
+                )
             }
         }
     }
@@ -241,7 +219,10 @@ private fun ArticlesContent(
         userScrollEnabled = screen.loadable.data.isNotEmpty()
     ) {
 
-        item { ArticleSearchHeader(state = screen, onMessage = onMessage) }
+        item(
+            key = "header",
+            contentType = "header"
+        ) { ArticleSearchHeader(state = screen, onMessage = onMessage) }
 
         children()
     }
@@ -262,7 +243,7 @@ private fun ArticleImage(
         if (imageUrl != null) {
             Image(
                 painter = rememberImagePainter(
-                    data = imageUrl.toExternalForm(),
+                    data = imageUrl.toExternalValue(),
                 ) {
                     crossfade(true)
                 },
@@ -371,17 +352,15 @@ fun ArticleActions(
 @Composable
 private fun ArticlesError(
     modifier: Modifier,
-    id: ScreenId,
     message: String,
-    onMessage: MessageHandler,
+    onRetry: () -> Unit,
 ) {
     ColumnMessage(
         modifier = modifier,
-        title = "Ooops, something went wrong",
+        title = "Oops, something went wrong",
         message = "Failed to load articles, message: '${message.toDisplayErrorMessage()}'",
-    ) {
-        onMessage(LoadArticles(id))
-    }
+        onClick = onRetry
+    )
 }
 
 @Composable

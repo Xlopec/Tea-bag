@@ -19,41 +19,28 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
 import com.google.gson.Gson
-import io.github.xlopec.tea.time.travel.gson.Gson
-import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
-import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentAttached
-import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentSnapshot
-import io.github.xlopec.tea.time.travel.gson.GsonNotifyServer
-import io.github.xlopec.tea.time.travel.plugin.integration.Message
+import io.github.xlopec.tea.time.travel.gson.*
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.AppendSnapshot
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.ComponentAttached
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.OperationException
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
+import io.github.xlopec.tea.time.travel.plugin.integration.Message
+import io.github.xlopec.tea.time.travel.plugin.integration.PacketDecodeException
+import io.github.xlopec.tea.time.travel.plugin.model.Server
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
-import io.github.xlopec.tea.time.travel.plugin.model.Server
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.protocol.NotifyClient
 import io.github.xlopec.tea.time.travel.protocol.NotifyServer
-import io.ktor.server.application.install
-import io.ktor.server.engine.ApplicationEngine
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.server.netty.NettyApplicationEngine
-import io.ktor.server.plugins.callloging.CallLogging
-import io.ktor.server.plugins.conditionalheaders.ConditionalHeaders
-import io.ktor.server.request.path
-import io.ktor.server.routing.Routing
-import io.ktor.server.routing.routing
-import io.ktor.server.websocket.WebSockets
-import io.ktor.server.websocket.pingPeriod
-import io.ktor.server.websocket.timeout
-import io.ktor.server.websocket.webSocket
-import io.ktor.websocket.Frame
-import io.ktor.websocket.readText
-import java.time.Duration
-import java.time.LocalDateTime.now
-import java.util.UUID.randomUUID
+import io.ktor.server.application.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.server.plugins.callloging.*
+import io.ktor.server.plugins.conditionalheaders.*
+import io.ktor.server.request.*
+import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
+import io.ktor.websocket.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -63,6 +50,9 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.slf4j.event.Level
+import java.time.Duration
+import java.time.LocalDateTime.now
+import java.util.UUID.randomUUID
 
 class NettyServer(
     override val address: ServerAddress,
@@ -80,6 +70,21 @@ class NettyServer(
         withContext(IO) {
             stop(1, 1)
         }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as NettyServer
+
+        if (address != other.address) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return address.hashCode()
+    }
 }
 
 private fun NettyAppEngine(
@@ -149,7 +154,7 @@ private suspend fun processIncomingFrame(
                 )
             }
         } catch (e: Throwable) {
-            events.emit(OperationException(e))
+            events.emit(OperationException(PacketDecodeException("Couldn't decode client packet", e)))
         }
     }
 

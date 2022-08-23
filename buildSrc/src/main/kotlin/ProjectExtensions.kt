@@ -55,13 +55,17 @@ fun Project.sourceSetDir(
 
 fun KotlinMultiplatformExtension.optIn(
     vararg annotationNames: String
-) = optIn(listOf(*annotationNames))
+) {
+    optIn(listOf(*annotationNames))
+}
 
 fun KotlinMultiplatformExtension.optIn(
     annotationNames: Iterable<String>
-) = sourceSets.all {
-    languageSettings {
-        annotationNames.forEach(::optIn)
+) {
+    sourceSets.all {
+        languageSettings {
+            annotationNames.forEach(::optIn)
+        }
     }
 }
 

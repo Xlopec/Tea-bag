@@ -19,137 +19,151 @@ package io.github.xlopec.tea.time.travel.plugin.feature.notification
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
-import io.github.xlopec.tea.time.travel.plugin.integration.Command
-import io.github.xlopec.tea.time.travel.plugin.integration.InternalException
-import io.github.xlopec.tea.time.travel.plugin.integration.NotificationMessage
-import io.github.xlopec.tea.time.travel.plugin.integration.PluginException
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoStartServer
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoStopServer
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.DoStoreSettings
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.ComponentState
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.DebugState
-import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
-import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
-import io.github.xlopec.tea.time.travel.plugin.model.Value
-import io.github.xlopec.tea.time.travel.plugin.model.Server
-import io.github.xlopec.tea.time.travel.plugin.model.Started
-import io.github.xlopec.tea.time.travel.plugin.model.Starting
-import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
-import io.github.xlopec.tea.time.travel.plugin.model.appendSnapshot
-import io.github.xlopec.tea.time.travel.plugin.model.updateComponents
-import io.github.xlopec.tea.time.travel.plugin.integration.warnUnacceptableMessage
-import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.plugin.integration.*
+import io.github.xlopec.tea.time.travel.plugin.model.*
+import java.util.*
 
-internal fun updateForNotification(
+internal fun State.updateForNotificationMessage(
     message: NotificationMessage,
-    state: State
 ): Update<State, Command> =
-    when {
-        message is NotifyStarted -> toStartedState(message.server, state.settings)
-        message is NotifyStopped -> toStoppedState(state.settings)
-        message is AppendSnapshot && state is Started -> appendSnapshot(message, state)
-        message is StateApplied && state is Started -> applyState(message, state)
-        message is ComponentAttached && state is Started -> attachComponent(message, state)
-        message is ComponentImported && state is Started -> appendComponent(message, state)
-        message is OperationException -> recoverFromException(message, state)
-        else -> warnUnacceptableMessage(message, state)
+    when (message) {
+        is ServerStarted -> onStarted(message.server)
+        is ServerStopped -> onStopped()
+        is AppendSnapshot -> onAppendSnapshot(message)
+        // fixme this might not work
+        is StateDeployed -> onStateDeployed(message)
+        is ComponentAttached -> onComponentAttached(message)
+        is ComponentImportResult -> onComponentImportResult(message)
+        is ComponentExportResult -> onComponentExportResult(message)
+        is OperationException -> onOperationException(message)
+        else -> onUnhandledMessage(message)
     }
 
-private fun appendComponent(
-    message: ComponentImported,
-    state: Started
-): Update<State, Command> =
+private fun State.onComponentImportResult(
+    message: ComponentImportResult
+) = when (message) {
+    is ComponentImportFailure -> onComponentImportFailure(message)
+    is ComponentImportSuccess -> onComponentImportSuccess(message)
+}
+
+private fun State.onComponentImportFailure(
+    message: ComponentImportFailure
+) = command(
+    DoNotifyFileOperationFailure(
+        title = "Import failure",
+        description = formatExceptionDescription("Couldn't import session", message.exception, ". Check if file is valid"),
+        forFile = message.exception.forFile
+    )
+)
+
 // overwrite any existing session for now
-    // todo: show prompt dialog in future with options to merge, overwrite and cancel
-    state.updateComponents { mapping ->
-        mapping.put(message.sessionState.id, message.sessionState)
-    }.noCommand()
+// todo: show prompt dialog in future with options to merge, overwrite and cancel
+private fun State.onComponentImportSuccess(
+    message: ComponentImportSuccess,
+): Update<State, Command> =
+    debugger(debugger.attachComponent(message.sessionState.id, message.sessionState)) command DoNotifyFileOperationSuccess(
+        title = "Import success",
+        description = "Session \"${message.sessionState.id.value}\" were imported",
+        forFile = message.from,
+    )
 
-private fun toStartedState(
+private fun State.onComponentExportResult(
+    message: ComponentExportResult
+) = when (message) {
+    is ComponentExportFailure -> onExportFailure(message)
+    is ComponentExportSuccess -> onExportSuccess(message)
+}
+
+private fun State.onExportSuccess(
+    message: ComponentExportSuccess
+) = command(
+    DoNotifyFileOperationSuccess(
+        title = "Export success",
+        description = "Session \"${message.id.value}\" were exported",
+        forFile = message.file,
+    )
+)
+
+private fun State.onExportFailure(
+    message: ComponentExportFailure
+) = command(
+    DoNotifyFileOperationFailure(
+        title = "Export failure",
+        description = formatExceptionDescription("Failed to export \"${message.id.value}\"", message.exception),
+        forFile = message.exception.forFile
+    ),
+)
+
+private fun State.onStarted(
     server: Server,
-    settings: Settings
-): Update<Started, Command> =
-    Started(
-        settings,
-        DebugState(),
-        server
-    ).noCommand()
+) = copy(server = server).noCommand()
 
-private fun toStoppedState(
-    settings: Settings
-): Update<Stopped, Command> =
-    Stopped(settings).noCommand()
+private fun State.onStopped() = copy(server = null).noCommand()
 
-private fun appendSnapshot(
+private fun State.onAppendSnapshot(
     message: AppendSnapshot,
-    state: Started
-): Update<State, Command> {
+): Update<State, Command> = debugger(
+    debugger.appendSnapshot(
+        id = message.componentId,
+        snapshot = message.toSnapshot(),
+        newState = message.newState,
+    )
+).noCommand()
 
-    val snapshot = message.toSnapshot()
-    val updated = state.debugState.componentOrNew(message.componentId, message.newState)
-        .appendSnapshot(snapshot, message.newState)
-
-    return state.updateComponents { mapping -> mapping.put(updated.id, updated) }
-        .noCommand()
-}
-
-private fun attachComponent(
+// fixme we go through this flow even when we just apply state from debugger
+private fun State.onComponentAttached(
     message: ComponentAttached,
-    state: Started
-): Update<State, Command> {
-
-    val id = message.componentId
-    val currentState = message.state
-    val componentState = state.debugState.componentOrNew(id, currentState)
-        .appendSnapshot(message.toSnapshot(), currentState)
-
-    return state.updateComponents { mapping ->
-        mapping.put(
-            componentState.id,
-            componentState
+): Update<State, Command> =
+    debugger(
+        debugger.attachComponent(
+            id = message.id,
+            state = message.state,
+            snapshot = message.toSnapshot(),
         )
-    } command DoNotifyComponentAttached(id)
-}
+    ) command DoNotifyComponentAttached(id = message.id, isComponentReattached = message.id in debugger.componentIds)
 
-private fun applyState(
-    message: StateApplied,
-    state: Started
+private fun State.onStateDeployed(
+    message: StateDeployed,
 ): Update<State, Command> {
-
-    val component = state.debugState.components[message.componentId] ?: return state.noCommand()
+    val component = debugger.components[message.id] ?: return noCommand()
     val updated = component.copy(state = message.state)
 
-    return state.updateComponents { mapping -> mapping.put(updated.id, updated) }
-        .noCommand()
+    return debugger(debugger.updateComponent(updated.id, updated)).noCommand()
 }
 
-private fun recoverFromException(
+private fun State.onOperationException(
     message: OperationException,
-    state: State
 ): Update<State, Command> =
     when {
         isFatalProblem(message.exception, message.operation) -> notifyDeveloperException(message.exception)
-        message.operation is DoStartServer && state is Starting -> Stopped(state.settings) command DoNotifyOperationException(
-            message
-        )
-        else -> state command DoNotifyOperationException(message)
+        isManipulateServerException(message) -> onManipulateServerException(message)
+        else -> onNonFatalOperationException(message)
     }
+
+private fun isManipulateServerException(
+    message: OperationException
+) = message.operation is DoStartServer || message.operation is DoStopServer
+
+private fun State.onManipulateServerException(
+    message: OperationException
+) = copy(server = null) command DoNotifyOperationException(message)
+
+private fun State.onNonFatalOperationException(
+    message: OperationException
+) = this command DoNotifyOperationException(message)
 
 private fun isFatalProblem(
     th: PluginException,
-    op: Command?
+    op: Command?,
 ): Boolean =
     op is DoStopServer || op is DoStoreSettings || th is InternalException
 
 private fun AppendSnapshot.toSnapshot() = OriginalSnapshot(meta, message, newState, commands)
 
 private fun ComponentAttached.toSnapshot() = OriginalSnapshot(meta, null, state, commands)
-
-private fun DebugState.componentOrNew(
-    id: ComponentId,
-    state: Value
-) = components[id] ?: ComponentState(id, state)
 
 private fun DoNotifyOperationException(
     message: OperationException,
@@ -160,3 +174,11 @@ private fun notifyDeveloperException(cause: Throwable): Nothing =
         "Unexpected exception. Please, inform developers about the problem",
         cause
     )
+
+internal fun formatExceptionDescription(
+    prefix: String,
+    exception: PluginException,
+    suffix: String = "",
+) = "$prefix${exception.message?.toSanitizedString()?.let { ", caused by \"$it\"" } ?: ""}$suffix"
+
+private fun String.toSanitizedString() = replaceFirstChar { it.lowercase(Locale.ROOT) }

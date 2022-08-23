@@ -54,18 +54,22 @@ dependencyResolutionManagement {
     versionCatalogs {
 
         create("libs") {
-
+            // 2.0.2 breaks client
             version("ktor", "2.0.0")
-            version("coroutines", "1.6.1")
-            version("compose", "1.2.0-alpha04")
-            version("accompanist", "0.24.1-alpha")
+            version("coroutines", "1.6.2")
+            version("compose", "1.2.0-beta02")
+            version("accompanist", "0.24.9-beta")
             version("sqldelight", "1.5.3")
+            version("arrow", "1.0.1")
 
             // Testing
 
             library("junit", "junit:junit:4.13.2")
 
             library("kotlin-test", "org.jetbrains.kotlin", "kotlin-test")
+                .withoutVersion()
+
+            library("kotlin-test-annotations", "org.jetbrains.kotlin", "kotlin-test-annotations-common")
                 .withoutVersion()
 
             library("compose-test-junit", "androidx.compose.ui", "ui-test-junit4")
@@ -75,8 +79,6 @@ dependencyResolutionManagement {
                 .versionRef("compose")
 
             library("android-test-orchestrator", "androidx.test:orchestrator:1.4.1")
-
-            library("android-test-runner", "androidx.test:orchestrator:1.4.1")
 
             // Coroutines
 
@@ -148,9 +150,6 @@ dependencyResolutionManagement {
             library("ktor-client-logging", "io.ktor", "ktor-client-logging")
                 .versionRef("ktor")
 
-            library("ktor-client-gson", "io.ktor", "ktor-client-gson")
-                .versionRef("ktor")
-
             library("ktor-client-negotiation", "io.ktor", "ktor-client-content-negotiation")
                 .versionRef("ktor")
 
@@ -159,11 +158,11 @@ dependencyResolutionManagement {
 
             // Serialization
 
-            library("serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").version("1.3.2")
+            library("serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").version("1.3.3")
 
             // Multiplatform settings
 
-            library("settings-core", "com.russhwolf", "multiplatform-settings-no-arg").version("0.8.1")
+            library("settings-core", "com.russhwolf", "multiplatform-settings-no-arg").version("0.9")
 
             // Compose
 
@@ -197,7 +196,7 @@ dependencyResolutionManagement {
             library("compose-compiler", "androidx.compose.compiler", "compiler")
                 .versionRef("compose")
 
-            library("compose-activity", "androidx.activity:activity-compose:1.5.0-alpha03")
+            library("compose-activity", "androidx.activity:activity-compose:1.5.0-rc01")
 
             bundle(
                 "compose",
@@ -215,6 +214,14 @@ dependencyResolutionManagement {
                 )
             )
 
+            // Downloadable fonts
+
+            library("compose-fonts", "androidx.compose.ui", "ui-text-google-fonts").version("1.2.0-beta01")
+
+            // Splash screen
+
+            library("splashscreen", "androidx.core", "core-splashscreen").version("1.0.0-rc01")
+
             // Accompanist
 
             library("accompanist-swiperefresh", "com.google.accompanist", "accompanist-swiperefresh")
@@ -223,7 +230,8 @@ dependencyResolutionManagement {
             library("accompanist-flow-layout", "com.google.accompanist", "accompanist-flowlayout")
                 .versionRef("accompanist")
 
-            bundle("accompanist",
+            bundle(
+                "accompanist",
                 listOf(
                     "accompanist-swiperefresh",
                     "accompanist-flow-layout"
@@ -234,17 +242,13 @@ dependencyResolutionManagement {
 
             library("coil", "io.coil-kt:coil-compose:1.4.0")
 
-            // App compat
-
-            library("appcompat", "androidx.appcompat:appcompat:1.6.0-alpha01")
-
             // Collections
 
             library("collections-immutable", "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 
             // Atomicfu
 
-            library("atomicfu", "org.jetbrains.kotlinx:atomicfu:0.17.2")
+            library("atomicfu", "org.jetbrains.kotlinx:atomicfu:0.17.3")
 
             // Logging
 
@@ -253,6 +257,10 @@ dependencyResolutionManagement {
             // Gson
 
             library("gson", "com.google.code.gson:gson:2.9.0")
+
+            // Arrow Kt
+
+            library("arrow-core", "io.arrow-kt", "arrow-core").versionRef("arrow")
 
             // Sqldelight
 
@@ -264,6 +272,10 @@ dependencyResolutionManagement {
 
             library("sqldelight-driver-native", "com.squareup.sqldelight", "native-driver")
                 .versionRef("sqldelight")
+
+            // Desugaring
+
+            library("desugar-jdk", "com.android.tools", "desugar_jdk_libs").version("1.1.5")
         }
     }
 }

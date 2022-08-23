@@ -25,13 +25,13 @@
 
 package io.github.xlopec.reader.app.model
 
-import io.github.xlopec.reader.app.ImmutableType
+import androidx.compose.runtime.Immutable
 import io.github.xlopec.tea.data.Date
 import io.github.xlopec.tea.data.Url
 import kotlin.contracts.contract
 import kotlin.jvm.JvmInline
 
-@ImmutableType
+@Immutable
 data class Article(
     val url: Url,
     val title: Title,

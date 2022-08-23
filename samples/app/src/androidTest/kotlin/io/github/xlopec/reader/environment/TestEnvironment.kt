@@ -28,6 +28,7 @@ package io.github.xlopec.reader.environment
 
 import android.app.Application
 import androidx.compose.ui.test.IdlingResource
+import arrow.core.Either
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.AppModule
 import io.github.xlopec.reader.app.Environment
@@ -39,7 +40,6 @@ import io.github.xlopec.reader.app.feature.filter.FiltersModule
 import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.network.SourcesResponse
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
-import io.github.xlopec.tea.data.Either
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.DelayController
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -54,11 +54,11 @@ interface MockNewsApi : NewsApi, IdlingResource {
     )
 
     infix fun ArticlePredicate.yields(
-        result: Either<ArticleResponse, AppException>
+        result: Either<AppException, ArticleResponse>
     )
 
     fun yieldsSourcesResponse(
-        result: Either<SourcesResponse, AppException>
+        result: Either<AppException, SourcesResponse>
     )
 }
 

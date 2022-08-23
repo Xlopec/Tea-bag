@@ -4,19 +4,17 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.UpdateFilter
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.Filter
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.FilterOption
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.FilterOption.REGEX
-import io.github.xlopec.tea.time.travel.plugin.feature.component.model.FilterOption.WORDS
+import io.github.xlopec.tea.time.travel.plugin.model.Filter
+import io.github.xlopec.tea.time.travel.plugin.model.FilterOption
+import io.github.xlopec.tea.time.travel.plugin.model.FilterOption.REGEX
+import io.github.xlopec.tea.time.travel.plugin.model.FilterOption.WORDS
 import io.github.xlopec.tea.time.travel.plugin.ui.control.ValidatedTextField
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
@@ -39,7 +37,7 @@ internal fun FiltersHeader(
         ValidatedTextField(
             validated = filter.predicate,
             placeholder = "Filter properties, snapshots, etc.",
-            modifier = Modifier.weight(1f).heightIn(28.dp, TextFieldDefaults.MinHeight),
+            modifier = Modifier.weight(1f),
             onValueChange = { s ->
                 events(UpdateFilter(id, filter, s))
             }

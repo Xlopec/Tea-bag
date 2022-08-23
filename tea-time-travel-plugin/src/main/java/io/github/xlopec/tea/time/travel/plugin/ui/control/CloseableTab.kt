@@ -40,7 +40,6 @@ internal fun CloseableTab(
                 onClick = onClose
             ) {
                 Image(
-                    // colorFilter = if (enabled) null else ColorFilter.tint(DisabledTintColor),
                     painter = ActionIcons.Close,
                     contentDescription = "Close tab"
                 )

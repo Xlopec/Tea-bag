@@ -1,3 +1,5 @@
+import org.jetbrains.compose.compose
+
 /*
  * MIT License
  *
@@ -28,19 +30,24 @@ plugins {
     id("com.android.library")
     id("com.squareup.sqldelight")
     kotlin("plugin.serialization")
+    id("org.jetbrains.compose")
 }
 
 version = "1.0.0"
 
-tasks.withType<Test>().whenTaskAdded {
-    onlyIf { !isCiEnv }
+repositories {
+    maven {
+        url = JBComposeDevRepository
+    }
 }
 
 kotlin {
 
     optIn("kotlinx.serialization.ExperimentalSerializationApi", "io.github.xlopec.tea.core.ExperimentalTeaApi")
 
-    android()
+    android {
+        publishAllLibraryVariants()
+    }
 
     ios()
 
@@ -59,6 +66,7 @@ kotlin {
             dependencies {
                 api(project(":tea-core"))
                 api(project(":tea-data"))
+                api(libs.arrow.core)
                 api(libs.collections.immutable)
                 api(libs.coroutines.core)
                 implementation(libs.stdlib)
@@ -69,6 +77,7 @@ kotlin {
                 implementation(libs.serialization.core)
                 implementation(libs.settings.core)
                 implementation(libs.sqldelight.runtime)
+                implementation(compose.runtime)
             }
         }
 
@@ -82,12 +91,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.ktor.client.cio)
-                implementation(libs.ktor.client.gson)
-                implementation(libs.gson)
-                implementation(libs.compose.runtime)
                 implementation(libs.sqldelight.driver.android)
-                api(project(":tea-time-travel"))
-                api(project(":tea-time-travel-adapter-gson"))
             }
         }
 
@@ -109,12 +113,57 @@ kotlin {
     }
 }
 
+tasks.named<TestReport>("allTests").configure {
+    configureOutputLocation(testReportsDir("multiplatform"))
+}
+
+afterEvaluate {
+    tasks.withType<Test>().configureEach {
+        configureOutputLocation(testReportsDir(name, "html"), testReportsDir(name, "xml"))
+    }
+}
+
 android {
     compileSdk = 31
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdk = 23
+        minSdk = 21
         targetSdk = 31
+        consumerProguardFile("proguard-rules.pro")
+    }
+
+    sourceSets {
+
+        maybeCreate("remote")
+            .java.srcDirs("remote/kotlin", "main/kotlin")
+
+        maybeCreate("default")
+            .java.srcDirs("default/kotlin", "main/kotlin")
+    }
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    flavorDimensions += "remote"
+    productFlavors {
+
+        create("remote") {
+            dimension = "remote"
+        }
+
+        create("default") {
+            dimension = "remote"
+        }
+    }
+
+    dependencies {
+        remoteApi(project(":tea-time-travel"))
+        remoteApi(project(":tea-time-travel-adapter-gson"))
+        remoteImplementation(libs.gson)
+        coreLibraryDesugaring(libs.desugar.jdk)
     }
 }
 

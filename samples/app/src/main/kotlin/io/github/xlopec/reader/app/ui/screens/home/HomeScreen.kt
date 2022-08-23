@@ -138,7 +138,8 @@ fun HomeScreen(
                 } else {
                     content(innerPadding)
                 }
-            })
+            }
+        )
     }
 }
 
@@ -169,7 +170,8 @@ fun HomeScreen(
                 settings = state.settings,
                 onMessage = onMessage
             )
-        })
+        }
+    )
 }
 
 @Composable
@@ -203,32 +205,35 @@ fun BottomBar(
             onClick = { handler(item === Feed, NavigateToFeed) }
         )
 
-        BottomNavigationItem(icon = {
-            Icon(
-                imageVector = Outlined.FavoriteBorder,
-                contentDescription = "Favorite"
-            )
-        },
+        BottomNavigationItem(
+            icon = {
+                Icon(
+                    imageVector = Outlined.FavoriteBorder,
+                    contentDescription = "Favorite"
+                )
+            },
             selected = item === Favorite,
             onClick = { handler(item === Favorite, NavigateToFavorite) }
         )
 
-        BottomNavigationItem(icon = {
-            Icon(
-                imageVector = Filled.TrendingUp,
-                contentDescription = "Trending"
-            )
-        },
+        BottomNavigationItem(
+            icon = {
+                Icon(
+                    imageVector = Filled.TrendingUp,
+                    contentDescription = "Trending"
+                )
+            },
             selected = item === Trending,
             onClick = { handler(item === Trending, NavigateToTrending) }
         )
 
-        BottomNavigationItem(icon = {
-            Icon(
-                imageVector = Filled.Settings,
-                contentDescription = "Settings"
-            )
-        },
+        BottomNavigationItem(
+            icon = {
+                Icon(
+                    imageVector = Filled.Settings,
+                    contentDescription = "Settings"
+                )
+            },
             selected = item === Settings,
             onClick = { handler(item === Settings, NavigateToSettings) }
         )

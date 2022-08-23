@@ -27,6 +27,7 @@ package io.github.xlopec.reader.app.feature.filter
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.FilterUpdated
 import io.github.xlopec.reader.app.ScreenId
+import io.github.xlopec.reader.app.feature.article.list.Page
 import io.github.xlopec.reader.app.misc.toException
 import io.github.xlopec.reader.app.misc.toIdle
 import io.github.xlopec.reader.app.model.Filter
@@ -91,7 +92,7 @@ private fun FiltersState.onSourcesLoadException(
 
 private fun FiltersState.onSourcesLoaded(
     sources: ImmutableList<Source>,
-) = copy(sourcesState = sourcesState.toIdle(sources)).noCommand()
+) = copy(sourcesState = sourcesState.toIdle(Page(sources))).noCommand()
 
 private fun FiltersState.onLoaded(
     suggestions: ImmutableList<Query>,

@@ -36,15 +36,15 @@ plugins {
 
 repositories {
     maven {
-        setUrl("https://repo1.maven.org/maven2/")
+        url = JBComposeDevRepository
     }
 }
 
 val supportedVersions = listOf(
-    IDEVersion(Product.IC, 2021, 1),
     IDEVersion(Product.IC, 2021, 2),
     IDEVersion(Product.IC, 2021, 3),
     IDEVersion(Product.IC, 2022, 1),
+    IDEVersion(Product.IC, 2022, 2),
 )
 
 intellij {
@@ -91,29 +91,51 @@ val allTests by tasks.creating(Task::class) {
     dependsOn("test")
 }
 
-tasks.withType<Test>().all {
-    reports {
-        html.outputLocation.set(htmlTestReportsDir)
-        junitXml.outputLocation.set(xmlTestReportsDir)
+optIn(
+    "kotlinx.coroutines.ExperimentalCoroutinesApi",
+    "androidx.compose.ui.ExperimentalComposeUiApi",
+    "io.github.xlopec.tea.core.ExperimentalTeaApi",
+)
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.freeCompilerArgs += listOf("-Xcontext-receivers")
+
+    if (project.findProperty("enableComposeCompilerLogs").toString().toBoolean()) {
+        kotlinOptions.freeCompilerArgs += listOf(
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${project.metricsDir.absolutePath}",
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${project.metricsDir.absolutePath}",
+        )
     }
 }
 
-optIn(
-    "kotlinx.coroutines.ExperimentalCoroutinesApi",
-    "io.githux.xlopec.tea.core.ExperimentalTeaApi",
-)
-
 sourceSets {
+
     main {
         resources {
             srcDir("resources")
         }
     }
+
+    test {
+        java {
+            setSrcDirs(listOf("src/test/integration/kotlin", "src/test/unit/kotlin"))
+        }
+    }
 }
+
+fun shouldUseForcedCoroutinesVersion(
+    configuration: Configuration,
+    details: DependencyResolveDetails,
+): Boolean =
+    !configuration.name.startsWith("test") &&
+            details.requested.group == "org.jetbrains.kotlinx" &&
+            details.requested.module.name.startsWith("kotlinx-coroutines")
 
 configurations.configureEach {
     resolutionStrategy.eachDependency {
-        if (requested.group == "org.jetbrains.kotlinx" && requested.module.name.startsWith("kotlinx-coroutines")) {
+        if (shouldUseForcedCoroutinesVersion(this@configureEach, this@eachDependency)) {
             val forcedVersion = "1.5.2"
             useVersion(forcedVersion)
             // https://www.jetbrains.com/legal/third-party-software/?product=iic&version=2022.1
@@ -136,10 +158,25 @@ dependencies {
 
     implementation(libs.stdlib)
     implementation(libs.stdlib.reflect)
+    implementation(libs.arrow.core)
 
-    implementation(compose.desktop.currentOs) {
+    // FIXME this is a temporary workaround
+    implementation(compose.desktop.macos_arm64) {
         exclude("org.jetbrains.compose.material")
     }
+    implementation(compose.desktop.macos_x64) {
+        exclude("org.jetbrains.compose.material")
+    }
+    implementation(compose.desktop.linux_x64) {
+        exclude("org.jetbrains.compose.material")
+    }
+    implementation(compose.desktop.linux_arm64) {
+        exclude("org.jetbrains.compose.material")
+    }
+    implementation(compose.desktop.windows_x64) {
+        exclude("org.jetbrains.compose.material")
+    }
+
     @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
     implementation(compose.desktop.components.splitPane)
     implementation("com.bybutter.compose:compose-jetbrains-theme")
@@ -150,6 +187,8 @@ dependencies {
     implementation(libs.collections.immutable)
 
     testImplementation(libs.ktor.server.tests)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.kotlin.test)
     testImplementation(project(":tea-test"))
-    testImplementation("io.kotlintest:kotlintest-assertions:3.4.2")
+    testImplementation(compose("org.jetbrains.compose.ui:ui-test-junit4"))
 }

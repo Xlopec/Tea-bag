@@ -51,7 +51,7 @@ public sealed interface Snapshot<out M, out S, out C> {
  */
 public data class Initial<out S, out C>(
     override val currentState: S,
-    override val commands: Set<C>
+    override val commands: Set<C> = setOf(),
 ) : Snapshot<Nothing, S, C>
 
 /**
@@ -71,7 +71,7 @@ public data class Regular<out M, out S, out C>(
     /**
      * Message that triggered state update
      */
-    val message: M
+    val message: M,
 ) : Snapshot<M, S, C>
 
 /**

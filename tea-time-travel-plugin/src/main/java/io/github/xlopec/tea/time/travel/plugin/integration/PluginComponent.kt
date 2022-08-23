@@ -19,40 +19,35 @@
 package io.github.xlopec.tea.time.travel.plugin.integration
 
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.debug
 import com.intellij.openapi.diagnostic.trace
-import io.github.xlopec.tea.core.Component
-import io.github.xlopec.tea.core.Initial
-import io.github.xlopec.tea.core.Initializer
-import io.github.xlopec.tea.core.Interceptor
-import io.github.xlopec.tea.core.Regular
-import io.github.xlopec.tea.core.Snapshot
-import io.github.xlopec.tea.core.with
+import io.github.xlopec.tea.core.*
+import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.util.PluginId
 import io.github.xlopec.tea.time.travel.plugin.util.settings
-import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.Stopped
 import kotlinx.coroutines.Dispatchers.IO
-import com.intellij.openapi.diagnostic.Logger as PlatformLogger
+
+internal val PluginLogger = Logger.getInstance(PluginId)
 
 fun PluginComponent(
     environment: Environment,
-    properties: PropertiesComponent,
+    initializer: Initializer<State, Command>,
 ): Component<Message, State, Command> =
     Component<Message, Command, State>(
-        initializer = AppInitializer(properties),
+        initializer = initializer,
         resolver = { c, ctx -> with(environment) { resolve(c, ctx) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment
-    ).with(Logger(PlatformLogger.getInstance(PluginId)))
+    ).with(LoggerInterceptor(PluginLogger))
 
-private fun AppInitializer(
-    properties: PropertiesComponent
+fun AppInitializer(
+    properties: PropertiesComponent,
 ): Initializer<State, Command> =
-    Initializer(IO) { Initial(Stopped(properties.settings), emptySet()) }
+    Initializer(IO) { Initial(State(properties.settings)) }
 
-private fun Logger(
-    logger: PlatformLogger
+private fun LoggerInterceptor(
+    logger: Logger,
 ): Interceptor<Message, State, Command> =
     { snapshot ->
         logger.info(snapshot.infoMessage)
@@ -73,9 +68,11 @@ private val Snapshot<*, *, *>.infoMessage: String
 
 private val Snapshot<*, *, *>.debugMessage: String
     get() = when (this) {
-        is Initial -> "Init class=${currentState?.javaClass}" +
-                if (commands.isEmpty()) "" else ", commands=${commands.joinToString { it?.javaClass.toString() }}"
-        is Regular -> """
+        is Initial ->
+            "Init class=${currentState?.javaClass}" +
+                    if (commands.isEmpty()) "" else ", commands=${commands.joinToString { it?.javaClass.toString() }}"
+        is Regular ->
+            """
         Regular with new state=${currentState?.javaClass},
         prev state=${previousState?.javaClass},
         caused by message=${message?.javaClass}
@@ -85,9 +82,10 @@ private val Snapshot<*, *, *>.debugMessage: String
 
 private val Snapshot<*, *, *>.traceMessage: String
     get() = when (this) {
-        is Initial -> "Init with state=$currentState" +
-                if (commands.isEmpty()) "" else ", commands=$commands"
-        is Regular -> """
+        is Initial ->
+            "Init with state=$currentState ${if (commands.isEmpty()) "" else ", commands=$commands}"}"
+        is Regular ->
+            """
         Regular with new state=$currentState,
         previousState state=$previousState,
         caused by message=$message

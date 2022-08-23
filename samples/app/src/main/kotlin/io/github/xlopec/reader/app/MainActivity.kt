@@ -25,20 +25,21 @@
 package io.github.xlopec.reader.app
 
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
+import android.view.Window
 import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
 import io.github.xlopec.reader.R
 import io.github.xlopec.reader.app.command.CloseApp
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.feature.settings.SystemDarkModeChanged
 import io.github.xlopec.reader.app.ui.screens.AppView
 import io.github.xlopec.tea.core.ExperimentalTeaApi
+import io.github.xlopec.tea.core.subscribeIn
 import io.github.xlopec.tea.core.toCommandsFlow
 import io.github.xlopec.tea.core.toStatesComponent
-import io.github.xlopec.tea.core.subscribeIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -46,21 +47,20 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
+class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
 
     private val systemDarkModeChanges = MutableSharedFlow<SystemDarkModeChanged>()
 
     @OptIn(ExperimentalTeaApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_NewsReader)
+        setTheme(R.style.NewsReader)
         super.onCreate(savedInstanceState)
-        // todo migrate at some point in the future
-        @Suppress("DEPRECATION")
-        window.setFlags(FLAG_TRANSLUCENT_STATUS, FLAG_TRANSLUCENT_STATUS)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.setupAppWindow()
+
+        val statesComponent = component.toStatesComponent()
 
         setContent {
-            AppView(component.toStatesComponent())
+            AppView(statesComponent)
         }
 
         launch {
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 .collect { finishAfterTransition() }
         }
 
-        component.toStatesComponent().subscribeIn(systemDarkModeChanges, this)
+        statesComponent.subscribeIn(systemDarkModeChanges, this)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -87,3 +87,13 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
 private val Collection<Command>.hasCloseCommand: Boolean
     get() = CloseApp in this
+
+private fun Window.setupAppWindow() {
+    // todo migrate at some point in the future
+    @Suppress("DEPRECATION")
+    setFlags(FLAG_TRANSLUCENT_STATUS, FLAG_TRANSLUCENT_STATUS)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        setDecorFitsSystemWindows(false)
+    }
+}

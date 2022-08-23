@@ -30,13 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.misc.*
-import io.github.xlopec.reader.app.model.Article
-import io.github.xlopec.reader.app.model.Author
-import io.github.xlopec.reader.app.model.Description
-import io.github.xlopec.reader.app.model.Filter
-import io.github.xlopec.reader.app.model.FilterType
-import io.github.xlopec.reader.app.model.Query
-import io.github.xlopec.reader.app.model.Title
+import io.github.xlopec.reader.app.model.*
 import io.github.xlopec.reader.app.ui.misc.ColumnMessage
 import io.github.xlopec.reader.app.ui.screens.article.ArticleActions
 import io.github.xlopec.reader.app.ui.screens.article.ArticleItem
@@ -44,10 +38,10 @@ import io.github.xlopec.reader.app.ui.screens.article.ArticleSearchHeader
 import io.github.xlopec.reader.app.ui.screens.article.ArticlesScreen
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
 import io.github.xlopec.tea.data.now
-import java.net.URL
-import java.util.UUID
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import java.net.URI
+import java.util.*
 
 @Composable
 @Preview("Articles search input field")
@@ -171,7 +165,7 @@ private fun ArticlesState(
 ) = ArticlesState(UUID.randomUUID(), Filter(type, Query.of("input")), Loadable(articles, false, loadableState))
 
 private val PreviewArticle = Article(
-    url = URL("https://www.google.com"),
+    url = URI("https://www.google.com"),
     title = Title("Jetpack Compose app"),
     author = Author("Max Oliinyk"),
     description = Description(
@@ -182,14 +176,14 @@ private val PreviewArticle = Article(
     ),
     published = now(),
     isFavorite = true,
-    urlToImage = URL("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png"),
+    urlToImage = URI("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png"),
     source = null
 )
 
 private val PreviewArticles = persistentListOf(
-    PreviewArticle.copy(url = URL("https://miro.medium.com/1")),
-    PreviewArticle.copy(url = URL("https://miro.medium.com/2")),
-    PreviewArticle.copy(url = URL("https://miro.medium.com/3"))
+    PreviewArticle.copy(url = URI("https://miro.medium.com/1")),
+    PreviewArticle.copy(url = URI("https://miro.medium.com/2")),
+    PreviewArticle.copy(url = URI("https://miro.medium.com/3"))
 )
 
 private val ListState = LazyListState(firstVisibleItemIndex = 0, firstVisibleItemScrollOffset = 5)

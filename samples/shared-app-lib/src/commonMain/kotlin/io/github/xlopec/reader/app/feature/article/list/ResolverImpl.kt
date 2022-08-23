@@ -26,21 +26,14 @@
 
 package io.github.xlopec.reader.app.feature.article.list
 
-import io.github.xlopec.reader.app.AppException
-import io.github.xlopec.reader.app.Log
-import io.github.xlopec.reader.app.Message
-import io.github.xlopec.reader.app.ScreenMessage
+import arrow.core.Either
+import io.github.xlopec.reader.app.*
 import io.github.xlopec.reader.app.feature.network.ArticleElement
 import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import io.github.xlopec.reader.app.misc.mapToPersistentList
 import io.github.xlopec.reader.app.model.Article
-import io.github.xlopec.reader.app.model.FilterType.Favorite
-import io.github.xlopec.reader.app.model.FilterType.Regular
-import io.github.xlopec.reader.app.model.FilterType.Trending
-import io.github.xlopec.reader.app.effect
-import io.github.xlopec.tea.data.Either
-import io.github.xlopec.tea.data.fold
+import io.github.xlopec.reader.app.model.FilterType.*
 import kotlinx.collections.immutable.ImmutableList
 
 fun interface ShareArticle {
@@ -64,8 +57,12 @@ class ArticlesResolverImpl<Env>(
             is DoLoadArticles -> loadArticles(command)
             is DoSaveArticle -> storeArticle(command.article)
             is DoRemoveArticle -> removeArticle(command.article)
-            is DoShareArticle -> { shareDelegate.share(command.article); emptySet() }
-            is DoStoreFilter -> { storeFilter(command.filter); emptySet() }
+            is DoShareArticle -> {
+                shareDelegate.share(command.article); emptySet()
+            }
+            is DoStoreFilter -> {
+                storeFilter(command.filter); emptySet()
+            }
             is DoLoadFilter -> command effect { FilterLoaded(id, findFilter(type)) }
         }
 }
@@ -99,11 +96,11 @@ private suspend fun LocalStorage.removeArticle(
 }
 
 private suspend fun LocalStorage.toArticlesMessage(
-    either: Either<ArticleResponse, AppException>,
+    either: Either<AppException, ArticleResponse>,
     command: DoLoadArticles,
 ) = either.fold(
-    left = { setOf(ArticlesLoaded(command.id, toPage(it, command.paging))) },
-    right = { setOf(ArticlesOperationException(command.id, it), Log(it, command, command.id)) }
+    { setOf(ArticlesLoadException(command.id, it), Log(it, command, command.id)) },
+    { setOf(ArticlesLoaded(command.id, toPage(it, command.paging))) },
 )
 
 private suspend fun LocalStorage.toPage(

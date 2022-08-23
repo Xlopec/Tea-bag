@@ -26,7 +26,6 @@ package io.github.xlopec.reader.app.misc
 
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.feature.article.list.Page
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -67,7 +66,7 @@ val Loadable<*>.isRefreshing: Boolean
     get() = loadableState === Refreshing
 
 val Loadable<*>.isIdle: Boolean
-    get() = loadableState === Idle
+    get() = loadableState === Idle || isException
 
 val Loadable<*>.isException: Boolean
     get() = loadableState is Exception
@@ -76,30 +75,26 @@ inline fun <T> Loadable<T>.updated(
     how: PersistentList<T>.() -> PersistentList<T>
 ) = copy(data = how(data))
 
-fun <T> Loadable<T>.toLoadingNext() =
-    copy(loadableState = LoadingNext)
+fun <T> Loadable<T>.toLoadingNext(): Loadable<T> {
+    checkCanLoadNextPage()
+    return copy(loadableState = LoadingNext)
+}
 
-fun <T> Loadable<T>.toLoading() =
+fun <T> Loadable<T>.toLoading(): Loadable<T> =
     copy(loadableState = Loading)
 
-fun <T> Loadable<T>.toRefreshing() =
+fun <T> Loadable<T>.toRefreshing(): Loadable<T> =
     copy(loadableState = Refreshing)
-
-fun <T> Loadable<T>.toIdle(
-    data: ImmutableList<T>,
-) = toIdle(Page(data = data, hasMore = false))
 
 fun <T> Loadable<T>.toIdle(
     page: Page<T>,
 ): Loadable<T> =
     when (loadableState) {
-        LoadingNext, is Exception -> {
-            copy(
-                data = data.addAll(page.data),
-                loadableState = Idle,
-                hasMore = page.hasMore
-            )
-        }
+        LoadingNext, is Exception -> copy(
+            data = data.addAll(page.data),
+            loadableState = Idle,
+            hasMore = page.hasMore
+        )
         Loading, Refreshing -> copy(
             data = page.data.toPersistentList(),
             loadableState = Idle,
@@ -110,4 +105,18 @@ fun <T> Loadable<T>.toIdle(
 
 fun <T> Loadable<T>.toException(
     cause: AppException,
-) = copy(loadableState = Exception(cause))
+): Loadable<T> =
+    when (loadableState) {
+        LoadingNext, is Exception, Idle -> copy(loadableState = Exception(cause))
+        Loading, Refreshing -> Loadable(
+            data = persistentListOf(),
+            loadableState = Exception(cause),
+            hasMore = false
+        )
+    }
+
+private fun Loadable<*>.checkCanLoadNextPage() {
+    require(data.isNotEmpty()) {
+        "$this doesn't contain items and thus LoadingNext transition is prohibited. Request full reload instead"
+    }
+}

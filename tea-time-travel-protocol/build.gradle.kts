@@ -23,7 +23,7 @@
  */
 
 plugins {
-    `published-multiplatform-library`
+    `published-multiplatform-library-convention`
 }
 
 kotlin {

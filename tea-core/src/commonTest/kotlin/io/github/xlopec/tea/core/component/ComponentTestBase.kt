@@ -48,7 +48,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.yield
 
 abstract class ComponentTestBase(
-    val factory: (env: Env<Char, String, Char>) -> Component<Char, String, Char>
+    val factory: (env: Env<Char, String, Char>) -> Component<Char, String, Char>,
 ) {
 
     @Test
@@ -169,7 +169,9 @@ abstract class ComponentTestBase(
             val actualSnapshots2 = snapshots2Deferred.await()
 
             assertContentEquals(
-                expectedSnapshots, actualSnapshots1, """
+                expectedSnapshots,
+                actualSnapshots1,
+                """
             snapshots1: $actualSnapshots1
             snapshots2: $actualSnapshots2
             expected: $expectedSnapshots
@@ -285,25 +287,29 @@ abstract class ComponentTestBase(
             val actualSnapshots2 = snapshots2Deferred.await()
             // performance gain is miserable for this case
             @Suppress("ConvertArgumentToSet")
-            (assertContentEquals(
-        expectedSnapshots, actualSnapshots1, """
+            assertContentEquals(
+                expectedSnapshots,
+                actualSnapshots1,
+                """
             snapshots1: $actualSnapshots1
             snapshots2: $actualSnapshots2
             expected: $expectedSnapshots
             diff: ${expectedSnapshots - actualSnapshots1}
             """.trimIndent()
-    ))
+            )
 
             // performance gain is miserable for this case
             @Suppress("ConvertArgumentToSet")
-            (assertContentEquals(
-        expectedSnapshots, actualSnapshots2, """
+            assertContentEquals(
+                expectedSnapshots,
+                actualSnapshots2,
+                """
             snapshots1: $actualSnapshots1
             snapshots2: $actualSnapshots2
             expected: $expectedSnapshots
             diff: ${expectedSnapshots - actualSnapshots2}
             """.trimIndent()
-    ))
+            )
         }
 
     @Test

@@ -19,8 +19,6 @@
 package io.github.xlopec.tea.time.travel.plugin.integration
 
 import io.github.xlopec.tea.core.ResolveCtx
-import io.github.xlopec.tea.core.effects
-import io.github.xlopec.tea.data.fold
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.NotificationResolver
 import io.github.xlopec.tea.time.travel.plugin.feature.server.ServerCommandResolver
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.StorageResolver
@@ -34,14 +32,12 @@ private class AppResolverImpl<Env> :
 
     override fun Env.resolve(
         command: Command,
-        ctx: ResolveCtx<Message>
+        ctx: ResolveCtx<Message>,
     ) {
-        ctx.effects {
-            when (command) {
-                is NotifyCommand -> resolve(command)
-                is ServerCommand -> resolveServerCommand(command)
-                is StoreCommand -> resolveStoreCommand(command)
-            }.fold(::setOfNotNull, ::setOf)
+        when (command) {
+            is NotifyCommand -> resolve(command)
+            is ServerCommand -> resolveServerCommand(command, ctx)
+            is StoreCommand -> resolveStoreCommand(command, ctx)
         }
     }
 }

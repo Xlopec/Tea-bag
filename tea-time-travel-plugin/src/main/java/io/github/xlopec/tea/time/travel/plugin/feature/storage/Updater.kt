@@ -4,28 +4,24 @@ import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.time.travel.plugin.integration.Command
 import io.github.xlopec.tea.time.travel.plugin.integration.StoreMessage
-import io.github.xlopec.tea.time.travel.plugin.model.Started
+import io.github.xlopec.tea.time.travel.plugin.integration.onUnhandledMessage
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.model.component
-import io.github.xlopec.tea.time.travel.plugin.integration.warnUnacceptableMessage
+import io.github.xlopec.tea.time.travel.plugin.model.componentOrThrow
 
-internal fun updateForStoreMessage(
+internal fun State.onUpdateForStoreMessage(
     message: StoreMessage,
-    state: State,
 ): Update<State, Command> = when {
-    message is ExportSessions && state is Started -> exportSessions(message, state)
-    message is ImportSession && state is Started -> importSession(message, state)
-    else -> warnUnacceptableMessage(message, state)
+    message is ExportSessions && debugger.components.isNotEmpty() -> onExportSessions(message)
+    message is ImportSession -> onImportSession(message)
+    else -> onUnhandledMessage(message)
 }
 
-internal fun importSession(
-    message: ImportSession,
-    state: Started
+internal fun State.onImportSession(
+    message: ImportSession
 ): Update<State, Command> =
-    state command DoImportSession(message.file)
+    this command DoImportSession(message.file)
 
-internal fun exportSessions(
-    message: ExportSessions,
-    state: Started
+internal fun State.onExportSessions(
+    message: ExportSessions
 ): Update<State, Command> =
-    state command DoExportSessions(message.dir, message.ids.map(state.debugState::component))
+    this command DoExportSessions(message.dir, message.ids.map(debugger::componentOrThrow))

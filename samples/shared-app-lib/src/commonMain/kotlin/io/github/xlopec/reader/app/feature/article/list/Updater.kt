@@ -30,9 +30,7 @@ import io.github.xlopec.reader.app.feature.article.list.Paging.Companion.FirstPa
 import io.github.xlopec.reader.app.misc.isIdle
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter
-import io.github.xlopec.reader.app.model.FilterType.Favorite
-import io.github.xlopec.reader.app.model.FilterType.Regular
-import io.github.xlopec.reader.app.model.FilterType.Trending
+import io.github.xlopec.reader.app.model.FilterType.*
 import io.github.xlopec.reader.app.model.toggleFavorite
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
@@ -42,11 +40,10 @@ fun ArticlesState.toArticlesUpdate(
     message: ArticlesMessage,
 ): Update<ArticlesState, Command> =
     when (message) {
-        is ArticlesLoaded -> toIdleUpdate(message.page)
+        is ArticlesLoadResult -> onLoadResult(message)
         is LoadNextArticles -> toLoadNextUpdate()
         is LoadArticles -> toLoadUpdate()
         is RefreshArticles -> toRefreshUpdate()
-        is ArticlesOperationException -> toOperationExceptionUpdate(message)
         is ToggleArticleIsFavorite -> toToggleFavoriteUpdate(message.article)
         is ArticleUpdated -> toUpdateAllArticlesUpdate(message.article)
         is OnShareArticle -> toShareArticleUpdate(message.article)
@@ -59,11 +56,18 @@ fun updateArticles(
     state: ArticlesState,
 ) = if (message.filter.type == state.filter.type) state.toFilterUpdate(message.filter) else state.noCommand()
 
-private fun ArticlesState.toOperationExceptionUpdate(
-    message: ArticlesOperationException,
+private fun ArticlesState.onLoadResult(
+    message: ArticlesLoadResult
+) = when (message) {
+    is ArticlesLoadException -> onLoadException(message)
+    is ArticlesLoaded -> onLoaded(message.page)
+}
+
+private fun ArticlesState.onLoadException(
+    message: ArticlesLoadException,
 ) = toException(message.cause).noCommand()
 
-private fun ArticlesState.toIdleUpdate(
+private fun ArticlesState.onLoaded(
     page: Page<Article>,
 ) = toIdle(page).noCommand()
 
@@ -82,7 +86,7 @@ private fun ArticlesState.toLoadUpdate(
 )
 
 private fun ArticlesState.toLoadNextUpdate() =
-    if (loadable.isIdle && loadable.hasMore && loadable.data.isNotEmpty() /*todo should we throw an error in this case?*/) {
+    if (loadable.isIdle && loadable.hasMore) {
         toLoadingNext() command toLoadCommand(nextPage())
     } else {
         // just ignore the command
