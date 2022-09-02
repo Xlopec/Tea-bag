@@ -50,8 +50,10 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.feature.filter.ClearSelection
@@ -61,6 +63,7 @@ import io.github.xlopec.reader.app.feature.filter.ToggleSourceSelection
 import io.github.xlopec.reader.app.misc.*
 import io.github.xlopec.reader.app.model.Source
 import io.github.xlopec.reader.app.ui.misc.RowMessage
+import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.toExternalValue
 
 @Composable
@@ -106,6 +109,7 @@ fun SourcesSection(
                     onClick = { handler(LoadSources(id)) }
                 )
             }
+
             Loading, Refreshing, Idle -> {
                 val infiniteTransition = rememberInfiniteTransition()
                 val alpha by infiniteTransition.animateFloat(
@@ -133,11 +137,13 @@ fun SourcesSection(
                         loadable == Idle && sources.data.isEmpty() -> emptySourceItems(
                             onClick = { handler(LoadSources(id)) }
                         )
+
                         loadable == Idle -> sourceItems(
                             sources = sources.data,
                             onClick = { handler(ToggleSourceSelection(id, it.id)) },
                             state = state
                         )
+
                         else -> shimmerSourceItems(alpha = alpha)
                     }
                 }
@@ -180,11 +186,7 @@ private fun LazyListScope.sourceItems(
 ) {
     items(sources, { it.id.value }) { source ->
         SourceItem(
-            painter = rememberImagePainter(
-                data = source.logo.toExternalValue(),
-            ) {
-                crossfade(true)
-            },
+            painter = source.logo.toAsyncImagePainter(),
             checked = source.id in state.filter.sources,
             contentDescription = source.name.value,
             onClick = { onClick(source) }
@@ -248,3 +250,11 @@ private fun ClearSelectionButton(
 }
 
 private val SourceImageSize = 60.dp
+
+@Composable
+private fun Url.toAsyncImagePainter() = rememberAsyncImagePainter(
+    ImageRequest.Builder(LocalContext.current)
+        .data(toExternalValue())
+        .crossfade(true)
+        .build()
+)

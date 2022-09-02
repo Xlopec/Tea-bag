@@ -45,12 +45,12 @@ android {
             keyAlias = getenvSafe("KEY_ALIAS")
         }
     }
-    compileSdk = 31
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "io.github.xlopec.news.reader"
         minSdk = 21
-        targetSdk = 31
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -88,7 +88,7 @@ android {
     }
 
     lint {
-        baseline(file("lint-baseline.xml"))
+        baseline = file("lint-baseline.xml")
     }
 
     buildFeatures {
@@ -154,6 +154,7 @@ dependencies {
     implementation(libs.compose.activity)
 
     implementation(libs.bundles.compose)
+    implementation(libs.compose.compiler)
     debugImplementation(libs.compose.tooling)
 
     implementation(libs.compose.fonts)
