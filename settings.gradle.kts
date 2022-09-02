@@ -216,7 +216,7 @@ dependencyResolutionManagement {
 
             // Downloadable fonts
 
-            library("compose-fonts", "androidx.compose.ui", "ui-text-google-fonts").version("1.2.0-beta01")
+            library("compose-fonts", "androidx.compose.ui", "ui-text-google-fonts").version("1.3.0-beta01")
 
             // Splash screen
 
