@@ -34,9 +34,9 @@ fun PluginComponent(
     environment: Environment,
     initializer: Initializer<State, Command>,
 ): Component<Message, State, Command> =
-    Component<Message, Command, State>(
+    Component(
         initializer = initializer,
-        resolver = { c, ctx -> with(environment) { resolve(c, ctx) } },
+        resolver = { snapshot, ctx -> with(environment) { resolve(snapshot, ctx) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment
     ).with(LoggerInterceptor(PluginLogger))

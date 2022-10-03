@@ -26,59 +26,54 @@
 
 package io.github.xlopec.tea.core.component
 
-import io.github.xlopec.tea.core.Component
-import io.github.xlopec.tea.core.Initial
-import io.github.xlopec.tea.core.Initializer
-import io.github.xlopec.tea.core.Regular
-import io.github.xlopec.tea.core.command
-import io.github.xlopec.tea.core.computeSnapshots
-import io.github.xlopec.tea.core.misc.NoOpResolver
-import io.github.xlopec.tea.core.misc.TestEnv
+import app.cash.turbine.test
+import io.github.xlopec.tea.core.*
 import io.github.xlopec.tea.core.misc.TestTimeoutMillis
+import io.github.xlopec.tea.core.misc.expectNoEventsAndCancel
 import io.github.xlopec.tea.core.misc.noOpSink
-import kotlin.test.Test
-import kotlin.test.assertContentEquals
+import io.github.xlopec.tea.core.misc.testEnv
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class ComponentTest : ComponentTestBase(::Component) {
 
     @Test
-    fun `when upstream receives new input then previous downstream is canceled`() =
-        runTest(dispatchTimeoutMs = TestTimeoutMillis) {
+    fun `when upstream receives new input then previous downstream is canceled`() = runTest(dispatchTimeoutMs = TestTimeoutMillis) {
+        val env = testEnv(
+            Initializer(""),
+            { _, _ -> },
+            { message: Char, state -> state command message }
+        )
 
-            val env = TestEnv(
-                Initializer(""),
-                NoOpResolver(),
-                { message, state -> state command message }
-            )
+        val lastInitial = Initial("b", setOf('e'))
 
-            val lastInitial = Initial("b", setOf('e'))
+        val initialStates = listOf(
+            Initial("", setOf('c')),
+            Initial("a", setOf('d')),
+            lastInitial
+        )
 
-            val initialStates = listOf(
-                Initial("", setOf('c')),
-                Initial("a", setOf('d')),
-                lastInitial
-            )
-
-            fun testInput(
-                input: Initial<String, Char>,
-            ) = input.commands.asFlow()
-                .onStart {
-                    if (input !== initialStates.last()) {
-                        delay(Long.MAX_VALUE)
-                    }
+        fun testInput(
+            input: Initial<String, Char>,
+        ) = input.commands.asFlow()
+            .onStart {
+                if (input !== initialStates.last()) {
+                    delay(Long.MAX_VALUE)
                 }
+            }
 
-            val actualStates = env.computeSnapshots(initialStates.asFlow(), ::noOpSink, ::testInput)
-                .toList()
-
+        env.computeSnapshots(initialStates.asFlow(), ::noOpSink, ::testInput).test {
             val (state, commands) = lastInitial
             val expectedStates = initialStates + Regular(state, commands, state, commands.first())
 
-            assertContentEquals(expectedStates, actualStates)
+            expectedStates.forEach { expectedState ->
+                assertEquals(expectedState, awaitItem())
+            }
+            expectNoEventsAndCancel()
         }
+    }
 }

@@ -26,16 +26,8 @@
 
 package io.github.xlopec.tea.core.misc
 
-import io.github.xlopec.tea.core.Component
-import io.github.xlopec.tea.core.Env
-import io.github.xlopec.tea.core.Initializer
-import io.github.xlopec.tea.core.ResolveCtx
-import io.github.xlopec.tea.core.Resolver
-import io.github.xlopec.tea.core.ShareOptions
-import io.github.xlopec.tea.core.ShareStateWhileSubscribed
-import io.github.xlopec.tea.core.Updater
-import io.github.xlopec.tea.core.invoke
-import io.github.xlopec.tea.core.noCommand
+import app.cash.turbine.ReceiveTurbine
+import io.github.xlopec.tea.core.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.abs
@@ -68,9 +60,9 @@ fun runTestCancellingChildren(
     job.cancelChildren()
 }
 
-fun <M, S, C> CoroutineScope.TestEnv(
+fun <M, S, C> CoroutineScope.testEnv(
     initializer: Initializer<S, C>,
-    resolver: Resolver<C, M>,
+    resolver: Resolver<M, S, C>,
     updater: Updater<M, S, C>,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ) = Env(
@@ -100,20 +92,14 @@ fun <M, S> CheckingUpdater(
     s.noCommand()
 }
 
-@Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
-suspend fun <C> NoOpResolver(): Resolver<C, Char> = object : Resolver<C, Char> {
-    override fun invoke(command: C, context: ResolveCtx<Char>) = Unit
-}
-
-val CharRange.size: Int
+internal val CharRange.size: Int
     get() = 1 + abs(last - first)
 
-suspend fun Component<Char, String, Char>.collectRanged(
+internal suspend fun Component<Char, String, Char>.collectRanged(
     messages: CharRange,
 ) = this(messages).take(messages.size + 1/*plus initial snapshot*/).collect()
 
-fun <T> ThrowingResolver() = object : Resolver<Any?, T> {
-    override fun invoke(command: Any?, context: ResolveCtx<T>) {
-        throw ComponentException("Unexpected command $command")
-    }
+internal suspend fun ReceiveTurbine<*>.expectNoEventsAndCancel() {
+    expectNoEvents()
+    cancel()
 }

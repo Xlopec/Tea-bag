@@ -28,27 +28,10 @@ package io.github.xlopec.tea.core
 
 import io.github.xlopec.tea.core.internal.mergeWith
 import io.github.xlopec.tea.core.internal.startFrom
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.RENDEZVOUS
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.*
 
 /**
  * Conceptually, component is a function that accepts [flow][Flow] of messages and returns [flow][Flow]
@@ -229,7 +212,7 @@ public fun <M> ((Flow<M>) -> Flow<*>).subscribeIn(
  */
 public fun <M, C, S> Component(
     initializer: Initializer<S, C>,
-    resolver: Resolver<C, M>,
+    resolver: Resolver<M, S, C>,
     updater: Updater<M, S, C>,
     scope: CoroutineScope,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
@@ -252,7 +235,7 @@ public fun <M, S, C> Component(
 
     fun messagesForInitialSnapshot(
         initial: Initial<S, C>,
-    ) = toMessagesFlow(initial.commands, input.receiveAsFlow())
+    ) = toMessagesFlow(initial, input.receiveAsFlow())
 
     val upstream = computeSnapshots(initial(), input::send, ::messagesForInitialSnapshot)
         .shareIn(scope, shareOptions)
@@ -317,13 +300,13 @@ public fun <M, S, C> Env<M, S, C>.computeSnapshots(
 ): Flow<Snapshot<M, S, C>> =
     // channel flow is for parallel decomposition
     channelFlow {
-        var current: Snapshot<M, S, C> = initial
+        var snapshot: Snapshot<M, S, C> = initial
         val context = ResolveCtx(sink, this@channelFlow)
 
         input
-            .map { message -> nextSnapshot(current, message) }
-            .onEach { regular -> current = regular }
-            .onEach { regular -> resolver.resolve(context, regular.commands) }
+            .map { message -> nextSnapshot(snapshot, message) }
+            .onEach { snapshot = it }
+            .onEach { resolver(it, context) }
             .collect(::send)
     }.startFrom(initial)
 
@@ -358,21 +341,16 @@ public fun <T> Flow<T>.shareIn(
  */
 @InternalTeaApi
 public fun <M, S, C> Env<M, S, C>.resolveAsFlow(
-    commands: Iterable<C>,
-): Flow<M> = channelFlow { resolver.resolve(ResolveCtx(::send, this), commands) }
+    snapshot: Snapshot<M, S, C>,
+): Flow<M> = channelFlow { resolver(snapshot, ResolveCtx(::send, this)) }
 
 /**
  * Merges messages flow produced by [initialCommands] and [messages] into single messages flow
  */
 private fun <M, S, C> Env<M, S, C>.toMessagesFlow(
-    initialCommands: Collection<C>,
+    snapshot: Snapshot<M, S, C>,
     messages: Flow<M>,
-): Flow<M> = resolveAsFlow(initialCommands).mergeWith(messages)
-
-private fun <M, C> Resolver<C, M>.resolve(
-    callContext: ResolveCtx<M>,
-    commands: Iterable<C>,
-) = commands.forEach { command -> this(command, callContext) }
+): Flow<M> = resolveAsFlow(snapshot).mergeWith(messages)
 
 private suspend fun <M, S, C> Env<M, S, C>.update(
     message: M,

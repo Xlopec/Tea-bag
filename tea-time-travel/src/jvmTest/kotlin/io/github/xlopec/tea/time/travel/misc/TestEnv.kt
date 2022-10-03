@@ -28,11 +28,6 @@ package io.github.xlopec.tea.time.travel.misc
 
 import com.google.gson.JsonElement
 import io.github.xlopec.tea.core.Env
-import io.github.xlopec.tea.core.Initializer
-import io.github.xlopec.tea.core.Resolver
-import io.github.xlopec.tea.core.ShareOptions
-import io.github.xlopec.tea.core.ShareStateWhileSubscribed
-import io.github.xlopec.tea.core.Updater
 import io.github.xlopec.tea.time.travel.component.DebugEnv
 import io.github.xlopec.tea.time.travel.component.Settings
 import io.github.xlopec.tea.time.travel.gson.GsonSerializer
@@ -40,8 +35,7 @@ import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
 import io.github.xlopec.tea.time.travel.session.Localhost
 import io.github.xlopec.tea.time.travel.session.SessionFactory
-import io.ktor.http.Url
-import kotlinx.coroutines.test.TestScope
+import io.ktor.http.*
 
 val TestComponentId = ComponentId("test")
 
@@ -59,19 +53,6 @@ fun <M, S> TestSettings(
     converter,
     url,
     sessionFactory
-)
-
-fun <M, S, C> TestScope.TestBaseEnv(
-    initializer: Initializer<S, C>,
-    resolver: Resolver<C, M>,
-    updater: Updater<M, S, C>,
-    shareOptions: ShareOptions = ShareStateWhileSubscribed,
-) = Env(
-    initializer,
-    resolver,
-    updater,
-    this,
-    shareOptions
 )
 
 fun <M, S, C> TestDebugEnv(

@@ -81,6 +81,8 @@ dependencyResolutionManagement {
 
             library("android-test-orchestrator", "androidx.test:orchestrator:1.4.1")
 
+            library("turbine", "app.cash.turbine:turbine:0.11.0")
+
             // Coroutines
 
             library("coroutines-core", "org.jetbrains.kotlinx", "kotlinx-coroutines-core")
