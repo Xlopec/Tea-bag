@@ -57,11 +57,11 @@ dependencyResolutionManagement {
             // 2.0.2 breaks client
             version("ktor", "2.0.0")
             version("coroutines", "1.6.4")
-            version("compose", "1.3.0-beta01")
+            version("compose", "1.3.0-beta03")
             version("compose-compiler", "1.3.0")
-            version("accompanist", "0.26.2-beta")
+            version("accompanist", "0.26.4-beta")
             version("sqldelight", "1.5.3")
-            version("arrow", "1.0.1")
+            version("arrow", "1.1.3")
 
             // Testing
 
@@ -197,7 +197,7 @@ dependencyResolutionManagement {
             library("compose-compiler", "androidx.compose.compiler", "compiler")
                 .versionRef("compose-compiler")
 
-            library("compose-activity", "androidx.activity:activity-compose:1.6.0-rc01")
+            library("compose-activity", "androidx.activity:activity-compose:1.6.0")
 
             bundle(
                 "compose",
@@ -240,7 +240,7 @@ dependencyResolutionManagement {
 
             // Coil
 
-            library("coil", "io.coil-kt:coil-compose:2.2.0")
+            library("coil", "io.coil-kt:coil-compose:2.2.2")
 
             // Collections
 

@@ -51,6 +51,10 @@ kotlin {
 
     ios()
 
+    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests::class.java) {
+        testRuns["test"].deviceId = "iPhone 14"
+    }
+
     cocoapods {
         summary = "Shared app lib with common code"
         homepage = "Link to the Shared Module homepage"
