@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
+
 /*
  * MIT License
  *
@@ -41,6 +43,10 @@ kotlin {
     }
 
     ios()
+
+    targets.withType(KotlinNativeTargetWithSimulatorTests::class.java) {
+        testRuns["test"].deviceId = "iPhone 14"
+    }
 }
 
 tasks.named<TestReport>("allTests").configure {
