@@ -61,6 +61,7 @@ kotlin {
         ios.deploymentTarget = "14.1"
         framework {
             baseName = "SharedAppLib"
+            isStatic = true
         }
         podfile = project.file("../iosApp/Podfile")
     }
