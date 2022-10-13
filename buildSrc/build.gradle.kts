@@ -61,7 +61,7 @@ dependencies {
     implementation("org.jetbrains.compose:compose-gradle-plugin:1.2.0")
     implementation("com.github.ben-manes:gradle-versions-plugin:0.42.0")
     implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
-    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.21.0")
+    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.20.0")
 
     testImplementation("junit:junit:4.13.2")
     // used for tests under buildSrc directory
