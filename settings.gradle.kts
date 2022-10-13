@@ -57,10 +57,10 @@ dependencyResolutionManagement {
             // 2.0.2 breaks client
             version("ktor", "2.0.0")
             version("coroutines", "1.6.4")
-            version("compose", "1.3.0-beta03")
+            version("compose", "1.3.0-rc01")
             version("compose-compiler", "1.3.2")
-            version("accompanist", "0.26.4-beta")
-            version("sqldelight", "1.5.3")
+            version("accompanist", "0.26.5-rc")
+            version("sqldelight", "1.5.4")
             version("arrow", "1.1.3")
 
             // Testing
@@ -197,7 +197,7 @@ dependencyResolutionManagement {
             library("compose-compiler", "androidx.compose.compiler", "compiler")
                 .versionRef("compose-compiler")
 
-            library("compose-activity", "androidx.activity:activity-compose:1.6.0")
+            library("compose-activity", "androidx.activity:activity-compose:1.7.0-alpha01")
 
             bundle(
                 "compose",
@@ -216,7 +216,7 @@ dependencyResolutionManagement {
 
             // Downloadable fonts
 
-            library("compose-fonts", "androidx.compose.ui", "ui-text-google-fonts").version("1.3.0-beta03")
+            library("compose-fonts", "androidx.compose.ui", "ui-text-google-fonts").version("1.3.0-rc01")
 
             // Splash screen
 
@@ -248,7 +248,7 @@ dependencyResolutionManagement {
 
             // Atomicfu
 
-            library("atomicfu", "org.jetbrains.kotlinx:atomicfu:0.18.3")
+            library("atomicfu", "org.jetbrains.kotlinx:atomicfu:0.18.4")
 
             // Logging
 
