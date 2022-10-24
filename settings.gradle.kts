@@ -57,7 +57,7 @@ dependencyResolutionManagement {
             // 2.0.2 breaks client
             version("ktor", "2.0.0")
             version("coroutines", "1.6.4")
-            version("compose", "1.3.0-rc01")
+            version("compose", "1.3.0")
             version("compose-compiler", "1.3.2")
             version("accompanist", "0.26.5-rc")
             version("sqldelight", "1.5.4")
@@ -159,7 +159,7 @@ dependencyResolutionManagement {
 
             // Serialization
 
-            library("serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").version("1.4.0")
+            library("serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").version("1.4.1")
 
             // Multiplatform settings
 
@@ -197,7 +197,7 @@ dependencyResolutionManagement {
             library("compose-compiler", "androidx.compose.compiler", "compiler")
                 .versionRef("compose-compiler")
 
-            library("compose-activity", "androidx.activity:activity-compose:1.7.0-alpha01")
+            library("compose-activity", "androidx.activity:activity-compose:1.7.0-alpha02")
 
             bundle(
                 "compose",
