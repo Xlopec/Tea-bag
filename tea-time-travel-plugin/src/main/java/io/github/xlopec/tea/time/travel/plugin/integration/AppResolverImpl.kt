@@ -19,9 +19,12 @@
 package io.github.xlopec.tea.time.travel.plugin.integration
 
 import io.github.xlopec.tea.core.ResolveCtx
+import io.github.xlopec.tea.core.Snapshot
+import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.NotificationResolver
 import io.github.xlopec.tea.time.travel.plugin.feature.server.ServerCommandResolver
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.StorageResolver
+import io.github.xlopec.tea.time.travel.plugin.model.State
 
 fun <Env> AppResolver(): AppResolver<Env> where Env : ServerCommandResolver,
                                                 Env : StorageResolver,
@@ -31,13 +34,15 @@ private class AppResolverImpl<Env> :
     AppResolver<Env> where Env : ServerCommandResolver, Env : StorageResolver, Env : NotificationResolver {
 
     override fun Env.resolve(
-        command: Command,
+        snapshot: Snapshot<Message, State, Command>,
         ctx: ResolveCtx<Message>,
     ) {
-        when (command) {
-            is NotifyCommand -> resolve(command)
-            is ServerCommand -> resolveServerCommand(command, ctx)
-            is StoreCommand -> resolveStoreCommand(command, ctx)
+        snapshot.commands.forEach { command ->
+            when (command) {
+                is NotifyCommand -> resolve(command)
+                is ServerCommand -> resolveServerCommand(command, ctx)
+                is StoreCommand -> resolveStoreCommand(command, ctx)
+            }
         }
     }
 }

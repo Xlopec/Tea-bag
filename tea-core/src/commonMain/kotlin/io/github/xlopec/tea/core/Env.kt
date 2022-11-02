@@ -40,7 +40,7 @@ import kotlinx.coroutines.CoroutineScope
  */
 public data class Env<M, S, C>(
     val initializer: Initializer<S, C>,
-    val resolver: Resolver<C, M>,
+    val resolver: Resolver<M, S, C>,
     val updater: Updater<M, S, C>,
     // todo: group to reduce number of arguments
     val scope: CoroutineScope,

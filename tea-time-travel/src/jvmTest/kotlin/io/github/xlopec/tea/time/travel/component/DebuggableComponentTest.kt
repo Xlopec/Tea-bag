@@ -24,124 +24,99 @@
 
 package io.github.xlopec.tea.time.travel.component
 
+import app.cash.turbine.test
 import com.google.gson.JsonElement
-import io.github.xlopec.tea.core.Env
-import io.github.xlopec.tea.core.Initial
-import io.github.xlopec.tea.core.Initializer
-import io.github.xlopec.tea.core.Regular
+import io.github.xlopec.tea.core.*
 import io.github.xlopec.tea.core.component.ComponentTestBase
-import io.github.xlopec.tea.core.invoke
-import io.github.xlopec.tea.core.misc.ThrowingResolver
 import io.github.xlopec.tea.core.misc.runTestCancellingChildren
-import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentAttached
 import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentSnapshot
-import io.github.xlopec.tea.time.travel.misc.TestComponentId
-import io.github.xlopec.tea.time.travel.misc.TestDebugEnv
-import io.github.xlopec.tea.time.travel.misc.TestDebugSession
-import io.github.xlopec.tea.time.travel.misc.TestSerializer
-import io.github.xlopec.tea.time.travel.misc.TestSettings
+import io.github.xlopec.tea.time.travel.misc.*
 import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toCollection
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import org.junit.Test
+import kotlin.test.*
 
 class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEnv(env)) }) {
 
     @Test
-    fun `test debuggable component throws expected exception when it can't connect to a server`() {
-        runTestCancellingChildren {
-            val exceptions = mutableListOf<Throwable>()
-            val env = Env<Char, String, Char>(
-                Initializer(""),
-                ThrowingResolver(),
-                { m, _ -> m.toString().noCommand() },
-                CoroutineScope(Job() + CoroutineExceptionHandler { _, th -> exceptions += th })
-            )
+    fun `test debuggable component throws expected exception when it can't connect to a server`() = runTestCancellingChildren {
+        val exceptions = mutableListOf<Throwable>()
+        val env = Env<Char, String, Char>(
+            Initializer(""),
+            { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
+            { m, _ -> m.toString().noCommand() },
+            CoroutineScope(Job() + CoroutineExceptionHandler { _, th -> exceptions += th })
+        )
 
-            runCatching {
+        runCatching {
 
-                val component = Component(
-                    TestDebugEnv(
-                        env = env,
-                        settings = TestSettings(sessionFactory = { _, _ -> throw ComponentException("Couldn't connect to debug server") })
-                    )
+            val component = Component(
+                TestDebugEnv(
+                    env = env,
+                    settings = TestSettings(sessionFactory = { _, _ -> throw ComponentException("Couldn't connect to debug server") })
                 )
-                val job = env.scope.launch { component(flowOf('a')).collect() }
+            )
+            val job = env.scope.launch { component(flowOf('a')).collect() }
 
-                job.join()
-            }
-
-            assertFalse(env.scope.isActive)
-            assertTrue(exceptions.isNotEmpty())
-            assertIs<ComponentException>(exceptions.first())
+            job.join()
         }
+
+        assertFalse(env.scope.isActive)
+        assertTrue(exceptions.isNotEmpty())
+        assertIs<ComponentException>(exceptions.first())
     }
 
     @Test
-    fun `test debuggable component sends the same sequence of events as the original component`() =
-        runTestCancellingChildren {
-
-            val testSession = TestDebugSession<Char, String>()
-            val component = Component(
-                TestDebugEnv(
-                    env = Env<Char, String, Char>(
-                        Initializer(""),
-                        ThrowingResolver(),
-                        { m, _ -> m.toString().noCommand() },
-                        this
-                    ),
-                    settings = TestSettings(
-                        sessionFactory = { _, block -> testSession.apply { block() } }
-                    )
+    fun `test debuggable component sends the same sequence of events as the original component`() = runTestCancellingChildren {
+        val testSession = TestDebugSession<Char, String>()
+        val component = Component(
+            TestDebugEnv(
+                env = Env<Char, String, Char>(
+                    Initializer(""),
+                    { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
+                    { m, _ -> m.toString().noCommand() },
+                    this
+                ),
+                settings = TestSettings(
+                    sessionFactory = { _, block -> testSession.apply { block() } }
                 )
             )
-            val messages = arrayOf('a', 'b', 'c')
-            val actual = component(*messages).take(messages.size + 1)
-                .toCollection(ArrayList(messages.size + 1))
+        )
+        val messages = arrayOf('a', 'b', 'c')
 
-            assertEquals(
-                listOf(
-                    Initial("", emptySet()),
-                    Regular("a", emptySet(), "", 'a'),
-                    Regular("b", emptySet(), "a", 'b'),
-                    Regular("c", emptySet(), "b", 'c')
-                ),
-                actual
-            )
+        component(*messages).take(messages.size + 1).test {
+            assertEquals(Initial("", emptySet()), awaitItem())
+            assertEquals(Regular("a", emptySet(), "", 'a'), awaitItem())
+            assertEquals(Regular("b", emptySet(), "a", 'b'), awaitItem())
+            assertEquals(Regular("c", emptySet(), "b", 'c'), awaitItem())
+            expectNoEvents()
+            cancel()
+        }
 
-            assertTrue(testSession.packets.isNotEmpty())
+        assertTrue(testSession.packets.isNotEmpty())
 
-            testSession.packets.forEachIndexed { index, elem ->
+        testSession.packets.forEachIndexed { index, elem ->
 
-                assertEquals(TestComponentId, elem.componentId)
+            assertEquals(TestComponentId, elem.componentId)
 
-                when (val payload = elem.payload) {
-                    is GsonNotifyComponentSnapshot -> {
-                        assertNotEquals(0, index)
-                        assertEquals(messages[index - 1], TestSerializer.fromJson(payload.message))
-                        assertEquals(messages[index - 1], TestSerializer.fromJson(payload.newState))
-                    }
+            when (val payload = elem.payload) {
+                is GsonNotifyComponentSnapshot -> {
+                    assertNotEquals(0, index)
+                    assertEquals(messages[index - 1], TestSerializer.fromJson(payload.message))
+                    assertEquals(messages[index - 1], TestSerializer.fromJson(payload.newState))
+                }
 
-                    is GsonNotifyComponentAttached -> {
-                        assertEquals(0, index)
-                        assertEquals("", TestSerializer.fromJson(payload.state))
-                    }
+                is GsonNotifyComponentAttached -> {
+                    assertEquals(0, index)
+                    assertEquals("", TestSerializer.fromJson(payload.state))
                 }
             }
         }
+    }
 }
 
 private inline fun <reified T : Any> JsonSerializer<JsonElement>.fromJson(
