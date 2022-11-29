@@ -46,7 +46,7 @@ fun navigate(
     debug: Boolean = true,
 ): Update<AppState, Command> {
 // gson serializer breaks singletons identity, thus we should rely on `is` check rather
-// then referential equality
+// than referential equality
     return when (nav) {
         is TabNavigation -> state.navigateToTab(nav, TabNavigation::toTabScreen)
         is NavigateToArticleDetails -> state.navigateToArticleDetails(nav)

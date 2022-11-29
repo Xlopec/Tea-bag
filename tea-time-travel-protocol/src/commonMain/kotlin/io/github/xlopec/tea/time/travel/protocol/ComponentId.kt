@@ -27,7 +27,7 @@ package io.github.xlopec.tea.time.travel.protocol
 import kotlin.jvm.JvmInline
 
 /**
- * Component identifier, it can be any non blank and non empty string
+ * Component identifier, it can be any non blank and non-empty string
  *
  * @param value raw identifier value
  */

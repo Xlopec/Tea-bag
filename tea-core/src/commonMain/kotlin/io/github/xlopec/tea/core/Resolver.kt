@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
  *
  * ### Exceptions
  *
- * Any exception that happens inside this function will redelivered to a [Component]'s scope and handled
+ * Any exception that happens inside this function will be delivered to a [Component]'s scope and handled
  * by it. For more information regarding error handling see [shareIn][kotlinx.coroutines.flow.shareIn]
  *
  */

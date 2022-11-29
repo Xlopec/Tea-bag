@@ -30,7 +30,7 @@ package io.github.xlopec.tea.core
  *
  * ### Exceptions
  *
- * Any exception that happens inside this function will redelivered to a [Component]'s scope and handled
+ * Any exception that happens inside this function will be delivered to a [Component]'s scope and handled
  * by it.
  *
  * @param M incoming messages
