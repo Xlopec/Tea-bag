@@ -41,7 +41,7 @@ val JBComposeDevRepository = URI("https://maven.pkg.jetbrains.space/public/p/com
 val isCiEnv: Boolean
     get() = getenvSafe("CI")?.toBoolean() == true
 
-val PluginReleaseChannels: Collection<String>
+val pluginReleaseChannels: Collection<String>
     get() = when (libraryVersion) {
         is Snapshot -> listOf("dev")
         is Alpha -> listOf("eap")

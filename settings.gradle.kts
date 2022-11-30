@@ -56,11 +56,12 @@ dependencyResolutionManagement {
         create("libs") {
             // 2.0.2 breaks client
             version("ktor", "2.0.0")
-            version("coroutines", "1.6.2")
-            version("compose", "1.2.0-beta02")
-            version("accompanist", "0.24.9-beta")
-            version("sqldelight", "1.5.3")
-            version("arrow", "1.0.1")
+            version("coroutines", "1.6.4")
+            version("compose", "1.3.0")
+            version("compose-compiler", "1.3.2")
+            version("accompanist", "0.26.5-rc")
+            version("sqldelight", "1.5.4")
+            version("arrow", "1.1.3")
 
             // Testing
 
@@ -79,6 +80,8 @@ dependencyResolutionManagement {
                 .versionRef("compose")
 
             library("android-test-orchestrator", "androidx.test:orchestrator:1.4.1")
+
+            library("turbine", "app.cash.turbine:turbine:0.11.0")
 
             // Coroutines
 
@@ -158,7 +161,7 @@ dependencyResolutionManagement {
 
             // Serialization
 
-            library("serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").version("1.3.3")
+            library("serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").version("1.4.1")
 
             // Multiplatform settings
 
@@ -194,9 +197,9 @@ dependencyResolutionManagement {
                 .versionRef("compose")
 
             library("compose-compiler", "androidx.compose.compiler", "compiler")
-                .versionRef("compose")
+                .versionRef("compose-compiler")
 
-            library("compose-activity", "androidx.activity:activity-compose:1.5.0-rc01")
+            library("compose-activity", "androidx.activity:activity-compose:1.7.0-alpha02")
 
             bundle(
                 "compose",
@@ -208,7 +211,6 @@ dependencyResolutionManagement {
                     "compose-icons",
                     "compose-runtime",
                     "compose-animation",
-                    "compose-compiler",
                     "compose-activity",
                     "compose-tooling-preview",
                 )
@@ -216,11 +218,11 @@ dependencyResolutionManagement {
 
             // Downloadable fonts
 
-            library("compose-fonts", "androidx.compose.ui", "ui-text-google-fonts").version("1.2.0-beta01")
+            library("compose-fonts", "androidx.compose.ui", "ui-text-google-fonts").version("1.3.0-rc01")
 
             // Splash screen
 
-            library("splashscreen", "androidx.core", "core-splashscreen").version("1.0.0-rc01")
+            library("splashscreen", "androidx.core", "core-splashscreen").version("1.0.0")
 
             // Accompanist
 
@@ -240,7 +242,7 @@ dependencyResolutionManagement {
 
             // Coil
 
-            library("coil", "io.coil-kt:coil-compose:1.4.0")
+            library("coil", "io.coil-kt:coil-compose:2.2.2")
 
             // Collections
 
@@ -248,15 +250,15 @@ dependencyResolutionManagement {
 
             // Atomicfu
 
-            library("atomicfu", "org.jetbrains.kotlinx:atomicfu:0.17.3")
+            library("atomicfu", "org.jetbrains.kotlinx:atomicfu:0.18.4")
 
             // Logging
 
-            library("logging", "ch.qos.logback:logback-classic:1.2.10")
+            library("logging", "ch.qos.logback:logback-classic:1.4.0")
 
             // Gson
 
-            library("gson", "com.google.code.gson:gson:2.9.0")
+            library("gson", "com.google.code.gson:gson:2.9.1")
 
             // Arrow Kt
 

@@ -10,8 +10,8 @@ import kotlinx.collections.immutable.persistentListOf
  * Represents state of a component under debug.
  *
  * Invariants:
- * * filteredSnapshots.size <= snapshots.size
- * * filteredSnapshots.ids in snapshots.ids
+ * * `filteredSnapshots.size <= snapshots.size`
+ * * `filteredSnapshots.ids in snapshots.ids`
  */
 @Immutable
 data class DebuggableComponent(

@@ -26,6 +26,7 @@ package io.github.xlopec.tea.core.misc
 
 import io.github.xlopec.tea.core.ResolveCtx
 import io.github.xlopec.tea.core.Resolver
+import io.github.xlopec.tea.core.Snapshot
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -33,23 +34,23 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ForeverWaitingResolver<T, M> : Resolver<T, M> {
+class ForeverWaitingResolver<M, S, C> : Resolver<M, S, C> {
 
-    private val _messages = Channel<T>()
+    private val _messages = Channel<Snapshot<M, S, C>>()
 
-    val messages: ReceiveChannel<T> = _messages
+    val messages: ReceiveChannel<Snapshot<M, S, C>> = _messages
 
-    override fun invoke(command: T, context: ResolveCtx<M>) {
+    override fun invoke(snapshot: Snapshot<M, S, C>, context: ResolveCtx<M>) {
         context.scope.launch {
             try {
                 delay(Long.MAX_VALUE)
             } finally {
                 withContext(NonCancellable) {
-                    _messages.send(command)
+                    _messages.send(snapshot)
                 }
             }
 
-            error("Improper cancellation, message=$command")
+            error("Improper cancellation, snapshot=$snapshot, resolve context=$context")
         }
     }
 }

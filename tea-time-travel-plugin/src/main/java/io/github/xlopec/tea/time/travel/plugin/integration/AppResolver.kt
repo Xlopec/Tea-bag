@@ -17,11 +17,13 @@
 package io.github.xlopec.tea.time.travel.plugin.integration
 
 import io.github.xlopec.tea.core.ResolveCtx
+import io.github.xlopec.tea.core.Snapshot
+import io.github.xlopec.tea.time.travel.plugin.model.State
 
 fun interface AppResolver<Env> {
 
     fun Env.resolve(
-        command: Command,
+        snapshot: Snapshot<Message, State, Command>,
         ctx: ResolveCtx<Message>
     )
 }

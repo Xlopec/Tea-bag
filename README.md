@@ -147,7 +147,7 @@ debugger (will try connecting to http://localhost:8080).
 - Re-implement client-server communication protocol from scratch
 - Migrate from gson to `kotlinx.serialization.json`
 - Release v1.0.0
-- Add Github Wiki
+- Add GitHub Wiki
 - Rework component builders and possibly replace it with some kind of DSL
 - Add keyboard shortcuts for plugin, consider improving plugin UX
 

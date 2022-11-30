@@ -26,7 +26,6 @@
 
 package io.github.xlopec.reader.app.ui.screens.article
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -47,13 +46,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.ScreenId
@@ -171,6 +172,7 @@ private fun LazyListScope.loadableContent(
                 message = loadableState.th.readableMessage,
                 onRetry = { onMessage(if (isEmpty) LoadArticles(id) else LoadNextArticles(id)) }
             )
+
         is Loading -> ArticlesProgress(modifier = Modifier.fillParentMaxSize())
         is LoadingNext -> ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
         is Idle, is Refreshing -> {
@@ -241,12 +243,8 @@ private fun ArticleImage(
     ) {
 
         if (imageUrl != null) {
-            Image(
-                painter = rememberImagePainter(
-                    data = imageUrl.toExternalValue(),
-                ) {
-                    crossfade(true)
-                },
+            AsyncImage(
+                model = imageUrl.toImageRequest(),
                 contentDescription = "Article's Image",
                 modifier = Modifier.fillMaxWidth(),
                 contentScale = ContentScale.Crop,
@@ -426,6 +424,12 @@ private fun FilterType.toEmptyStateDescription() =
         Regular, Trending -> "There are no articles matching search criteria"
         Favorite -> "There are no favorite articles. Let's add some"
     }
+
+@Composable
+private fun Url.toImageRequest() = ImageRequest.Builder(LocalContext.current)
+    .data(toExternalValue())
+    .crossfade(true)
+    .build()
 
 private val ArticlesState.hasDataToDisplay: Boolean
     get() = loadable.data.isNotEmpty() && !loadable.isLoading

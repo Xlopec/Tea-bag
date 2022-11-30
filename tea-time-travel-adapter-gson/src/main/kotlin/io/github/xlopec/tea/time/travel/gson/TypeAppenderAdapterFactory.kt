@@ -143,7 +143,7 @@ private fun shouldAddTypeLabel(
         returns(true) implies (src != null)
     }
     // check is needed in case custom adapter returns some default json object for
-    // null instance of T. Also, Map is serialized by Gson as json object and we want
+    // null instance of T. Also, Map is serialized by Gson as json object, and we want
     // to avoid adding type label to serialized Map json object
     return srcAsJson.isJsonObject && (src != null && src !is Map<*, *>)
 }

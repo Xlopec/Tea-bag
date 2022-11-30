@@ -73,7 +73,7 @@ tasks.named<PatchPluginXmlTask>("patchPluginXml") {
 
 tasks.named<PublishPluginTask>("publishPlugin") {
     token.set(ciVariable("PUBLISH_PLUGIN_TOKEN"))
-    channels.set(PluginReleaseChannels)
+    channels.set(pluginReleaseChannels)
     dependsOn("runPluginVerifier")
 }
 

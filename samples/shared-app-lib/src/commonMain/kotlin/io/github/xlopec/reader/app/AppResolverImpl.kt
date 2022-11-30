@@ -44,17 +44,19 @@ fun <Env> AppResolver(): AppResolver<Env> where
         Env : LocalStorage,
         Env : FiltersResolver<Env>,
         Env : ArticleDetailsResolver =
-    AppResolver { cmd, ctx ->
-        when (cmd) {
-            is CloseApp -> Unit
-            is ArticlesCommand -> ctx effects { resolve(cmd) }
-            is ArticleDetailsCommand -> ctx effects { resolve(cmd) }
-            is DoStoreDarkMode -> ctx sideEffect {
-                storeDarkModePreferences(cmd.userDarkModeEnabled, cmd.syncWithSystemDarkModeEnabled)
+    AppResolver { snapshot, ctx ->
+        snapshot.commands.forEach { cmd ->
+            when (cmd) {
+                is CloseApp -> Unit
+                is ArticlesCommand -> ctx effects { resolve(cmd) }
+                is ArticleDetailsCommand -> ctx effects { resolve(cmd) }
+                is DoStoreDarkMode -> ctx sideEffect {
+                    storeDarkModePreferences(cmd.userDarkModeEnabled, cmd.syncWithSystemDarkModeEnabled)
+                }
+                is FilterCommand -> ctx effects { resolve(cmd) }
+                is DoLog -> ctx sideEffect { log(cmd) }
+                else -> error("Shouldn't get here $cmd")
             }
-            is FilterCommand -> ctx effects { resolve(cmd) }
-            is DoLog -> ctx sideEffect { log(cmd) }
-            else -> error("Shouldn't get here $cmd")
         }
     }
 

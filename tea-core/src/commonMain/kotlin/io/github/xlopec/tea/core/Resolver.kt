@@ -36,13 +36,11 @@ import kotlinx.coroutines.launch
  *
  * ### Exceptions
  *
- * Any exception that happens inside this function will redelivered to a [Component]'s scope and handled
+ * Any exception that happens inside this function will be delivered to a [Component]'s scope and handled
  * by it. For more information regarding error handling see [shareIn][kotlinx.coroutines.flow.shareIn]
  *
- * @param M incoming messages
- * @param C commands to be executed
  */
-public typealias Resolver<C, M> = (command: C, context: ResolveCtx<M>) -> Unit
+public typealias Resolver<M, S, C> = (snapshot: Snapshot<M, S, C>, context: ResolveCtx<M>) -> Unit
 
 /**
  * This class represents a resolver context. [sink] and [scope] are used to resolve effects.

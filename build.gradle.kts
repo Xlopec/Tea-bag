@@ -25,7 +25,7 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+// Top-level build file where you can add configuration options common to all subprojects/modules.
 
 installGitHooks()
 
@@ -67,7 +67,7 @@ allprojects {
     optIn(DefaultOptIns)
 
     dependencies {
-        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.20.0")
+        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.21.0")
     }
 
     afterEvaluate {

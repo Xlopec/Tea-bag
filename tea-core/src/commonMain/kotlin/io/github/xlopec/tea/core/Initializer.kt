@@ -35,7 +35,7 @@ import kotlinx.coroutines.withContext
  *
  * ### Exceptions
  *
- * Any exception that happens inside this function will redelivered to a [Component]'s scope and handled
+ * Any exception that happens inside this function will be delivered to a [Component]'s scope and handled
  * by it.
  *
  * @param S initial state of the application

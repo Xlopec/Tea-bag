@@ -84,7 +84,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 public inline fun <reified M : Any, reified C, reified S : Any, J> Component(
     id: ComponentId,
     noinline initializer: Initializer<S, C>,
-    noinline resolver: Resolver<C, M>,
+    noinline resolver: Resolver<M, S, C>,
     noinline updater: Updater<M, S, C>,
     scope: CoroutineScope,
     // todo: group to reduce number of arguments
@@ -138,7 +138,7 @@ private fun <M, S, C, J> DebugEnv<M, S, C, J>.mergeMessages(
     originalInput: Flow<M>,
     debugInput: Flow<M>,
 ): (Initial<S, C>) -> Flow<M> = { initial ->
-    env.resolveAsFlow(initial.commands)
+    env.resolveAsFlow(initial)
         .mergeWith(originalInput)
         .mergeWith(debugInput)
 }

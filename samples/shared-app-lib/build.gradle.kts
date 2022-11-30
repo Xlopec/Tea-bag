@@ -51,12 +51,17 @@ kotlin {
 
     ios()
 
+    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests::class.java) {
+        testRuns["test"].deviceId = "iPhone 14"
+    }
+
     cocoapods {
         summary = "Shared app lib with common code"
         homepage = "Link to the Shared Module homepage"
         ios.deploymentTarget = "14.1"
         framework {
             baseName = "SharedAppLib"
+            isStatic = true
         }
         podfile = project.file("../iosApp/Podfile")
     }
@@ -124,11 +129,11 @@ afterEvaluate {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 33
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 21
-        targetSdk = 31
+        targetSdk = 33
         consumerProguardFile("proguard-rules.pro")
     }
 
