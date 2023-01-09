@@ -29,31 +29,20 @@ package io.github.xlopec.reader.app.feature.article.details
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
-import io.github.xlopec.reader.app.Message
-import io.github.xlopec.reader.app.ScreenMessage
 
 fun ArticleDetailsResolver(
-    application: Application
+    application: Application,
 ): ArticleDetailsResolver =
     object : ArticleDetailsResolver {
 
-        override suspend fun resolve(
-            command: ArticleDetailsCommand
-        ): Set<Message> =
-            when (command) {
-                is DoOpenArticle -> openArticle(command)
-            }
-
-        fun openArticle(
-            command: DoOpenArticle
-        ): Set<ScreenMessage> {
+        override fun resolve(
+            command: DoOpenInBrowser,
+        ) {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(command.article.url.toString()))
                 .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
 
             if (intent.resolveActivity(application.packageManager) != null) {
                 application.startActivity(intent)
             }
-
-            return emptySet()
         }
     }

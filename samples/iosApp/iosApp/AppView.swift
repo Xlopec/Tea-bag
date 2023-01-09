@@ -62,7 +62,7 @@ struct AppView: View {
                 case let tabScreen as TabScreen:
                     AppTabView(initialTab: tabScreen, appState: appState, handler: handler)
                 case let articleDetailsState as ArticleDetailsState:
-                    Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+                    ArticleDetailsView(state: articleDetailsState, handler: handler)
                 default:
                     fatalError("Unhandled app state: \(appState), screen: \(screen)")
                 }
