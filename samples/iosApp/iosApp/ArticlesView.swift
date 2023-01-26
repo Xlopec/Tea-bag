@@ -73,6 +73,8 @@ struct ArticlesView: View {
                                 if article == data[safe: data.count - 2] {
                                     handler(LoadNextArticles(id: state.id))
                                 }
+                            }.onTapGesture {
+                                handler(NavigateToArticleDetails(article: article, id: state.id))
                             }
                     }
                     

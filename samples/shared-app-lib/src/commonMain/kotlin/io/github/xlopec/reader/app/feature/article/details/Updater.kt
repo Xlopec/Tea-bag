@@ -29,7 +29,7 @@ import io.github.xlopec.tea.core.command
 
 fun ArticleDetailsState.toArticleDetailsUpdate(
     message: ArticleDetailsMessage,
-): Update<ArticleDetailsState, ArticleDetailsCommand> =
+): Update<ArticleDetailsState, DoOpenInBrowser> =
     when (message) {
-        is OpenInBrowser -> this command DoOpenArticle(article)
+        is OpenInBrowser -> this command DoOpenInBrowser(article)
     }
