@@ -52,13 +52,16 @@ afterEvaluate {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20")
+    constraints {
+        implementation("org.jetbrains.kotlin:kotlin-sam-with-receiver:1.8.0")
+    }
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0")
     implementation("com.android.tools.build:gradle:7.2.2")
-    implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.9.0")
+    implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.11.0")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.7.20")
-    implementation("org.jetbrains.kotlin:kotlin-serialization:1.7.20")
-    implementation("com.squareup.sqldelight:gradle-plugin:1.5.4")
-    implementation("org.jetbrains.compose:compose-gradle-plugin:1.2.0")
+    implementation("org.jetbrains.kotlin:kotlin-serialization:1.8.0")
+    implementation("com.squareup.sqldelight:gradle-plugin:1.5.5")
+    implementation("org.jetbrains.compose:compose-gradle-plugin:1.3.0-rc04")
     implementation("com.github.ben-manes:gradle-versions-plugin:0.42.0")
     implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.20.0")
