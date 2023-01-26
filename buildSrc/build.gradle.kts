@@ -56,8 +56,8 @@ dependencies {
         implementation("org.jetbrains.kotlin:kotlin-sam-with-receiver:1.8.0")
     }
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0")
-    implementation("com.android.tools.build:gradle:7.2.2")
-    implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.11.0")
+    implementation("com.android.tools.build:gradle:7.4.0-beta02")
+    implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.12.0")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.7.20")
     implementation("org.jetbrains.kotlin:kotlin-serialization:1.8.0")
     implementation("com.squareup.sqldelight:gradle-plugin:1.5.5")

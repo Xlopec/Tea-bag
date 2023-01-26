@@ -82,6 +82,11 @@ allprojects {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
         }
     }
+
+    tasks.withType<JavaCompile>().configureEach {
+        targetCompatibility = "11"
+        sourceCompatibility = "11"
+    }
 }
 
 val detektAll by tasks.registering(Detekt::class) {

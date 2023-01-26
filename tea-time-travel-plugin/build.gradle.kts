@@ -30,7 +30,7 @@ plugins {
     `maven-publish`
     `java-library`
     kotlin("jvm")
-    intellij()
+    id("org.jetbrains.intellij")
     id("org.jetbrains.compose")
 }
 
@@ -41,10 +41,9 @@ repositories {
 }
 
 val supportedVersions = listOf(
-    IDEVersion(Product.IC, 2021, 2),
-    IDEVersion(Product.IC, 2021, 3),
     IDEVersion(Product.IC, 2022, 1),
     IDEVersion(Product.IC, 2022, 2),
+    IDEVersion(Product.IC, 2022, 3),
 )
 
 intellij {
@@ -75,6 +74,25 @@ tasks.named<PublishPluginTask>("publishPlugin") {
     token.set(ciVariable("PUBLISH_PLUGIN_TOKEN"))
     channels.set(pluginReleaseChannels)
     dependsOn("runPluginVerifier")
+}
+
+val service = project.extensions.getByType<JavaToolchainService>()
+val customLauncher = service.launcherFor {
+    languageVersion.set(JavaLanguageVersion.of(17))
+}
+project.tasks.withType<org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain>().configureEach {
+    kotlinJavaToolchain.toolchain.use(customLauncher)
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    targetCompatibility = "17"
+    sourceCompatibility = "17"
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }
 
 val copyArtifacts by tasks.registering(Copy::class) {
