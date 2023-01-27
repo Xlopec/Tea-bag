@@ -23,7 +23,10 @@ import io.github.xlopec.tea.time.travel.plugin.ui.Plugin
 import io.github.xlopec.tea.time.travel.plugin.ui.ServerActionButtonTag
 import io.github.xlopec.tea.time.travel.plugin.util.invoke
 import io.github.xlopec.tea.time.travel.plugin.util.setContentWithEnv
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import org.junit.Rule
 import org.junit.Test
 
@@ -40,7 +43,8 @@ class StartPluginScenarios {
      */
     @Test
     fun `test info view displayed when user starts plugin given no components attach`() = rule {
-        val environment = TestEnvironment()
+        val scheduler = TestCoroutineScheduler()
+        val environment = TestEnvironment(scope = CoroutineScope(StandardTestDispatcher(scheduler)))
         setContentWithEnv(environment) {
             Plugin(
                 platform = TestPlatform(),
@@ -48,10 +52,13 @@ class StartPluginScenarios {
             )
         }
         // fixme assertExists should be replaced with assertIsDisplayed
+        scheduler.advanceUntilIdle()
+        awaitIdle()
         onNodeWithTag(InfoViewTag).assertExists()
 
         onNodeWithTag(ServerActionButtonTag).performClick()
 
+        scheduler.advanceUntilIdle()
         awaitIdle()
         onNodeWithTag(InfoViewTag).assertExists()
     }
@@ -66,7 +73,8 @@ class StartPluginScenarios {
      */
     @Test
     fun `test components displayed when user starts plugin given a component attaches`() = rule {
-        val environment = TestEnvironment()
+        val scheduler = TestCoroutineScheduler()
+        val environment = TestEnvironment(scope = CoroutineScope(StandardTestDispatcher(scheduler)))
         val messages = MutableSharedFlow<Message>()
         val component = PluginComponent(environment, Initializer(State(ValidTestSettings)))
 
@@ -78,15 +86,19 @@ class StartPluginScenarios {
             )
         }
 
+        scheduler.advanceUntilIdle()
         awaitIdle()
         onNodeWithTag(ComponentTabTag(TestComponentId1)).assertDoesNotExist()
         onNodeWithTag(ComponentTag(TestComponentId1)).assertDoesNotExist()
         onNodeWithTag(ServerActionButtonTag).performClick()
+        scheduler.advanceUntilIdle()
+        awaitIdle()
         // fixme assertExists should be replaced with assertIsDisplayed
         onNodeWithTag(InfoViewTag).assertExists()
 
         messages.emit(ComponentAttached(TestComponentId1, TestSnapshotMeta1, TestUserValue, CollectionWrapper()))
 
+        scheduler.advanceUntilIdle()
         awaitIdle()
         onNodeWithTag(ComponentTabTag(TestComponentId1)).assertExists()
         onNodeWithTag(ComponentTag(TestComponentId1)).assertExists()

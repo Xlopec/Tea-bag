@@ -10,7 +10,7 @@ import io.github.xlopec.tea.time.travel.plugin.integration.AppResolver
 import io.github.xlopec.tea.time.travel.plugin.integration.AppUpdater
 import io.github.xlopec.tea.time.travel.plugin.integration.Environment
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 
 interface TestEnvironment : Environment, IdlingResource
 
@@ -18,7 +18,7 @@ fun TestEnvironment(
     serverCommandResolver: TestServerCommandResolver = SimpleTestServerCommandResolver(),
     storageResolver: TestStorageResolver = SimpleTestStorageResolver(),
     notificationResolver: NotificationResolver = SimpleTestNotificationResolver(),
-    scope: CoroutineScope = CoroutineScope(TestCoroutineDispatcher()),
+    scope: CoroutineScope = CoroutineScope(StandardTestDispatcher()),
 ): TestEnvironment = object : TestEnvironment,
     AppUpdater by AppUpdater(),
     StorageResolver by storageResolver,
