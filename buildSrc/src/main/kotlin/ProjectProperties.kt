@@ -38,6 +38,9 @@ val NexusUrl = URI("https://s01.oss.sonatype.org/service/local/")
 val SnapshotNexusUrl = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 val JBComposeDevRepository = URI("https://maven.pkg.jetbrains.space/public/p/compose/dev/")
 
+private const val RefBranch = "refs/heads/"
+private const val RefTag = "refs/tags/"
+
 val isCiEnv: Boolean
     get() = getenvSafe("CI")?.toBoolean() == true
 
@@ -50,18 +53,19 @@ val pluginReleaseChannels: Collection<String>
     }
 
 val branch: String?
-    get() = getenvSafe("GITHUB_REF_NAME")
-        ?.removePrefix("refs/heads/")
-        ?.removePrefix("refs/tags/")
+    get() = getenvSafe("GITHUB_REF")
+        ?.takeIf { it.startsWith(RefBranch) || it.startsWith(RefTag) }
+        ?.removePrefix(RefBranch)
+        ?.removePrefix(RefTag)
         ?: localBranch
 
 val branchOrDefault: String
     get() = branch ?: "master"
 
 val tag: String?
-    get() = getenvSafe("GITHUB_TAG")
-        ?.takeUnless { tag -> tag.startsWith("refs/heads/") }
-        ?.removePrefix("refs/tags/")
+    get() = getenvSafe("GITHUB_REF")
+        ?.takeIf { tag -> tag.startsWith(RefTag) }
+        ?.removePrefix(RefTag)
 
 val commitSha: String?
     get() = getenvSafe("GITHUB_SHA")

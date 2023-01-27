@@ -9,17 +9,19 @@ jobs:
       DEFAULT_BRANCH: master
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - name: set up JDK 11
-        uses: actions/setup-java@v1
+      - name: set up JDK 19
+        uses: actions/setup-java@v3
         with:
-          java-version: 11
+          distribution: 'adopt'
+          java-version: 19
+          cache: 'gradle'
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run static code analysis
@@ -31,23 +33,25 @@ jobs:
     needs: Check
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
           key: avd-29
-      - name: set up JDK 11
-        uses: actions/setup-java@v1
+      - name: set up JDK 19
+        uses: actions/setup-java@v3
         with:
-          java-version: 11
+          distribution: 'adopt'
+          java-version: 19
+          cache: 'gradle'
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run connected Android tests
@@ -63,21 +67,23 @@ jobs:
     needs: Check
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - name: set up JDK 11
-        uses: actions/setup-java@v1
+      - name: set up JDK 19
+        uses: actions/setup-java@v3
         with:
-          java-version: 11
+          distribution: 'adopt'
+          java-version: 19
+          cache: 'gradle'
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build IOS app
-        uses: sersoft-gmbh/xcodebuild-action@v1
+        uses: sersoft-gmbh/xcodebuild-action@v2
         with:
           workspace: samples/iosApp/iosApp.xcworkspace
           scheme: iosApp
@@ -91,24 +97,26 @@ jobs:
     needs: Check
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - name: set up JDK 11
-        uses: actions/setup-java@v1
+      - name: set up JDK 19
+        uses: actions/setup-java@v3
         with:
-          java-version: 11
+          distribution: 'adopt'
+          java-version: 19
+          cache: 'gradle'
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run tests
         run: ./gradlew check -x detekt
       - name: Archive test reports
         if: success() || failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: tests-report
           path: build/junit-reports/**
@@ -125,26 +133,24 @@ jobs:
     # v1.2.3 -> stable
     if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/develop'
     steps:
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=GITHUB_TAG::${GITHUB_REF#refs/tags/}
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - name: set up JDK 11
-        uses: actions/setup-java@v1
+      - name: set up JDK 19
+        uses: actions/setup-java@v3
         with:
-          java-version: 11
+          distribution: 'adopt'
+          java-version: 19
+          cache: 'gradle'
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Publish artifacts
         run: ./gradlew publishToSonatype closeSonatypeStagingRepository publishPlugin copyArtifacts --no-configure-on-demand
         env:
-          GITHUB_TAG: ${{ steps.get_version.outputs.GITHUB_TAG }}
           OSSRH_USER: ${{ secrets.OSSRH_USER }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
