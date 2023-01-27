@@ -22,7 +22,7 @@ fun TestReport.configureOutputLocation(
     destinationDir: File,
 ) {
     description = "$description Also copies test reports to $destinationDir"
-    this@configureOutputLocation.destinationDir = destinationDir
+    getDestinationDirectory().set(destinationDir)
 }
 
 internal fun File.commonParentDir(
