@@ -74,14 +74,6 @@ tasks.named<PublishPluginTask>("publishPlugin") {
     dependsOn("runPluginVerifier")
 }
 
-val service = project.extensions.getByType<JavaToolchainService>()
-val customLauncher = service.launcherFor {
-    languageVersion.set(JavaLanguageVersion.of(17))
-}
-project.tasks.withType<org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain>().configureEach {
-    kotlinJavaToolchain.toolchain.use(customLauncher)
-}
-
 tasks.withType<JavaCompile>().configureEach {
     targetCompatibility = "17"
     sourceCompatibility = "17"
