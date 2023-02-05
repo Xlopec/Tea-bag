@@ -85,5 +85,5 @@ private val Project.settingsMessages: Flow<UpdateDebugSettings>
 
 context (Logger, Project) private fun ToolWindowContent(
     component: Component<Message, State, Command>,
-): Content = ContentFactory.SERVICE.getInstance()
+): Content = ContentFactory.getInstance()
     .createContent(PluginSwingAdapter(component.toStatesComponent()), null, false)
