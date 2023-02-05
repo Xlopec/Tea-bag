@@ -144,6 +144,7 @@ afterEvaluate {
 
 android {
     compileSdk = 33
+    namespace = "io.github.xlopec.shared"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 21

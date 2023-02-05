@@ -46,6 +46,7 @@ android {
         }
     }
     compileSdk = 33
+    namespace = "io.github.xlopec.reader"
 
     defaultConfig {
         applicationId = "io.github.xlopec.news.reader"
