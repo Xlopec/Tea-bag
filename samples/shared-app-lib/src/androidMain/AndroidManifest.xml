@@ -23,10 +23,10 @@
   ~ SOFTWARE.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="io.github.xlopec.shared">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <queries>
         <intent>
-            <action android:name="android.intent.action.VIEW" />
+            <action android:name="android.intent.action.VIEW"/>
         </intent>
     </queries>
     <uses-permission android:name="android.permission.INTERNET"/>

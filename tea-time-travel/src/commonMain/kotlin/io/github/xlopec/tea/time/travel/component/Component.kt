@@ -26,43 +26,16 @@
 
 package io.github.xlopec.tea.time.travel.component
 
-import io.github.xlopec.tea.core.Component
-import io.github.xlopec.tea.core.Env
-import io.github.xlopec.tea.core.Initial
-import io.github.xlopec.tea.core.Initializer
-import io.github.xlopec.tea.core.Regular
-import io.github.xlopec.tea.core.Resolver
-import io.github.xlopec.tea.core.ShareOptions
-import io.github.xlopec.tea.core.ShareStateWhileSubscribed
-import io.github.xlopec.tea.core.Sink
-import io.github.xlopec.tea.core.Snapshot
-import io.github.xlopec.tea.core.Updater
-import io.github.xlopec.tea.core.attachMessageCollector
-import io.github.xlopec.tea.core.computeSnapshots
-import io.github.xlopec.tea.core.initial
-import io.github.xlopec.tea.core.resolveAsFlow
-import io.github.xlopec.tea.core.shareIn
+import io.github.xlopec.tea.core.*
 import io.github.xlopec.tea.data.RandomUUID
 import io.github.xlopec.tea.time.travel.component.internal.mergeWith
-import io.github.xlopec.tea.time.travel.protocol.ComponentId
-import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
-import io.github.xlopec.tea.time.travel.protocol.NotifyComponentAttached
-import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
-import io.github.xlopec.tea.time.travel.protocol.NotifyServer
-import io.github.xlopec.tea.time.travel.session.DebugSession
-import io.github.xlopec.tea.time.travel.session.HttpClient
-import io.github.xlopec.tea.time.travel.session.Localhost
-import io.github.xlopec.tea.time.travel.session.SessionFactory
-import io.github.xlopec.tea.time.travel.session.session
-import io.ktor.http.Url
+import io.github.xlopec.tea.time.travel.protocol.*
+import io.github.xlopec.tea.time.travel.session.*
+import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.RENDEZVOUS
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 
 /**
  * Creates new debuggable [component][Component]
@@ -81,7 +54,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
  * @param S state of the application
  * @param C commands to be executed
  */
-public inline fun <reified M : Any, reified C, reified S : Any, J> Component(
+public inline fun <reified M : Any, reified S : Any, reified C, J> Component(
     id: ComponentId,
     noinline initializer: Initializer<S, C>,
     noinline resolver: Resolver<M, S, C>,
@@ -176,5 +149,5 @@ private fun <M, S, C, J> JsonSerializer<J>.toServerMessage(
 }
 
 private fun <C, J> JsonSerializer<J>.toCommandsSet(
-    s: Set<C>
+    s: Set<C>,
 ): Set<J> = s.mapTo(HashSet(s.size), ::toJsonTree)

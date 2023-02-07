@@ -26,47 +26,29 @@
 
 package io.github.xlopec.reader.app.ui.screens.home
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Language
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.dp
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.article.list.RefreshArticles
 import io.github.xlopec.reader.app.feature.article.list.ScrollState
 import io.github.xlopec.reader.app.feature.article.list.SyncScrollPosition
-import io.github.xlopec.reader.app.feature.navigation.NavigateToFavorite
-import io.github.xlopec.reader.app.feature.navigation.NavigateToFeed
-import io.github.xlopec.reader.app.feature.navigation.NavigateToSettings
-import io.github.xlopec.reader.app.feature.navigation.NavigateToTrending
-import io.github.xlopec.reader.app.feature.navigation.Navigation
+import io.github.xlopec.reader.app.feature.navigation.*
 import io.github.xlopec.reader.app.misc.isException
 import io.github.xlopec.reader.app.misc.isIdle
 import io.github.xlopec.reader.app.misc.isRefreshing
@@ -89,19 +71,24 @@ enum class BottomMenuItem {
     Settings
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     state: ArticlesState,
     onMessage: MessageHandler,
     content: (@Composable (innerPadding: PaddingValues) -> Unit)?,
 ) {
-    SwipeRefresh(
-        state = rememberSwipeRefreshState(state.loadable.isRefreshing),
-        swipeEnabled = state.isRefreshable,
-        indicator = { indicatorState, dp ->
-            SwipeRefreshIndicator(refreshTriggerDistance = dp, state = indicatorState, refreshingOffset = 40.dp)
-        },
+    val refreshState = rememberPullRefreshState(
+        refreshing = state.loadable.isRefreshing,
         onRefresh = { onMessage(RefreshArticles(state.id)) },
+    )
+
+    Box(
+        modifier = Modifier.pullRefresh(
+            state = refreshState,
+            enabled = state.isRefreshable
+        ),
+        contentAlignment = Alignment.TopCenter
     ) {
         val scrollTrigger = remember(state.id) { mutableStateOf(0) }
         val listState = remember(state.id) { state.scrollState.toLazyListState() }
@@ -132,13 +119,20 @@ fun HomeScreen(
                         listState.animateScrollToItem(0)
                     }
                 }
-            }, content = { innerPadding ->
+            },
+            content = { innerPadding ->
                 if (content == null) {
                     ArticlesScreen(state, listState, Modifier.padding(innerPadding), onMessage)
                 } else {
                     content(innerPadding)
                 }
             }
+        )
+
+        PullRefreshIndicator(
+            modifier = Modifier.statusBarsPadding(),
+            refreshing = state.loadable.isRefreshing,
+            state = refreshState,
         )
     }
 }
@@ -164,7 +158,8 @@ fun HomeScreen(
                 item = Settings,
                 handler = { _, nav -> onMessage(nav) }
             )
-        }, content = { innerPadding ->
+        },
+        content = { innerPadding ->
             SettingsScreen(
                 innerPadding = innerPadding,
                 settings = state.settings,

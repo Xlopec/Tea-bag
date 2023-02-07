@@ -46,6 +46,7 @@ android {
         }
     }
     compileSdk = 33
+    namespace = "io.github.xlopec.reader"
 
     defaultConfig {
         applicationId = "io.github.xlopec.news.reader"
@@ -63,6 +64,15 @@ android {
 
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        managedDevices {
+            devices {
+                maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel6api30").apply {
+                    device = "Pixel 6"
+                    apiLevel = 30
+                    systemImageSource = "aosp-atd"
+                }
+            }
+        }
     }
 
     buildTypes {
@@ -79,8 +89,8 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     packagingOptions {
@@ -120,7 +130,7 @@ android {
 
     androidComponents {
         beforeVariants(selector().withName("remoteRelease")) { builder ->
-            builder.enabled = false
+            builder.enable = false
         }
     }
 

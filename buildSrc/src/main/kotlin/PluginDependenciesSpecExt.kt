@@ -25,11 +25,6 @@
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.add
-import org.gradle.plugin.use.PluginDependenciesSpec
-import org.gradle.plugin.use.PluginDependencySpec
-
-fun PluginDependenciesSpec.intellij(): PluginDependencySpec =
-    id("org.jetbrains.intellij")
 
 fun DependencyHandlerScope.remoteImplementation(dependencyNotation: Any) {
     add("remoteImplementation", dependencyNotation)

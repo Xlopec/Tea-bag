@@ -59,11 +59,11 @@ typealias TreeFormatter = (Value) -> String
 typealias TreeSelectionState = MutableState<Any?>
 
 internal fun Tag(
-    value: Value
+    value: Value,
 ) = "value: ${value.stringValue}"
 
 internal fun Tag(
-    meta: SnapshotMeta
+    meta: SnapshotMeta,
 ) = "filtered snapshot: ${meta.id}/${meta.timestamp}"
 
 internal val LocalInitialExpandState = compositionLocalOf { false }
@@ -90,7 +90,9 @@ fun Tree(
         Column(modifier = Modifier.fillMaxSize().verticalScroll(state)) {
             CompositionLocalProvider(LocalTreeFormatter provides formatter) {
                 Text(
-                    modifier = Modifier.padding(all = 4.dp), style = LocalTypography.current.defaultBold, text = "State"
+                    modifier = Modifier.padding(all = 4.dp),
+                    style = LocalTypography.current.defaultBold,
+                    text = "State"
                 )
                 SubTree(root, 0, formatter(root), selection, valuePopupContent)
             }
@@ -132,7 +134,8 @@ fun Tree(
         }
 
         VerticalScrollbar(
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(), adapter = rememberScrollbarAdapter(
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+            adapter = rememberScrollbarAdapter(
                 scrollState = state
             )
         )
@@ -156,6 +159,7 @@ private fun SubTree(
         state = state,
         popupContent = { valuePopupContent(value) }
     )
+
     is CollectionWrapper -> CollectionSubTree(value, level, text, state, valuePopupContent)
     is Ref -> ReferenceSubTree(level, text, value, state, valuePopupContent)
 }
@@ -404,7 +408,8 @@ private fun ExpandableNode(
                     painter = Expand,
                     contentDescription = null
                 )
-            })
+            }
+        )
     }
 }
 
@@ -445,5 +450,8 @@ private fun Modifier.indentLevel(
     level: Int,
     step: Dp = IndentPadding,
 ) = padding(
-    start = Dp(step.value * level) + 4.dp, top = 2.dp, end = 4.dp, bottom = 2.dp
+    start = Dp(step.value * level) + 4.dp,
+    top = 2.dp,
+    end = 4.dp,
+    bottom = 2.dp
 )

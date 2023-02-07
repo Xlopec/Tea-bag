@@ -38,7 +38,8 @@ val TestHost = Host.newOrNull("localhost")!!
 val TestPort = Port(123)
 
 val ValidTestSettings = Settings(
-    host = Input(TestHost.value, Valid(TestHost)), port = Input(TestPort.value.toString(), Valid(TestPort)),
+    host = Input(TestHost.value, Valid(TestHost)),
+    port = Input(TestPort.value.toString(), Valid(TestPort)),
     isDetailedOutput = false,
     clearSnapshotsOnAttach = true
 )

@@ -118,8 +118,11 @@ private suspend fun Throwable.toAppException(): AppException =
 private suspend inline fun Throwable.wrap(
     crossinline transform: suspend (Throwable) -> AppException?,
 ): AppException? =
-    if (this is AppException) this
-    else transform(this) ?: cause?.let { th -> transform(th) }
+    if (this is AppException) {
+        this
+    } else {
+        transform(this) ?: cause?.let { th -> transform(th) }
+    }
 
 private suspend fun ClientRequestException.toAppException(): AppException =
     NetworkException(

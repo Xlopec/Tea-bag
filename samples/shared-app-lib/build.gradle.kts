@@ -1,5 +1,3 @@
-import org.jetbrains.compose.compose
-
 /*
  * MIT License
  *
@@ -116,7 +114,7 @@ kotlin {
             }
         }
 
-        val androidTest by getting {
+        val androidUnitTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation(libs.junit)
@@ -146,10 +144,10 @@ afterEvaluate {
 
 android {
     compileSdk = 33
+    namespace = "io.github.xlopec.shared"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 21
-        targetSdk = 33
         consumerProguardFile("proguard-rules.pro")
     }
 
@@ -164,8 +162,8 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     flavorDimensions += "remote"

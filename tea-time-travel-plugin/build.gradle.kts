@@ -30,7 +30,7 @@ plugins {
     `maven-publish`
     `java-library`
     kotlin("jvm")
-    intellij()
+    id("org.jetbrains.intellij")
     id("org.jetbrains.compose")
 }
 
@@ -41,10 +41,8 @@ repositories {
 }
 
 val supportedVersions = listOf(
-    IDEVersion(Product.IC, 2021, 2),
-    IDEVersion(Product.IC, 2021, 3),
-    IDEVersion(Product.IC, 2022, 1),
     IDEVersion(Product.IC, 2022, 2),
+    IDEVersion(Product.IC, 2022, 3),
 )
 
 intellij {
@@ -75,6 +73,17 @@ tasks.named<PublishPluginTask>("publishPlugin") {
     token.set(ciVariable("PUBLISH_PLUGIN_TOKEN"))
     channels.set(pluginReleaseChannels)
     dependsOn("runPluginVerifier")
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    targetCompatibility = "17"
+    sourceCompatibility = "17"
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }
 
 val copyArtifacts by tasks.registering(Copy::class) {
@@ -128,21 +137,22 @@ sourceSets {
 fun shouldUseForcedCoroutinesVersion(
     configuration: Configuration,
     details: DependencyResolveDetails,
+    version: String,
 ): Boolean =
     !configuration.name.startsWith("test") &&
             details.requested.group == "org.jetbrains.kotlinx" &&
-            details.requested.module.name.startsWith("kotlinx-coroutines")
+            details.requested.module.name.startsWith("kotlinx-coroutines") &&
+            details.requested.version != version
 
 configurations.configureEach {
     resolutionStrategy.eachDependency {
-        if (shouldUseForcedCoroutinesVersion(this@configureEach, this@eachDependency)) {
-            val forcedVersion = "1.5.2"
+        val forcedVersion = "1.6.4"
+        if (shouldUseForcedCoroutinesVersion(this@configureEach, this@eachDependency, forcedVersion)) {
             useVersion(forcedVersion)
-            // https://www.jetbrains.com/legal/third-party-software/?product=iic&version=2022.1
             because(
                 """
                 We must use bundled coroutines version, latest compatible coroutines dependency version 
-                for IJ 2022.1 is $forcedVersion, see https://www.jetbrains.com/legal/third-party-software/?product=iic&version=2022.1 
+                for IJ 2022.1 is $forcedVersion, see https://www.jetbrains.com/legal/third-party-software/?product=iic&version=2022.3.2
             """.trimIndent()
             )
         }
