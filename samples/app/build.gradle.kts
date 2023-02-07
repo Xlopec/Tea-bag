@@ -130,7 +130,7 @@ android {
 
     androidComponents {
         beforeVariants(selector().withName("remoteRelease")) { builder ->
-            builder.enabled = false
+            builder.enable = false
         }
     }
 
