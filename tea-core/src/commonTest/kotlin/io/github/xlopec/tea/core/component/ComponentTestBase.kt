@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.*
 import kotlin.test.*
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class ComponentTestBase(
     val factory: (env: Env<Char, String, Char>) -> Component<Char, String, Char>,
 ) {
@@ -106,11 +107,15 @@ abstract class ComponentTestBase(
             { snapshot, ctx ->
                 snapshot.commands.forEach { ch ->
                     ctx effects {
-                        if (ch == 'a') setOf(
+                        if (ch == 'a') {
+                            setOf(
                             ch + 1, // only this message should be consumed
                             ch + 2,
                             ch + 3
-                        ) else setOf()
+                        )
+                        } else {
+                            setOf()
+                        }
                     }
                 }
             },

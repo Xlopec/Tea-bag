@@ -35,9 +35,12 @@ internal suspend fun Gson.import(
 ): ComponentImportResult =
     withContext(IO) {
         Either.catch {
-            ComponentImportSuccess(file, BufferedReader(FileReader(file))
+            ComponentImportSuccess(
+                file,
+                BufferedReader(FileReader(file))
                 .use { br -> fromJson(br, JsonObject::class.java) }
-                .toComponentDebugState())
+                .toComponentDebugState()
+            )
         }.mapLeft {
             ComponentImportFailure(FileException("Couldn't import session from ${file.absolutePath}", it, file))
         }.foldSuper()

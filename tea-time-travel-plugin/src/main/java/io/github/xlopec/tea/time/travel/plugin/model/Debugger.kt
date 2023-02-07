@@ -77,7 +77,11 @@ fun Debugger.attachComponent(
     state: Value,
     snapshot: OriginalSnapshot,
 ): Debugger {
-    val componentState = if (settings.clearSnapshotsOnAttach) DebuggableComponent(id, state) else getComponentOrNew(id, state)
+    val componentState = if (settings.clearSnapshotsOnAttach) {
+        DebuggableComponent(id, state)
+    } else {
+        getComponentOrNew(id, state)
+    }
     // todo add option to disable component selection on attach
     return attachComponent(id, componentState.appendSnapshot(snapshot, state))
 }

@@ -154,19 +154,25 @@ private fun Predicate.applyToRef(
     fun applyToProp(
         property: Property
     ): Property? =
-        if (this(property.name)) property
-        else applyTo(property.v)
+        if (this(property.name)) {
+            property
+        } else {
+            applyTo(property.v)
             ?.let { filteredValue ->
                 Property(
                     property.name,
                     filteredValue
                 )
             }
+        }
 
-    return if (this(ref.type.name)) ref
-    else ref.properties.mapNotNullTo(HashSet(ref.properties.size), ::applyToProp)
+    return if (this(ref.type.name)) {
+        ref
+    } else {
+        ref.properties.mapNotNullTo(HashSet(ref.properties.size), ::applyToProp)
         .takeIf(Collection<*>::isNotEmpty)
         ?.let { ref.copy(properties = it) }
+    }
 }
 
 fun Predicate.applyToWrapper(

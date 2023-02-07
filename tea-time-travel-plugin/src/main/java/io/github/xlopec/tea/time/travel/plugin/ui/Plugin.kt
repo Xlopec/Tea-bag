@@ -178,14 +178,17 @@ context (Logger) private fun handleFatalException(
                 """
                 Fatal error occurred inside Tea Time Travel plugin, no plugin state dump available.
                 Please, fill a bug for this issue - $GithubIssuesLink with attached logs, stack traces, etc.
-            """.trimIndent(), th
+            """.trimIndent(),
+                th
             )
         } else {
             error(
                 """
                 Fatal error occurred inside Tea Time Travel plugin.
                 Please, fill a bug for this issue - $GithubIssuesLink with attached logs, stack traces, etc.
-            """.trimIndent(), th, attachment
+            """.trimIndent(),
+                th,
+                attachment
             )
         }
     }

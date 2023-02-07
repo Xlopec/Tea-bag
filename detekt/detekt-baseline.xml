@@ -12,9 +12,7 @@
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _textBackground: State&lt;Color></ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") internal fun Null.toReadableString(): String</ID>
     <ID>MagicNumber:Date.kt$1000.0</ID>
-    <ID>MaxLineLength:AppTheme.kt$val secondaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant)</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
-    <ID>MaximumLineLength:io.github.xlopec.reader.app.ui.theme.AppTheme.kt:54</ID>
     <ID>MaximumLineLength:io.github.xlopec.tea.time.travel.plugin.util.CollectionExtensionsTest.kt:51</ID>
     <ID>TooGenericExceptionCaught:NettyServer.kt$e: Throwable</ID>
     <ID>TooManyFunctions:ComponentTestBase.kt$ComponentTestBase</ID>
@@ -44,6 +42,5 @@
     <ID>UndocumentedPublicProperty:Url.kt$public actual val Url.domain: String get() = host</ID>
     <ID>UndocumentedPublicProperty:Url.kt$public actual val Url.domain: String get() = host ?: error("No domain: ${toExternalValue()}")</ID>
     <ID>UndocumentedPublicProperty:Url.kt$public expect val Url.domain: String</ID>
-    <ID>UnnecessaryAbstractClass:ComponentTestBase.kt$ComponentTestBase</ID>
   </CurrentIssues>
 </SmellBaseline>

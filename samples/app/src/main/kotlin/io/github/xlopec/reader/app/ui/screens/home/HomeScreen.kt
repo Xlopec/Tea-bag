@@ -119,7 +119,8 @@ fun HomeScreen(
                         listState.animateScrollToItem(0)
                     }
                 }
-            }, content = { innerPadding ->
+            },
+            content = { innerPadding ->
                 if (content == null) {
                     ArticlesScreen(state, listState, Modifier.padding(innerPadding), onMessage)
                 } else {
@@ -157,7 +158,8 @@ fun HomeScreen(
                 item = Settings,
                 handler = { _, nav -> onMessage(nav) }
             )
-        }, content = { innerPadding ->
+        },
+        content = { innerPadding ->
             SettingsScreen(
                 innerPadding = innerPadding,
                 settings = state.settings,

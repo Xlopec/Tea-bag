@@ -233,6 +233,13 @@ formatting:
   ModifierOrdering:
     active: true
     autoCorrect: true
+  ArgumentListWrapping:
+    active: true
+    maxLineLength: 140
+    autoCorrect: true
+  SpacingBetweenDeclarationsWithComments:
+    active: true
+    autoCorrect: true
   MultiLineIfElse:
     active: true
     autoCorrect: true

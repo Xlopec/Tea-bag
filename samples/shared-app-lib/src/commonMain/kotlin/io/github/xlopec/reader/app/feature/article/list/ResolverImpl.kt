@@ -112,8 +112,11 @@ private suspend fun LocalStorage.toPage(
     val skip = currentSize % resultsPerPage
     // removes data duplicates by skipping and removing
     // overlapping data indices
-    val tail = if (skip == 0 || results.isEmpty()) results
-    else results.subList(skip, results.size)
+    val tail = if (skip == 0 || results.isEmpty()) {
+        results
+    } else {
+        results.subList(skip, results.size)
+    }
 
     return Page(toArticles(tail), currentSize + tail.size < total)
 }
