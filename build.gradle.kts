@@ -87,48 +87,47 @@ allprojects {
         targetCompatibility = "11"
         sourceCompatibility = "11"
     }
-}
 
-val detektAll by tasks.registering(Detekt::class) {
-    description = "Runs analysis task over whole codebase"
-    debug = false
-    parallel = true
-    ignoreFailures = false
-    disableDefaultRuleSets = false
-    buildUponDefaultConfig = true
-    setSource(files(projectDir))
-    config.setFrom(detektConfig)
-    baseline.set(detektBaseline)
-
-    include("**/*.kt", "**/*.kts")
-    exclude("compose-jetbrains-theme/**", "resources/", "**/build/**", "**/test/java/**")
-
-    reports {
-        xml.required.set(false)
-        txt.required.set(false)
-        html.required.set(true)
+    detekt {
+        parallel = true
+        ignoreFailures = false
+        disableDefaultRuleSets = false
+        buildUponDefaultConfig = true
+        config.setFrom(detektConfig)
+        baseline = file(detektBaseline)
     }
-}
 
-val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) {
-    ignoreFailures.set(true)
-    parallel.set(true)
-    setSource(files(rootDir))
-    config.setFrom(detektConfig)
-    baseline.set(detektBaseline)
-    include("**/*.kt", "**/*.kts")
-    exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
-}
+    tasks.withType<Detekt>().configureEach {
+        include("**/*.kt", "**/*.kts")
+        exclude("compose-jetbrains-theme/**", "resources/", "**/build/**", "**/test/java/**")
+        setSource(files(projectDir))
+        reports {
+            xml.required.set(false)
+            txt.required.set(false)
+            html.required.set(true)
+        }
+    }
 
-val detektFormat by tasks.registering(Detekt::class) {
-    parallel = true
-    autoCorrect = true
-    ignoreFailures = false
-    setSource(files(projectDir))
+    val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) {
+        ignoreFailures.set(true)
+        parallel.set(true)
+        setSource(files(rootDir))
+        config.setFrom(detektConfig)
+        baseline.set(detektBaseline)
+        include("**/*.kt", "**/*.kts")
+        exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
+    }
 
-    include("**/*.kt", "**/*.kts")
-    exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
+    val detektFormat by tasks.registering(Detekt::class) {
+        parallel = true
+        autoCorrect = true
+        ignoreFailures = false
+        setSource(files(projectDir))
 
-    config.setFrom(detektConfig)
-    baseline.set(detektBaseline)
+        include("**/*.kt", "**/*.kts")
+        exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
+
+        config.setFrom(detektConfig)
+        baseline.set(detektBaseline)
+    }
 }

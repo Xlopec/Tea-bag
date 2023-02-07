@@ -3,7 +3,6 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
-    <ID>ComplexMethod:Updater.kt$fun updateForUiMessage( message: ComponentMessage, state: State ): Update&lt;State, Command></ID>
     <ID>ConstructorParameterNaming:Transitions.kt$ChildTransitionState$val _contentAlpha: State&lt;Float></ID>
     <ID>ConstructorParameterNaming:Transitions.kt$ChildTransitionState$val _listItemOffsetY: State&lt;Dp></ID>
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _cornerRadius: State&lt;Dp></ID>
@@ -12,25 +11,14 @@
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _indicatorColor: State&lt;Color></ID>
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _textBackground: State&lt;Color></ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") internal fun Null.toReadableString(): String</ID>
-    <ID>LongParameterList:Component.kt$( id: ComponentId, noinline initializer: Initializer&lt;S, C>, noinline resolver: Resolver&lt;C, M>, noinline updater: Updater&lt;M, S, C>, scope: CoroutineScope, // todo: group to reduce number of arguments url: Url = Localhost, jsonSerializer: JsonSerializer&lt;J>, // see https://youtrack.jetbrains.com/issue/KT-47195 // see https://github.com/Kotlin/kotlinx.coroutines/issues/3005#issuecomment-1014577573 noinline sessionFactory: SessionFactory&lt;M, S, J> = { settings, block -> HttpClient.session(settings, block) }, shareOptions: ShareOptions = ShareStateWhileSubscribed, )</ID>
-    <ID>LongParameterList:SettingsScreen.kt$( icon: ImageVector, imageDescription: String?, title: String, description: String, checked: Boolean, enabled: Boolean = true, onCheckedChange: (Boolean) -> Unit, )</ID>
-    <ID>LongParameterList:SourcesSection.kt$( state: FiltersState, id: ScreenId, modifier: Modifier, sources: Loadable&lt;Source>, childTransitionState: ChildTransitionState, handler: MessageHandler, )</ID>
-    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, painter: Painter, node: Any, state: TreeSelectionState, expandedState: MutableState&lt;Boolean>, popupContent: @Composable () -> Unit, )</ID>
-    <ID>LongParameterList:TreeView.kt$( level: Int, text: String, painter: Painter, node: Any, state: TreeSelectionState, popupContent: @Composable () -> Unit, )</ID>
     <ID>MagicNumber:Date.kt$1000.0</ID>
     <ID>MaxLineLength:AppTheme.kt$val secondaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant)</ID>
     <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
     <ID>MaximumLineLength:io.github.xlopec.reader.app.ui.theme.AppTheme.kt:54</ID>
     <ID>MaximumLineLength:io.github.xlopec.tea.time.travel.plugin.util.CollectionExtensionsTest.kt:51</ID>
-    <ID>NoWildcardImports:io.github.reader.app.ui.screens.article.ArticlesPreview.kt:32</ID>
-    <ID>NoWildcardImports:io.github.xlopec.reader.app.ui.screens.AppView.kt:29</ID>
-    <ID>NoWildcardImports:io.github.xlopec.tea.time.travel.plugin.model.Filter.kt:21</ID>
     <ID>TooGenericExceptionCaught:NettyServer.kt$e: Throwable</ID>
     <ID>TooManyFunctions:ComponentTestBase.kt$ComponentTestBase</ID>
     <ID>UndocumentedPublicClass:Date.kt$Date</ID>
-    <ID>UndocumentedPublicClass:Either.kt$Either&lt;out L, out R></ID>
-    <ID>UndocumentedPublicClass:Either.kt$Left&lt;L> : Either</ID>
-    <ID>UndocumentedPublicClass:Either.kt$Right&lt;R> : Either</ID>
     <ID>UndocumentedPublicClass:UUID.kt$UUID</ID>
     <ID>UndocumentedPublicClass:Url.kt$Url</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public actual fun Date.toMillis(): Long</ID>
@@ -39,16 +27,6 @@
     <ID>UndocumentedPublicFunction:Date.kt$public expect fun Date.toMillis(): Long</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public expect fun fromMillis( millis: Long ): Date</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public expect fun now(): Date</ID>
-    <ID>UndocumentedPublicFunction:Either.kt$// @OptIn(ExperimentalContracts::class) public operator fun &lt;L> Either&lt;L, *>.component1(): L?</ID>
-    <ID>UndocumentedPublicFunction:Either.kt$// @OptIn(ExperimentalContracts::class) public operator fun &lt;R> Either&lt;*, R>.component2(): R?</ID>
-    <ID>UndocumentedPublicFunction:Either.kt$@JvmName("LeftUnit") public inline fun Left( ifSuccess: () -> Unit, ): Left&lt;Nothing?></ID>
-    <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R, T, F> Either&lt;L, R>.bimap( left: (L) -> T, right: (R) -> F ): Either&lt;T, F></ID>
-    <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R, T> Either&lt;L, R>.fold( left: (L) -> T, right: (R) -> T ): T</ID>
-    <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R, T> Either&lt;L, R>.mapL( left: (L) -> T, ): Either&lt;T, R></ID>
-    <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R, T> Either&lt;L, R>.mapR( right: (R) -> T ): Either&lt;L, T></ID>
-    <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L, R> Either( ifSuccess: () -> L, ifFailure: (th: Throwable) -> R ): Either&lt;L, R></ID>
-    <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L> Either( ifSuccess: () -> L, ): Either&lt;L, Throwable></ID>
-    <ID>UndocumentedPublicFunction:Either.kt$public inline fun &lt;L> Left( ifSuccess: () -> L, ): Left&lt;L></ID>
     <ID>UndocumentedPublicFunction:Resolver.kt$public suspend operator fun &lt;T> Sink&lt;T>.invoke( elements: Iterable&lt;T>, ): Unit</ID>
     <ID>UndocumentedPublicFunction:Resolver.kt$public suspend operator fun &lt;T> Sink&lt;T>.invoke( vararg elements: T, ): Unit</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public actual fun RandomUUID(): UUID</ID>
@@ -63,8 +41,6 @@
     <ID>UndocumentedPublicFunction:Url.kt$public expect fun Url.toExternalValue(): String</ID>
     <ID>UndocumentedPublicFunction:Url.kt$public expect fun UrlFor( s: String ): Url</ID>
     <ID>UndocumentedPublicProperty:Component.kt$@ExperimentalTeaApi public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
-    <ID>UndocumentedPublicProperty:Either.kt$Left$val value: L</ID>
-    <ID>UndocumentedPublicProperty:Either.kt$Right$val value: R</ID>
     <ID>UndocumentedPublicProperty:Url.kt$public actual val Url.domain: String get() = host</ID>
     <ID>UndocumentedPublicProperty:Url.kt$public actual val Url.domain: String get() = host ?: error("No domain: ${toExternalValue()}")</ID>
     <ID>UndocumentedPublicProperty:Url.kt$public expect val Url.domain: String</ID>

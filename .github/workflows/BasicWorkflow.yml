@@ -25,7 +25,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run static code analysis
-        run: ./gradlew detektAll
+        run: ./gradlew detekt
 
   Android-emulator-tests:
     env:
