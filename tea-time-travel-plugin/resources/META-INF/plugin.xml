@@ -24,7 +24,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <toolWindow anchor="right" icon="/icons/toolbar_plugin_icon.svg"
+        <toolWindow anchor="right"
                     factoryClass="io.github.xlopec.tea.time.travel.plugin.ui.SideToolWindowFactory"
                     id="Time Traveller"/>
 
