@@ -41,7 +41,8 @@ include(
     ":tea-time-travel-adapter-gson",
     ":tea-data",
     ":samples:app",
-    ":samples:shared-app-lib"
+    ":samples:shared-app-lib",
+    ":samples:counter",
 )
 
 includeBuild("compose-jetbrains-theme") {

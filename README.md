@@ -20,67 +20,61 @@ updater (`computeNewState`function), and UI (`renderSnapshot,` function). After 
 them to an appropriate `Component` builder overload.
 
 ```kotlin
-import io.github.xlopec.tea.core.Component
-import io.github.xlopec.tea.core.Initial
-import io.github.xlopec.tea.core.Regular
-import io.github.xlopec.tea.core.ResolveCtx
-import io.github.xlopec.tea.core.Snapshot
-import io.github.xlopec.tea.core.command
-import io.github.xlopec.tea.core.invoke
-import io.github.xlopec.tea.core.sideEffect
+@file:OptIn(ExperimentalTeaApi::class)
+
+package io.github.xlopec.counter
+
+import io.github.xlopec.tea.core.*
 import kotlinx.coroutines.runBlocking
 
-/**Async initializer*/
-suspend fun initializer() =
-  Initial<String, String>("Hello", emptySet())
+/**Async initializer, provides initial state*/
+suspend fun initializer(): Initial<Int, Int> = Initial(0)
 
 /**Some tracker*/
-fun tracker(
-  event: String,
-  ctx: ResolveCtx<String>,
+fun track(
+  event: Snapshot<Int, Int, Int>,
+  ctx: ResolveCtx<Int>,
 ) {
-  ctx sideEffect { println("Tracked: \"$event\"") }
+  ctx sideEffect { println("Track: \"$event\"") }
 }
 
-/**App logic, just appends user message and passes it further to tracker*/
-fun computeNewState(
-  msg: String,
-  state: String
-) = (state + msg) command msg
+/**App logic, for now it just adds delta to count and returns this as result*/
+fun add(
+  delta: Int,
+  counter: Int,
+): Update<Int, Int> = (counter + delta) command delta
 
 /**Some UI, e.g. console*/
-suspend fun renderSnapshot(
-  snapshot: Snapshot<*, *, *>
+suspend fun display(
+  snapshot: Snapshot<*, *, *>,
 ) {
-  val description = when (snapshot) {
-    is Initial -> "Initial snapshot, $snapshot"
-    is Regular -> "Regular snapshot, $snapshot"
-  }
-
-  println(description)
+  println("Display: $snapshot")
 }
 
 fun main() = runBlocking {
   // Somewhere at the application level
   val component = Component(
     initializer = ::initializer,
-    resolver = ::tracker,
-    updater = ::computeNewState,
-    scope = this
+    resolver = ::track,
+    updater = ::add,
+    scope = this,
   )
   // UI = component([message1, message2, ..., message N])
-  component(" ", "world").collect(::renderSnapshot)
+  component(+1, +2, -3).collect(::display)
 }
 ```
 
 The sample above will print the following:
 
 ```text
-Initial snapshot, Initial(currentState=Hello, commands=[])
-Tracked: " "
-Tracked: "world"
-Regular snapshot, Regular(currentState=Hello , commands=[ ], previousState=Hello, message= )
-Regular snapshot, Regular(currentState=Hello world, commands=[world], previousState=Hello , message=world)
+Display: Initial(currentState=0, commands=[])
+Track: "Regular(currentState=1, commands=[1], previousState=0, message=1)"
+Track: "Initial(currentState=0, commands=[])"
+Track: "Regular(currentState=3, commands=[2], previousState=1, message=2)"
+Track: "Regular(currentState=0, commands=[-3], previousState=3, message=-3)"
+Display: Regular(currentState=1, commands=[1], previousState=0, message=1)
+Display: Regular(currentState=3, commands=[2], previousState=1, message=2)
+Display: Regular(currentState=0, commands=[-3], previousState=3, message=-3)
 ```
 
 Real world examples include [Android](https://github.com/Xlopec/Tea-bag/tree/master/samples/app) and
