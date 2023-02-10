@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.xlopec/tea-core?style=plastic&versionPrefix=1.0.0-alpha4)](https://mvnrepository.com/artifact/io.github.xlopec/tea-core)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.xlopec/tea-core?style=plastic&versionPrefix=1.0.0-alpha6)](https://mvnrepository.com/artifact/io.github.xlopec/tea-core)
 [![Jetbrains Market Place](https://img.shields.io/jetbrains/plugin/d/14254)](https://plugins.jetbrains.com/plugin/14254-time-travel-debugger)
 
 # TEA Bag
@@ -88,6 +88,8 @@ Real world examples include [Android](https://github.com/Xlopec/Tea-bag/tree/mas
 and share common entities, application and navigation logic.
 [Intellij plugin](https://github.com/Xlopec/Tea-bag/tree/master/tea-time-travel-plugin) is built on the top of the library
 as well.
+
+For more info visit [Wiki](https://github.com/Xlopec/Tea-bag/wiki) page
 
 ## Main Features
 
