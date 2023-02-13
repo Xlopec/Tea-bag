@@ -30,39 +30,38 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import io.github.xlopec.tea.data.UUID
-import io.github.xlopec.tea.time.travel.protocol.ApplyMessage
-import io.github.xlopec.tea.time.travel.protocol.ApplyState
-import io.github.xlopec.tea.time.travel.protocol.ClientMessage
-import io.github.xlopec.tea.time.travel.protocol.ComponentId
-import io.github.xlopec.tea.time.travel.protocol.NotifyComponentAttached
-import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
-import io.github.xlopec.tea.time.travel.protocol.NotifyServer
-import io.github.xlopec.tea.time.travel.protocol.ServerMessage
+import io.github.xlopec.tea.time.travel.protocol.*
 
 /**
  * Type alias a for Gson specific [ClientMessage]
  */
 public typealias GsonClientMessage = ClientMessage<JsonElement>
+
 /**
  * Type alias a for Gson specific [ApplyMessage]
  */
 public typealias GsonApplyMessage = ApplyMessage<JsonElement>
+
 /**
  * Type alias a for Gson specific [ApplyState]
  */
 public typealias GsonApplyState = ApplyState<JsonElement>
+
 /**
  * Type alias a for Gson specific [ServerMessage]
  */
 public typealias GsonServerMessage = ServerMessage<JsonElement>
+
 /**
  * Type alias a for Gson specific [NotifyComponentSnapshot]
  */
 public typealias GsonNotifyComponentSnapshot = NotifyComponentSnapshot<JsonElement>
+
 /**
  * Type alias a for Gson specific [NotifyServer]
  */
 public typealias GsonNotifyServer = NotifyServer<JsonElement>
+
 /**
  * Type alias a for Gson specific [NotifyComponentAttached]
  */

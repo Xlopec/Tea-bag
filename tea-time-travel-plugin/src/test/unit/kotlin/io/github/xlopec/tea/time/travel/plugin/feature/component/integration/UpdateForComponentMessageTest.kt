@@ -92,7 +92,8 @@ internal class UpdateForComponentMessageTest {
                     resultingOriginalSnapshots.toPersistentList(),
                     resultingFilteredSnapshots.toPersistentList()
                 )
-            ), state
+            ),
+            state
         )
     }
 
@@ -186,8 +187,10 @@ internal class UpdateForComponentMessageTest {
     fun `when update filter with empty substring and SUBSTRING option and plugin state is Started then it's updated properly`() {
 
         val componentId = ComponentId("a")
-        val initialState =
-            StartedFromPairs(ValidTestSettings, NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp1)))
+        val initialState = StartedFromPairs(
+            ValidTestSettings,
+            NonEmptyComponentDebugState(componentId, SnapshotMeta(RandomSnapshotId(), TestTimestamp1))
+        )
 
         UpdateFilter(
             ComponentId("a"),

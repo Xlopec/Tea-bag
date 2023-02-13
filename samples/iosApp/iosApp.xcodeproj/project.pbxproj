@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D0599F3296CAC2000FF55D1 /* ArticleDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D0599F2296CAC2000FF55D1 /* ArticleDetailsView.swift */; };
 		3D07BC4E272DED0F00F58ADA /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D07BC4D272DED0F00F58ADA /* WebView.swift */; };
 		3D0EED4927218D5B0020E30E /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D0EED4827218D5A0020E30E /* SearchBar.swift */; };
 		3D18EDC72717146200D8FA2B /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D18EDC62717146200D8FA2B /* AlertView.swift */; };
@@ -61,6 +62,7 @@
 
 /* Begin PBXFileReference section */
 		230A1D31ACA4687670AE06CC /* Pods_iosAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D0599F2296CAC2000FF55D1 /* ArticleDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleDetailsView.swift; sourceTree = "<group>"; };
 		3D07BC4D272DED0F00F58ADA /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		3D0EED4827218D5A0020E30E /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		3D18EDC62717146200D8FA2B /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
@@ -163,6 +165,7 @@
 				3D07BC4D272DED0F00F58ADA /* WebView.swift */,
 				3D6AC7872737390800351A17 /* AppTabView.swift */,
 				3D2ED41B27AC736E001DEB77 /* SettingsView.swift */,
+				3D0599F2296CAC2000FF55D1 /* ArticleDetailsView.swift */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -488,6 +491,7 @@
 				7555FF83242A565900829871 /* ArticlesView.swift in Sources */,
 				3D77241A27298261008103EE /* MessageView.swift in Sources */,
 				3D6AC7882737390800351A17 /* AppTabView.swift in Sources */,
+				3D0599F3296CAC2000FF55D1 /* ArticleDetailsView.swift in Sources */,
 				3D0EED4927218D5B0020E30E /* SearchBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

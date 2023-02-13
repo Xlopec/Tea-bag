@@ -41,7 +41,8 @@ include(
     ":tea-time-travel-adapter-gson",
     ":tea-data",
     ":samples:app",
-    ":samples:shared-app-lib"
+    ":samples:shared-app-lib",
+    ":samples:counter",
 )
 
 includeBuild("compose-jetbrains-theme") {
@@ -58,10 +59,10 @@ dependencyResolutionManagement {
             version("ktor", "2.0.0")
             version("coroutines", "1.6.4")
             version("compose", "1.3.0")
-            version("compose-compiler", "1.3.2")
-            version("accompanist", "0.26.5-rc")
-            version("sqldelight", "1.5.4")
-            version("arrow", "1.1.3")
+            version("compose-compiler", "1.4.0")
+            version("accompanist", "0.29.0-alpha")
+            version("sqldelight", "1.5.5")
+            version("arrow", "1.1.5")
 
             // Testing
 
@@ -79,9 +80,9 @@ dependencyResolutionManagement {
             library("compose-test-manifest", "androidx.compose.ui", "ui-test-manifest")
                 .versionRef("compose")
 
-            library("android-test-orchestrator", "androidx.test:orchestrator:1.4.1")
+            library("android-test-orchestrator", "androidx.test:orchestrator:1.4.2")
 
-            library("turbine", "app.cash.turbine:turbine:0.11.0")
+            library("turbine", "app.cash.turbine:turbine:0.12.1")
 
             // Coroutines
 
@@ -165,7 +166,7 @@ dependencyResolutionManagement {
 
             // Multiplatform settings
 
-            library("settings-core", "com.russhwolf", "multiplatform-settings-no-arg").version("0.9")
+            library("settings-core", "com.russhwolf", "multiplatform-settings-no-arg").version("1.0.0")
 
             // Compose
 
@@ -199,7 +200,7 @@ dependencyResolutionManagement {
             library("compose-compiler", "androidx.compose.compiler", "compiler")
                 .versionRef("compose-compiler")
 
-            library("compose-activity", "androidx.activity:activity-compose:1.7.0-alpha02")
+            library("compose-activity", "androidx.activity:activity-compose:1.7.0-alpha04")
 
             bundle(
                 "compose",
@@ -250,7 +251,7 @@ dependencyResolutionManagement {
 
             // Atomicfu
 
-            library("atomicfu", "org.jetbrains.kotlinx:atomicfu:0.18.4")
+            library("atomicfu", "org.jetbrains.kotlinx:atomicfu:0.19.0")
 
             // Logging
 
@@ -258,7 +259,7 @@ dependencyResolutionManagement {
 
             // Gson
 
-            library("gson", "com.google.code.gson:gson:2.9.1")
+            library("gson", "com.google.code.gson:gson:2.10.1")
 
             // Arrow Kt
 

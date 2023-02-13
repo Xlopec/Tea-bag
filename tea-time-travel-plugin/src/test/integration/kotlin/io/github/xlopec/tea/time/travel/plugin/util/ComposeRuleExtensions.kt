@@ -6,8 +6,8 @@ import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import io.github.xlopec.tea.time.travel.plugin.environment.TestEnvironment
 import kotlinx.coroutines.runBlocking
 
-operator fun ComposeContentTestRule.invoke(
-    body: suspend ComposeContentTestRule.() -> Unit
+inline operator fun ComposeContentTestRule.invoke(
+    crossinline body: suspend ComposeContentTestRule.() -> Unit
 ) {
     runBlocking {
         body()

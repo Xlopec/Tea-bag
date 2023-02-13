@@ -210,7 +210,7 @@ public fun <M> ((Flow<M>) -> Flow<*>).subscribeIn(
  * @param S state of the application
  * @param C commands to be executed
  */
-public fun <M, C, S> Component(
+public fun <M, S, C> Component(
     initializer: Initializer<S, C>,
     resolver: Resolver<M, S, C>,
     updater: Updater<M, S, C>,

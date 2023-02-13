@@ -24,6 +24,7 @@
 
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 // Top-level build file where you can add configuration options common to all subprojects/modules.
 
@@ -67,7 +68,8 @@ allprojects {
     optIn(DefaultOptIns)
 
     dependencies {
-        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.21.0")
+        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0")
+        detektPlugins("io.gitlab.arturbosch.detekt:detekt-rules-libraries:1.22.0")
     }
 
     afterEvaluate {
@@ -75,48 +77,58 @@ allprojects {
             configureOutputLocation(htmlTestReportsDir, xmlTestReportsDir)
         }
     }
-}
 
-val detektAll by tasks.registering(Detekt::class) {
-    description = "Runs analysis task over whole codebase"
-    debug = false
-    parallel = true
-    ignoreFailures = false
-    disableDefaultRuleSets = false
-    buildUponDefaultConfig = true
-    setSource(files(projectDir))
-    config.setFrom(detektConfig)
-    baseline.set(detektBaseline)
-
-    include("**/*.kt", "**/*.kts")
-    exclude("compose-jetbrains-theme/**", "resources/", "**/build/**", "**/test/java/**")
-
-    reports {
-        xml.required.set(false)
-        txt.required.set(false)
-        html.required.set(true)
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
     }
-}
 
-val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) {
-    ignoreFailures.set(true)
-    parallel.set(true)
-    setSource(files(rootDir))
-    config.setFrom(detektConfig)
-    baseline.set(detektBaseline)
-    include("**/*.kt", "**/*.kts")
-    exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
-}
+    tasks.withType<JavaCompile>().configureEach {
+        targetCompatibility = "11"
+        sourceCompatibility = "11"
+    }
 
-val detektFormat by tasks.registering(Detekt::class) {
-    parallel = true
-    autoCorrect = true
-    ignoreFailures = false
-    setSource(files(projectDir))
+    detekt {
+        parallel = true
+        ignoreFailures = false
+        disableDefaultRuleSets = false
+        buildUponDefaultConfig = true
+        config.setFrom(detektConfig)
+        baseline = file(detektBaseline)
+    }
 
-    include("**/*.kt", "**/*.kts")
-    exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
+    tasks.withType<Detekt>().configureEach {
+        include("**/*.kt", "**/*.kts")
+        exclude("compose-jetbrains-theme/**", "resources/", "**/build/**", "**/test/java/**")
+        setSource(files(projectDir))
+        reports {
+            xml.required.set(false)
+            txt.required.set(false)
+            html.required.set(true)
+        }
+    }
 
-    config.setFrom(detektConfig)
-    baseline.set(detektBaseline)
+    val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) {
+        ignoreFailures.set(true)
+        parallel.set(true)
+        setSource(files(rootDir))
+        config.setFrom(detektConfig)
+        baseline.set(detektBaseline)
+        include("**/*.kt", "**/*.kts")
+        exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
+    }
+
+    val detektFormat by tasks.registering(Detekt::class) {
+        parallel = true
+        autoCorrect = true
+        ignoreFailures = false
+        setSource(files(projectDir))
+
+        include("**/*.kt", "**/*.kts")
+        exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
+
+        config.setFrom(detektConfig)
+        baseline.set(detektBaseline)
+    }
 }

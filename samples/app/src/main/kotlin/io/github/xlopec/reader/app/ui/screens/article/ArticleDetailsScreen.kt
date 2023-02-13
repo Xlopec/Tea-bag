@@ -86,7 +86,8 @@ fun ArticleDetailsScreen(
                     }
                 }
             )
-        }, content = { innerPadding ->
+        },
+        content = { innerPadding ->
 
             if (canGoBack) {
                 BackHandler {

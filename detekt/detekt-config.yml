@@ -61,16 +61,16 @@ complexity:
     active: false
     threshold: 10
     includeStaticDeclarations: false
-  ComplexMethod:
+  CyclomaticComplexMethod:
     active: true
     threshold: 15
     ignoreSingleWhenExpression: false
     ignoreSimpleWhenEntries: false
     ignoreNestingFunctions: false
-    nestingFunctions: run,let,apply,with,also,use,forEach,isNotNull,ifNull
+    nestingFunctions: [ 'run','let','apply','with','also','use','forEach','isNotNull','ifNull' ]
   LabeledExpression:
     active: false
-    ignoredLabels: ""
+    ignoredLabels: [ ]
   LargeClass:
     active: true
     threshold: 600
@@ -151,7 +151,7 @@ exceptions:
   active: true
   ExceptionRaisedInUnexpectedLocation:
     active: false
-    methodNames: 'toString,hashCode,equals,finalize'
+    methodNames: [ 'toString','hashCode','equals','finalize' ]
   InstanceOfCheckForException:
     active: false
     excludes: "**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
@@ -166,7 +166,7 @@ exceptions:
     ignoreLabeled: false
   SwallowedException:
     active: false
-    ignoredExceptionTypes: 'InterruptedException,NumberFormatException,ParseException,MalformedURLException'
+    ignoredExceptionTypes: [ 'InterruptedException','NumberFormatException','ParseException','MalformedURLException' ]
     allowedExceptionNameRegex: "^(_|(ignore|expected).*)"
   ThrowingExceptionFromFinally:
     active: false
@@ -174,7 +174,7 @@ exceptions:
     active: false
   ThrowingExceptionsWithoutMessageOrCause:
     active: false
-    exceptions: 'IllegalArgumentException,IllegalStateException,IOException'
+    exceptions: [ 'IllegalArgumentException','IllegalStateException','IOException' ]
   ThrowingNewInstanceOfSameException:
     active: false
   TooGenericExceptionCaught:
@@ -226,11 +226,17 @@ formatting:
     active: false
     autoCorrect: true
     indentSize: 4
-    continuationIndentSize: 4
   MaximumLineLength:
     active: true
     maxLineLength: 140
   ModifierOrdering:
+    active: true
+    autoCorrect: true
+  ArgumentListWrapping:
+    active: true
+    maxLineLength: 140
+    autoCorrect: true
+  SpacingBetweenDeclarationsWithComments:
     active: true
     autoCorrect: true
   MultiLineIfElse:
@@ -277,7 +283,6 @@ formatting:
   ParameterListWrapping:
     active: true
     autoCorrect: true
-    indentSize: 4
   SpacingAroundColon:
     active: true
     autoCorrect: true
@@ -329,7 +334,7 @@ naming:
   ForbiddenClassName:
     active: false
     excludes: "**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
-    forbiddenName: ''
+    forbiddenName: [ ]
   FunctionMaxLength:
     active: false
     excludes: "**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
@@ -407,8 +412,6 @@ potential-bugs:
   active: true
   Deprecation:
     active: false
-  DuplicateCaseInWhenExpression:
-    active: true
   EqualsAlwaysReturnsTrueOrFalse:
     active: true
   EqualsWithHashCodeExist:
@@ -428,14 +431,10 @@ potential-bugs:
   LateinitUsage:
     active: false
     excludes: "**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
-    ignoreAnnotated: []
+    ignoreAnnotated: [ ]
     ignoreOnClassesPattern: ""
   MapGetWithNotNullAssertionOperator:
     active: false
-  MissingWhenCase:
-    active: true
-  RedundantElseInWhen:
-    active: true
   UnconditionalJumpStatementInLoop:
     active: false
   UnreachableCode:
@@ -455,7 +454,7 @@ style:
     active: false
   DataClassContainsFunctions:
     active: false
-    conversionFunctionPrefix: 'to'
+    conversionFunctionPrefix: [ 'to' ]
   DataClassShouldBeImmutable:
     active: false
   EqualsNullCall:
@@ -471,18 +470,15 @@ style:
     includeLineWrapping: false
   ForbiddenComment:
     active: false
-    values: 'TODO:,FIXME:,STOPSHIP:'
+    values: [ 'TODO:','FIXME:','STOPSHIP:' ]
     allowedPatterns: ""
   ForbiddenImport:
     active: false
-    imports: ''
+    imports: [ ]
     forbiddenPatterns: ""
   ForbiddenMethodCall:
     active: false
-    methods: ''
-  ForbiddenPublicDataClass:
-    active: false
-    ignorePackages: '*.internal,*.internal.*'
+    methods: [ ]
   ForbiddenVoid:
     active: false
     ignoreOverridden: false
@@ -490,17 +486,15 @@ style:
   FunctionOnlyReturningConstant:
     active: true
     ignoreOverridableFunction: true
-    excludedFunctions: 'describeContents'
-    ignoreAnnotated: []
-  LibraryCodeMustSpecifyReturnType:
-    active: true
+    excludedFunctions: [ 'describeContents' ]
+    ignoreAnnotated: [ ]
   LoopWithTooManyJumpStatements:
     active: true
     maxJumpCount: 1
   MagicNumber:
     active: true
     excludes: "**/test/**,**/commonTest/**,**/buildSrc/**,**/screens/**,**/tea-test/**,**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt,**/build.gradle.kts,**/tea-time-travel-plugin/**,**/samples/**"
-    ignoreNumbers: '-1,0,1,2'
+    ignoreNumbers: [ '-1','0','1','2' ]
     ignoreHashCodeFunction: true
     ignorePropertyDeclaration: false
     ignoreLocalVariableDeclaration: false
@@ -545,7 +539,7 @@ style:
   ReturnCount:
     active: true
     max: 2
-    excludedFunctions: "equals"
+    excludedFunctions: [ "equals" ]
     excludeLabeled: false
     excludeReturnFromLambda: true
     excludeGuardClauses: false
@@ -565,7 +559,7 @@ style:
     acceptableLength: 5
   UnnecessaryAbstractClass:
     active: true
-    ignoreAnnotated: []
+    ignoreAnnotated: [ ]
   UnnecessaryAnnotationUseSiteTarget:
     active: false
   UnnecessaryApply:
@@ -591,7 +585,7 @@ style:
     active: false
   UseDataClass:
     active: false
-    ignoreAnnotated: []
+    ignoreAnnotated: [ ]
     allowVars: false
   UseIfInsteadOfWhen:
     active: false
@@ -606,4 +600,13 @@ style:
   WildcardImport:
     active: false
     excludes: "**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
-    excludeImports: 'java.util.*,kotlinx.android.synthetic.*'
+    excludeImports: [ 'java.util.*','kotlinx.android.synthetic.*' ]
+
+libraries:
+  ForbiddenPublicDataClass:
+    active: false
+    ignorePackages: [ '*.internal', '*.internal.*', '*.io.github.reader.app.*', '*.io.github.xlopec.tea.time.travel.plugin.*' ]
+  LibraryEntitiesShouldNotBePublic:
+    active: false
+  LibraryCodeMustSpecifyReturnType:
+    active: true

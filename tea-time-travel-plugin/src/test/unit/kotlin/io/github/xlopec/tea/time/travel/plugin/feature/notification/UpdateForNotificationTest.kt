@@ -48,7 +48,8 @@ internal class UpdateForNotificationTest {
             State(
                 debugger = Debugger(settings = ValidTestSettings),
                 server = StartedTestServerStub,
-            ), nextState
+            ),
+            nextState
         )
         assertTrue(commands.isEmpty())
     }
@@ -96,8 +97,11 @@ internal class UpdateForNotificationTest {
 
             val id = ComponentId(strId)
 
-            if (id.value == "a") ComponentDebugState(id)
-            else NonEmptyComponentDebugState(id, SnapshotMeta(RandomSnapshotId(), TestTimestamp1))
+            if (id.value == "a") {
+                ComponentDebugState(id)
+            } else {
+                NonEmptyComponentDebugState(id, SnapshotMeta(RandomSnapshotId(), TestTimestamp1))
+            }
         }
 
         val meta = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
@@ -155,8 +159,11 @@ internal class UpdateForNotificationTest {
         val otherStates = ComponentDebugStates('a'..'z') { strId ->
             val id = ComponentId(strId)
 
-            if (id.value == "a") ComponentDebugState(id)
-            else NonEmptyComponentDebugState(id, SnapshotMeta(RandomSnapshotId(), TestTimestamp1))
+            if (id.value == "a") {
+                ComponentDebugState(id)
+            } else {
+                NonEmptyComponentDebugState(id, SnapshotMeta(RandomSnapshotId(), TestTimestamp1))
+            }
         }
 
         val componentId = ComponentId("a")
@@ -377,7 +384,8 @@ internal class UpdateForNotificationTest {
                     description = "Session \"${id.value}\" were imported",
                     forFile = importedFrom
                 )
-            ), commands
+            ),
+            commands
         )
     }
 
@@ -456,7 +464,8 @@ internal class UpdateForNotificationTest {
                         )
                     )
                 )
-            ), state1
+            ),
+            state1
         )
 
         val (state2, commands2) = state1.updateForNotificationMessage(message)
@@ -496,7 +505,8 @@ internal class UpdateForNotificationTest {
                         )
                     )
                 )
-            ), state2
+            ),
+            state2
         )
 
         assertEquals(setOf(DoNotifyComponentAttached(id = componentId, isComponentReattached = false)), commands1)

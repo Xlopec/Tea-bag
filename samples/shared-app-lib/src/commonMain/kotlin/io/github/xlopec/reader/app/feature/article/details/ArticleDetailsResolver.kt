@@ -24,11 +24,9 @@
 
 package io.github.xlopec.reader.app.feature.article.details
 
-import io.github.xlopec.reader.app.Message
+interface ArticleDetailsResolver {
 
-fun interface ArticleDetailsResolver {
-
-    suspend fun resolve(
-        command: ArticleDetailsCommand
-    ): Set<Message>
+    fun resolve(
+        command: DoOpenInBrowser
+    )
 }

@@ -26,7 +26,10 @@ import io.github.xlopec.tea.time.travel.plugin.util.setContentWithEnv
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import org.junit.Rule
 import org.junit.Test
 
@@ -47,7 +50,8 @@ class ComponentScenarios {
      */
     @Test
     fun `test component tabs are closed properly`() = rule {
-        val environment = TestEnvironment()
+        val scheduler = TestCoroutineScheduler()
+        val environment = TestEnvironment(scope = CoroutineScope(StandardTestDispatcher(scheduler)))
         val messages = MutableSharedFlow<Message>()
         val idA = ComponentId("Component A")
         val idB = ComponentId("Component B")
@@ -73,11 +77,14 @@ class ComponentScenarios {
             )
         }
 
+        scheduler.advanceUntilIdle()
+        awaitIdle()
         onNodeWithTag(ComponentTabTag(idA)).assertExists(TabDoesNotExistMessage(idA)).assertIsSelected()
         onNodeWithTag(ComponentTabTag(idB)).assertExists(TabDoesNotExistMessage(idB)).assertIsNotSelected()
         onNodeWithTag(ComponentTabTag(idC)).assertExists(TabDoesNotExistMessage(idC)).assertIsNotSelected()
 
         onCloseTabActionNode(idB).performClick()
+        scheduler.advanceUntilIdle()
         awaitIdle()
 
         onNodeWithTag(ComponentTabTag(idA)).assertExists(TabDoesNotExistMessage(idA)).assertIsSelected()
@@ -85,6 +92,7 @@ class ComponentScenarios {
         onNodeWithTag(ComponentTabTag(idC)).assertExists(TabDoesNotExistMessage(idC)).assertIsNotSelected()
 
         onCloseTabActionNode(idC).performClick()
+        scheduler.advanceUntilIdle()
         awaitIdle()
 
         onNodeWithTag(ComponentTabTag(idA)).assertExists(TabDoesNotExistMessage(idA)).assertIsSelected()
@@ -92,6 +100,7 @@ class ComponentScenarios {
         onNodeWithTag(ComponentTabTag(idC)).assertDoesNotExist()
 
         onCloseTabActionNode(idA).performClick()
+        scheduler.advanceUntilIdle()
         awaitIdle()
 
         onNodeWithTag(ComponentTabTag(idA)).assertDoesNotExist()
@@ -110,7 +119,8 @@ class ComponentScenarios {
      */
     @Test
     fun `test component tab gets selected when user clicks on it`() = rule {
-        val environment = TestEnvironment()
+        val scheduler = TestCoroutineScheduler()
+        val environment = TestEnvironment(scope = CoroutineScope(StandardTestDispatcher(scheduler)))
         val messages = MutableSharedFlow<Message>()
         val idA = ComponentId("Component A")
         val idB = ComponentId("Component B")
@@ -136,12 +146,16 @@ class ComponentScenarios {
             )
         }
 
+        scheduler.advanceUntilIdle()
+        awaitIdle()
         onNodeWithTag(ComponentTabTag(idB)).performClick()
+        scheduler.advanceUntilIdle()
         awaitIdle()
 
         onNodeWithTag(ComponentTabTag(idB)).assertIsSelected()
 
         onNodeWithTag(ComponentTabTag(idC)).performClick()
+        scheduler.advanceUntilIdle()
         awaitIdle()
 
         onNodeWithTag(ComponentTabTag(idC)).assertIsSelected()
@@ -156,7 +170,8 @@ class ComponentScenarios {
      */
     @Test
     fun `test component snapshots are rendered when new snapshots are emitted`() = rule {
-        val environment = TestEnvironment()
+        val scheduler = TestCoroutineScheduler()
+        val environment = TestEnvironment(scope = CoroutineScope(StandardTestDispatcher(scheduler)))
         val messages = MutableSharedFlow<Message>()
 
         val snapshotMeta1 = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
@@ -198,6 +213,9 @@ class ComponentScenarios {
                 messages = messages
             )
         }
+
+        scheduler.advanceUntilIdle()
+        awaitIdle()
         // fixme assertExists should be replaced with assertIsDisplayed
         onNodeWithTag(InfoViewTag).assertDoesNotExist()
         onNodeWithTag(Tag(snapshotMeta1)).assertExists()
@@ -213,6 +231,7 @@ class ComponentScenarios {
                 CollectionWrapper()
             )
         )
+        scheduler.advanceUntilIdle()
         awaitIdle()
 
         onNodeWithTag(Tag(snapshotMeta1)).assertExists()

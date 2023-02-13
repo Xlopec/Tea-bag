@@ -19,7 +19,10 @@ import io.github.xlopec.tea.time.travel.plugin.util.invoke
 import io.github.xlopec.tea.time.travel.plugin.util.setContentWithEnv
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import org.junit.Rule
 import org.junit.Test
 
@@ -49,7 +52,8 @@ class StopPluginScenarios {
         )
         val messages = MutableSharedFlow<Message>()
         val started = State(debugger, StartedTestServerStub)
-        val environment = TestEnvironment()
+        val scheduler = TestCoroutineScheduler()
+        val environment = TestEnvironment(scope = CoroutineScope(StandardTestDispatcher(scheduler)))
 
         val component = PluginComponent(environment, Initializer(started))
 
@@ -61,12 +65,14 @@ class StopPluginScenarios {
             )
         }
 
+        scheduler.advanceUntilIdle()
         awaitIdle()
         onNodeWithTag(ComponentTabTag(TestComponentId1)).assertExists()
         onNodeWithTag(ComponentTag(TestComponentId1)).assertExists()
 
         onNodeWithTag(ServerActionButtonTag).performClick()
         // fixme assertExists should be replaced with assertIsDisplayed
+        scheduler.advanceUntilIdle()
         awaitIdle()
         onNodeWithTag(ComponentTabTag(TestComponentId1)).assertExists()
         onNodeWithTag(ComponentTag(TestComponentId1)).assertExists()

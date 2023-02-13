@@ -27,8 +27,6 @@ package io.github.xlopec.reader.app.feature.article.details
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.model.Article
 
-sealed interface ArticleDetailsCommand : Command
-
-data class DoOpenArticle(
+data class DoOpenInBrowser(
     val article: Article,
-) : ArticleDetailsCommand
+) : Command
