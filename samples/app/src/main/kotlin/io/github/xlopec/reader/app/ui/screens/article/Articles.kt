@@ -76,7 +76,7 @@ import java.util.*
 internal const val ProgressIndicatorTag = "Progress Indicator"
 
 @Composable
-fun ArticlesScreen(
+fun Articles(
     state: ArticlesState,
     listState: LazyListState,
     modifier: Modifier = Modifier,

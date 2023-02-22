@@ -41,25 +41,26 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.MessageHandler
+import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.article.list.RefreshArticles
 import io.github.xlopec.reader.app.feature.article.list.ScrollState
 import io.github.xlopec.reader.app.feature.article.list.SyncScrollPosition
 import io.github.xlopec.reader.app.feature.navigation.*
+import io.github.xlopec.reader.app.feature.settings.SettingsScreen
 import io.github.xlopec.reader.app.misc.isException
 import io.github.xlopec.reader.app.misc.isIdle
 import io.github.xlopec.reader.app.misc.isRefreshing
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.ui.misc.InsetAwareTopAppBar
-import io.github.xlopec.reader.app.ui.screens.article.ArticlesScreen
+import io.github.xlopec.reader.app.ui.screens.article.Articles
 import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Favorite
 import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Feed
 import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Settings
 import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Trending
-import io.github.xlopec.reader.app.ui.screens.settings.SettingsScreen
+import io.github.xlopec.reader.app.ui.screens.settings.Settings
 import io.github.xlopec.reader.app.model.FilterType.Favorite as FavoriteQuery
 import io.github.xlopec.reader.app.model.FilterType.Regular as RegularQuery
 import io.github.xlopec.reader.app.model.FilterType.Trending as TrendingQuery
@@ -71,12 +72,50 @@ enum class BottomMenuItem {
     Settings
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+private typealias BottomBarContent = @Composable (BottomMenuItem) -> Unit
+private typealias BottomBarListener = (reselected: Boolean, navigation: Navigation) -> Unit
+
+private val LocalBottomBarListener = compositionLocalOf<BottomBarListener> { error("no bottom bar listener provided") }
+
 @Composable
 fun HomeScreen(
+    appState: AppState,
+    screen: TabScreen,
+    onMessage: MessageHandler,
+) {
+
+    val bottomBar: BottomBarContent = remember {
+        movableContentOf { item ->
+            BottomBar(
+                modifier = Modifier.navigationBarsPadding(),
+                item = item,
+            )
+        }
+    }
+
+    when (screen) {
+        is ArticlesState -> ArticlesScreen(
+            state = screen,
+            onMessage = onMessage,
+            bottomBar = bottomBar
+        )
+
+        is SettingsScreen -> SettingsScreen(
+            state = appState,
+            onMessage = onMessage,
+            bottomBar = bottomBar
+        )
+
+        else -> error("unhandled branch $screen")
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun ArticlesScreen(
     state: ArticlesState,
     onMessage: MessageHandler,
-    content: (@Composable (innerPadding: PaddingValues) -> Unit)?,
+    bottomBar: BottomBarContent,
 ) {
     val refreshState = rememberPullRefreshState(
         refreshing = state.loadable.isRefreshing,
@@ -102,17 +141,17 @@ fun HomeScreen(
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
-                BottomBar(
-                    modifier = Modifier.navigationBarsPadding(),
-                    item = state.filter.toMenuItem(),
-                    handler = { reselected, nav ->
+                CompositionLocalProvider(
+                    LocalBottomBarListener provides { reselected, nav ->
                         onMessage(nav)
 
                         if (reselected) {
                             scrollTrigger.value++
                         }
                     }
-                )
+                ) {
+                    bottomBar(state.filter.toMenuItem())
+                }
 
                 if (scrollTrigger.value != 0) {
                     LaunchedEffect(scrollTrigger.value) {
@@ -121,11 +160,7 @@ fun HomeScreen(
                 }
             },
             content = { innerPadding ->
-                if (content == null) {
-                    ArticlesScreen(state, listState, Modifier.padding(innerPadding), onMessage)
-                } else {
-                    content(innerPadding)
-                }
+                Articles(state, listState, Modifier.padding(innerPadding), onMessage)
             }
         )
 
@@ -138,9 +173,10 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeScreen(
+private fun SettingsScreen(
     state: AppState,
     onMessage: MessageHandler,
+    bottomBar: BottomBarContent,
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -153,14 +189,16 @@ fun HomeScreen(
             )
         },
         bottomBar = {
-            BottomBar(
-                modifier = Modifier.navigationBarsPadding(),
-                item = Settings,
-                handler = { _, nav -> onMessage(nav) }
-            )
+            CompositionLocalProvider(
+                LocalBottomBarListener provides { _, nav ->
+                    onMessage(nav)
+                }
+            ) {
+                bottomBar(Settings)
+            }
         },
         content = { innerPadding ->
-            SettingsScreen(
+            Settings(
                 innerPadding = innerPadding,
                 settings = state.settings,
                 onMessage = onMessage
@@ -170,20 +208,12 @@ fun HomeScreen(
 }
 
 @Composable
-operator fun PaddingValues.plus(other: PaddingValues) =
-    PaddingValues(
-        start = other.calculateStartPadding(LocalLayoutDirection.current),
-        top = other.calculateTopPadding(),
-        end = other.calculateEndPadding(LocalLayoutDirection.current),
-        bottom = other.calculateBottomPadding()
-    )
-
-@Composable
 fun BottomBar(
     modifier: Modifier,
     item: BottomMenuItem,
-    handler: (reselected: Boolean, navigation: Navigation) -> Unit,
 ) {
+    val handler = LocalBottomBarListener.current
+
     BottomNavigation(
         modifier = modifier,
         backgroundColor = MaterialTheme.colors.surface

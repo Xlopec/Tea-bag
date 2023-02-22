@@ -35,13 +35,13 @@ import io.github.xlopec.reader.app.ui.misc.ColumnMessage
 import io.github.xlopec.reader.app.ui.screens.article.ArticleActions
 import io.github.xlopec.reader.app.ui.screens.article.ArticleItem
 import io.github.xlopec.reader.app.ui.screens.article.ArticleSearchHeader
-import io.github.xlopec.reader.app.ui.screens.article.ArticlesScreen
+import io.github.xlopec.reader.app.ui.screens.article.Articles
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
 import io.github.xlopec.tea.data.now
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
 import java.net.URI
 import java.util.*
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 @Preview("Articles search input field")
@@ -49,9 +49,9 @@ fun ArticleSearchHeaderPreview() {
     ThemedPreview {
         ArticleSearchHeader(
             state = ArticlesState(
-                UUID.randomUUID(),
-                Filter(FilterType.Trending, Query.of("some input text")),
-                Loadable(persistentListOf(), false, Idle)
+                id = UUID.randomUUID(),
+                filter = Filter(FilterType.Trending, Query.of("some input text")),
+                loadable = Loadable(persistentListOf(), false, Idle)
             ),
             onMessage = {}
         )
@@ -86,14 +86,14 @@ fun MessagePreview() {
 @Preview("Articles screen preview")
 fun ArticlesScreenPreview() {
     ThemedPreview {
-        ArticlesScreen(
+        Articles(
             state = ArticlesState(
                 FilterType.Trending,
                 PreviewArticles,
                 Idle
             ),
-            ListState,
-            Modifier
+            listState = ListState,
+            modifier = Modifier
         ) {}
     }
 }
@@ -102,14 +102,14 @@ fun ArticlesScreenPreview() {
 @Preview("Articles screen loading next")
 fun ArticlesScreenLoadingNextPreview() {
     ThemedPreview {
-        ArticlesScreen(
+        Articles(
             state = ArticlesState(
                 FilterType.Trending,
                 persistentListOf(PreviewArticle),
                 LoadingNext
             ),
-            ListState,
-            Modifier
+            listState = ListState,
+            modifier = Modifier
         ) {}
     }
 }
@@ -118,14 +118,14 @@ fun ArticlesScreenLoadingNextPreview() {
 @Preview("Articles screen loading")
 fun ArticlesScreenLoadingPreview() {
     ThemedPreview {
-        ArticlesScreen(
+        Articles(
             state = ArticlesState(
                 FilterType.Trending,
                 persistentListOf(),
                 Loading
             ),
-            ListState,
-            Modifier
+            listState = ListState,
+            modifier = Modifier
         ) {}
     }
 }
@@ -134,14 +134,14 @@ fun ArticlesScreenLoadingPreview() {
 @Preview("Articles screen refreshing")
 fun ArticlesScreenRefreshingPreview() {
     ThemedPreview {
-        ArticlesScreen(
+        Articles(
             state = ArticlesState(
                 FilterType.Trending,
                 persistentListOf(PreviewArticle),
                 Refreshing
             ),
-            ListState,
-            Modifier
+            listState = ListState,
+            modifier = Modifier
         ) {}
     }
 }
@@ -161,7 +161,7 @@ fun ArticleItemPreview() {
 private fun ArticlesState(
     type: FilterType,
     articles: PersistentList<Article>,
-    loadableState: LoadableState
+    loadableState: LoadableState,
 ) = ArticlesState(UUID.randomUUID(), Filter(type, Query.of("input")), Loadable(articles, false, loadableState))
 
 private val PreviewArticle = Article(
