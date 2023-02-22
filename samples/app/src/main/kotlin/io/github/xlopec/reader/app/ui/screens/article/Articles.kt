@@ -146,8 +146,8 @@ private fun LazyListScope.articleItems(
                 onMessage = onMessage
             )
 
-            if (index == articles.lastIndex) {
-                LaunchedEffect(Unit) {
+            LaunchedEffect(index == articles.lastIndex) {
+                if (index == articles.lastIndex) {
                     onMessage(LoadNextArticles(screen.id))
                 }
             }
