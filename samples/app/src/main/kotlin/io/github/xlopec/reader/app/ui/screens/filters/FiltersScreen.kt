@@ -51,6 +51,10 @@ import io.github.xlopec.reader.app.ui.screens.article.toSearchHint
 import io.github.xlopec.reader.app.ui.screens.filters.ScreenAnimationState.Begin
 import io.github.xlopec.reader.app.ui.screens.filters.ScreenAnimationState.Finish
 
+const val HeaderSectionId = "header section"
+const val SourcesSectionId = "sources section"
+const val RecentSearchesSubtitle = "recent searches subtitle"
+
 @Composable
 fun FiltersScreen(
     state: FiltersState,
@@ -112,7 +116,7 @@ fun FiltersScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            item {
+            item(key = HeaderSectionId) {
                 SearchHeader(
                     modifier = Modifier
                         .padding(
@@ -133,7 +137,7 @@ fun FiltersScreen(
                 )
             }
 
-            item {
+            item(key = SourcesSectionId) {
                 SourcesSection(
                     id = state.id,
                     modifier = Modifier.fillParentMaxWidth(),
@@ -145,7 +149,7 @@ fun FiltersScreen(
             }
 
             if (state.recentSearches.isNotEmpty()) {
-                suggestionsSection(
+                recentSearchesSection(
                     suggestions = state.recentSearches,
                     childTransitionState = childTransition,
                     onSelect = { suggestion ->

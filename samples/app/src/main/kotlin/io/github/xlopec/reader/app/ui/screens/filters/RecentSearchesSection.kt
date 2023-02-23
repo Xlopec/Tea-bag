@@ -25,31 +25,36 @@
 package io.github.xlopec.reader.app.ui.screens.filters
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.QueryBuilder
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import io.github.xlopec.reader.app.model.Query
+import kotlin.math.abs
 
-@OptIn(ExperimentalFoundationApi::class)
-fun LazyListScope.suggestionsSection(
+private val RecentSearchSwipeThreshold = 120.dp
+
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+fun LazyListScope.recentSearchesSection(
     suggestions: List<Query>,
     childTransitionState: ChildTransitionState,
     onSelect: (Query) -> Unit,
     onDelete: (Query) -> Unit,
 ) {
-    item {
+    item(key = RecentSearchesSubtitle) {
         FiltersSubtitle(
             modifier = Modifier
                 .fillMaxWidth()
@@ -60,25 +65,60 @@ fun LazyListScope.suggestionsSection(
     }
 
     items(suggestions, Query::value) { item ->
-        SuggestionItem(
-            modifier = Modifier
-                .fillParentMaxWidth()
+        val dismissState = rememberDismissState()
+
+        LaunchedEffect(dismissState.isDismissed(DismissDirection.EndToStart)) {
+            if (dismissState.isDismissed(DismissDirection.EndToStart)) {
+                onDelete(item)
+            }
+        }
+
+        SwipeToDismiss(
+            modifier = Modifier.fillParentMaxWidth()
                 .clickable { onSelect(item) }
                 .animateItemPlacement()
                 .alpha(childTransitionState.contentAlpha)
-                .padding(start = 16.dp, end = 8.dp)
                 .offset(y = childTransitionState.listItemOffsetY),
-            suggestion = item,
-            onDelete = onDelete
-        )
+            state = dismissState,
+            dismissThresholds = { FixedThreshold(RecentSearchSwipeThreshold) },
+            directions = setOf(DismissDirection.EndToStart),
+            background = {
+                if (dismissState.dismissDirection == DismissDirection.EndToStart) {
+                    BoxWithConstraints {
+                        val dismissed = with(LocalDensity.current) { abs(dismissState.offset.value).toDp() }
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .offset(x = maxWidth - dismissed)
+                                .background(Color.Red)
+                                .padding(start = 16.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                }
+            }
+        ) {
+            RecentSearchItem(
+                modifier = Modifier.padding(
+                    horizontal = 16.dp,
+                    vertical = 8.dp
+                ),
+                suggestion = item
+            )
+        }
     }
 }
 
 @Composable
-fun SuggestionItem(
+fun RecentSearchItem(
     modifier: Modifier,
     suggestion: Query,
-    onDelete: (Query) -> Unit,
 ) {
     Row(
         modifier = modifier,
@@ -94,12 +134,5 @@ fun SuggestionItem(
             modifier = Modifier.weight(1f),
             text = suggestion.value
         )
-
-        IconButton(onClick = { onDelete(suggestion) }) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = null
-            )
-        }
     }
 }

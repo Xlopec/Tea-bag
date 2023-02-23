@@ -37,7 +37,7 @@ import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.ui.screens.filters.FiltersScreen
-import io.github.xlopec.reader.app.ui.screens.filters.SuggestionItem
+import io.github.xlopec.reader.app.ui.screens.filters.RecentSearchItem
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
 import java.util.*
 
@@ -76,18 +76,18 @@ fun SuggestionItems() {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            SuggestionItem(
+            RecentSearchItem(
                 modifier = Modifier.fillMaxWidth(),
                 suggestion = Query.of("Android search text")!!,
-            ) {}
-            SuggestionItem(
+            )
+            RecentSearchItem(
                 modifier = Modifier.fillMaxWidth(),
                 suggestion = Query.of("IOS search text")!!,
-            ) {}
-            SuggestionItem(
+            )
+            RecentSearchItem(
                 modifier = Modifier.fillMaxWidth(),
                 suggestion = Query.of("Desktop search text")!!,
-            ) {}
+            )
         }
     }
 }
