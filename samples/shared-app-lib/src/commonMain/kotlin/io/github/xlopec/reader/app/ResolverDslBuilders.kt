@@ -20,3 +20,13 @@ suspend inline infix fun <C, M> C.effect(
     }
     return setOfNotNull(action(this))
 }
+
+suspend inline infix fun <C> C.sideEffect(
+    crossinline action: suspend C.() -> Unit,
+): Set<Nothing> {
+    contract {
+        callsInPlace(action, InvocationKind.EXACTLY_ONCE)
+    }
+    action(this)
+    return setOf()
+}

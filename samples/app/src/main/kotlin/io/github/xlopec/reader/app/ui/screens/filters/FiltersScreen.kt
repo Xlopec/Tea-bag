@@ -42,6 +42,7 @@ import io.github.xlopec.reader.app.FilterUpdated
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.feature.article.list.LoadArticles
 import io.github.xlopec.reader.app.feature.filter.FiltersState
+import io.github.xlopec.reader.app.feature.filter.RecentSearchRemoved
 import io.github.xlopec.reader.app.feature.navigation.Pop
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.query
@@ -143,15 +144,19 @@ fun FiltersScreen(
                 )
             }
 
-            if (state.suggestions.isNotEmpty()) {
+            if (state.recentSearches.isNotEmpty()) {
                 suggestionsSection(
-                    suggestions = state.suggestions,
-                    childTransitionState = childTransition
-                ) { suggestion ->
-                    inputState.value = suggestion
-                    performSearch = true
-                    closeScreen = true
-                }
+                    suggestions = state.recentSearches,
+                    childTransitionState = childTransition,
+                    onSelect = { suggestion ->
+                        inputState.value = suggestion
+                        performSearch = true
+                        closeScreen = true
+                    },
+                    onDelete = { suggestion ->
+                        handler(RecentSearchRemoved(state.id, suggestion))
+                    },
+                )
             }
         }
     }

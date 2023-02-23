@@ -27,6 +27,7 @@ package io.github.xlopec.reader.app.feature.filter
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.model.FilterType
+import io.github.xlopec.reader.app.model.Query
 import kotlin.jvm.JvmInline
 
 sealed interface FilterCommand : Command
@@ -36,7 +37,12 @@ value class DoLoadSources(
     val id: ScreenId,
 ) : FilterCommand
 
-data class DoLoadSuggestions(
+data class DoLoadRecentSearches(
     val id: ScreenId,
-    val type: FilterType
+    val type: FilterType,
+) : FilterCommand
+
+data class DoRemoveRecentSearch(
+    val type: FilterType,
+    val query: Query,
 ) : FilterCommand

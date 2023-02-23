@@ -26,17 +26,14 @@ package io.github.xlopec.reader.app.ui.screens.filters
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.QueryBuilder
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,7 +46,8 @@ import io.github.xlopec.reader.app.model.Query
 fun LazyListScope.suggestionsSection(
     suggestions: List<Query>,
     childTransitionState: ChildTransitionState,
-    onSuggestionSelected: (Query) -> Unit,
+    onSelect: (Query) -> Unit,
+    onDelete: (Query) -> Unit,
 ) {
     item {
         FiltersSubtitle(
@@ -65,29 +63,43 @@ fun LazyListScope.suggestionsSection(
         SuggestionItem(
             modifier = Modifier
                 .fillParentMaxWidth()
-                .clickable { onSuggestionSelected(item) }
+                .clickable { onSelect(item) }
                 .animateItemPlacement()
                 .alpha(childTransitionState.contentAlpha)
-                .padding(all = 16.dp)
+                .padding(start = 16.dp, end = 8.dp)
                 .offset(y = childTransitionState.listItemOffsetY),
-            suggestion = item
+            suggestion = item,
+            onDelete = onDelete
         )
     }
 }
 
 @Composable
-private fun SuggestionItem(
+fun SuggestionItem(
     modifier: Modifier,
     suggestion: Query,
+    onDelete: (Query) -> Unit,
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Icon(imageVector = Icons.Default.QueryBuilder, contentDescription = null)
+        Icon(
+            imageVector = Icons.Default.QueryBuilder,
+            contentDescription = null
+        )
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            modifier = Modifier.weight(1f),
+            text = suggestion.value
+        )
 
-        Text(text = suggestion.value)
+        IconButton(onClick = { onDelete(suggestion) }) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = null
+            )
+        }
     }
 }

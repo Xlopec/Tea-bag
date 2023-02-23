@@ -34,24 +34,12 @@ import com.squareup.sqldelight.db.use
 import io.github.xlopec.reader.app.IO
 import io.github.xlopec.reader.app.feature.article.list.Page
 import io.github.xlopec.reader.app.misc.mapNotNullToPersistentList
-import io.github.xlopec.reader.app.model.Article
-import io.github.xlopec.reader.app.model.Author
-import io.github.xlopec.reader.app.model.Description
-import io.github.xlopec.reader.app.model.Filter
-import io.github.xlopec.reader.app.model.FilterType
-import io.github.xlopec.reader.app.model.Query
-import io.github.xlopec.reader.app.model.SourceId
-import io.github.xlopec.reader.app.model.Title
+import io.github.xlopec.reader.app.model.*
 import io.github.xlopec.reader.app.storage.AppDatabase
 import io.github.xlopec.reader.app.storage.ArticlesQueries
 import io.github.xlopec.reader.app.storage.FiltersQueries
 import io.github.xlopec.reader.app.storage.RecentSearchesQueries
-import io.github.xlopec.tea.data.Url
-import io.github.xlopec.tea.data.UrlFor
-import io.github.xlopec.tea.data.fromMillis
-import io.github.xlopec.tea.data.now
-import io.github.xlopec.tea.data.toExternalValue
-import io.github.xlopec.tea.data.toMillis
+import io.github.xlopec.tea.data.*
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentSet
@@ -167,6 +155,10 @@ private class LocalStorageImpl(
         findAllByType(type.ordinal.toLong()) { value_, _, _ -> value_ }
             .executeAsList()
             .mapNotNullToPersistentList(Query::of)
+    }
+
+    override suspend fun deleteRecentSearch(type: FilterType, query: Query) = searchesQuery {
+        delete(type.ordinal.toLong(), query.value)
     }
 
     private suspend inline fun <T> articlesQuery(

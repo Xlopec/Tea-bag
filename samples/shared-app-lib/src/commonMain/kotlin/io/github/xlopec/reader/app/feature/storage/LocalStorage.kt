@@ -76,4 +76,10 @@ interface LocalStorage {
     suspend fun recentSearches(
         type: FilterType
     ): ImmutableList<Query>
+
+    suspend fun deleteRecentSearch(
+        type: FilterType,
+        query: Query
+    )
+
 }

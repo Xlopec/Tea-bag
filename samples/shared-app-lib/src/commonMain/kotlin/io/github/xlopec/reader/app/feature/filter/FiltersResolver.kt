@@ -32,6 +32,7 @@ import io.github.xlopec.reader.app.feature.network.SourceResponseElement
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import io.github.xlopec.reader.app.misc.mapToPersistentList
 import io.github.xlopec.reader.app.model.Source
+import io.github.xlopec.reader.app.sideEffect
 import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.UrlFor
 import io.github.xlopec.tea.data.domain
@@ -53,18 +54,25 @@ private class FiltersResolverImpl<Env> : FiltersResolver<Env>
         command: FilterCommand,
     ): Set<FilterMessage> =
         when (command) {
-            is DoLoadSuggestions -> resolveRecentSearches(command)
-            is DoLoadSources -> resolveSources(command)
+            is DoLoadRecentSearches -> fetchRecentSearches(command)
+            is DoLoadSources -> fetchSources(command)
+            is DoRemoveRecentSearch -> removeRecentSearch(command)
         }
 }
 
-private suspend fun LocalStorage.resolveRecentSearches(
-    command: DoLoadSuggestions,
-) = command effect {
-    SuggestionsLoaded(id, recentSearches(command.type))
+private suspend fun LocalStorage.removeRecentSearch(
+    command: DoRemoveRecentSearch,
+) = command sideEffect {
+    deleteRecentSearch(command.type, command.query)
 }
 
-private suspend fun NewsApi.resolveSources(
+private suspend fun LocalStorage.fetchRecentSearches(
+    command: DoLoadRecentSearches,
+) = command effect {
+    RecentSearchesLoaded(id, recentSearches(command.type))
+}
+
+private suspend fun NewsApi.fetchSources(
     command: DoLoadSources,
 ) = command effect {
     fetchNewsSources().fold(

@@ -24,16 +24,22 @@
 
 package io.github.reader.app.ui.screens.filters
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import io.github.xlopec.reader.app.feature.filter.FiltersState
 import io.github.xlopec.reader.app.misc.Loadable
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.ui.screens.filters.FiltersScreen
+import io.github.xlopec.reader.app.ui.screens.filters.SuggestionItem
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
-import java.util.UUID
+import java.util.*
 
 private val PreviewState = FiltersState(
     UUID.randomUUID(),
@@ -60,5 +66,28 @@ fun FiltersPreviewLight() {
             state = PreviewState,
             handler = {}
         )
+    }
+}
+
+@Preview("Suggestion items")
+@Composable
+fun SuggestionItems() {
+    ThemedPreview {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            SuggestionItem(
+                modifier = Modifier.fillMaxWidth(),
+                suggestion = Query.of("Android search text")!!,
+            ) {}
+            SuggestionItem(
+                modifier = Modifier.fillMaxWidth(),
+                suggestion = Query.of("IOS search text")!!,
+            ) {}
+            SuggestionItem(
+                modifier = Modifier.fillMaxWidth(),
+                suggestion = Query.of("Desktop search text")!!,
+            ) {}
+        }
     }
 }

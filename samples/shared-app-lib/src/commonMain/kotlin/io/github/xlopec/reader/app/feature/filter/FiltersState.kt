@@ -30,7 +30,7 @@ import io.github.xlopec.reader.app.misc.Loadable
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.Source
-import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
 typealias SourcesState = Loadable<Source>
@@ -39,7 +39,7 @@ data class FiltersState(
     override val id: ScreenId,
     val filter: Filter,
     val sourcesState: SourcesState,
-    val suggestions: ImmutableList<Query> = persistentListOf(),
+    val recentSearches: PersistentList<Query> = persistentListOf(),
 ) : FullScreen {
     companion object {
         const val StoreSuggestionsLimit = 10U
