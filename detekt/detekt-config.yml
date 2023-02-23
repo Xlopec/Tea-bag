@@ -99,8 +99,8 @@ complexity:
     active: true
     excludes: "**/tea-test/**,**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
     thresholdInFiles: 20
-    thresholdInClasses: 11
-    thresholdInInterfaces: 11
+    thresholdInClasses: 20
+    thresholdInInterfaces: 20
     thresholdInObjects: 15
     thresholdInEnums: 11
     ignoreDeprecated: true

@@ -81,5 +81,4 @@ interface LocalStorage {
         type: FilterType,
         query: Query
     )
-
 }

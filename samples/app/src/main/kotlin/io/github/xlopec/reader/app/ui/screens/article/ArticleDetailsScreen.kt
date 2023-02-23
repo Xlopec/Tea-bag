@@ -32,6 +32,8 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -43,9 +45,7 @@ import androidx.compose.material.icons.Icons.Default
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,13 +62,17 @@ fun ArticleDetailsScreen(
     screen: ArticleDetailsState,
     onMessage: MessageHandler,
 ) {
-    val (canGoBack, backStackUpdater) = remember(screen.id) { mutableStateOf(false) }
-    val (progress, loadProgressUpdater) = remember(screen.id) { mutableStateOf(0) }
-    val (title, titleUpdater) = remember(screen.id) { mutableStateOf(screen.article.title.value) }
+    val (canGoBack, onBackStackUpdated) = remember { mutableStateOf(false) }
+    val (progress, onProgressUpdated) = remember { mutableStateOf(0) }
+    val (title, onTitleUpdate) = remember { mutableStateOf(screen.article.title.value) }
     val context = LocalContext.current
-    val view = remember(screen.id) {
-        AppWebView(context, titleUpdater, loadProgressUpdater, backStackUpdater)
+    val view = remember {
+        AppWebView(context, onTitleUpdate, onProgressUpdated, onBackStackUpdated)
             .apply { loadUrl(screen.article.url.toExternalValue()) }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose(view::destroy)
     }
 
     Scaffold(
@@ -105,6 +109,7 @@ fun ArticleDetailsScreen(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ArticleDetailsToolbar(
     canGoBack: Boolean,
@@ -126,6 +131,7 @@ private fun ArticleDetailsToolbar(
         },
         title = {
             Text(
+                modifier = Modifier.basicMarquee(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 text = title
@@ -145,9 +151,9 @@ private fun ArticleDetailsToolbar(
 @SuppressLint("SetJavaScriptEnabled")
 private fun AppWebView(
     context: Context,
-    titleUpdater: (String) -> Unit,
-    progressUpdater: (Int) -> Unit,
-    backStackUpdater: (Boolean) -> Unit,
+    onTitleUpdated: (String) -> Unit,
+    onProgressUpdated: (Int) -> Unit,
+    onBackStackUpdated: (Boolean) -> Unit,
 ) = WebView(context).apply {
     settings.javaScriptEnabled = true
     settings.setSupportZoom(true)
@@ -155,12 +161,12 @@ private fun AppWebView(
         override fun onReceivedTitle(
             view: WebView,
             title: String,
-        ) = titleUpdater(title)
+        ) = onTitleUpdated(title)
 
         override fun onProgressChanged(
             view: WebView,
             newProgress: Int,
-        ) = progressUpdater(newProgress)
+        ) = onProgressUpdated(newProgress)
     }
     webViewClient = object : WebViewClient() {
         override fun doUpdateVisitedHistory(
@@ -169,7 +175,7 @@ private fun AppWebView(
             isReload: Boolean,
         ) {
             if (!isReload) {
-                backStackUpdater(view.canGoBack())
+                onBackStackUpdated(view.canGoBack())
             }
         }
     }
