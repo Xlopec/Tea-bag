@@ -27,29 +27,18 @@ package io.github.xlopec.tea.time.travel.gson.serialization.test
 import com.google.gson.JsonNull
 import com.google.gson.JsonPrimitive
 import com.google.gson.reflect.TypeToken
-import io.github.xlopec.tea.data.Id
-import io.github.xlopec.tea.data.Name
-import io.github.xlopec.tea.data.Photo
-import io.github.xlopec.tea.data.UUID
-import io.github.xlopec.tea.data.User
+import io.github.xlopec.tea.data.*
 import io.github.xlopec.tea.time.travel.gson.Gson
 import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
 import io.github.xlopec.tea.time.travel.gson.serialization.data.Singleton
-import io.github.xlopec.tea.time.travel.protocol.ApplyMessage
-import io.github.xlopec.tea.time.travel.protocol.ApplyState
-import io.github.xlopec.tea.time.travel.protocol.ClientMessage
-import io.github.xlopec.tea.time.travel.protocol.ComponentId
+import io.github.xlopec.tea.time.travel.protocol.*
 import io.github.xlopec.tea.time.travel.protocol.NotifyClient
-import io.github.xlopec.tea.time.travel.protocol.NotifyComponentAttached
-import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
-import io.github.xlopec.tea.time.travel.protocol.NotifyServer
-import io.github.xlopec.tea.time.travel.protocol.ServerMessage
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertNull
 
 @RunWith(JUnit4::class)
 internal class DefaultGsonSerializersTest {
@@ -81,7 +70,6 @@ internal class DefaultGsonSerializersTest {
         val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
 
         assertEquals(message, fromJson)
-        // fromJson shouldBe message
     }
 
     @Test
@@ -104,7 +92,6 @@ internal class DefaultGsonSerializersTest {
         val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
 
         assertEquals(message, fromJson)
-        // fromJson shouldBe message
     }
 
     @Test
@@ -120,7 +107,6 @@ internal class DefaultGsonSerializersTest {
             val fromJson = gsonSerializer.fromJson(json, NotifyClient::class.java)
 
             assertEquals(applyMessage, fromJson)
-            // fromJson shouldBe applyMessage
         }
     }
 
@@ -146,7 +132,6 @@ internal class DefaultGsonSerializersTest {
             val fromJson = fromJson(json, ClientMessage::class.java)
 
             assertEquals(applyMessage, fromJson)
-            // fromJson shouldBe applyMessage
         }
     }
 
@@ -168,7 +153,6 @@ internal class DefaultGsonSerializersTest {
         )
 
         assertEquals(nullableList, fromJson)
-        // fromJson shouldBe nullableList
     }
 
     @Test
@@ -178,7 +162,6 @@ internal class DefaultGsonSerializersTest {
         val fromJson = gsonSerializer.fromJson(json, Any::class.java)
 
         assertNull(fromJson)
-        // fromJson shouldBe null
     }
 
     @Test
@@ -191,7 +174,6 @@ internal class DefaultGsonSerializersTest {
             val fromJson = fromJson(json, ClientMessage::class.java)
 
             assertEquals(applyMessage, fromJson)
-            // fromJson shouldBe applyMessage
         }
     }
 
@@ -203,7 +185,6 @@ internal class DefaultGsonSerializersTest {
             val fromJson = fromJson(json, Singleton::class.java)
 
             assertIs<Singleton>(fromJson)
-            // fromJson should beInstanceOf(Singleton::class)
         }
     }
 
@@ -219,7 +200,6 @@ internal class DefaultGsonSerializersTest {
         val fromJson = fromJson(json, NotifyServer::class.java)
 
         assertEquals(message, fromJson)
-        // fromJson shouldBe message
     }
 }
 

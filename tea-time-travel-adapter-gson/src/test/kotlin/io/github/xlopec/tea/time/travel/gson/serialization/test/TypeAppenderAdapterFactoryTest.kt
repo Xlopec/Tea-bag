@@ -25,20 +25,15 @@
 package io.github.xlopec.tea.time.travel.gson.serialization.test
 
 import io.github.xlopec.tea.time.travel.gson.Gson
-import io.github.xlopec.tea.time.travel.gson.serialization.data.A
-import io.github.xlopec.tea.time.travel.gson.serialization.data.Container
-import io.github.xlopec.tea.time.travel.gson.serialization.data.D
-import io.github.xlopec.tea.time.travel.gson.serialization.data.PolyA
-import io.github.xlopec.tea.time.travel.gson.serialization.data.PolyB
-import io.github.xlopec.tea.time.travel.gson.serialization.data.PolyContainer
+import io.github.xlopec.tea.time.travel.gson.serialization.data.*
 import io.github.xlopec.tea.time.travel.gson.serialization.serializer.MapDeserializer
 import io.github.xlopec.tea.time.travel.gson.serialization.serializer.PersistentListSerializer
-import kotlin.test.assertEquals
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import kotlin.test.assertEquals
 
 @RunWith(JUnit4::class)
 internal class TypeAppenderAdapterFactoryTest {
@@ -59,7 +54,6 @@ internal class TypeAppenderAdapterFactoryTest {
         val fromJson = fromJson(json, A::class.java)
 
         assertEquals(message, fromJson)
-        // fromJson shouldBe message
     }
 
     @Test
@@ -70,7 +64,6 @@ internal class TypeAppenderAdapterFactoryTest {
         val fromJson = fromJson(json, String::class.java)
 
         assertEquals(message, fromJson)
-        // fromJson shouldBe message
     }
 
     @Test
@@ -86,7 +79,6 @@ internal class TypeAppenderAdapterFactoryTest {
             val fromJson = fromJson(json, Container::class.java)
 
             assertEquals(container, fromJson)
-            // fromJson shouldBe container
         }
 
     @Test
@@ -102,6 +94,5 @@ internal class TypeAppenderAdapterFactoryTest {
             val fromJson = fromJson(json, PolyContainer::class.java)
 
             assertEquals(container, fromJson)
-            // fromJson shouldBe container
         }
 }
