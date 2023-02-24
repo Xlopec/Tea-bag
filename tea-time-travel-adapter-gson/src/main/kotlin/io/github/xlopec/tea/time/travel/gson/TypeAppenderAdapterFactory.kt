@@ -126,10 +126,7 @@ private fun <T> JsonObject.asAny(
 @Suppress("UNCHECKED_CAST")
 private fun <T> TypeToken(
     name: String
-): TypeToken<T> =
-    typeTokenCache.getOrPut(name) { TypeToken.get(Class.forName(name)) } as TypeToken<T>
-
-private val typeTokenCache = mutableMapOf<String, TypeToken<*>>()
+): TypeToken<T> = TypeToken.get(Class.forName(name)) as TypeToken<T>
 
 private fun <T> JsonObject.type(): TypeToken<T>? = get("@type")?.asString?.let(::TypeToken)
 
