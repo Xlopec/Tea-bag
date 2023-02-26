@@ -16,21 +16,9 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonNull
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
-import io.github.xlopec.tea.time.travel.plugin.model.BooleanWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.CharWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Null
-import io.github.xlopec.tea.time.travel.plugin.model.NumberWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Property
-import io.github.xlopec.tea.time.travel.plugin.model.Ref
-import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
-import io.github.xlopec.tea.time.travel.plugin.model.Type
-import io.github.xlopec.tea.time.travel.plugin.model.Value
+import com.google.gson.*
+import io.github.xlopec.tea.time.travel.gson.SyntheticType
+import io.github.xlopec.tea.time.travel.plugin.model.*
 
 internal fun Value.toJsonElement(): JsonElement =
     when (this) {
@@ -53,7 +41,7 @@ internal fun JsonElement.toValue(): Value =
     }
 
 internal fun Ref.toJsonElement(): JsonElement = JsonObject().apply {
-    addProperty("@type", type.name)
+    addProperty(SyntheticType, type.name)
 
     for (property in properties) {
         add(property.name, property.v.toJsonElement())
@@ -72,7 +60,7 @@ internal inline fun <T> Collection<T>.toJsonArray(
 
 internal fun JsonObject.toRef(): Ref {
 
-    val entrySet = entrySet().filter { e -> e.key != "@type" }
+    val entrySet = entrySet().filter { e -> e.key != SyntheticType }
     // should be sorted to produce idempotent values
     val props = entrySet.sortedBy { it.key }.mapTo(LinkedHashSet(entrySet.size)) { entry ->
         Property(
@@ -81,7 +69,7 @@ internal fun JsonObject.toRef(): Ref {
         )
     }
 
-    return Ref(Type.of(this["@type"].asString), props)
+    return Ref(Type.of(this[SyntheticType].asString), props)
 }
 
 internal fun JsonPrimitive.toValue(): Value = when {

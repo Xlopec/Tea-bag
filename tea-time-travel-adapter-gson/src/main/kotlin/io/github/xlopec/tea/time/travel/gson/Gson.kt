@@ -75,7 +75,7 @@ public typealias GsonNotifyComponentAttached = NotifyComponentAttached<JsonEleme
  * as the resulting json will have all needed meta information appended that in turn
  * is needed by the debug plugin to work correctly
  *
- * @see TypeAppenderAdapterFactory
+ * @see MetadataAppenderAdapterFactory
  * @param config configuration block
  */
 public fun Gson(
@@ -87,6 +87,6 @@ public fun Gson(
         .registerTypeHierarchyAdapter(ClientMessage::class.java, ClientMessageAdapter)
         .registerTypeAdapter(UUID::class.java, UUIDAdapter)
         .registerTypeAdapter(ComponentId::class.java, ComponentIdAdapter)
-        .registerTypeAdapterFactory(TypeAppenderAdapterFactory)
+        .registerTypeAdapterFactory(MetadataAppenderAdapterFactory)
         .apply(config)
         .create()

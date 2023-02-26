@@ -26,21 +26,11 @@
 
 package io.github.xlopec.tea.time.travel.gson
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
-import com.google.gson.JsonSerializationContext
+import com.google.gson.*
 import com.google.gson.JsonSerializer
 import io.github.xlopec.tea.data.UUID
 import io.github.xlopec.tea.data.toHumanReadable
-import io.github.xlopec.tea.time.travel.protocol.ApplyMessage
-import io.github.xlopec.tea.time.travel.protocol.ApplyState
-import io.github.xlopec.tea.time.travel.protocol.ComponentId
-import io.github.xlopec.tea.time.travel.protocol.NotifyComponentAttached
-import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
+import io.github.xlopec.tea.time.travel.protocol.*
 import java.lang.reflect.Type
 
 internal object UUIDAdapter : JsonSerializer<UUID>, JsonDeserializer<UUID> {
@@ -88,7 +78,7 @@ internal object ServerMessageAdapter : JsonSerializer<GsonServerMessage>,
             is GsonNotifyComponentAttached -> src.toJsonElement()
         }
 
-        tree.addProperty("@type", src::class.java.name)
+        tree.addProperty(SyntheticType, src::class.java.name)
 
         return tree
     }
@@ -99,7 +89,7 @@ internal object ServerMessageAdapter : JsonSerializer<GsonServerMessage>,
         context: JsonDeserializationContext
     ): GsonServerMessage = json.asJsonObject.let { obj ->
 
-        when (obj["@type"].asString) {
+        when (obj[SyntheticType].asString) {
             NotifyComponentSnapshot::class.java.name -> json.asNotifyComponentSnapshot()
             NotifyComponentAttached::class.java.name -> json.asNotifyComponentAttached()
 
@@ -146,7 +136,7 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
             is GsonApplyState -> src.toJsonElement()
         }
 
-        tree.addProperty("@type", src::class.java.name)
+        tree.addProperty(SyntheticType, src::class.java.name)
 
         return tree
     }
@@ -157,7 +147,7 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
         context: JsonDeserializationContext
     ): GsonClientMessage = json.asJsonObject.let { obj ->
 
-        when (obj["@type"].asString) {
+        when (obj[SyntheticType].asString) {
             ApplyMessage::class.java.name -> json.asApplyMessage()
             ApplyState::class.java.name -> json.asApplyState()
             else -> error("unknown server message type, json\n\n$json\n")

@@ -49,7 +49,7 @@ object PersistentListSerializer : Serializer<PersistentList<*>> {
     ): PersistentList<*> = json.asJsonArray.map { element ->
         // For our app we know that we always deal with objects,
         // so it's safe to access "@type" property without additional checks
-        context.deserialize<Any?>(element, Class.forName(element.asJsonObject["@type"].asString))
+        context.deserialize<Any?>(element, Class.forName(element.asJsonObject[TYPE_DENOMINATOR].asString))
     }.toPersistentList()
 
     override fun serialize(
@@ -69,7 +69,7 @@ object PersistentSetSerializer : Serializer<PersistentSet<*>> {
     ): PersistentSet<*> = json.asJsonArray.map { element ->
         // For our app we know that we always deal with objects,
         // so it's safe to access "@type" property without additional checks
-        context.deserialize<Any?>(element, Class.forName(element.asJsonObject["@type"].asString))
+        context.deserialize<Any?>(element, Class.forName(element.asJsonObject[TYPE_DENOMINATOR].asString))
     }.toPersistentSet()
 
     override fun serialize(

@@ -34,6 +34,10 @@ val allTests by tasks.creating(Task::class) {
     dependsOn("test")
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.freeCompilerArgs += listOf("-Xcontext-receivers")
+}
+
 dependencies {
 
     api(project(":tea-time-travel-protocol"))

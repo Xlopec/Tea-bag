@@ -36,7 +36,7 @@ import org.junit.runners.JUnit4
 import kotlin.test.assertEquals
 
 @RunWith(JUnit4::class)
-internal class TypeAppenderAdapterFactoryTest {
+internal class MetadataAppenderAdapterFactoryTest {
 
     private val serializer = Gson {
         setPrettyPrinting()
