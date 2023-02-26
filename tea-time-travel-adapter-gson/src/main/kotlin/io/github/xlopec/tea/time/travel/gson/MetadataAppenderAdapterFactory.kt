@@ -123,9 +123,7 @@ internal object MetadataAppenderAdapterFactory : TypeAdapterFactory {
                 .fromJsonTreeWithMetadata(type)
         }
     }
-
 }
-
 
 /**
  * Serializes current receiver instance to a JSON element. Depending on the type of the JSON element this function does the following:
@@ -140,7 +138,7 @@ private fun <T> T?.toJsonTreeWithMetaData(
         .toJsonTree(this@toJsonTreeWithMetaData)
 
     return if (jsonElement.isJsonObject) {
-        jsonElement.asJsonObject.addProperty(SyntheticType, type)
+        jsonElement.asJsonObject.addTypeProperty(type)
         jsonElement
     } else {
         JsonObject(type, jsonElement)

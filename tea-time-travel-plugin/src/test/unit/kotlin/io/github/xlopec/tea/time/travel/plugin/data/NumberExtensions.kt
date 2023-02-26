@@ -18,4 +18,4 @@ package io.github.xlopec.tea.time.travel.plugin.data
 
 inline fun <T> Int.times(
     block: () -> T
-): List<T> = (0 until this).map { block() }
+): List<T> = (0 ..< this).map { block() }

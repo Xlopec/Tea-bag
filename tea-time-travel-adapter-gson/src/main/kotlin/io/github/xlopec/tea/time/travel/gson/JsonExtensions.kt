@@ -8,39 +8,47 @@ internal fun JsonObject(
     type: TypeToken<*>,
     value: JsonElement,
 ) = JsonObject().apply {
-    addProperty(SyntheticType, type)
+    addTypeProperty(type)
     add(SyntheticValue, value)
 }
 
-internal fun JsonObject.addProperty(name: String, type: TypeToken<*>) {
-    addProperty(name, type.rawType.name)
+internal fun JsonObject.addTypeProperty(
+    type: TypeToken<*>
+) {
+    addTypeProperty(type.rawType)
 }
 
-@Suppress("UNCHECKED_CAST")
+internal fun JsonObject.addTypeProperty(
+    type: Class<*>
+) {
+    addProperty(SyntheticType, type.name)
+}
+
+/*@Suppress("UNCHECKED_CAST")
 internal fun <T> TypeToken(
     name: String,
-): TypeToken<T> = TypeToken.get(Class.forName(name)) as TypeToken<T>
+): TypeToken<T> = TypeToken.get(Class.forName(name)) as TypeToken<T>*/
 
-internal inline val JsonObject.syntheticType: TypeToken<Any?>
-    get() = TypeToken(this[SyntheticType].asString)
+internal inline val JsonObject.rawSyntheticType: String
+    get() = this[SyntheticType].asString
 
 internal inline val JsonObject.syntheticValue: JsonElement
     get() = this[SyntheticValue]
 
 internal val JsonObject.nonSyntheticValue: JsonElement
     get() {
-        require(isSyntheticObject) { "can't calculate value for non synthetic object, was $this" }
+        require(isSyntheticObject) { "can't extract value for non synthetic object, was $this" }
         return if (syntheticValue.isJsonArray) {
             // removes metadata from array elements
             val jsArray = syntheticValue.asJsonArray
 
-            for (i in 0 until jsArray.size()) {
+            for (i in 0 ..< jsArray.size()) {
                 val rawElement = jsArray[i]
-                // remove metadata if needed
+                // removes metadata only if needed
                 val sanitizedElement = if (rawElement.isJsonObject && rawElement.asJsonObject.isSyntheticObject) {
                     rawElement.asJsonObject.syntheticValue
                 } else {
-                    rawElement
+                    continue
                 }
                 jsArray.set(i, sanitizedElement)
             }

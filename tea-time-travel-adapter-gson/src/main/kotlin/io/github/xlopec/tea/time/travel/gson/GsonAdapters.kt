@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-@file:Suppress("UNCHECKED_CAST", "FunctionName")
+@file:Suppress("FunctionName")
 
 package io.github.xlopec.tea.time.travel.gson
 
@@ -38,13 +38,13 @@ internal object UUIDAdapter : JsonSerializer<UUID>, JsonDeserializer<UUID> {
     override fun serialize(
         src: UUID,
         typeOfSrc: Type?,
-        context: JsonSerializationContext
+        context: JsonSerializationContext,
     ): JsonElement = JsonPrimitive(src.toHumanReadable())
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext
+        context: JsonDeserializationContext,
     ): UUID = UUID.fromString(json.asString)
 }
 
@@ -53,13 +53,13 @@ internal object ComponentIdAdapter : JsonSerializer<ComponentId>, JsonDeserializ
     override fun serialize(
         src: ComponentId,
         typeOfSrc: Type?,
-        context: JsonSerializationContext
+        context: JsonSerializationContext,
     ): JsonElement = JsonPrimitive(src.value)
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext
+        context: JsonDeserializationContext,
     ): ComponentId =
         ComponentId(json.asString)
 }
@@ -67,10 +67,16 @@ internal object ComponentIdAdapter : JsonSerializer<ComponentId>, JsonDeserializ
 internal object ServerMessageAdapter : JsonSerializer<GsonServerMessage>,
     JsonDeserializer<GsonServerMessage> {
 
+    private const val MessageKey = "message"
+    private const val OldStateKey = "oldState"
+    private const val NewStateKey = "newState"
+    private const val StateKey = "State"
+    private const val CommandsKey = "commands"
+
     override fun serialize(
         src: GsonServerMessage,
         typeOfSrc: Type?,
-        context: JsonSerializationContext
+        context: JsonSerializationContext,
     ): JsonElement {
 
         val tree: JsonObject = when (src) {
@@ -78,7 +84,7 @@ internal object ServerMessageAdapter : JsonSerializer<GsonServerMessage>,
             is GsonNotifyComponentAttached -> src.toJsonElement()
         }
 
-        tree.addProperty(SyntheticType, src::class.java.name)
+        tree.addTypeProperty(src::class.java)
 
         return tree
     }
@@ -86,10 +92,10 @@ internal object ServerMessageAdapter : JsonSerializer<GsonServerMessage>,
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext
+        context: JsonDeserializationContext,
     ): GsonServerMessage = json.asJsonObject.let { obj ->
 
-        when (obj[SyntheticType].asString) {
+        when (obj.rawSyntheticType) {
             NotifyComponentSnapshot::class.java.name -> json.asNotifyComponentSnapshot()
             NotifyComponentAttached::class.java.name -> json.asNotifyComponentAttached()
 
@@ -99,27 +105,30 @@ internal object ServerMessageAdapter : JsonSerializer<GsonServerMessage>,
 
     private fun GsonNotifyComponentSnapshot.toJsonElement() =
         JsonObject {
-            add("message", message)
-            add("oldState", oldState)
-            add("newState", newState)
-            add("commands", commands.toJsonArray())
+            add(MessageKey, message)
+            add(OldStateKey, oldState)
+            add(NewStateKey, newState)
+            add(CommandsKey, commands.toJsonArray())
         }
 
     private fun JsonElement.asNotifyComponentSnapshot() =
         NotifyComponentSnapshot(
-            asJsonObject["message"],
-            asJsonObject["oldState"],
-            asJsonObject["newState"],
-            asJsonObject["commands"].asJsonArray.toJsonElementSet(),
+            asJsonObject[MessageKey],
+            asJsonObject[OldStateKey],
+            asJsonObject[NewStateKey],
+            asJsonObject[CommandsKey].asJsonArray.toJsonElementSet(),
         )
 
     private fun GsonNotifyComponentAttached.toJsonElement(): JsonObject = JsonObject {
-        add("state", state)
-        add("commands", commands.toJsonArray())
+        add(StateKey, state)
+        add(CommandsKey, commands.toJsonArray())
     }
 
     private fun JsonElement.asNotifyComponentAttached() =
-        NotifyComponentAttached(asJsonObject["state"], asJsonObject["commands"].asJsonArray.toJsonElementSet())
+        NotifyComponentAttached(
+            state = asJsonObject[StateKey],
+            commands = asJsonObject[CommandsKey].asJsonArray.toJsonElementSet()
+        )
 }
 
 internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
@@ -128,7 +137,7 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
     override fun serialize(
         src: GsonClientMessage,
         typeOfSrc: Type?,
-        context: JsonSerializationContext
+        context: JsonSerializationContext,
     ): JsonElement {
 
         val tree: JsonObject = when (src) {
@@ -136,7 +145,7 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
             is GsonApplyState -> src.toJsonElement()
         }
 
-        tree.addProperty(SyntheticType, src::class.java.name)
+        tree.addTypeProperty(src::class.java)
 
         return tree
     }
@@ -144,10 +153,10 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext
+        context: JsonDeserializationContext,
     ): GsonClientMessage = json.asJsonObject.let { obj ->
 
-        when (obj[SyntheticType].asString) {
+        when (obj.rawSyntheticType) {
             ApplyMessage::class.java.name -> json.asApplyMessage()
             ApplyState::class.java.name -> json.asApplyState()
             else -> error("unknown server message type, json\n\n$json\n")
@@ -169,7 +178,7 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
 }
 
 private inline fun JsonObject(
-    builder: JsonObject.() -> Unit
+    builder: JsonObject.() -> Unit,
 ): JsonObject = JsonObject().apply(builder)
 
 private fun Set<JsonElement>.toJsonArray() = JsonArray(size).apply { this@toJsonArray.forEach(::add) }

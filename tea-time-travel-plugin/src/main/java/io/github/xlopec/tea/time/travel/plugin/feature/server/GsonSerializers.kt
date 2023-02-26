@@ -59,7 +59,6 @@ internal inline fun <T> Collection<T>.toJsonArray(
     }
 
 internal fun JsonObject.toRef(): Ref {
-
     val entrySet = entrySet().filter { e -> e.key != SyntheticType }
     // should be sorted to produce idempotent values
     val props = entrySet.sortedBy { it.key }.mapTo(LinkedHashSet(entrySet.size)) { entry ->

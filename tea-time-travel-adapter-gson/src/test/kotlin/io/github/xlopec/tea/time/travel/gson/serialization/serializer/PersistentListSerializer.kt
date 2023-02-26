@@ -25,7 +25,6 @@
 package io.github.xlopec.tea.time.travel.gson.serialization.serializer
 
 import com.google.gson.*
-import io.github.xlopec.tea.time.travel.gson.SyntheticType
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import java.lang.reflect.ParameterizedType
@@ -46,7 +45,7 @@ internal object PersistentListSerializer : JsonSerializer<PersistentList<*>>,
             .map { element ->
                 context.deserialize<Any?>(
                     element,
-                    if (genericArgType.isJsonPrimitive) genericArgType else element.asJsonObject.type
+                    genericArgType
                 )
             }
             .toList()
@@ -63,9 +62,3 @@ internal object PersistentListSerializer : JsonSerializer<PersistentList<*>>,
         }
     }
 }
-
-private inline val Class<*>.isJsonPrimitive: Boolean
-    get() = kotlin.javaPrimitiveType != null || this == String::class.java
-
-private inline val JsonObject.type: Class<*>
-    get() = Class.forName(this[SyntheticType].asString)

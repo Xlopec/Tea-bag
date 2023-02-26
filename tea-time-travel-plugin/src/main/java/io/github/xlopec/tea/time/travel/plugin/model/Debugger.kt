@@ -194,7 +194,7 @@ private fun calculateNextSelectionIndex(
     size: Int,
 ): Int {
     require(size > 0) { "Can't calculate selection index for empty collection" }
-    require(currentSelectionIndex in 0 until size) {
+    require(currentSelectionIndex in 0 ..< size) {
         "Precondition 0 < $currentSelectionIndex (currentSelectionIndex) < $size (size) doesn't hold"
     }
     return (currentSelectionIndex - 1).takeIf { it >= 0 } ?: ((currentSelectionIndex + 1) % size)
