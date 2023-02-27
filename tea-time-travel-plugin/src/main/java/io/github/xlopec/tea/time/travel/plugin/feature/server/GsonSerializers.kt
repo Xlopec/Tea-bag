@@ -18,6 +18,8 @@ package io.github.xlopec.tea.time.travel.plugin.feature.server
 
 import com.google.gson.*
 import io.github.xlopec.tea.time.travel.gson.SyntheticType
+import io.github.xlopec.tea.time.travel.gson.addMetadata
+import io.github.xlopec.tea.time.travel.gson.rawSyntheticType
 import io.github.xlopec.tea.time.travel.plugin.model.*
 
 internal fun Value.toJsonElement(): JsonElement =
@@ -41,7 +43,7 @@ internal fun JsonElement.toValue(): Value =
     }
 
 internal fun Ref.toJsonElement(): JsonElement = JsonObject().apply {
-    addProperty(SyntheticType, type.name)
+    addMetadata(type.name)
 
     for (property in properties) {
         add(property.name, property.v.toJsonElement())
@@ -68,7 +70,7 @@ internal fun JsonObject.toRef(): Ref {
         )
     }
 
-    return Ref(Type.of(this[SyntheticType].asString), props)
+    return Ref(Type.of(rawSyntheticType), props)
 }
 
 internal fun JsonPrimitive.toValue(): Value = when {

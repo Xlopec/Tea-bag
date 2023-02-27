@@ -1,25 +1,60 @@
+@file:Suppress("FunctionName")
+
 package io.github.xlopec.tea.time.travel.gson
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 
-internal fun JsonObject(
+internal fun SyntheticWrapper(
     type: TypeToken<*>,
     value: JsonElement,
 ) = JsonObject().apply {
-    addTypeProperty(type)
+    addMetadata(type)
     add(SyntheticValue, value)
 }
 
-internal fun JsonObject.addTypeProperty(
-    type: TypeToken<*>
+public fun JsonObject.addMetadata(
+    type: TypeToken<*>,
+) {
+    add(
+        MetaData,
+        JsonObject().apply {
+            addTypeProperty(type)
+        }
+    )
+}
+
+public fun JsonObject.addMetadata(
+    cl: Class<*>,
+) {
+    add(
+        MetaData,
+        JsonObject().apply {
+            addTypeProperty(cl)
+        }
+    )
+}
+
+public fun JsonObject.addMetadata(
+    typeName: String,
+) {
+    add(
+        MetaData,
+        JsonObject().apply {
+            addProperty(SyntheticType, typeName)
+        }
+    )
+}
+
+public fun JsonObject.addTypeProperty(
+    type: TypeToken<*>,
 ) {
     addTypeProperty(type.rawType)
 }
 
-internal fun JsonObject.addTypeProperty(
-    type: Class<*>
+public fun JsonObject.addTypeProperty(
+    type: Class<*>,
 ) {
     addProperty(SyntheticType, type.name)
 }
@@ -29,7 +64,7 @@ internal fun <T> TypeToken(
     name: String,
 ): TypeToken<T> = TypeToken.get(Class.forName(name)) as TypeToken<T>*/
 
-internal inline val JsonObject.rawSyntheticType: String
+public inline val JsonObject.rawSyntheticType: String
     get() = this[SyntheticType].asString
 
 internal inline val JsonObject.syntheticValue: JsonElement
@@ -40,23 +75,23 @@ internal val JsonObject.nonSyntheticValue: JsonElement
         require(isSyntheticObject) { "can't extract value for non synthetic object, was $this" }
         return if (syntheticValue.isJsonArray) {
             // removes metadata from array elements
-            val jsArray = syntheticValue.asJsonArray
+            val array = syntheticValue.asJsonArray
 
-            for (i in 0 ..< jsArray.size()) {
-                val rawElement = jsArray[i]
+            for (i in 0 ..< array.size()) {
+                val rawElement = array[i]
                 // removes metadata only if needed
                 val sanitizedElement = if (rawElement.isJsonObject && rawElement.asJsonObject.isSyntheticObject) {
                     rawElement.asJsonObject.syntheticValue
                 } else {
                     continue
                 }
-                jsArray.set(i, sanitizedElement)
+                array.set(i, sanitizedElement)
             }
-            jsArray
+            array
         } else {
             syntheticValue
         }
     }
 
 internal inline val JsonObject.isSyntheticObject: Boolean
-    get() = has(SyntheticType) && has(SyntheticValue)
+    get() = has(MetaData) && has(SyntheticValue)

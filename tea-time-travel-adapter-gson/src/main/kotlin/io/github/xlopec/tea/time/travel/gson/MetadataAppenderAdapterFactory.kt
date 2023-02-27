@@ -33,11 +33,11 @@ import com.google.gson.stream.JsonWriter
 
 @Deprecated("will hide")
 public const val SyntheticType: String = "@type"
+internal const val MetaData = "@meta"
 internal const val SyntheticValue = "@value"
-internal const val SyntheticNullable = "@nullable"
 
 /**
- * [TypeAdapterFactory] that adds metadata to each serialized [json object][JsonObject]. Metadata includes the following information:
+ * [TypeAdapterFactory] that adds metadata to each serialized [json object][SyntheticWrapper]. Metadata includes the following information:
  * * instance type name, included as string property;
  * * synthetic wrapper object that holds instance type name and wrapped value;
  *
@@ -138,10 +138,10 @@ private fun <T> T?.toJsonTreeWithMetaData(
         .toJsonTree(this@toJsonTreeWithMetaData)
 
     return if (jsonElement.isJsonObject) {
-        jsonElement.asJsonObject.addTypeProperty(type)
+        jsonElement.asJsonObject.addMetadata(type)
         jsonElement
     } else {
-        JsonObject(type, jsonElement)
+        SyntheticWrapper(type, jsonElement)
     }
 }
 
