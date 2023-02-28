@@ -30,6 +30,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import io.github.xlopec.tea.data.UUID
+import io.github.xlopec.tea.time.travel.gson.metadata.*
 import io.github.xlopec.tea.time.travel.protocol.*
 
 /**
@@ -75,18 +76,25 @@ public typealias GsonNotifyComponentAttached = NotifyComponentAttached<JsonEleme
  * as the resulting json will have all needed meta information appended that in turn
  * is needed by the debug plugin to work correctly
  *
- * @see MetadataAppenderAdapterFactory
+ * @see MetadataAdapterFactory
  * @param config configuration block
  */
 public fun Gson(
     config: GsonBuilder.() -> Unit = {},
 ): Gson =
     GsonBuilder()
-        .serializeNulls()
+        .registerDefaultTypeAdapters()
+        .apply(config)
+        .enableMetadata()
+        .create()
+
+public fun GsonBuilder.enableMetadata(): GsonBuilder = registerTypeAdapterFactory(MetadataAdapterFactory)
+
+public fun GsonBuilder.enableMetadataLookup(): GsonBuilder = registerTypeAdapterFactory(MetadataLookupAdapterFactory)
+
+public fun GsonBuilder.registerDefaultTypeAdapters(): GsonBuilder =
+    serializeNulls()
         .registerTypeHierarchyAdapter(ServerMessage::class.java, ServerMessageAdapter)
         .registerTypeHierarchyAdapter(ClientMessage::class.java, ClientMessageAdapter)
         .registerTypeAdapter(UUID::class.java, UUIDAdapter)
         .registerTypeAdapter(ComponentId::class.java, ComponentIdAdapter)
-        .registerTypeAdapterFactory(MetadataAppenderAdapterFactory)
-        .apply(config)
-        .create()

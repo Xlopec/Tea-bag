@@ -5,6 +5,7 @@ package io.github.xlopec.tea.time.travel.gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import io.github.xlopec.tea.time.travel.gson.metadata.*
 
 internal fun SyntheticWrapper(
     type: TypeToken<*>,
@@ -18,7 +19,7 @@ public fun JsonObject.addMetadata(
     type: TypeToken<*>,
 ) {
     add(
-        MetaData,
+        Metadata,
         JsonObject().apply {
             addTypeProperty(type)
         }
@@ -29,20 +30,21 @@ public fun JsonObject.addMetadata(
     cl: Class<*>,
 ) {
     add(
-        MetaData,
+        Metadata,
         JsonObject().apply {
             addTypeProperty(cl)
         }
     )
 }
 
+@Deprecated("incorrect")
 public fun JsonObject.addMetadata(
     typeName: String,
 ) {
     add(
-        MetaData,
+        Metadata,
         JsonObject().apply {
-            addProperty(SyntheticType, typeName)
+            addProperty(SimpleType1, typeName)
         }
     )
 }
@@ -50,25 +52,77 @@ public fun JsonObject.addMetadata(
 public fun JsonObject.addTypeProperty(
     type: TypeToken<*>,
 ) {
-    addTypeProperty(type.rawType)
+    addProperty(SimpleType1, type.rawType.name)
+    add(FullType, type.type.toJsonTypeTree())
 }
 
+@Deprecated("use type token overload")
 public fun JsonObject.addTypeProperty(
-    type: Class<*>,
+    clazz: Class<*>,
 ) {
-    addProperty(SyntheticType, type.name)
+    addTypeProperty(TypeToken.get(clazz))
 }
-
-/*@Suppress("UNCHECKED_CAST")
-internal fun <T> TypeToken(
-    name: String,
-): TypeToken<T> = TypeToken.get(Class.forName(name)) as TypeToken<T>*/
 
 public inline val JsonObject.rawSyntheticType: String
-    get() = this[SyntheticType].asString
+    get() = this[SimpleType1].asString
 
 internal inline val JsonObject.syntheticValue: JsonElement
     get() = this[SyntheticValue]
+
+internal val JsonObject.flattenMap: JsonObject
+    get() {
+        val js = JsonObject()
+        entrySet().forEach { (k, v) ->
+
+            if (k != "@meta") {
+
+            }
+
+            // js.add(k, )
+        }
+        TODO()
+    }
+
+/**
+ * Flattens synthetic values but keeps metadata for type token lookup
+ */
+internal fun JsonObject.flattenSynthetics(): JsonElement {
+    return if (isSyntheticObject) {
+        nonSyntheticValue
+    } else {
+        val asMap = asMap()
+        for (entry in asMap.entries) {
+
+            if (entry.key != Metadata) {
+                val jsonElement = entry.value
+                val flatten = if (jsonElement.isJsonObject) {
+                    jsonElement.asJsonObject.flattenSynthetics()
+                } else if(jsonElement.isJsonArray) {
+                    val array = jsonElement.asJsonArray
+
+                    for (i in 0..<array.size()) {
+                        val rawElement = array[i]
+                        // removes metadata only if needed
+                        val sanitizedElement = if (rawElement.isJsonObject) {
+                            rawElement.asJsonObject.flattenSynthetics()
+                        } else {
+                            continue
+                        }
+                        array.set(i, sanitizedElement)
+                    }
+                    array
+                } else {
+                    jsonElement
+                }
+
+                entry.setValue(flatten)
+            }
+        }
+
+        remove(Metadata)
+        this
+    }
+}
 
 internal val JsonObject.nonSyntheticValue: JsonElement
     get() {
@@ -77,7 +131,7 @@ internal val JsonObject.nonSyntheticValue: JsonElement
             // removes metadata from array elements
             val array = syntheticValue.asJsonArray
 
-            for (i in 0 ..< array.size()) {
+            for (i in 0..<array.size()) {
                 val rawElement = array[i]
                 // removes metadata only if needed
                 val sanitizedElement = if (rawElement.isJsonObject && rawElement.asJsonObject.isSyntheticObject) {
@@ -94,4 +148,7 @@ internal val JsonObject.nonSyntheticValue: JsonElement
     }
 
 internal inline val JsonObject.isSyntheticObject: Boolean
-    get() = has(MetaData) && has(SyntheticValue)
+    get() = hasMetadata && has(SyntheticValue)
+
+internal inline val JsonObject.hasMetadata: Boolean
+    get() = has(Metadata)

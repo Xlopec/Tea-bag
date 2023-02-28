@@ -24,17 +24,16 @@
 
 @file:Suppress("FunctionName")
 
-package io.github.xlopec.tea.time.travel.gson
+package io.github.xlopec.tea.time.travel.gson.metadata
 
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
+import io.github.xlopec.tea.time.travel.gson.*
 
 @Deprecated("will hide")
-public const val SyntheticType: String = "@type"
-internal const val MetaData = "@meta"
-internal const val SyntheticValue = "@value"
+public const val SimpleType1: String = SimpleType
 
 /**
  * [TypeAdapterFactory] that adds metadata to each serialized [json object][SyntheticWrapper]. Metadata includes the following information:
@@ -96,77 +95,69 @@ internal const val SyntheticValue = "@value"
  *
  * This type adapter will append metadata for each JSON element!
  */
-internal object MetadataAppenderAdapterFactory : TypeAdapterFactory {
+internal object MetadataAdapterFactory : TypeAdapterFactory {
 
     override fun <T> create(
         gson: Gson,
         type: TypeToken<T>,
-    ): TypeAdapter<T> = object : TypeAdapter<T>() {
+    ): TypeAdapter<T> = with(gson) { with(this) { MetadataTypeAdapter(type) } }
 
-        val elementAdapter = gson.getAdapter(JsonElement::class.java)
+}
 
-        override fun write(
-            out: JsonWriter,
-            value: T?,
-        ) = with(gson) {
-            elementAdapter.write(
-                out,
-                value.toJsonTreeWithMetaData(type)
-            )
-        }
+context (Gson, TypeAdapterFactory)
+private class MetadataTypeAdapter<T>(
+    private val type: TypeToken<T>,
+) : TypeAdapter<T>() {
+    private val elementAdapter: TypeAdapter<JsonElement> = getAdapter(JsonElement::class.java)
 
-        override fun read(
-            `in`: JsonReader,
-        ): T? = with(gson) {
-            elementAdapter
-                .read(`in`)
-                .fromJsonTreeWithMetadata(type)
+    override fun write(
+        out: JsonWriter,
+        value: T?,
+    ) = elementAdapter.write(
+        out,
+        value.toJsonTreeWithMetaData(type)
+    )
+
+    override fun read(
+        `in`: JsonReader,
+    ): T? = elementAdapter
+        .read(`in`)
+        .fromJsonTreeWithMetadata(type)
+
+    /**
+     * Serializes current receiver instance to a JSON element. Depending on the type of the JSON element this function does the following:
+     * * JSON object - type information will be added;
+     * * JSON primitive, array or null - the JSON element will be wrapped into JSON object with type information and serialized value
+     */
+    private fun <T> T?.toJsonTreeWithMetaData(
+        type: TypeToken<T>,
+    ): JsonElement {
+        val jsonElement = getDelegateAdapter(this@TypeAdapterFactory, type)
+            .toJsonTree(this@toJsonTreeWithMetaData)
+
+        return if (jsonElement.isJsonObject) {
+            jsonElement.asJsonObject.addMetadata(type)
+            jsonElement
+        } else {
+            SyntheticWrapper(type, jsonElement)
         }
     }
-}
 
-/**
- * Serializes current receiver instance to a JSON element. Depending on the type of the JSON element this function does the following:
- * * JSON object - type information will be added;
- * * JSON primitive, array or null - the JSON element will be wrapped into JSON object with type information and serialized value
- */
-context (Gson, TypeAdapterFactory)
-private fun <T> T?.toJsonTreeWithMetaData(
-    type: TypeToken<T>,
-): JsonElement {
-    val jsonElement = getDelegateAdapter(this@TypeAdapterFactory, type)
-        .toJsonTree(this@toJsonTreeWithMetaData)
+    /**
+     * Deserializes current JSON element to an instance required type.
+     */
+    private fun <T> JsonElement.fromJsonTreeWithMetadata(
+        type: TypeToken<T>,
+    ): T {
+        val adapter = getDelegateAdapter(this@TypeAdapterFactory, type)
 
-    return if (jsonElement.isJsonObject) {
-        jsonElement.asJsonObject.addMetadata(type)
-        jsonElement
-    } else {
-        SyntheticWrapper(type, jsonElement)
-    }
-}
+        return if (isJsonObject) {
+            val copy = asJsonObject.deepCopy()
+            val flatten = copy.flattenSynthetics()
 
-/**
- * Deserializes current JSON element to an instance required type by removing all
- * metadata added by [toJsonTreeWithMetaData]
- */
-context (Gson, TypeAdapterFactory)
-private fun <T> JsonElement.fromJsonTreeWithMetadata(
-    type: TypeToken<T>,
-): T = if (isJsonObject) {
-    asJsonObject.fromJsonObject(type)
-} else {
-    getDelegateAdapter(this@TypeAdapterFactory, type).fromJsonTree(this)
-}
-
-context (Gson, TypeAdapterFactory)
-private fun <T> JsonObject.fromJsonObject(
-    type: TypeToken<T>,
-): T {
-    val adapter = getDelegateAdapter(this@TypeAdapterFactory, type)
-
-    return if (isSyntheticObject) {
-        adapter.fromJsonTree(nonSyntheticValue)
-    } else {
-        adapter.fromJsonTree(this)
+            adapter.fromJsonTree(flatten)
+        } else {
+            adapter.fromJsonTree(this)
+        }
     }
 }

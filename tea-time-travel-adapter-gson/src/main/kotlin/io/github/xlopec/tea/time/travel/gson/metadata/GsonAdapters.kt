@@ -24,12 +24,13 @@
 
 @file:Suppress("FunctionName")
 
-package io.github.xlopec.tea.time.travel.gson
+package io.github.xlopec.tea.time.travel.gson.metadata
 
 import com.google.gson.*
 import com.google.gson.JsonSerializer
 import io.github.xlopec.tea.data.UUID
 import io.github.xlopec.tea.data.toHumanReadable
+import io.github.xlopec.tea.time.travel.gson.*
 import io.github.xlopec.tea.time.travel.protocol.*
 import java.lang.reflect.Type
 
@@ -136,7 +137,7 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
 
     override fun serialize(
         src: GsonClientMessage,
-        typeOfSrc: Type?,
+        typeOfSrc: Type,
         context: JsonSerializationContext,
     ): JsonElement {
 
@@ -152,7 +153,7 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
 
     override fun deserialize(
         json: JsonElement,
-        typeOfT: Type?,
+        typeOfT: Type,
         context: JsonDeserializationContext,
     ): GsonClientMessage = json.asJsonObject.let { obj ->
 

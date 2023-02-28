@@ -24,7 +24,11 @@
 
 package io.github.xlopec.tea.time.travel.gson.serialization.test
 
+import com.google.gson.GsonBuilder
 import io.github.xlopec.tea.time.travel.gson.Gson
+import io.github.xlopec.tea.time.travel.gson.enableMetadata
+import io.github.xlopec.tea.time.travel.gson.enableMetadataLookup
+import io.github.xlopec.tea.time.travel.gson.registerDefaultTypeAdapters
 import io.github.xlopec.tea.time.travel.gson.serialization.data.*
 import io.github.xlopec.tea.time.travel.gson.serialization.serializer.MapDeserializer
 import io.github.xlopec.tea.time.travel.gson.serialization.serializer.PersistentListSerializer
@@ -36,28 +40,50 @@ import org.junit.runners.JUnit4
 import kotlin.test.assertEquals
 
 @RunWith(JUnit4::class)
-internal class MetadataAppenderAdapterFactoryTest {
+internal class MetadataAdapterFactoryTest {
 
-    private val serializer = Gson {
-        setPrettyPrinting()
-        enableComplexMapKeySerialization()
+    @Test
+    fun t() {
+        val g = GsonBuilder()
+            .setPrettyPrinting()
+            .create()
+
+        println(g.toJson(mapOf("a" to C("c"), "b" to 2.0)))
     }
 
     @Test
     fun `test class hierarchy gets serialized correctly`() = with(
-        Gson { registerTypeAdapter(Map::class.java, MapDeserializer) }
+        GsonBuilder()
+            .setPrettyPrinting()
+            .registerDefaultTypeAdapters()
+            .registerTypeAdapter(Map::class.java, MapDeserializer)
+            .enableMetadata()
+            .enableMetadataLookup()
+
+
+            .create()
     ) {
 
-        val message = D()
-        val json = toJson(message)
+        val expected = D()
+        val json = toJson(expected)
 
-        val fromJson = fromJson(json, A::class.java)
+        println("json $json")
 
-        assertEquals(message, fromJson)
+        val fromJson = fromJson(json, D::class.java)
+
+        assertEquals(expected, fromJson)
     }
 
     @Test
-    fun `test simple string gets serialized correctly`() = with(serializer) {
+    fun `test simple string gets serialized correctly`() = with(
+        GsonBuilder()
+            .setPrettyPrinting()
+            .enableComplexMapKeySerialization()
+            .registerDefaultTypeAdapters()
+            .enableMetadataLookup()
+            .enableMetadata()
+            .create()
+    ) {
 
         val message = "a"
         val json = toJson(message)
@@ -69,7 +95,14 @@ internal class MetadataAppenderAdapterFactoryTest {
     @Test
     fun `test AppenderFactory delegates serialization to a user defined serializer`() =
         with(
-            Gson { registerTypeAdapter(PersistentList::class.java, PersistentListSerializer) }
+            GsonBuilder()
+                .setPrettyPrinting()
+                .enableComplexMapKeySerialization()
+                .registerDefaultTypeAdapters()
+                .enableMetadata()
+                .enableMetadataLookup()
+                .registerTypeAdapter(PersistentList::class.java, PersistentListSerializer)
+                .create()
         ) {
 
             val container = Container(persistentListOf("a", "b", "c"))

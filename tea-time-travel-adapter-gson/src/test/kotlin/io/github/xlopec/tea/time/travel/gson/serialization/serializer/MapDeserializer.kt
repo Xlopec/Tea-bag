@@ -42,10 +42,18 @@ internal object MapDeserializer : JsonDeserializer<Map<*, *>> {
 
         return json.asJsonObject.entrySet()
             .associate { (k, v) ->
-                (if (k == "null") null else k) to context.deserialize<Any?>(
-                    v,
-                    genericKeyArgType
-                )
+                (if (k == "null") {
+                    null
+                } else {
+                    k
+                }) to if (v.isJsonNull) {
+                    null
+                } else {
+                    context.deserialize<Any?>(
+                        v,
+                        genericKeyArgType
+                    )
+                }
             }
     }
 }

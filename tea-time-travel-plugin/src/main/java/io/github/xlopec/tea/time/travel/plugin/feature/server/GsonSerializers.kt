@@ -17,8 +17,8 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
 import com.google.gson.*
-import io.github.xlopec.tea.time.travel.gson.SyntheticType
 import io.github.xlopec.tea.time.travel.gson.addMetadata
+import io.github.xlopec.tea.time.travel.gson.metadata.SimpleType1
 import io.github.xlopec.tea.time.travel.gson.rawSyntheticType
 import io.github.xlopec.tea.time.travel.plugin.model.*
 
@@ -61,7 +61,7 @@ internal inline fun <T> Collection<T>.toJsonArray(
     }
 
 internal fun JsonObject.toRef(): Ref {
-    val entrySet = entrySet().filter { e -> e.key != SyntheticType }
+    val entrySet = entrySet().filter { e -> e.key != SimpleType1 }
     // should be sorted to produce idempotent values
     val props = entrySet.sortedBy { it.key }.mapTo(LinkedHashSet(entrySet.size)) { entry ->
         Property(

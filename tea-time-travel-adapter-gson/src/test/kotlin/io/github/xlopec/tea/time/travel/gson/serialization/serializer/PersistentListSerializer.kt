@@ -30,13 +30,12 @@ import kotlinx.collections.immutable.toPersistentList
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-internal object PersistentListSerializer : JsonSerializer<PersistentList<*>>,
-    JsonDeserializer<PersistentList<*>> {
+internal object PersistentListSerializer : JsonSerializer<PersistentList<*>>, JsonDeserializer<PersistentList<*>> {
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type,
-        context: JsonDeserializationContext
+        context: JsonDeserializationContext,
     ): PersistentList<*> {
 
         val genericArgType = (typeOfT as ParameterizedType).actualTypeArguments[0] as Class<*>
@@ -54,8 +53,8 @@ internal object PersistentListSerializer : JsonSerializer<PersistentList<*>>,
 
     override fun serialize(
         src: PersistentList<*>,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext
+        typeOfSrc: Type,
+        context: JsonSerializationContext,
     ): JsonElement = JsonArray().apply {
         for (v in src) {
             add(context.serialize(v))
