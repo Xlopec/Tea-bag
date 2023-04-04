@@ -24,24 +24,40 @@
 
 package io.github.xlopec.reader.app.ui.screens
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.view.View
+import android.view.Window
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.*
-import io.github.xlopec.reader.app.*
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import io.github.xlopec.reader.app.AppState
+import io.github.xlopec.reader.app.FullScreen
+import io.github.xlopec.reader.app.Message
+import io.github.xlopec.reader.app.MessageHandler
+import io.github.xlopec.reader.app.NestedScreen
+import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
 import io.github.xlopec.reader.app.feature.filter.FiltersState
 import io.github.xlopec.reader.app.feature.navigation.Pop
+import io.github.xlopec.reader.app.messageHandler
+import io.github.xlopec.reader.app.screen
 import io.github.xlopec.reader.app.ui.screens.article.ArticleDetailsScreen
 import io.github.xlopec.reader.app.ui.screens.filters.FiltersScreen
 import io.github.xlopec.reader.app.ui.screens.home.HomeScreen
 import io.github.xlopec.reader.app.ui.theme.AppTheme
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 @Composable
-fun AppView(
+fun App(
     component: (Flow<Message>) -> Flow<AppState>,
 ) {
     val messages = remember { MutableSharedFlow<Message>() }
@@ -50,11 +66,18 @@ fun AppView(
     val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
     val messageHandler = remember { scope.messageHandler(messages) }
 
-    AppView(appState, messageHandler)
+    App(appState, messageHandler)
+
+    val systemUiController = rememberInsetsController()
+
+    LaunchedEffect(appState.settings.appDarkModeEnabled) {
+        systemUiController.isAppearanceLightStatusBars = !appState.settings.appDarkModeEnabled
+        systemUiController.isAppearanceLightNavigationBars = !appState.settings.appDarkModeEnabled
+    }
 }
 
 @Composable
-fun AppView(
+fun App(
     appState: AppState,
     onMessage: MessageHandler,
 ) {
@@ -96,3 +119,23 @@ private fun FullScreen(
 private fun <T : R, R> Flow<T>.collectAsNullableState(
     context: CoroutineContext = EmptyCoroutineContext,
 ): State<R?> = collectAsState(context = context, initial = null)
+
+@Composable
+private fun rememberInsetsController(): WindowInsetsControllerCompat {
+    val view = LocalView.current
+
+    return remember(view) {
+        val window = view.findWindow()
+        WindowCompat.getInsetsController(window, window.decorView)
+    }
+}
+
+private fun View.findWindow(): Window =
+    (parent as? DialogWindowProvider)?.window ?: context.findWindow()
+
+private tailrec fun Context.findWindow(): Window =
+    when (this) {
+        is Activity -> window
+        is ContextWrapper -> baseContext.findWindow()
+        else -> error("No window found")
+    }

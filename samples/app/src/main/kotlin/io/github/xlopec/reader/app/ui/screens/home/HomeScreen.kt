@@ -26,7 +26,10 @@
 
 package io.github.xlopec.reader.app.ui.screens.home
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons.Filled
@@ -55,6 +58,7 @@ import io.github.xlopec.reader.app.misc.isIdle
 import io.github.xlopec.reader.app.misc.isRefreshing
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.ui.misc.InsetAwareTopAppBar
+import io.github.xlopec.reader.app.ui.misc.InsetsAwareBottomNavigation
 import io.github.xlopec.reader.app.ui.screens.article.Articles
 import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Favorite
 import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Feed
@@ -87,7 +91,6 @@ fun HomeScreen(
     val bottomBar: BottomBarContent = remember {
         movableContentOf { item ->
             BottomBar(
-                modifier = Modifier.navigationBarsPadding(),
                 item = item,
             )
         }
@@ -160,7 +163,14 @@ private fun ArticlesScreen(
                 }
             },
             content = { innerPadding ->
-                Articles(state, listState, Modifier.padding(innerPadding), onMessage)
+                Articles(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize(),
+                    state = state,
+                    listState = listState,
+                    onMessage = onMessage
+                )
             }
         )
 
@@ -182,7 +192,6 @@ private fun SettingsScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             InsetAwareTopAppBar(
-                backgroundColor = MaterialTheme.colors.surface,
                 title = {
                     Text(text = "Settings")
                 }
@@ -209,16 +218,14 @@ private fun SettingsScreen(
 
 @Composable
 fun BottomBar(
-    modifier: Modifier,
     item: BottomMenuItem,
+    modifier: Modifier = Modifier,
 ) {
     val handler = LocalBottomBarListener.current
 
-    BottomNavigation(
+    InsetsAwareBottomNavigation(
         modifier = modifier,
-        backgroundColor = MaterialTheme.colors.surface
     ) {
-
         BottomNavigationItem(
             icon = {
                 Icon(

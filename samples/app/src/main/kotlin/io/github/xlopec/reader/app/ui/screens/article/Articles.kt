@@ -83,7 +83,7 @@ fun Articles(
     onMessage: MessageHandler,
 ) {
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
 
