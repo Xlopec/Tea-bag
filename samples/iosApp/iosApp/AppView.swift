@@ -54,17 +54,15 @@ struct AppView: View {
     var body: some View {
         ZStack {
             if let appState = appComponent.appState {
-                
-                let screen = appState.screen
+                let screen = ScreenStateKs(appState.screen)
                 
                 switch screen {
-                    // fixme refactor in truly Swift fashion
-                case let tabScreen as TabScreen:
+                case .tabScreen(let tabScreen):
                     AppTabView(initialTab: tabScreen, appState: appState, handler: handler)
-                case let articleDetailsState as ArticleDetailsState:
-                    ArticleDetailsView(state: articleDetailsState, handler: handler)
-                default:
-                    fatalError("Unhandled app state: \(appState), screen: \(screen)")
+                case .fullScreen(let fullscreen):
+                    ArticleDetailsView(state: fullscreen as! ArticleDetailsState, handler: handler)
+                case .nestedScreen(let nestedScreen):
+                    fatalError("Not implemented: \(nestedScreen)")
                 }
             } else {
                 // todo: show splash screen

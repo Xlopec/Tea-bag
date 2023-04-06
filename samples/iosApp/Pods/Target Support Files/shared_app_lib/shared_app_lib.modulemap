@@ -1,0 +1,6 @@
+framework module shared_app_lib {
+  umbrella header "shared_app_lib-umbrella.h"
+
+  export *
+  module * { export * }
+}

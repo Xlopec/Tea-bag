@@ -60,6 +60,7 @@ dependencies {
     implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.12.0")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.7.20")
     implementation("org.jetbrains.kotlin:kotlin-serialization:1.8.0")
+    implementation("dev.icerock.moko:kswift-gradle-plugin:0.6.1")
     implementation("com.squareup.sqldelight:gradle-plugin:1.5.5")
     implementation("org.jetbrains.compose:compose-gradle-plugin:1.3.0")
     implementation("com.github.ben-manes:gradle-versions-plugin:0.42.0")

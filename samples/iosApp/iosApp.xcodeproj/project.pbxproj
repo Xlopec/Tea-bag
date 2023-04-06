@@ -17,6 +17,7 @@
 		3D4F2861267D108E00D3D126 /* Pods_iosApp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F986668854AAE55513203521 /* Pods_iosApp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3D6AC7882737390800351A17 /* AppTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D6AC7872737390800351A17 /* AppTabView.swift */; };
 		3D77241A27298261008103EE /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D77241927298261008103EE /* MessageView.swift */; };
+		3DE22A2829DF3CE80038483B /* Tea-bag_samples_shared-app-lib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE22A2729DF3CE80038483B /* Tea-bag_samples_shared-app-lib.swift */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
 		7555FF81242A565900829871 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF80242A565900829871 /* SceneDelegate.swift */; };
 		7555FF83242A565900829871 /* ArticlesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ArticlesView.swift */; };
@@ -69,11 +70,10 @@
 		3D1C3F692714DC4300AD2F0C /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
 		3D2ED41B27AC736E001DEB77 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		3D4F286D267D118A00D3D126 /* SharedAppLib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SharedAppLib.framework; path = "../shared-app-lib/build/cocoapods/framework/SharedAppLib.framework"; sourceTree = "<group>"; };
-		3D4F2872267D119200D3D126 /* TeaCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TeaCore.framework; path = "../tea-core/build/cocoapods/framework/TeaCore.framework"; sourceTree = "<group>"; };
-		3D52458326780EC6005C4ED3 /* TeaCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TeaCore.framework; path = "../tea-core/build/xcode-frameworks/TeaCore.framework"; sourceTree = "<group>"; };
 		3D6AC7872737390800351A17 /* AppTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTabView.swift; sourceTree = "<group>"; };
 		3D77241927298261008103EE /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		3D94EE83267A9FEA0008D90C /* SharedAppLib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SharedAppLib.framework; path = "../shared-app-lib/build/xcode-frameworks/SharedAppLib.framework"; sourceTree = "<group>"; };
+		3DE22A2729DF3CE80038483B /* Tea-bag_samples_shared-app-lib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Tea-bag_samples_shared-app-lib.swift"; path = "../shared-app-lib/build/bin/iosSimulatorArm64/podDebugFramework/SharedAppLibSwift/Tea-bag_samples_shared-app-lib.swift"; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF7E242A565900829871 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7555FF80242A565900829871 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -126,9 +126,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3D5E424529DF32760072C26B /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				3DE22A2729DF3CE80038483B /* Tea-bag_samples_shared-app-lib.swift */,
+			);
+			name = Generated;
+			sourceTree = "<group>";
+		};
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
+				3D5E424529DF32760072C26B /* Generated */,
 				7555FF7D242A565900829871 /* iosApp */,
 				7555FF94242A565B00829871 /* iosAppTests */,
 				7555FF9F242A565B00829871 /* iosAppUITests */,
@@ -201,8 +210,6 @@
 			children = (
 				3D94EE83267A9FEA0008D90C /* SharedAppLib.framework */,
 				3D4F286D267D118A00D3D126 /* SharedAppLib.framework */,
-				3D4F2872267D119200D3D126 /* TeaCore.framework */,
-				3D52458326780EC6005C4ED3 /* TeaCore.framework */,
 				F986668854AAE55513203521 /* Pods_iosApp.framework */,
 				B9F5E5FEBDEE552ED4AFCCC9 /* Pods_iosApp_iosAppUITests.framework */,
 				230A1D31ACA4687670AE06CC /* Pods_iosAppTests.framework */,
@@ -490,6 +497,7 @@
 				3D2ED41C27AC736E001DEB77 /* SettingsView.swift in Sources */,
 				7555FF83242A565900829871 /* ArticlesView.swift in Sources */,
 				3D77241A27298261008103EE /* MessageView.swift in Sources */,
+				3DE22A2829DF3CE80038483B /* Tea-bag_samples_shared-app-lib.swift in Sources */,
 				3D6AC7882737390800351A17 /* AppTabView.swift in Sources */,
 				3D0599F3296CAC2000FF55D1 /* ArticleDetailsView.swift in Sources */,
 				3D0EED4927218D5B0020E30E /* SearchBar.swift in Sources */,
@@ -593,6 +601,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -651,6 +660,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;

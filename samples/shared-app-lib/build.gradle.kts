@@ -25,6 +25,7 @@
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
+    id("dev.icerock.moko.kswift")
     id("com.android.library")
     id("com.squareup.sqldelight")
     kotlin("plugin.serialization")
@@ -36,6 +37,27 @@ version = "1.0.0"
 repositories {
     maven {
         url = JBComposeDevRepository
+    }
+}
+
+kswift {
+    install(dev.icerock.moko.kswift.plugin.feature.SealedToSwiftEnumFeature) {
+        filter = includeFilter(
+            "ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/AppException",
+            "ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/ScreenState",
+            "ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/misc/LoadableState",
+            "ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/misc/Loadable",
+            /*"ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/feature/navigation/Navigation",
+            "ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/feature/navigation/TabNavigation",
+            "ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/feature/filter/FilterCommand",
+            "ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/feature/filter/FilterMessage",
+            "ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/feature/filter/SourcesLoadResult",
+            "ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/feature/article/list/ArticlesCommand",
+            "ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/feature/article/list/ArticlesLoadResult",
+            "ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/feature/article/list/ArticlesMessage",
+            "ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/feature/article/details/ArticleDetailsMessage",
+            "ClassContext/Tea-bag.samples:shared-app-lib/io/github/xlopec/reader/app/feature/settings/SettingsMessage",*/
+        )
     }
 }
 
