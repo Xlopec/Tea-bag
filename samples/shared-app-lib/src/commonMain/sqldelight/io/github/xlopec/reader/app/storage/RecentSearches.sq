@@ -9,6 +9,10 @@ insert:
 INSERT OR REPLACE INTO RecentSearches(value, type, saved_on)
 VALUES (?, ?, ?);
 
+delete:
+DELETE FROM RecentSearches
+WHERE type = ? AND value = ?;
+
 deleteOutdated:
 DELETE FROM RecentSearches
 WHERE type = ? AND value NOT IN (

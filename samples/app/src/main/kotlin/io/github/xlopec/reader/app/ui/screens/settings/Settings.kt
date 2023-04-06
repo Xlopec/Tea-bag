@@ -54,7 +54,7 @@ import io.github.xlopec.reader.app.Settings
 import io.github.xlopec.reader.app.feature.settings.ToggleDarkMode
 
 @Composable
-fun SettingsScreen(
+fun Settings(
     innerPadding: PaddingValues,
     settings: Settings,
     onMessage: MessageHandler,

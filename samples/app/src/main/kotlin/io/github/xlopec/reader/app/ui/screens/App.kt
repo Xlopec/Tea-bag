@@ -24,10 +24,17 @@
 
 package io.github.xlopec.reader.app.ui.screens
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.view.View
+import android.view.Window
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.*
-import io.github.xlopec.reader.BuildConfig
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.FullScreen
 import io.github.xlopec.reader.app.Message
@@ -35,14 +42,10 @@ import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.NestedScreen
 import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
-import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.filter.FiltersState
 import io.github.xlopec.reader.app.feature.navigation.Pop
-import io.github.xlopec.reader.app.feature.navigation.currentTab
-import io.github.xlopec.reader.app.feature.settings.SettingsScreen
 import io.github.xlopec.reader.app.messageHandler
 import io.github.xlopec.reader.app.screen
-import io.github.xlopec.reader.app.ui.misc.LocalLogCompositions
 import io.github.xlopec.reader.app.ui.screens.article.ArticleDetailsScreen
 import io.github.xlopec.reader.app.ui.screens.filters.FiltersScreen
 import io.github.xlopec.reader.app.ui.screens.home.HomeScreen
@@ -54,20 +57,27 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 @Composable
-fun AppView(
-    component: (Flow<Message>) -> Flow<AppState>
+fun App(
+    component: (Flow<Message>) -> Flow<AppState>,
 ) {
     val messages = remember { MutableSharedFlow<Message>() }
     val stateFlow = remember { component(messages) }
     val appState = stateFlow.collectAsNullableState(context = Dispatchers.Main).value ?: return
-    val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
     val messageHandler = remember { scope.messageHandler(messages) }
 
-    AppView(appState, messageHandler)
+    App(appState, messageHandler)
+
+    val systemUiController = rememberInsetsController()
+
+    LaunchedEffect(appState.settings.appDarkModeEnabled) {
+        systemUiController.isAppearanceLightStatusBars = !appState.settings.appDarkModeEnabled
+        systemUiController.isAppearanceLightNavigationBars = !appState.settings.appDarkModeEnabled
+    }
 }
 
 @Composable
-fun AppView(
+fun App(
     appState: AppState,
     onMessage: MessageHandler,
 ) {
@@ -79,29 +89,18 @@ fun AppView(
             onMessage(Pop)
         }
 
-        CompositionLocalProvider(LocalLogCompositions provides BuildConfig.DEBUG) {
-            when (val screen = appState.screen) {
-                is FullScreen -> FullScreen(screen, onMessage)
-                is TabScreen -> TabScreen(appState, screen, onMessage)
-                is NestedScreen -> TabScreen(appState, appState.currentTab, onMessage) {
-                    TODO("Not implemented yet")
-                }
-            }
+        when (val screen = appState.screen) {
+            is FullScreen -> FullScreen(
+                screen = screen,
+                onMessage = onMessage
+            )
+            is TabScreen -> HomeScreen(
+                appState = appState,
+                screen = screen,
+                onMessage = onMessage
+            )
+            is NestedScreen -> TODO()
         }
-    }
-}
-
-@Composable
-private fun TabScreen(
-    appState: AppState,
-    screen: TabScreen,
-    onMessage: MessageHandler,
-    content: (@Composable (innerPadding: PaddingValues) -> Unit)? = null
-) {
-    when (screen) {
-        is ArticlesState -> HomeScreen(screen, onMessage, content)
-        is SettingsScreen -> HomeScreen(appState, onMessage)
-        else -> error("unhandled branch $screen")
     }
 }
 
@@ -120,3 +119,23 @@ private fun FullScreen(
 private fun <T : R, R> Flow<T>.collectAsNullableState(
     context: CoroutineContext = EmptyCoroutineContext,
 ): State<R?> = collectAsState(context = context, initial = null)
+
+@Composable
+private fun rememberInsetsController(): WindowInsetsControllerCompat {
+    val view = LocalView.current
+
+    return remember(view) {
+        val window = view.findWindow()
+        WindowCompat.getInsetsController(window, window.decorView)
+    }
+}
+
+private fun View.findWindow(): Window =
+    (parent as? DialogWindowProvider)?.window ?: context.findWindow()
+
+private tailrec fun Context.findWindow(): Window =
+    when (this) {
+        is Activity -> window
+        is ContextWrapper -> baseContext.findWindow()
+        else -> error("No window found")
+    }

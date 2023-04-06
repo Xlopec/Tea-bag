@@ -33,7 +33,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.contentColorFor
-import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,9 +45,9 @@ fun InsetAwareTopAppBar(
     modifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
-    backgroundColor: Color = MaterialTheme.colors.primarySurface,
+    backgroundColor: Color = MaterialTheme.colors.surface,
     contentColor: Color = contentColorFor(backgroundColor),
-    elevation: Dp = 4.dp,
+    elevation: Dp = 1.dp,
 ) {
     Surface(
         color = backgroundColor,
@@ -56,13 +55,13 @@ fun InsetAwareTopAppBar(
         modifier = modifier
     ) {
         TopAppBar(
+            modifier = Modifier.statusBarsPadding(),
             title = title,
             navigationIcon = navigationIcon,
             actions = actions,
             backgroundColor = Color.Transparent,
             contentColor = contentColor,
-            elevation = 0.dp,
-            modifier = Modifier.statusBarsPadding()
+            elevation = 0.dp
         )
     }
 }
@@ -74,7 +73,7 @@ fun ProgressInsetAwareTopAppBar(
     modifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
-    backgroundColor: Color = MaterialTheme.colors.primarySurface,
+    backgroundColor: Color = MaterialTheme.colors.surface,
     contentColor: Color = contentColorFor(backgroundColor),
     elevation: Dp = 4.dp,
 ) {

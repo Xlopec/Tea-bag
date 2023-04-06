@@ -40,16 +40,18 @@ import io.github.xlopec.tea.core.noCommand
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentHashSetOf
+import kotlinx.collections.immutable.toPersistentList
 
 fun FiltersState.toFiltersUpdate(
     message: FilterMessage,
 ): Update<FiltersState, FilterCommand> =
     when (message) {
-        is SuggestionsLoaded -> onLoaded(message.suggestions)
-        is LoadSources -> onLoad(message.id)
+        is RecentSearchesLoaded -> onRecentSearchesLoaded(message.suggestions)
+        is LoadSources -> onSourcesLoaded(message.id)
         is SourcesLoadResult -> onSourcesLoadResult(message)
         is ToggleSourceSelection -> onToggleSelection(message.sourceId)
         is ClearSelection -> onClearSelection()
+        is RecentSearchRemoved -> onRemoveRecentSearch(message.search)
     }
 
 fun updateFilters(
@@ -75,7 +77,7 @@ private fun FiltersState.toFilterChangedUpdate(
 private fun FiltersState.onClearSelection() =
     updatedFilter { copy(sources = persistentHashSetOf()) }.noCommand()
 
-private fun FiltersState.onLoad(
+private fun FiltersState.onSourcesLoaded(
     id: ScreenId,
 ) = command(DoLoadSources(id))
 
@@ -94,9 +96,13 @@ private fun FiltersState.onSourcesLoaded(
     sources: ImmutableList<Source>,
 ) = copy(sourcesState = sourcesState.toIdle(Page(sources))).noCommand()
 
-private fun FiltersState.onLoaded(
+private fun FiltersState.onRecentSearchesLoaded(
     suggestions: ImmutableList<Query>,
-) = copy(suggestions = suggestions).noCommand()
+) = copy(recentSearches = suggestions.toPersistentList()).noCommand()
+
+private fun FiltersState.onRemoveRecentSearch(
+    query: Query
+) = copy(recentSearches = recentSearches.remove(query)) command DoRemoveRecentSearch(filter.type, query)
 
 private fun FiltersState.updatedFilter(
     how: Filter.() -> Filter,

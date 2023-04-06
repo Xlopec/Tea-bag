@@ -35,11 +35,16 @@ import io.github.xlopec.reader.app.AppInitializer
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.network.ArticleElement
 import io.github.xlopec.reader.app.feature.network.SourceElement
-import io.github.xlopec.reader.app.model.*
+import io.github.xlopec.reader.app.model.Author
+import io.github.xlopec.reader.app.model.Description
+import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.FilterType.Regular
-import io.github.xlopec.reader.app.ui.screens.AppView
+import io.github.xlopec.reader.app.model.Query
+import io.github.xlopec.reader.app.model.SourceId
+import io.github.xlopec.reader.app.model.Title
+import io.github.xlopec.reader.app.ui.screens.App
 import io.github.xlopec.reader.app.ui.screens.article.ArticleTestTag
-import io.github.xlopec.reader.app.ui.screens.article.ArticlesScreen
+import io.github.xlopec.reader.app.ui.screens.article.Articles
 import io.github.xlopec.reader.app.ui.screens.article.ProgressIndicatorTag
 import io.github.xlopec.reader.app.ui.theme.AppTheme
 import io.github.xlopec.reader.environment.ArticleResponse
@@ -48,11 +53,11 @@ import io.github.xlopec.reader.environment.invoke
 import io.github.xlopec.reader.environment.setTestContent
 import io.github.xlopec.tea.core.toStatesComponent
 import io.github.xlopec.tea.data.RandomUUID
+import java.net.URI
+import java.util.Date
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Rule
 import org.junit.Test
-import java.net.URI
-import java.util.*
 
 internal class AppTest {
 
@@ -63,14 +68,14 @@ internal class AppTest {
     fun testProgressIndicatorIsDisplayedOnStart() = rule {
         setContent {
             AppTheme(isDarkModeEnabled = true) {
-                ArticlesScreen(
-                    ArticlesState.newLoading(
-                        RandomUUID(),
-                        Filter(Regular, Query.of("Input text")),
-                        persistentListOf()
+                Articles(
+                    state = ArticlesState.newLoading(
+                        id = RandomUUID(),
+                        filter = Filter(Regular, Query.of("Input text")),
+                        articles = persistentListOf()
                     ),
-                    LazyListState(0, 0),
-                    Modifier
+                    listState = LazyListState(0, 0),
+                    modifier = Modifier
                 ) {}
             }
         }
@@ -84,10 +89,10 @@ internal class AppTest {
 
             anyArticleRequest() yields ArticleResponse(TestArticleElement)
 
-            AppView(
+            App(
                 AppComponent(
-                    this,
-                    AppInitializer(systemDarkModeEnabled = false, this)
+                    environment = this,
+                    initializer = AppInitializer(systemDarkModeEnabled = false, this)
                 ).toStatesComponent()
             )
 
@@ -103,11 +108,11 @@ private val TestUrl = URI("https://www.google.com")
 private val TestDate = Date(2021, 11, 17)
 
 private val TestArticleElement = ArticleElement(
-    Author("Max"),
-    Description("Android description"),
-    TestDate,
-    Title("Android"),
-    TestUrl,
-    null,
-    SourceElement(SourceId("cnn"))
+    author = Author("Max"),
+    description = Description("Android description"),
+    publishedAt = TestDate,
+    title = Title("Android"),
+    url = TestUrl,
+    urlToImage = null,
+    source = SourceElement(SourceId("cnn"))
 )
