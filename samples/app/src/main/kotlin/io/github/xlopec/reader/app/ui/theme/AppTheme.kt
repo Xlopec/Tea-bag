@@ -24,13 +24,18 @@
 
 package io.github.xlopec.reader.app.ui.theme
 
+import android.os.Build
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppTheme(
     isDarkModeEnabled: Boolean,
@@ -40,13 +45,21 @@ fun AppTheme(
         colors = appColors(isDarkModeEnabled),
         typography = Typography,
     ) {
-        content()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            content()
+        } else {
+            CompositionLocalProvider(
+                LocalOverscrollConfiguration provides null
+            ) {
+                content()
+            }
+        }
     }
 }
 
 @Composable
 private fun appColors(
-    isDarkModeEnabled: Boolean
+    isDarkModeEnabled: Boolean,
 ): Colors {
     val primary by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.primary else DarkThemeColors.primary)
     val primaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.primaryVariant else DarkThemeColors.primaryVariant)

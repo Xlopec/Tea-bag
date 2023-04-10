@@ -126,7 +126,7 @@ private fun ArticlesState.toFilterUpdate(
 ): Update<ArticlesState, ArticlesCommand> =
     copy(filter = filter).noCommand()
 
-private fun Article.storeCommand() = if (isFavorite) DoSaveArticle(this) else DoRemoveArticle(this)
+fun Article.storeCommand() = if (isFavorite) DoSaveArticle(this) else DoRemoveArticle(this)
 
 private fun ArticlesState.toSyncScrollStateUpdate(
     message: SyncScrollPosition,

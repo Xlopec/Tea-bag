@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
         val statesComponent = component.toStatesComponent()
 
         setContent {
-            App(statesComponent)
+            App(component = statesComponent)
         }
 
         launch {
