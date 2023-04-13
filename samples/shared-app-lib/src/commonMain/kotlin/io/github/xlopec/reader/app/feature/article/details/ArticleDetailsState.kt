@@ -32,3 +32,7 @@ data class ArticleDetailsState(
     override val id: ScreenId,
     val article: Article,
 ) : FullScreen
+
+fun ArticleDetailsState.article(
+    toggled: Article
+) = copy(article = toggled)

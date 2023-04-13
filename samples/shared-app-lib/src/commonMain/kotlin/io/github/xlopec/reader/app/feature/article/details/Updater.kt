@@ -24,12 +24,24 @@
 
 package io.github.xlopec.reader.app.feature.article.details
 
+import io.github.xlopec.reader.app.command.Command
+import io.github.xlopec.reader.app.feature.article.list.ArticlesCommand
+import io.github.xlopec.reader.app.feature.article.list.storeCommand
+import io.github.xlopec.reader.app.model.toggleFavorite
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 
 fun ArticleDetailsState.toArticleDetailsUpdate(
     message: ArticleDetailsMessage,
-): Update<ArticleDetailsState, DoOpenInBrowser> =
+): Update<ArticleDetailsState, Command> =
     when (message) {
-        is OpenInBrowser -> this command DoOpenInBrowser(article)
+        is OpenInBrowser -> toOpenInBrowserUpdate()
+        is ToggleArticleIsFavorite -> toToggleArticleIsFavoriteUpdate()
     }
+
+private fun ArticleDetailsState.toOpenInBrowserUpdate() = this command DoOpenInBrowser(article)
+
+private fun ArticleDetailsState.toToggleArticleIsFavoriteUpdate(): Update<ArticleDetailsState, ArticlesCommand> {
+    val toggled = article.toggleFavorite()
+    return article(toggled) command toggled.storeCommand()
+}

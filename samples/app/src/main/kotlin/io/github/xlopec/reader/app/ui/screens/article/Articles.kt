@@ -275,7 +275,11 @@ fun ArticleItem(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            ArticleActions(onMessage, article, screenId)
+            ArticleActions(
+                onMessage = onMessage,
+                article = article,
+                screenId = screenId
+            )
         }
     }
 }
