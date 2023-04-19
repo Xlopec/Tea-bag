@@ -117,6 +117,8 @@ internal fun Plugin(
         ) {
             SettingsFields(
                 modifier = Modifier.fillMaxWidth(),
+                verticalSpacing = 12.dp,
+                horizontalSpacing = 8.dp,
                 state = state,
                 handler = handler
             )
