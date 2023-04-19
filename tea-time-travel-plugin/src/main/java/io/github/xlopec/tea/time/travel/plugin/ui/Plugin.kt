@@ -50,7 +50,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
 
 internal val LocalPlatform = staticCompositionLocalOf<Platform> { error("No platform implementation provided") }
 
@@ -199,7 +198,6 @@ context (Logger) private fun handleFatalException(
 
 private const val GithubIssuesLink = "https://github.com/Xlopec/Tea-bag/issues"
 
-@OptIn(ExperimentalTime::class)
 private suspend fun ((Flow<Message>) -> Flow<State>).currentStateOrNull(
     timeout: Duration = 1.seconds,
 ) = withTimeoutOrNull(timeout) { invoke(flowOf()).first() }
