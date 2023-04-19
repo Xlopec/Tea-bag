@@ -53,7 +53,6 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
-                implementation(libs.atomicfu)
                 implementation(libs.coroutines.test)
                 implementation(libs.turbine)
             }

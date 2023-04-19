@@ -29,7 +29,7 @@ package io.github.xlopec.tea.core.component
 import app.cash.turbine.test
 import io.github.xlopec.tea.core.*
 import io.github.xlopec.tea.core.misc.TestTimeoutMillis
-import io.github.xlopec.tea.core.misc.expectNoEventsAndCancel
+import io.github.xlopec.tea.core.misc.expectCompletionAndCancel
 import io.github.xlopec.tea.core.misc.noOpSink
 import io.github.xlopec.tea.core.misc.testEnv
 import kotlinx.coroutines.delay
@@ -73,7 +73,7 @@ class ComponentTest : ComponentTestBase(::Component) {
             expectedStates.forEach { expectedState ->
                 assertEquals(expectedState, awaitItem())
             }
-            expectNoEventsAndCancel()
+            expectCompletionAndCancel()
         }
     }
 }

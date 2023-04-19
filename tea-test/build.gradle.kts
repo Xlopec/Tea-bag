@@ -43,7 +43,6 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(libs.stdlib)
-                api(libs.atomicfu)
                 api(libs.coroutines.core)
                 api(libs.coroutines.test)
                 api(libs.kotlin.test)

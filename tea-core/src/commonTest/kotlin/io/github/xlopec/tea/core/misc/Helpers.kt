@@ -28,10 +28,6 @@ package io.github.xlopec.tea.core.misc
 
 import app.cash.turbine.ReceiveTurbine
 import io.github.xlopec.tea.core.*
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.math.abs
-import kotlin.test.assertNotEquals
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
@@ -40,6 +36,10 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.math.abs
+import kotlin.test.assertNotEquals
 
 const val TestTimeoutMillis = 10 * 1000L
 
@@ -99,7 +99,7 @@ internal suspend fun Component<Char, String, Char>.collectRanged(
     messages: CharRange,
 ) = this(messages).take(messages.size + 1/*plus initial snapshot*/).collect()
 
-internal suspend fun ReceiveTurbine<*>.expectNoEventsAndCancel() {
-    expectNoEvents()
+internal suspend fun ReceiveTurbine<*>.expectCompletionAndCancel() {
+    awaitComplete()
     cancel()
 }

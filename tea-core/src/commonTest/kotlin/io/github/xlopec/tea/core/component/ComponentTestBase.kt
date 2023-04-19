@@ -7,8 +7,14 @@ import io.github.xlopec.tea.core.misc.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.test.*
-import kotlin.test.*
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class ComponentTestBase(
@@ -141,8 +147,8 @@ abstract class ComponentTestBase(
             assertEquals(expectedSnapshot, consumer1.awaitItem())
         }
 
-        consumer2.expectNoEventsAndCancel()
-        consumer1.expectNoEventsAndCancel()
+        consumer2.expectCompletionAndCancel()
+        consumer1.expectCompletionAndCancel()
     }
 
     @Test
@@ -239,8 +245,8 @@ abstract class ComponentTestBase(
             assertEquals(expectedSnapshot, consumer2.awaitItem())
         }
 
-        consumer1.expectNoEventsAndCancel()
-        consumer2.expectNoEventsAndCancel()
+        consumer1.expectCompletionAndCancel()
+        consumer2.expectCompletionAndCancel()
     }
 
     @Test
