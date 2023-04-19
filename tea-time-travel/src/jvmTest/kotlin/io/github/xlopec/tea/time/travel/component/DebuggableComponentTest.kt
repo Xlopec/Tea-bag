@@ -93,7 +93,7 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
             assertEquals(Regular("a", emptySet(), "", 'a'), awaitItem())
             assertEquals(Regular("b", emptySet(), "a", 'b'), awaitItem())
             assertEquals(Regular("c", emptySet(), "b", 'c'), awaitItem())
-            expectNoEvents()
+            awaitComplete()
             cancel()
         }
 

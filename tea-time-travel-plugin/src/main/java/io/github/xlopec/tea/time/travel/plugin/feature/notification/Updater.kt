@@ -66,7 +66,7 @@ private fun State.onComponentImportSuccess(
 ): Update<State, Command> =
     debugger(debugger.attachComponent(message.sessionState.id, message.sessionState)) command DoNotifyFileOperationSuccess(
         title = "Import success",
-        description = "Session \"${message.sessionState.id.value}\" were imported",
+        description = "Session \"${message.sessionState.id.value}\" was imported",
         forFile = message.from,
     )
 

@@ -1,10 +1,6 @@
 package io.github.xlopec.tea.time.travel.plugin.ui.theme
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import com.intellij.ide.ui.LafManagerListener
 import com.intellij.openapi.application.ApplicationManager
@@ -43,17 +39,12 @@ fun PluginThemeColors(): PluginThemeColors {
         ApplicationManager.getApplication().messageBus.connect()
     }
 
-    remember(messageBus) {
+    DisposableEffect(messageBus) {
         messageBus.subscribe(
             LafManagerListener.TOPIC,
             ThemeChangeListener(swingColors::updateCurrentColors)
         )
-    }
-
-    DisposableEffect(messageBus) {
-        onDispose {
-            messageBus.disconnect()
-        }
+        onDispose { messageBus.disconnect() }
     }
 
     return swingColors
