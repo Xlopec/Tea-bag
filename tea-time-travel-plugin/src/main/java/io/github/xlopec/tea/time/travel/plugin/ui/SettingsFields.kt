@@ -1,15 +1,14 @@
 package io.github.xlopec.tea.time.travel.plugin.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import arrow.core.Valid
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.UpdateServerSettings
@@ -23,6 +22,7 @@ import io.github.xlopec.tea.time.travel.plugin.model.areSettingsModifiable
 import io.github.xlopec.tea.time.travel.plugin.ui.control.ValidatedTextField
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
 import io.kanro.compose.jetbrains.control.Text
+import kotlin.math.roundToInt
 
 internal const val HostFieldTag = "host field"
 internal const val PortFieldTag = "port field"
@@ -35,31 +35,22 @@ internal fun SettingsFields(
     state: State,
     handler: MessageHandler,
     modifier: Modifier = Modifier,
+    horizontalSpacing: Dp = 0.dp,
+    verticalSpacing: Dp = 0.dp,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        val maxTextWidth = remember { mutableStateOf(0.dp) }
-        val density = LocalDensity.current
+    val density = LocalDensity.current
+    val horizontalSpacingPx = with(density) { horizontalSpacing.toPx() }.roundToInt()
+    val verticalSpacingPx = with(density) { verticalSpacing.toPx() }.roundToInt()
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+    Layout(
+        modifier = modifier,
+        content = {
             Text(
-                modifier = Modifier
-                    .then(
-                        if (maxTextWidth.value == 0.dp) {
-                            Modifier
-                        } else {
-                            Modifier.requiredWidth(maxTextWidth.value)
-                        }
-                    )
-                    .onPlaced {
-                        maxTextWidth.value = maxOf(maxTextWidth.value, with(density) { it.size.width.toDp() })
-                    },
                 text = "Host name:"
+            )
+
+            Text(
+                text = "Port number:"
             )
 
             ValidatedTextField(
@@ -73,26 +64,6 @@ internal fun SettingsFields(
                 },
                 enabled = state.areSettingsModifiable
             )
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-
-            Text(
-                modifier = Modifier.then(
-                    if (maxTextWidth.value == 0.dp) {
-                        Modifier
-                    } else {
-                        Modifier.requiredWidth(maxTextWidth.value)
-                    }
-                )
-                    .onPlaced {
-                        maxTextWidth.value = maxOf(maxTextWidth.value, with(density) { it.size.width.toDp() })
-                    },
-                text = "Port number:"
-            )
 
             ValidatedTextField(
                 modifier = Modifier
@@ -105,6 +76,44 @@ internal fun SettingsFields(
                 },
                 enabled = state.areSettingsModifiable
             )
+        },
+    ) { measurables, constraints ->
+        // ask for a preferred size
+        val childConstraints = constraints.copy(minWidth = 0)
+        val hostText = measurables[0].measure(childConstraints)
+        val portText = measurables[1].measure(childConstraints)
+
+        val firstColumnWidth = maxOf(hostText.width, portText.width)
+
+        val inputsConstraints = childConstraints.copy(
+            maxWidth = (constraints.maxWidth - firstColumnWidth - horizontalSpacingPx).coerceAtLeast(0)
+        )
+        val hostInput = measurables[2].measure(inputsConstraints)
+        val portInput = measurables[3].measure(inputsConstraints)
+        val firstRowHeight = maxOf(hostText.height, hostInput.height)
+        val secondRowHeight = maxOf(portInput.height, portInput.height)
+        val secondColumnWidth = maxOf(hostInput.width, portInput.width)
+
+        val layoutWidth = firstColumnWidth + secondColumnWidth + horizontalSpacingPx
+        val layoutHeight = firstRowHeight + secondRowHeight + verticalSpacingPx
+
+        layout(layoutWidth, layoutHeight) {
+            hostText.placeRelative(
+                x = 0,
+                y = (firstRowHeight - hostText.height) / 2
+            )
+            hostInput.placeRelative(
+                x = firstColumnWidth + horizontalSpacingPx,
+                y = (firstRowHeight - hostInput.height) / 2
+            )
+            portText.placeRelative(
+                x = 0,
+                y = verticalSpacingPx + firstRowHeight + (secondRowHeight - portText.height) / 2
+            )
+            portInput.placeRelative(
+                x = firstColumnWidth + horizontalSpacingPx,
+                y = verticalSpacingPx + firstRowHeight + (secondRowHeight - hostInput.height) / 2
+            )
         }
     }
 }
@@ -114,7 +123,9 @@ internal fun SettingsFields(
 private fun SettingsFieldsPreview() {
     PluginPreviewTheme {
         SettingsFields(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp),
             state = State(
                 settings = Settings(
                     host = Input("localhost", Valid(Host.newOrNull("localhost")!!)),
@@ -124,6 +135,8 @@ private fun SettingsFieldsPreview() {
                 )
             ),
             handler = {},
+            verticalSpacing = 12.dp,
+            horizontalSpacing = 8.dp
         )
     }
 }
