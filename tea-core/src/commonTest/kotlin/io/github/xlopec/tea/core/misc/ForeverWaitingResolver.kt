@@ -41,7 +41,7 @@ class ForeverWaitingResolver<M, S, C> : Resolver<M, S, C> {
     val messages: ReceiveChannel<Snapshot<M, S, C>> = _messages
 
     override fun invoke(snapshot: Snapshot<M, S, C>, context: ResolveCtx<M>) {
-        context.scope.launch {
+        context.launch {
             try {
                 delay(Long.MAX_VALUE)
             } finally {
