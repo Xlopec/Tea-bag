@@ -24,11 +24,11 @@
 
 package io.github.xlopec.tea.core
 
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /**
  * Alias for a possibly **impure** function that resolves commands to messages and performs side
@@ -43,15 +43,16 @@ import kotlinx.coroutines.launch
 public typealias Resolver<M, S, C> = (snapshot: Snapshot<M, S, C>, context: ResolveCtx<M>) -> Unit
 
 /**
- * This class represents a resolver context. [sink] and [scope] are used to resolve effects.
- * [sink] should be used to consume resolved messages and [scope] should be used to launch long-running operations.
- * Do ***not*** store references to [sink] or [scope] since they might be different between resolver invocations
+ * This class represents a resolver context that used to resolve effects.
+ * To consume resolved messages use [ResolveCtx.invoke]. This class implements [CoroutineScope] to launch long-running component lifecycle
+ * aware operations.
+ * Do ***not*** store reference to [ResolveCtx] since it might change between invocations
  */
 // todo replace with multi receivers
-public data class ResolveCtx<in M> internal constructor(
-    public val sink: Sink<M>,
-    public val scope: CoroutineScope,
-)
+public class ResolveCtx<in M> internal constructor(
+    sink: Sink<M>,
+    scope: CoroutineScope,
+) : CoroutineScope by scope, Sink<M> by sink
 
 /**
  * Type alias for suspending function that accepts incoming values a puts it to a queue for later
@@ -71,7 +72,7 @@ public infix fun <M> ResolveCtx<M>.effects(
     contract {
         callsInPlace(action, InvocationKind.EXACTLY_ONCE)
     }
-    return scope.launch { sink(action()) }
+    return launch { invoke(action()) }
 }
 
 /**
@@ -84,7 +85,7 @@ public inline infix fun <M> ResolveCtx<M>.effect(
     contract {
         callsInPlace(action, InvocationKind.EXACTLY_ONCE)
     }
-    return scope.launch { action()?.also { sink(it) } }
+    return launch { action()?.also { invoke(it) } }
 }
 
 /**
@@ -97,7 +98,7 @@ public inline infix fun <M> ResolveCtx<M>.sideEffect(
     contract {
         callsInPlace(action, InvocationKind.EXACTLY_ONCE)
     }
-    return scope.launch { action() }
+    return launch { action() }
 }
 
 public suspend operator fun <T> Sink<T>.invoke(

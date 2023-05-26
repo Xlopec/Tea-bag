@@ -24,17 +24,13 @@
 
 package io.github.xlopec.reader.app.ui.misc
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.contentColorFor
-import androidx.compose.material.primarySurface
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -46,9 +42,9 @@ fun InsetAwareTopAppBar(
     modifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
-    backgroundColor: Color = MaterialTheme.colors.primarySurface,
+    backgroundColor: Color = MaterialTheme.colors.surface,
     contentColor: Color = contentColorFor(backgroundColor),
-    elevation: Dp = 4.dp,
+    elevation: Dp = 1.dp,
 ) {
     Surface(
         color = backgroundColor,
@@ -56,13 +52,13 @@ fun InsetAwareTopAppBar(
         modifier = modifier
     ) {
         TopAppBar(
+            modifier = Modifier.statusBarsPadding(),
             title = title,
             navigationIcon = navigationIcon,
             actions = actions,
             backgroundColor = Color.Transparent,
             contentColor = contentColor,
-            elevation = 0.dp,
-            modifier = Modifier.statusBarsPadding()
+            elevation = 0.dp
         )
     }
 }
@@ -74,7 +70,7 @@ fun ProgressInsetAwareTopAppBar(
     modifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
-    backgroundColor: Color = MaterialTheme.colors.primarySurface,
+    backgroundColor: Color = MaterialTheme.colors.surface,
     contentColor: Color = contentColorFor(backgroundColor),
     elevation: Dp = 4.dp,
 ) {
@@ -85,7 +81,10 @@ fun ProgressInsetAwareTopAppBar(
         elevation = elevation,
         modifier = modifier
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.BottomCenter
+        ) {
             TopAppBar(
                 title = title,
                 navigationIcon = navigationIcon,
@@ -99,13 +98,11 @@ fun ProgressInsetAwareTopAppBar(
             if (progress == 0) {
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colors.onPrimary
                 )
             } else if (progress < 100) {
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth(),
                     progress = progress.toFloat() / 100f,
-                    color = MaterialTheme.colors.onPrimary
                 )
             }
         }

@@ -42,6 +42,7 @@ import io.github.xlopec.reader.app.FilterUpdated
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.feature.article.list.LoadArticles
 import io.github.xlopec.reader.app.feature.filter.FiltersState
+import io.github.xlopec.reader.app.feature.filter.RecentSearchRemoved
 import io.github.xlopec.reader.app.feature.navigation.Pop
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.query
@@ -49,6 +50,10 @@ import io.github.xlopec.reader.app.ui.misc.SearchHeader
 import io.github.xlopec.reader.app.ui.screens.article.toSearchHint
 import io.github.xlopec.reader.app.ui.screens.filters.ScreenAnimationState.Begin
 import io.github.xlopec.reader.app.ui.screens.filters.ScreenAnimationState.Finish
+
+const val HeaderSectionId = "header section"
+const val SourcesSectionId = "sources section"
+const val RecentSearchesSubtitle = "recent searches subtitle"
 
 @Composable
 fun FiltersScreen(
@@ -111,7 +116,7 @@ fun FiltersScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            item {
+            item(key = HeaderSectionId) {
                 SearchHeader(
                     modifier = Modifier
                         .padding(
@@ -132,7 +137,7 @@ fun FiltersScreen(
                 )
             }
 
-            item {
+            item(key = SourcesSectionId) {
                 SourcesSection(
                     id = state.id,
                     modifier = Modifier.fillParentMaxWidth(),
@@ -143,15 +148,19 @@ fun FiltersScreen(
                 )
             }
 
-            if (state.suggestions.isNotEmpty()) {
-                suggestionsSection(
-                    suggestions = state.suggestions,
-                    childTransitionState = childTransition
-                ) { suggestion ->
-                    inputState.value = suggestion
-                    performSearch = true
-                    closeScreen = true
-                }
+            if (state.recentSearches.isNotEmpty()) {
+                recentSearchesSection(
+                    suggestions = state.recentSearches,
+                    childTransitionState = childTransition,
+                    onSelect = { suggestion ->
+                        inputState.value = suggestion
+                        performSearch = true
+                        closeScreen = true
+                    },
+                    onDelete = { suggestion ->
+                        handler(RecentSearchRemoved(state.id, suggestion))
+                    },
+                )
             }
         }
     }

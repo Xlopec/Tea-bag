@@ -76,14 +76,14 @@ import java.util.*
 internal const val ProgressIndicatorTag = "Progress Indicator"
 
 @Composable
-fun ArticlesScreen(
+fun Articles(
     state: ArticlesState,
     listState: LazyListState,
     modifier: Modifier = Modifier,
     onMessage: MessageHandler,
 ) {
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
 
@@ -146,8 +146,8 @@ private fun LazyListScope.articleItems(
                 onMessage = onMessage
             )
 
-            if (index == articles.lastIndex) {
-                LaunchedEffect(Unit) {
+            LaunchedEffect(index == articles.lastIndex) {
+                if (index == articles.lastIndex) {
                     onMessage(LoadNextArticles(screen.id))
                 }
             }
@@ -275,7 +275,11 @@ fun ArticleItem(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            ArticleActions(onMessage, article, screenId)
+            ArticleActions(
+                onMessage = onMessage,
+                article = article,
+                screenId = screenId
+            )
         }
     }
 }

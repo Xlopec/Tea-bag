@@ -297,7 +297,7 @@ internal class UpdateForNotificationTest {
             setOf(
                 DoNotifyFileOperationSuccess(
                     title = "Import success",
-                    description = "Session \"${id.value}\" were imported",
+                    description = "Session \"${id.value}\" was imported",
                     forFile = importedFrom
                 )
             ),
@@ -381,7 +381,7 @@ internal class UpdateForNotificationTest {
             setOf(
                 DoNotifyFileOperationSuccess(
                     title = "Import success",
-                    description = "Session \"${id.value}\" were imported",
+                    description = "Session \"${id.value}\" was imported",
                     forFile = importedFrom
                 )
             ),

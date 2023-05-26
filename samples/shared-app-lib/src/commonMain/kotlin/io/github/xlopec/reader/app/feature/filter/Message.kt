@@ -30,8 +30,8 @@ import io.github.xlopec.reader.app.ScreenMessage
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.Source
 import io.github.xlopec.reader.app.model.SourceId
-import kotlin.jvm.JvmInline
 import kotlinx.collections.immutable.ImmutableList
+import kotlin.jvm.JvmInline
 
 sealed interface FilterMessage : ScreenMessage {
     val id: ScreenId
@@ -49,12 +49,17 @@ value class ClearSelection(
 
 data class ToggleSourceSelection(
     override val id: ScreenId,
-    val sourceId: SourceId
+    val sourceId: SourceId,
 ) : FilterMessage
 
-data class SuggestionsLoaded(
+data class RecentSearchesLoaded(
     override val id: ScreenId,
     val suggestions: ImmutableList<Query>,
+) : FilterMessage
+
+data class RecentSearchRemoved(
+    override val id: ScreenId,
+    val search: Query,
 ) : FilterMessage
 
 sealed interface SourcesLoadResult : FilterMessage
@@ -66,5 +71,5 @@ data class SourcesLoadSuccess(
 
 data class SourcesLoadException(
     override val id: ScreenId,
-    val exception: AppException
+    val exception: AppException,
 ) : SourcesLoadResult

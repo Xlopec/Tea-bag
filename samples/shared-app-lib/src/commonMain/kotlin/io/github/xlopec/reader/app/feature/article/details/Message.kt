@@ -31,6 +31,10 @@ sealed interface ArticleDetailsMessage : ScreenMessage {
     val id: ScreenId
 }
 
+data class ToggleArticleIsFavorite(
+    override val id: ScreenId,
+) : ArticleDetailsMessage
+
 data class OpenInBrowser(
     override val id: ScreenId
 ) : ArticleDetailsMessage

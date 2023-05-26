@@ -22,10 +22,10 @@ import io.github.xlopec.tea.time.travel.plugin.feature.notification.Notification
 import io.github.xlopec.tea.time.travel.plugin.feature.server.ServerCommandResolver
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.StorageResolver
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.newSingleThreadContext
+import java.util.concurrent.Executors
 
 interface Environment :
     AppUpdater,
@@ -35,7 +35,6 @@ interface Environment :
     NotificationResolver,
     CoroutineScope
 
-@OptIn(ObsoleteCoroutinesApi::class)
 fun Environment(
     properties: PropertiesComponent,
     project: Project,
@@ -46,4 +45,4 @@ fun Environment(
     ServerCommandResolver by ServerCommandResolver(events),
     NotificationResolver by NotificationResolver(project),
     AppResolver<Environment> by AppResolver(),
-    CoroutineScope by CoroutineScope(SupervisorJob() + newSingleThreadContext("Plugin Thread")) {}
+    CoroutineScope by CoroutineScope(SupervisorJob() + Executors.newSingleThreadExecutor().asCoroutineDispatcher()) {}

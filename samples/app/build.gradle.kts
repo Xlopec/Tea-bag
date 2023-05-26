@@ -94,7 +94,7 @@ android {
     }
 
     packagingOptions {
-        resources.excludes.add("META-INF/*")
+        resources.excludes.add("META-INF/INDEX.LIST")
     }
 
     lint {

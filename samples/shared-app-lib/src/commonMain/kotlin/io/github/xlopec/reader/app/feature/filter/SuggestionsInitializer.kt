@@ -35,4 +35,4 @@ fun FiltersInitialUpdate(
     id: ScreenId,
     filter: Filter,
 ) = FiltersState(id, filter, Loadable.newLoading())
-    .command(DoLoadSuggestions(id, filter.type), DoLoadSources(id))
+    .command(DoLoadRecentSearches(id, filter.type), DoLoadSources(id))

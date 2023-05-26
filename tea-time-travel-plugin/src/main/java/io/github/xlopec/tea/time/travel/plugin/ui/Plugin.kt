@@ -28,6 +28,7 @@ import com.google.gson.GsonBuilder
 import com.intellij.diagnostic.AttachmentFactory
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.Component
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTab
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
@@ -49,7 +50,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
 
 internal val LocalPlatform = staticCompositionLocalOf<Platform> { error("No platform implementation provided") }
 
@@ -117,6 +117,8 @@ internal fun Plugin(
         ) {
             SettingsFields(
                 modifier = Modifier.fillMaxWidth(),
+                verticalSpacing = 12.dp,
+                horizontalSpacing = 8.dp,
                 state = state,
                 handler = handler
             )
@@ -169,9 +171,11 @@ context (Logger) private fun handleFatalException(
     th: Throwable,
 ) {
     runBlocking(Dispatchers.IO) {
+
         val attachment = component.currentStateOrNull()
             ?.let { createCrashLogFile(it) }
-            ?.let { AttachmentFactory.createAttachment(it, false) }
+            ?.let { LocalFileSystem.getInstance().findFileByIoFile(it) }
+            ?.let { AttachmentFactory.createAttachment(it) }
 
         if (attachment == null) {
             error(
@@ -196,7 +200,6 @@ context (Logger) private fun handleFatalException(
 
 private const val GithubIssuesLink = "https://github.com/Xlopec/Tea-bag/issues"
 
-@OptIn(ExperimentalTime::class)
 private suspend fun ((Flow<Message>) -> Flow<State>).currentStateOrNull(
     timeout: Duration = 1.seconds,
 ) = withTimeoutOrNull(timeout) { invoke(flowOf()).first() }

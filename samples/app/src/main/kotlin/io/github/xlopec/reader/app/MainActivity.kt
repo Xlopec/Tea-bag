@@ -25,17 +25,15 @@
 package io.github.xlopec.reader.app
 
 import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
-import android.view.Window
-import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.core.view.WindowCompat
 import io.github.xlopec.reader.R
 import io.github.xlopec.reader.app.command.CloseApp
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.feature.settings.SystemDarkModeChanged
-import io.github.xlopec.reader.app.ui.screens.AppView
+import io.github.xlopec.reader.app.ui.screens.App
 import io.github.xlopec.tea.core.ExperimentalTeaApi
 import io.github.xlopec.tea.core.subscribeIn
 import io.github.xlopec.tea.core.toCommandsFlow
@@ -55,12 +53,12 @@ class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.NewsReader)
         super.onCreate(savedInstanceState)
-        window.setupAppWindow()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val statesComponent = component.toStatesComponent()
 
         setContent {
-            AppView(statesComponent)
+            App(component = statesComponent)
         }
 
         launch {
@@ -87,13 +85,3 @@ class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
 
 private val Collection<Command>.hasCloseCommand: Boolean
     get() = CloseApp in this
-
-private fun Window.setupAppWindow() {
-    // todo migrate at some point in the future
-    @Suppress("DEPRECATION")
-    setFlags(FLAG_TRANSLUCENT_STATUS, FLAG_TRANSLUCENT_STATUS)
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        setDecorFitsSystemWindows(false)
-    }
-}

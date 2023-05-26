@@ -362,6 +362,7 @@ private fun LeafNode(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ExpandableNode(
     level: Int,
