@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,6 +16,8 @@
 		3D4F2860267D108E00D3D126 /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F986668854AAE55513203521 /* Pods_iosApp.framework */; };
 		3D6AC7882737390800351A17 /* AppTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D6AC7872737390800351A17 /* AppTabView.swift */; };
 		3D77241A27298261008103EE /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D77241927298261008103EE /* MessageView.swift */; };
+		3DE45F032A4E19F700148710 /* SwiftUINavigation in Frameworks */ = {isa = PBXBuildFile; productRef = 3DE45F022A4E19F700148710 /* SwiftUINavigation */; };
+		3DE45F052A4E19F700148710 /* SwiftUINavigationCore in Frameworks */ = {isa = PBXBuildFile; productRef = 3DE45F042A4E19F700148710 /* SwiftUINavigationCore */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
 		7555FF81242A565900829871 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF80242A565900829871 /* SceneDelegate.swift */; };
 		7555FF83242A565900829871 /* ArticlesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ArticlesView.swift */; };
@@ -85,6 +87,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DE45F032A4E19F700148710 /* SwiftUINavigation in Frameworks */,
+				3DE45F052A4E19F700148710 /* SwiftUINavigationCore in Frameworks */,
 				3D4F2860267D108E00D3D126 /* Pods_iosApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -221,6 +225,10 @@
 			dependencies = (
 			);
 			name = iosApp;
+			packageProductDependencies = (
+				3DE45F022A4E19F700148710 /* SwiftUINavigation */,
+				3DE45F042A4E19F700148710 /* SwiftUINavigationCore */,
+			);
 			productName = iosApp;
 			productReference = 7555FF7B242A565900829871 /* iosApp.app */;
 			productType = "com.apple.product-type.application";
@@ -296,6 +304,9 @@
 				Base,
 			);
 			mainGroup = 7555FF72242A565900829871;
+			packageReferences = (
+				3DE45F012A4E19F700148710 /* XCRemoteSwiftPackageReference "swiftui-navigation" */,
+			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -925,6 +936,30 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3DE45F012A4E19F700148710 /* XCRemoteSwiftPackageReference "swiftui-navigation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swiftui-navigation";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.8.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3DE45F022A4E19F700148710 /* SwiftUINavigation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3DE45F012A4E19F700148710 /* XCRemoteSwiftPackageReference "swiftui-navigation" */;
+			productName = SwiftUINavigation;
+		};
+		3DE45F042A4E19F700148710 /* SwiftUINavigationCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3DE45F012A4E19F700148710 /* XCRemoteSwiftPackageReference "swiftui-navigation" */;
+			productName = SwiftUINavigationCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7555FF73242A565900829871 /* Project object */;
 }

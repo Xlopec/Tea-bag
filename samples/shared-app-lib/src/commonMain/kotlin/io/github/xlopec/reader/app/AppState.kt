@@ -53,6 +53,9 @@ data class AppState(
 inline val AppState.screen: ScreenState
     get() = screens.screen
 
+inline val AppState.homeScreen: TabScreen
+    get() = screens.first { it is TabScreen  } as TabScreen
+
 inline fun <reified T : ScreenState> AppState.updateScreen(
     id: ScreenId? = null,
     noinline how: (T) -> Update<T, Command>,

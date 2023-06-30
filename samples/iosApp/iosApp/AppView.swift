@@ -8,6 +8,7 @@
 
 import SwiftUI
 import SharedAppLib
+import SwiftUINavigation
 
 // todo add custom App protocol implementation
 
@@ -44,35 +45,35 @@ struct AppView: View {
     
     @ObservedObject private(set) var appComponent: ObservableAppComponent
     
+    private let detailsState: Binding<ArticleDetailsState?>
+    
     let handler: MessageHandler
     
     init(appComponent: ObservableAppComponent) {
         self.appComponent = appComponent
         self.handler = appComponent.dispatch
+        self.detailsState = Binding<ArticleDetailsState?>(
+            get: { appComponent.appState?.screen as? ArticleDetailsState},
+            set: {_,_ in }
+        )
     }
     
     var body: some View {
-        ZStack {
-            if let appState = appComponent.appState {
-                
-                let screen = appState.screen
-                
-                switch screen {
-                    // fixme refactor in truly Swift fashion
-                case let tabScreen as TabScreen:
-                    AppTabView(initialTab: tabScreen, appState: appState, handler: handler)
-                case let articleDetailsState as ArticleDetailsState:
-                    ArticleDetailsView(state: articleDetailsState, handler: handler)
-                default:
-                    fatalError("Unhandled app state: \(appState), screen: \(screen)")
+        NavigationStack {
+            ZStack {
+                if let appState = appComponent.appState {
+                    AppTabView(initialTab: appState.homeScreen, appState: appState, handler: handler)
+                } else {
+                    // todo: show splash screen
+                    Text("News Reader")
+                        .font(.headline)
                 }
-            } else {
-                // todo: show splash screen
-                Text("News Reader")
-                    .font(.headline)
+            }.navigationDestination(unwrapping: detailsState) { details in
+                ArticleDetailsView(state: details.wrappedValue, handler: handler)
+                    .navigationBarBackButtonHidden(true)
             }
-        }.onChange(of: appComponent.appState?.settings) {
-            
+        }
+        .onChange(of: appComponent.appState?.settings) {
             if let darkMode = $0?.appDarkModeEnabled {
                 updateDarkMode(darkModeEnabled: darkMode)
             }
