@@ -48,7 +48,7 @@ kotlin {
     applyDefaultHierarchyTemplate()
 
     targets.withType(KotlinNativeTargetWithSimulatorTests::class.java) {
-        testRuns["test"].deviceId = "iPhone 14"
+        testRuns["test"].deviceId = "iPhone 15"
     }
 }
 

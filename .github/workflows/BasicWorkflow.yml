@@ -88,7 +88,7 @@ jobs:
         with:
           workspace: samples/iosApp/iosApp.xcworkspace
           scheme: iosApp
-          destination: 'platform=iOS Simulator,name=iPhone 12 Pro'
+          destination: 'platform=iOS Simulator,name=iPhone 15'
           configuration: Debug
           action: build
 

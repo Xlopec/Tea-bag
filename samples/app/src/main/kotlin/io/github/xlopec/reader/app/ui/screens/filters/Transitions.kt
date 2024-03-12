@@ -113,7 +113,7 @@ fun Transition<ScreenAnimationState>.headerTransitionState(): HeaderTransitionSt
     val indicatorColor = textFieldColors.indicatorColor(
         enabled = true,
         isError = false,
-        interactionSource = MutableInteractionSource()
+        interactionSource = remember { MutableInteractionSource() }
     )
 
     val horizontalPadding = transition.animateDp(label = "Header padding") {

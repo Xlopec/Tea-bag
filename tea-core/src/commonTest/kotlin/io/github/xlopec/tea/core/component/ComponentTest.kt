@@ -27,7 +27,12 @@
 package io.github.xlopec.tea.core.component
 
 import app.cash.turbine.test
-import io.github.xlopec.tea.core.*
+import io.github.xlopec.tea.core.Component
+import io.github.xlopec.tea.core.Initial
+import io.github.xlopec.tea.core.Initializer
+import io.github.xlopec.tea.core.Regular
+import io.github.xlopec.tea.core.command
+import io.github.xlopec.tea.core.computeSnapshots
 import io.github.xlopec.tea.core.misc.TestTimeoutMillis
 import io.github.xlopec.tea.core.misc.expectCompletionAndCancel
 import io.github.xlopec.tea.core.misc.noOpSink
@@ -38,11 +43,12 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Duration.Companion.milliseconds
 
 class ComponentTest : ComponentTestBase(::Component) {
 
     @Test
-    fun `when upstream receives new input then previous downstream is canceled`() = runTest(dispatchTimeoutMs = TestTimeoutMillis) {
+    fun `when upstream receives new input then previous downstream is canceled`() = runTest(timeout = TestTimeoutMillis.milliseconds) {
         val env = testEnv(
             Initializer(""),
             { _, _ -> },

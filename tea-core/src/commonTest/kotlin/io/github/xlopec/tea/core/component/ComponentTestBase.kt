@@ -1,7 +1,7 @@
 package io.github.xlopec.tea.core.component
 
 import app.cash.turbine.test
-import app.cash.turbine.testIn
+import app.cash.turbine.turbineScope
 import io.github.xlopec.tea.core.Component
 import io.github.xlopec.tea.core.Env
 import io.github.xlopec.tea.core.Initial
@@ -162,24 +162,26 @@ abstract class ComponentTestBase(
         val take = 3
         val component = factory(env)
 
-        val consumer1 = component(emptyFlow()).take(take).testIn(this)
-        val consumer2 = component('a').take(take).testIn(this)
+        turbineScope {
+            val consumer1 = component(emptyFlow()).take(take).testIn(this)
+            val consumer2 = component('a').take(take).testIn(this)
 
-        val expectedSnapshots = listOf(
-            Initial("", setOf()),
-            Regular("a", setOf('a'), "", 'a'),
-            Regular("ab", setOf('b'), "a", 'b')
-        )
+            val expectedSnapshots = listOf(
+                Initial("", setOf()),
+                Regular("a", setOf('a'), "", 'a'),
+                Regular("ab", setOf('b'), "a", 'b')
+            )
 
-        expectedSnapshots.forEach { expectedSnapshot ->
-            assertEquals(expectedSnapshot, consumer2.awaitItem())
+            expectedSnapshots.forEach { expectedSnapshot ->
+                assertEquals(expectedSnapshot, consumer2.awaitItem())
+            }
+            expectedSnapshots.forEach { expectedSnapshot ->
+                assertEquals(expectedSnapshot, consumer1.awaitItem())
+            }
+
+            consumer2.expectCompletionAndCancel()
+            consumer1.expectCompletionAndCancel()
         }
-        expectedSnapshots.forEach { expectedSnapshot ->
-            assertEquals(expectedSnapshot, consumer1.awaitItem())
-        }
-
-        consumer2.expectCompletionAndCancel()
-        consumer1.expectCompletionAndCancel()
     }
 
     @Test
@@ -240,44 +242,46 @@ abstract class ComponentTestBase(
         val chan1 = Channel<Char>()
         val chan2 = Channel<Char>()
 
-        val consumer2 = component(chan2.consumeAsFlow()).take(1 + range.count()).testIn(this)
-        val consumer1 = component(chan1.consumeAsFlow()).take(1 + range.count()).testIn(this)
+        turbineScope {
+            val consumer2 = component(chan2.consumeAsFlow()).take(1 + range.count()).testIn(this)
+            val consumer1 = component(chan1.consumeAsFlow()).take(1 + range.count()).testIn(this)
 
-        range.forEachIndexed { index, ch ->
-            if (index % 2 == 0) {
-                chan1.send(ch)
-            } else {
-                chan2.send(ch)
-            }
-            // forces enqueued coroutines to run
-            runCurrent()
-        }
-
-        val expectedSnapshots: List<Snapshot<Char, String, Char>> =
-            listOf(
-                Initial(
-                    "",
-                    setOf<Char>()
-                )
-            ) + range.mapIndexed { index, ch ->
-                Regular(
-                    ch.toString(),
-                    setOf(),
-                    if (index == 0) "" else ch.dec().toString(),
-                    ch
-                )
+            range.forEachIndexed { index, ch ->
+                if (index % 2 == 0) {
+                    chan1.send(ch)
+                } else {
+                    chan2.send(ch)
+                }
+                // forces enqueued coroutines to run
+                runCurrent()
             }
 
-        expectedSnapshots.forEach { expectedSnapshot ->
-            assertEquals(expectedSnapshot, consumer1.awaitItem())
-        }
+            val expectedSnapshots: List<Snapshot<Char, String, Char>> =
+                listOf(
+                    Initial(
+                        "",
+                        setOf<Char>()
+                    )
+                ) + range.mapIndexed { index, ch ->
+                    Regular(
+                        ch.toString(),
+                        setOf(),
+                        if (index == 0) "" else ch.dec().toString(),
+                        ch
+                    )
+                }
 
-        expectedSnapshots.forEach { expectedSnapshot ->
-            assertEquals(expectedSnapshot, consumer2.awaitItem())
-        }
+            expectedSnapshots.forEach { expectedSnapshot ->
+                assertEquals(expectedSnapshot, consumer1.awaitItem())
+            }
 
-        consumer1.expectCompletionAndCancel()
-        consumer2.expectCompletionAndCancel()
+            expectedSnapshots.forEach { expectedSnapshot ->
+                assertEquals(expectedSnapshot, consumer2.awaitItem())
+            }
+
+            consumer1.expectCompletionAndCancel()
+            consumer2.expectCompletionAndCancel()
+        }
     }
 
     @Test
