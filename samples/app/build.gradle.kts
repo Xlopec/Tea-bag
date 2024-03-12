@@ -170,7 +170,6 @@ dependencies {
     implementation(libs.compose.fonts)
     implementation(libs.splashscreen)
 
-    implementation(libs.bundles.accompanist)
     implementation(libs.coil)
 
     implementation(libs.ktor.client.cio)

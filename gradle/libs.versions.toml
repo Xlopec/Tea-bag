@@ -3,7 +3,6 @@ ktor = "2.0.0"
 coroutines = "1.8.0"
 compose = "1.6.3"
 compose-compiler = "1.5.10"
-accompanist = "0.31.0-alpha"
 sqldelight = "1.5.5"
 arrow = "1.2.3"
 
@@ -46,8 +45,6 @@ compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref 
 compose-activity = { module = "androidx.activity:activity-compose", version = "1.8.2" }
 serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version = "1.6.3" }
 settings-core = { module = "com.russhwolf:multiplatform-settings-no-arg", version = "1.1.1" }
-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
-accompanist-flow-layout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 sqldelight-runtime = { module = "com.squareup.sqldelight:runtime", version.ref = "sqldelight" }
 sqldelight-driver-android = { module = "com.squareup.sqldelight:android-driver", version.ref = "sqldelight" }
@@ -72,10 +69,6 @@ compose = [
     "compose-animation",
     "compose-activity",
     "compose-tooling-preview",
-]
-accompanist = [
-    "accompanist-swiperefresh",
-    "accompanist-flow-layout"
 ]
 
 [plugins]

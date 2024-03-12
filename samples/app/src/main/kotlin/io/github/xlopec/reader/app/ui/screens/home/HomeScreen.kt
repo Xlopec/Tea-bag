@@ -132,7 +132,7 @@ private fun ArticlesScreen(
         ),
         contentAlignment = Alignment.TopCenter
     ) {
-        val scrollTrigger = remember(state.id) { mutableStateOf(0) }
+        val scrollTrigger = remember(state.id) { mutableIntStateOf(0) }
         val listState = remember(state.id) { state.scrollState.toLazyListState() }
 
         DisposableEffect(state.id) {
@@ -149,15 +149,15 @@ private fun ArticlesScreen(
                         onMessage(nav)
 
                         if (reselected) {
-                            scrollTrigger.value++
+                            scrollTrigger.intValue++
                         }
                     }
                 ) {
                     bottomBar(state.filter.toMenuItem())
                 }
 
-                if (scrollTrigger.value != 0) {
-                    LaunchedEffect(scrollTrigger.value) {
+                if (scrollTrigger.intValue != 0) {
+                    LaunchedEffect(scrollTrigger.intValue) {
                         listState.animateScrollToItem(0)
                     }
                 }
