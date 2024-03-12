@@ -1,8 +1,8 @@
 [versions]
 ktor = "2.0.0"
-coroutines = "1.6.4"
-compose = "1.4.1"
-compose-compiler = "1.4.5"
+coroutines = "1.8.0"
+compose = "1.6.3"
+compose-compiler = "1.5.10"
 accompanist = "0.31.0-alpha"
 sqldelight = "1.5.5"
 arrow = "1.1.5"
