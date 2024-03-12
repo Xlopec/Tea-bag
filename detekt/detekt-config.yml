@@ -211,6 +211,10 @@ formatting:
   CommentSpacing:
     active: true
     autoCorrect: true
+  CommentWrapping:
+    active: true
+    autoCorrect: true
+    indentSize: 4
   EnumEntryNameCase:
     active: false
     autoCorrect: true
@@ -576,6 +580,9 @@ style:
     active: false
   UnusedPrivateClass:
     active: true
+  UnusedPrivateProperty:
+    active: true
+    allowedNames: '_|ignored|expected|serialVersionUID|androidMain|commonMain|detektFormat|detektProjectBaseline|iosMain|commonTest|androidUnitTest|iosTest|jvmMain|jvmTest'
   UnusedPrivateMember:
     active: false
     allowedNames: "(_|ignored|expected|serialVersionUID)"

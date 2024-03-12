@@ -27,7 +27,15 @@
 package io.github.xlopec.tea.core.misc
 
 import app.cash.turbine.ReceiveTurbine
-import io.github.xlopec.tea.core.*
+import io.github.xlopec.tea.core.Component
+import io.github.xlopec.tea.core.Env
+import io.github.xlopec.tea.core.Initializer
+import io.github.xlopec.tea.core.Resolver
+import io.github.xlopec.tea.core.ShareOptions
+import io.github.xlopec.tea.core.ShareStateWhileSubscribed
+import io.github.xlopec.tea.core.Updater
+import io.github.xlopec.tea.core.invoke
+import io.github.xlopec.tea.core.noCommand
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
@@ -97,7 +105,7 @@ internal val CharRange.size: Int
 
 internal suspend fun Component<Char, String, Char>.collectRanged(
     messages: CharRange,
-) = this(messages).take(messages.size + 1/*plus initial snapshot*/).collect()
+) = this(messages).take(messages.size + 1).collect() // plus initial snapshot
 
 internal suspend fun ReceiveTurbine<*>.expectCompletionAndCancel() {
     awaitComplete()

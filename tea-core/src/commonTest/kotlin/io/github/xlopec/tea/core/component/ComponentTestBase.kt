@@ -2,15 +2,46 @@ package io.github.xlopec.tea.core.component
 
 import app.cash.turbine.test
 import app.cash.turbine.testIn
-import io.github.xlopec.tea.core.*
-import io.github.xlopec.tea.core.misc.*
-import kotlinx.coroutines.*
+import io.github.xlopec.tea.core.Component
+import io.github.xlopec.tea.core.Env
+import io.github.xlopec.tea.core.Initial
+import io.github.xlopec.tea.core.Initializer
+import io.github.xlopec.tea.core.Regular
+import io.github.xlopec.tea.core.ShareOptions
+import io.github.xlopec.tea.core.Snapshot
+import io.github.xlopec.tea.core.command
+import io.github.xlopec.tea.core.effects
+import io.github.xlopec.tea.core.invoke
+import io.github.xlopec.tea.core.misc.CheckingUpdater
+import io.github.xlopec.tea.core.misc.ComponentException
+import io.github.xlopec.tea.core.misc.ForeverWaitingResolver
+import io.github.xlopec.tea.core.misc.ThrowingInitializer
+import io.github.xlopec.tea.core.misc.collectRanged
+import io.github.xlopec.tea.core.misc.currentThreadName
+import io.github.xlopec.tea.core.misc.expectCompletionAndCancel
+import io.github.xlopec.tea.core.misc.runTestCancellingChildren
+import io.github.xlopec.tea.core.misc.size
+import io.github.xlopec.tea.core.misc.testEnv
+import io.github.xlopec.tea.core.noCommand
+import io.github.xlopec.tea.core.with
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.yield
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -183,8 +214,8 @@ abstract class ComponentTestBase(
         )
 
         val messages = 'a'..'z'
-
-        factory(env)(messages).take(messages.size + 1 /*plus initial snapshot*/).collect()
+        // plus initial snapshot
+        factory(env)(messages).take(messages.size + 1).collect()
 
         resolver.messages.consumeAsFlow().test {
             assertEquals(Initial(""), awaitItem())

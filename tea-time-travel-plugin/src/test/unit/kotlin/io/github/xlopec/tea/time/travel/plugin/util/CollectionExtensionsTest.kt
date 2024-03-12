@@ -48,7 +48,32 @@ internal class CollectionExtensionsTest {
     @Test
     fun `test receiver collection is bigger than target collection`() {
 
-        val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)
+        val input = mutableListOf(
+            263,
+            110,
+            109,
+            156,
+            158,
+            161,
+            166,
+            170,
+            176,
+            186,
+            150,
+            189,
+            194,
+            197,
+            199,
+            204,
+            176,
+            186,
+            150,
+            189,
+            194,
+            197,
+            199,
+            204
+        )
         val expected = listOf(263, 110, 109, 156, 158, 161, 166, 170)
 
         input.replaceAll(expected, DiffCallbackImp)
