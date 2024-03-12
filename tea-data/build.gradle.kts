@@ -40,14 +40,11 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
-        val jvmMain by getting
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation(libs.junit)
             }
         }
-        val iosMain by getting
-        val iosTest by getting
     }
 }

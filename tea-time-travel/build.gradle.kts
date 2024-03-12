@@ -78,7 +78,5 @@ kotlin {
                 implementation(libs.ktor.client.ios)
             }
         }
-
-        val iosTest by getting
     }
 }
