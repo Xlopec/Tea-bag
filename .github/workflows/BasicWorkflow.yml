@@ -34,7 +34,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     needs: Check
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -63,7 +63,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     needs: Check
-    runs-on: macos-12
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v3
         with:
@@ -96,7 +96,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     needs: Check
-    runs-on: macos-12
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v3
         with:
@@ -129,7 +129,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     needs: [Unit-tests, Android-emulator-tests, IOS-app-build]
-    runs-on: macos-12
+    runs-on: macos-14
     # tags should be of the form:
     # <no-value> -> dev build
     # v1.2.3-alpha1 -> alpha build
