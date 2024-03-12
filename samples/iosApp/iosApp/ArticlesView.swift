@@ -154,38 +154,14 @@ struct RowItem: View {
                     }
                     
                     Button {
-                        handler(ToggleArticleIsFavorite(id: screenId, article: article))
+                        handler(ToggleArticleIsFavorite_(id: screenId, article: article))
                     } label: {
                         Label(article.isFavorite ? "Remove from favorite" : "Add to favorite", systemImage: article.isFavorite ? "heart.fill" : "heart")
                     }
                 }.id(article.isFavorite)
         }
-        
-        /*.padding(
-         EdgeInsets(
-         top: CGFloat(16.0),
-         leading: CGFloat(16.0),
-         bottom: CGFloat(16.0),
-         trailing: CGFloat(16.0)
-         )
-         )*/
     }
 }
-
-/*struct ContentView_Previews: PreviewProvider {
-    
-    static private let filter = Filter(type: FilterType.favorite, query: "", sources: [])
-    static private let article = Article(url: URL(string: "www.google.com")!, title: "Title", author: nil, description: nil, urlToImage: nil, published: Date(), isFavorite: true, source: nil)
-    static private let loadable = Loadable<AnyObject>.companion.doNewLoading(data: [article])
-    
-    static private let state = ArticlesState(id: UUID(), filter: filter, loadable: loadable, scrollState: ScrollState.companion.Initial)
-    
-    static var previews: some View {
-        RowItem(screenId: UUID(), article: article) {_ in }
-        
-        ArticlesView(state: state, handler: { _ in }, searchHintText: "Search in articles", headingText: "Feed")
-    }
-}*/
 
 private extension Exception {
     var displayMessage: String { return th.message }

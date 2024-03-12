@@ -31,7 +31,7 @@ fun MavenPom.configurePom(
     name.set(projectName)
     description.set(
         "TEA Bag is simple implementation of TEA written in Kotlin. " +
-                "${projectName.capitalize(Locale.ROOT)} is part of this project"
+                "${projectName.replaceFirstChar { it.titlecase(Locale.ROOT) }} is part of this project"
     )
     url.set("https://github.com/Xlopec/Tea-bag.git")
 
