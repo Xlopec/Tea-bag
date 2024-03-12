@@ -34,7 +34,7 @@ import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.SourceId
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.withContext
 
 typealias ArticlePredicate = (input: Query?, paging: Paging) -> Boolean
@@ -52,7 +52,7 @@ value class SourcesMockData(
 )
 
 class TestNewsApi(
-    private val dispatcher: TestCoroutineDispatcher,
+    private val dispatcher: TestDispatcher,
 ) : MockNewsApi, IdlingResource {
 
     private val articlesMockData = mutableListOf<ArticlesMockData>()

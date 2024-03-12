@@ -41,9 +41,10 @@ import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.network.SourcesResponse
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 
 interface TestEnvironment : Environment, MockNewsApi {
     val testScheduler: TestCoroutineScheduler
@@ -65,7 +66,7 @@ interface MockNewsApi : NewsApi, IdlingResource {
 
 fun TestEnvironment(
     application: Application,
-    dispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
+    dispatcher: TestDispatcher = UnconfinedTestDispatcher()
 ): TestEnvironment {
     val testScope = TestScope(dispatcher)
     return object : TestEnvironment,

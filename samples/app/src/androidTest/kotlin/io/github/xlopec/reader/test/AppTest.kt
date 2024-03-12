@@ -51,6 +51,7 @@ import io.github.xlopec.reader.environment.ArticleResponse
 import io.github.xlopec.reader.environment.anyArticleRequest
 import io.github.xlopec.reader.environment.invoke
 import io.github.xlopec.reader.environment.setTestContent
+import io.github.xlopec.tea.core.ExperimentalTeaApi
 import io.github.xlopec.tea.core.toStatesComponent
 import io.github.xlopec.tea.data.RandomUUID
 import kotlinx.collections.immutable.persistentListOf
@@ -83,6 +84,7 @@ internal class AppTest {
         onNodeWithTag(ProgressIndicatorTag).assertIsDisplayed()
     }
 
+    @OptIn(ExperimentalTeaApi::class)
     @Test
     fun testArticlesListIsDisplayedCorrectly() = rule {
         setTestContent {
