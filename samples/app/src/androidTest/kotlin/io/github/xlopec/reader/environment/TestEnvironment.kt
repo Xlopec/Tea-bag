@@ -41,12 +41,13 @@ import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.network.SourcesResponse
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.test.DelayController
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineExceptionHandler
-import kotlinx.coroutines.test.createTestCoroutineScope
+import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.TestScope
 
-interface TestEnvironment : Environment, MockNewsApi, DelayController
+interface TestEnvironment : Environment, MockNewsApi {
+    val testScheduler: TestCoroutineScheduler
+}
 
 interface MockNewsApi : NewsApi, IdlingResource {
     infix fun ArticlePredicate.yields(
@@ -65,18 +66,16 @@ interface MockNewsApi : NewsApi, IdlingResource {
 fun TestEnvironment(
     application: Application,
     dispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
-): TestEnvironment =
-    object : TestEnvironment,
+): TestEnvironment {
+    val testScope = TestScope(dispatcher)
+    return object : TestEnvironment,
         AppModule<Environment> by AppModule(),
         ArticlesModule<Environment> by ArticlesModule(AndroidShareArticle(application)),
         ArticleDetailsModule by ArticleDetailsModule(application),
         FiltersModule<Environment> by FiltersModule(),
         MockNewsApi by TestNewsApi(dispatcher),
         LocalStorage by LocalStorage(application),
-        CoroutineScope by createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + dispatcher),
-        DelayController by dispatcher {
-
-        init {
-            pauseDispatcher()
-        }
+        CoroutineScope by testScope {
+        override val testScheduler: TestCoroutineScheduler by testScope::testScheduler
     }
+}
