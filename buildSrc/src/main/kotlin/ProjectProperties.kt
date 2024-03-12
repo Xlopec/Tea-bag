@@ -22,15 +22,16 @@
  * SOFTWARE.
  */
 
+import org.gradle.api.Project
+import org.gradle.api.file.Directory
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.kotlin.dsl.get
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import java.net.URI
-import java.nio.file.Path
 import java.nio.file.Paths
-import org.gradle.api.Project
-import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.kotlin.dsl.get
 
 const val CommitHashLength = 6
 const val SonatypeProfileId = "1c78bd5d6fbb0c"
@@ -88,17 +89,17 @@ val Project.signingPassword: String?
 val Project.projectSourceSets: SourceSetContainer
     get() = extensions["sourceSets"] as SourceSetContainer
 
-val Project.documentationDir: File
-    get() = buildDir.resolve("documentation")
+val Project.documentationDir: Provider<File>
+    get() = layout.buildDirectory.map { it.asFile.resolve("documentation") }
 
-val Project.libsDir: File
-    get() = buildDir.resolve("libs")
+val Project.libsDir: Provider<File>
+    get() = layout.buildDirectory.map { it.asFile.resolve("libs") }
 
-val Project.distributionsDir: File
-    get() = buildDir.resolve("distributions")
+val Project.distributionsDir: Provider<File>
+    get() = layout.buildDirectory.map { it.asFile.resolve("distributions") }
 
-val Project.artifactsDir: File
-    get() = rootMostProject.buildDir.resolve(File("artifacts", name))
+val Project.artifactsDir: Provider<File>
+    get() = rootMostProject.layout.buildDirectory.map { it.asFile.resolve(File("artifacts", name)) }
 
 val Project.rootMostProject: Project
     get() {
@@ -123,8 +124,8 @@ val Project.detektConfig: File
 val Project.detektBaseline: File
     get() = Paths.get(rootDir.path, "detekt", "detekt-baseline.xml").toFile()
 
-val Project.metricsDir: File
-    get() = File(buildDir, "compose_metrics")
+val Project.metricsDir: Provider<Directory>
+    get() = layout.buildDirectory.map { it.dir("compose_metrics") }
 
 val Project.hasKotlinMultiplatformPlugin: Boolean
     get() = plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")
@@ -139,21 +140,18 @@ val localBranch: String?
         ?.let { BufferedReader(InputStreamReader(it.inputStream)) }
         ?.let { it.use { reader -> reader.readLine().trim() } }
 
-val Project.testReportsPath: Path
-    get() = Paths.get(rootMostProject.buildDir.path, "junit-reports", project.name)
+val Project.testReportsDir: Provider<Directory>
+    get() = rootMostProject.layout.buildDirectory.map { it.dir("junit-reports").dir(project.name) }
 
-val Project.testReportsDir: File
-    get() = testReportsPath.toFile()
+val Project.htmlTestReportsDir: Provider<Directory>
+    get() = testReportsDir.map { it.dir("html") }
 
-val Project.htmlTestReportsDir: File
-    get() = File(testReportsDir, "html")
-
-val Project.xmlTestReportsDir: File
-    get() = File(testReportsDir, "xml")
+val Project.xmlTestReportsDir: Provider<Directory>
+    get() = testReportsDir.map { it.dir("xml") }
 
 fun Project.testReportsDir(
-    vararg subdirs: String
-): File = File(testReportsDir, subdirs.joinToString(separator = File.separator))
+    vararg subdirs: String,
+): Provider<Directory> = testReportsDir.map { subdirs.fold(it) { acc, path -> acc.dir(path) } }
 
 fun Project.ciVariable(
     name: String,

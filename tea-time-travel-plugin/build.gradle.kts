@@ -113,9 +113,9 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     if (project.findProperty("enableComposeCompilerLogs").toString().toBoolean()) {
         kotlinOptions.freeCompilerArgs += listOf(
             "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${project.metricsDir.absolutePath}",
+            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${project.metricsDir.get().asFile.absolutePath}",
             "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${project.metricsDir.absolutePath}",
+            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${project.metricsDir.get().asFile.absolutePath}",
         )
     }
 }

@@ -45,13 +45,13 @@ android {
             keyAlias = getenvSafe("KEY_ALIAS")
         }
     }
-    compileSdk = 33
+    compileSdk = 34
     namespace = "io.github.xlopec.reader"
 
     defaultConfig {
         applicationId = "io.github.xlopec.news.reader"
         minSdk = 21
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -93,7 +93,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    packagingOptions {
+    packaging {
         resources.excludes.add("META-INF/INDEX.LIST")
     }
 
@@ -107,10 +107,10 @@ android {
         renderScript = false
         resValues = false
         shaders = false
+        buildConfig = true
     }
 
     composeOptions {
-        @Suppress("UnstableApiUsage")
         kotlinCompilerExtensionVersion = libs.compose.compiler.get().versionConstraint.requiredVersion
     }
 
