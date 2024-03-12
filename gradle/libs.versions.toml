@@ -5,7 +5,7 @@ compose = "1.6.3"
 compose-compiler = "1.5.10"
 accompanist = "0.31.0-alpha"
 sqldelight = "1.5.5"
-arrow = "1.1.5"
+arrow = "1.2.3"
 
 [libraries]
 junit = { module = "junit:junit", version = "4.13.2" }
@@ -14,7 +14,7 @@ kotlin-test-annotations = { module = "org.jetbrains.kotlin:kotlin-test-annotatio
 compose-test-junit = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
 compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }
 android-test-orchestrator = { module = "androidx.test:orchestrator", version = "1.4.2" }
-turbine = { module = "app.cash.turbine:turbine", version = "0.12.3" }
+turbine = { module = "app.cash.turbine:turbine", version = "1.1.0" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
@@ -26,7 +26,6 @@ ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.re
 ktor-server-headers = { module = "io.ktor:ktor-server-conditional-headers", version.ref = "ktor" }
 ktor-server-logging-jvm = { module = "io.ktor:ktor-server-call-logging-jvm", version.ref = "ktor" }
 ktor-server-tests = { module = "io.ktor:ktor-server-tests", version.ref = "ktor" }
-ktor-client-mock-jvm = { module = "io.ktor:ktor-client-mock-jvm", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-ios = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
@@ -44,22 +43,22 @@ compose-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", v
 compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose" }
 compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose" }
 compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler" }
-compose-activity = { module = "androidx.activity:activity-compose", version = "1.7.0" }
-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version = "1.4.1" }
-settings-core = { module = "com.russhwolf:multiplatform-settings-no-arg", version = "1.0.0" }
+compose-activity = { module = "androidx.activity:activity-compose", version = "1.8.2" }
+serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version = "1.6.3" }
+settings-core = { module = "com.russhwolf:multiplatform-settings-no-arg", version = "1.1.1" }
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 accompanist-flow-layout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 sqldelight-runtime = { module = "com.squareup.sqldelight:runtime", version.ref = "sqldelight" }
 sqldelight-driver-android = { module = "com.squareup.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-driver-native = { module = "com.squareup.sqldelight:native-driver", version.ref = "sqldelight" }
-desugar-jdk = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.3" }
+desugar-jdk = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.4" }
 gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
 logging = { module = "ch.qos.logback:logback-classic", version = "1.4.0" }
-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.5" }
-coil = { module = "io.coil-kt:coil-compose", version = "2.3.0" }
-compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.4.1" }
-splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.0" }
+collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.7" }
+coil = { module = "io.coil-kt:coil-compose", version = "2.6.0" }
+compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.6.3" }
+splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 
 [bundles]
 ktor-server = ["ktor-server-core", "ktor-server-netty", "ktor-server-websockets", "ktor-server-headers", "ktor-server-logging-jvm"]
