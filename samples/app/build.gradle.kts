@@ -65,8 +65,8 @@ android {
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
         managedDevices {
-            devices {
-                maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel6api34").apply {
+            localDevices {
+                create("pixel6api34") {
                     device = "Pixel 6"
                     apiLevel = 34
                     systemImageSource = "aosp-atd"
