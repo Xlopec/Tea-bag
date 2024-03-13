@@ -34,7 +34,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     needs: Check
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -57,7 +57,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run connected Android tests
-        run: ./gradlew samples:app:pixel6api34Check -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect" --no-configuration-cache
+        run: ./gradlew samples:app:pixel6api34DefaultDebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect" --no-configuration-cache
 
   IOS-app-build:
     env:
