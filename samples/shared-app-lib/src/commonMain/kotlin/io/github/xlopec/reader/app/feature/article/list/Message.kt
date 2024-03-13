@@ -41,17 +41,20 @@ data class FilterLoaded(
     val filter: Filter,
 ) : ArticlesMessage
 
-/*@JvmInline value*/ // see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
+/*@JvmInline value*/
+// see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
 data class LoadNextArticles(
     override val id: ScreenId,
 ) : ArticlesMessage
 
-/*@JvmInline value*/ // see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
+/*@JvmInline value*/
+// see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
 data class LoadArticles(
     override val id: ScreenId,
 ) : ArticlesMessage
 
-/*@JvmInline value*/ // see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
+/*@JvmInline value*/
+// see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
 data class RefreshArticles(
     override val id: ScreenId,
 ) : ArticlesMessage
@@ -87,7 +90,8 @@ data class SyncScrollPosition(
 ) : ArticlesMessage
 
 /*@JvmInline
-value*/data class OnShareArticle(
+value*/
+data class OnShareArticle(
     val article: Article,
 ) : ArticlesMessage {
     override val id: Nothing?

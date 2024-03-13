@@ -65,13 +65,5 @@ kotlin {
                 api(libs.turbine)
             }
         }
-
-        val jvmMain by getting
-
-        val jvmTest by getting
-
-        val iosMain by getting
-
-        val iosTest by getting
     }
 }

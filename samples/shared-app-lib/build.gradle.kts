@@ -43,30 +43,17 @@ kotlin {
 
     optIn("kotlinx.serialization.ExperimentalSerializationApi", "io.github.xlopec.tea.core.ExperimentalTeaApi")
 
-    android {
+    androidTarget {
         publishAllLibraryVariants()
     }
 
-    ios()
+    iosX64()
+    iosArm64()
     iosSimulatorArm64()
+    applyDefaultHierarchyTemplate()
 
     targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests::class.java) {
-        testRuns["test"].deviceId = "iPhone 14"
-    }
-
-    sourceSets {
-
-        val iosSimulatorArm64Main by getting
-
-        val iosMain by getting {
-            iosSimulatorArm64Main.dependsOn(this)
-        }
-
-        val iosSimulatorArm64Test by getting
-
-        val iosTest by getting {
-            iosSimulatorArm64Test.dependsOn(this)
-        }
+        testRuns["test"].deviceId = "iPhone 15"
     }
 
     cocoapods {

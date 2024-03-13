@@ -41,9 +41,8 @@ repositories {
 }
 
 val supportedVersions = listOf(
-    IDEVersion(Product.IC, 2022, 2),
-    IDEVersion(Product.IC, 2022, 3),
-    IDEVersion(Product.IC, 2023, 1),
+    IDEVersion(Product.IC, 2023, 3),
+    IDEVersion(Product.IC, 2023, 2),
 )
 
 intellij {
@@ -113,9 +112,9 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     if (project.findProperty("enableComposeCompilerLogs").toString().toBoolean()) {
         kotlinOptions.freeCompilerArgs += listOf(
             "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${project.metricsDir.absolutePath}",
+            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${project.metricsDir.get().asFile.absolutePath}",
             "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${project.metricsDir.absolutePath}",
+            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${project.metricsDir.get().asFile.absolutePath}",
         )
     }
 }

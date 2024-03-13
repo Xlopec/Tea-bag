@@ -24,10 +24,7 @@
 
 package io.github.xlopec.reader.app.ui.misc
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -39,10 +36,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
-import com.google.accompanist.flowlayout.FlowMainAxisAlignment
-import com.google.accompanist.flowlayout.FlowRow
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RowMessage(
     modifier: Modifier = Modifier,
@@ -51,10 +46,8 @@ fun RowMessage(
 ) {
     FlowRow(
         modifier = modifier,
-        mainAxisAlignment = FlowMainAxisAlignment.Center,
-        crossAxisAlignment = FlowCrossAxisAlignment.Center,
-        mainAxisSpacing = 16.dp,
-        crossAxisSpacing = 8.dp
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
     ) {
         Text(
             text = message,

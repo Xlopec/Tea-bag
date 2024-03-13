@@ -27,7 +27,8 @@ package io.github.xlopec.reader.app.command
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.ScreenId
 
-/*sealed*/ interface Command
+/*sealed*/
+interface Command
 
 // App wide commands
 

@@ -42,26 +42,13 @@ kotlin {
         }
     }
 
-    ios()
+    iosX64()
+    iosArm64()
     iosSimulatorArm64()
+    applyDefaultHierarchyTemplate()
 
     targets.withType(KotlinNativeTargetWithSimulatorTests::class.java) {
-        testRuns["test"].deviceId = "iPhone 14"
-    }
-
-    sourceSets {
-
-        val iosSimulatorArm64Main by getting
-
-        val iosMain by getting {
-            iosSimulatorArm64Main.dependsOn(this)
-        }
-
-        val iosSimulatorArm64Test by getting
-
-        val iosTest by getting {
-            iosSimulatorArm64Test.dependsOn(this)
-        }
+        testRuns["test"].deviceId = "iPhone 15"
     }
 }
 
