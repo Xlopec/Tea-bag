@@ -66,9 +66,9 @@ android {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
         managedDevices {
             localDevices {
-                create("pixel6api30") {
+                create("pixel6api34") {
                     device = "Pixel 6"
-                    apiLevel = 30
+                    apiLevel = 34
                     systemImageSource = "aosp-atd"
                 }
             }
