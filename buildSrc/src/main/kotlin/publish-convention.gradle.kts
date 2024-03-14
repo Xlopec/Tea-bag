@@ -46,7 +46,7 @@ val copyArtifacts by tasks.registering(Copy::class) {
     from(libsDir)
     into(artifactsDir)
 
-    mustRunAfter("publishToSonatype")
+    mustRunAfter("publishToSonatype", "publishToMavenLocal")
 
     group = "release"
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
@@ -67,4 +67,10 @@ publishing {
 
 tasks.withType<DokkaTask>().configureEach {
     outputDirectory.set(documentationDir)
+}
+
+val signingTasks = tasks.withType<Sign>()
+
+tasks.withType<AbstractPublishToMaven>().configureEach {
+    dependsOn(signingTasks)
 }

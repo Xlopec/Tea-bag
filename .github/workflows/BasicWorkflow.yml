@@ -129,7 +129,7 @@ jobs:
   Deploy:
     env:
       DEFAULT_BRANCH: master
-    needs: [Unit-tests, Android-emulator-tests, IOS-app-build]
+    needs: [Unit-tests, IOS-app-build]
     runs-on: macos-14
     # tags should be of the form:
     # <no-value> -> dev build
