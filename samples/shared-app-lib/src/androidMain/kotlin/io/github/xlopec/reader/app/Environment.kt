@@ -37,11 +37,7 @@ import io.github.xlopec.reader.app.feature.article.list.ArticlesModule
 import io.github.xlopec.reader.app.feature.article.list.NewsApi
 import io.github.xlopec.reader.app.feature.filter.FiltersModule
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-
-actual val IO: CoroutineDispatcher = Dispatchers.IO
 
 fun Environment(
     debug: Boolean,

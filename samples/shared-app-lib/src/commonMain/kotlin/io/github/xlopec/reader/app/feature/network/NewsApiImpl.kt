@@ -28,7 +28,6 @@ package io.github.xlopec.reader.app.feature.network
 
 import arrow.core.Either
 import io.github.xlopec.reader.app.AppException
-import io.github.xlopec.reader.app.IO
 import io.github.xlopec.reader.app.InternalException
 import io.github.xlopec.reader.app.NetworkException
 import io.github.xlopec.reader.app.feature.article.list.NewsApi
@@ -50,6 +49,8 @@ import io.ktor.http.URLProtocol.Companion.HTTPS
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.network.*
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -134,7 +135,7 @@ private suspend fun ClientRequestException.toAppException(): AppException =
         this
     )
 
-private suspend fun ClientRequestException.errorMessage() = withContext(IO) {
+private suspend fun ClientRequestException.errorMessage() = withContext(Dispatchers.IO) {
     Json.decodeFromString<JsonElement>(response.bodyAsText())
         .jsonObject["message"]
         ?.jsonPrimitive
