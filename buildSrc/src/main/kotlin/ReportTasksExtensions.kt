@@ -5,8 +5,8 @@ import org.gradle.api.tasks.testing.TestReport
 import java.io.File
 
 fun Test.configureOutputLocation(
-    htmlDestinationDir: Provider<Directory>,
-    xmlDestinationDir: Provider<Directory>,
+    htmlDestinationDir: Provider<out Directory>,
+    xmlDestinationDir: Provider<out Directory>,
 ) {
 
     val commonDir = htmlDestinationDir.get().asFile.commonParentDir(xmlDestinationDir.get().asFile)
@@ -21,7 +21,7 @@ fun Test.configureOutputLocation(
 }
 
 fun TestReport.configureOutputLocation(
-    destinationDir: Provider<Directory>,
+    destinationDir: Provider<out Directory>,
 ) {
     description = "$description Also copies test reports to $destinationDir"
     destinationDirectory.set(destinationDir)

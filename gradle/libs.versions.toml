@@ -1,5 +1,5 @@
 [versions]
-ktor = "2.0.0"
+ktor = "2.3.9"
 coroutines = "1.8.0"
 compose = "1.6.3"
 compose-compiler = "1.5.10"
@@ -51,7 +51,7 @@ sqldelight-driver-android = { module = "com.squareup.sqldelight:android-driver",
 sqldelight-driver-native = { module = "com.squareup.sqldelight:native-driver", version.ref = "sqldelight" }
 desugar-jdk = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.4" }
 gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
-logging = { module = "ch.qos.logback:logback-classic", version = "1.4.0" }
+logging = { module = "ch.qos.logback:logback-classic", version = "1.5.3" }
 collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.7" }
 coil = { module = "io.coil-kt:coil-compose", version = "2.6.0" }
 compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.6.3" }

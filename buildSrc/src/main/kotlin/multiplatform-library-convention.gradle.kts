@@ -40,12 +40,30 @@ kotlin {
         testRuns["test"].executionTask.configure {
             useJUnit()
         }
+
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "11"
+            }
+        }
     }
 
     iosX64()
     iosArm64()
     iosSimulatorArm64()
     applyDefaultHierarchyTemplate()
+
+    targets.all {
+        compilations.all {
+            compilerOptions.configure {
+                freeCompilerArgs.add("-Xexpect-actual-classes")
+            }
+        }
+    }
+
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        compilations["main"].compilerOptions.options.freeCompilerArgs.add("-Xexport-kdoc")
+    }
 
     targets.withType(KotlinNativeTargetWithSimulatorTests::class.java) {
         testRuns["test"].deviceId = "iPhone 15"

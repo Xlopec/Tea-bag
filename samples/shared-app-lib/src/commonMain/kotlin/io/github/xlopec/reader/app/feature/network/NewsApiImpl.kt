@@ -51,8 +51,11 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.network.*
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 internal class NewsApiImpl(
     engine: HttpClientEngineFactory<HttpClientEngineConfig>,
@@ -98,6 +101,7 @@ private fun HttpClient(
     }
 
     Logging {
+        logger = Logger.SIMPLE
         level = logLevel
     }
 }

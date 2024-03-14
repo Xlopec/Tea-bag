@@ -89,17 +89,17 @@ val Project.signingPassword: String?
 val Project.projectSourceSets: SourceSetContainer
     get() = extensions["sourceSets"] as SourceSetContainer
 
-val Project.documentationDir: Provider<File>
-    get() = layout.buildDirectory.map { it.asFile.resolve("documentation") }
+val Project.documentationDir: Provider<out Directory>
+    get() = layout.buildDirectory.map { it.dir("documentation") }
 
-val Project.libsDir: Provider<File>
-    get() = layout.buildDirectory.map { it.asFile.resolve("libs") }
+val Project.libsDir: Provider<out Directory>
+    get() = layout.buildDirectory.map { it.dir("libs") }
 
-val Project.distributionsDir: Provider<File>
-    get() = layout.buildDirectory.map { it.asFile.resolve("distributions") }
+val Project.distributionsDir: Provider<out Directory>
+    get() = layout.buildDirectory.map { it.dir("distributions") }
 
-val Project.artifactsDir: Provider<File>
-    get() = rootMostProject.layout.buildDirectory.map { it.asFile.resolve(File("artifacts", name)) }
+val Project.artifactsDir: Provider<out Directory>
+    get() = rootMostProject.layout.buildDirectory.map { it.dir("artifacts").dir(name) }
 
 val Project.rootMostProject: Project
     get() {
@@ -124,7 +124,7 @@ val Project.detektConfig: File
 val Project.detektBaseline: File
     get() = Paths.get(rootDir.path, "detekt", "detekt-baseline.xml").toFile()
 
-val Project.metricsDir: Provider<Directory>
+val Project.metricsDir: Provider<out Directory>
     get() = layout.buildDirectory.map { it.dir("compose_metrics") }
 
 val Project.hasKotlinMultiplatformPlugin: Boolean
@@ -140,18 +140,18 @@ val localBranch: String?
         ?.let { BufferedReader(InputStreamReader(it.inputStream)) }
         ?.let { it.use { reader -> reader.readLine().trim() } }
 
-val Project.testReportsDir: Provider<Directory>
+val Project.testReportsDir: Provider<out Directory>
     get() = rootMostProject.layout.buildDirectory.map { it.dir("junit-reports").dir(project.name) }
 
-val Project.htmlTestReportsDir: Provider<Directory>
+val Project.htmlTestReportsDir: Provider<out Directory>
     get() = testReportsDir.map { it.dir("html") }
 
-val Project.xmlTestReportsDir: Provider<Directory>
+val Project.xmlTestReportsDir: Provider<out Directory>
     get() = testReportsDir.map { it.dir("xml") }
 
 fun Project.testReportsDir(
     vararg subdirs: String,
-): Provider<Directory> = testReportsDir.map { subdirs.fold(it) { acc, path -> acc.dir(path) } }
+): Provider<out Directory> = testReportsDir.map { subdirs.fold(it) { acc, path -> acc.dir(path) } }
 
 fun Project.ciVariable(
     name: String,
