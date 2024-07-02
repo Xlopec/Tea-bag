@@ -1,18 +1,17 @@
 [versions]
 ktor = "2.3.9"
-coroutines = "1.8.0"
-compose = "1.6.3"
-compose-compiler = "1.5.10"
+coroutines = "1.8.1"
+compose = "1.6.11"
 sqldelight = "1.5.5"
-arrow = "1.2.3"
+arrow = "1.2.4"
 
 [libraries]
 junit = { module = "junit:junit", version = "4.13.2" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlin-test-annotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common" }
 compose-test-junit = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
-compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }
-android-test-orchestrator = { module = "androidx.test:orchestrator", version = "1.4.2" }
+compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version = "compose" }
+android-test-orchestrator = { module = "androidx.test:orchestrator", version = "1.5.0" }
 turbine = { module = "app.cash.turbine:turbine", version = "1.1.0" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
@@ -32,16 +31,15 @@ ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
-compose-foundation-layout = { module = "androidx.compose.foundation:foundation-layout", version.ref = "compose" }
-compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
-compose-icons = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
-compose-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
-compose-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose" }
-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose" }
-compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler" }
+#compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+#compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
+#compose-foundation-layout = { module = "androidx.compose.foundation:foundation-layout", version.ref = "compose" }
+#compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
+#compose-icons = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
+#compose-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+#compose-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+#compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose" }
+#compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose" }
 compose-activity = { module = "androidx.activity:activity-compose", version = "1.8.2" }
 serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version = "1.6.3" }
 settings-core = { module = "com.russhwolf:multiplatform-settings-no-arg", version = "1.1.1" }
@@ -50,25 +48,25 @@ sqldelight-runtime = { module = "com.squareup.sqldelight:runtime", version.ref =
 sqldelight-driver-android = { module = "com.squareup.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-driver-native = { module = "com.squareup.sqldelight:native-driver", version.ref = "sqldelight" }
 desugar-jdk = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.4" }
-gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
+gson = { module = "com.google.code.gson:gson", version = "2.11.0" }
 logging = { module = "ch.qos.logback:logback-classic", version = "1.5.3" }
 collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.7" }
 coil = { module = "io.coil-kt:coil-compose", version = "2.6.0" }
-compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.6.3" }
+compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.6.8" }
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 
 [bundles]
 ktor-server = ["ktor-server-core", "ktor-server-netty", "ktor-server-websockets", "ktor-server-headers", "ktor-server-logging-jvm"]
 compose = [
-    "compose-ui",
-    "compose-foundation",
-    "compose-foundation-layout",
-    "compose-material",
-    "compose-icons",
-    "compose-runtime",
-    "compose-animation",
+    #"compose-ui",
+    #"compose-foundation",
+    #"compose-foundation-layout",
+    #"compose-material",
+    #"compose-icons",
+    #"compose-runtime",
+    #"compose-animation",
     "compose-activity",
-    "compose-tooling-preview",
+    #"compose-tooling-preview",
 ]
 
 [plugins]

@@ -29,6 +29,7 @@ plugins {
     id("com.squareup.sqldelight")
     kotlin("plugin.serialization")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 version = "1.0.0"
@@ -93,6 +94,9 @@ kotlin {
                 api(libs.arrow.core)
                 api(libs.collections.immutable)
                 api(libs.coroutines.core)
+                api(compose.runtime)
+                api(compose.foundation)
+                api(compose.material)
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.logging)

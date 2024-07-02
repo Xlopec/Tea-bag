@@ -32,6 +32,7 @@ plugins {
     kotlin("jvm")
     id("org.jetbrains.intellij")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 repositories {
