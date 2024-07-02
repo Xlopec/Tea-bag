@@ -54,7 +54,7 @@ afterEvaluate {
 //noinspection UseTomlInstead
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0")
-    implementation("com.android.tools.build:gradle:8.2.0")
+    implementation("com.android.tools.build:gradle:8.2.2")
     implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.17.4")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.9.20")
     implementation("org.jetbrains.kotlin:kotlin-serialization:2.0.0")

@@ -31,13 +31,11 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-repositories {
-    maven {
-        url = JBComposeDevRepository
+kotlin {
+    compilerOptions {
+        optIn.addAll(DefaultOptIns + "kotlinx.coroutines.ExperimentalCoroutinesApi")
     }
 }
-
-optIn(DefaultOptIns + "kotlinx.coroutines.ExperimentalCoroutinesApi")
 
 android {
     signingConfigs {
@@ -163,8 +161,6 @@ dependencies {
     implementation(libs.compose.activity)
     implementation(compose.materialIconsExtended)
 
-    @OptIn(ExperimentalComposeLibrary::class)
-   // implementation(compose.uiTest)
     debugImplementation(compose.uiTooling)
 
     implementation(libs.compose.fonts)

@@ -35,12 +35,6 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-repositories {
-    maven {
-        url = JBComposeDevRepository
-    }
-}
-
 val supportedVersions = listOf(
     IDEVersion(Product.IC, 2023, 3),
     IDEVersion(Product.IC, 2023, 2),
@@ -101,22 +95,24 @@ val allTests by tasks.creating(Task::class) {
     dependsOn("test")
 }
 
-optIn(
-    "kotlinx.coroutines.ExperimentalCoroutinesApi",
-    "androidx.compose.ui.ExperimentalComposeUiApi",
-    "io.github.xlopec.tea.core.ExperimentalTeaApi",
-)
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.freeCompilerArgs += listOf("-Xcontext-receivers")
-
-    if (project.findProperty("enableComposeCompilerLogs").toString().toBoolean()) {
-        kotlinOptions.freeCompilerArgs += listOf(
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${project.metricsDir.get().asFile.absolutePath}",
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${project.metricsDir.get().asFile.absolutePath}",
+kotlin {
+    compilerOptions {
+        optIn.addAll(
+            "kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "androidx.compose.ui.ExperimentalComposeUiApi",
+            "io.github.xlopec.tea.core.ExperimentalTeaApi",
         )
+
+        freeCompilerArgs.addAll("-Xcontext-receivers")
+
+        if (project.findProperty("enableComposeCompilerLogs").toString().toBoolean()) {
+            freeCompilerArgs.addAll(
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${project.metricsDir.get().asFile.absolutePath}",
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${project.metricsDir.get().asFile.absolutePath}",
+            )
+        }
     }
 }
 
@@ -141,9 +137,9 @@ fun shouldUseForcedCoroutinesVersion(
     version: String,
 ): Boolean =
     !configuration.name.startsWith("test") &&
-            details.requested.group == "org.jetbrains.kotlinx" &&
-            details.requested.module.name.startsWith("kotlinx-coroutines") &&
-            details.requested.version != version
+        details.requested.group == "org.jetbrains.kotlinx" &&
+        details.requested.module.name.startsWith("kotlinx-coroutines") &&
+        details.requested.version != version
 
 configurations.configureEach {
     resolutionStrategy.eachDependency {

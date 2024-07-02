@@ -37,7 +37,6 @@ const val CommitHashLength = 6
 const val SonatypeProfileId = "1c78bd5d6fbb0c"
 val NexusUrl = URI("https://s01.oss.sonatype.org/service/local/")
 val SnapshotNexusUrl = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-val JBComposeDevRepository = URI("https://maven.pkg.jetbrains.space/public/p/compose/dev/")
 
 private const val RefBranch = "refs/heads/"
 private const val RefTag = "refs/tags/"

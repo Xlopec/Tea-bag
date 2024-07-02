@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  * MIT License
  *
@@ -34,23 +37,23 @@ plugins {
 
 version = "1.0.0"
 
-repositories {
-    maven {
-        url = JBComposeDevRepository
-    }
-}
-
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
+    compilerOptions {
+        optIn.addAll(
+            "kotlinx.serialization.ExperimentalSerializationApi",
+            "io.github.xlopec.tea.core.ExperimentalTeaApi",
+        )
 
-    optIn("kotlinx.serialization.ExperimentalSerializationApi", "io.github.xlopec.tea.core.ExperimentalTeaApi")
+        optIn.addAll(DefaultOptIns)
+
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
 
     androidTarget {
         publishAllLibraryVariants()
-
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
         }
     }
 
@@ -63,16 +66,10 @@ kotlin {
         testRuns["test"].deviceId = "iPhone 15"
     }
 
-    targets.all {
-        compilations.all {
-            compilerOptions.configure {
-                freeCompilerArgs.add("-Xexpect-actual-classes")
-            }
-        }
-    }
-
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-        compilations["main"].compilerOptions.options.freeCompilerArgs.add("-Xexport-kdoc")
+        compilerOptions {
+            freeCompilerArgs.add("-Xexport-kdoc")
+        }
     }
 
     cocoapods {

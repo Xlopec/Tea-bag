@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
 
 /*
@@ -31,6 +33,7 @@ plugins {
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
 
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     explicitApi()
 
@@ -41,10 +44,8 @@ kotlin {
             useJUnit()
         }
 
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
         }
     }
 
@@ -53,16 +54,15 @@ kotlin {
     iosSimulatorArm64()
     applyDefaultHierarchyTemplate()
 
-    targets.all {
-        compilations.all {
-            compilerOptions.configure {
-                freeCompilerArgs.add("-Xexpect-actual-classes")
-            }
-        }
+    compilerOptions {
+        optIn.addAll(DefaultOptIns)
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-        compilations["main"].compilerOptions.options.freeCompilerArgs.add("-Xexport-kdoc")
+        compilerOptions {
+            freeCompilerArgs.add("-Xexport-kdoc")
+        }
     }
 
     targets.withType(KotlinNativeTargetWithSimulatorTests::class.java) {
