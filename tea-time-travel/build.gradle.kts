@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 /*
  * MIT License
  *
@@ -26,15 +28,17 @@ plugins {
     `published-multiplatform-library-convention`
 }
 
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-
-    optIn(
-        "kotlinx.coroutines.ExperimentalCoroutinesApi",
-        "kotlinx.coroutines.FlowPreview",
-        "kotlinx.coroutines.InternalCoroutinesApi",
-        "io.github.xlopec.tea.core.InternalTeaApi",
-        "io.github.xlopec.tea.core.ExperimentalTeaApi"
-    )
+    compilerOptions {
+        optIn.addAll(
+            "kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "kotlinx.coroutines.FlowPreview",
+            "kotlinx.coroutines.InternalCoroutinesApi",
+            "io.github.xlopec.tea.core.InternalTeaApi",
+            "io.github.xlopec.tea.core.ExperimentalTeaApi"
+        )
+    }
 
     sourceSets {
         val commonMain by getting {

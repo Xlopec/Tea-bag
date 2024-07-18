@@ -4,6 +4,7 @@
 /local.properties
 # User-specific stuff:
 .idea/*
+.kotlin/
 
 !.idea/codeStyles/
 

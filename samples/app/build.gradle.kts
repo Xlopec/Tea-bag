@@ -1,3 +1,5 @@
+import org.jetbrains.compose.ExperimentalComposeLibrary
+
 /*
  * MIT License
  *
@@ -26,15 +28,14 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
-repositories {
-    maven {
-        url = JBComposeDevRepository
+kotlin {
+    compilerOptions {
+        optIn.addAll(DefaultOptIns + "kotlinx.coroutines.ExperimentalCoroutinesApi")
     }
 }
-
-optIn(DefaultOptIns + "kotlinx.coroutines.ExperimentalCoroutinesApi")
 
 android {
     signingConfigs {
@@ -110,10 +111,6 @@ android {
         buildConfig = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.compose.compiler.get().versionConstraint.requiredVersion
-    }
-
     flavorDimensions += "remote"
     productFlavors {
 
@@ -162,10 +159,9 @@ dependencies {
 
     implementation(libs.coroutines.android)
     implementation(libs.compose.activity)
+    implementation(compose.materialIconsExtended)
 
-    implementation(libs.bundles.compose)
-    implementation(libs.compose.compiler)
-    debugImplementation(libs.compose.tooling)
+    debugImplementation(compose.uiTooling)
 
     implementation(libs.compose.fonts)
     implementation(libs.splashscreen)
@@ -174,12 +170,12 @@ dependencies {
 
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.logging)
-    implementation(libs.logging)
 
     testImplementation(project(":tea-data"))
     androidTestImplementation(project(":tea-data"))
 
     androidTestUtil(libs.android.test.orchestrator)
-    androidTestImplementation(libs.compose.test.junit)
+    @OptIn(ExperimentalComposeLibrary::class)
+    androidTestImplementation(compose.uiTest)
     debugImplementation(libs.compose.test.manifest)
 }

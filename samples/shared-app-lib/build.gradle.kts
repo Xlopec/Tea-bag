@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  * MIT License
  *
@@ -29,22 +32,29 @@ plugins {
     id("com.squareup.sqldelight")
     kotlin("plugin.serialization")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 version = "1.0.0"
 
-repositories {
-    maven {
-        url = JBComposeDevRepository
-    }
-}
-
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
+    compilerOptions {
+        optIn.addAll(
+            "kotlinx.serialization.ExperimentalSerializationApi",
+            "io.github.xlopec.tea.core.ExperimentalTeaApi",
+        )
 
-    optIn("kotlinx.serialization.ExperimentalSerializationApi", "io.github.xlopec.tea.core.ExperimentalTeaApi")
+        optIn.addAll(DefaultOptIns)
+
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
 
     androidTarget {
         publishAllLibraryVariants()
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
     }
 
     iosX64()
@@ -54,6 +64,12 @@ kotlin {
 
     targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests::class.java) {
         testRuns["test"].deviceId = "iPhone 15"
+    }
+
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        compilerOptions {
+            freeCompilerArgs.add("-Xexport-kdoc")
+        }
     }
 
     cocoapods {
@@ -75,6 +91,9 @@ kotlin {
                 api(libs.arrow.core)
                 api(libs.collections.immutable)
                 api(libs.coroutines.core)
+                api(compose.runtime)
+                api(compose.foundation)
+                api(compose.material)
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.logging)

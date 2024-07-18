@@ -53,16 +53,17 @@ afterEvaluate {
 
 //noinspection UseTomlInstead
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22")
-    implementation("com.android.tools.build:gradle:8.2.0")
-    implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.17.2")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.8.10")
-    implementation("org.jetbrains.kotlin:kotlin-serialization:1.9.22")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0")
+    implementation("com.android.tools.build:gradle:8.2.2")
+    implementation("org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.17.4")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.9.20")
+    implementation("org.jetbrains.kotlin:kotlin-serialization:2.0.0")
     implementation("com.squareup.sqldelight:gradle-plugin:1.5.5")
-    implementation("org.jetbrains.compose:compose-gradle-plugin:1.6.0")
+    implementation("org.jetbrains.compose:compose-gradle-plugin:1.6.11")
+    implementation("org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.0.0")
     implementation("com.github.ben-manes:gradle-versions-plugin:0.51.0")
     implementation("io.github.gradle-nexus:publish-plugin:1.3.0")
-    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.5")
+    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6")
 
     testImplementation("junit:junit:4.13.2")
     // used for tests under buildSrc directory

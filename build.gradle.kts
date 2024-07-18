@@ -65,8 +65,6 @@ allprojects {
         plugin("io.gitlab.arturbosch.detekt")
     }
 
-    optIn(DefaultOptIns)
-
     //noinspection UseTomlInstead
     dependencies {
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.5")

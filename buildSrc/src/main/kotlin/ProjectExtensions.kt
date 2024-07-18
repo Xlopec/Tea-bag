@@ -22,16 +22,12 @@
  * SOFTWARE.
  */
 
-import java.io.File
-import java.net.URL
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.findByType
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.GradleDokkaSourceSetBuilder
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.io.File
+import java.net.URL
 
 val DefaultOptIns = listOf(
     "kotlin.RequiresOptIn",
@@ -52,41 +48,6 @@ fun Project.installGitHooks() = afterEvaluate {
 fun Project.sourceSetDir(
     sourceSetName: String
 ): File = file("src/$sourceSetName/kotlin")
-
-fun KotlinMultiplatformExtension.optIn(
-    vararg annotationNames: String
-) {
-    optIn(listOf(*annotationNames))
-}
-
-fun KotlinMultiplatformExtension.optIn(
-    annotationNames: Iterable<String>
-) {
-    sourceSets.all {
-        languageSettings {
-            annotationNames.forEach(::optIn)
-        }
-    }
-}
-
-fun Project.optIn(
-    vararg annotationNames: String
-) = optIn(listOf(*annotationNames))
-
-fun Project.optIn(
-    annotationNames: Iterable<String>
-) = afterEvaluate {
-    if (hasKotlinMultiplatformPlugin) {
-        extensions.findByType<KotlinMultiplatformExtension>()?.optIn(annotationNames)
-    } else {
-        tasks.withType<KotlinCompile>().all {
-            kotlinOptions {
-                @Suppress("SuspiciousCollectionReassignment")
-                freeCompilerArgs += annotationNames.map { "-opt-in=$it" }
-            }
-        }
-    }
-}
 
 fun GradleDokkaSourceSetBuilder.linkSourcesForSourceSet(
     project: Project,
