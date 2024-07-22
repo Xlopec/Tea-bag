@@ -6,7 +6,6 @@ target 'iosApp' do
   use_frameworks!
 
   # Pods for iosApp
-  pod 'Kingfisher', '7.12.0'
   pod 'shared_app_lib', :path => '../shared-app-lib'
  # pod 'tea_core', :path => '../tea-core'
   #pod 'Alamofire', '4.9.1'

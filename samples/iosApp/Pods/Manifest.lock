@@ -1,23 +1,16 @@
 PODS:
-  - Kingfisher (7.12.0)
   - shared_app_lib (1.0.0)
 
 DEPENDENCIES:
-  - Kingfisher (= 7.12.0)
   - shared_app_lib (from `../shared-app-lib`)
-
-SPEC REPOS:
-  trunk:
-    - Kingfisher
 
 EXTERNAL SOURCES:
   shared_app_lib:
     :path: "../shared-app-lib"
 
 SPEC CHECKSUMS:
-  Kingfisher: 53a10ea35051a436b5fb626ca2dd8f3144d755e9
   shared_app_lib: ebf106e0f90f4616b283fdb1ed35c94b6fce0250
 
-PODFILE CHECKSUM: a9726019d05e20b8f8edf9a0900f83de9aef56c4
+PODFILE CHECKSUM: 3d1d15649428a057163b94b85dfaff2ef2d1bd07
 
 COCOAPODS: 1.12.1

@@ -16,6 +16,7 @@
 		3D4F2860267D108E00D3D126 /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F986668854AAE55513203521 /* Pods_iosApp.framework */; };
 		3D6AC7882737390800351A17 /* AppTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D6AC7872737390800351A17 /* AppTabView.swift */; };
 		3D77241A27298261008103EE /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D77241927298261008103EE /* MessageView.swift */; };
+		3DDAB1BE2C4EB733006D5A58 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 3DDAB1BD2C4EB733006D5A58 /* Kingfisher */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
 		7555FF81242A565900829871 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF80242A565900829871 /* SceneDelegate.swift */; };
 		7555FF83242A565900829871 /* ArticlesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ArticlesView.swift */; };
@@ -85,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DDAB1BE2C4EB733006D5A58 /* Kingfisher in Frameworks */,
 				3D4F2860267D108E00D3D126 /* Pods_iosApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -214,7 +216,6 @@
 				7555FF77242A565900829871 /* Sources */,
 				7555FF78242A565900829871 /* Frameworks */,
 				7555FF79242A565900829871 /* Resources */,
-				68A6E23B84BF8DCB9C98F65D /* [CP] Embed Pods Frameworks */,
 				3A9E0E917FF97D0753BD17AE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -222,6 +223,9 @@
 			dependencies = (
 			);
 			name = iosApp;
+			packageProductDependencies = (
+				3DDAB1BD2C4EB733006D5A58 /* Kingfisher */,
+			);
 			productName = iosApp;
 			productReference = 7555FF7B242A565900829871 /* iosApp.app */;
 			productType = "com.apple.product-type.application";
@@ -253,7 +257,6 @@
 				7555FF98242A565B00829871 /* Sources */,
 				7555FF99242A565B00829871 /* Frameworks */,
 				7555FF9A242A565B00829871 /* Resources */,
-				3ED1883B4744FB6BA36E5A23 /* [CP] Embed Pods Frameworks */,
 				D57AC066CFFE15DBD4D5F9A4 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -298,6 +301,9 @@
 				Base,
 			);
 			mainGroup = 7555FF72242A565900829871;
+			packageReferences = (
+				3DDAB1BC2C4EB733006D5A58 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -376,40 +382,6 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		3ED1883B4744FB6BA36E5A23 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-iosApp-iosAppUITests/Pods-iosApp-iosAppUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-iosApp-iosAppUITests/Pods-iosApp-iosAppUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iosApp-iosAppUITests/Pods-iosApp-iosAppUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		68A6E23B84BF8DCB9C98F65D /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		7555FFB5242A651A00829871 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -425,7 +397,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\n";
+			shellScript = "
+";
 		};
 		D57AC066CFFE15DBD4D5F9A4 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -606,7 +579,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -665,7 +638,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CODE_SIGN_FLAGS = "--generate-entitlement-der";
@@ -688,7 +661,7 @@
 				DEVELOPMENT_TEAM = ETCK86Y532;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/../shared-app-lib/build/cocoapods/framework",
+					"\"${PODS_ROOT}/../../shared-app-lib/build/cocoapods/framework\"",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -702,18 +675,6 @@
 					"$(inherited)",
 					"-ObjC",
 					"-l\"c++\"",
-					"-framework",
-					"\"Accelerate\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"Kingfisher\"",
-					"-framework",
-					"\"SharedAppLib\"",
-					"-weak_framework",
-					"\"Combine\"",
-					"-weak_framework",
-					"\"SwiftUI\"",
 					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.github.xlopec.news.reader;
@@ -736,7 +697,7 @@
 				DEVELOPMENT_TEAM = ETCK86Y532;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/../shared-app-lib/build/cocoapods/framework",
+					"\"${PODS_ROOT}/../../shared-app-lib/build/cocoapods/framework\"",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -750,18 +711,6 @@
 					"$(inherited)",
 					"-ObjC",
 					"-l\"c++\"",
-					"-framework",
-					"\"Accelerate\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"Kingfisher\"",
-					"-framework",
-					"\"SharedAppLib\"",
-					"-weak_framework",
-					"\"Combine\"",
-					"-weak_framework",
-					"\"SwiftUI\"",
 					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.github.xlopec.news.reader;
@@ -964,6 +913,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3DDAB1BC2C4EB733006D5A58 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = exactVersion;
+				version = 7.12.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3DDAB1BD2C4EB733006D5A58 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3DDAB1BC2C4EB733006D5A58 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7555FF73242A565900829871 /* Project object */;
 }
