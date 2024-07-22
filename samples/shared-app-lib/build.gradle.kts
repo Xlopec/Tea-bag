@@ -27,7 +27,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     kotlin("multiplatform")
-    kotlin("native.cocoapods")
     id("com.android.library")
     id("com.squareup.sqldelight")
     kotlin("plugin.serialization")
@@ -62,6 +61,17 @@ kotlin {
     iosSimulatorArm64()
     applyDefaultHierarchyTemplate()
 
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "SharedAppLib"
+            isStatic = true
+        }
+    }
+
     targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests::class.java) {
         testRuns["test"].deviceId = "iPhone 15"
     }
@@ -70,17 +80,6 @@ kotlin {
         compilerOptions {
             freeCompilerArgs.add("-Xexport-kdoc")
         }
-    }
-
-    cocoapods {
-        summary = "Shared app lib with common code"
-        homepage = "Link to the Shared Module homepage"
-        ios.deploymentTarget = "14.1"
-        framework {
-            baseName = "SharedAppLib"
-            isStatic = true
-        }
-        podfile = project.file("../iosApp/Podfile")
     }
 
     sourceSets {
