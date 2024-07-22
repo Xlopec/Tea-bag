@@ -26,6 +26,11 @@
 
 import Foundation
 import CoreGraphics
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 public protocol KFOptionSetter {
     var options: KingfisherParsedOptionsInfo { get nonmutating set }
@@ -41,22 +46,6 @@ extension KF.Builder: KFOptionSetter {
     public var delegateObserver: AnyObject { self }
 }
 
-#if canImport(SwiftUI) && canImport(Combine)
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension KFImage: KFOptionSetter {
-    public var options: KingfisherParsedOptionsInfo {
-        get { context.binder.options }
-        nonmutating set { context.binder.options = newValue }
-    }
-
-    public var onFailureDelegate: Delegate<KingfisherError, Void> { context.binder.onFailureDelegate }
-    public var onSuccessDelegate: Delegate<RetrieveImageResult, Void> { context.binder.onSuccessDelegate }
-    public var onProgressDelegate: Delegate<(Int64, Int64), Void> { context.binder.onProgressDelegate }
-
-    public var delegateObserver: AnyObject { context.binder }
-}
-#endif
-
 // MARK: - Life cycles
 extension KFOptionSetter {
     /// Sets the progress block to current builder.
@@ -71,8 +60,8 @@ extension KFOptionSetter {
         return self
     }
 
-    /// Sets the the done block to current builder.
-    /// - Parameter block: Called when the image task successfully completes and the the image set is done. If `block`
+    /// Sets the done block to current builder.
+    /// - Parameter block: Called when the image task successfully completes and the image set is done. If `block`
     ///                    is `nil`, the callback will be reset.
     /// - Returns: A `KF.Builder` with changes applied.
     public func onSuccess(_ block: ((RetrieveImageResult) -> Void)?) -> Self {
@@ -253,6 +242,18 @@ extension KFOptionSetter {
         return self
     }
 
+    /// Sets writing options for an original image on a first write
+    /// - Parameter writingOptions: Options to control the writing of data to a disk storage.
+    /// - Returns: A `Self` value with changes applied.
+    /// If set, options will be passed the store operation for a new files.
+    ///
+    /// This is useful if you want to implement file encryption on first write - eg [.completeFileProtection]
+    ///
+    public func diskStoreWriteOptions(_ writingOptions: Data.WritingOptions) -> Self {
+        options.diskStoreWriteOptions = writingOptions
+        return self
+    }
+
     /// Sets whether the disk storage loading should happen in the same calling queue.
     /// - Parameter enabled: Whether the disk storage loading should happen in the same calling queue.
     /// - Returns: A `Self` value with changes applied.
@@ -303,7 +304,7 @@ extension KFOptionSetter {
     /// Sets a retry strategy that will be used when something gets wrong during the image retrieving.
     /// - Parameter strategy: The provided strategy to define how the retrying should happen.
     /// - Returns: A `Self` value with changes applied.
-    public func retry(_ strategy: RetryStrategy) -> Self {
+    public func retry(_ strategy: RetryStrategy?) -> Self {
         options.retryStrategy = strategy
         return self
     }
@@ -342,12 +343,24 @@ extension KFOptionSetter {
 
     /// Sets whether the image setting for an image view should happen with transition even when retrieved from cache.
     /// - Parameter enabled: Enable the force transition or not.
-    /// - Returns: A `KF.Builder` with changes applied.
+    /// - Returns: A `Self` with changes applied.
     public func forceTransition(_ enabled: Bool = true) -> Self {
         options.forceTransition = enabled
         return self
     }
 
+    /// Sets the image that will be used if an image retrieving task fails.
+    /// - Parameter image: The image that will be used when something goes wrong.
+    /// - Returns: A `Self` with changes applied.
+    ///
+    /// If set and an image retrieving error occurred Kingfisher will set provided image (or empty)
+    /// in place of requested one. It's useful when you don't want to show placeholder
+    /// during loading time but wants to use some default image when requests will be failed.
+    ///
+    public func onFailureImage(_ image: KFCrossPlatformImage?) -> Self {
+        options.onFailureImage = .some(image)
+        return self
+    }
 }
 
 // MARK: - Request Modifier
@@ -359,7 +372,7 @@ extension KFOptionSetter {
     /// This is the last chance you can modify the image download request. You can modify the request for some
     /// customizing purpose, such as adding auth token to the header, do basic HTTP auth or something like url mapping.
     ///
-    public func requestModifier(_ modifier: ImageDownloadRequestModifier) -> Self {
+    public func requestModifier(_ modifier: AsyncImageDownloadRequestModifier) -> Self {
         options.requestModifier = modifier
         return self
     }
@@ -434,8 +447,7 @@ extension KFOptionSetter {
     ///                         to form a processor pipeline.
     /// - Returns: A `Self` value with changes applied.
     ///
-    /// - Note:
-    /// To append processors to current ones instead of replacing them all, concatenate them by `|>`, then use
+    /// - Note: To append processors to current ones instead of replacing them all, concatenate them by `|>`, then use
     /// `appendProcessor(_:)`.
     public func setProcessors(_ processors: [ImageProcessor]) -> Self {
         switch processors.count {
@@ -468,7 +480,7 @@ extension KFOptionSetter {
     ///   - backgroundColor: Background color of the output image. If `nil`, it will use a transparent background.
     /// - Returns: A `Self` value with changes applied.
     public func roundCorner(
-        radius: RoundCornerImageProcessor.Radius,
+        radius: Radius,
         targetSize: CGSize? = nil,
         roundingCorners corners: RectCorner = .all,
         backgroundColor: KFCrossPlatformColor? = nil
