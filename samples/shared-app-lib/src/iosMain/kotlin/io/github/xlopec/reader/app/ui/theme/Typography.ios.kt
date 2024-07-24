@@ -14,7 +14,7 @@ import tea_bag.samples.shared_app_lib.generated.resources.roboto_medium
 import tea_bag.samples.shared_app_lib.generated.resources.roboto_regular
 
 @Composable
-actual fun typography(): Typography {
+internal actual fun typography(): Typography {
     val fontFamily = FontFamily(
         Font(Res.font.roboto_regular),
         Font(Res.font.roboto_medium),

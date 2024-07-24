@@ -32,66 +32,66 @@ import io.github.xlopec.reader.app.model.Filter
 
 import kotlin.jvm.JvmInline
 
-sealed interface ArticlesMessage : ScreenMessage {
-    val id: ScreenId?
+public sealed interface ArticlesMessage : ScreenMessage {
+    public val id: ScreenId?
 }
 
-data class FilterLoaded(
+public data class FilterLoaded(
     override val id: ScreenId,
     val filter: Filter,
 ) : ArticlesMessage
 
 /*@JvmInline value*/
 // see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
-data class LoadNextArticles(
+public data class LoadNextArticles(
     override val id: ScreenId,
 ) : ArticlesMessage
 
 /*@JvmInline value*/
 // see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
-data class LoadArticles(
+public data class LoadArticles(
     override val id: ScreenId,
 ) : ArticlesMessage
 
 /*@JvmInline value*/
 // see https://kotlinlang.org/docs/native-objc-interop.html#unsupported
-data class RefreshArticles(
+public data class RefreshArticles(
     override val id: ScreenId,
 ) : ArticlesMessage
 
-data class ToggleArticleIsFavorite(
+public data class ToggleArticleIsFavorite(
     override val id: ScreenId,
     val article: Article,
 ) : ArticlesMessage
 
-sealed interface ArticlesLoadResult : ArticlesMessage
+public sealed interface ArticlesLoadResult : ArticlesMessage
 
-data class ArticlesLoaded(
+public data class ArticlesLoaded(
     override val id: ScreenId,
     val page: Page<Article>,
 ) : ArticlesLoadResult
 
-data class ArticlesLoadException(
+public data class ArticlesLoadException(
     override val id: ScreenId?,
     val cause: AppException,
 ) : ArticlesLoadResult
 
 @JvmInline
-value class ArticleUpdated(
-    val article: Article,
+public value class ArticleUpdated(
+    public val article: Article,
 ) : ArticlesMessage {
     override val id: Nothing?
         get() = null
 }
 
-data class SyncScrollPosition(
+public data class SyncScrollPosition(
     override val id: ScreenId,
     val scrollState: ScrollState,
 ) : ArticlesMessage
 
 /*@JvmInline
 value*/
-data class OnShareArticle(
+public data class OnShareArticle(
     val article: Article,
 ) : ArticlesMessage {
     override val id: Nothing?

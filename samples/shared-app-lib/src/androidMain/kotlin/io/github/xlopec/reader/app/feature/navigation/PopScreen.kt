@@ -33,7 +33,7 @@ import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
 
-actual fun AppState.popScreen(): Update<AppState, Command> {
+public actual fun AppState.popScreen(): Update<AppState, Command> {
     val screen = screen
 
     return if (screen is TabScreen) {

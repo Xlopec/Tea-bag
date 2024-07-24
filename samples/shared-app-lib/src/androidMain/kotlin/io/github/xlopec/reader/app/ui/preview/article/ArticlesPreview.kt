@@ -22,15 +22,26 @@
  * SOFTWARE.
  */
 
-package io.github.reader.app.ui.screens.article
+package io.github.xlopec.reader.app.ui.preview.article
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
-import io.github.xlopec.reader.app.misc.*
-import io.github.xlopec.reader.app.model.*
+import io.github.xlopec.reader.app.misc.Idle
+import io.github.xlopec.reader.app.misc.Loadable
+import io.github.xlopec.reader.app.misc.LoadableState
+import io.github.xlopec.reader.app.misc.Loading
+import io.github.xlopec.reader.app.misc.LoadingNext
+import io.github.xlopec.reader.app.misc.Refreshing
+import io.github.xlopec.reader.app.model.Article
+import io.github.xlopec.reader.app.model.Author
+import io.github.xlopec.reader.app.model.Description
+import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.reader.app.model.FilterType
+import io.github.xlopec.reader.app.model.Query
+import io.github.xlopec.reader.app.model.Title
 import io.github.xlopec.reader.app.ui.misc.ColumnMessage
 import io.github.xlopec.reader.app.ui.screens.article.ArticleActions
 import io.github.xlopec.reader.app.ui.screens.article.ArticleItem
@@ -38,14 +49,14 @@ import io.github.xlopec.reader.app.ui.screens.article.ArticleSearchHeader
 import io.github.xlopec.reader.app.ui.screens.article.Articles
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
 import io.github.xlopec.tea.data.now
-import java.net.URI
-import java.util.*
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import java.net.URI
+import java.util.*
 
 @Composable
 @Preview("Articles search input field")
-fun ArticleSearchHeaderPreview() {
+internal fun ArticleSearchHeaderPreview() {
     ThemedPreview {
         ArticleSearchHeader(
             state = ArticlesState(
@@ -60,7 +71,7 @@ fun ArticleSearchHeaderPreview() {
 
 @Composable
 @Preview("Articles bottom action menu")
-fun ArticleActionsPreview() {
+internal fun ArticleActionsPreview() {
     ThemedPreview {
         ArticleActions(
             onMessage = {},
@@ -72,7 +83,7 @@ fun ArticleActionsPreview() {
 
 @Composable
 @Preview("Messages preview")
-fun MessagePreview() {
+internal fun MessagePreview() {
     ThemedPreview {
         ColumnMessage(
             modifier = Modifier,
@@ -84,7 +95,7 @@ fun MessagePreview() {
 
 @Composable
 @Preview("Articles screen preview")
-fun ArticlesScreenPreview() {
+internal fun ArticlesScreenPreview() {
     ThemedPreview {
         Articles(
             state = ArticlesState(
@@ -100,7 +111,7 @@ fun ArticlesScreenPreview() {
 
 @Composable
 @Preview("Articles screen loading next")
-fun ArticlesScreenLoadingNextPreview() {
+internal fun ArticlesScreenLoadingNextPreview() {
     ThemedPreview {
         Articles(
             state = ArticlesState(
@@ -116,7 +127,7 @@ fun ArticlesScreenLoadingNextPreview() {
 
 @Composable
 @Preview("Articles screen loading")
-fun ArticlesScreenLoadingPreview() {
+internal fun ArticlesScreenLoadingPreview() {
     ThemedPreview {
         Articles(
             state = ArticlesState(
@@ -132,7 +143,7 @@ fun ArticlesScreenLoadingPreview() {
 
 @Composable
 @Preview("Articles screen refreshing")
-fun ArticlesScreenRefreshingPreview() {
+internal fun ArticlesScreenRefreshingPreview() {
     ThemedPreview {
         Articles(
             state = ArticlesState(
@@ -148,7 +159,7 @@ fun ArticlesScreenRefreshingPreview() {
 
 @Composable
 @Preview("Article item")
-fun ArticleItemPreview() {
+internal fun ArticleItemPreview() {
     ThemedPreview {
         ArticleItem(
             screenId = UUID.randomUUID(),

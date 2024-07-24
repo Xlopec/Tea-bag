@@ -7,4 +7,4 @@ private val DateFormatter = NSDateFormatter().apply {
     dateFormat = "dd MMM' at 'hh:mm"
 }
 
-actual fun Date.formatted(): String = DateFormatter.stringFromDate(this)
+public actual fun Date.formatted(): String = DateFormatter.stringFromDate(this)

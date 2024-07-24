@@ -24,9 +24,9 @@
 
 package io.github.xlopec.reader.app.feature.article.details
 
-interface ArticleDetailsResolver {
+public interface ArticleDetailsResolver {
 
-    fun resolve(
+    public fun resolve(
         command: DoOpenInBrowser
     )
 }

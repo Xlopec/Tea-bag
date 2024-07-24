@@ -30,10 +30,10 @@ import android.app.Application
 import android.content.Intent
 import io.github.xlopec.reader.app.model.Article
 
-class AndroidShareArticle(
+public class AndroidShareArticle(
     private val application: Application
 ) : ShareArticle {
-    override fun share(article: Article) = application.startActivity(ShareIntent(article))
+    override fun share(article: Article): Unit = application.startActivity(ShareIntent(article))
 }
 
 private fun ShareIntent(

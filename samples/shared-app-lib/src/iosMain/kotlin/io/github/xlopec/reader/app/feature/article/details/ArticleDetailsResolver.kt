@@ -28,7 +28,7 @@ package io.github.xlopec.reader.app.feature.article.details
 
 import platform.UIKit.UIApplication
 
-fun ArticleDetailsResolver(): ArticleDetailsResolver =
+public fun ArticleDetailsResolver(): ArticleDetailsResolver =
     object : ArticleDetailsResolver {
         override fun resolve(command: DoOpenInBrowser) {
             UIApplication.sharedApplication.openURL(command.article.url)

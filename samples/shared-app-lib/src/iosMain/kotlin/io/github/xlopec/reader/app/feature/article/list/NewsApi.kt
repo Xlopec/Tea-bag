@@ -31,4 +31,4 @@ import platform.Foundation.NSLocale
 import platform.Foundation.countryCode
 import platform.Foundation.currentLocale
 
-fun NewsApi(): NewsApi = NewsApiImpl(Darwin, Country(NSLocale.currentLocale.countryCode ?: "en"))
+public fun NewsApi(): NewsApi = NewsApiImpl(Darwin, Country(NSLocale.currentLocale.countryCode ?: "en"))

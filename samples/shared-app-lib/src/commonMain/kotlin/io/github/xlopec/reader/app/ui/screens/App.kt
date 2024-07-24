@@ -45,7 +45,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 @Composable
-fun App(
+internal fun App(
     appState: AppState,
     onMessage: MessageHandler,
 ) {

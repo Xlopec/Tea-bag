@@ -47,15 +47,15 @@ import io.github.xlopec.reader.app.ui.screens.filters.ScreenAnimationState.Begin
 import io.github.xlopec.reader.app.ui.screens.filters.ScreenAnimationState.Finish
 import io.github.xlopec.reader.app.ui.screens.filters.ScreenAnimationState.Half
 
-enum class ScreenAnimationState {
+internal enum class ScreenAnimationState {
     Begin, Half, Finish
 }
 
-enum class ChildAnimationState {
+internal enum class ChildAnimationState {
     Start, End,
 }
 
-data class HeaderTransitionState(
+internal data class HeaderTransitionState(
     val _textBackground: State<Color>,
     val _indicatorColor: State<Color>,
     val _horizontalPadding: State<Dp>,
@@ -80,7 +80,7 @@ data class HeaderTransitionState(
         )
 }
 
-data class ChildTransitionState(
+internal data class ChildTransitionState(
     val _contentAlpha: State<Float>,
     val _listItemOffsetY: State<Dp>,
     val transition: Transition<ChildAnimationState>,
@@ -91,7 +91,7 @@ data class ChildTransitionState(
 
 @OptIn(ExperimentalTransitionApi::class)
 @Composable
-fun Transition<ScreenAnimationState>.headerTransitionState(): HeaderTransitionState {
+internal fun Transition<ScreenAnimationState>.headerTransitionState(): HeaderTransitionState {
 
     val transition = createChildTransition(label = "Header transition") {
         when (it) {
@@ -151,7 +151,7 @@ fun Transition<ScreenAnimationState>.headerTransitionState(): HeaderTransitionSt
 
 @OptIn(ExperimentalTransitionApi::class)
 @Composable
-fun Transition<ScreenAnimationState>.childTransitionState(): ChildTransitionState {
+internal fun Transition<ScreenAnimationState>.childTransitionState(): ChildTransitionState {
     val childTransition = createChildTransition(label = "Suggestions child transition") {
         when (it) {
             Begin, Half -> Start

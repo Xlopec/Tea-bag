@@ -29,10 +29,10 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
 
-val Colors.importantAction: Color
+internal val Colors.importantAction: Color
     get() = if (isLight) Color(0xffdb2a59) else Color(0xffbd2b52)
 
-val DarkThemeColors = darkColors(
+internal val DarkThemeColors = darkColors(
     primary = Color.White,
     secondary = Color(4, 4, 6),
     background = Color.Black,
@@ -45,7 +45,7 @@ val DarkThemeColors = darkColors(
     onError = Color.White
 )
 
-val LightThemeColors = lightColors(
+internal val LightThemeColors = lightColors(
     primary = Color.Black,
     onPrimary = Color.Black,
     secondary = Color(18, 18, 18),

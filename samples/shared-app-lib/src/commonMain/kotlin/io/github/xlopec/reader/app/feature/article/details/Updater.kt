@@ -31,7 +31,7 @@ import io.github.xlopec.reader.app.model.toggleFavorite
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 
-fun ArticleDetailsState.toArticleDetailsUpdate(
+public fun ArticleDetailsState.toArticleDetailsUpdate(
     message: ArticleDetailsMessage,
 ): Update<ArticleDetailsState, Command> =
     when (message) {

@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun RowMessage(
+internal fun RowMessage(
     modifier: Modifier = Modifier,
     message: String,
     onClick: () -> Unit,
@@ -66,7 +66,7 @@ fun RowMessage(
 }
 
 @Composable
-fun ColumnMessage(
+internal fun ColumnMessage(
     modifier: Modifier = Modifier,
     title: String,
     message: String,

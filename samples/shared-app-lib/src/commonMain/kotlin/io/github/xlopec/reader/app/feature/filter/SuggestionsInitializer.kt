@@ -29,10 +29,11 @@ package io.github.xlopec.reader.app.feature.filter
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.misc.Loadable
 import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 
-fun FiltersInitialUpdate(
+public fun FiltersInitialUpdate(
     id: ScreenId,
     filter: Filter,
-) = FiltersState(id, filter, Loadable.newLoading())
+): Update<FiltersState, FilterCommand> = FiltersState(id, filter, Loadable.newLoading())
     .command(DoLoadRecentSearches(id, filter.type), DoLoadSources(id))

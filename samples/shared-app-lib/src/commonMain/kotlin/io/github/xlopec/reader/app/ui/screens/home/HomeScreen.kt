@@ -85,7 +85,7 @@ import io.github.xlopec.reader.app.model.FilterType.Favorite as FavoriteQuery
 import io.github.xlopec.reader.app.model.FilterType.Regular as RegularQuery
 import io.github.xlopec.reader.app.model.FilterType.Trending as TrendingQuery
 
-enum class BottomMenuItem {
+internal enum class BottomMenuItem {
     Feed,
     Favorite,
     Trending,
@@ -98,7 +98,7 @@ private typealias BottomBarListener = (reselected: Boolean, navigation: Navigati
 private val LocalBottomBarListener = compositionLocalOf<BottomBarListener> { error("no bottom bar listener provided") }
 
 @Composable
-fun HomeScreen(
+internal fun HomeScreen(
     appState: AppState,
     screen: TabScreen,
     onMessage: MessageHandler,
@@ -233,7 +233,7 @@ private fun SettingsScreen(
 }
 
 @Composable
-fun BottomBar(
+internal fun BottomBar(
     item: BottomMenuItem,
     modifier: Modifier = Modifier,
 ) {

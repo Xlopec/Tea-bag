@@ -30,6 +30,7 @@ import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.feature.article.list.Paging.Companion.FirstPage
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.FilterType
+import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 
 internal fun ArticlesInitialUpdate(
@@ -37,7 +38,7 @@ internal fun ArticlesInitialUpdate(
     type: FilterType
 ) = ArticlesState.newLoading(id, Filter(type)) command DoLoadFilter(id, type)
 
-fun ArticlesInitialUpdate(
+public fun ArticlesInitialUpdate(
     id: ScreenId,
     filter: Filter
-) = ArticlesState.newLoading(id, filter) command DoLoadArticles(id, filter, FirstPage)
+): Update<ArticlesState, DoLoadArticles> = ArticlesState.newLoading(id, filter) command DoLoadArticles(id, filter, FirstPage)

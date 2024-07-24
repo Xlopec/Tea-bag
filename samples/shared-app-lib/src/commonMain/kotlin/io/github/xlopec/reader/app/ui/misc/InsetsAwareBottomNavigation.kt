@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun InsetsAwareBottomNavigation(
+internal fun InsetsAwareBottomNavigation(
     modifier: Modifier = Modifier,
     elevation: Dp = 1.dp,
     background: Color = MaterialTheme.colors.surface,

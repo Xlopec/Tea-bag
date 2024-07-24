@@ -31,7 +31,7 @@ import io.github.xlopec.reader.app.screen
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.noCommand
 
-actual fun AppState.popScreen(): Update<AppState, Command> {
+internal actual fun AppState.popScreen(): Update<AppState, Command> {
     val screen = screen
 
     return if (screen is TabScreen) {

@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SearchHeader(
+internal fun SearchHeader(
     modifier: Modifier = Modifier,
     inputText: String,
     placeholderText: String,

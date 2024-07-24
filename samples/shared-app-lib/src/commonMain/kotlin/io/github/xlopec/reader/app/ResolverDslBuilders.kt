@@ -12,7 +12,7 @@ import kotlin.contracts.contract
  * @param action action to perform that might produce message to be consumed by a component
  * @return set of messages to be consumed a component
  */
-suspend inline infix fun <C, M> C.effect(
+public suspend inline infix fun <C, M> C.effect(
     crossinline action: suspend C.() -> M?,
 ): Set<M> {
     contract {
@@ -21,7 +21,7 @@ suspend inline infix fun <C, M> C.effect(
     return setOfNotNull(action(this))
 }
 
-suspend inline infix fun <C> C.sideEffect(
+public suspend inline infix fun <C> C.sideEffect(
     crossinline action: suspend C.() -> Unit,
 ): Set<Nothing> {
     contract {

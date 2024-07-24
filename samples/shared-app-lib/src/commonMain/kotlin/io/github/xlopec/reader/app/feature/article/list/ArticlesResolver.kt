@@ -26,9 +26,9 @@ package io.github.xlopec.reader.app.feature.article.list
 
 import io.github.xlopec.reader.app.Message
 
-interface ArticlesResolver<Env> {
+public interface ArticlesResolver<Env> {
 
-    suspend fun Env.resolve(
+    public suspend fun Env.resolve(
         command: ArticlesCommand
     ): Set<Message>
 }

@@ -26,4 +26,4 @@
 
 package io.github.xlopec.reader.app.feature.article.details
 
-typealias ArticleDetailsModule = ArticleDetailsResolver
+public typealias ArticleDetailsModule = ArticleDetailsResolver

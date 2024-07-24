@@ -103,7 +103,7 @@ import io.github.xlopec.tea.data.toExternalValue
 internal const val ProgressIndicatorTag = "Progress Indicator"
 
 @Composable
-fun Articles(
+internal fun Articles(
     state: ArticlesState,
     listState: LazyListState,
     modifier: Modifier = Modifier,
@@ -282,7 +282,7 @@ private fun ArticleImage(
 
 @Composable
 @OptIn(ExperimentalMaterialApi::class)
-fun ArticleItem(
+internal fun ArticleItem(
     screenId: ScreenId,
     article: Article,
     onMessage: MessageHandler,
@@ -348,7 +348,7 @@ private fun ArticleContents(
 }
 
 @Composable
-fun ArticleActions(
+internal fun ArticleActions(
     onMessage: MessageHandler,
     article: Article,
     screenId: ScreenId,
@@ -394,7 +394,7 @@ private fun ArticlesError(
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
-fun ArticleSearchHeader(
+internal fun ArticleSearchHeader(
     state: ArticlesState,
     onMessage: MessageHandler,
 ) {
@@ -439,7 +439,7 @@ private fun Filter.toScreenTitle(): String =
         Trending -> "Trending"
     }
 
-fun FilterType.toSearchHint(): String =
+internal fun FilterType.toSearchHint(): String =
     when (this) {
         Regular -> "Search in articles"
         Favorite -> "Search in favorite"

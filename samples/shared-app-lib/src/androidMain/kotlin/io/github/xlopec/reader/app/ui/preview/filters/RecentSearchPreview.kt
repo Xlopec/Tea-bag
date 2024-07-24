@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.reader.app.ui.screens.filters
+package io.github.xlopec.reader.app.ui.preview.filters
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -49,7 +49,7 @@ private val PreviewState = FiltersState(
 
 @Preview("Filters preview dark mode")
 @Composable
-fun FiltersPreviewDark() {
+internal fun FiltersPreviewDark() {
     ThemedPreview {
         FiltersScreen(
             state = PreviewState,
@@ -60,7 +60,7 @@ fun FiltersPreviewDark() {
 
 @Preview("Filters preview light mode")
 @Composable
-fun FiltersPreviewLight() {
+internal fun FiltersPreviewLight() {
     ThemedPreview(isDarkModeEnabled = false) {
         FiltersScreen(
             state = PreviewState,
@@ -71,7 +71,7 @@ fun FiltersPreviewLight() {
 
 @Preview("Suggestion items")
 @Composable
-fun SuggestionItems() {
+internal fun SuggestionItems() {
     ThemedPreview {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)

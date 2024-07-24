@@ -13,7 +13,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 
 @Composable
-fun rememberWindowInsetsController(): WindowInsetsControllerCompat {
+internal fun rememberWindowInsetsController(): WindowInsetsControllerCompat {
     val view = LocalView.current
 
     return remember(view) {
@@ -22,10 +22,10 @@ fun rememberWindowInsetsController(): WindowInsetsControllerCompat {
     }
 }
 
-fun View.findWindow(): Window =
+private fun View.findWindow(): Window =
     (parent as? DialogWindowProvider)?.window ?: context.findWindow()
 
-tailrec fun Context.findWindow(): Window =
+private tailrec fun Context.findWindow(): Window =
     when (this) {
         is Activity -> window
         is ContextWrapper -> baseContext.findWindow()

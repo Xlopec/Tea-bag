@@ -25,11 +25,11 @@
 package io.github.xlopec.reader.app.model
 
 import io.github.xlopec.reader.app.misc.coerceIn
-import kotlin.jvm.JvmInline
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlin.jvm.JvmInline
 
-enum class FilterType {
+public enum class FilterType {
     Regular, Favorite, Trending
 }
 
@@ -37,10 +37,10 @@ enum class FilterType {
  * Represents user query, never empty
  */
 @JvmInline
-value class Query private constructor(
-    val value: String
+public value class Query private constructor(
+    public val value: String
 ) {
-    companion object {
+    internal companion object {
 
         private const val MaxQueryLength = 500U
         private const val MinQueryLength = 1U
@@ -51,12 +51,12 @@ value class Query private constructor(
     }
 }
 
-data class Filter(
+public data class Filter(
     val type: FilterType,
     val query: Query? = null,
     val sources: PersistentSet<SourceId> = persistentSetOf(),
 ) {
-    companion object {
+    internal companion object {
         /**
          * API doesn't accept more than 20 sources per request
          */
@@ -64,6 +64,6 @@ data class Filter(
     }
 }
 
-fun Filter.query(
+internal fun Filter.query(
     query: Query?
 ) = copy(query = query)

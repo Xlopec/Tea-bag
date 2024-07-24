@@ -37,14 +37,14 @@ import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.UrlFor
 import io.github.xlopec.tea.data.domain
 
-interface FiltersResolver<Env> {
+public interface FiltersResolver<Env> {
 
-    suspend fun Env.resolve(
+    public suspend fun Env.resolve(
         command: FilterCommand,
     ): Set<FilterMessage>
 }
 
-fun <Env> FiltersResolver(): FiltersResolver<Env>
+public fun <Env> FiltersResolver(): FiltersResolver<Env>
         where Env : LocalStorage, Env : NewsApi = FiltersResolverImpl()
 
 private class FiltersResolverImpl<Env> : FiltersResolver<Env>

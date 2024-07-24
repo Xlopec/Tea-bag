@@ -32,9 +32,9 @@ import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.noCommand
 import kotlinx.collections.immutable.PersistentList
 
-typealias NavigationStack = PersistentList<ScreenState>
+public typealias NavigationStack = PersistentList<ScreenState>
 
-fun <T> PersistentList<T>.swap(
+internal fun <T> PersistentList<T>.swap(
     i: Int,
     j: Int,
 ): PersistentList<T> {
@@ -46,13 +46,13 @@ fun <T> PersistentList<T>.swap(
     return set(j, this[i]).set(i, tmp)
 }
 
-fun NavigationStack.push(
+internal fun NavigationStack.push(
     s: ScreenState
 ) = add(0, s)
 
-inline val NavigationStack.screen: ScreenState get() = this[0]
+internal inline val NavigationStack.screen: ScreenState get() = this[0]
 
-fun NavigationStack.pop(): NavigationStack = if (isEmpty()) this else removeAt(0)
+internal fun NavigationStack.pop(): NavigationStack = if (isEmpty()) this else removeAt(0)
 
 /**
  * This functions moves specified navigation group to the top of the navigation stack and returns
@@ -116,7 +116,7 @@ fun NavigationStack.pop(): NavigationStack = if (isEmpty()) this else removeAt(0
  * ***Implementation note***. If we ever have to support nesting of the depth more than 1, drawing
  * groups might be implemented as linked list.
  */
-fun NavigationStack.floatGroup(
+internal fun NavigationStack.floatGroup(
     tabIdx: Int,
     tabId: ScreenId
 ): NavigationStack {

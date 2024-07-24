@@ -29,10 +29,10 @@ import android.content.res.Configuration
 import android.os.Build
 import io.github.xlopec.reader.app.feature.network.NewsApiImpl
 import io.github.xlopec.reader.app.model.Country
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.cio.*
 import java.util.Locale.ENGLISH
 
-fun NewsApi(
+internal fun NewsApi(
     application: Application
 ): NewsApi = NewsApiImpl(CIO, application.countryCode)
 

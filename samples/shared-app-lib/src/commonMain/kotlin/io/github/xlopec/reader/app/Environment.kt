@@ -27,4 +27,4 @@ package io.github.xlopec.reader.app
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import kotlinx.coroutines.CoroutineScope
 
-expect interface Environment : AppModule<Environment>, CoroutineScope, LocalStorage
+public expect interface Environment : AppModule<Environment>, CoroutineScope, LocalStorage

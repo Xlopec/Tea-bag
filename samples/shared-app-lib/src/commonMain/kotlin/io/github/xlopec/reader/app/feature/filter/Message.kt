@@ -33,43 +33,43 @@ import io.github.xlopec.reader.app.model.SourceId
 import kotlinx.collections.immutable.ImmutableList
 import kotlin.jvm.JvmInline
 
-sealed interface FilterMessage : ScreenMessage {
-    val id: ScreenId
+public sealed interface FilterMessage : ScreenMessage {
+    public val id: ScreenId
 }
 
 @JvmInline
-value class LoadSources(
+public value class LoadSources(
     override val id: ScreenId,
 ) : FilterMessage
 
 @JvmInline
-value class ClearSelection(
+public value class ClearSelection(
     override val id: ScreenId,
 ) : FilterMessage
 
-data class ToggleSourceSelection(
+public data class ToggleSourceSelection(
     override val id: ScreenId,
     val sourceId: SourceId,
 ) : FilterMessage
 
-data class RecentSearchesLoaded(
+public data class RecentSearchesLoaded(
     override val id: ScreenId,
     val suggestions: ImmutableList<Query>,
 ) : FilterMessage
 
-data class RecentSearchRemoved(
+public data class RecentSearchRemoved(
     override val id: ScreenId,
     val search: Query,
 ) : FilterMessage
 
-sealed interface SourcesLoadResult : FilterMessage
+public sealed interface SourcesLoadResult : FilterMessage
 
-data class SourcesLoadSuccess(
+public data class SourcesLoadSuccess(
     override val id: ScreenId,
     val sources: ImmutableList<Source>,
 ) : SourcesLoadResult
 
-data class SourcesLoadException(
+public data class SourcesLoadException(
     override val id: ScreenId,
     val exception: AppException,
 ) : SourcesLoadResult

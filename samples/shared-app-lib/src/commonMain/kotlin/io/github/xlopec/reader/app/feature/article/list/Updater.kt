@@ -30,13 +30,15 @@ import io.github.xlopec.reader.app.feature.article.list.Paging.Companion.FirstPa
 import io.github.xlopec.reader.app.misc.isIdle
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter
-import io.github.xlopec.reader.app.model.FilterType.*
+import io.github.xlopec.reader.app.model.FilterType.Favorite
+import io.github.xlopec.reader.app.model.FilterType.Regular
+import io.github.xlopec.reader.app.model.FilterType.Trending
 import io.github.xlopec.reader.app.model.toggleFavorite
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
 
-fun ArticlesState.toArticlesUpdate(
+internal fun ArticlesState.toArticlesUpdate(
     message: ArticlesMessage,
 ): Update<ArticlesState, Command> =
     when (message) {
@@ -51,7 +53,7 @@ fun ArticlesState.toArticlesUpdate(
         is FilterLoaded -> toLoadUpdate(message.filter)
     }
 
-fun updateArticles(
+internal fun updateArticles(
     message: FilterUpdated,
     state: ArticlesState,
 ) = if (message.filter.type == state.filter.type) state.toFilterUpdate(message.filter) else state.noCommand()
@@ -126,7 +128,7 @@ private fun ArticlesState.toFilterUpdate(
 ): Update<ArticlesState, ArticlesCommand> =
     copy(filter = filter).noCommand()
 
-fun Article.storeCommand() = if (isFavorite) DoSaveArticle(this) else DoRemoveArticle(this)
+internal fun Article.storeCommand() = if (isFavorite) DoSaveArticle(this) else DoRemoveArticle(this)
 
 private fun ArticlesState.toSyncScrollStateUpdate(
     message: SyncScrollPosition,

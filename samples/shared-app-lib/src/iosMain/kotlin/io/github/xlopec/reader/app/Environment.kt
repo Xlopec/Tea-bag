@@ -32,7 +32,7 @@ import io.github.xlopec.reader.app.feature.filter.FiltersModule
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import kotlinx.coroutines.CoroutineScope
 
-fun Environment(
+public fun Environment(
     scope: CoroutineScope,
 ): Environment =
     object : Environment,
@@ -45,7 +45,7 @@ fun Environment(
         CoroutineScope by scope {
     }
 
-actual interface Environment :
+public actual interface Environment :
     AppModule<Environment>,
     ArticlesModule<Environment>,
     FiltersModule<Environment>,

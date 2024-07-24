@@ -157,7 +157,6 @@ dependencies {
 
     implementation(libs.stdlib)
     implementation(libs.compose.activity)
-    debugImplementation(compose.uiTooling)
 
     implementation(libs.splashscreen)
 

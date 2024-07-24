@@ -56,12 +56,12 @@ import io.github.xlopec.reader.app.ui.screens.article.toSearchHint
 import io.github.xlopec.reader.app.ui.screens.filters.ScreenAnimationState.Begin
 import io.github.xlopec.reader.app.ui.screens.filters.ScreenAnimationState.Finish
 
-const val HeaderSectionId = "header section"
-const val SourcesSectionId = "sources section"
-const val RecentSearchesSubtitle = "recent searches subtitle"
+internal const val HeaderSectionId = "header section"
+internal const val SourcesSectionId = "sources section"
+internal const val RecentSearchesSubtitle = "recent searches subtitle"
 
 @Composable
-fun FiltersScreen(
+internal fun FiltersScreen(
     state: FiltersState,
     handler: MessageHandler,
 ) {

@@ -38,6 +38,8 @@ version = "1.0.0"
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
+    explicitApi()
+
     compilerOptions {
         optIn.addAll(
             "kotlinx.serialization.ExperimentalSerializationApi",
@@ -118,6 +120,7 @@ kotlin {
 
         val androidMain by getting {
             dependencies {
+                implementation(compose.preview)
                 implementation(libs.compose.fonts)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.client.logging)
@@ -196,6 +199,7 @@ android {
         remoteApi(project(":tea-time-travel"))
         remoteApi(project(":tea-time-travel-adapter-gson"))
         remoteImplementation(libs.gson)
+        debugImplementation(compose.uiTooling)
         coreLibraryDesugaring(libs.desugar.jdk)
     }
 }

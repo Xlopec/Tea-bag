@@ -27,16 +27,16 @@ package io.github.xlopec.reader.app.feature.article.list
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState.Companion.ArticlesPerPage
 import kotlinx.collections.immutable.ImmutableList
 
-data class Page<out T>(
+public data class Page<out T>(
     val data: ImmutableList<T>,
     val hasMore: Boolean = false
 )
 
-data class Paging(
+public data class Paging(
     val currentSize: Int,
     val resultsPerPage: Int = ArticlesPerPage
 ) {
-    companion object {
+    internal companion object {
         val FirstPage = Paging(currentSize = 0)
     }
 }
@@ -45,9 +45,9 @@ data class Paging(
  * Calculates and returns next page for current Paging instance.
  * For 0 page it'll return 1, which is acceptable by API
  */
-inline val Paging.nextPage: Int
+internal inline val Paging.nextPage: Int
     get() = (currentSize / resultsPerPage) + 1
 
-fun ArticlesState.nextPage(
+internal fun ArticlesState.nextPage(
     resultsPerPage: Int = ArticlesPerPage
 ) = Paging(loadable.data.size, resultsPerPage)

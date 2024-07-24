@@ -30,7 +30,7 @@ import android.app.Application
 import android.content.Intent
 import android.net.Uri
 
-fun ArticleDetailsResolver(
+internal fun ArticleDetailsResolver(
     application: Application,
 ): ArticleDetailsResolver =
     object : ArticleDetailsResolver {

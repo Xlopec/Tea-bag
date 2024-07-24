@@ -24,28 +24,28 @@
 
 package io.github.xlopec.reader.app
 
-sealed class AppException : RuntimeException {
+public sealed class AppException : RuntimeException {
 
-    constructor() : super()
+    protected constructor() : super()
 
-    constructor(message: String) : super(message)
+    protected constructor(message: String) : super(message)
 
-    constructor(
+    protected constructor(
         message: String,
         cause: Throwable,
     ) : super(message, cause)
 
-    constructor(cause: Throwable) : super(cause)
+    protected constructor(cause: Throwable) : super(cause)
 
     abstract override val message: String
 }
 
-class NetworkException(
+public class NetworkException(
     override val message: String,
     cause: Throwable,
 ) : AppException(message, cause)
 
-class InternalException(
+public class InternalException(
     override val message: String,
     cause: Throwable,
 ) : AppException(message, cause)

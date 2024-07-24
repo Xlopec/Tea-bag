@@ -27,27 +27,33 @@
 package io.github.xlopec.reader.app.feature.article.list
 
 import arrow.core.Either
-import io.github.xlopec.reader.app.*
+import io.github.xlopec.reader.app.AppException
+import io.github.xlopec.reader.app.Log
+import io.github.xlopec.reader.app.Message
+import io.github.xlopec.reader.app.ScreenMessage
+import io.github.xlopec.reader.app.effect
 import io.github.xlopec.reader.app.feature.network.ArticleElement
 import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import io.github.xlopec.reader.app.misc.mapToPersistentList
 import io.github.xlopec.reader.app.model.Article
-import io.github.xlopec.reader.app.model.FilterType.*
+import io.github.xlopec.reader.app.model.FilterType.Favorite
+import io.github.xlopec.reader.app.model.FilterType.Regular
+import io.github.xlopec.reader.app.model.FilterType.Trending
 import kotlinx.collections.immutable.ImmutableList
 
-fun interface ShareArticle {
-    fun share(
+public fun interface ShareArticle {
+    public fun share(
         article: Article,
     )
 }
 
-fun <Env> ArticlesResolver(
+public fun <Env> ArticlesResolver(
     shareDelegate: ShareArticle,
 ): ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage =
     ArticlesResolverImpl(shareDelegate)
 
-class ArticlesResolverImpl<Env>(
+internal class ArticlesResolverImpl<Env>(
     private val shareDelegate: ShareArticle,
 ) : ArticlesResolver<Env> where Env : NewsApi, Env : LocalStorage {
     override suspend fun Env.resolve(

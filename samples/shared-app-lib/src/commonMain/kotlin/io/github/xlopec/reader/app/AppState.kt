@@ -26,21 +26,25 @@ package io.github.xlopec.reader.app
 
 import androidx.compose.runtime.Immutable
 import io.github.xlopec.reader.app.command.Command
-import io.github.xlopec.reader.app.feature.navigation.*
+import io.github.xlopec.reader.app.feature.navigation.NavigationStack
+import io.github.xlopec.reader.app.feature.navigation.push
+import io.github.xlopec.reader.app.feature.navigation.screen
+import io.github.xlopec.reader.app.feature.navigation.updateAllScreens
+import io.github.xlopec.reader.app.feature.navigation.updateScreen
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.data.UUID
 import kotlinx.collections.immutable.persistentListOf
 
-typealias ScreenId = UUID
+public typealias ScreenId = UUID
 
 @Immutable
-data class AppState(
+public data class AppState internal constructor(
     val settings: Settings,
     val screens: NavigationStack,
 ) {
 
-    constructor(
+    internal constructor(
         screen: TabScreen,
         settings: Settings,
     ) : this(settings, persistentListOf(screen))
@@ -50,10 +54,10 @@ data class AppState(
     }
 }
 
-inline val AppState.screen: ScreenState
+public val AppState.screen: ScreenState
     get() = screens.screen
 
-inline fun <reified T : ScreenState> AppState.updateScreen(
+public inline fun <reified T : ScreenState> AppState.updateScreen(
     id: ScreenId? = null,
     noinline how: (T) -> Update<T, Command>,
 ): Update<AppState, Command> {
@@ -67,6 +71,6 @@ inline fun <reified T : ScreenState> AppState.updateScreen(
     return copy(screens = updatedStack) command commands
 }
 
-fun AppState.pushScreen(
+public fun AppState.pushScreen(
     screen: ScreenState,
 ): AppState = copy(screens = screens.push(screen))

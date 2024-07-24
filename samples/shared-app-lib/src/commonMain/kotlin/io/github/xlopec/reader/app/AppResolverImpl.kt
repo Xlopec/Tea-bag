@@ -39,7 +39,7 @@ import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import io.github.xlopec.tea.core.effects
 import io.github.xlopec.tea.core.sideEffect
 
-fun <Env> AppResolver(): AppResolver<Env> where
+public fun <Env> AppResolver(): AppResolver<Env> where
         Env : ArticlesResolver<Env>,
         Env : LocalStorage,
         Env : FiltersResolver<Env>,

@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun InsetAwareTopAppBar(
+internal fun InsetAwareTopAppBar(
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit)? = null,
@@ -68,7 +68,7 @@ fun InsetAwareTopAppBar(
 }
 
 @Composable
-fun ProgressInsetAwareTopAppBar(
+internal fun ProgressInsetAwareTopAppBar(
     progress: Int,
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier,

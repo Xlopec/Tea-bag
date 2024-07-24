@@ -40,7 +40,7 @@ import io.github.xlopec.tea.core.noCommand
 import kotlin.Int.Companion.MAX_VALUE
 import kotlin.Int.Companion.MIN_VALUE
 
-fun navigate(
+internal fun navigate(
     nav: Navigation,
     state: AppState,
     debug: Boolean = true,
@@ -59,7 +59,7 @@ fun navigate(
     }
 }
 
-fun AppState.navigateToTab(
+internal fun AppState.navigateToTab(
     nav: TabNavigation,
     screenWithCommand: (TabNavigation) -> Update<TabScreen, Command>,
 ): Update<AppState, Command> {
@@ -77,11 +77,11 @@ fun AppState.navigateToTab(
     }
 }
 
-fun AppState.navigateToArticleDetails(
+internal fun AppState.navigateToArticleDetails(
     nav: NavigateToArticleDetails,
 ) = pushScreen(ArticleDetailsState(nav.id, nav.article)).noCommand()
 
-fun AppState.navigateToFilters(
+internal fun AppState.navigateToFilters(
     nav: NavigateToFilters,
 ): Update<AppState, FilterCommand> {
 
@@ -90,14 +90,14 @@ fun AppState.navigateToFilters(
     return pushScreen(state) command commands
 }
 
-fun AppState.findTabScreenIndex(
+internal fun AppState.findTabScreenIndex(
     nav: TabNavigation,
 ): Int = screens.indexOfFirst { s -> nav.id == s.id }
 
-val AppState.currentTab: TabScreen
+internal val AppState.currentTab: TabScreen
     get() = screens.first { it is TabScreen } as TabScreen
 
-expect fun AppState.popScreen(): Update<AppState, Command>
+internal expect fun AppState.popScreen(): Update<AppState, Command>
 
 private fun checkInvariants(
     state: AppState,

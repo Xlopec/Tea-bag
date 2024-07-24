@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 @Composable
-fun App(
+public fun App(
     component: (Flow<Message>) -> Flow<AppState>,
 ) {
     val messages = remember { MutableSharedFlow<Message>() }

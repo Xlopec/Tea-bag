@@ -32,7 +32,7 @@ import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.ShareOptions
 import kotlinx.coroutines.flow.SharingStarted
 
-fun AppComponent(
+public fun AppComponent(
     environment: Environment,
     initializer: Initializer<AppState, Command>,
 ): Component<Message, AppState, Command> =

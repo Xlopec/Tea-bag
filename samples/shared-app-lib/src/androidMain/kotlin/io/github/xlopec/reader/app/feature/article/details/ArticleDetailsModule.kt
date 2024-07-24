@@ -29,6 +29,6 @@ package io.github.xlopec.reader.app.feature.article.details
 
 import android.app.Application
 
-fun ArticleDetailsModule(
+public fun ArticleDetailsModule(
     application: Application
 ): ArticleDetailsModule = ArticleDetailsResolver(application)

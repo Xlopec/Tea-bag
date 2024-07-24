@@ -27,14 +27,14 @@ package io.github.xlopec.reader.app.feature.article.details
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.ScreenMessage
 
-sealed interface ArticleDetailsMessage : ScreenMessage {
-    val id: ScreenId
+public sealed interface ArticleDetailsMessage : ScreenMessage {
+    public val id: ScreenId
 }
 
-data class ToggleArticleIsFavorite(
+public data class ToggleArticleIsFavorite(
     override val id: ScreenId,
 ) : ArticleDetailsMessage
 
-data class OpenInBrowser(
+public data class OpenInBrowser(
     override val id: ScreenId
 ) : ArticleDetailsMessage

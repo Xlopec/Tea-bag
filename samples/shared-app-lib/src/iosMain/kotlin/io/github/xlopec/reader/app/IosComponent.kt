@@ -36,11 +36,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-fun interface Cancellation {
-    fun cancel()
+public fun interface Cancellation {
+    public fun cancel()
 }
 
-class IosComponent(
+public class IosComponent(
     systemDarkModeEnabled: Boolean
 ) {
     private val componentJob = Job()
@@ -48,7 +48,7 @@ class IosComponent(
     private val component = AppComponent(systemDarkModeEnabled, componentScope).toStatesComponent()
     private val messages = MutableSharedFlow<Message>()
 
-    fun dispatch(
+    public fun dispatch(
         message: Message
     ) {
         componentScope.launch {
@@ -56,11 +56,11 @@ class IosComponent(
         }
     }
 
-    fun destroy() {
+    public fun destroy() {
         componentScope.cancel()
     }
 
-    fun render(
+    public fun render(
         renderCallback: (AppState) -> Unit
     ): Cancellation {
 

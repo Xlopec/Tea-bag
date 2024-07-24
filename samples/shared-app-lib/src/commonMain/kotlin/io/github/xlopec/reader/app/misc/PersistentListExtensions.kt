@@ -27,15 +27,15 @@ package io.github.xlopec.reader.app.misc
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
-inline fun <E, T> Iterable<E>.mapToPersistentList(
+internal inline fun <E, T> Iterable<E>.mapToPersistentList(
     mapper: (E) -> T,
 ) = with(persistentListOf<T>().builder()) { mapTo(this, mapper) }.build()
 
-inline fun <E, T : Any> Iterable<E>.mapNotNullToPersistentList(
+internal inline fun <E, T : Any> Iterable<E>.mapNotNullToPersistentList(
     mapper: (E) -> T?,
 ) = with(persistentListOf<T>().builder()) { mapNotNullTo(this, mapper) }.build()
 
-inline fun <E> PersistentList<E>.replace(
+internal inline fun <E> PersistentList<E>.replace(
     e: E,
     predicate: (E) -> Boolean,
 ): PersistentList<E> {
@@ -48,7 +48,7 @@ inline fun <E> PersistentList<E>.replace(
     }
 }
 
-inline fun <E> PersistentList<E>.remove(
+internal inline fun <E> PersistentList<E>.remove(
     predicate: (E) -> Boolean,
 ): PersistentList<E> {
     val i = indexOfFirst(predicate)

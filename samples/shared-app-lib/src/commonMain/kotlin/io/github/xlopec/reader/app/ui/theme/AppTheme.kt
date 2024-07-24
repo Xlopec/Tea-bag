@@ -32,7 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 
 @Composable
-fun AppTheme(
+public fun AppTheme(
     isDarkModeEnabled: Boolean,
     content: @Composable () -> Unit,
 ) {
@@ -90,7 +90,7 @@ private fun appColors(
 }
 
 @Composable
-fun ThemedPreview(
+public fun ThemedPreview(
     isDarkModeEnabled: Boolean = true,
     content: @Composable () -> Unit,
 ) {

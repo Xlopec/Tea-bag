@@ -95,7 +95,7 @@ import io.github.xlopec.tea.data.Url
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun ArticleDetailsScreen(
+internal fun ArticleDetailsScreen(
     screen: ArticleDetailsState,
     onMessage: MessageHandler,
 ) {

@@ -28,4 +28,4 @@ import androidx.compose.material.Typography
 import androidx.compose.runtime.Composable
 
 @Composable
-expect fun typography(): Typography
+internal expect fun typography(): Typography

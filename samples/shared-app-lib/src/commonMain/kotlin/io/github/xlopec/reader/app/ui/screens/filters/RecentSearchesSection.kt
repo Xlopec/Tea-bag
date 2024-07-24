@@ -61,7 +61,7 @@ import kotlin.math.abs
 private val RecentSearchSwipeThreshold = 120.dp
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
-fun LazyListScope.recentSearchesSection(
+internal fun LazyListScope.recentSearchesSection(
     suggestions: List<Query>,
     childTransitionState: ChildTransitionState,
     onSelect: (Query) -> Unit,
@@ -129,7 +129,7 @@ fun LazyListScope.recentSearchesSection(
 }
 
 @Composable
-fun RecentSearchItem(
+internal fun RecentSearchItem(
     modifier: Modifier,
     suggestion: Query,
 ) {

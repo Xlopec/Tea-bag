@@ -30,63 +30,63 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
-data class Loadable<out T>(
+public data class Loadable<out T>(
     val data: PersistentList<T>,
     val hasMore: Boolean,
     val loadableState: LoadableState,
 ) {
-    companion object {
-        fun <T> newLoading(
+    public companion object {
+        public fun <T> newLoading(
             data: PersistentList<T> = persistentListOf()
-        ) = Loadable(data = data, hasMore = false, loadableState = Loading)
+        ): Loadable<T> = Loadable(data = data, hasMore = false, loadableState = Loading)
     }
 }
 
-sealed interface LoadableState
+public sealed interface LoadableState
 
-data class Exception(
+public data class Exception(
     val th: AppException,
 ) : LoadableState
 
-object Loading : LoadableState
+public object Loading : LoadableState
 
-object LoadingNext : LoadableState
+public object LoadingNext : LoadableState
 
-object Refreshing : LoadableState
+public object Refreshing : LoadableState
 
-object Idle : LoadableState
+public object Idle : LoadableState
 
-val Loadable<*>.isLoading: Boolean
+public val Loadable<*>.isLoading: Boolean
     get() = loadableState === Loading
 
-val Loadable<*>.isLoadingNext: Boolean
+public val Loadable<*>.isLoadingNext: Boolean
     get() = loadableState === LoadingNext
 
-val Loadable<*>.isRefreshing: Boolean
+public val Loadable<*>.isRefreshing: Boolean
     get() = loadableState === Refreshing
 
-val Loadable<*>.isIdle: Boolean
+public val Loadable<*>.isIdle: Boolean
     get() = loadableState === Idle || isException
 
-val Loadable<*>.isException: Boolean
+public val Loadable<*>.isException: Boolean
     get() = loadableState is Exception
 
-inline fun <T> Loadable<T>.updated(
+public inline fun <T> Loadable<T>.updated(
     how: PersistentList<T>.() -> PersistentList<T>
-) = copy(data = how(data))
+): Loadable<T> = copy(data = how(data))
 
-fun <T> Loadable<T>.toLoadingNext(): Loadable<T> {
+public fun <T> Loadable<T>.toLoadingNext(): Loadable<T> {
     checkCanLoadNextPage()
     return copy(loadableState = LoadingNext)
 }
 
-fun <T> Loadable<T>.toLoading(): Loadable<T> =
+public fun <T> Loadable<T>.toLoading(): Loadable<T> =
     copy(loadableState = Loading)
 
-fun <T> Loadable<T>.toRefreshing(): Loadable<T> =
+public fun <T> Loadable<T>.toRefreshing(): Loadable<T> =
     copy(loadableState = Refreshing)
 
-fun <T> Loadable<T>.toIdle(
+public fun <T> Loadable<T>.toIdle(
     page: Page<T>,
 ): Loadable<T> =
     when (loadableState) {
@@ -103,7 +103,7 @@ fun <T> Loadable<T>.toIdle(
         Idle -> this
     }
 
-fun <T> Loadable<T>.toException(
+public fun <T> Loadable<T>.toException(
     cause: AppException,
 ): Loadable<T> =
     when (loadableState) {

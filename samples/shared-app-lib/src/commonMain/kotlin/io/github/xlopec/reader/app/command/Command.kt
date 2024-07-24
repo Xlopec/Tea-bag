@@ -28,20 +28,20 @@ import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.ScreenId
 
 /*sealed*/
-interface Command
+public interface Command
 
 // App wide commands
 
-object CloseApp : Command
+public object CloseApp : Command
 
-data class DoLog(
+public data class DoLog(
     val state: AppState,
     val throwable: Throwable,
     val id: ScreenId?,
     val causedBy: Command,
 ) : Command
 
-data class DoStoreDarkMode(
+public data class DoStoreDarkMode(
     val userDarkModeEnabled: Boolean,
     val syncWithSystemDarkModeEnabled: Boolean
 ) : Command

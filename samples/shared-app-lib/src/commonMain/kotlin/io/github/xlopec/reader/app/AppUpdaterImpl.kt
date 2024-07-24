@@ -49,7 +49,7 @@ import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
 
-fun <Env> AppUpdater(): AppUpdater<Env> =
+public fun <Env> AppUpdater(): AppUpdater<Env> =
     AppUpdater { message, state ->
         when (message) {
             is Navigation -> navigate(message, state)

@@ -84,7 +84,7 @@ import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.toExternalValue
 
 @Composable
-fun SourcesSection(
+internal fun SourcesSection(
     state: FiltersState,
     id: ScreenId,
     modifier: Modifier,

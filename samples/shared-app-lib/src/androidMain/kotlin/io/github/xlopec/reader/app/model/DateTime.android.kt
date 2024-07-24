@@ -8,4 +8,4 @@ private val DateFormatter: SimpleDateFormat by lazy {
     SimpleDateFormat("dd MMM' at 'hh:mm", Locale.getDefault())
 }
 
-actual fun Date.formatted(): String = DateFormatter.format(this)
+public actual fun Date.formatted(): String = DateFormatter.format(this)

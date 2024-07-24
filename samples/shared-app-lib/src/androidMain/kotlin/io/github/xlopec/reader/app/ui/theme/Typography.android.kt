@@ -34,7 +34,7 @@ import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
 import io.github.xlopec.shared.R
 
-val GmsFontProvider = GoogleFont.Provider(
+private val GmsFontProvider = GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",
     providerPackage = "com.google.android.gms",
     certificates = R.array.com_google_android_gms_fonts_certs
@@ -59,7 +59,7 @@ private val Roboto = FontFamily(
 )
 
 @Composable
-actual fun typography(): Typography {
+internal actual fun typography(): Typography {
     return remember {
         Typography(
             h4 = TextStyle(

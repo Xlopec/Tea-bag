@@ -31,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 
 @Composable
-fun FiltersSubtitle(
+internal fun FiltersSubtitle(
     modifier: Modifier,
     text: String,
 ) {
