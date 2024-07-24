@@ -24,7 +24,6 @@
 
 package io.github.xlopec.reader.app.ui.screens.filters
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +31,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -47,6 +51,7 @@ import io.github.xlopec.reader.app.feature.navigation.Pop
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.query
 import io.github.xlopec.reader.app.ui.misc.SearchHeader
+import io.github.xlopec.reader.app.ui.screens.BackHandler
 import io.github.xlopec.reader.app.ui.screens.article.toSearchHint
 import io.github.xlopec.reader.app.ui.screens.filters.ScreenAnimationState.Begin
 import io.github.xlopec.reader.app.ui.screens.filters.ScreenAnimationState.Finish

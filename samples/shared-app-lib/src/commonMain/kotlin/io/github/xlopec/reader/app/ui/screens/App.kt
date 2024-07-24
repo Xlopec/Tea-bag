@@ -24,45 +24,25 @@
 
 package io.github.xlopec.reader.app.ui.screens
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.runtime.*
-import io.github.xlopec.reader.app.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import io.github.xlopec.reader.app.AppState
+import io.github.xlopec.reader.app.FullScreen
+import io.github.xlopec.reader.app.MessageHandler
+import io.github.xlopec.reader.app.NestedScreen
+import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
 import io.github.xlopec.reader.app.feature.filter.FiltersState
 import io.github.xlopec.reader.app.feature.navigation.Pop
-import io.github.xlopec.reader.app.ui.misc.rememberWindowInsetsController
+import io.github.xlopec.reader.app.screen
 import io.github.xlopec.reader.app.ui.screens.article.ArticleDetailsScreen
 import io.github.xlopec.reader.app.ui.screens.filters.FiltersScreen
 import io.github.xlopec.reader.app.ui.screens.home.HomeScreen
 import io.github.xlopec.reader.app.ui.theme.AppTheme
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
-
-@Composable
-fun App(
-    component: (Flow<Message>) -> Flow<AppState>,
-) {
-    val messages = remember { MutableSharedFlow<Message>() }
-    val stateFlow = remember { component(messages) }
-    val appState = stateFlow.collectAsNullableState(context = Dispatchers.Main).value ?: return
-    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
-    val messageHandler = remember { scope.messageHandler(messages) }
-
-    App(
-        appState = appState,
-        onMessage = messageHandler
-    )
-
-    val systemUiController = rememberWindowInsetsController()
-
-    LaunchedEffect(appState.settings.appDarkModeEnabled) {
-        systemUiController.isAppearanceLightStatusBars = !appState.settings.appDarkModeEnabled
-        systemUiController.isAppearanceLightNavigationBars = !appState.settings.appDarkModeEnabled
-    }
-}
 
 @Composable
 fun App(
@@ -104,6 +84,6 @@ private fun FullScreen(
 }
 
 @Composable
-private fun <T : R, R> Flow<T>.collectAsNullableState(
+internal fun <T : R, R> Flow<T>.collectAsNullableState(
     context: CoroutineContext = EmptyCoroutineContext,
 ): State<R?> = collectAsState(context = context, initial = null)

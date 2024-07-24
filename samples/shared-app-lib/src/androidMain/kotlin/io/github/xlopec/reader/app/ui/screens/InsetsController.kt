@@ -1,4 +1,4 @@
-package io.github.xlopec.reader.app.ui.misc
+package io.github.xlopec.reader.app.ui.screens
 
 import android.app.Activity
 import android.content.Context

@@ -26,15 +26,7 @@
 
 package io.github.xlopec.reader.app.ui.screens.article
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.view.ViewGroup.LayoutParams
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -73,11 +65,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -86,13 +74,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.widget.NestedScrollView
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
@@ -101,7 +86,11 @@ import io.github.xlopec.reader.app.feature.article.details.ToggleArticleIsFavori
 import io.github.xlopec.reader.app.feature.article.list.OnShareArticle
 import io.github.xlopec.reader.app.feature.navigation.Pop
 import io.github.xlopec.reader.app.model.Article
+import io.github.xlopec.reader.app.ui.components.WebView
+import io.github.xlopec.reader.app.ui.components.WebViewState
+import io.github.xlopec.reader.app.ui.components.rememberWebViewState
 import io.github.xlopec.reader.app.ui.misc.ProgressInsetAwareTopAppBar
+import io.github.xlopec.reader.app.ui.screens.BackHandler
 import io.github.xlopec.tea.data.Url
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -112,7 +101,7 @@ fun ArticleDetailsScreen(
 ) {
     val webViewState = rememberWebViewState(screen.article.url)
     val refreshState = rememberPullRefreshState(
-        refreshing = webViewState.isReloading,
+        refreshing = webViewState.isReloading.value,
         onRefresh = webViewState::reload,
     )
 
@@ -125,14 +114,14 @@ fun ArticleDetailsScreen(
 
         Scaffold(
             content = { innerPadding ->
-                if (webViewState.canGoBack) {
+                if (webViewState.canGoBack.value) {
                     BackHandler {
                         webViewState.navigateBack()
                     }
                 }
-                CompositionLocalProvider(
+                /*CompositionLocalProvider(
                     LocalOverscrollConfiguration provides null
-                ) {
+                ) {*/
                     LazyColumn(
                         modifier = Modifier
                             .padding(innerPadding)
@@ -147,24 +136,19 @@ fun ArticleDetailsScreen(
                             )
                         }
                         item {
-                            AndroidView(
+                            WebView(
                                 modifier = Modifier.fillMaxSize(),
-                                factory = {
-                                    NestedScrollView(it).apply {
-                                        layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-                                        addView(webViewState.webView, 0, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
-                                    }
-                                },
+                                url = screen.article.url
                             )
                         }
                     }
-                }
+               // }
             }
         )
 
         PullRefreshIndicator(
             modifier = Modifier.statusBarsPadding(),
-            refreshing = webViewState.isReloading,
+            refreshing = webViewState.isReloading.value,
             state = refreshState,
         )
     }
@@ -181,19 +165,19 @@ private fun ArticleDetailsToolbar(
     val clipboardManager = LocalClipboardManager.current
 
     ProgressInsetAwareTopAppBar(
-        progress = state.loadProgress,
+        progress = state.loadProgress.value,
         modifier = Modifier.fillMaxWidth(),
         navigationIcon = {
             IconButton(onClick = {
-                if (state.canGoBack) {
+                if (state.canGoBack.value) {
                     state.navigateBack()
                 } else {
                     handler(Pop)
                 }
             }) {
                 Icon(
-                    contentDescription = if (state.canGoBack) "Back" else "Close",
-                    imageVector = if (state.canGoBack) Icons.AutoMirrored.Filled.ArrowBack else Default.Close,
+                    contentDescription = if (state.canGoBack.value) "Back" else "Close",
+                    imageVector = if (state.canGoBack.value) Icons.AutoMirrored.Filled.ArrowBack else Default.Close,
                 )
             }
         },
@@ -203,7 +187,7 @@ private fun ArticleDetailsToolbar(
                     modifier = Modifier.basicMarquee(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    text = state.title ?: article.title.value
+                    text = state.title.value ?: article.title.value
                 )
 
                 Row(
@@ -321,103 +305,8 @@ private fun DropdownMenuItem(
     }
 }
 
-@Composable
-private fun rememberWebViewState(
-    url: Url,
-    javascriptEnabled: Boolean = true,
-    zoomSupportEnabled: Boolean = true,
-): WebViewState {
-    val context = LocalContext.current
-    val state = remember {
-        WebViewState(
-            url = url,
-            context = context,
-            javascriptEnabled = javascriptEnabled,
-            zoomSupportEnabled = zoomSupportEnabled
-        )
-    }
-
-    DisposableEffect(Unit) {
-        onDispose(state.webView::destroy)
-    }
-
-    return state
-}
-
-@Stable
-private class WebViewState(
-    url: Url,
-    context: Context,
-    javascriptEnabled: Boolean = true,
-    zoomSupportEnabled: Boolean = true,
-) {
-    var title by mutableStateOf<String?>(null)
-        private set
-
-    var canGoBack by mutableStateOf(false)
-        private set
-
-    var loadProgress by mutableIntStateOf(0)
-        private set
-
-    var isLoading by mutableStateOf(false)
-        private set
-
-    var isReloading by mutableStateOf(false)
-        private set
-
-    val webView = WebView(context).apply {
-        settings.javaScriptEnabled = javascriptEnabled
-        settings.setSupportZoom(zoomSupportEnabled)
-        webChromeClient = object : WebChromeClient() {
-            override fun onReceivedTitle(
-                view: WebView,
-                title: String,
-            ) {
-                this@WebViewState.title = title
-            }
-
-            override fun onProgressChanged(
-                view: WebView,
-                newProgress: Int,
-            ) {
-                loadProgress = newProgress
-            }
-        }
-        webViewClient = object : WebViewClient() {
-            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                isLoading = true
-            }
-
-            override fun onPageFinished(view: WebView?, url: String?) {
-                isLoading = false
-                isReloading = false
-            }
-
-            override fun doUpdateVisitedHistory(
-                view: WebView,
-                url: String?,
-                isReload: Boolean,
-            ) {
-                if (!isReload) {
-                    canGoBack = view.canGoBack()
-                }
-            }
-        }
-
-        loadUrl(url.toString())
-    }
-
-    fun reload() {
-        isReloading = true
-        webView.reload()
-    }
-
-    fun navigateBack() = webView.goBack()
-}
-
 private val Url.isHttps: Boolean
-    get() = scheme == "https"
+    get() = true// scheme == "https"
 
 private val Url.isHttp: Boolean
-    get() = scheme == "http"
+    get() = false//scheme == "http"

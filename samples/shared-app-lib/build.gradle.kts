@@ -90,9 +90,11 @@ kotlin {
                 api(libs.arrow.core)
                 api(libs.collections.immutable)
                 api(libs.coroutines.core)
+                api(compose.ui)
                 api(compose.runtime)
                 api(compose.foundation)
                 api(compose.material)
+                api(compose.materialIconsExtended)
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.logging)
@@ -114,6 +116,12 @@ kotlin {
 
         val androidMain by getting {
             dependencies {
+                implementation(libs.compose.fonts)
+                implementation(libs.coil)
+                implementation(libs.ktor.client.cio)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.coroutines.android)
+                implementation(libs.compose.activity)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.sqldelight.driver.android)
             }

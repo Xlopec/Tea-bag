@@ -30,4 +30,10 @@
         </intent>
     </queries>
     <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application>
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts"/>
+    </application>
 </manifest>

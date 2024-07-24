@@ -30,7 +30,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
-import io.github.xlopec.reader.R
+import io.github.xlopec.shared.R
 
 val GmsFontProvider = GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",
@@ -56,7 +56,7 @@ private val Roboto = FontFamily(
     ),
 )
 
-val Typography = Typography(
+actual val Typography: Typography = Typography(
     h4 = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.W600,
