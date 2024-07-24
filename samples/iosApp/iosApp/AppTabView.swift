@@ -95,7 +95,7 @@ struct AppTabView: View {
     
 }
 
-struct AppTabView_Previews: PreviewProvider {
+/*struct AppTabView_Previews: PreviewProvider {
     
     static let settings = Settings(userDarkModeEnabled: true, systemDarkModeEnabled: true, syncWithSystemDarkModeEnabled: true)
     static let appState = AppState(settings: settings, screens: [])
@@ -103,7 +103,7 @@ struct AppTabView_Previews: PreviewProvider {
     static var previews: some View {
         AppTabView(initialTab: SettingsScreen.shared, appState: appState, handler: {_ in })
     }
-}
+}*/
 
 private extension TabScreen {
     

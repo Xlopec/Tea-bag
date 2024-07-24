@@ -45,8 +45,8 @@ public class IosComponent(
 ) {
     private val componentJob = Job()
     private val componentScope = CoroutineScope(Main + componentJob)
-    private val component = AppComponent(systemDarkModeEnabled, componentScope).toStatesComponent()
-    private val messages = MutableSharedFlow<Message>()
+    internal val component = AppComponent(systemDarkModeEnabled, componentScope).toStatesComponent()
+    internal val messages = MutableSharedFlow<Message>()
 
     public fun dispatch(
         message: Message

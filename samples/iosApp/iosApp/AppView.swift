@@ -52,7 +52,12 @@ struct AppView: View {
     }
     
     var body: some View {
-        ZStack {
+        
+        ComposeViewController(component: appComponent.component)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea()
+        
+        /*ZStack {
             if let appState = appComponent.appState {
                 
                 let screen = appState.screen
@@ -79,7 +84,7 @@ struct AppView: View {
 
         }.onChange(of: colorScheme) {
             handler(SystemDarkModeChanged(enabled: $0 == .dark))
-        }
+        }*/
     }
     
     private func updateDarkMode(darkModeEnabled: Bool) {
@@ -94,5 +99,17 @@ struct AppView_Previews: PreviewProvider {
     static var previews: some View {
         Text("abc")
         //AppView()
+    }
+}
+
+struct ComposeViewController: UIViewControllerRepresentable {
+    
+    let component: IosComponent
+    
+    func makeUIViewController(context: Context) -> UIViewController {
+        return App_iosKt.appController(component: component)
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
     }
 }
