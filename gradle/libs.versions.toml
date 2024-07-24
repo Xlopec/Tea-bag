@@ -3,6 +3,7 @@ ktor = "2.3.9"
 coroutines = "1.8.1"
 sqldelight = "1.5.5"
 arrow = "1.2.4"
+coil = "3.0.0-alpha09"
 
 [libraries]
 junit = { module = "junit:junit", version = "4.13.2" }
@@ -40,11 +41,13 @@ desugar-jdk = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.4"
 gson = { module = "com.google.code.gson:gson", version = "2.11.0" }
 logging = { module = "ch.qos.logback:logback-classic", version = "1.5.3" }
 collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.7" }
-coil = { module = "io.coil-kt:coil-compose", version = "2.6.0" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network = { module = "io.coil-kt.coil3:coil-network-ktor2", version.ref = "coil" }
 compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.6.8" }
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 
 [bundles]
 ktor-server = ["ktor-server-core", "ktor-server-netty", "ktor-server-websockets", "ktor-server-headers", "ktor-server-logging-jvm"]
+coil = [ "coil-compose", "coil-network" ]
 
 [plugins]

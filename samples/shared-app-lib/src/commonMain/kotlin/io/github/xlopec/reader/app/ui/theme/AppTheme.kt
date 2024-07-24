@@ -38,7 +38,7 @@ fun AppTheme(
 ) {
     MaterialTheme(
         colors = appColors(isDarkModeEnabled),
-        typography = Typography,
+        typography = typography(),
     ) {
         content()
        /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

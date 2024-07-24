@@ -93,8 +93,10 @@ kotlin {
                 api(compose.ui)
                 api(compose.runtime)
                 api(compose.foundation)
-                api(compose.material)
-                api(compose.materialIconsExtended)
+                implementation(libs.bundles.coil)
+                implementation(compose.material)
+                implementation(compose.materialIconsExtended)
+                implementation(compose.components.resources)
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.logging)
@@ -117,7 +119,6 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.compose.fonts)
-                implementation(libs.coil)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.client.logging)
                 implementation(libs.coroutines.android)

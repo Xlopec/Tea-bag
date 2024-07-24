@@ -26,15 +26,30 @@
 
 package io.github.xlopec.reader.app.ui.screens.article
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.typography
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Share
@@ -46,32 +61,44 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.feature.article.list.*
+import io.github.xlopec.reader.app.feature.article.list.ArticlesState
+import io.github.xlopec.reader.app.feature.article.list.LoadArticles
+import io.github.xlopec.reader.app.feature.article.list.LoadNextArticles
+import io.github.xlopec.reader.app.feature.article.list.OnShareArticle
+import io.github.xlopec.reader.app.feature.article.list.ToggleArticleIsFavorite
 import io.github.xlopec.reader.app.feature.navigation.NavigateToArticleDetails
 import io.github.xlopec.reader.app.feature.navigation.NavigateToFilters
-import io.github.xlopec.reader.app.misc.*
+import io.github.xlopec.reader.app.misc.Exception
+import io.github.xlopec.reader.app.misc.Idle
+import io.github.xlopec.reader.app.misc.LoadableState
+import io.github.xlopec.reader.app.misc.Loading
+import io.github.xlopec.reader.app.misc.LoadingNext
+import io.github.xlopec.reader.app.misc.Refreshing
+import io.github.xlopec.reader.app.misc.isLoading
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.FilterType
-import io.github.xlopec.reader.app.model.FilterType.*
+import io.github.xlopec.reader.app.model.FilterType.Favorite
+import io.github.xlopec.reader.app.model.FilterType.Regular
+import io.github.xlopec.reader.app.model.FilterType.Trending
+import io.github.xlopec.reader.app.model.formatted
 import io.github.xlopec.reader.app.ui.misc.ColumnMessage
 import io.github.xlopec.reader.app.ui.misc.SearchHeader
 import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.toExternalValue
-import java.text.SimpleDateFormat
-import java.util.*
 
 internal const val ProgressIndicatorTag = "Progress Indicator"
 
@@ -307,7 +334,7 @@ private fun ArticleContents(
         }
 
         Text(
-            text = "Published on ${DateFormatter.format(article.published)}",
+            text = "Published on ${article.published.formatted()}",
             style = typography.body2
         )
 
@@ -402,12 +429,8 @@ fun ArticleSearchHeader(
 private val CardElevation = 4.dp
 private val CardShape = RoundedCornerShape(8.dp)
 
-private val DateFormatter: SimpleDateFormat by lazy {
-    SimpleDateFormat("dd MMM' at 'hh:mm", Locale.getDefault())
-}
-
 private val AppException.readableMessage: String
-    get() = message.replaceFirstChar { it.lowercase(Locale.getDefault()) }
+    get() = message.replaceFirstChar { it.lowercase() }
 
 private fun Filter.toScreenTitle(): String =
     when (type) {
@@ -430,7 +453,7 @@ private fun FilterType.toEmptyStateDescription() =
     }
 
 @Composable
-private fun Url.toImageRequest() = ImageRequest.Builder(LocalContext.current)
+private fun Url.toImageRequest(): ImageRequest = ImageRequest.Builder(LocalPlatformContext.current)
     .data(toExternalValue())
     .crossfade(true)
     .build()
@@ -438,4 +461,4 @@ private fun Url.toImageRequest() = ImageRequest.Builder(LocalContext.current)
 private val ArticlesState.hasDataToDisplay: Boolean
     get() = loadable.data.isNotEmpty() && !loadable.isLoading
 
-private fun String.toDisplayErrorMessage() = replaceFirstChar { it.lowercase(Locale.getDefault()) }
+private fun String.toDisplayErrorMessage() = replaceFirstChar { it.lowercase() }

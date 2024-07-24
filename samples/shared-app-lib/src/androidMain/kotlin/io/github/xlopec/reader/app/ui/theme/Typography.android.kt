@@ -25,6 +25,8 @@
 package io.github.xlopec.reader.app.ui.theme
 
 import androidx.compose.material.Typography
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -56,54 +58,59 @@ private val Roboto = FontFamily(
     ),
 )
 
-actual val Typography: Typography = Typography(
-    h4 = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.W600,
-        fontSize = 30.sp
-    ),
-    h5 = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.W600,
-        fontSize = 24.sp
-    ),
-    h6 = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.W600,
-        fontSize = 20.sp
-    ),
-    subtitle1 = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.W600,
-        fontSize = 16.sp
-    ),
-    subtitle2 = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.W500,
-        fontSize = 14.sp
-    ),
-    body1 = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp
-    ),
-    body2 = TextStyle(
-        fontFamily = Roboto,
-        fontSize = 14.sp
-    ),
-    button = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.W500,
-        fontSize = 14.sp
-    ),
-    caption = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
-    ),
-    overline = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.W500,
-        fontSize = 12.sp
-    )
-)
+@Composable
+actual fun typography(): Typography {
+    return remember {
+        Typography(
+            h4 = TextStyle(
+                fontFamily = Roboto,
+                fontWeight = FontWeight.W600,
+                fontSize = 30.sp
+            ),
+            h5 = TextStyle(
+                fontFamily = Roboto,
+                fontWeight = FontWeight.W600,
+                fontSize = 24.sp
+            ),
+            h6 = TextStyle(
+                fontFamily = Roboto,
+                fontWeight = FontWeight.W600,
+                fontSize = 20.sp
+            ),
+            subtitle1 = TextStyle(
+                fontFamily = Roboto,
+                fontWeight = FontWeight.W600,
+                fontSize = 16.sp
+            ),
+            subtitle2 = TextStyle(
+                fontFamily = Roboto,
+                fontWeight = FontWeight.W500,
+                fontSize = 14.sp
+            ),
+            body1 = TextStyle(
+                fontFamily = Roboto,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp
+            ),
+            body2 = TextStyle(
+                fontFamily = Roboto,
+                fontSize = 14.sp
+            ),
+            button = TextStyle(
+                fontFamily = Roboto,
+                fontWeight = FontWeight.W500,
+                fontSize = 14.sp
+            ),
+            caption = TextStyle(
+                fontFamily = Roboto,
+                fontWeight = FontWeight.Normal,
+                fontSize = 12.sp
+            ),
+            overline = TextStyle(
+                fontFamily = Roboto,
+                fontWeight = FontWeight.W500,
+                fontSize = 12.sp
+            )
+        )
+    }
+}

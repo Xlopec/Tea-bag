@@ -25,5 +25,7 @@
 package io.github.xlopec.reader.app.ui.theme
 
 import androidx.compose.material.Typography
+import androidx.compose.runtime.Composable
 
-expect val Typography: Typography
+@Composable
+expect fun typography(): Typography

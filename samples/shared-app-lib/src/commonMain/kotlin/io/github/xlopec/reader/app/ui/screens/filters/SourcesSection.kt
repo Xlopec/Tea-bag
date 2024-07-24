@@ -25,11 +25,22 @@
 package io.github.xlopec.reader.app.ui.screens.filters
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -50,17 +61,23 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
+import coil3.compose.LocalPlatformContext
+import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.feature.filter.ClearSelection
 import io.github.xlopec.reader.app.feature.filter.FiltersState
 import io.github.xlopec.reader.app.feature.filter.LoadSources
 import io.github.xlopec.reader.app.feature.filter.ToggleSourceSelection
-import io.github.xlopec.reader.app.misc.*
+import io.github.xlopec.reader.app.misc.Exception
+import io.github.xlopec.reader.app.misc.Idle
+import io.github.xlopec.reader.app.misc.Loadable
+import io.github.xlopec.reader.app.misc.Loading
+import io.github.xlopec.reader.app.misc.LoadingNext
+import io.github.xlopec.reader.app.misc.Refreshing
 import io.github.xlopec.reader.app.model.Source
 import io.github.xlopec.reader.app.ui.misc.RowMessage
 import io.github.xlopec.tea.data.Url
@@ -253,7 +270,7 @@ private val SourceImageSize = 60.dp
 
 @Composable
 private fun Url.toAsyncImagePainter() = rememberAsyncImagePainter(
-    ImageRequest.Builder(LocalContext.current)
+    ImageRequest.Builder(LocalPlatformContext.current)
         .data(toExternalValue())
         .crossfade(true)
         .build()
