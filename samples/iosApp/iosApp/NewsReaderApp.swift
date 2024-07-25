@@ -2,7 +2,36 @@ import UIKit
 import SwiftUI
 import SharedAppLib
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+@main
+struct NewsReaderApp: App {
+    
+    @UIApplicationDelegateAdaptor(NewsReaderAppDelegate.self) private var appDelegate: NewsReaderAppDelegate
+
+    init() {
+        UITabBar.appearance().isTranslucent = false
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            AppView(component: appDelegate.component)
+        }
+    }
+}
+
+class NewsReaderAppDelegate: NSObject, UIApplicationDelegate {
+    
+    let component: IosComponent
+    
+    override init() {
+        component = IosComponent(systemDarkModeEnabled: UIViewController().isDarkMode)
+    }
+    
+    deinit {
+        component.destroy()
+    }
+}
+
+/*class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
@@ -50,7 +79,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
 
-}
+}*/
 
 private extension UIViewController {
     var isDarkMode: Bool {
