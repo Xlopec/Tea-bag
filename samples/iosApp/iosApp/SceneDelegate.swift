@@ -7,9 +7,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-       
-        let appComponent = ObservableAppComponent(systemDarkModeEnabled: UIViewController().isDarkMode)
-        let contentView = AppView(appComponent: appComponent)
+        let contentView = AppView(component: IosComponent(systemDarkModeEnabled: UIViewController().isDarkMode))
         
         UITabBar.appearance().isTranslucent = false
         

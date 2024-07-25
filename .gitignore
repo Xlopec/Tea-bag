@@ -18,3 +18,4 @@ androidx_prebuilts/
 out/
 
 /buildSrc/local.properties
+.fleet/
