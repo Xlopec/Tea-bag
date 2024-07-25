@@ -53,6 +53,7 @@ import androidx.compose.material.icons.Icons.Default
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -80,7 +81,9 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.multiplatform.webview.web.LoadingState
+import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.WebViewNavigator
+import com.multiplatform.webview.web.WebViewState
 import com.multiplatform.webview.web.rememberWebViewNavigator
 import com.multiplatform.webview.web.rememberWebViewState
 import io.github.xlopec.reader.app.MessageHandler
@@ -98,7 +101,6 @@ import io.github.xlopec.tea.data.isSecureProtocol
 import io.github.xlopec.tea.data.protocol
 import io.github.xlopec.tea.data.toExternalValue
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun ArticleDetailsScreen(
     screen: ArticleDetailsState,
@@ -106,73 +108,38 @@ internal fun ArticleDetailsScreen(
 ) {
     val webViewState = rememberWebViewState(url = screen.article.url.toExternalValue())
     val navigator = rememberWebViewNavigator(rememberCoroutineScope())
-    var isReloading by remember { mutableStateOf(false) }
-    val refreshState = rememberPullRefreshState(
-        refreshing = isReloading,
-        onRefresh = {
-            isReloading = true
-            navigator.reload()
-        },
-    )
 
-    LaunchedEffect(webViewState.loadingState) {
-        when (webViewState.loadingState) {
-            LoadingState.Finished -> isReloading = false
-            LoadingState.Initializing -> isReloading = false
-            is LoadingState.Loading -> {}
-        }
-    }
-
-    Box(
-        modifier = Modifier.pullRefresh(
-            state = refreshState,
-        ),
-        contentAlignment = Alignment.TopCenter
-    ) {
-
-        Scaffold(
-            content = { innerPadding ->
-                if (navigator.canGoBack) {
-                    BackHandler {
-                        navigator.navigateBack()
-                    }
+    Scaffold(
+        content = { innerPadding ->
+            if (navigator.canGoBack) {
+                BackHandler {
+                    navigator.navigateBack()
                 }
-                /*CompositionLocalProvider(
-                    LocalOverscrollConfiguration provides null
-                ) {*/
-                Column(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                ) {
-                    //item {
-                        ArticleDetailsToolbar(
-                            id = screen.id,
-                            state = webViewState,
-                            article = screen.article,
-                            navigator = navigator,
-                            handler = onMessage
-                        )
-                  //  }
-                  //  item {
-
-                        com.multiplatform.webview.web.WebView(
-                            modifier = Modifier.fillMaxSize(),
-                            state = webViewState,
-                            navigator = navigator,
-                        )
-                //    }
-                }
-                // }
             }
-        )
+            /*CompositionLocalProvider(
+                LocalOverscrollConfiguration provides null
+            ) {*/
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                ArticleDetailsToolbar(
+                    id = screen.id,
+                    state = webViewState,
+                    article = screen.article,
+                    navigator = navigator,
+                    handler = onMessage
+                )
 
-        PullRefreshIndicator(
-            modifier = Modifier.statusBarsPadding(),
-            refreshing = isReloading,
-            state = refreshState,
-        )
-    }
+                WebView(
+                    modifier = Modifier.fillMaxSize(),
+                    state = webViewState,
+                    navigator = navigator,
+                )
+            }
+        }
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -180,7 +147,7 @@ internal fun ArticleDetailsScreen(
 private fun ArticleDetailsToolbar(
     id: ScreenId,
     navigator: WebViewNavigator,
-    state: com.multiplatform.webview.web.WebViewState,
+    state: WebViewState,
     article: Article,
     handler: MessageHandler,
 ) {
@@ -271,6 +238,15 @@ private fun ArticleDetailsToolbar(
                 DropdownMenuItem(
                     onClick = {
                         expanded = false
+                        navigator.reload()
+                    },
+                    imageVector = Default.Refresh,
+                    text = "Refresh"
+                )
+
+                DropdownMenuItem(
+                    onClick = {
+                        expanded = false
                         clipboardManager.setText(AnnotatedString(article.url.toString()))
                     },
                     imageVector = Icons.Outlined.ContentCopy,
@@ -316,7 +292,8 @@ private fun DropdownMenuItem(
 ) {
     DropdownMenuItem(onClick = onClick) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 imageVector = imageVector,
