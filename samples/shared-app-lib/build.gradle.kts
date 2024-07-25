@@ -107,6 +107,7 @@ kotlin {
                 implementation(libs.serialization.core)
                 implementation(libs.settings.core)
                 implementation(libs.sqldelight.runtime)
+                implementation(libs.webview)
                 implementation(compose.runtime)
             }
         }

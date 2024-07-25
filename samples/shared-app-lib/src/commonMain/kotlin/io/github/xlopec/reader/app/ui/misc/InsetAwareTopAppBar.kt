@@ -34,6 +34,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -69,7 +70,7 @@ internal fun InsetAwareTopAppBar(
 
 @Composable
 internal fun ProgressInsetAwareTopAppBar(
-    progress: Int,
+    progress: Int?,
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit)? = null,
@@ -78,7 +79,10 @@ internal fun ProgressInsetAwareTopAppBar(
     contentColor: Color = contentColorFor(backgroundColor),
     elevation: Dp = 4.dp,
 ) {
-    require(progress in 0..100) { "Progress is out of range 0-100" }
+    LaunchedEffect(progress) {
+        println("Progress $progress")
+    }
+    require(progress == null || progress in 0..100) { "Progress is out of range 0-100, was $progress" }
 
     Surface(
         color = backgroundColor,
@@ -99,15 +103,19 @@ internal fun ProgressInsetAwareTopAppBar(
                 modifier = Modifier.statusBarsPadding()
             )
 
-            if (progress == 0) {
-                LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            } else if (progress < 100) {
-                LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth(),
-                    progress = progress.toFloat() / 100f,
-                )
+            when {
+                progress == null -> Unit
+                progress == 0 -> {
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+                progress < 100 -> {
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth(),
+                        progress = progress.toFloat() / 100f,
+                    )
+                }
             }
         }
     }

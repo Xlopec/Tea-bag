@@ -38,7 +38,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -65,9 +64,11 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,6 +79,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.multiplatform.webview.web.LoadingState
+import com.multiplatform.webview.web.WebViewNavigator
+import com.multiplatform.webview.web.rememberWebViewNavigator
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
@@ -86,24 +90,35 @@ import io.github.xlopec.reader.app.feature.article.details.ToggleArticleIsFavori
 import io.github.xlopec.reader.app.feature.article.list.OnShareArticle
 import io.github.xlopec.reader.app.feature.navigation.Pop
 import io.github.xlopec.reader.app.model.Article
-import io.github.xlopec.reader.app.ui.components.WebView
-import io.github.xlopec.reader.app.ui.components.WebViewState
-import io.github.xlopec.reader.app.ui.components.rememberWebViewState
 import io.github.xlopec.reader.app.ui.misc.ProgressInsetAwareTopAppBar
 import io.github.xlopec.reader.app.ui.screens.BackHandler
 import io.github.xlopec.tea.data.Url
+import io.github.xlopec.tea.data.toExternalValue
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun ArticleDetailsScreen(
     screen: ArticleDetailsState,
     onMessage: MessageHandler,
 ) {
-    val webViewState = rememberWebViewState(screen.article.url)
+    val webViewState = com.multiplatform.webview.web.rememberWebViewState(url = screen.article.url.toExternalValue())
+    val navigator = rememberWebViewNavigator(rememberCoroutineScope())
+    var isReloading by remember { mutableStateOf(false) }
     val refreshState = rememberPullRefreshState(
-        refreshing = webViewState.isReloading.value,
-        onRefresh = webViewState::reload,
+        refreshing = isReloading,
+        onRefresh = {
+            isReloading = true
+            navigator.reload()
+        },
     )
+
+    LaunchedEffect(webViewState.loadingState) {
+        when (webViewState.loadingState) {
+            LoadingState.Finished -> isReloading = false
+            LoadingState.Initializing -> isReloading = false
+            is LoadingState.Loading -> {}
+        }
+    }
 
     Box(
         modifier = Modifier.pullRefresh(
@@ -114,41 +129,44 @@ internal fun ArticleDetailsScreen(
 
         Scaffold(
             content = { innerPadding ->
-                if (webViewState.canGoBack.value) {
+                if (navigator.canGoBack) {
                     BackHandler {
-                        webViewState.navigateBack()
+                        navigator.navigateBack()
                     }
                 }
                 /*CompositionLocalProvider(
                     LocalOverscrollConfiguration provides null
                 ) {*/
-                    LazyColumn(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize()
-                    ) {
-                        item {
-                            ArticleDetailsToolbar(
-                                id = screen.id,
-                                state = webViewState,
-                                article = screen.article,
-                                handler = onMessage
-                            )
-                        }
-                        item {
-                            WebView(
-                                modifier = Modifier.fillMaxSize(),
-                                url = screen.article.url
-                            )
-                        }
-                    }
-               // }
+                Column(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                ) {
+                    //item {
+                        ArticleDetailsToolbar(
+                            id = screen.id,
+                            state = webViewState,
+                            article = screen.article,
+                            navigator = navigator,
+                            handler = onMessage
+                        )
+                  //  }
+                  //  item {
+
+                        com.multiplatform.webview.web.WebView(
+                            modifier = Modifier.fillMaxSize(),
+                            state = webViewState,
+                            navigator = navigator,
+                        )
+                //    }
+                }
+                // }
             }
         )
 
         PullRefreshIndicator(
             modifier = Modifier.statusBarsPadding(),
-            refreshing = webViewState.isReloading.value,
+            refreshing = isReloading,
             state = refreshState,
         )
     }
@@ -158,26 +176,27 @@ internal fun ArticleDetailsScreen(
 @Composable
 private fun ArticleDetailsToolbar(
     id: ScreenId,
-    state: WebViewState,
+    navigator: WebViewNavigator,
+    state: com.multiplatform.webview.web.WebViewState,
     article: Article,
     handler: MessageHandler,
 ) {
     val clipboardManager = LocalClipboardManager.current
 
     ProgressInsetAwareTopAppBar(
-        progress = state.loadProgress.value,
+        progress = (state.loadingState as? LoadingState.Loading)?.progress?.let { it * 100 }?.toInt(),
         modifier = Modifier.fillMaxWidth(),
         navigationIcon = {
             IconButton(onClick = {
-                if (state.canGoBack.value) {
-                    state.navigateBack()
+                if (navigator.canGoBack) {
+                    navigator.navigateBack()
                 } else {
                     handler(Pop)
                 }
             }) {
                 Icon(
-                    contentDescription = if (state.canGoBack.value) "Back" else "Close",
-                    imageVector = if (state.canGoBack.value) Icons.AutoMirrored.Filled.ArrowBack else Default.Close,
+                    contentDescription = if (navigator.canGoBack) "Back" else "Close",
+                    imageVector = if (navigator.canGoBack) Icons.AutoMirrored.Filled.ArrowBack else Default.Close,
                 )
             }
         },
@@ -187,7 +206,7 @@ private fun ArticleDetailsToolbar(
                     modifier = Modifier.basicMarquee(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    text = state.title.value ?: article.title.value
+                    text = state.pageTitle ?: article.title.value
                 )
 
                 Row(
