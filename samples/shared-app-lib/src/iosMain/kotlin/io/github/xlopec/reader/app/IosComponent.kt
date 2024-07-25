@@ -28,7 +28,9 @@ package io.github.xlopec.reader.app
 
 import io.github.xlopec.tea.core.toStatesComponent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -43,34 +45,12 @@ public fun interface Cancellation {
 public class IosComponent(
     systemDarkModeEnabled: Boolean
 ) {
-    private val componentJob = Job()
-    private val componentScope = CoroutineScope(Main + componentJob)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val componentScope = CoroutineScope(Job() + Default.limitedParallelism(1))
     internal val component = AppComponent(systemDarkModeEnabled, componentScope).toStatesComponent()
-    internal val messages = MutableSharedFlow<Message>()
-
-    public fun dispatch(
-        message: Message
-    ) {
-        componentScope.launch {
-            messages.emit(message)
-        }
-    }
 
     public fun destroy() {
         componentScope.cancel()
-    }
-
-    public fun render(
-        renderCallback: (AppState) -> Unit
-    ): Cancellation {
-
-        val renderScope = CoroutineScope(Main + Job(parent = componentJob))
-
-        component(messages)
-            .onEach { renderCallback(it) }
-            .launchIn(renderScope)
-
-        return Cancellation { renderScope.cancel() }
     }
 }
 

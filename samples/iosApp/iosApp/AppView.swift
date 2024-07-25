@@ -9,19 +9,11 @@
 import SwiftUI
 import SharedAppLib
 
-typealias MessageHandler = (Message) -> Void
-
 struct AppView: View {
     
-    @SwiftUI.Environment(\.colorScheme) var colorScheme: ColorScheme
+    @SwiftUI.Environment(\.colorScheme) private var colorScheme: ColorScheme
     
-    private let component: IosComponent
-    private let handler: MessageHandler
-    
-    init(component: IosComponent) {
-        self.component = component
-        self.handler = component.dispatch
-    }
+    let component: IosComponent
     
     var body: some View {
         ComposeViewController(component: component)
