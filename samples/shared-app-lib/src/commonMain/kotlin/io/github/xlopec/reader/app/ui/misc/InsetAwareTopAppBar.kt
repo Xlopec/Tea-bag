@@ -79,9 +79,6 @@ internal fun ProgressInsetAwareTopAppBar(
     contentColor: Color = contentColorFor(backgroundColor),
     elevation: Dp = 4.dp,
 ) {
-    LaunchedEffect(progress) {
-        println("Progress $progress")
-    }
     require(progress == null || progress in 0..100) { "Progress is out of range 0-100, was $progress" }
 
     Surface(

@@ -82,6 +82,7 @@ import androidx.compose.ui.unit.dp
 import com.multiplatform.webview.web.LoadingState
 import com.multiplatform.webview.web.WebViewNavigator
 import com.multiplatform.webview.web.rememberWebViewNavigator
+import com.multiplatform.webview.web.rememberWebViewState
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
@@ -93,6 +94,8 @@ import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.ui.misc.ProgressInsetAwareTopAppBar
 import io.github.xlopec.reader.app.ui.screens.BackHandler
 import io.github.xlopec.tea.data.Url
+import io.github.xlopec.tea.data.isSecureProtocol
+import io.github.xlopec.tea.data.protocol
 import io.github.xlopec.tea.data.toExternalValue
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -101,7 +104,7 @@ internal fun ArticleDetailsScreen(
     screen: ArticleDetailsState,
     onMessage: MessageHandler,
 ) {
-    val webViewState = com.multiplatform.webview.web.rememberWebViewState(url = screen.article.url.toExternalValue())
+    val webViewState = rememberWebViewState(url = screen.article.url.toExternalValue())
     val navigator = rememberWebViewNavigator(rememberCoroutineScope())
     var isReloading by remember { mutableStateOf(false) }
     val refreshState = rememberPullRefreshState(
@@ -225,7 +228,7 @@ private fun ArticleDetailsToolbar(
                     val contentColor = LocalContentColor.current.copy(alpha = 0.68f)
                     val linkStyle = MaterialTheme.typography.caption
 
-                    if (article.url.isHttps || article.url.isHttp) {
+                    if (article.url.protocol?.startsWith("http") == true) {
                         val iconSize = with(LocalDensity.current) {
                             if (linkStyle.fontSize.isSp) {
                                 linkStyle.fontSize.toDp()
@@ -236,7 +239,7 @@ private fun ArticleDetailsToolbar(
 
                         Icon(
                             modifier = Modifier.size(iconSize),
-                            imageVector = if (article.url.isHttps) Icons.Outlined.Lock else Icons.Outlined.LockOpen,
+                            imageVector = if (article.url.isSecureProtocol) Icons.Outlined.Lock else Icons.Outlined.LockOpen,
                             tint = contentColor,
                             contentDescription = null
                         )
@@ -245,6 +248,7 @@ private fun ArticleDetailsToolbar(
                     Text(
                         text = article.url.toString(),
                         overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
                         style = linkStyle,
                         color = contentColor
                     )
@@ -323,9 +327,3 @@ private fun DropdownMenuItem(
         }
     }
 }
-
-private val Url.isHttps: Boolean
-    get() = true// scheme == "https"
-
-private val Url.isHttp: Boolean
-    get() = false//scheme == "http"

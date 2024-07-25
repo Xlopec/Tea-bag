@@ -39,3 +39,6 @@ public actual fun Url.toExternalValue(): String = toString()
 
 public actual val Url.domain: String
     get() = host ?: error("No domain: ${toExternalValue()}")
+
+public actual val Url.protocol: String?
+ get() = scheme

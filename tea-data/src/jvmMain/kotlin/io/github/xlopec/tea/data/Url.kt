@@ -36,3 +36,6 @@ public actual fun Url.toExternalValue(): String = toASCIIString()
 
 public actual val Url.domain: String
     get() = host
+
+public actual val Url.protocol: String?
+ get() = scheme
