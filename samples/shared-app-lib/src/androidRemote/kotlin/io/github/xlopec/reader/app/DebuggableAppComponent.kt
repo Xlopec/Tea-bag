@@ -41,7 +41,7 @@ import io.ktor.http.Url
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
 
-fun DebuggableAppComponent(
+public fun DebuggableAppComponent(
     environment: Environment,
     initializer: Initializer<AppState, Command>,
 ): Component<Message, AppState, Command> =

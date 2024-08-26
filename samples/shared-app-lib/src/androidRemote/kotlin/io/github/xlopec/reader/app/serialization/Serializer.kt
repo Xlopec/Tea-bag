@@ -38,9 +38,9 @@ import kotlinx.collections.immutable.toPersistentSet
 
 // gson serializers to enable debugging facilities
 
-interface Serializer<T> : JsonSerializer<T>, JsonDeserializer<T>
+internal interface Serializer<T> : JsonSerializer<T>, JsonDeserializer<T>
 
-object PersistentListSerializer : Serializer<PersistentList<*>> {
+internal object PersistentListSerializer : Serializer<PersistentList<*>> {
 
     override fun deserialize(
         json: JsonElement,
@@ -60,7 +60,7 @@ object PersistentListSerializer : Serializer<PersistentList<*>> {
         .apply { src.map(context::serialize).forEach(::add) }
 }
 
-object PersistentSetSerializer : Serializer<PersistentSet<*>> {
+internal object PersistentSetSerializer : Serializer<PersistentSet<*>> {
 
     override fun deserialize(
         json: JsonElement,
