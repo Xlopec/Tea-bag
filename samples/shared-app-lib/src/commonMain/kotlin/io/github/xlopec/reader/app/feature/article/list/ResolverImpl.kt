@@ -40,7 +40,10 @@ import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.FilterType.Favorite
 import io.github.xlopec.reader.app.model.FilterType.Regular
 import io.github.xlopec.reader.app.model.FilterType.Trending
+import io.github.xlopec.reader.app.sideEffect
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 public fun interface ShareArticle {
     public fun share(
@@ -64,11 +67,17 @@ internal class ArticlesResolverImpl<Env>(
             is DoSaveArticle -> storeArticle(command.article)
             is DoRemoveArticle -> removeArticle(command.article)
             is DoShareArticle -> {
-                shareDelegate.share(command.article); emptySet()
+                sideEffect {
+                    withContext(Dispatchers.Main) {
+                        shareDelegate.share(command.article)
+                    }
+                }
             }
+
             is DoStoreFilter -> {
                 storeFilter(command.filter); emptySet()
             }
+
             is DoLoadFilter -> command effect { FilterLoaded(id, findFilter(type)) }
         }
 }
