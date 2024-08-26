@@ -26,7 +26,7 @@ package io.github.xlopec.reader.app.feature.article.details
 
 public interface ArticleDetailsResolver {
 
-    public fun resolve(
+    public suspend fun resolve(
         command: DoOpenInBrowser
     )
 }
