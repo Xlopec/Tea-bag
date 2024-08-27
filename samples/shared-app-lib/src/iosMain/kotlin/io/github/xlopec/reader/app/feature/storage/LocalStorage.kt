@@ -32,7 +32,7 @@ import io.github.xlopec.reader.app.storage.AppDatabase
 
 private const val DBfileName = "app.db"
 
-fun LocalStorage(
+internal fun LocalStorage(
     schema: SqlDriver.Schema = AppDatabase.Schema,
     dbName: String = DBfileName,
 ): LocalStorage =

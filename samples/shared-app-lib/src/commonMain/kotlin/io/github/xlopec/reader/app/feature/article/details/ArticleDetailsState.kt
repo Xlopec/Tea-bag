@@ -28,11 +28,11 @@ import io.github.xlopec.reader.app.FullScreen
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.model.Article
 
-data class ArticleDetailsState(
+public data class ArticleDetailsState internal constructor(
     override val id: ScreenId,
     val article: Article,
 ) : FullScreen
 
-fun ArticleDetailsState.article(
+internal fun ArticleDetailsState.article(
     toggled: Article
-) = copy(article = toggled)
+): ArticleDetailsState = copy(article = toggled)

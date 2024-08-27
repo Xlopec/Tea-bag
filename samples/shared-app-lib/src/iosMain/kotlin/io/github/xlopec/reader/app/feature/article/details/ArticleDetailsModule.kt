@@ -26,4 +26,4 @@
 
 package io.github.xlopec.reader.app.feature.article.details
 
-fun ArticleDetailsModule(): ArticleDetailsModule = ArticleDetailsResolver()
+public fun ArticleDetailsModule(): ArticleDetailsModule = ArticleDetailsResolver()

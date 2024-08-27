@@ -35,7 +35,7 @@ import io.github.xlopec.tea.core.Initializer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
-fun AppInitializer(
+public fun AppInitializer(
     systemDarkModeEnabled: Boolean,
     environment: Environment
 ): Initializer<AppState, Command> = Initializer(Dispatchers.IO) {

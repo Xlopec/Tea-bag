@@ -35,35 +35,35 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-object SourceIdSerializer : KSerializer<SourceId> {
+public object SourceIdSerializer : KSerializer<SourceId> {
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("SourceId", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: SourceId) =
+    override fun serialize(encoder: Encoder, value: SourceId): Unit =
         encoder.encodeString(value.value)
 
-    override fun deserialize(decoder: Decoder) = SourceId(decoder.decodeString())
+    override fun deserialize(decoder: Decoder): SourceId = SourceId(decoder.decodeString())
 }
 
-object SourceNameSerializer : KSerializer<SourceName> {
+public object SourceNameSerializer : KSerializer<SourceName> {
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("SourceName", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: SourceName) =
+    override fun serialize(encoder: Encoder, value: SourceName): Unit =
         encoder.encodeNullableString(value.value)
 
-    override fun deserialize(decoder: Decoder) = SourceName(decoder.decodeString())
+    override fun deserialize(decoder: Decoder): SourceName = SourceName(decoder.decodeString())
 }
 
-object SourceDescriptionSerializer : KSerializer<SourceDescription?> {
+public object SourceDescriptionSerializer : KSerializer<SourceDescription?> {
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("SourceDescription", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: SourceDescription?) =
+    override fun serialize(encoder: Encoder, value: SourceDescription?): Unit =
         encoder.encodeNullableString(value?.value)
 
-    override fun deserialize(decoder: Decoder) = tryCreate(decoder.decodeString(), ::SourceDescription)
+    override fun deserialize(decoder: Decoder): SourceDescription? = tryCreate(decoder.decodeString(), ::SourceDescription)
 }

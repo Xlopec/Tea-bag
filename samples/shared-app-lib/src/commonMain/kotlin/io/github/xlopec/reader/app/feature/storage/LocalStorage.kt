@@ -36,48 +36,48 @@ import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.tea.data.Url
 import kotlinx.collections.immutable.ImmutableList
 
-interface LocalStorage {
+public interface LocalStorage {
 
-    suspend fun insertArticle(
+    public suspend fun insertArticle(
         article: Article,
     )
 
-    suspend fun deleteArticle(
+    public suspend fun deleteArticle(
         url: Url,
     )
 
-    suspend fun findAllArticles(
+    public suspend fun findAllArticles(
         filter: Filter,
     ): Page<Article>
 
-    suspend fun isFavoriteArticle(
+    public suspend fun isFavoriteArticle(
         url: Url,
     ): Boolean
 
-    suspend fun isDarkModeEnabled(): Boolean
+    public suspend fun isDarkModeEnabled(): Boolean
 
-    suspend fun isSyncWithSystemDarkModeEnabled(): Boolean
+    public suspend fun isSyncWithSystemDarkModeEnabled(): Boolean
 
-    suspend fun storeDarkModePreferences(
+    public suspend fun storeDarkModePreferences(
         appDarkMode: Boolean,
         syncWithSystemDarkMode: Boolean,
     )
 
-    suspend fun storeFilter(
+    public suspend fun storeFilter(
         filter: Filter,
         storeSuggestionsLimit: UInt = StoreSuggestionsLimit,
         storeSourcesLimit: UInt = StoreSourcesLimit,
     )
 
-    suspend fun findFilter(
+    public suspend fun findFilter(
         type: FilterType
     ): Filter
 
-    suspend fun recentSearches(
+    public suspend fun recentSearches(
         type: FilterType
     ): ImmutableList<Query>
 
-    suspend fun deleteRecentSearch(
+    public suspend fun deleteRecentSearch(
         type: FilterType,
         query: Query
     )

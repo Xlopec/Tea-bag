@@ -42,7 +42,7 @@ import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentHashSetOf
 import kotlinx.collections.immutable.toPersistentList
 
-fun FiltersState.toFiltersUpdate(
+internal fun FiltersState.toFiltersUpdate(
     message: FilterMessage,
 ): Update<FiltersState, FilterCommand> =
     when (message) {
@@ -54,7 +54,7 @@ fun FiltersState.toFiltersUpdate(
         is RecentSearchRemoved -> onRemoveRecentSearch(message.search)
     }
 
-fun updateFilters(
+internal fun updateFilters(
     message: FilterUpdated,
     state: FiltersState,
 ) = if (message.filter.type == state.filter.type) state.toFilterChangedUpdate(message.filter) else state.noCommand()

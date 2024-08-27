@@ -32,7 +32,7 @@ import kotlin.contracts.contract
 import kotlin.jvm.JvmInline
 
 @Immutable
-data class Article(
+public data class Article(
     val url: Url,
     val title: Title,
     val author: Author?,
@@ -44,11 +44,11 @@ data class Article(
 )
 
 @JvmInline
-value class Title(
-    val value: String,
+public value class Title(
+    public val value: String,
 ) {
 
-    companion object;
+    internal companion object;
 
     init {
         require(isValid(value)) { "Invalid title value, was $value" }
@@ -56,11 +56,11 @@ value class Title(
 }
 
 @JvmInline
-value class Author(
-    val value: String,
+public value class Author(
+    public val value: String,
 ) {
 
-    companion object;
+    internal companion object;
 
     init {
         require(isValid(value)) { "Invalid author value, was $value" }
@@ -68,18 +68,18 @@ value class Author(
 }
 
 @JvmInline
-value class Description(
-    val value: String,
+public value class Description(
+    public val value: String,
 ) {
 
-    companion object;
+    internal companion object;
 
     init {
         require(isValid(value)) { "Invalid description value, was $value" }
     }
 }
 
-fun Title.Companion.isValid(
+internal fun Title.Companion.isValid(
     s: String?,
 ): Boolean {
     contract {
@@ -89,11 +89,11 @@ fun Title.Companion.isValid(
     return s.isNonEmpty()
 }
 
-fun Title.Companion.tryCreate(
+internal fun Title.Companion.tryCreate(
     s: String?,
 ) = if (isValid(s)) Title(s) else null
 
-fun Author.Companion.isValid(
+internal fun Author.Companion.isValid(
     s: String?,
 ): Boolean {
     contract {
@@ -103,11 +103,11 @@ fun Author.Companion.isValid(
     return s.isNonEmpty()
 }
 
-fun Author.Companion.tryCreate(
+internal fun Author.Companion.tryCreate(
     s: String?,
 ) = if (isValid(s)) Author(s) else null
 
-fun Description.Companion.isValid(
+internal fun Description.Companion.isValid(
     s: String?,
 ): Boolean {
     contract {
@@ -117,13 +117,13 @@ fun Description.Companion.isValid(
     return s.isNonEmpty()
 }
 
-fun Description.Companion.tryCreate(
+internal fun Description.Companion.tryCreate(
     s: String?,
 ) = if (isValid(s)) Description(s) else null
 
-fun Article.toggleFavorite(): Article = copy(isFavorite = !isFavorite)
+internal fun Article.toggleFavorite(): Article = copy(isFavorite = !isFavorite)
 
-fun <T> tryCreate(
+internal fun <T> tryCreate(
     s: String?,
     constructor: (String) -> T
 ) = if (s?.isNonEmpty() == true) constructor(s) else null

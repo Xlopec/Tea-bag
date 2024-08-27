@@ -85,9 +85,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build IOS app
-        uses: sersoft-gmbh/xcodebuild-action@v2
+        uses: sersoft-gmbh/xcodebuild-action@v3
         with:
-          workspace: samples/iosApp/iosApp.xcworkspace
+          project: samples/iosApp/iosApp.xcodeproj
           scheme: iosApp
           destination: 'platform=iOS Simulator,name=iPhone 15'
           configuration: Debug

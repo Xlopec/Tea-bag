@@ -29,20 +29,24 @@ package io.github.xlopec.reader.app.feature.article.details
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-fun ArticleDetailsResolver(
+internal fun ArticleDetailsResolver(
     application: Application,
 ): ArticleDetailsResolver =
     object : ArticleDetailsResolver {
 
-        override fun resolve(
+        override suspend fun resolve(
             command: DoOpenInBrowser,
         ) {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(command.article.url.toString()))
-                .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
+            withContext(Dispatchers.Main) {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(command.article.url.toString()))
+                    .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
 
-            if (intent.resolveActivity(application.packageManager) != null) {
-                application.startActivity(intent)
+                if (intent.resolveActivity(application.packageManager) != null) {
+                    application.startActivity(intent)
+                }
             }
         }
     }

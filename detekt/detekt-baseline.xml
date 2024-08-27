@@ -11,36 +11,44 @@
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _indicatorColor: State&lt;Color></ID>
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _textBackground: State&lt;Color></ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") internal fun Null.toReadableString(): String</ID>
-    <ID>MagicNumber:Date.kt$1000.0</ID>
-    <ID>MaxLineLength:CollectionExtensionsTest.kt$CollectionExtensionsTest$val input = mutableListOf(263, 110, 109, 156, 158, 161, 166, 170, 176, 186, 150, 189, 194, 197, 199, 204, 176, 186, 150, 189, 194, 197, 199, 204)</ID>
-    <ID>MaximumLineLength:io.github.xlopec.tea.time.travel.plugin.util.CollectionExtensionsTest.kt:51</ID>
+    <ID>MagicNumber:Date.ios.kt$1000.0</ID>
     <ID>TooGenericExceptionCaught:NettyServer.kt$e: Throwable</ID>
-    <ID>TooManyFunctions:ComponentTestBase.kt$ComponentTestBase</ID>
     <ID>UndocumentedPublicClass:Date.kt$Date</ID>
     <ID>UndocumentedPublicClass:UUID.kt$UUID</ID>
     <ID>UndocumentedPublicClass:Url.kt$Url</ID>
-    <ID>UndocumentedPublicFunction:Date.kt$public actual fun Date.toMillis(): Long</ID>
-    <ID>UndocumentedPublicFunction:Date.kt$public actual fun fromMillis( millis: Long ): Date</ID>
-    <ID>UndocumentedPublicFunction:Date.kt$public actual fun now(): Date</ID>
+    <ID>UndocumentedPublicFunction:Date.ios.kt$public actual fun Date.toMillis(): Long</ID>
+    <ID>UndocumentedPublicFunction:Date.ios.kt$public actual fun fromMillis( millis: Long ): Date</ID>
+    <ID>UndocumentedPublicFunction:Date.ios.kt$public actual fun now(): Date</ID>
+    <ID>UndocumentedPublicFunction:Date.jvm.kt$public actual fun Date.toMillis(): Long</ID>
+    <ID>UndocumentedPublicFunction:Date.jvm.kt$public actual fun fromMillis( millis: Long ): Date</ID>
+    <ID>UndocumentedPublicFunction:Date.jvm.kt$public actual fun now(): Date</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public expect fun Date.toMillis(): Long</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public expect fun fromMillis( millis: Long ): Date</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public expect fun now(): Date</ID>
     <ID>UndocumentedPublicFunction:Resolver.kt$public suspend operator fun &lt;T> Sink&lt;T>.invoke( elements: Iterable&lt;T>, ): Unit</ID>
     <ID>UndocumentedPublicFunction:Resolver.kt$public suspend operator fun &lt;T> Sink&lt;T>.invoke( vararg elements: T, ): Unit</ID>
-    <ID>UndocumentedPublicFunction:UUID.kt$public actual fun RandomUUID(): UUID</ID>
-    <ID>UndocumentedPublicFunction:UUID.kt$public actual fun UUID.toHumanReadable(): String</ID>
-    <ID>UndocumentedPublicFunction:UUID.kt$public actual fun UUIDFrom( value: String ): UUID</ID>
-    <ID>UndocumentedPublicFunction:UUID.kt$public actual fun UUIDFrom( value: String, ): UUID</ID>
+    <ID>UndocumentedPublicFunction:UUID.ios.kt$public actual fun RandomUUID(): UUID</ID>
+    <ID>UndocumentedPublicFunction:UUID.ios.kt$public actual fun UUID.toHumanReadable(): String</ID>
+    <ID>UndocumentedPublicFunction:UUID.ios.kt$public actual fun UUIDFrom( value: String, ): UUID</ID>
+    <ID>UndocumentedPublicFunction:UUID.jvm.kt$public actual fun RandomUUID(): UUID</ID>
+    <ID>UndocumentedPublicFunction:UUID.jvm.kt$public actual fun UUID.toHumanReadable(): String</ID>
+    <ID>UndocumentedPublicFunction:UUID.jvm.kt$public actual fun UUIDFrom( value: String ): UUID</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public expect fun RandomUUID(): UUID</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public expect fun UUID.toHumanReadable(): String</ID>
     <ID>UndocumentedPublicFunction:UUID.kt$public expect fun UUIDFrom( value: String ): UUID</ID>
-    <ID>UndocumentedPublicFunction:Url.kt$public actual fun Url.toExternalValue(): String</ID>
-    <ID>UndocumentedPublicFunction:Url.kt$public actual fun UrlFor( s: String ): Url</ID>
+    <ID>UndocumentedPublicFunction:Url.ios.kt$public actual fun Url.toExternalValue(): String</ID>
+    <ID>UndocumentedPublicFunction:Url.ios.kt$public actual fun UrlFor( s: String ): Url</ID>
+    <ID>UndocumentedPublicFunction:Url.jvm.kt$public actual fun Url.toExternalValue(): String</ID>
+    <ID>UndocumentedPublicFunction:Url.jvm.kt$public actual fun UrlFor( s: String ): Url</ID>
     <ID>UndocumentedPublicFunction:Url.kt$public expect fun Url.toExternalValue(): String</ID>
     <ID>UndocumentedPublicFunction:Url.kt$public expect fun UrlFor( s: String ): Url</ID>
     <ID>UndocumentedPublicProperty:Component.kt$@ExperimentalTeaApi public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
-    <ID>UndocumentedPublicProperty:Url.kt$public actual val Url.domain: String get() = host</ID>
-    <ID>UndocumentedPublicProperty:Url.kt$public actual val Url.domain: String get() = host ?: error("No domain: ${toExternalValue()}")</ID>
+    <ID>UndocumentedPublicProperty:Url.ios.kt$public actual val Url.domain: String get() = host ?: error("No domain: ${toExternalValue()}")</ID>
+    <ID>UndocumentedPublicProperty:Url.ios.kt$public actual val Url.protocol: String? get() = scheme</ID>
+    <ID>UndocumentedPublicProperty:Url.jvm.kt$public actual val Url.domain: String get() = host</ID>
+    <ID>UndocumentedPublicProperty:Url.jvm.kt$public actual val Url.protocol: String? get() = scheme</ID>
     <ID>UndocumentedPublicProperty:Url.kt$public expect val Url.domain: String</ID>
+    <ID>UndocumentedPublicProperty:Url.kt$public expect val Url.protocol: String?</ID>
+    <ID>UndocumentedPublicProperty:Url.kt$public val Url.isSecureProtocol: Boolean get() = protocol == "https"</ID>
   </CurrentIssues>
 </SmellBaseline>

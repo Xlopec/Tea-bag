@@ -28,6 +28,6 @@ import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.tea.data.RandomUUID
 
-object SettingsScreen : TabScreen {
+public data object SettingsScreen : TabScreen {
     override val id: ScreenId = RandomUUID()
 }

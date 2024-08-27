@@ -31,7 +31,7 @@ private val DateParser = NSDateFormatter().apply {
     dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
 }
 
-actual fun Date.toJson(): String = DateParser.stringFromDate(this)
+public actual fun Date.toJson(): String = DateParser.stringFromDate(this)
 
-actual fun String.toDate(): Date = DateParser.dateFromString(this)
+public actual fun String.toDate(): Date = DateParser.dateFromString(this)
     ?: error("couldn't parse $this as date")

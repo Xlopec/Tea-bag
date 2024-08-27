@@ -27,7 +27,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     kotlin("multiplatform")
-    kotlin("native.cocoapods")
     id("com.android.library")
     id("com.squareup.sqldelight")
     kotlin("plugin.serialization")
@@ -39,6 +38,8 @@ version = "1.0.0"
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
+    explicitApi()
+
     compilerOptions {
         optIn.addAll(
             "kotlinx.serialization.ExperimentalSerializationApi",
@@ -62,6 +63,17 @@ kotlin {
     iosSimulatorArm64()
     applyDefaultHierarchyTemplate()
 
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "SharedAppLib"
+            isStatic = true
+        }
+    }
+
     targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests::class.java) {
         testRuns["test"].deviceId = "iPhone 15"
     }
@@ -72,17 +84,6 @@ kotlin {
         }
     }
 
-    cocoapods {
-        summary = "Shared app lib with common code"
-        homepage = "Link to the Shared Module homepage"
-        ios.deploymentTarget = "14.1"
-        framework {
-            baseName = "SharedAppLib"
-            isStatic = true
-        }
-        podfile = project.file("../iosApp/Podfile")
-    }
-
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -91,9 +92,13 @@ kotlin {
                 api(libs.arrow.core)
                 api(libs.collections.immutable)
                 api(libs.coroutines.core)
+                api(compose.ui)
                 api(compose.runtime)
                 api(compose.foundation)
-                api(compose.material)
+                implementation(libs.bundles.coil)
+                implementation(compose.material)
+                implementation(compose.materialIconsExtended)
+                implementation(compose.components.resources)
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.logging)
@@ -102,6 +107,7 @@ kotlin {
                 implementation(libs.serialization.core)
                 implementation(libs.settings.core)
                 implementation(libs.sqldelight.runtime)
+                implementation(libs.webview)
                 implementation(compose.runtime)
             }
         }
@@ -115,6 +121,12 @@ kotlin {
 
         val androidMain by getting {
             dependencies {
+                implementation(compose.preview)
+                implementation(libs.compose.fonts)
+                implementation(libs.ktor.client.cio)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.coroutines.android)
+                implementation(libs.compose.activity)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.sqldelight.driver.android)
             }
@@ -188,6 +200,7 @@ android {
         remoteApi(project(":tea-time-travel"))
         remoteApi(project(":tea-time-travel-adapter-gson"))
         remoteImplementation(libs.gson)
+        debugImplementation(compose.uiTooling)
         coreLibraryDesugaring(libs.desugar.jdk)
     }
 }

@@ -27,7 +27,7 @@ package io.github.xlopec.reader.app.model
 import io.github.xlopec.tea.data.Url
 import kotlin.jvm.JvmInline
 
-data class Source(
+public data class Source(
     val id: SourceId,
     val name: SourceName,
     val description: SourceDescription?,
@@ -36,16 +36,16 @@ data class Source(
 )
 
 @JvmInline
-value class SourceName(
-    val value: String,
+public value class SourceName(
+    public val value: String,
 )
 
 @JvmInline
-value class SourceDescription(
-    val value: String,
+public value class SourceDescription(
+    public val value: String,
 )
 
 @JvmInline
-value class SourceId(
-    val value: String,
+public value class SourceId(
+    public val value: String,
 )

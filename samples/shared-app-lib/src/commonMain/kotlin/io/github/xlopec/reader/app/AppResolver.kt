@@ -28,9 +28,9 @@ import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.tea.core.ResolveCtx
 import io.github.xlopec.tea.core.Snapshot
 
-fun interface AppResolver<Env> {
+public fun interface AppResolver<Env> {
 
-    fun Env.resolve(
+    public fun Env.resolve(
         snapshot: Snapshot<Message, AppState, Command>,
         context: ResolveCtx<Message>
     )

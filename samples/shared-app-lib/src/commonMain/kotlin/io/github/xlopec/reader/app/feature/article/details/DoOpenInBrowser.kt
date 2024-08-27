@@ -27,6 +27,6 @@ package io.github.xlopec.reader.app.feature.article.details
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.model.Article
 
-data class DoOpenInBrowser(
+public data class DoOpenInBrowser internal constructor(
     val article: Article,
 ) : Command

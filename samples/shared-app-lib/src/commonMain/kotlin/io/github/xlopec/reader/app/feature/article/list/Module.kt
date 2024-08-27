@@ -28,9 +28,9 @@ package io.github.xlopec.reader.app.feature.article.list
 
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 
-typealias ArticlesModule<Env> = ArticlesResolver<Env>
+public typealias ArticlesModule<Env> = ArticlesResolver<Env>
 
-fun <Env> ArticlesModule(
+public fun <Env> ArticlesModule(
     shareArticle: ShareArticle
 ): ArticlesModule<Env> where Env : NewsApi,
                              Env : LocalStorage = ArticlesResolver(shareArticle)

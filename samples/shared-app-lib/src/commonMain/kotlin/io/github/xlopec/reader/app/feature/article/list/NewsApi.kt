@@ -34,19 +34,19 @@ import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.SourceId
 import kotlinx.collections.immutable.ImmutableSet
 
-interface NewsApi {
+public interface NewsApi {
 
-    suspend fun fetchFromEverything(
+    public suspend fun fetchFromEverything(
         query: Query?,
         sources: ImmutableSet<SourceId>,
         paging: Paging
     ): Either<AppException, ArticleResponse>
 
-    suspend fun fetchTopHeadlines(
+    public suspend fun fetchTopHeadlines(
         query: Query?,
         sources: ImmutableSet<SourceId>,
         paging: Paging
     ): Either<AppException, ArticleResponse>
 
-    suspend fun fetchNewsSources(): Either<AppException, SourcesResponse>
+    public suspend fun fetchNewsSources(): Either<AppException, SourcesResponse>
 }

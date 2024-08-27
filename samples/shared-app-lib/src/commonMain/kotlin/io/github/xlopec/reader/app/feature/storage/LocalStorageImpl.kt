@@ -58,7 +58,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
-fun LocalStorage(
+internal fun LocalStorage(
     driver: SqlDriver,
     settings: Settings = Settings(),
 ): LocalStorage = LocalStorageImpl(driver, settings)

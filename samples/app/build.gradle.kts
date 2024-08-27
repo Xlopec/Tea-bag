@@ -156,20 +156,9 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk)
 
     implementation(libs.stdlib)
-
-    implementation(libs.coroutines.android)
     implementation(libs.compose.activity)
-    implementation(compose.materialIconsExtended)
 
-    debugImplementation(compose.uiTooling)
-
-    implementation(libs.compose.fonts)
     implementation(libs.splashscreen)
-
-    implementation(libs.coil)
-
-    implementation(libs.ktor.client.cio)
-    implementation(libs.ktor.client.logging)
 
     testImplementation(project(":tea-data"))
     androidTestImplementation(project(":tea-data"))

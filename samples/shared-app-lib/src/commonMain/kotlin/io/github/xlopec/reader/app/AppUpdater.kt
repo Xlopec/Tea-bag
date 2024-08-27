@@ -27,9 +27,9 @@ package io.github.xlopec.reader.app
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.tea.core.Update
 
-fun interface AppUpdater<Env> {
+public fun interface AppUpdater<Env> {
 
-    fun Env.update(
+    public fun Env.update(
         message: Message,
         state: AppState
     ): Update<AppState, Command>

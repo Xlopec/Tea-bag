@@ -34,7 +34,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ArticleElement(
+public data class ArticleElement(
     @Serializable(with = AuthorSerializer::class)
     @SerialName("author")
     val author: Author? = null,
@@ -58,14 +58,14 @@ data class ArticleElement(
 )
 
 @Serializable
-data class SourceElement(
+public data class SourceElement(
     @SerialName("id")
     @Serializable(with = SourceIdSerializer::class)
     val id: SourceId?,
 )
 
 @Serializable
-data class ArticleResponse(
+public data class ArticleResponse(
     @SerialName("totalResults")
     val totalResults: Int,
     @SerialName("articles")
