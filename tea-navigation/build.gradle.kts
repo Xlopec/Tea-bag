@@ -22,23 +22,38 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.reader.app.feature.navigation
+plugins {
+    `published-multiplatform-library-convention`
+    id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
+}
 
-import io.github.xlopec.reader.app.AppState
-import io.github.xlopec.reader.app.TabScreen
-import io.github.xlopec.reader.app.command.CloseApp
-import io.github.xlopec.reader.app.command.Command
-import io.github.xlopec.reader.app.screen
-import io.github.xlopec.tea.core.Update
-import io.github.xlopec.tea.core.command
-import io.github.xlopec.tea.core.noCommand
+kotlin {
 
-public actual fun AppState.popScreen(): Update<AppState, Command> {
-    val screen = screen
-
-    return if (screen is TabScreen) {
-        this command CloseApp
-    } else {
-        copy(screens = screens.pop()).noCommand()
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.stdlib)
+                implementation(project(":tea-core"))
+                api(compose.ui)
+                api(compose.runtime)
+                api(compose.foundation)
+                api(libs.collections.immutable)
+                api("com.arkivanov.decompose:extensions-compose:3.1.0")
+                api("com.arkivanov.essenty:back-handler:2.2.0-alpha04")
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+            }
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit"))
+                implementation(libs.junit)
+            }
+        }
     }
 }

@@ -96,12 +96,14 @@ import io.github.xlopec.tea.data.toExternalValue
 @Composable
 internal fun ArticleDetailsScreen(
     screen: ArticleDetailsState,
-    onMessage: MessageHandler,
+    handler: MessageHandler,
+    modifier: Modifier = Modifier,
 ) {
     val webViewState = rememberWebViewState(url = screen.article.url.toExternalValue())
     val navigator = rememberWebViewNavigator(rememberCoroutineScope())
 
     Scaffold(
+        modifier = modifier,
         content = { innerPadding ->
             if (navigator.canGoBack) {
                 BackHandler {
@@ -121,7 +123,7 @@ internal fun ArticleDetailsScreen(
                     state = webViewState,
                     article = screen.article,
                     navigator = navigator,
-                    handler = onMessage
+                    handler = handler
                 )
 
                 WebView(

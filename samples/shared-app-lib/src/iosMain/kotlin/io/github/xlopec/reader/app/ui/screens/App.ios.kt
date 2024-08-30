@@ -31,7 +31,7 @@ internal fun App(
     val messageHandler = remember { scope.messageHandler(messages) }
 
     App(
-        appState = appState,
-        onMessage = messageHandler
+        app = appState,
+        handler = messageHandler
     )
 }

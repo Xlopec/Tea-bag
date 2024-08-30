@@ -32,8 +32,6 @@ public interface Command
 
 // App wide commands
 
-public object CloseApp : Command
-
 public data class DoLog(
     val state: AppState,
     val throwable: Throwable,

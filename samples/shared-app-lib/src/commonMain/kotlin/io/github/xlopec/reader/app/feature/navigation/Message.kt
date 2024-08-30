@@ -33,6 +33,13 @@ import io.github.xlopec.tea.data.RandomUUID
 
 public sealed interface Navigation : Message
 
+public enum class Tab(public val id: ScreenId) {
+    Feed(RandomUUID()),
+    Favorite(RandomUUID()),
+    Trending(RandomUUID()),
+    Settings(RandomUUID()),
+}
+
 public data class NavigateToArticleDetails(
     val article: Article,
     val id: ScreenId = RandomUUID(),
@@ -45,22 +52,27 @@ public data class NavigateToFilters(
 
 public sealed interface TabNavigation : Navigation {
     public val id: ScreenId
+    public val tab: Tab
 }
 
 public data object NavigateToFavorite : TabNavigation {
     override val id: ScreenId = RandomUUID()
+    override val tab: Tab = Tab.Favorite
 }
 
 public data object NavigateToFeed : TabNavigation {
     override val id: ScreenId = RandomUUID()
+    override val tab: Tab = Tab.Feed
 }
 
 public data object NavigateToSettings : TabNavigation {
     override val id: ScreenId = SettingsScreen.id
+    override val tab: Tab = Tab.Settings
 }
 
 public data object NavigateToTrending : TabNavigation {
     override val id: ScreenId = RandomUUID()
+    override val tab: Tab = Tab.Trending
 }
 
 public data object Pop : Navigation

@@ -26,51 +26,42 @@ package io.github.xlopec.reader.app
 
 import androidx.compose.runtime.Immutable
 import io.github.xlopec.reader.app.command.Command
-import io.github.xlopec.reader.app.feature.navigation.NavigationStack
-import io.github.xlopec.reader.app.feature.navigation.push
-import io.github.xlopec.reader.app.feature.navigation.screen
-import io.github.xlopec.reader.app.feature.navigation.updateAllScreens
-import io.github.xlopec.reader.app.feature.navigation.updateScreen
+import io.github.xlopec.reader.app.feature.navigation.AppNavigationStack
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.data.UUID
-import kotlinx.collections.immutable.persistentListOf
+import io.github.xlopec.tea.navigation.mutate
+import io.github.xlopec.tea.navigation.screen
+import io.github.xlopec.tea.navigation.stackOf
 
 public typealias ScreenId = UUID
 
 @Immutable
 public data class AppState internal constructor(
     val settings: Settings,
-    val screens: NavigationStack,
+    val screens: AppNavigationStack,
 ) {
 
     internal constructor(
         screen: TabScreen,
         settings: Settings,
-    ) : this(settings, persistentListOf(screen))
-
-    init {
-        require(screens.isNotEmpty())
-    }
+    ) : this(settings, stackOf(screen))
 }
 
-public val AppState.screen: ScreenState
+public inline val AppState.screen: Screen
     get() = screens.screen
 
-public inline fun <reified T : ScreenState> AppState.updateScreen(
+public inline fun <reified T : Screen> AppState.updateScreen(
     id: ScreenId? = null,
     noinline how: (T) -> Update<T, Command>,
 ): Update<AppState, Command> {
-
-    val (updatedStack, commands) = if (id == null) {
-        screens.updateAllScreens(how)
-    } else {
-        screens.updateScreen(id, how)
+    val (updatedStack, commands) = screens.mutate {
+        if (id == null) {
+            updateInstanceOf(how)
+        } else {
+            updateInstanceOfById(id, how)
+        }
     }
 
     return copy(screens = updatedStack) command commands
 }
-
-public fun AppState.pushScreen(
-    screen: ScreenState,
-): AppState = copy(screens = screens.push(screen))

@@ -29,6 +29,7 @@ package io.github.xlopec.reader.app.feature.article.list
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.TabScreen
+import io.github.xlopec.reader.app.feature.navigation.Tab
 import io.github.xlopec.reader.app.misc.Loadable
 import io.github.xlopec.reader.app.misc.remove
 import io.github.xlopec.reader.app.misc.replace
@@ -55,21 +56,23 @@ public data class ScrollState(
 }
 
 public data class ArticlesState(
-    override val id: ScreenId,
+    override val tab: Tab,
     val filter: Filter,
     val loadable: ArticlesLoadable,
     val scrollState: ScrollState = ScrollState.Initial,
 ) : TabScreen {
+
+    override val id: ScreenId by tab::id
 
     internal companion object {
 
         const val ArticlesPerPage = 10
 
         fun newLoading(
-            id: ScreenId,
+            tab: Tab,
             filter: Filter,
             articles: PersistentList<Article> = persistentListOf(),
-        ) = ArticlesState(id, filter, Loadable.newLoading(articles))
+        ) = ArticlesState(tab, filter, Loadable.newLoading(articles))
     }
 }
 
