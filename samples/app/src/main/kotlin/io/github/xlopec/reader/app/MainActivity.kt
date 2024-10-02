@@ -30,19 +30,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
 import io.github.xlopec.reader.R
-import io.github.xlopec.reader.app.command.CloseApp
-import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.feature.settings.SystemDarkModeChanged
 import io.github.xlopec.reader.app.ui.screens.App
 import io.github.xlopec.tea.core.ExperimentalTeaApi
 import io.github.xlopec.tea.core.subscribeIn
-import io.github.xlopec.tea.core.toCommandsFlow
 import io.github.xlopec.tea.core.toStatesComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
@@ -61,12 +57,6 @@ class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
             App(component = statesComponent)
         }
 
-        launch {
-            component.toCommandsFlow()
-                .filter { it.hasCloseCommand }
-                .collect { finishAfterTransition() }
-        }
-
         statesComponent.subscribeIn(systemDarkModeChanges, this)
     }
 
@@ -82,6 +72,3 @@ class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
         super.onDestroy()
     }
 }
-
-private val Collection<Command>.hasCloseCommand: Boolean
-    get() = CloseApp in this

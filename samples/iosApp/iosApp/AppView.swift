@@ -18,7 +18,8 @@ struct AppView: View {
     var body: some View {
         ComposeViewController(component: component)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .ignoresSafeArea()
+            //.ignoresSafeArea()
+            .ignoresSafeArea(.all)
     }
     
     private func updateDarkMode(darkModeEnabled: Bool) {

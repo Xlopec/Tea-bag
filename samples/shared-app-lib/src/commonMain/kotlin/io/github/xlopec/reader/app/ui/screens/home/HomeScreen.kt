@@ -63,6 +63,8 @@ import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.article.list.RefreshArticles
 import io.github.xlopec.reader.app.feature.article.list.ScrollState
 import io.github.xlopec.reader.app.feature.article.list.SyncScrollPosition
+import io.github.xlopec.reader.app.feature.navigation.Tab
+import io.github.xlopec.reader.app.feature.navigation.Tab.*
 import io.github.xlopec.reader.app.feature.navigation.NavigateToFavorite
 import io.github.xlopec.reader.app.feature.navigation.NavigateToFeed
 import io.github.xlopec.reader.app.feature.navigation.NavigateToSettings
@@ -76,30 +78,20 @@ import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.ui.misc.InsetAwareTopAppBar
 import io.github.xlopec.reader.app.ui.misc.InsetsAwareBottomNavigation
 import io.github.xlopec.reader.app.ui.screens.article.Articles
-import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Favorite
-import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Feed
-import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Settings
-import io.github.xlopec.reader.app.ui.screens.home.BottomMenuItem.Trending
 import io.github.xlopec.reader.app.ui.screens.settings.Settings
 import io.github.xlopec.reader.app.model.FilterType.Favorite as FavoriteQuery
 import io.github.xlopec.reader.app.model.FilterType.Regular as RegularQuery
 import io.github.xlopec.reader.app.model.FilterType.Trending as TrendingQuery
 
-internal enum class BottomMenuItem {
-    Feed,
-    Favorite,
-    Trending,
-    Settings
-}
-
-private typealias BottomBarContent = @Composable (BottomMenuItem) -> Unit
+private typealias BottomBarContent = @Composable (Tab) -> Unit
 private typealias BottomBarListener = (reselected: Boolean, navigation: Navigation) -> Unit
 
 private val LocalBottomBarListener = compositionLocalOf<BottomBarListener> { error("no bottom bar listener provided") }
 
 @Composable
 internal fun HomeScreen(
-    appState: AppState,
+    modifier: Modifier,
+    app: AppState,
     screen: TabScreen,
     onMessage: MessageHandler,
 ) {
@@ -116,13 +108,15 @@ internal fun HomeScreen(
         is ArticlesState -> ArticlesScreen(
             state = screen,
             onMessage = onMessage,
-            bottomBar = bottomBar
+            bottomBar = bottomBar,
+            modifier = modifier,
         )
 
         is SettingsScreen -> SettingsScreen(
-            state = appState,
+            state = app,
             onMessage = onMessage,
-            bottomBar = bottomBar
+            bottomBar = bottomBar,
+            modifier = modifier,
         )
 
         else -> error("unhandled branch $screen")
@@ -135,6 +129,7 @@ private fun ArticlesScreen(
     state: ArticlesState,
     onMessage: MessageHandler,
     bottomBar: BottomBarContent,
+    modifier: Modifier = Modifier,
 ) {
     val refreshState = rememberPullRefreshState(
         refreshing = state.loadable.isRefreshing,
@@ -142,7 +137,7 @@ private fun ArticlesScreen(
     )
 
     Box(
-        modifier = Modifier.pullRefresh(
+        modifier = modifier.pullRefresh(
             state = refreshState,
             enabled = state.isRefreshable
         ),
@@ -203,9 +198,10 @@ private fun SettingsScreen(
     state: AppState,
     onMessage: MessageHandler,
     bottomBar: BottomBarContent,
+    modifier: Modifier,
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         topBar = {
             InsetAwareTopAppBar(
                 title = {
@@ -234,7 +230,7 @@ private fun SettingsScreen(
 
 @Composable
 internal fun BottomBar(
-    item: BottomMenuItem,
+    item: Tab,
     modifier: Modifier = Modifier,
 ) {
     val handler = LocalBottomBarListener.current

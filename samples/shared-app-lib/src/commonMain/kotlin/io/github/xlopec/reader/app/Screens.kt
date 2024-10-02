@@ -25,26 +25,29 @@
 package io.github.xlopec.reader.app
 
 import androidx.compose.runtime.Immutable
+import io.github.xlopec.reader.app.feature.navigation.Tab
+import io.github.xlopec.tea.navigation.NavStackEntry
 
 @Immutable
-public sealed interface ScreenState {
-    public val id: ScreenId
-}
+public sealed interface Screen : NavStackEntry<ScreenId>
 
 /**
  * Intermediate screen that should be rendered without
  * tab frame
  */
-public interface FullScreen : ScreenState
+public interface FullScreen : Screen
 
 /**
  * Screen that should be drawn inside tab
  */
-public interface NestedScreen : ScreenState {
-    public val tabId: ScreenId
+@Deprecated("replace with TabScreen")
+public interface NestedScreen : Screen {
+    public val tab: Tab
 }
 
 /**
  * Root screen in the navigation hierarchy
  */
-public interface TabScreen : ScreenState
+public interface TabScreen : Screen {
+    public val tab: Tab
+}

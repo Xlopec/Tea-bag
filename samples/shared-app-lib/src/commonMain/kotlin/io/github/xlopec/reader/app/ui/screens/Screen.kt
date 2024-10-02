@@ -27,59 +27,56 @@ package io.github.xlopec.reader.app.ui.screens
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.FullScreen
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.NestedScreen
+import io.github.xlopec.reader.app.Screen
 import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
 import io.github.xlopec.reader.app.feature.filter.FiltersState
-import io.github.xlopec.reader.app.feature.navigation.Pop
-import io.github.xlopec.reader.app.screen
 import io.github.xlopec.reader.app.ui.screens.article.ArticleDetailsScreen
 import io.github.xlopec.reader.app.ui.screens.filters.FiltersScreen
 import io.github.xlopec.reader.app.ui.screens.home.HomeScreen
-import io.github.xlopec.reader.app.ui.theme.AppTheme
 import kotlinx.coroutines.flow.Flow
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 @Composable
-internal fun App(
-    appState: AppState,
-    onMessage: MessageHandler,
+internal fun Screen(
+    modifier: Modifier,
+    app: AppState,
+    screen: Screen,
+    handler: MessageHandler,
 ) {
-    AppTheme(
-        isDarkModeEnabled = appState.settings.appDarkModeEnabled
-    ) {
+    when (screen) {
+        is FullScreen -> FullScreen(
+            modifier = modifier,
+            screen = screen,
+            handler = handler,
+        )
 
-        BackHandler {
-            onMessage(Pop)
-        }
+        is TabScreen -> HomeScreen(
+            app = app,
+            screen = screen,
+            onMessage = handler,
+            modifier = modifier,
+        )
 
-        when (val screen = appState.screen) {
-            is FullScreen -> FullScreen(
-                screen = screen,
-                onMessage = onMessage
-            )
-            is TabScreen -> HomeScreen(
-                appState = appState,
-                screen = screen,
-                onMessage = onMessage
-            )
-            is NestedScreen -> TODO()
-        }
+        is NestedScreen -> TODO()
     }
 }
 
 @Composable
 private fun FullScreen(
+    modifier: Modifier,
     screen: FullScreen,
-    onMessage: MessageHandler,
+    handler: MessageHandler,
 ) {
     when (screen) {
-        is ArticleDetailsState -> ArticleDetailsScreen(screen, onMessage)
-        is FiltersState -> FiltersScreen(screen, onMessage)
+        is ArticleDetailsState -> ArticleDetailsScreen(screen = screen, handler = handler, modifier = modifier)
+        is FiltersState -> FiltersScreen(state = screen, handler = handler, modifier = modifier)
     }
 }
 

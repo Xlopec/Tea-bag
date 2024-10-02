@@ -6,6 +6,8 @@ arrow = "1.2.4"
 coil = "3.0.0-alpha09"
 
 [libraries]
+decompose-backHandler = { module = "com.arkivanov.essenty:back-handler", version = "2.2.0-alpha04" }
+decompose-extensions = { module = "com.arkivanov.decompose:extensions-compose", version = "3.1.0" }
 junit = { module = "junit:junit", version = "4.13.2" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlin-test-annotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common" }

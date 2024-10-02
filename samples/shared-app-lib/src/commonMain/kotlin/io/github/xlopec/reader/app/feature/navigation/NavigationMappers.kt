@@ -37,7 +37,7 @@ import io.github.xlopec.tea.core.noCommand
 internal fun TabNavigation.toTabScreen(): Update<TabScreen, Command> =
     when (this) {
         NavigateToSettings -> SettingsScreen.noCommand()
-        NavigateToFeed -> ArticlesInitialUpdate(id, FilterType.Regular)
-        NavigateToFavorite -> ArticlesInitialUpdate(id, FilterType.Favorite)
-        NavigateToTrending -> ArticlesInitialUpdate(id, FilterType.Trending)
+        NavigateToFeed -> ArticlesInitialUpdate(tab, FilterType.Regular)
+        NavigateToFavorite -> ArticlesInitialUpdate(tab, FilterType.Favorite)
+        NavigateToTrending -> ArticlesInitialUpdate(tab, FilterType.Trending)
     }

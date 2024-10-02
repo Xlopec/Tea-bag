@@ -64,7 +64,7 @@ internal fun FiltersPreviewLight() {
     ThemedPreview(isDarkModeEnabled = false) {
         FiltersScreen(
             state = PreviewState,
-            handler = {}
+            handler = {},
         )
     }
 }

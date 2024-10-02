@@ -30,8 +30,15 @@ import io.github.xlopec.reader.app.Settings
 import io.github.xlopec.reader.app.feature.article.list.ArticlesLoadable
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.article.list.LoadArticles
+import io.github.xlopec.reader.app.feature.navigation.Tab
 import io.github.xlopec.reader.app.misc.Idle
-import io.github.xlopec.reader.app.model.*
+import io.github.xlopec.reader.app.model.Article
+import io.github.xlopec.reader.app.model.Description
+import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.reader.app.model.FilterType
+import io.github.xlopec.reader.app.model.Query
+import io.github.xlopec.reader.app.model.Title
+import io.github.xlopec.tea.navigation.stackOf
 import io.github.xlopec.tea.time.travel.gson.Gson
 import io.github.xlopec.tea.time.travel.protocol.NotifyComponentAttached
 import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
@@ -54,10 +61,10 @@ internal class AppStateSerializationTest {
     }
 
     private val previewScreenState = ArticlesState(
-        UUID.randomUUID(),
-        Filter(FilterType.Regular, Query.of("android")),
-        ArticlesLoadable(
-            persistentListOf(
+        tab = Tab.Feed,
+        filter = Filter(FilterType.Regular, Query.of("android")),
+        loadable = ArticlesLoadable(
+            data = persistentListOf(
                 Article(
                     url = URI("http://www.google.com"),
                     title = Title("test"),
@@ -69,18 +76,18 @@ internal class AppStateSerializationTest {
                     source = null
                 )
             ),
-            false,
-            Idle
+            hasMore = false,
+            loadableState = Idle
         )
     )
 
     private val loadingScreenState = ArticlesState.newLoading(
-        UUID.randomUUID(),
+        Tab.Feed,
         Filter(FilterType.Regular, Query.of("test"))
     )
 
     private val testState = AppState(
-        screens = persistentListOf(
+        screens = stackOf(
             previewScreenState,
             loadingScreenState
         ),

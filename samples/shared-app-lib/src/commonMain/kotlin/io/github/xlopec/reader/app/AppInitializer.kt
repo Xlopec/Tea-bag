@@ -41,7 +41,7 @@ public fun AppInitializer(
 ): Initializer<AppState, Command> = Initializer(Dispatchers.IO) {
 
     val filter = environment.findFilter(Regular)
-    val (screen, commands) = ArticlesInitialUpdate(NavigateToFeed.id, filter)
+    val (screen, commands) = ArticlesInitialUpdate(NavigateToFeed.tab, filter)
 
     val settings = Settings(
         syncWithSystemDarkModeEnabled = environment.isSyncWithSystemDarkModeEnabled(),

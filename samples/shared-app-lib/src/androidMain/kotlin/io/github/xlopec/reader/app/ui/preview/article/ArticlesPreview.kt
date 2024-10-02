@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
+import io.github.xlopec.reader.app.feature.navigation.Tab
 import io.github.xlopec.reader.app.misc.Idle
 import io.github.xlopec.reader.app.misc.Loadable
 import io.github.xlopec.reader.app.misc.LoadableState
@@ -60,7 +61,7 @@ internal fun ArticleSearchHeaderPreview() {
     ThemedPreview {
         ArticleSearchHeader(
             state = ArticlesState(
-                id = UUID.randomUUID(),
+                tab = Tab.Trending,
                 filter = Filter(FilterType.Trending, Query.of("some input text")),
                 loadable = Loadable(persistentListOf(), false, Idle)
             ),
@@ -99,6 +100,7 @@ internal fun ArticlesScreenPreview() {
     ThemedPreview {
         Articles(
             state = ArticlesState(
+                Tab.Trending,
                 FilterType.Trending,
                 PreviewArticles,
                 Idle
@@ -115,6 +117,7 @@ internal fun ArticlesScreenLoadingNextPreview() {
     ThemedPreview {
         Articles(
             state = ArticlesState(
+                Tab.Trending,
                 FilterType.Trending,
                 persistentListOf(PreviewArticle),
                 LoadingNext
@@ -131,6 +134,7 @@ internal fun ArticlesScreenLoadingPreview() {
     ThemedPreview {
         Articles(
             state = ArticlesState(
+                Tab.Trending,
                 FilterType.Trending,
                 persistentListOf(),
                 Loading
@@ -147,6 +151,7 @@ internal fun ArticlesScreenRefreshingPreview() {
     ThemedPreview {
         Articles(
             state = ArticlesState(
+                Tab.Trending,
                 FilterType.Trending,
                 persistentListOf(PreviewArticle),
                 Refreshing
@@ -170,10 +175,11 @@ internal fun ArticleItemPreview() {
 }
 
 private fun ArticlesState(
+    tab: Tab,
     type: FilterType,
     articles: PersistentList<Article>,
     loadableState: LoadableState,
-) = ArticlesState(UUID.randomUUID(), Filter(type, Query.of("input")), Loadable(articles, false, loadableState))
+) = ArticlesState(tab, Filter(type, Query.of("input")), Loadable(articles, false, loadableState))
 
 private val PreviewArticle = Article(
     url = URI("https://www.google.com"),
@@ -181,9 +187,9 @@ private val PreviewArticle = Article(
     author = Author("Max Oliinyk"),
     description = Description(
         "Let your imagination fly! Modifiers let you modify your composable " +
-                "in a very flexible way. For example, if you wanted to add some outer spacing, change " +
-                "the background color of the composable, and round the corners of the Row, you could " +
-                "use the following code"
+            "in a very flexible way. For example, if you wanted to add some outer spacing, change " +
+            "the background color of the composable, and round the corners of the Row, you could " +
+            "use the following code"
     ),
     published = now(),
     isFavorite = true,

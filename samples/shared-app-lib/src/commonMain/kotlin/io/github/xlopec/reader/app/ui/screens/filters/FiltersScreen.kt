@@ -64,6 +64,7 @@ internal const val RecentSearchesSubtitle = "recent searches subtitle"
 internal fun FiltersScreen(
     state: FiltersState,
     handler: MessageHandler,
+    modifier: Modifier = Modifier,
 ) {
     var screenTransitionState by remember { mutableStateOf(Begin) }
     var closeScreen by remember { mutableStateOf(false) }
@@ -111,7 +112,7 @@ internal fun FiltersScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier,
     ) { innerPadding ->
 
         LazyColumn(
