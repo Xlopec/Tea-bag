@@ -39,8 +39,13 @@ kotlin {
                 api(compose.runtime)
                 api(compose.foundation)
                 api(libs.collections.immutable)
-                api("com.arkivanov.decompose:extensions-compose:3.1.0")
-                api("com.arkivanov.essenty:back-handler:2.2.0-alpha04")
+            }
+        }
+        val iosMain by getting {
+            dependencies {
+                // todo consider replacing with implementation
+                api(libs.decompose.extensions)
+                api(libs.decompose.backHandler)
             }
         }
         val commonTest by getting {

@@ -12,13 +12,10 @@
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _textBackground: State&lt;Color></ID>
     <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") internal fun Null.toReadableString(): String</ID>
     <ID>MagicNumber:Date.ios.kt$1000.0</ID>
-    <ID>MagicNumber:PredictiveBackGestureOverlay.kt$BackGestureHandler$3F</ID>
-    <ID>MagicNumber:PredictiveBackGestureOverlay.kt$BackGestureHandler$4F</ID>
     <ID>TooGenericExceptionCaught:NettyServer.kt$e: Throwable</ID>
     <ID>UndocumentedPublicClass:Date.kt$Date</ID>
     <ID>UndocumentedPublicClass:PredictiveBackAnimation.kt$BackCoordinator&lt;T : NavStackEntry&lt;*>> : BackCallback</ID>
     <ID>UndocumentedPublicClass:PredictiveBackAnimation.kt$PredictiveBackAnimation</ID>
-    <ID>UndocumentedPublicClass:PredictiveBackGestureOverlay.kt$SwipeEdge</ID>
     <ID>UndocumentedPublicClass:UUID.kt$UUID</ID>
     <ID>UndocumentedPublicClass:Url.kt$Url</ID>
     <ID>UndocumentedPublicFunction:Date.ios.kt$public actual fun Date.toMillis(): Long</ID>
@@ -30,13 +27,13 @@
     <ID>UndocumentedPublicFunction:Date.kt$public expect fun Date.toMillis(): Long</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public expect fun fromMillis( millis: Long ): Date</ID>
     <ID>UndocumentedPublicFunction:Date.kt$public expect fun now(): Date</ID>
-    <ID>UndocumentedPublicFunction:PredictiveBackAnimation.kt$@Composable public fun &lt;T : NavStackEntry&lt;*>> PredictiveBackContainer( backDispatcher: BackDispatcher, coordinator: BackCoordinator&lt;T>, modifier: Modifier = Modifier, backIcon: (@Composable (progress: Float, edge: SwipeEdge) -> Unit)? = null, startEdgeEnabled: Boolean = true, endEdgeEnabled: Boolean = true, edgeWidth: Dp = 16.dp, activationOffsetThreshold: Dp = 16.dp, confirmationProgressThreshold: Float = 0.2F, onClose: (() -> Unit)? = null, content: @Composable (Modifier, T) -> Unit, )</ID>
     <ID>UndocumentedPublicFunction:PredictiveBackAnimation.kt$@Composable public fun &lt;T : NavStackEntry&lt;*>> rememberPredictiveBackCoordinator( dispatcher: BackDispatcher, stack: NavigationStack&lt;T>, animation: PredictiveBackAnimation, onBackComplete: (T) -> Unit, ): BackCoordinator&lt;T></ID>
     <ID>UndocumentedPublicFunction:PredictiveBackAnimation.kt$@Composable public fun rememberDefaultPredictiveBackAnimation( maxWidth: Dp, ): PredictiveBackAnimation</ID>
     <ID>UndocumentedPublicFunction:PredictiveBackAnimation.kt$PredictiveBackAnimation$public suspend fun animate(event: BackEvent)</ID>
     <ID>UndocumentedPublicFunction:PredictiveBackAnimation.kt$PredictiveBackAnimation$public suspend fun cancelAnimation()</ID>
     <ID>UndocumentedPublicFunction:PredictiveBackAnimation.kt$PredictiveBackAnimation$public suspend fun finishAnimation()</ID>
     <ID>UndocumentedPublicFunction:PredictiveBackAnimation.kt$PredictiveBackAnimation$public suspend fun reset()</ID>
+    <ID>UndocumentedPublicFunction:PredictiveBackContainer.kt$@Composable public fun &lt;T : NavStackEntry&lt;*>> PredictiveBackContainer( backDispatcher: BackDispatcher, coordinator: BackCoordinator&lt;T>, modifier: Modifier = Modifier, backIcon: (@Composable (progress: Float, edge: BackEvent.SwipeEdge) -> Unit)? = null, startEdgeEnabled: Boolean = true, endEdgeEnabled: Boolean = true, edgeWidth: Dp = 16.dp, activationOffsetThreshold: Dp = 16.dp, confirmationProgressThreshold: Float = 0.2F, onClose: (() -> Unit)? = null, content: @Composable (Modifier, T) -> Unit, )</ID>
     <ID>UndocumentedPublicFunction:Resolver.kt$public suspend operator fun &lt;T> Sink&lt;T>.invoke( elements: Iterable&lt;T>, ): Unit</ID>
     <ID>UndocumentedPublicFunction:Resolver.kt$public suspend operator fun &lt;T> Sink&lt;T>.invoke( vararg elements: T, ): Unit</ID>
     <ID>UndocumentedPublicFunction:UUID.ios.kt$public actual fun RandomUUID(): UUID</ID>

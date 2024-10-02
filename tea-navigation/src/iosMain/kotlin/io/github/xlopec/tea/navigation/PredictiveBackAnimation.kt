@@ -1,14 +1,10 @@
 package io.github.xlopec.tea.navigation
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -18,11 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.arkivanov.essenty.backhandler.BackEvent
-import com.arkivanov.essenty.backhandler.BackEvent.SwipeEdge
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -139,7 +133,6 @@ public class BackCoordinator<T : NavStackEntry<*>> internal constructor(
     internal val currentModifier: Modifier by animation::currentModifier
 
     override fun onBack() {
-        println("onBack")
         val previous = previous ?: return
 
         scope.launch {
@@ -152,72 +145,22 @@ public class BackCoordinator<T : NavStackEntry<*>> internal constructor(
     }
 
     override fun onBackStarted(backEvent: BackEvent) {
-        println("onBackStarted $backEvent")
         val previous = stack.getOrNull(stack.lastIndex - 1) ?: return
 
         this.previous = previous
     }
 
     override fun onBackProgressed(backEvent: BackEvent) {
-        println("onBackProgressed $backEvent")
-
         previous ?: return
 
         scope.launch { animation.animate(backEvent) }
     }
 
     override fun onBackCancelled() {
-        println("onBackCancelled")
         scope.launch {
             animation.cancelAnimation()
             previous = null
             animation.reset()
-        }
-    }
-}
-
-@Composable
-public fun <T : NavStackEntry<*>> PredictiveBackContainer(
-    backDispatcher: BackDispatcher,
-    coordinator: BackCoordinator<T>,
-    modifier: Modifier = Modifier,
-    backIcon: (@Composable (progress: Float, edge: SwipeEdge) -> Unit)? = null,
-    startEdgeEnabled: Boolean = true,
-    endEdgeEnabled: Boolean = true,
-    edgeWidth: Dp = 16.dp,
-    activationOffsetThreshold: Dp = 16.dp,
-    confirmationProgressThreshold: Float = 0.2F,
-    onClose: (() -> Unit)? = null,
-    content: @Composable (Modifier, T) -> Unit,
-) {
-    PredictiveBackGestureOverlay(
-        modifier = modifier,
-        backDispatcher = backDispatcher,
-        backIcon = backIcon,
-        startEdgeEnabled = startEdgeEnabled,
-        endEdgeEnabled = endEdgeEnabled,
-        edgeWidth = edgeWidth,
-        activationOffsetThreshold = activationOffsetThreshold,
-        confirmationProgressThreshold = confirmationProgressThreshold,
-        onClose = onClose,
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            val movableContent = remember(content) { movableContentOf(content) }
-            val previous = coordinator.previous
-
-            if (previous != null) {
-                key(previous.id) {
-                    movableContent(coordinator.previousModifier, previous)
-                }
-            }
-
-            val current = coordinator.current
-
-            key(current.id) {
-                movableContent(coordinator.currentModifier, current)
-            }
         }
     }
 }

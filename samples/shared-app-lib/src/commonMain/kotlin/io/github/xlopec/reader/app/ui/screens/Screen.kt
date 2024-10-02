@@ -24,79 +24,47 @@
 
 package io.github.xlopec.reader.app.ui.screens
 
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.arkivanov.essenty.backhandler.BackDispatcher
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.FullScreen
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.NestedScreen
+import io.github.xlopec.reader.app.Screen
 import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
 import io.github.xlopec.reader.app.feature.filter.FiltersState
-import io.github.xlopec.reader.app.feature.navigation.Pop
 import io.github.xlopec.reader.app.ui.screens.article.ArticleDetailsScreen
 import io.github.xlopec.reader.app.ui.screens.filters.FiltersScreen
 import io.github.xlopec.reader.app.ui.screens.home.HomeScreen
-import io.github.xlopec.reader.app.ui.theme.AppTheme
-import io.github.xlopec.tea.navigation.PredictiveBackContainer
-import io.github.xlopec.tea.navigation.rememberDefaultPredictiveBackAnimation
-import io.github.xlopec.tea.navigation.rememberPredictiveBackCoordinator
 import kotlinx.coroutines.flow.Flow
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 @Composable
-internal fun App(
+internal fun Screen(
+    modifier: Modifier,
     app: AppState,
+    screen: Screen,
     handler: MessageHandler,
 ) {
-    AppTheme(
-        isDarkModeEnabled = app.settings.appDarkModeEnabled
-    ) {
-        val backDispatcher = remember { BackDispatcher() }
+    when (screen) {
+        is FullScreen -> FullScreen(
+            modifier = modifier,
+            screen = screen,
+            handler = handler,
+        )
 
-        BoxWithConstraints(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            val animation = rememberDefaultPredictiveBackAnimation(maxWidth = maxWidth)
-            val coordinator = rememberPredictiveBackCoordinator(
-                dispatcher = backDispatcher,
-                stack = app.screens,
-                animation = animation,
-                onBackComplete = {
-                    handler(Pop)
-                },
-            )
+        is TabScreen -> HomeScreen(
+            app = app,
+            screen = screen,
+            onMessage = handler,
+            modifier = modifier,
+        )
 
-            PredictiveBackContainer(
-                modifier = Modifier.fillMaxSize(),
-                backDispatcher = backDispatcher,
-                coordinator = coordinator,
-            ) { modifier, screen ->
-                when (screen) {
-                    is FullScreen -> FullScreen(
-                        modifier = modifier,
-                        screen = screen,
-                        handler = handler,
-                    )
-
-                    is TabScreen -> HomeScreen(
-                        appState = app,
-                        screen = screen,
-                        onMessage = handler,
-                        modifier = modifier,
-                    )
-
-                    is NestedScreen -> TODO()
-                }
-            }
-        }
+        is NestedScreen -> TODO()
     }
 }
 

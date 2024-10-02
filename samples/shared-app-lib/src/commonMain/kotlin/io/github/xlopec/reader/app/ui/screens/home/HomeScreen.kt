@@ -91,7 +91,7 @@ private val LocalBottomBarListener = compositionLocalOf<BottomBarListener> { err
 @Composable
 internal fun HomeScreen(
     modifier: Modifier,
-    appState: AppState,
+    app: AppState,
     screen: TabScreen,
     onMessage: MessageHandler,
 ) {
@@ -113,7 +113,7 @@ internal fun HomeScreen(
         )
 
         is SettingsScreen -> SettingsScreen(
-            state = appState,
+            state = app,
             onMessage = onMessage,
             bottomBar = bottomBar,
             modifier = modifier,
