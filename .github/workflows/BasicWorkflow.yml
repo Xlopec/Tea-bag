@@ -165,7 +165,7 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           PUBLISH_PLUGIN_TOKEN: ${{ secrets.PUBLISH_PLUGIN_TOKEN }}
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: publish-artifacts
           path: build/artifacts/**
