@@ -28,7 +28,6 @@ package io.github.xlopec.reader.app.feature.navigation
 
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.FullScreen
-import io.github.xlopec.reader.app.NestedScreen
 import io.github.xlopec.reader.app.Screen
 import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.command.Command
@@ -75,7 +74,7 @@ internal fun AppState.navigateToTab(
         if (i >= 0) {
             // tab might contain child screen stack
             // collect all child screens for this tab and place them on the top of the stack
-            switchToTab(nav.tab) { screen, tab -> (screen as? NestedScreen)?.tab == tab || (screen as? TabScreen)?.id == tab.id }
+            switchToTab(nav.tab, ::screenBelongsToTab)
         } else {
             push(screenWithCommand(nav))
         }
@@ -113,6 +112,13 @@ internal fun AppState.popScreen(): Update<AppState, Command> {
         val (screens, commands) = screens.mutate<_, _, Command> { mutator.removeLast() }
         copy(screens = screens) command commands
     }
+}
+
+private fun screenBelongsToTab(
+    screen: Screen,
+    tab: Tab,
+): Boolean {
+    return (screen as? TabScreen)?.id == tab.id
 }
 
 private fun checkInvariants(

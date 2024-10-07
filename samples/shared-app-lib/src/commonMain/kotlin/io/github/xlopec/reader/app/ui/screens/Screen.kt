@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.FullScreen
 import io.github.xlopec.reader.app.MessageHandler
-import io.github.xlopec.reader.app.NestedScreen
 import io.github.xlopec.reader.app.Screen
 import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
@@ -63,8 +62,6 @@ internal fun Screen(
             onMessage = handler,
             modifier = modifier,
         )
-
-        is NestedScreen -> TODO()
     }
 }
 

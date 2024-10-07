@@ -38,14 +38,6 @@ public sealed interface Screen : NavStackEntry<ScreenId>
 public interface FullScreen : Screen
 
 /**
- * Screen that should be drawn inside tab
- */
-@Deprecated("replace with TabScreen")
-public interface NestedScreen : Screen {
-    public val tab: Tab
-}
-
-/**
  * Root screen in the navigation hierarchy
  */
 public interface TabScreen : Screen {
