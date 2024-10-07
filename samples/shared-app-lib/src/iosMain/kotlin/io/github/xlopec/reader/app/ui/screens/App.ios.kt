@@ -8,6 +8,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
 import com.arkivanov.essenty.backhandler.BackDispatcher
+import io.github.xlopec.reader.app.FullScreen
 import io.github.xlopec.reader.app.IosComponent
 import io.github.xlopec.reader.app.Message
 import io.github.xlopec.reader.app.feature.navigation.Pop
@@ -52,6 +53,9 @@ internal fun App(
                 dispatcher = backDispatcher,
                 stack = app.screens,
                 animation = animation,
+                previousScreenFor = { stack, current ->
+                    stack.getOrNull(stack.lastIndex - 1)?.takeIf { current is FullScreen }
+                },
                 onBackComplete = {
                     handler(Pop)
                 },

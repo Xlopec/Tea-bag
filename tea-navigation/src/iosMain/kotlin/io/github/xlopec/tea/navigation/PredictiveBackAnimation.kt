@@ -34,26 +34,29 @@ public interface PredictiveBackAnimation {
 public fun <T : NavStackEntry<*>> rememberPredictiveBackCoordinator(
     dispatcher: BackDispatcher,
     stack: NavigationStack<T>,
+    previousScreenFor: (NavigationStack<T>, T) -> T?,
     animation: PredictiveBackAnimation,
     onBackComplete: (T) -> Unit,
 ): BackCoordinator<T> {
     val scope = rememberCoroutineScope()
     val currentOnBackComplete by rememberUpdatedState(onBackComplete)
+    val currentPreviousScreen by rememberUpdatedState(previousScreenFor)
     val coordinator = remember(animation) {
         BackCoordinator(
             stack = stack,
+            previousScreen = { stack, current -> currentPreviousScreen(stack, current) },
             scope = scope,
             animation = animation,
-            onBackComplete = currentOnBackComplete,
+            onBackComplete = { currentOnBackComplete(it) },
         )
     }
 
-    LaunchedEffect(stack.screen, stack.getOrNull(stack.lastIndex - 1)) {
-        // TODO: decide how many screens we should take into account
+    LaunchedEffect(stack) {
+        // TODO: decide how many screens we should take into account, for a large stack it'll fallback to equals&hashCode
         coordinator.stack = stack
     }
 
-    DisposableEffect(Unit) {
+    DisposableEffect(dispatcher, coordinator) {
         dispatcher.register(coordinator)
 
         onDispose {
@@ -113,6 +116,7 @@ internal class DefaultPredictiveBackAnimation(
 
 public class BackCoordinator<T : NavStackEntry<*>> internal constructor(
     stack: NavigationStack<T>,
+    private val previousScreen: (NavigationStack<T>, T) -> T?,
     private val onBackComplete: (T) -> Unit,
     private val scope: CoroutineScope,
     private val animation: PredictiveBackAnimation,
@@ -120,8 +124,13 @@ public class BackCoordinator<T : NavStackEntry<*>> internal constructor(
 
     internal var stack: NavigationStack<T> = stack
         set(value) {
-            current = value.screen
             field = value
+            current = value.screen
+            val currentPrevious = previous
+
+            if (currentPrevious != null) {
+                previous = previousScreen(value, value.screen) ?: previous
+            }
         }
 
     internal var current: T by mutableStateOf(stack.screen)
@@ -134,19 +143,19 @@ public class BackCoordinator<T : NavStackEntry<*>> internal constructor(
 
     override fun onBack() {
         val previous = previous ?: return
+        val current = current
 
         scope.launch {
             animation.finishAnimation()
             onBackComplete(current)
-            current = previous
+            this@BackCoordinator.current = previous
             this@BackCoordinator.previous = null
             animation.reset()
         }
     }
 
     override fun onBackStarted(backEvent: BackEvent) {
-        val previous = stack.getOrNull(stack.lastIndex - 1) ?: return
-
+        val previous = previousScreen(stack, current) ?: return
         this.previous = previous
     }
 

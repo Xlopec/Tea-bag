@@ -10,30 +10,30 @@ import SwiftUI
 import SharedAppLib
 
 struct AppView: View {
-    
+
     @SwiftUI.Environment(\.colorScheme) private var colorScheme: ColorScheme
-    
+
     let component: IosComponent
-    
+
     var body: some View {
         ComposeViewController(component: component)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             //.ignoresSafeArea()
             .ignoresSafeArea(.all)
     }
-    
+
     private func updateDarkMode(darkModeEnabled: Bool) {
         let window = UIApplication.shared.windows.first
-        
+
         window?.overrideUserInterfaceStyle = darkModeEnabled ? .dark : .light
     }
-    
+
 }
 
 struct ComposeViewController: UIViewControllerRepresentable {
-    
+
     let component: IosComponent
-    
+
     func makeUIViewController(context: Context) -> UIViewController {
         App_iosKt.appController(component: component)
     }
