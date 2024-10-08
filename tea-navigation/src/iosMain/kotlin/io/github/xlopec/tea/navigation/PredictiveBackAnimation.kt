@@ -2,11 +2,17 @@ package io.github.xlopec.tea.navigation
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import com.arkivanov.essenty.backhandler.BackEvent
 
 public interface PredictiveBackAnimation {
@@ -20,16 +26,36 @@ public interface PredictiveBackAnimation {
 }
 
 @Composable
+public fun rememberPredictiveBackAnimation(
+    previousModifierProvider: (progress: Float) -> Modifier,
+    currentModifierProvider: (progress: Float) -> Modifier,
+): PredictiveBackAnimation {
+    val currentPreviousModifierProvider by rememberUpdatedState(previousModifierProvider)
+    val currentCurrentModifierProvider by rememberUpdatedState(currentModifierProvider)
+    return remember {
+        DefaultPredictiveBackAnimation(
+            previousModifierProvider = {currentPreviousModifierProvider(it)},
+            currentModifierProvider = {currentCurrentModifierProvider(it)},
+        )
+    }
+}
+
+@Composable
 public fun rememberDefaultPredictiveBackAnimation(
-    maxWidth: Dp,
+    screenWidth: Dp,
 ): PredictiveBackAnimation {
     val density = LocalDensity.current
-    return remember(maxWidth, density) {
+    val layoutDirection = LocalLayoutDirection.current
+    return remember(screenWidth, density, layoutDirection) {
         DefaultPredictiveBackAnimation(
-            previousModifierProvider = { Modifier },
+            previousModifierProvider = { progress ->
+                Modifier.graphicsLayer {
+                    translationX = with(density) { lerp(if(layoutDirection == LayoutDirection.Ltr) (-50).dp else 50.dp, 0.dp, progress).toPx() }
+                }
+                                       },
             currentModifierProvider = { progress ->
                 Modifier.graphicsLayer {
-                    translationX = with(density) { progress * maxWidth.toPx() }
+                    translationX = with(density) { progress * screenWidth.toPx() }
                 }
             },
         )

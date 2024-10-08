@@ -48,7 +48,7 @@ internal fun App(
         BoxWithConstraints(
             modifier = Modifier.fillMaxSize(),
         ) {
-            val animation = rememberDefaultPredictiveBackAnimation(maxWidth = maxWidth)
+            val animation = rememberDefaultPredictiveBackAnimation(screenWidth = maxWidth)
             val coordinator = rememberPredictiveBackCoordinator(
                 dispatcher = backDispatcher,
                 stack = app.screens,
@@ -64,6 +64,7 @@ internal fun App(
             PredictiveBackContainer(
                 modifier = Modifier.fillMaxSize(),
                 backDispatcher = backDispatcher,
+                endEdgeEnabled = false,
                 coordinator = coordinator,
             ) { modifier, screen ->
                 Screen(
