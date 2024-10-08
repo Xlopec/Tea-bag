@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.reader.app.ui.preview.article
+package io.github.xlopec.reader.app.ui.screens.article
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.navigation.Tab
 import io.github.xlopec.reader.app.misc.Idle
@@ -44,26 +44,22 @@ import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.Title
 import io.github.xlopec.reader.app.ui.misc.ColumnMessage
-import io.github.xlopec.reader.app.ui.screens.article.ArticleActions
-import io.github.xlopec.reader.app.ui.screens.article.ArticleItem
-import io.github.xlopec.reader.app.ui.screens.article.ArticleSearchHeader
-import io.github.xlopec.reader.app.ui.screens.article.Articles
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
+import io.github.xlopec.tea.data.RandomUUID
+import io.github.xlopec.tea.data.UrlFor
 import io.github.xlopec.tea.data.now
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import java.net.URI
-import java.util.*
 
 @Composable
-@Preview("Articles search input field")
+@Preview
 internal fun ArticleSearchHeaderPreview() {
     ThemedPreview {
         ArticleSearchHeader(
             state = ArticlesState(
                 tab = Tab.Trending,
                 filter = Filter(FilterType.Trending, Query.of("some input text")),
-                loadable = Loadable(persistentListOf(), false, Idle)
+                loadable = Loadable(data = persistentListOf(), hasMore = false, loadableState = Idle)
             ),
             onMessage = {}
         )
@@ -71,19 +67,19 @@ internal fun ArticleSearchHeaderPreview() {
 }
 
 @Composable
-@Preview("Articles bottom action menu")
+@Preview
 internal fun ArticleActionsPreview() {
     ThemedPreview {
         ArticleActions(
             onMessage = {},
             article = PreviewArticle,
-            screenId = UUID.randomUUID()
+            screenId = RandomUUID()
         )
     }
 }
 
 @Composable
-@Preview("Messages preview")
+@Preview
 internal fun MessagePreview() {
     ThemedPreview {
         ColumnMessage(
@@ -95,7 +91,7 @@ internal fun MessagePreview() {
 }
 
 @Composable
-@Preview("Articles screen preview")
+@Preview
 internal fun ArticlesScreenPreview() {
     ThemedPreview {
         Articles(
@@ -112,7 +108,7 @@ internal fun ArticlesScreenPreview() {
 }
 
 @Composable
-@Preview("Articles screen loading next")
+@Preview
 internal fun ArticlesScreenLoadingNextPreview() {
     ThemedPreview {
         Articles(
@@ -129,7 +125,7 @@ internal fun ArticlesScreenLoadingNextPreview() {
 }
 
 @Composable
-@Preview("Articles screen loading")
+@Preview
 internal fun ArticlesScreenLoadingPreview() {
     ThemedPreview {
         Articles(
@@ -146,7 +142,7 @@ internal fun ArticlesScreenLoadingPreview() {
 }
 
 @Composable
-@Preview("Articles screen refreshing")
+@Preview
 internal fun ArticlesScreenRefreshingPreview() {
     ThemedPreview {
         Articles(
@@ -163,11 +159,11 @@ internal fun ArticlesScreenRefreshingPreview() {
 }
 
 @Composable
-@Preview("Article item")
+@Preview
 internal fun ArticleItemPreview() {
     ThemedPreview {
         ArticleItem(
-            screenId = UUID.randomUUID(),
+            screenId = RandomUUID(),
             article = PreviewArticle,
             onMessage = {}
         )
@@ -179,10 +175,18 @@ private fun ArticlesState(
     type: FilterType,
     articles: PersistentList<Article>,
     loadableState: LoadableState,
-) = ArticlesState(tab, Filter(type, Query.of("input")), Loadable(articles, false, loadableState))
+) = ArticlesState(
+    tab = tab,
+    filter = Filter(type, Query.of("input")),
+    loadable = Loadable(
+        data = articles,
+        hasMore = false,
+        loadableState = loadableState
+    )
+)
 
 private val PreviewArticle = Article(
-    url = URI("https://www.google.com"),
+    url = UrlFor("https://www.google.com"),
     title = Title("Jetpack Compose app"),
     author = Author("Max Oliinyk"),
     description = Description(
@@ -193,14 +197,14 @@ private val PreviewArticle = Article(
     ),
     published = now(),
     isFavorite = true,
-    urlToImage = URI("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png"),
+    urlToImage = UrlFor("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png"),
     source = null
 )
 
 private val PreviewArticles = persistentListOf(
-    PreviewArticle.copy(url = URI("https://miro.medium.com/1")),
-    PreviewArticle.copy(url = URI("https://miro.medium.com/2")),
-    PreviewArticle.copy(url = URI("https://miro.medium.com/3"))
+    PreviewArticle.copy(url = UrlFor("https://miro.medium.com/1")),
+    PreviewArticle.copy(url = UrlFor("https://miro.medium.com/2")),
+    PreviewArticle.copy(url = UrlFor("https://miro.medium.com/3"))
 )
 
 private val ListState = LazyListState(firstVisibleItemIndex = 0, firstVisibleItemScrollOffset = 5)
