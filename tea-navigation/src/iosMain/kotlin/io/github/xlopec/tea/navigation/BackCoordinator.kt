@@ -1,6 +1,14 @@
 package io.github.xlopec.tea.navigation
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.backhandler.BackDispatcher
@@ -8,11 +16,20 @@ import com.arkivanov.essenty.backhandler.BackEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+/**
+ * Creates and configures [BackCoordinator] to be used for a given [NavigationStack]
+ *
+ * @param dispatcher current back dispatcher
+ * @param stack current navigation stack
+ * @param previousScreenFor lambda to find previous screen for currently visible screen. Return null if there is no previous screen
+ * @param animation animation to use
+ * @param onBackComplete lambda to invoke when back animation completes
+ */
 @Composable
 public fun <T : NavStackEntry<*>> rememberPredictiveBackCoordinator(
     dispatcher: BackDispatcher,
     stack: NavigationStack<T>,
-    previousScreenFor: (NavigationStack<T>, T) -> T?,
+    previousScreenFor: (stack: NavigationStack<T>, current: T) -> T?,
     animation: PredictiveBackAnimation,
     onBackComplete: (T) -> Unit,
 ): BackCoordinator<T> {
@@ -45,6 +62,9 @@ public fun <T : NavStackEntry<*>> rememberPredictiveBackCoordinator(
     return coordinator
 }
 
+/**
+ * [BackCallback] implementation for a [NavigationStack]
+ */
 public class BackCoordinator<T : NavStackEntry<*>> internal constructor(
     stack: NavigationStack<T>,
     private val previousScreen: (NavigationStack<T>, T) -> T?,

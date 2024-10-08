@@ -27,6 +27,12 @@ public interface PredictiveBackAnimation {
     public suspend fun cancelAnimation()
 }
 
+/**
+ * Creates custom predictive back animation
+ *
+ * @param previousModifierProvider lambda to calculate Modifier for a screen in a backstack
+ * @param currentModifierProvider lambda to calculate Modifier for a currently visible screen
+ */
 @Composable
 public fun rememberPredictiveBackAnimation(
     previousModifierProvider: (progress: Float) -> Modifier,
@@ -42,6 +48,11 @@ public fun rememberPredictiveBackAnimation(
     }
 }
 
+/**
+ * Creates IOS-like predictive back animation
+ *
+ * @param screenWidth width occupied by a currently visible screen
+ */
 @Composable
 public fun rememberDefaultPredictiveBackAnimation(
     screenWidth: Dp,
