@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import com.arkivanov.essenty.backhandler.BackEvent
 
+private val InitialBackstackScreenOffset = 50.dp
+
 public interface PredictiveBackAnimation {
     public val previousModifier: Modifier
     public val currentModifier: Modifier
@@ -34,8 +36,8 @@ public fun rememberPredictiveBackAnimation(
     val currentCurrentModifierProvider by rememberUpdatedState(currentModifierProvider)
     return remember {
         DefaultPredictiveBackAnimation(
-            previousModifierProvider = {currentPreviousModifierProvider(it)},
-            currentModifierProvider = {currentCurrentModifierProvider(it)},
+            previousModifierProvider = { currentPreviousModifierProvider(it) },
+            currentModifierProvider = { currentCurrentModifierProvider(it) },
         )
     }
 }
@@ -50,9 +52,17 @@ public fun rememberDefaultPredictiveBackAnimation(
         DefaultPredictiveBackAnimation(
             previousModifierProvider = { progress ->
                 Modifier.graphicsLayer {
-                    translationX = with(density) { lerp(if(layoutDirection == LayoutDirection.Ltr) (-50).dp else 50.dp, 0.dp, progress).toPx() }
+                    translationX = with(density) {
+                        val startOffset = if (layoutDirection == LayoutDirection.Ltr) {
+                            -InitialBackstackScreenOffset
+                        } else {
+                            InitialBackstackScreenOffset
+                        }
+
+                        lerp(startOffset, 0.dp, progress).toPx()
+                    }
                 }
-                                       },
+            },
             currentModifierProvider = { progress ->
                 Modifier.graphicsLayer {
                     translationX = with(density) { progress * screenWidth.toPx() }
