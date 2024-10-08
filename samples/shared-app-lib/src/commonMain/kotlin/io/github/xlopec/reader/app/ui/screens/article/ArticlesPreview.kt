@@ -96,10 +96,10 @@ internal fun ArticlesScreenPreview() {
     ThemedPreview {
         Articles(
             state = ArticlesState(
-                Tab.Trending,
-                FilterType.Trending,
-                PreviewArticles,
-                Idle
+                tab = Tab.Trending,
+                type = FilterType.Trending,
+                articles = PreviewArticles,
+                loadableState = Idle
             ),
             listState = ListState,
             modifier = Modifier
@@ -113,10 +113,10 @@ internal fun ArticlesScreenLoadingNextPreview() {
     ThemedPreview {
         Articles(
             state = ArticlesState(
-                Tab.Trending,
-                FilterType.Trending,
-                persistentListOf(PreviewArticle),
-                LoadingNext
+                tab = Tab.Trending,
+                type = FilterType.Trending,
+                articles = persistentListOf(PreviewArticle),
+                loadableState = LoadingNext
             ),
             listState = ListState,
             modifier = Modifier
@@ -130,10 +130,10 @@ internal fun ArticlesScreenLoadingPreview() {
     ThemedPreview {
         Articles(
             state = ArticlesState(
-                Tab.Trending,
-                FilterType.Trending,
-                persistentListOf(),
-                Loading
+                tab = Tab.Trending,
+                type = FilterType.Trending,
+                articles = persistentListOf(),
+                loadableState = Loading
             ),
             listState = ListState,
             modifier = Modifier
@@ -147,10 +147,10 @@ internal fun ArticlesScreenRefreshingPreview() {
     ThemedPreview {
         Articles(
             state = ArticlesState(
-                Tab.Trending,
-                FilterType.Trending,
-                persistentListOf(PreviewArticle),
-                Refreshing
+                tab = Tab.Trending,
+                type = FilterType.Trending,
+                articles = persistentListOf(PreviewArticle),
+                loadableState = Refreshing
             ),
             listState = ListState,
             modifier = Modifier
