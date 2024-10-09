@@ -34,7 +34,6 @@ import io.github.xlopec.reader.app.feature.settings.SystemDarkModeChanged
 import io.github.xlopec.reader.app.ui.screens.App
 import io.github.xlopec.tea.core.ExperimentalTeaApi
 import io.github.xlopec.tea.core.subscribeIn
-import io.github.xlopec.tea.core.toStatesComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -51,13 +50,13 @@ class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        val statesComponent = component.toStatesComponent()
+        val component = component
 
         setContent {
-            App(component = statesComponent)
+            App(component = component)
         }
 
-        statesComponent.subscribeIn(systemDarkModeChanges, this)
+        component.subscribeIn(systemDarkModeChanges, this)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

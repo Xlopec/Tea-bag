@@ -22,32 +22,30 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.reader.app.ui.preview.filters
+package io.github.xlopec.reader.app.ui.screens.filters
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.xlopec.reader.app.feature.filter.FiltersState
 import io.github.xlopec.reader.app.misc.Loadable
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.Query
-import io.github.xlopec.reader.app.ui.screens.filters.FiltersScreen
-import io.github.xlopec.reader.app.ui.screens.filters.RecentSearchItem
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
-import java.util.*
+import io.github.xlopec.tea.data.RandomUUID
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val PreviewState = FiltersState(
-    UUID.randomUUID(),
-    Filter(FilterType.Regular, Query.of("Android")),
-    Loadable.newLoading()
+    id = RandomUUID(),
+    filter = Filter(FilterType.Regular, Query.of("Android")),
+    sourcesState = Loadable.newLoading()
 )
 
-@Preview("Filters preview dark mode")
+@Preview
 @Composable
 internal fun FiltersPreviewDark() {
     ThemedPreview {
@@ -58,7 +56,7 @@ internal fun FiltersPreviewDark() {
     }
 }
 
-@Preview("Filters preview light mode")
+@Preview
 @Composable
 internal fun FiltersPreviewLight() {
     ThemedPreview(isDarkModeEnabled = false) {
@@ -69,7 +67,7 @@ internal fun FiltersPreviewLight() {
     }
 }
 
-@Preview("Suggestion items")
+@Preview
 @Composable
 internal fun SuggestionItems() {
     ThemedPreview {

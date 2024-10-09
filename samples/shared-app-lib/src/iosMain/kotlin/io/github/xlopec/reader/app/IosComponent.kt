@@ -26,23 +26,18 @@
 
 package io.github.xlopec.reader.app
 
-import io.github.xlopec.tea.core.toStatesComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 
-public fun interface Cancellation {
-    public fun cancel()
-}
-
 public class IosComponent(
     systemDarkModeEnabled: Boolean
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     private val componentScope = CoroutineScope(Job() + Default.limitedParallelism(1))
-    internal val component = AppComponent(systemDarkModeEnabled, componentScope).toStatesComponent()
+    internal val component = AppComponent(systemDarkModeEnabled, componentScope)
 
     public fun destroy() {
         componentScope.cancel()

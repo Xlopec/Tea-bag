@@ -44,7 +44,7 @@ class NavigationExtensionsTest {
 
         val initialStack = (group1 + group2 + group3).toStackOrNull()!!
         val (actualNavigationStack, commands) = initialStack.mutate<_, _, Nothing> {
-            switchToTab(Tab.Settings) { screen, tab -> (screen as? NestedScreen)?.tab == tab || (screen as? TabScreen)?.tab == tab }
+            switchToTab(Tab.Settings, ::testScreenBelongsToTab)
         }
         val expectedNavigationStack = (group1 + group3 + group2).toStackOrNull()!!
 
@@ -69,7 +69,7 @@ class NavigationExtensionsTest {
 
         val initialStack = (group1 + group2 + group3).toStackOrNull()!!
         val (actualNavigationStack, commands) = initialStack.mutate<_, _, Nothing> {
-            switchToTab(Tab.Trending) { screen, tab -> (screen as? NestedScreen)?.tab == tab || (screen as? TabScreen)?.tab == tab }
+            switchToTab(Tab.Trending, ::testScreenBelongsToTab)
         }
 
         assertTrue(commands.isEmpty())
@@ -80,7 +80,7 @@ class NavigationExtensionsTest {
 private data class TestNestedScreen(
     override val tab: Tab,
     override val id: ScreenId,
-) : NestedScreen
+) : TabScreen
 
 private data class TestRootScreen(
     override val tab: Tab,
@@ -102,3 +102,8 @@ private fun GenerateNestedScreens(
     tab: Tab,
     times: UInt
 ) = (0U until times).map { TestNestedScreen(tab, RandomUUID()) }
+
+private fun testScreenBelongsToTab(
+    screen: TabScreen,
+    tab: Tab,
+) = (screen as? TabScreen)?.tab == tab

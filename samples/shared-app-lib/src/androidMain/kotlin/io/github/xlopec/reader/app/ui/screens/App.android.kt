@@ -8,38 +8,41 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.Message
+import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.messageHandler
 import io.github.xlopec.reader.app.screen
 import io.github.xlopec.reader.app.ui.theme.AppTheme
+import io.github.xlopec.tea.core.Snapshot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 @Composable
 public fun App(
-    component: (Flow<Message>) -> Flow<AppState>,
+    component: (Flow<Message>) -> Flow<Snapshot<Message, AppState, Command>>,
 ) {
     val messages = remember { MutableSharedFlow<Message>() }
-    val stateFlow = remember { component(messages) }
-    val app = stateFlow.collectAsNullableState(context = Dispatchers.Main).value ?: return
+    val snapshots = remember { component(messages) }
+    val snapshot = snapshots.collectAsNullableState(context = Dispatchers.Main).value ?: return
     val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
     val handler = remember { scope.messageHandler(messages) }
+    val currentState = snapshot.currentState
 
     AppTheme(
-        isDarkModeEnabled = app.settings.appDarkModeEnabled
+        isDarkModeEnabled = currentState.settings.appDarkModeEnabled
     ) {
-        Screen(
+        ScreenTransition(
             modifier = Modifier.fillMaxSize(),
-            screen = app.screen,
-            app = app,
+            screen = currentState.screen,
+            snapshot = snapshot,
             handler = handler,
         )
     }
 
     val systemUiController = rememberWindowInsetsController()
 
-    LaunchedEffect(app.settings.appDarkModeEnabled) {
-        systemUiController.isAppearanceLightStatusBars = !app.settings.appDarkModeEnabled
-        systemUiController.isAppearanceLightNavigationBars = !app.settings.appDarkModeEnabled
+    LaunchedEffect(currentState.settings.appDarkModeEnabled) {
+        systemUiController.isAppearanceLightStatusBars = !currentState.settings.appDarkModeEnabled
+        systemUiController.isAppearanceLightNavigationBars = !currentState.settings.appDarkModeEnabled
     }
 }

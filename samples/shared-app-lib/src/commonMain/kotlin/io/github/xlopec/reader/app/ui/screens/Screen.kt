@@ -24,24 +24,73 @@
 
 package io.github.xlopec.reader.app.ui.screens
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.End
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Start
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.FullScreen
 import io.github.xlopec.reader.app.MessageHandler
-import io.github.xlopec.reader.app.NestedScreen
 import io.github.xlopec.reader.app.Screen
 import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
 import io.github.xlopec.reader.app.feature.filter.FiltersState
+import io.github.xlopec.reader.app.screen
 import io.github.xlopec.reader.app.ui.screens.article.ArticleDetailsScreen
 import io.github.xlopec.reader.app.ui.screens.filters.FiltersScreen
 import io.github.xlopec.reader.app.ui.screens.home.HomeScreen
+import io.github.xlopec.tea.core.Regular
+import io.github.xlopec.tea.core.Snapshot
 import kotlinx.coroutines.flow.Flow
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+
+private val NoTransition: ContentTransform = ContentTransform(
+    targetContentEnter = EnterTransition.None,
+    initialContentExit = ExitTransition.None,
+    targetContentZIndex = 0f,
+    sizeTransform = null
+)
+
+@Composable
+internal fun ScreenTransition(
+    modifier: Modifier,
+    screen: Screen,
+    snapshot: Snapshot<*, AppState, *>,
+    handler: MessageHandler,
+) {
+    val currentScreen by rememberUpdatedState(screen)
+    val currentState by rememberUpdatedState(snapshot.currentState)
+    val previousScreen by rememberUpdatedState((snapshot as? Regular)?.previousState?.screen)
+    val previousState by rememberUpdatedState((snapshot as? Regular)?.previousState)
+    val transition = updateTransition(targetState = screen, label = "Screen transition")
+
+    transition.AnimatedContent(
+        transitionSpec = {
+            screenTransition(currentScreen, previousScreen, currentState, previousState)
+        },
+        contentKey = { it.id.toString() }
+    ) { animatedScreen ->
+        Screen(
+            modifier = modifier,
+            screen = animatedScreen,
+            app = currentState,
+            handler = handler,
+        )
+    }
+}
 
 @Composable
 internal fun Screen(
@@ -63,8 +112,6 @@ internal fun Screen(
             onMessage = handler,
             modifier = modifier,
         )
-
-        is NestedScreen -> TODO()
     }
 }
 
@@ -84,3 +131,34 @@ private fun FullScreen(
 internal fun <T : R, R> Flow<T>.collectAsNullableState(
     context: CoroutineContext = EmptyCoroutineContext,
 ): State<R?> = collectAsState(context = context, initial = null)
+
+internal fun AnimatedContentTransitionScope<*>.screenTransition(
+    currentScreen: Screen,
+    previousScreen: Screen?,
+    currentState: AppState,
+    previousState: AppState?
+): ContentTransform = when {
+    skipTransition(currentScreen, previousScreen) -> NoTransition
+    forwardNavigation(currentState, previousState) -> slideIntoContainer(Start) + fadeIn() togetherWith ExitTransition.None
+    else -> slideIntoContainer(End) + fadeIn() togetherWith ExitTransition.None
+}
+
+private fun skipTransition(
+    currentScreen: Screen,
+    previousScreen: Screen?,
+): Boolean {
+    return currentScreen.id == previousScreen?.id ||
+        (currentScreen is TabScreen && (previousScreen == null || tabChanged(previousScreen, currentScreen)))
+}
+
+private fun tabChanged(
+    previousScreen: Screen,
+    currentScreen: TabScreen,
+): Boolean = previousScreen is TabScreen && previousScreen.tab != currentScreen.tab && currentScreen.id != previousScreen.id
+
+private fun forwardNavigation(
+    currentState: AppState,
+    previousState: AppState?,
+): Boolean {
+    return currentState.screens.size > (previousState?.screens?.size ?: 0)
+}

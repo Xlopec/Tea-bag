@@ -2,23 +2,20 @@ package io.github.xlopec.tea.navigation
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
-import com.arkivanov.essenty.backhandler.BackCallback
-import com.arkivanov.essenty.backhandler.BackDispatcher
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import com.arkivanov.essenty.backhandler.BackEvent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+
+private val InitialBackstackScreenOffset = 50.dp
 
 public interface PredictiveBackAnimation {
     public val previousModifier: Modifier
@@ -30,51 +27,56 @@ public interface PredictiveBackAnimation {
     public suspend fun cancelAnimation()
 }
 
+/**
+ * Creates custom predictive back animation
+ *
+ * @param previousModifierProvider lambda to calculate Modifier for a screen in a backstack
+ * @param currentModifierProvider lambda to calculate Modifier for a currently visible screen
+ */
 @Composable
-public fun <T : NavStackEntry<*>> rememberPredictiveBackCoordinator(
-    dispatcher: BackDispatcher,
-    stack: NavigationStack<T>,
-    animation: PredictiveBackAnimation,
-    onBackComplete: (T) -> Unit,
-): BackCoordinator<T> {
-    val scope = rememberCoroutineScope()
-    val currentOnBackComplete by rememberUpdatedState(onBackComplete)
-    val coordinator = remember(animation) {
-        BackCoordinator(
-            stack = stack,
-            scope = scope,
-            animation = animation,
-            onBackComplete = currentOnBackComplete,
-        )
-    }
-
-    LaunchedEffect(stack.screen, stack.getOrNull(stack.lastIndex - 1)) {
-        // TODO: decide how many screens we should take into account
-        coordinator.stack = stack
-    }
-
-    DisposableEffect(Unit) {
-        dispatcher.register(coordinator)
-
-        onDispose {
-            dispatcher.unregister(coordinator)
-        }
-    }
-
-    return coordinator
-}
-
-@Composable
-public fun rememberDefaultPredictiveBackAnimation(
-    maxWidth: Dp,
+public fun rememberPredictiveBackAnimation(
+    previousModifierProvider: (progress: Float) -> Modifier,
+    currentModifierProvider: (progress: Float) -> Modifier,
 ): PredictiveBackAnimation {
-    val density = LocalDensity.current
+    val currentPreviousModifierProvider by rememberUpdatedState(previousModifierProvider)
+    val currentCurrentModifierProvider by rememberUpdatedState(currentModifierProvider)
     return remember {
         DefaultPredictiveBackAnimation(
-            previousModifierProvider = { Modifier },
+            previousModifierProvider = { currentPreviousModifierProvider(it) },
+            currentModifierProvider = { currentCurrentModifierProvider(it) },
+        )
+    }
+}
+
+/**
+ * Creates IOS-like predictive back animation
+ *
+ * @param screenWidth width occupied by a currently visible screen
+ */
+@Composable
+public fun rememberDefaultPredictiveBackAnimation(
+    screenWidth: Dp,
+): PredictiveBackAnimation {
+    val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
+    return remember(screenWidth, density, layoutDirection) {
+        DefaultPredictiveBackAnimation(
+            previousModifierProvider = { progress ->
+                Modifier.graphicsLayer {
+                    translationX = with(density) {
+                        val startOffset = if (layoutDirection == LayoutDirection.Ltr) {
+                            -InitialBackstackScreenOffset
+                        } else {
+                            InitialBackstackScreenOffset
+                        }
+
+                        lerp(startOffset, 0.dp, progress).toPx()
+                    }
+                }
+            },
             currentModifierProvider = { progress ->
                 Modifier.graphicsLayer {
-                    translationX = with(density) { progress * maxWidth.toPx() }
+                    translationX = with(density) { progress * screenWidth.toPx() }
                 }
             },
         )
@@ -108,59 +110,5 @@ internal class DefaultPredictiveBackAnimation(
 
     override suspend fun cancelAnimation() {
         animatable.animateTo(0f)
-    }
-}
-
-public class BackCoordinator<T : NavStackEntry<*>> internal constructor(
-    stack: NavigationStack<T>,
-    private val onBackComplete: (T) -> Unit,
-    private val scope: CoroutineScope,
-    private val animation: PredictiveBackAnimation,
-) : BackCallback() {
-
-    internal var stack: NavigationStack<T> = stack
-        set(value) {
-            current = value.screen
-            field = value
-        }
-
-    internal var current: T by mutableStateOf(stack.screen)
-        private set
-    internal var previous: T? by mutableStateOf(null)
-        private set
-
-    internal val previousModifier: Modifier by animation::previousModifier
-    internal val currentModifier: Modifier by animation::currentModifier
-
-    override fun onBack() {
-        val previous = previous ?: return
-
-        scope.launch {
-            animation.finishAnimation()
-            onBackComplete(current)
-            current = previous
-            this@BackCoordinator.previous = null
-            animation.reset()
-        }
-    }
-
-    override fun onBackStarted(backEvent: BackEvent) {
-        val previous = stack.getOrNull(stack.lastIndex - 1) ?: return
-
-        this.previous = previous
-    }
-
-    override fun onBackProgressed(backEvent: BackEvent) {
-        previous ?: return
-
-        scope.launch { animation.animate(backEvent) }
-    }
-
-    override fun onBackCancelled() {
-        scope.launch {
-            animation.cancelAnimation()
-            previous = null
-            animation.reset()
-        }
     }
 }
