@@ -1,15 +1,7 @@
 package io.github.xlopec.reader.app.ui.screens
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.End
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Start
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -20,12 +12,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
 import com.arkivanov.essenty.backhandler.BackDispatcher
-import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.FullScreen
 import io.github.xlopec.reader.app.IosComponent
 import io.github.xlopec.reader.app.Message
 import io.github.xlopec.reader.app.Screen
-import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.feature.navigation.Pop
 import io.github.xlopec.reader.app.messageHandler
 import io.github.xlopec.reader.app.screen
@@ -38,13 +28,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import platform.UIKit.UIViewController
 import kotlin.experimental.ExperimentalObjCName
-
-private val NoTransition: ContentTransform = ContentTransform(
-    targetContentEnter = EnterTransition.None,
-    initialContentExit = ExitTransition.None,
-    targetContentZIndex = 0f,
-    sizeTransform = null
-)
 
 @OptIn(ExperimentalObjCName::class)
 @ObjCName("appController")
@@ -113,35 +96,4 @@ internal fun App(
             }
         }
     }
-}
-
-private fun AnimatedContentTransitionScope<*>.screenTransition(
-    currentScreen: Screen,
-    previousScreen: Screen?,
-    currentState: AppState,
-    previousState: AppState?
-): ContentTransform = when {
-    skipTransition(currentScreen, previousScreen) -> NoTransition
-    forwardNavigation(currentState, previousState) -> slideIntoContainer(Start) + fadeIn() togetherWith ExitTransition.None
-    else -> slideIntoContainer(End) + fadeIn() togetherWith ExitTransition.None
-}
-
-private fun skipTransition(
-    currentScreen: Screen,
-    previousScreen: Screen?,
-): Boolean {
-    return currentScreen.id == previousScreen?.id ||
-        (currentScreen is TabScreen && (previousScreen == null || tabChanged(previousScreen, currentScreen)))
-}
-
-private fun tabChanged(
-    previousScreen: Screen,
-    currentScreen: TabScreen,
-): Boolean = previousScreen is TabScreen && previousScreen.tab != currentScreen.tab && currentScreen.id != previousScreen.id
-
-private fun forwardNavigation(
-    currentState: AppState,
-    previousState: AppState?,
-): Boolean {
-    return currentState.screens.size > (previousState?.screens?.size ?: 0)
 }
