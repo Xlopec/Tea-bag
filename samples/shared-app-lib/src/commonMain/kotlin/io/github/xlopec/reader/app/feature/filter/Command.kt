@@ -30,19 +30,19 @@ import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.Query
 import kotlin.jvm.JvmInline
 
-sealed interface FilterCommand : Command
+public sealed interface FilterCommand : Command
 
 @JvmInline
-value class DoLoadSources(
-    val id: ScreenId,
+public value class DoLoadSources(
+    internal val id: ScreenId,
 ) : FilterCommand
 
-data class DoLoadRecentSearches(
+public data class DoLoadRecentSearches(
     val id: ScreenId,
     val type: FilterType,
 ) : FilterCommand
 
-data class DoRemoveRecentSearch(
+public data class DoRemoveRecentSearch(
     val type: FilterType,
     val query: Query,
 ) : FilterCommand

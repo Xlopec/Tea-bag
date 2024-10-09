@@ -66,11 +66,11 @@ public typealias Sink<T> = suspend (T) -> Unit
  * Resolves [action] to set of messages using provided [resolver context][ResolveCtx]
  */
 @ExperimentalTeaApi
-public infix fun <M> ResolveCtx<M>.effects(
-    action: suspend () -> Set<M>,
+public inline infix fun <M> ResolveCtx<M>.effects(
+    crossinline action: suspend () -> Set<M>,
 ): Job {
     contract {
-        callsInPlace(action, InvocationKind.EXACTLY_ONCE)
+        callsInPlace(action, InvocationKind.AT_MOST_ONCE)
     }
     return launch { invoke(action()) }
 }
@@ -83,7 +83,7 @@ public inline infix fun <M> ResolveCtx<M>.effect(
     crossinline action: suspend () -> M?,
 ): Job {
     contract {
-        callsInPlace(action, InvocationKind.EXACTLY_ONCE)
+        callsInPlace(action, InvocationKind.AT_MOST_ONCE)
     }
     return launch { action()?.also { invoke(it) } }
 }
@@ -96,7 +96,7 @@ public inline infix fun <M> ResolveCtx<M>.sideEffect(
     crossinline action: suspend () -> Unit,
 ): Job {
     contract {
-        callsInPlace(action, InvocationKind.EXACTLY_ONCE)
+        callsInPlace(action, InvocationKind.AT_MOST_ONCE)
     }
     return launch { action() }
 }

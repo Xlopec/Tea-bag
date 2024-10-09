@@ -1,3 +1,5 @@
+import org.jetbrains.compose.ExperimentalComposeLibrary
+
 /*
  * MIT License
  *
@@ -26,15 +28,14 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
-repositories {
-    maven {
-        url = JBComposeDevRepository
+kotlin {
+    compilerOptions {
+        optIn.addAll(DefaultOptIns + "kotlinx.coroutines.ExperimentalCoroutinesApi")
     }
 }
-
-optIn(DefaultOptIns + "kotlinx.coroutines.ExperimentalCoroutinesApi")
 
 android {
     signingConfigs {
@@ -45,13 +46,13 @@ android {
             keyAlias = getenvSafe("KEY_ALIAS")
         }
     }
-    compileSdk = 33
+    compileSdk = 34
     namespace = "io.github.xlopec.reader"
 
     defaultConfig {
         applicationId = "io.github.xlopec.news.reader"
         minSdk = 21
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -65,9 +66,9 @@ android {
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
         managedDevices {
-            devices {
-                maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel6api30").apply {
-                    device = "Pixel 6"
+            localDevices {
+                create("pixel2api30") {
+                    device = "Pixel 2"
                     apiLevel = 30
                     systemImageSource = "aosp-atd"
                 }
@@ -93,7 +94,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    packagingOptions {
+    packaging {
         resources.excludes.add("META-INF/INDEX.LIST")
     }
 
@@ -107,11 +108,7 @@ android {
         renderScript = false
         resValues = false
         shaders = false
-    }
-
-    composeOptions {
-        @Suppress("UnstableApiUsage")
-        kotlinCompilerExtensionVersion = libs.compose.compiler.get().versionConstraint.requiredVersion
+        buildConfig = true
     }
 
     flavorDimensions += "remote"
@@ -159,28 +156,15 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk)
 
     implementation(libs.stdlib)
-
-    implementation(libs.coroutines.android)
     implementation(libs.compose.activity)
 
-    implementation(libs.bundles.compose)
-    implementation(libs.compose.compiler)
-    debugImplementation(libs.compose.tooling)
-
-    implementation(libs.compose.fonts)
     implementation(libs.splashscreen)
-
-    implementation(libs.bundles.accompanist)
-    implementation(libs.coil)
-
-    implementation(libs.ktor.client.cio)
-    implementation(libs.ktor.client.logging)
-    implementation(libs.logging)
 
     testImplementation(project(":tea-data"))
     androidTestImplementation(project(":tea-data"))
 
     androidTestUtil(libs.android.test.orchestrator)
-    androidTestImplementation(libs.compose.test.junit)
+    @OptIn(ExperimentalComposeLibrary::class)
+    androidTestImplementation(compose.uiTest)
     debugImplementation(libs.compose.test.manifest)
 }

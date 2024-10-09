@@ -36,8 +36,10 @@ kotlin {
         }
     }
 
-    ios()
+    iosX64()
+    iosArm64()
     iosSimulatorArm64()
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
         val commonMain by getting {
@@ -51,23 +53,5 @@ kotlin {
                 api(project(":tea-data"))
             }
         }
-
-        val commonTest by getting
-
-        val iosSimulatorArm64Main by getting
-
-        val iosMain by getting {
-            iosSimulatorArm64Main.dependsOn(this)
-        }
-
-        val iosSimulatorArm64Test by getting
-
-        val iosTest by getting {
-            iosSimulatorArm64Test.dependsOn(this)
-        }
-
-        val jvmMain by getting
-
-        val jvmTest by getting
     }
 }

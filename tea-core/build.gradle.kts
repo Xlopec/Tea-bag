@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 /*
  * MIT License
  *
@@ -39,15 +41,17 @@ artifacts {
     add("testOutput", prepareTestJar)
 }
 
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-
-    optIn(
-        "kotlinx.coroutines.ExperimentalCoroutinesApi",
-        "kotlinx.coroutines.FlowPreview",
-        "kotlinx.coroutines.InternalCoroutinesApi",
-        "io.github.xlopec.tea.core.InternalTeaApi",
-        "io.github.xlopec.tea.core.ExperimentalTeaApi"
-    )
+    compilerOptions {
+        optIn.addAll(
+            "kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "kotlinx.coroutines.FlowPreview",
+            "kotlinx.coroutines.InternalCoroutinesApi",
+            "io.github.xlopec.tea.core.InternalTeaApi",
+            "io.github.xlopec.tea.core.ExperimentalTeaApi"
+        )
+    }
 
     sourceSets {
 
@@ -65,13 +69,5 @@ kotlin {
                 api(libs.turbine)
             }
         }
-
-        val jvmMain by getting
-
-        val jvmTest by getting
-
-        val iosMain by getting
-
-        val iosTest by getting
     }
 }

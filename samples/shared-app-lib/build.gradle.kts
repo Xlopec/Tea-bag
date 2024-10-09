@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  * MIT License
  *
@@ -24,60 +27,61 @@
 
 plugins {
     kotlin("multiplatform")
-    kotlin("native.cocoapods")
     id("com.android.library")
     id("com.squareup.sqldelight")
     kotlin("plugin.serialization")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 version = "1.0.0"
 
-repositories {
-    maven {
-        url = JBComposeDevRepository
-    }
-}
-
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
+    explicitApi()
 
-    optIn("kotlinx.serialization.ExperimentalSerializationApi", "io.github.xlopec.tea.core.ExperimentalTeaApi")
+    compilerOptions {
+        optIn.addAll(
+            "kotlinx.serialization.ExperimentalSerializationApi",
+            "io.github.xlopec.tea.core.ExperimentalTeaApi",
+        )
 
-    android {
+        optIn.addAll(DefaultOptIns)
+
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
+    androidTarget {
         publishAllLibraryVariants()
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
     }
 
-    ios()
+    iosX64()
+    iosArm64()
     iosSimulatorArm64()
+    applyDefaultHierarchyTemplate()
 
-    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests::class.java) {
-        testRuns["test"].deviceId = "iPhone 14"
-    }
-
-    sourceSets {
-
-        val iosSimulatorArm64Main by getting
-
-        val iosMain by getting {
-            iosSimulatorArm64Main.dependsOn(this)
-        }
-
-        val iosSimulatorArm64Test by getting
-
-        val iosTest by getting {
-            iosSimulatorArm64Test.dependsOn(this)
-        }
-    }
-
-    cocoapods {
-        summary = "Shared app lib with common code"
-        homepage = "Link to the Shared Module homepage"
-        ios.deploymentTarget = "14.1"
-        framework {
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
             baseName = "SharedAppLib"
             isStatic = true
         }
-        podfile = project.file("../iosApp/Podfile")
+    }
+
+    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests::class.java) {
+        testRuns["test"].deviceId = "iPhone 15"
+    }
+
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        compilerOptions {
+            freeCompilerArgs.add("-Xexport-kdoc")
+        }
     }
 
     sourceSets {
@@ -85,9 +89,18 @@ kotlin {
             dependencies {
                 api(project(":tea-core"))
                 api(project(":tea-data"))
+                api(project(":tea-navigation"))
                 api(libs.arrow.core)
                 api(libs.collections.immutable)
                 api(libs.coroutines.core)
+                api(compose.ui)
+                api(compose.runtime)
+                api(compose.foundation)
+                api(compose.components.uiToolingPreview)
+                implementation(compose.components.resources)
+                implementation(libs.bundles.coil)
+                implementation(compose.material)
+                implementation(compose.materialIconsExtended)
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.logging)
@@ -96,6 +109,7 @@ kotlin {
                 implementation(libs.serialization.core)
                 implementation(libs.settings.core)
                 implementation(libs.sqldelight.runtime)
+                implementation(libs.webview)
                 implementation(compose.runtime)
             }
         }
@@ -109,6 +123,12 @@ kotlin {
 
         val androidMain by getting {
             dependencies {
+                implementation(compose.preview)
+                implementation(libs.compose.fonts)
+                implementation(libs.ktor.client.cio)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.coroutines.android)
+                implementation(libs.compose.activity)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.sqldelight.driver.android)
             }
@@ -182,6 +202,7 @@ android {
         remoteApi(project(":tea-time-travel"))
         remoteApi(project(":tea-time-travel-adapter-gson"))
         remoteImplementation(libs.gson)
+        debugImplementation(compose.uiTooling)
         coreLibraryDesugaring(libs.desugar.jdk)
     }
 }

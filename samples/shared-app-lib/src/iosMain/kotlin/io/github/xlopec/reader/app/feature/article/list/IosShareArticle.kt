@@ -30,7 +30,7 @@ import io.github.xlopec.reader.app.model.Article
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 
-object IosShareArticle : ShareArticle {
+public object IosShareArticle : ShareArticle {
     override fun share(article: Article) {
         val viewController = UIActivityViewController(activityItems = listOf(article.url), applicationActivities = null)
 

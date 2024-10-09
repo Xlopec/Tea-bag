@@ -26,13 +26,13 @@ package io.github.xlopec.reader.app.feature.settings
 
 import io.github.xlopec.reader.app.ScreenMessage
 
-sealed interface SettingsMessage : ScreenMessage
+public sealed interface SettingsMessage : ScreenMessage
 
-data class ToggleDarkMode(
+public data class ToggleDarkMode(
     val userDarkModeEnabled: Boolean,
     val syncWithSystemDarkModeEnabled: Boolean,
 ) : SettingsMessage
 
-data class SystemDarkModeChanged(
+public data class SystemDarkModeChanged(
     val enabled: Boolean
 ) : SettingsMessage

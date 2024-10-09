@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
 
 /*
@@ -31,6 +33,7 @@ plugins {
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
 
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     explicitApi()
 
@@ -40,28 +43,30 @@ kotlin {
         testRuns["test"].executionTask.configure {
             useJUnit()
         }
+
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
     }
 
-    ios()
+    iosX64()
+    iosArm64()
     iosSimulatorArm64()
+    applyDefaultHierarchyTemplate()
+
+    compilerOptions {
+        optIn.addAll(DefaultOptIns)
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        compilerOptions {
+            freeCompilerArgs.add("-Xexport-kdoc")
+        }
+    }
 
     targets.withType(KotlinNativeTargetWithSimulatorTests::class.java) {
-        testRuns["test"].deviceId = "iPhone 14"
-    }
-
-    sourceSets {
-
-        val iosSimulatorArm64Main by getting
-
-        val iosMain by getting {
-            iosSimulatorArm64Main.dependsOn(this)
-        }
-
-        val iosSimulatorArm64Test by getting
-
-        val iosTest by getting {
-            iosSimulatorArm64Test.dependsOn(this)
-        }
+        testRuns["test"].deviceId = "iPhone 15"
     }
 }
 

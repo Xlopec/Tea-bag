@@ -28,19 +28,24 @@ package io.github.xlopec.reader.app.feature.navigation
 
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.FullScreen
+import io.github.xlopec.reader.app.Screen
 import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
 import io.github.xlopec.reader.app.feature.filter.FilterCommand
 import io.github.xlopec.reader.app.feature.filter.FiltersInitialUpdate
-import io.github.xlopec.reader.app.pushScreen
+import io.github.xlopec.reader.app.screen
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
+import io.github.xlopec.tea.navigation.NavigationStack
+import io.github.xlopec.tea.navigation.mutate
 import kotlin.Int.Companion.MAX_VALUE
 import kotlin.Int.Companion.MIN_VALUE
 
-fun navigate(
+public typealias AppNavigationStack = NavigationStack<Screen>
+
+internal fun navigate(
     nav: Navigation,
     state: AppState,
     debug: Boolean = true,
@@ -59,45 +64,62 @@ fun navigate(
     }
 }
 
-fun AppState.navigateToTab(
+internal fun AppState.navigateToTab(
     nav: TabNavigation,
     screenWithCommand: (TabNavigation) -> Update<TabScreen, Command>,
 ): Update<AppState, Command> {
-    val i = findTabScreenIndex(nav)
+    val i = findTabScreenIndex(nav.tab)
 
-    return if (i >= 0) {
-        // tab might contain child screen stack
-        // collect all child screens for this tab and place them on the top of the stack
-        copy(screens = screens.floatGroup(i, nav.id)).noCommand()
+    val (screens, commands) = screens.mutate {
+        if (i >= 0) {
+            // tab might contain child screen stack
+            // collect all child screens for this tab and place them on the top of the stack
+            switchToTab(nav.tab, ::screenBelongsToTab)
+        } else {
+            push(screenWithCommand(nav))
+        }
+    }
+
+    return copy(screens = screens) command commands
+}
+
+internal fun AppState.navigateToArticleDetails(
+    nav: NavigateToArticleDetails,
+): Update<AppState, Command> {
+    val (screens, commands) = screens.mutate<_, _, Command> { push(ArticleDetailsState(nav.id, nav.article)) }
+
+    return copy(screens = screens) command commands
+}
+
+internal fun AppState.navigateToFilters(
+    nav: NavigateToFilters,
+): Update<AppState, FilterCommand> {
+    val (screens, commands) = screens.mutate { push(FiltersInitialUpdate(nav.id, nav.filter)) }
+
+    return copy(screens = screens) command commands
+}
+
+internal fun AppState.findTabScreenIndex(
+    tab: Tab,
+): Int = screens.indexOfFirst { s -> tab.id == s.id }
+
+internal fun AppState.popScreen(): Update<AppState, Command> {
+    val screen = screen
+
+    return if (screen is TabScreen) {
+        noCommand()
     } else {
-
-        val (state, commands) = screenWithCommand(nav)
-
-        pushScreen(state) command commands
+        val (screens, commands) = screens.mutate<_, _, Command> { mutator.removeLast() }
+        copy(screens = screens) command commands
     }
 }
 
-fun AppState.navigateToArticleDetails(
-    nav: NavigateToArticleDetails,
-) = pushScreen(ArticleDetailsState(nav.id, nav.article)).noCommand()
-
-fun AppState.navigateToFilters(
-    nav: NavigateToFilters,
-): Update<AppState, FilterCommand> {
-
-    val (state, commands) = FiltersInitialUpdate(nav.id, nav.filter)
-
-    return pushScreen(state) command commands
+private fun screenBelongsToTab(
+    screen: Screen,
+    tab: Tab,
+): Boolean {
+    return (screen as? TabScreen)?.id == tab.id
 }
-
-fun AppState.findTabScreenIndex(
-    nav: TabNavigation,
-): Int = screens.indexOfFirst { s -> nav.id == s.id }
-
-val AppState.currentTab: TabScreen
-    get() = screens.first { it is TabScreen } as TabScreen
-
-expect fun AppState.popScreen(): Update<AppState, Command>
 
 private fun checkInvariants(
     state: AppState,

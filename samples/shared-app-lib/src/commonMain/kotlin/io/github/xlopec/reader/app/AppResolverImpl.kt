@@ -26,7 +26,6 @@
 
 package io.github.xlopec.reader.app
 
-import io.github.xlopec.reader.app.command.CloseApp
 import io.github.xlopec.reader.app.command.DoLog
 import io.github.xlopec.reader.app.command.DoStoreDarkMode
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsResolver
@@ -39,7 +38,7 @@ import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import io.github.xlopec.tea.core.effects
 import io.github.xlopec.tea.core.sideEffect
 
-fun <Env> AppResolver(): AppResolver<Env> where
+public fun <Env> AppResolver(): AppResolver<Env> where
         Env : ArticlesResolver<Env>,
         Env : LocalStorage,
         Env : FiltersResolver<Env>,
@@ -47,9 +46,8 @@ fun <Env> AppResolver(): AppResolver<Env> where
     AppResolver { snapshot, ctx ->
         snapshot.commands.forEach { cmd ->
             when (cmd) {
-                is CloseApp -> Unit
                 is ArticlesCommand -> ctx effects { resolve(cmd) }
-                is DoOpenInBrowser -> resolve(cmd)
+                is DoOpenInBrowser -> ctx sideEffect { resolve(cmd) }
                 is DoStoreDarkMode -> ctx sideEffect {
                     storeDarkModePreferences(cmd.userDarkModeEnabled, cmd.syncWithSystemDarkModeEnabled)
                 }

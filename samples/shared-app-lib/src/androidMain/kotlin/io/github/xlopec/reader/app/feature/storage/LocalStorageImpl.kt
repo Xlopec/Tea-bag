@@ -32,9 +32,9 @@ import android.app.Application
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import io.github.xlopec.reader.app.storage.AppDatabase
 
-private const val DB_FILE_NAME = "app.db"
+private const val DBfileName = "app.db"
 
-fun LocalStorage(
+internal fun LocalStorage(
     application: Application
 ): LocalStorage =
-    LocalStorage(AndroidSqliteDriver(AppDatabase.Schema, application, DB_FILE_NAME))
+    LocalStorage(AndroidSqliteDriver(AppDatabase.Schema, application, DBfileName))

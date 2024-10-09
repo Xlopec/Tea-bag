@@ -31,21 +31,34 @@ import com.squareup.sqldelight.db.SqlCursor
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.db.SqlPreparedStatement
 import com.squareup.sqldelight.db.use
-import io.github.xlopec.reader.app.IO
 import io.github.xlopec.reader.app.feature.article.list.Page
 import io.github.xlopec.reader.app.misc.mapNotNullToPersistentList
-import io.github.xlopec.reader.app.model.*
+import io.github.xlopec.reader.app.model.Article
+import io.github.xlopec.reader.app.model.Author
+import io.github.xlopec.reader.app.model.Description
+import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.reader.app.model.FilterType
+import io.github.xlopec.reader.app.model.Query
+import io.github.xlopec.reader.app.model.SourceId
+import io.github.xlopec.reader.app.model.Title
 import io.github.xlopec.reader.app.storage.AppDatabase
 import io.github.xlopec.reader.app.storage.ArticlesQueries
 import io.github.xlopec.reader.app.storage.FiltersQueries
 import io.github.xlopec.reader.app.storage.RecentSearchesQueries
-import io.github.xlopec.tea.data.*
+import io.github.xlopec.tea.data.Url
+import io.github.xlopec.tea.data.UrlFor
+import io.github.xlopec.tea.data.fromMillis
+import io.github.xlopec.tea.data.now
+import io.github.xlopec.tea.data.toExternalValue
+import io.github.xlopec.tea.data.toMillis
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
-fun LocalStorage(
+internal fun LocalStorage(
     driver: SqlDriver,
     settings: Settings = Settings(),
 ): LocalStorage = LocalStorageImpl(driver, settings)
@@ -163,19 +176,19 @@ private class LocalStorageImpl(
 
     private suspend inline fun <T> articlesQuery(
         crossinline block: ArticlesQueries.() -> T,
-    ) = withContext(IO) {
+    ) = withContext(Dispatchers.IO) {
         database.articlesQueries.run(block)
     }
 
     private suspend inline fun <T> searchesQuery(
         crossinline block: suspend RecentSearchesQueries.() -> T,
-    ) = withContext(IO) {
+    ) = withContext(Dispatchers.IO) {
         database.recentSearchesQueries.run { block() }
     }
 
     private suspend inline fun <T> filtersQuery(
         crossinline block: suspend FiltersQueries.() -> T,
-    ) = withContext(IO) {
+    ) = withContext(Dispatchers.IO) {
         database.filtersQueries.run { block() }
     }
 }

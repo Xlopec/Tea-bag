@@ -21,10 +21,14 @@ import androidx.compose.runtime.Immutable
 @Immutable
 sealed interface Message
 
-/*sealed*/ interface ServerMessage : Message
+/*sealed*/
+interface ServerMessage : Message
 
-/*sealed*/ interface NotificationMessage : Message
+/*sealed*/
+interface NotificationMessage : Message
 
-/*sealed*/ interface ComponentMessage : Message
+/*sealed*/
+interface ComponentMessage : Message
 
-/*sealed*/ interface StoreMessage : Message
+/*sealed*/
+interface StoreMessage : Message

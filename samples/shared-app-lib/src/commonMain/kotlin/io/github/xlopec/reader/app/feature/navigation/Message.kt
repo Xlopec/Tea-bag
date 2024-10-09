@@ -31,36 +31,48 @@ import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.tea.data.RandomUUID
 
-sealed interface Navigation : Message
+public sealed interface Navigation : Message
 
-data class NavigateToArticleDetails(
+public enum class Tab(public val id: ScreenId) {
+    Feed(RandomUUID()),
+    Favorite(RandomUUID()),
+    Trending(RandomUUID()),
+    Settings(RandomUUID()),
+}
+
+public data class NavigateToArticleDetails(
     val article: Article,
     val id: ScreenId = RandomUUID(),
 ) : Navigation
 
-data class NavigateToFilters(
+public data class NavigateToFilters(
     val id: ScreenId,
     val filter: Filter,
 ) : Navigation
 
-sealed interface TabNavigation : Navigation {
-    val id: ScreenId
+public sealed interface TabNavigation : Navigation {
+    public val id: ScreenId
+    public val tab: Tab
 }
 
-object NavigateToFavorite : TabNavigation {
+public data object NavigateToFavorite : TabNavigation {
     override val id: ScreenId = RandomUUID()
+    override val tab: Tab = Tab.Favorite
 }
 
-object NavigateToFeed : TabNavigation {
+public data object NavigateToFeed : TabNavigation {
     override val id: ScreenId = RandomUUID()
+    override val tab: Tab = Tab.Feed
 }
 
-object NavigateToSettings : TabNavigation {
+public data object NavigateToSettings : TabNavigation {
     override val id: ScreenId = SettingsScreen.id
+    override val tab: Tab = Tab.Settings
 }
 
-object NavigateToTrending : TabNavigation {
+public data object NavigateToTrending : TabNavigation {
     override val id: ScreenId = RandomUUID()
+    override val tab: Tab = Tab.Trending
 }
 
-object Pop : Navigation
+public data object Pop : Navigation

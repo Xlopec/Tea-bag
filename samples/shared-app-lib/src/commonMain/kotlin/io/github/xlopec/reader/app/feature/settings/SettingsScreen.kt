@@ -26,8 +26,9 @@ package io.github.xlopec.reader.app.feature.settings
 
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.TabScreen
-import io.github.xlopec.tea.data.RandomUUID
+import io.github.xlopec.reader.app.feature.navigation.Tab
 
-object SettingsScreen : TabScreen {
-    override val id: ScreenId = RandomUUID()
+public data object SettingsScreen : TabScreen {
+    override val tab: Tab = Tab.Settings
+    override val id: ScreenId = Tab.Settings.id
 }

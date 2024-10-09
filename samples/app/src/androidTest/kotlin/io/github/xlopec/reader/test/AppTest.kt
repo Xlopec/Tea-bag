@@ -49,15 +49,15 @@ import io.github.xlopec.reader.app.ui.screens.article.ProgressIndicatorTag
 import io.github.xlopec.reader.app.ui.theme.AppTheme
 import io.github.xlopec.reader.environment.ArticleResponse
 import io.github.xlopec.reader.environment.anyArticleRequest
-import io.github.xlopec.reader.environment.invoke
 import io.github.xlopec.reader.environment.setTestContent
+import io.github.xlopec.tea.core.ExperimentalTeaApi
 import io.github.xlopec.tea.core.toStatesComponent
 import io.github.xlopec.tea.data.RandomUUID
-import java.net.URI
-import java.util.Date
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Rule
 import org.junit.Test
+import java.net.URI
+import java.util.*
 
 internal class AppTest {
 
@@ -83,6 +83,7 @@ internal class AppTest {
         onNodeWithTag(ProgressIndicatorTag).assertIsDisplayed()
     }
 
+    @OptIn(ExperimentalTeaApi::class)
     @Test
     fun testArticlesListIsDisplayedCorrectly() = rule {
         setTestContent {
@@ -96,7 +97,7 @@ internal class AppTest {
                 ).toStatesComponent()
             )
 
-            resumeDispatcher()
+            testScheduler.advanceUntilIdle()
         }
 
         onNodeWithTag(ArticleTestTag(TestUrl)).assertIsDisplayed()

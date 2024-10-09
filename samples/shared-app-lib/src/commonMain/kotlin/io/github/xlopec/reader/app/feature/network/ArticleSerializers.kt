@@ -39,60 +39,60 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-object AuthorSerializer : KSerializer<Author?> {
+public object AuthorSerializer : KSerializer<Author?> {
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("Author", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: Author?) =
+    override fun serialize(encoder: Encoder, value: Author?): Unit =
         encoder.encodeNullableString(value?.value)
 
     override fun deserialize(decoder: Decoder): Author? = Author.tryCreate(decoder.decodeString())
 }
 
-object DescriptionSerializer : KSerializer<Description?> {
+public object DescriptionSerializer : KSerializer<Description?> {
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("Description", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: Description?) =
+    override fun serialize(encoder: Encoder, value: Description?): Unit =
         encoder.encodeNullableString(value?.value)
 
     override fun deserialize(decoder: Decoder): Description? =
         Description.tryCreate(decoder.decodeString())
 }
 
-object TitleSerializer : KSerializer<Title> {
+public object TitleSerializer : KSerializer<Title> {
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("Title", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: Title) = encoder.encodeString(value.value)
+    override fun serialize(encoder: Encoder, value: Title): Unit = encoder.encodeString(value.value)
     override fun deserialize(decoder: Decoder): Title = Title(decoder.decodeString())
 }
 
-expect fun Date.toJson(): String
+public expect fun Date.toJson(): String
 
-expect fun String.toDate(): Date
+public expect fun String.toDate(): Date
 
-object CommonDateSerializer : KSerializer<Date> {
+public object CommonDateSerializer : KSerializer<Date> {
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("CommonDate", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: Date) =
+    override fun serialize(encoder: Encoder, value: Date): Unit =
         encoder.encodeString(value.toJson())
 
     override fun deserialize(decoder: Decoder): Date =
         decoder.decodeString().toDate()
 }
 
-object UrlSerializer : KSerializer<Url> {
+public object UrlSerializer : KSerializer<Url> {
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("Url", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: Url) =
+    override fun serialize(encoder: Encoder, value: Url): Unit =
         encoder.encodeString(value.toExternalValue())
 
     override fun deserialize(decoder: Decoder): Url = UrlFor(decoder.decodeString())

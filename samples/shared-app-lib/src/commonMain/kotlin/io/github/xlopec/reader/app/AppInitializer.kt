@@ -32,14 +32,16 @@ import io.github.xlopec.reader.app.feature.navigation.NavigateToFeed
 import io.github.xlopec.reader.app.model.FilterType.Regular
 import io.github.xlopec.tea.core.Initial
 import io.github.xlopec.tea.core.Initializer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 
-fun AppInitializer(
+public fun AppInitializer(
     systemDarkModeEnabled: Boolean,
     environment: Environment
-): Initializer<AppState, Command> = Initializer(IO) {
+): Initializer<AppState, Command> = Initializer(Dispatchers.IO) {
 
     val filter = environment.findFilter(Regular)
-    val (screen, commands) = ArticlesInitialUpdate(NavigateToFeed.id, filter)
+    val (screen, commands) = ArticlesInitialUpdate(NavigateToFeed.tab, filter)
 
     val settings = Settings(
         syncWithSystemDarkModeEnabled = environment.isSyncWithSystemDarkModeEnabled(),

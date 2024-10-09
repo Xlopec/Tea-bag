@@ -29,7 +29,7 @@ package io.github.xlopec.reader.app.feature.filter
 import io.github.xlopec.reader.app.feature.article.list.NewsApi
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 
-typealias FiltersModule<Env> = FiltersResolver<Env>
+public typealias FiltersModule<Env> = FiltersResolver<Env>
 
-fun <Env> FiltersModule(): FiltersModule<Env> where Env : LocalStorage, Env : NewsApi =
+public fun <Env> FiltersModule(): FiltersModule<Env> where Env : LocalStorage, Env : NewsApi =
     FiltersResolver()

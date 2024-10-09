@@ -21,8 +21,11 @@ import androidx.compose.runtime.Immutable
 @Immutable
 sealed interface Command
 
-/*sealed*/ interface StoreCommand : Command
+/*sealed*/
+interface StoreCommand : Command
 
-/*sealed*/ interface NotifyCommand : Command
+/*sealed*/
+interface NotifyCommand : Command
 
-/*sealed*/ interface ServerCommand : Command
+/*sealed*/
+interface ServerCommand : Command

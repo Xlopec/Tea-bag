@@ -32,7 +32,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SourceResponseElement(
+public data class SourceResponseElement(
     @SerialName("id")
     @Serializable(with = SourceIdSerializer::class)
     val id: SourceId,
@@ -48,7 +48,7 @@ data class SourceResponseElement(
 )
 
 @Serializable
-data class SourcesResponse(
+public data class SourcesResponse(
     @SerialName("sources")
     val sources: List<SourceResponseElement>
 )

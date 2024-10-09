@@ -31,32 +31,32 @@ import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.FilterType
 import kotlin.jvm.JvmInline
 
-sealed interface ArticlesCommand : Command
+public sealed interface ArticlesCommand : Command
 
-data class DoLoadArticles(
+public data class DoLoadArticles(
     val id: ScreenId,
     val filter: Filter,
     val paging: Paging
 ) : ArticlesCommand
 
-data class DoLoadFilter(
+public data class DoLoadFilter(
     val id: ScreenId,
     val type: FilterType
 ) : ArticlesCommand
 
 @JvmInline
-value class DoStoreFilter(
-    val filter: Filter
+public value class DoStoreFilter(
+    internal val filter: Filter
 ) : ArticlesCommand
 
-data class DoSaveArticle(
+public data class DoSaveArticle(
     val article: Article,
 ) : ArticlesCommand
 
-data class DoRemoveArticle(
+public data class DoRemoveArticle(
     val article: Article,
 ) : ArticlesCommand
 
-data class DoShareArticle(
+public data class DoShareArticle(
     val article: Article,
 ) : ArticlesCommand

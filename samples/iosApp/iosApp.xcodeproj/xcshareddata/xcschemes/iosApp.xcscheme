@@ -59,7 +59,8 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
-      allowLocationSimulation = "YES">
+      allowLocationSimulation = "YES"
+      customWorkingDirectory = "/Users/maksym_oliinyk2/AndroidStudioProjects/private/Tea-bag">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference

@@ -49,7 +49,7 @@ import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
 
-fun <Env> AppUpdater(): AppUpdater<Env> =
+public fun <Env> AppUpdater(): AppUpdater<Env> =
     AppUpdater { message, state ->
         when (message) {
             is Navigation -> navigate(message, state)
@@ -73,14 +73,14 @@ private fun updateScreen(
             screen.toArticleDetailsUpdate(message)
         }
         is SettingsMessage -> state.toSettingsUpdate(message)
-        is FilterUpdated -> state.updateScreen<ScreenState> { screen ->
+        is FilterUpdated -> state.updateScreen<Screen> { screen ->
             screen.toFiltersBroadcastUpdate(message)
         }
         is Log -> state.toLogUpdate(message)
         else -> error("Unknown screen message, was $message")
     }
 
-private fun ScreenState.toFiltersBroadcastUpdate(
+private fun Screen.toFiltersBroadcastUpdate(
     message: FilterUpdated
 ) = when (this) {
     is ArticlesState -> updateArticles(message, this)

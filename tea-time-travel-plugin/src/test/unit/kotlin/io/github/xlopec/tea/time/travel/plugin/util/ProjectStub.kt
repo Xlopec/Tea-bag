@@ -12,7 +12,6 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.messages.MessageBus
 import kotlinx.coroutines.CoroutineScope
-import org.picocontainer.PicoContainer
 
 open class ProjectStub : Project {
     override fun <T : Any?> getUserData(p0: Key<T>): T? {
@@ -39,11 +38,6 @@ open class ProjectStub : Project {
         TODO("Not yet implemented")
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun getPicoContainer(): PicoContainer {
-        TODO("Not yet implemented")
-    }
-
     override fun isInjectionForExtensionSupported(): Boolean {
         TODO("Not yet implemented")
     }
@@ -61,6 +55,10 @@ open class ProjectStub : Project {
     }
 
     override fun <T : Any?> getService(p0: Class<T>): T {
+        TODO("Not yet implemented")
+    }
+
+    override fun <T : Any?> instantiateClass(aClass: Class<T>, pluginId: PluginId): T {
         TODO("Not yet implemented")
     }
 

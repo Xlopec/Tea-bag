@@ -31,9 +31,9 @@ import io.github.xlopec.reader.app.feature.article.list.ArticlesResolver
 import io.github.xlopec.reader.app.feature.filter.FiltersResolver
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 
-interface AppModule<Env> : AppUpdater<Env>, AppResolver<Env>
+public interface AppModule<Env> : AppUpdater<Env>, AppResolver<Env>
 
-fun <Env> AppModule(): AppModule<Env> where Env : ArticlesResolver<Env>,
+public fun <Env> AppModule(): AppModule<Env> where Env : ArticlesResolver<Env>,
                                             Env : FiltersResolver<Env>,
                                             Env : ArticleDetailsResolver,
                                             Env : LocalStorage =

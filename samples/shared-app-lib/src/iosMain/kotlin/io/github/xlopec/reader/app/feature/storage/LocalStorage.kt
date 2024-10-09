@@ -30,10 +30,10 @@ import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.drivers.native.NativeSqliteDriver
 import io.github.xlopec.reader.app.storage.AppDatabase
 
-private const val DB_FILE_NAME = "app.db"
+private const val DBfileName = "app.db"
 
-fun LocalStorage(
+internal fun LocalStorage(
     schema: SqlDriver.Schema = AppDatabase.Schema,
-    dbName: String = DB_FILE_NAME,
+    dbName: String = DBfileName,
 ): LocalStorage =
     LocalStorage(NativeSqliteDriver(schema, dbName))

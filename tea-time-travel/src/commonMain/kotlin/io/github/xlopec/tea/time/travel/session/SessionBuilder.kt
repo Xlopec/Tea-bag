@@ -27,11 +27,10 @@
 package io.github.xlopec.tea.time.travel.session
 
 import io.github.xlopec.tea.time.travel.component.Settings
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.websocket.WebSockets
-import io.ktor.client.plugins.websocket.ws
+import io.ktor.client.*
+import io.ktor.client.plugins.websocket.*
+import io.ktor.http.*
 import io.ktor.http.HttpMethod.Companion.Get
-import io.ktor.http.Url
 
 /**
  * Function that for a given server settings creates a new connection

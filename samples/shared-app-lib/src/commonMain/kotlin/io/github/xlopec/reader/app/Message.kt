@@ -27,16 +27,16 @@ package io.github.xlopec.reader.app
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.model.Filter
 
-interface Message
+public interface Message
 
-interface ScreenMessage : Message
+public interface ScreenMessage : Message
 
-data class Log(
+public data class Log(
     val throwable: Throwable,
     val causedBy: Command,
     val id: ScreenId? = null,
 ) : ScreenMessage
 
-data class FilterUpdated(
+public data class FilterUpdated(
     val filter: Filter,
 ) : ScreenMessage

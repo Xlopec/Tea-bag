@@ -29,6 +29,7 @@ package io.github.xlopec.reader.app.feature.article.list
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.TabScreen
+import io.github.xlopec.reader.app.feature.navigation.Tab
 import io.github.xlopec.reader.app.misc.Loadable
 import io.github.xlopec.reader.app.misc.remove
 import io.github.xlopec.reader.app.misc.replace
@@ -43,60 +44,62 @@ import io.github.xlopec.reader.app.model.Filter
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
-typealias ArticlesLoadable = Loadable<Article>
+public typealias ArticlesLoadable = Loadable<Article>
 
-data class ScrollState(
+public data class ScrollState(
     val firstVisibleItemIndex: Int,
     val firstVisibleItemScrollOffset: Int,
 ) {
-    companion object {
+    internal companion object {
         val Initial = ScrollState(firstVisibleItemIndex = 0, firstVisibleItemScrollOffset = 0)
     }
 }
 
-data class ArticlesState(
-    override val id: ScreenId,
+public data class ArticlesState(
+    override val tab: Tab,
     val filter: Filter,
     val loadable: ArticlesLoadable,
     val scrollState: ScrollState = ScrollState.Initial,
 ) : TabScreen {
 
-    companion object {
+    override val id: ScreenId by tab::id
+
+    internal companion object {
 
         const val ArticlesPerPage = 10
 
         fun newLoading(
-            id: ScreenId,
+            tab: Tab,
             filter: Filter,
             articles: PersistentList<Article> = persistentListOf(),
-        ) = ArticlesState(id, filter, Loadable.newLoading(articles))
+        ) = ArticlesState(tab, filter, Loadable.newLoading(articles))
     }
 }
 
-fun ArticlesState.toLoadingNext() =
+internal fun ArticlesState.toLoadingNext() =
     copy(loadable = loadable.toLoadingNext())
 
-fun ArticlesState.toLoading(
+internal fun ArticlesState.toLoading(
     filter: Filter = this.filter
 ) = copy(filter = filter, loadable = loadable.toLoading())
 
-fun ArticlesState.toRefreshing() =
+internal fun ArticlesState.toRefreshing() =
     copy(loadable = loadable.toRefreshing())
 
-fun ArticlesState.toIdle(
+internal fun ArticlesState.toIdle(
     page: Page<Article>,
 ): ArticlesState = copy(loadable = loadable.toIdle(page))
 
-fun ArticlesState.toException(
+internal fun ArticlesState.toException(
     cause: AppException,
 ) = copy(loadable = loadable.toException(cause))
 
-fun ArticlesState.updateArticle(
+internal fun ArticlesState.updateArticle(
     new: Article,
 ): ArticlesState =
     copy(loadable = loadable.updated { replace(new) { it.url == new.url } })
 
-fun ArticlesState.removeArticle(
+internal fun ArticlesState.removeArticle(
     victim: Article,
 ): ArticlesState =
     copy(loadable = loadable.updated { remove { it.url == victim.url } })

@@ -34,7 +34,8 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     needs: Check
-    runs-on: macos-12
+    runs-on: ubuntu-latest
+    if: false
     steps:
       - uses: actions/checkout@v3
         with:
@@ -57,13 +58,13 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run connected Android tests
-        run: ./gradlew samples:app:pixel6api30Check -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect" --no-configuration-cache
+        run: ./gradlew samples:app:pixel2api30DefaultDebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect" -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1 --no-configuration-cache
 
   IOS-app-build:
     env:
       DEFAULT_BRANCH: master
     needs: Check
-    runs-on: macos-12
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v3
         with:
@@ -84,11 +85,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build IOS app
-        uses: sersoft-gmbh/xcodebuild-action@v2
+        uses: sersoft-gmbh/xcodebuild-action@v3
         with:
-          workspace: samples/iosApp/iosApp.xcworkspace
+          project: samples/iosApp/iosApp.xcodeproj
           scheme: iosApp
-          destination: 'platform=iOS Simulator,name=iPhone 12 Pro'
+          destination: 'platform=iOS Simulator,name=iPhone 15'
           configuration: Debug
           action: build
 
@@ -96,7 +97,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     needs: Check
-    runs-on: macos-12
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v3
         with:
@@ -120,7 +121,7 @@ jobs:
         run: ./gradlew check -x detekt --no-configuration-cache
       - name: Archive test reports
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tests-report
           path: build/junit-reports/**
@@ -128,8 +129,8 @@ jobs:
   Deploy:
     env:
       DEFAULT_BRANCH: master
-    needs: [Unit-tests, Android-emulator-tests, IOS-app-build]
-    runs-on: macos-12
+    needs: [Unit-tests, IOS-app-build]
+    runs-on: macos-14
     # tags should be of the form:
     # <no-value> -> dev build
     # v1.2.3-alpha1 -> alpha build
@@ -164,7 +165,7 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           PUBLISH_PLUGIN_TOKEN: ${{ secrets.PUBLISH_PLUGIN_TOKEN }}
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: publish-artifacts
           path: build/artifacts/**

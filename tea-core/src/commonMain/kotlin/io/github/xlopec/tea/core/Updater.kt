@@ -144,3 +144,33 @@ public infix fun <S, C> S.command(
  * @return [Update] instance with given state and empty set of commands
  */
 public fun <S> S.noCommand(): Update<S, Nothing> = this to setOf()
+
+/**
+ * Appends a command to an update
+ *
+ * @receiver update to append a command to
+ * @param command command to append
+ * @return [Update] instance with command appended
+ */
+public operator fun <S, C> Update<S, C>.plus(
+    command: C,
+): Update<S, C> {
+    val (state, commands) = this
+
+    return state command commands + command
+}
+
+/**
+ * Appends commands to an update
+ *
+ * @receiver update to append commands to
+ * @param additionalCommands commands to append
+ * @return [Update] instance with commands appended
+ */
+public operator fun <S, C> Update<S, C>.plus(
+    additionalCommands: Collection<C>,
+): Update<S, C> {
+    val (state, commands) = this
+
+    return state command commands + additionalCommands
+}

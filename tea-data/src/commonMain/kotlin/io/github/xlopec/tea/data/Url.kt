@@ -30,6 +30,11 @@ public expect class Url
 
 public expect val Url.domain: String
 
+public expect val Url.protocol: String?
+
+public val Url.isSecureProtocol: Boolean
+    get() = protocol == "https"
+
 public expect fun UrlFor(
     s: String
 ): Url

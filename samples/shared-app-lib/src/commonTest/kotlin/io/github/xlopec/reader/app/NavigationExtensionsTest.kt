@@ -26,30 +26,29 @@
 
 package io.github.xlopec.reader.app
 
-import io.github.xlopec.reader.app.feature.navigation.floatGroup
+import io.github.xlopec.reader.app.feature.navigation.Tab
 import io.github.xlopec.tea.data.RandomUUID
+import io.github.xlopec.tea.navigation.mutate
+import io.github.xlopec.tea.navigation.toStackOrNull
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertSame
-import kotlinx.collections.immutable.persistentListOf
+import kotlin.test.assertTrue
 
 class NavigationExtensionsTest {
 
     @Test
     fun middleNavigationGroupFloatsCorrectly() {
+        val group1 = listOf(*Group(Tab.Feed))
+        val group2 = listOf(*Group(Tab.Settings))
+        val group3 = listOf(*Group(Tab.Trending))
 
-        val group2Id = RandomUUID()
+        val initialStack = (group1 + group2 + group3).toStackOrNull()!!
+        val (actualNavigationStack, commands) = initialStack.mutate<_, _, Nothing> {
+            switchToTab(Tab.Settings, ::testScreenBelongsToTab)
+        }
+        val expectedNavigationStack = (group1 + group3 + group2).toStackOrNull()!!
 
-        val group1 = arrayOf(*Group(RandomUUID()))
-        val group2 = arrayOf(*Group(group2Id))
-        val group3 = arrayOf(*Group(RandomUUID()))
-
-        val initialStack = persistentListOf(*group1, *group2, *group3)
-        val actualNavigationStack =
-            initialStack.floatGroup(initialStack.indexOfFirst { it.id == group2Id }, group2Id)
-        val expectedNavigationStack = persistentListOf(*group2, *group1, *group3)
-
+        assertTrue(commands.isEmpty())
         assertEquals(
             expectedNavigationStack,
             actualNavigationStack,
@@ -64,47 +63,47 @@ class NavigationExtensionsTest {
 
     @Test
     fun unmodifiedIfAlreadyOnTheTop() {
-        val group1Id = RandomUUID()
+        val group1 = listOf(*Group(Tab.Feed))
+        val group2 = listOf(*Group(Tab.Settings))
+        val group3 = listOf(*Group(Tab.Trending))
 
-        val group1 = arrayOf(*Group(group1Id))
-        val group2 = arrayOf(*Group(RandomUUID()))
-        val group3 = arrayOf(*Group(RandomUUID()))
-
-        val initialStack = persistentListOf(*group1, *group2, *group3)
-        val actualNavigationStack =
-            initialStack.floatGroup(initialStack.indexOfFirst { it.id == group1Id }, group1Id)
-
-        assertSame(initialStack, actualNavigationStack)
-    }
-
-    @Test
-    fun failsForIncorrectGroupIndex() {
-        assertFailsWith(IllegalArgumentException::class) {
-            persistentListOf<ScreenState>().floatGroup(-1, RandomUUID())
+        val initialStack = (group1 + group2 + group3).toStackOrNull()!!
+        val (actualNavigationStack, commands) = initialStack.mutate<_, _, Nothing> {
+            switchToTab(Tab.Trending, ::testScreenBelongsToTab)
         }
+
+        assertTrue(commands.isEmpty())
+        assertEquals(initialStack, actualNavigationStack)
     }
 }
 
 private data class TestNestedScreen(
-    override val tabId: ScreenId,
-    override val id: ScreenId = RandomUUID()
-) : NestedScreen
-
-private data class TestRootScreen(
-    override val id: ScreenId
+    override val tab: Tab,
+    override val id: ScreenId,
 ) : TabScreen
 
+private data class TestRootScreen(
+    override val tab: Tab,
+) : TabScreen {
+    override val id: ScreenId = tab.id
+}
+
 private fun Group(
-    groupId: ScreenId,
+    tab: Tab,
     nestedItemsCount: UInt = 1U
 ) = arrayOf(
-    // group
-    *GenerateNestedScreens(groupId, nestedItemsCount).toTypedArray(),
     // group root
-    TestRootScreen(groupId),
+    TestRootScreen(tab),
+    // group
+    *GenerateNestedScreens(tab, nestedItemsCount).toTypedArray(),
 )
 
 private fun GenerateNestedScreens(
-    groupId: ScreenId,
+    tab: Tab,
     times: UInt
-) = (0U until times).map { TestNestedScreen(groupId) }
+) = (0U until times).map { TestNestedScreen(tab, RandomUUID()) }
+
+private fun testScreenBelongsToTab(
+    screen: TabScreen,
+    tab: Tab,
+) = (screen as? TabScreen)?.tab == tab
