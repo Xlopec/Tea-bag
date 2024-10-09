@@ -58,7 +58,7 @@ internal fun App(
                 stack = currentState.screens,
                 animation = animation,
                 previousScreenFor = { stack, current ->
-                    stack.getOrNull<Screen>(stack.lastIndex - 1)?.takeIf<Screen> { current is FullScreen }
+                    stack.getOrNull<Screen>(stack.lastIndex - 1)?.takeIf { current is FullScreen }
                 },
                 onBackComplete = {
                     handler(Pop)
