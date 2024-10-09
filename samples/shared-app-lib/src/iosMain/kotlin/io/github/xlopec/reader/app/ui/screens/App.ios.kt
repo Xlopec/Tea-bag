@@ -1,7 +1,5 @@
 package io.github.xlopec.reader.app.ui.screens
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -18,9 +16,7 @@ import io.github.xlopec.reader.app.Message
 import io.github.xlopec.reader.app.Screen
 import io.github.xlopec.reader.app.feature.navigation.Pop
 import io.github.xlopec.reader.app.messageHandler
-import io.github.xlopec.reader.app.screen
 import io.github.xlopec.reader.app.ui.theme.AppTheme
-import io.github.xlopec.tea.core.Regular
 import io.github.xlopec.tea.navigation.PredictiveBackContainer
 import io.github.xlopec.tea.navigation.rememberDefaultPredictiveBackAnimation
 import io.github.xlopec.tea.navigation.rememberPredictiveBackCoordinator
@@ -75,24 +71,12 @@ internal fun App(
                 endEdgeEnabled = false,
                 coordinator = coordinator,
             ) { modifier, screen ->
-                val currentScreen by rememberUpdatedState(screen)
-                val previousScreen by rememberUpdatedState((snapshot as? Regular)?.previousState?.screen)
-                val previousState by rememberUpdatedState((snapshot as? Regular)?.previousState)
-                val transition = updateTransition(targetState = screen, label = "Screen transition")
-
-                transition.AnimatedContent(
-                    transitionSpec = {
-                        screenTransition(currentScreen, previousScreen, currentState, previousState)
-                    },
-                    contentKey = { it.id.toString() }
-                ) { animatedScreen ->
-                    Screen(
-                        modifier = modifier,
-                        screen = animatedScreen,
-                        app = currentState,
-                        handler = handler,
-                    )
-                }
+                ScreenTransition(
+                    modifier = modifier,
+                    screen = screen,
+                    snapshot = snapshot,
+                    handler = handler,
+                )
             }
         }
     }

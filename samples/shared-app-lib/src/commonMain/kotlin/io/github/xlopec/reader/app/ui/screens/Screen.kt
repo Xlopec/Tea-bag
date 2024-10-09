@@ -24,17 +24,21 @@
 
 package io.github.xlopec.reader.app.ui.screens
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.End
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Start
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.FullScreen
@@ -43,9 +47,12 @@ import io.github.xlopec.reader.app.Screen
 import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
 import io.github.xlopec.reader.app.feature.filter.FiltersState
+import io.github.xlopec.reader.app.screen
 import io.github.xlopec.reader.app.ui.screens.article.ArticleDetailsScreen
 import io.github.xlopec.reader.app.ui.screens.filters.FiltersScreen
 import io.github.xlopec.reader.app.ui.screens.home.HomeScreen
+import io.github.xlopec.tea.core.Regular
+import io.github.xlopec.tea.core.Snapshot
 import kotlinx.coroutines.flow.Flow
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -56,6 +63,34 @@ private val NoTransition: ContentTransform = ContentTransform(
     targetContentZIndex = 0f,
     sizeTransform = null
 )
+
+@Composable
+internal fun ScreenTransition(
+    modifier: Modifier,
+    screen: Screen,
+    snapshot: Snapshot<*, AppState, *>,
+    handler: MessageHandler,
+) {
+    val currentScreen by rememberUpdatedState(screen)
+    val currentState by rememberUpdatedState(snapshot.currentState)
+    val previousScreen by rememberUpdatedState((snapshot as? Regular)?.previousState?.screen)
+    val previousState by rememberUpdatedState((snapshot as? Regular)?.previousState)
+    val transition = updateTransition(targetState = screen, label = "Screen transition")
+
+    transition.AnimatedContent(
+        transitionSpec = {
+            screenTransition(currentScreen, previousScreen, currentState, previousState)
+        },
+        contentKey = { it.id.toString() }
+    ) { animatedScreen ->
+        Screen(
+            modifier = modifier,
+            screen = animatedScreen,
+            app = currentState,
+            handler = handler,
+        )
+    }
+}
 
 @Composable
 internal fun Screen(
