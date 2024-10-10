@@ -1,6 +1,6 @@
 [versions]
-ktor = "2.3.9"
-coroutines = "1.8.1"
+ktor = "2.3.12"
+coroutines = "1.9.0"
 sqldelight = "1.5.5"
 arrow = "1.2.4"
 coil = "3.0.0-alpha09"
@@ -32,20 +32,20 @@ ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-compose-activity = { module = "androidx.activity:activity-compose", version = "1.9.0" }
+compose-activity = { module = "androidx.activity:activity-compose", version = "1.9.2" }
 serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version = "1.6.3" }
 settings-core = { module = "com.russhwolf:multiplatform-settings-no-arg", version = "1.1.1" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 sqldelight-runtime = { module = "com.squareup.sqldelight:runtime", version.ref = "sqldelight" }
 sqldelight-driver-android = { module = "com.squareup.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-driver-native = { module = "com.squareup.sqldelight:native-driver", version.ref = "sqldelight" }
-desugar-jdk = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.4" }
+desugar-jdk = { module = "com.android.tools:desugar_jdk_libs", version = "2.1.2" }
 gson = { module = "com.google.code.gson:gson", version = "2.11.0" }
 logging = { module = "ch.qos.logback:logback-classic", version = "1.5.3" }
-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.7" }
+collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.8" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor2", version.ref = "coil" }
-compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.6.8" }
+compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.7.3" }
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.9.20" }
 
