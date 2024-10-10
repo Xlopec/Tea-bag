@@ -401,29 +401,25 @@ internal fun ArticleSearchHeader(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    CompositionLocalProvider(
-        LocalTextInputService provides null
-    ) {
-        SearchHeader(
-            inputText = state.filter.query?.value ?: "",
-            placeholderText = state.filter.type.toSearchHint(),
-            onQueryUpdate = { },
-            onSearch = {
-                keyboardController?.hide()
-                onMessage(LoadArticles(state.id))
-            },
-            onFocusChanged = { focusState ->
-                if (focusState.isFocused) {
-                    onMessage(
-                        NavigateToFilters(
-                            state.id,
-                            state.filter,
-                        )
+    SearchHeader(
+        inputText = state.filter.query?.value ?: "",
+        placeholderText = state.filter.type.toSearchHint(),
+        onQueryUpdate = { },
+        onSearch = {
+            keyboardController?.hide()
+            onMessage(LoadArticles(state.id))
+        },
+        onFocusChanged = { focusState ->
+            if (focusState.isFocused) {
+                onMessage(
+                    NavigateToFilters(
+                        state.id,
+                        state.filter,
                     )
-                }
+                )
             }
-        )
-    }
+        }
+    )
 }
 
 private val CardElevation = 4.dp
