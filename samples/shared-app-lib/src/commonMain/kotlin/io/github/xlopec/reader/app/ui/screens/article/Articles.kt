@@ -393,7 +393,6 @@ private fun ArticlesError(
 }
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 internal fun ArticleSearchHeader(
     state: ArticlesState,
     onMessage: MessageHandler,
