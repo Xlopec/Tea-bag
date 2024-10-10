@@ -51,7 +51,7 @@ public data class AppState internal constructor(
 public inline val AppState.screen: Screen
     get() = screens.screen
 
-public inline fun <reified T : Screen> AppState.updateScreen(
+internal inline fun <reified T : Screen> AppState.updateScreen(
     id: ScreenId? = null,
     noinline how: (T) -> Update<T, Command>,
 ): Update<AppState, Command> {

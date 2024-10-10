@@ -57,6 +57,7 @@ kotlin {
     compilerOptions {
         optIn.addAll(DefaultOptIns)
         freeCompilerArgs.add("-Xexpect-actual-classes")
+        freeCompilerArgs.add("-Xconsistent-data-class-copy-visibility")
     }
 
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
