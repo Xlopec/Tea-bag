@@ -134,6 +134,11 @@ public class NavigationStackMutator<I : Any, E : NavStackEntry<I>, C> internal c
     }
 
     /**
+     * Removes last screen
+     */
+    public fun pop(): E = mutator.removeLast()
+
+    /**
      * Removes ***ALL*** stack entries that match given [predicate]. You can provide [onPop] callback
      * to produce commands when an entry matching predicate is removed from the stack
      *
