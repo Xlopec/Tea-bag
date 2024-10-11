@@ -134,7 +134,7 @@ public class NavigationStackMutator<I : Any, E : NavStackEntry<I>, C> internal c
     }
 
     /**
-     * Removes last screen
+     * Removes lastly added screen
      */
     public fun pop(): E = mutator.removeLast()
 
