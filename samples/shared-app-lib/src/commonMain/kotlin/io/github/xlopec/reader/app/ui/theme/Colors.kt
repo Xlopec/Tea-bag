@@ -35,6 +35,7 @@ internal val Colors.importantAction: Color
 internal val DarkThemeColors = darkColors(
     primary = Color.White,
     secondary = Color(4, 4, 6),
+    secondaryVariant = Color.White,
     background = Color.Black,
     surface = Color(4, 4, 6),
     error = Color(0xFFF70040),

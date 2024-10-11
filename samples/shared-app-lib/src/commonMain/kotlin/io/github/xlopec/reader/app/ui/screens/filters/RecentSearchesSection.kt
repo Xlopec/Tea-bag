@@ -89,7 +89,7 @@ internal fun LazyListScope.recentSearchesSection(
         SwipeToDismiss(
             modifier = Modifier.fillParentMaxWidth()
                 .clickable { onSelect(item) }
-                .animateItemPlacement()
+                .animateItem()
                 .alpha(childTransitionState.contentAlpha)
                 .offset(y = childTransitionState.listItemOffsetY),
             state = dismissState,
