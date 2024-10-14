@@ -27,6 +27,7 @@
 package io.github.xlopec.tea.data
 
 import kotlin.jvm.JvmInline
+import kotlin.uuid.Uuid
 
 data class User(
     val id: Id,
@@ -37,7 +38,7 @@ data class User(
 
 @JvmInline
 value class Id(
-    val uuid: UUID
+    val uuid: Uuid
 )
 
 data class Name(
@@ -52,8 +53,6 @@ data class Name(
 value class Photo(
     val url: Url
 )
-
-fun RandomId() = Id(RandomUUID())
 
 fun Photo(urlSpec: String) = Photo(UrlFor(urlSpec))
 

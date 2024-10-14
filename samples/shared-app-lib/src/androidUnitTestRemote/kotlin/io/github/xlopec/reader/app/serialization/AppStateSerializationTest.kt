@@ -51,6 +51,7 @@ import org.junit.runners.JUnit4
 import java.net.URI
 import java.util.*
 import kotlin.test.assertEquals
+import kotlin.uuid.Uuid
 
 @RunWith(JUnit4::class)
 internal class AppStateSerializationTest {
@@ -131,7 +132,7 @@ internal class AppStateSerializationTest {
     @Test
     fun `test ScreenMessage is serialized correctly`() = with(gsonSerializer) {
 
-        val message = LoadArticles(UUID.randomUUID())
+        val message = LoadArticles(Uuid.random())
 
         val json = toJson(message)
         val fromJson = fromJson(json, ScreenMessage::class.java)

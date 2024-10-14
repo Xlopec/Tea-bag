@@ -17,9 +17,17 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
 import com.google.gson.JsonElement
-import io.github.xlopec.tea.data.*
+import io.github.xlopec.tea.data.Avatar
+import io.github.xlopec.tea.data.Id
+import io.github.xlopec.tea.data.Name
+import io.github.xlopec.tea.data.Photo
+import io.github.xlopec.tea.data.User
 import io.github.xlopec.tea.time.travel.gson.Gson
-import io.github.xlopec.tea.time.travel.plugin.model.*
+import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Property
+import io.github.xlopec.tea.time.travel.plugin.model.Ref
+import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Type
 import io.github.xlopec.tea.time.travel.protocol.ApplyMessage
 import io.github.xlopec.tea.time.travel.protocol.ClientMessage
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
@@ -30,8 +38,8 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.io.File
 import java.io.FileReader
-import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.uuid.Uuid
 
 @RunWith(JUnit4::class)
 internal class ClientMessageSerializationTest {
@@ -42,7 +50,7 @@ internal class ClientMessageSerializationTest {
     fun `test subclasses of ClientMessage serialized properly`() = with(gson) {
 
         val user = User(
-            Id(UUID.randomUUID()),
+            Id(Uuid.random()),
             Name("John"),
             listOf()
         )
@@ -59,7 +67,7 @@ internal class ClientMessageSerializationTest {
     fun `test from Value is mapped to Gson tree properly`() = with(gson) {
 
         val user = User(
-            Id(UUID.randomUUID()),
+            Id(Uuid.random()),
             Name("John"),
             listOf(
                 Photo("https://www.google.com")
@@ -69,7 +77,7 @@ internal class ClientMessageSerializationTest {
 
         val expectedMessageTree = toJsonTree(
             NotifyClient(
-                UUID.randomUUID(),
+                Uuid.random(),
                 ComponentId("test"),
                 ApplyMessage(toJsonTree(user))
             )

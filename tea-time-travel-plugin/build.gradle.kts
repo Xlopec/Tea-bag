@@ -97,11 +97,7 @@ val allTests by tasks.creating(Task::class) {
 
 kotlin {
     compilerOptions {
-        optIn.addAll(
-            "kotlinx.coroutines.ExperimentalCoroutinesApi",
-            "androidx.compose.ui.ExperimentalComposeUiApi",
-            "io.github.xlopec.tea.core.ExperimentalTeaApi",
-        )
+        optIn.addAll(DefaultOptIns)
 
         freeCompilerArgs.addAll("-Xcontext-receivers")
 

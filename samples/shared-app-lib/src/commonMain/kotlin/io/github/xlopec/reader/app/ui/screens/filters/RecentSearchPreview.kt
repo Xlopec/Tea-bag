@@ -36,11 +36,11 @@ import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
-import io.github.xlopec.tea.data.RandomUUID
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.uuid.Uuid
 
 private val PreviewState = FiltersState(
-    id = RandomUUID(),
+    id = Uuid.random(),
     filter = Filter(FilterType.Regular, Query.of("Android")),
     sourcesState = Loadable.newLoading()
 )

@@ -2,8 +2,6 @@ package io.github.xlopec.tea.time.travel.plugin.feature.storage
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import io.github.xlopec.tea.data.UUID
-import io.github.xlopec.tea.data.toHumanReadable
 import io.github.xlopec.tea.time.travel.plugin.feature.server.toCollectionWrapper
 import io.github.xlopec.tea.time.travel.plugin.feature.server.toJsonArray
 import io.github.xlopec.tea.time.travel.plugin.feature.server.toJsonElement
@@ -13,10 +11,11 @@ import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
 import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import kotlin.uuid.Uuid
 
 internal fun JsonObject.toComponentDebugState(): DebuggableComponent =
     DebuggableComponent(
@@ -27,7 +26,7 @@ internal fun JsonObject.toComponentDebugState(): DebuggableComponent =
 
 internal fun JsonObject.toSnapshotMeta() =
     SnapshotMeta(
-        SnapshotId(UUID.fromString(this["uuid"].asString)),
+        SnapshotId(Uuid.parse(this["uuid"].asString)),
         LocalDateTime.from(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(this["timestamp"].asString))
     )
 
@@ -71,6 +70,6 @@ internal fun OriginalSnapshot.toJsonElement() = JsonObject().apply {
 }
 
 internal fun SnapshotMeta.toJsonObject() = JsonObject().apply {
-    addProperty("uuid", id.value.toHumanReadable())
+    addProperty("uuid", id.value.toString())
     addProperty("timestamp", DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(timestamp))
 }

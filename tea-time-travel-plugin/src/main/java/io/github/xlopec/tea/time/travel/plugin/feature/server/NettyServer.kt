@@ -19,7 +19,11 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
 import com.google.gson.Gson
-import io.github.xlopec.tea.time.travel.gson.*
+import io.github.xlopec.tea.time.travel.gson.Gson
+import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
+import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentAttached
+import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentSnapshot
+import io.github.xlopec.tea.time.travel.gson.GsonNotifyServer
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.AppendSnapshot
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.ComponentAttached
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.OperationException
@@ -44,7 +48,6 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
@@ -52,7 +55,7 @@ import kotlinx.coroutines.withContext
 import org.slf4j.event.Level
 import java.time.Duration
 import java.time.LocalDateTime.now
-import java.util.UUID.randomUUID
+import kotlin.uuid.Uuid
 
 class NettyServer(
     override val address: ServerAddress,
@@ -64,7 +67,7 @@ class NettyServer(
     override suspend operator fun invoke(
         component: ComponentId,
         message: GsonClientMessage
-    ) = calls.emit(RemoteCall(randomUUID(), component, message))
+    ) = calls.emit(RemoteCall(Uuid.random(), component, message))
 
     override suspend fun stop() =
         withContext(IO) {
@@ -149,6 +152,7 @@ private suspend fun processIncomingFrame(
                 is GsonNotifyComponentSnapshot -> events.emit(
                     message.toNotification(packet.componentId, SnapshotMeta())
                 )
+
                 is GsonNotifyComponentAttached -> events.emit(
                     message.toNotification(packet.componentId, SnapshotMeta())
                 )
@@ -175,4 +179,4 @@ private fun GsonNotifyComponentAttached.toNotification(
     meta: SnapshotMeta
 ) = ComponentAttached(id, meta, state.asJsonObject.toValue(), commands.toCollectionWrapper())
 
-private fun SnapshotMeta() = SnapshotMeta(SnapshotId(randomUUID()), now())
+private fun SnapshotMeta() = SnapshotMeta(SnapshotId(Uuid.random()), now())

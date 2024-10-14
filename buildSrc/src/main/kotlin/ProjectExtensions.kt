@@ -33,6 +33,7 @@ val DefaultOptIns = listOf(
     "kotlin.RequiresOptIn",
     "kotlin.ExperimentalStdlibApi",
     "kotlin.contracts.ExperimentalContracts",
+    "kotlin.uuid.ExperimentalUuidApi",
 )
 
 fun Project.installGitHooks() = afterEvaluate {

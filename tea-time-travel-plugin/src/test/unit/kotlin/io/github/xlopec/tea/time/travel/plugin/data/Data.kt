@@ -26,13 +26,29 @@ import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Port
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.ServerAddress
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
-import io.github.xlopec.tea.time.travel.plugin.model.*
+import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
+import io.github.xlopec.tea.time.travel.plugin.model.Debugger
+import io.github.xlopec.tea.time.travel.plugin.model.FilteredSnapshot
+import io.github.xlopec.tea.time.travel.plugin.model.Input
+import io.github.xlopec.tea.time.travel.plugin.model.Null
+import io.github.xlopec.tea.time.travel.plugin.model.NumberWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
+import io.github.xlopec.tea.time.travel.plugin.model.Property
+import io.github.xlopec.tea.time.travel.plugin.model.Ref
+import io.github.xlopec.tea.time.travel.plugin.model.Server
+import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
+import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
+import io.github.xlopec.tea.time.travel.plugin.model.State
+import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Type
+import io.github.xlopec.tea.time.travel.plugin.model.Value
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentMap
 import java.time.LocalDateTime
-import java.util.*
+import kotlin.uuid.Uuid
 
 val TestHost = Host.newOrNull("localhost")!!
 val TestPort = Port(123)
@@ -59,9 +75,9 @@ val StartedTestServerStub = object : Server {
 val TestTimestamp1: LocalDateTime = LocalDateTime.of(2000, 1, 1, 1, 1)
 
 val TestTimestamp2: LocalDateTime = LocalDateTime.of(2001, 2, 3, 4, 5)
-val TestSnapshotId1: SnapshotId = SnapshotId(UUID.fromString("3853fab6-f20c-11ea-adc1-0242ac120001"))
+val TestSnapshotId1: SnapshotId = SnapshotId(Uuid.parse("3853fab6-f20c-11ea-adc1-0242ac120001"))
 
-val TestSnapshotId2: SnapshotId = SnapshotId(UUID.fromString("40811a0c-82ca-11ec-a8a3-0242ac120002"))
+val TestSnapshotId2: SnapshotId = SnapshotId(Uuid.parse("40811a0c-82ca-11ec-a8a3-0242ac120002"))
 
 val TestSnapshotMeta1 = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
 val TestComponentId1 = ComponentId("Test component id")
@@ -118,7 +134,7 @@ fun StartedFromPairs(
     server = StartedTestServerStub
 )
 
-fun RandomSnapshotId() = SnapshotId(UUID.randomUUID())
+fun RandomSnapshotId() = SnapshotId(Uuid.random())
 val TestUserValue = Ref(
     Type.of("com.max.oliynick.Test"),
     setOf(

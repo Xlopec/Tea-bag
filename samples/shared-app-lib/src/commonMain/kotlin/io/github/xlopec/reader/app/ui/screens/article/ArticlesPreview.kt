@@ -45,11 +45,11 @@ import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.Title
 import io.github.xlopec.reader.app.ui.misc.ColumnMessage
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
-import io.github.xlopec.tea.data.RandomUUID
 import io.github.xlopec.tea.data.UrlFor
 import io.github.xlopec.tea.data.now
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlin.uuid.Uuid
 
 @Composable
 @Preview
@@ -73,7 +73,7 @@ internal fun ArticleActionsPreview() {
         ArticleActions(
             onMessage = {},
             article = PreviewArticle,
-            screenId = RandomUUID()
+            screenId = Uuid.random()
         )
     }
 }
@@ -163,7 +163,7 @@ internal fun ArticlesScreenRefreshingPreview() {
 internal fun ArticleItemPreview() {
     ThemedPreview {
         ArticleItem(
-            screenId = RandomUUID(),
+            screenId = Uuid.random(),
             article = PreviewArticle,
             onMessage = {}
         )
