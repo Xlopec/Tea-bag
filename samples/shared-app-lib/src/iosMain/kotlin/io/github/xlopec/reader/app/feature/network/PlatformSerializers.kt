@@ -24,14 +24,20 @@
 
 package io.github.xlopec.reader.app.feature.network
 
-import io.github.xlopec.tea.data.Date
+import io.github.xlopec.reader.app.model.toNSDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toKotlinInstant
+import kotlinx.datetime.toLocalDateTime
 import platform.Foundation.NSDateFormatter
 
 private val DateParser = NSDateFormatter().apply {
     dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
 }
 
-public actual fun Date.toJson(): String = DateParser.stringFromDate(this)
+public actual fun LocalDateTime.toJson(): String = DateParser.stringFromDate(toNSDate())
 
-public actual fun String.toDate(): Date = DateParser.dateFromString(this)
-    ?: error("couldn't parse $this as date")
+public actual fun String.toDate(): LocalDateTime {
+    val instant = DateParser.dateFromString(this)?.toKotlinInstant()
+    return instant?.toLocalDateTime(TimeZone.currentSystemDefault()) ?: error("couldn't parse $this as date")
+}

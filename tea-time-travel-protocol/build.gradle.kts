@@ -33,6 +33,7 @@ kotlin {
             dependencies {
                 implementation(project(":tea-data"))
                 implementation(libs.stdlib)
+                implementation(libs.kotlinx.datetime)
             }
         }
     }

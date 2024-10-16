@@ -24,6 +24,7 @@
 
 package io.github.xlopec.tea.data
 
+/*
 public actual typealias Date = java.util.Date
 
 public actual fun now(): Date = java.util.Date()
@@ -33,3 +34,4 @@ public actual fun fromMillis(
 ): Date = java.util.Date(millis)
 
 public actual fun Date.toMillis(): Long = time
+*/

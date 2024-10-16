@@ -100,6 +100,7 @@ kotlin {
                 api(compose.components.uiToolingPreview)
                 implementation(compose.components.resources)
                 implementation(libs.bundles.coil)
+                implementation(libs.kotlinx.datetime)
                 implementation(compose.material)
                 implementation(compose.materialIconsExtended)
                 implementation(libs.stdlib)

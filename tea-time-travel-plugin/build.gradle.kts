@@ -158,6 +158,7 @@ dependencies {
     implementation(project(":tea-time-travel-protocol"))
     implementation(project(":tea-time-travel-adapter-gson"))
     implementation(project(":tea-data"))
+    implementation(libs.kotlinx.datetime)
 
     implementation(libs.stdlib)
     implementation(libs.stdlib.reflect)

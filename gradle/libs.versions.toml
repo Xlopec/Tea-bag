@@ -48,6 +48,7 @@ coil-network = { module = "io.coil-kt.coil3:coil-network-ktor2", version.ref = "
 compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.7.3" }
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.9.20" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.1" }
 
 [bundles]
 ktor-server = ["ktor-server-core", "ktor-server-netty", "ktor-server-websockets", "ktor-server-headers", "ktor-server-logging-jvm"]

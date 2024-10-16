@@ -28,10 +28,10 @@ import io.github.xlopec.reader.app.model.Author
 import io.github.xlopec.reader.app.model.Description
 import io.github.xlopec.reader.app.model.Title
 import io.github.xlopec.reader.app.model.tryCreate
-import io.github.xlopec.tea.data.Date
 import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.UrlFor
 import io.github.xlopec.tea.data.toExternalValue
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -71,19 +71,19 @@ public object TitleSerializer : KSerializer<Title> {
     override fun deserialize(decoder: Decoder): Title = Title(decoder.decodeString())
 }
 
-public expect fun Date.toJson(): String
+public expect fun LocalDateTime.toJson(): String
 
-public expect fun String.toDate(): Date
+public expect fun String.toDate(): LocalDateTime
 
-public object CommonDateSerializer : KSerializer<Date> {
+public object CommonDateSerializer : KSerializer<LocalDateTime> {
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("CommonDate", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: Date): Unit =
+    override fun serialize(encoder: Encoder, value: LocalDateTime): Unit =
         encoder.encodeString(value.toJson())
 
-    override fun deserialize(decoder: Decoder): Date =
+    override fun deserialize(decoder: Decoder): LocalDateTime =
         decoder.decodeString().toDate()
 }
 
