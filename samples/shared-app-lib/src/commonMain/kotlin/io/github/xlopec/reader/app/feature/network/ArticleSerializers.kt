@@ -31,7 +31,13 @@ import io.github.xlopec.reader.app.model.tryCreate
 import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.UrlFor
 import io.github.xlopec.tea.data.toExternalValue
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -71,10 +77,6 @@ public object TitleSerializer : KSerializer<Title> {
     override fun deserialize(decoder: Decoder): Title = Title(decoder.decodeString())
 }
 
-public expect fun LocalDateTime.toJson(): String
-
-public expect fun String.toDate(): LocalDateTime
-
 public object CommonDateSerializer : KSerializer<LocalDateTime> {
 
     override val descriptor: SerialDescriptor =
@@ -96,4 +98,12 @@ public object UrlSerializer : KSerializer<Url> {
         encoder.encodeString(value.toExternalValue())
 
     override fun deserialize(decoder: Decoder): Url = UrlFor(decoder.decodeString())
+}
+
+private fun LocalDateTime.toJson(): String = toInstant(TimeZone.UTC)
+    .format(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
+
+private fun String.toDate(): LocalDateTime {
+    return Instant.parse(this, DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
+        .toLocalDateTime(TimeZone.currentSystemDefault())
 }

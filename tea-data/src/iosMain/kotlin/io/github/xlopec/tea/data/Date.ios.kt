@@ -24,10 +24,6 @@
 
 package io.github.xlopec.tea.data
 
-import platform.Foundation.NSDate
-import platform.Foundation.dateWithTimeIntervalSince1970
-import platform.Foundation.timeIntervalSince1970
-
 /*
 public actual typealias Date = NSDate
 

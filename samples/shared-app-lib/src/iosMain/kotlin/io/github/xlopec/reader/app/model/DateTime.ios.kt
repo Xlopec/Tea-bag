@@ -7,11 +7,11 @@ import platform.Foundation.NSDate
 import platform.Foundation.NSDateFormatter
 
 private val DateFormatter = NSDateFormatter().apply {
-    dateFormat = "dd MMM' at 'hh:mm"
+    dateFormat = "dd MMM' at 'HH:mm"
 }
 
 public actual fun LocalDateTime.formatted(): String = DateFormatter.stringFromDate(toNSDate())
 
-public fun LocalDateTime.toNSDate(): NSDate {
+private fun LocalDateTime.toNSDate(): NSDate {
     return NSCalendar.currentCalendar.dateFromComponents(toNSDateComponents()) ?: error("Couldn't convert $this to NSDate")
 }
