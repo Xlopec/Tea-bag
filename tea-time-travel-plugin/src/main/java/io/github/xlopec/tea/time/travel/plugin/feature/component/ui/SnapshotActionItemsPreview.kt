@@ -6,7 +6,7 @@ import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.kanro.compose.jetbrains.control.DropdownMenu
-import java.util.*
+import kotlin.uuid.Uuid
 
 @Preview
 @Composable
@@ -15,7 +15,7 @@ private fun SnapshotActionItemsPreview() {
         DropdownMenu(expanded = true, onDismissRequest = {}) {
             SnapshotActionItems(
                 componentId = ComponentId("test component"),
-                snapshotId = SnapshotId(UUID.randomUUID()),
+                snapshotId = SnapshotId(Uuid.random()),
                 serverStarted = false,
                 handler = {}
             )

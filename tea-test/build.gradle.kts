@@ -28,6 +28,10 @@ plugins {
 
 kotlin {
 
+    compilerOptions {
+        optIn.addAll(DefaultOptIns)
+    }
+
     jvm {
         withJava()
 

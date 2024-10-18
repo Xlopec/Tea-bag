@@ -47,16 +47,18 @@ import io.github.xlopec.reader.app.storage.FiltersQueries
 import io.github.xlopec.reader.app.storage.RecentSearchesQueries
 import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.UrlFor
-import io.github.xlopec.tea.data.fromMillis
-import io.github.xlopec.tea.data.now
 import io.github.xlopec.tea.data.toExternalValue
-import io.github.xlopec.tea.data.toMillis
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 
 internal fun LocalStorage(
     driver: SqlDriver,
@@ -88,8 +90,8 @@ private class LocalStorageImpl(
                     url_to_image = urlToImage?.toExternalValue(),
                     // I don't expect performance issues here as we aren't going
                     // to store thousands of articles in a row
-                    saved_on = now().toMillis(),
-                    published = published.toMillis(),
+                    saved_on = Clock.System.now().toEpochMilliseconds(),
+                    published = published.toInstant(TimeZone.UTC).toEpochMilliseconds(),
                     is_favorite = isFavorite,
                     source = article.source?.value
                 )
@@ -152,7 +154,7 @@ private class LocalStorageImpl(
 
         if (filter.query != null) {
             searchesQuery {
-                insert(filter.query.value, type, now().toMillis())
+                insert(filter.query.value, type, Clock.System.now().toEpochMilliseconds())
                 deleteOutdated(type, type, storeSuggestionsLimit.toLong())
             }
         }
@@ -212,7 +214,7 @@ private fun SqlCursor.toArticle() =
         author = getString(2)?.let(::Author),
         description = getString(3)?.let(::Description),
         urlToImage = getString(4)?.let(::UrlFor),
-        published = fromMillis(getLong(5)!!),
+        published = Instant.fromEpochSeconds(getLong(5)!!).toLocalDateTime(TimeZone.UTC),
         isFavorite = isFavorite,
         source = getString(8)?.let(::SourceId)
     )

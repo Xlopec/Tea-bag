@@ -29,20 +29,20 @@ import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.feature.settings.SettingsScreen
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter
-import io.github.xlopec.tea.data.RandomUUID
+import kotlin.uuid.Uuid
 
 public sealed interface Navigation : Message
 
 public enum class Tab(public val id: ScreenId) {
-    Feed(RandomUUID()),
-    Favorite(RandomUUID()),
-    Trending(RandomUUID()),
-    Settings(RandomUUID()),
+    Feed(Uuid.random()),
+    Favorite(Uuid.random()),
+    Trending(Uuid.random()),
+    Settings(Uuid.random()),
 }
 
 public data class NavigateToArticleDetails(
     val article: Article,
-    val id: ScreenId = RandomUUID(),
+    val id: ScreenId = Uuid.random(),
 ) : Navigation
 
 public data class NavigateToFilters(
@@ -56,12 +56,12 @@ public sealed interface TabNavigation : Navigation {
 }
 
 public data object NavigateToFavorite : TabNavigation {
-    override val id: ScreenId = RandomUUID()
+    override val id: ScreenId = Uuid.random()
     override val tab: Tab = Tab.Favorite
 }
 
 public data object NavigateToFeed : TabNavigation {
-    override val id: ScreenId = RandomUUID()
+    override val id: ScreenId = Uuid.random()
     override val tab: Tab = Tab.Feed
 }
 
@@ -71,7 +71,7 @@ public data object NavigateToSettings : TabNavigation {
 }
 
 public data object NavigateToTrending : TabNavigation {
-    override val id: ScreenId = RandomUUID()
+    override val id: ScreenId = Uuid.random()
     override val tab: Tab = Tab.Trending
 }
 

@@ -28,17 +28,31 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import java.lang.reflect.Type
+import io.github.xlopec.reader.app.feature.network.toDate
+import io.github.xlopec.reader.app.feature.network.toJson
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.datetime.LocalDateTime
+import java.lang.reflect.Type
 
 // gson serializers to enable debugging facilities
 
 internal interface Serializer<T> : JsonSerializer<T>, JsonDeserializer<T>
+
+internal object LocalDateTimeSerializer : Serializer<LocalDateTime> {
+    override fun serialize(src: LocalDateTime, typeOfSrc: Type?, context: JsonSerializationContext): JsonElement {
+        return JsonPrimitive(src.toJson())
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext): LocalDateTime {
+        return json.asString.toDate()
+    }
+}
 
 internal object PersistentListSerializer : Serializer<PersistentList<*>> {
 

@@ -97,11 +97,7 @@ val allTests by tasks.creating(Task::class) {
 
 kotlin {
     compilerOptions {
-        optIn.addAll(
-            "kotlinx.coroutines.ExperimentalCoroutinesApi",
-            "androidx.compose.ui.ExperimentalComposeUiApi",
-            "io.github.xlopec.tea.core.ExperimentalTeaApi",
-        )
+        optIn.addAll(DefaultOptIns)
 
         freeCompilerArgs.addAll("-Xcontext-receivers")
 
@@ -162,6 +158,7 @@ dependencies {
     implementation(project(":tea-time-travel-protocol"))
     implementation(project(":tea-time-travel-adapter-gson"))
     implementation(project(":tea-data"))
+    implementation(libs.kotlinx.datetime)
 
     implementation(libs.stdlib)
     implementation(libs.stdlib.reflect)

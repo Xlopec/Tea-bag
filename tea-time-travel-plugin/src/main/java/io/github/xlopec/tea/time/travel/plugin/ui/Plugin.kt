@@ -20,6 +20,7 @@ package io.github.xlopec.tea.time.travel.plugin.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
 import androidx.compose.ui.unit.dp
@@ -53,7 +54,8 @@ import kotlin.time.Duration.Companion.seconds
 
 internal val LocalPlatform = staticCompositionLocalOf<Platform> { error("No platform implementation provided") }
 
-context (Logger, Project) internal fun PluginSwingAdapter(
+context (Logger, Project) @OptIn(ExperimentalComposeUiApi::class)
+internal fun PluginSwingAdapter(
     component: (Flow<Message>) -> Flow<State>,
 ) = ComposePanel()
     .apply {

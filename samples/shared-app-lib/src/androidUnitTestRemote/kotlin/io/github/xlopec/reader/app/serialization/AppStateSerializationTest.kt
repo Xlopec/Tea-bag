@@ -45,12 +45,16 @@ import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
 import io.github.xlopec.tea.time.travel.protocol.ServerMessage
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.net.URI
-import java.util.*
 import kotlin.test.assertEquals
+import kotlin.uuid.Uuid
 
 @RunWith(JUnit4::class)
 internal class AppStateSerializationTest {
@@ -58,6 +62,7 @@ internal class AppStateSerializationTest {
     private val gsonSerializer = Gson {
         setPrettyPrinting()
         registerTypeHierarchyAdapter(PersistentList::class.java, PersistentListSerializer)
+        registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer)
     }
 
     private val previewScreenState = ArticlesState(
@@ -71,7 +76,7 @@ internal class AppStateSerializationTest {
                     author = null,
                     description = Description("test"),
                     urlToImage = null,
-                    published = Date(),
+                    published = Clock.System.now().toLocalDateTime(TimeZone.UTC),
                     isFavorite = false,
                     source = null
                 )
@@ -131,7 +136,7 @@ internal class AppStateSerializationTest {
     @Test
     fun `test ScreenMessage is serialized correctly`() = with(gsonSerializer) {
 
-        val message = LoadArticles(UUID.randomUUID())
+        val message = LoadArticles(Uuid.random())
 
         val json = toJson(message)
         val fromJson = fromJson(json, ScreenMessage::class.java)

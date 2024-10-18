@@ -39,6 +39,7 @@ dependencies {
     api(project(":tea-time-travel-protocol"))
     api(libs.gson)
     implementation(project(":tea-data"))
+    implementation(libs.kotlinx.datetime)
     implementation(libs.stdlib.reflect)
 
     implementation(libs.stdlib)

@@ -27,7 +27,6 @@ package io.github.xlopec.reader.app.ui.screens.article
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.navigation.Tab
 import io.github.xlopec.reader.app.misc.Idle
@@ -45,11 +44,14 @@ import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.Title
 import io.github.xlopec.reader.app.ui.misc.ColumnMessage
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
-import io.github.xlopec.tea.data.RandomUUID
 import io.github.xlopec.tea.data.UrlFor
-import io.github.xlopec.tea.data.now
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.uuid.Uuid
 
 @Composable
 @Preview
@@ -73,7 +75,7 @@ internal fun ArticleActionsPreview() {
         ArticleActions(
             onMessage = {},
             article = PreviewArticle,
-            screenId = RandomUUID()
+            screenId = Uuid.random()
         )
     }
 }
@@ -163,7 +165,7 @@ internal fun ArticlesScreenRefreshingPreview() {
 internal fun ArticleItemPreview() {
     ThemedPreview {
         ArticleItem(
-            screenId = RandomUUID(),
+            screenId = Uuid.random(),
             article = PreviewArticle,
             onMessage = {}
         )
@@ -195,7 +197,7 @@ private val PreviewArticle = Article(
             "the background color of the composable, and round the corners of the Row, you could " +
             "use the following code"
     ),
-    published = now(),
+    published = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
     isFavorite = true,
     urlToImage = UrlFor("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png"),
     source = null

@@ -28,6 +28,7 @@ package io.github.xlopec.reader.app
 
 import com.google.gson.JsonElement
 import io.github.xlopec.reader.app.command.Command
+import io.github.xlopec.reader.app.serialization.LocalDateTimeSerializer
 import io.github.xlopec.reader.app.serialization.PersistentListSerializer
 import io.github.xlopec.reader.app.serialization.PersistentSetSerializer
 import io.github.xlopec.tea.core.Component
@@ -40,6 +41,7 @@ import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
 import io.ktor.http.Url
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
+import kotlinx.datetime.LocalDateTime
 
 public fun DebuggableAppComponent(
     environment: Environment,
@@ -58,5 +60,6 @@ public fun DebuggableAppComponent(
 
 private fun AppGsonSerializer(): JsonSerializer<JsonElement> = GsonSerializer {
     registerTypeAdapter(PersistentList::class.java, PersistentListSerializer)
+    registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer)
     registerTypeAdapter(PersistentSet::class.java, PersistentSetSerializer)
 }

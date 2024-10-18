@@ -23,6 +23,7 @@
  */
 
 package io.github.xlopec.tea.data
+/*
 
 public expect class Date
 
@@ -33,3 +34,4 @@ public expect fun fromMillis(
 ): Date
 
 public expect fun Date.toMillis(): Long
+*/

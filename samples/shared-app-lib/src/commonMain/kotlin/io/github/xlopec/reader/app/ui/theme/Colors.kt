@@ -24,13 +24,9 @@
 
 package io.github.xlopec.reader.app.ui.theme
 
-import androidx.compose.material.Colors
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
-
-internal val Colors.importantAction: Color
-    get() = if (isLight) Color(0xffdb2a59) else Color(0xffbd2b52)
 
 internal val DarkThemeColors = darkColors(
     primary = Color.White,

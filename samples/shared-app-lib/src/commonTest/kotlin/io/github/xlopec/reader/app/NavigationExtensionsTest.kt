@@ -27,12 +27,12 @@
 package io.github.xlopec.reader.app
 
 import io.github.xlopec.reader.app.feature.navigation.Tab
-import io.github.xlopec.tea.data.RandomUUID
 import io.github.xlopec.tea.navigation.mutate
 import io.github.xlopec.tea.navigation.toStackOrNull
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.uuid.Uuid
 
 class NavigationExtensionsTest {
 
@@ -101,7 +101,7 @@ private fun Group(
 private fun GenerateNestedScreens(
     tab: Tab,
     times: UInt
-) = (0U until times).map { TestNestedScreen(tab, RandomUUID()) }
+) = (0U until times).map { TestNestedScreen(tab, Uuid.random()) }
 
 private fun testScreenBelongsToTab(
     screen: TabScreen,

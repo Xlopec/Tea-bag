@@ -29,12 +29,12 @@ import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.feature.navigation.AppNavigationStack
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
-import io.github.xlopec.tea.data.UUID
 import io.github.xlopec.tea.navigation.mutate
 import io.github.xlopec.tea.navigation.screen
 import io.github.xlopec.tea.navigation.stackOf
+import kotlin.uuid.Uuid
 
-public typealias ScreenId = UUID
+public typealias ScreenId = Uuid
 
 @Immutable
 public data class AppState internal constructor(

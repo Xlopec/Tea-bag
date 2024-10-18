@@ -1,11 +1,14 @@
 package io.github.xlopec.reader.app.model
 
-import io.github.xlopec.tea.data.Date
-import java.text.SimpleDateFormat
+import android.annotation.SuppressLint
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toJavaLocalDateTime
 import java.util.*
+import java.time.format.DateTimeFormatter as JavaDateTimeFormatter
 
-private val DateFormatter: SimpleDateFormat by lazy {
-    SimpleDateFormat("dd MMM' at 'hh:mm", Locale.getDefault())
+@SuppressLint("ConstantLocale")
+private val DateTimeFormatter: JavaDateTimeFormatter = JavaDateTimeFormatter.ofPattern("dd MMM' at 'HH:mm", Locale.getDefault())
+
+public actual fun LocalDateTime.formatted(): String {
+    return DateTimeFormatter.format(toJavaLocalDateTime())
 }
-
-public actual fun Date.formatted(): String = DateFormatter.format(this)

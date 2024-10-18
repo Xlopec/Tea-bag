@@ -52,7 +52,6 @@ import io.github.xlopec.reader.environment.anyArticleRequest
 import io.github.xlopec.reader.environment.setTestContent
 import io.github.xlopec.tea.core.ExperimentalTeaApi
 import io.github.xlopec.tea.core.toStatesComponent
-import io.github.xlopec.tea.data.RandomUUID
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Rule
 import org.junit.Test
@@ -70,7 +69,7 @@ internal class AppTest {
             AppTheme(isDarkModeEnabled = true) {
                 Articles(
                     state = ArticlesState.newLoading(
-                        id = RandomUUID(),
+                        id = Uuid.random(),
                         filter = Filter(Regular, Query.of("Input text")),
                         articles = persistentListOf()
                     ),

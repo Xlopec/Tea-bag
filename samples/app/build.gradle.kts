@@ -161,7 +161,9 @@ dependencies {
     implementation(libs.splashscreen)
 
     testImplementation(project(":tea-data"))
+    testImplementation(libs.kotlinx.datetime)
     androidTestImplementation(project(":tea-data"))
+    androidTestImplementation(libs.kotlinx.datetime)
 
     androidTestUtil(libs.android.test.orchestrator)
     @OptIn(ExperimentalComposeLibrary::class)

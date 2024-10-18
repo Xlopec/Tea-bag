@@ -37,6 +37,9 @@ group = "io.github.xlopec"
 
 kotlin {
     explicitApi()
+    compilerOptions {
+        optIn.addAll(DefaultOptIns)
+    }
 }
 
 val packSourcesJar by tasks.creating(Jar::class) {
