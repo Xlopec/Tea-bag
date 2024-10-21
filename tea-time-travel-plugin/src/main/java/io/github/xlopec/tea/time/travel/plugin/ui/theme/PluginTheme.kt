@@ -31,6 +31,8 @@ import io.kanro.compose.jetbrains.JBTypography
 import io.kanro.compose.jetbrains.color.PanelColors
 import io.kanro.compose.jetbrains.color.TextColors
 import io.kanro.compose.jetbrains.control.JPanel
+import org.jetbrains.jewel.bridge.theme.SwingBridgeTheme
+import org.jetbrains.jewel.foundation.ExperimentalJewelApi
 
 private val PreviewPanelColors = PanelColors(Color.Black, Color.Gray, Color(45, 48, 50))
 
@@ -40,14 +42,17 @@ val JBTheme.contrastBorderColor: Color
     @Composable
     get() = LocalPluginColors.current.contrastBorderColor
 
+@OptIn(ExperimentalJewelApi::class)
 @Composable
 fun PluginTheme(
     content: @Composable () -> Unit,
 ) {
-    val themeColors = PluginThemeColors()
+   /* val themeColors = PluginThemeColors()
     val jbTypography = JBTypography(themeColors.textColors, UISettings.getInstance().fontSize)
+*/
+    SwingBridgeTheme(content)
 
-    JBTheme(
+    /*JBTheme(
         textColors = themeColors.textColors,
         panelColors = themeColors.panelColors,
         typography = jbTypography,
@@ -62,7 +67,7 @@ fun PluginTheme(
         CompositionLocalProvider(LocalPluginColors provides themeColors) {
             content()
         }
-    }
+    }*/
 }
 
 private fun JBTypography(

@@ -30,6 +30,6 @@ fun Iterable<IDEVersion>.latest(): IDEVersion = sortedWith(IDEVersionComparator)
 
 fun Iterable<IDEVersion>.oldest(): IDEVersion = sortedWith(IDEVersionComparator).first()
 
-val IDEVersion.versionName: String get() = "${product.value}-$year.$release"
+val IDEVersion.versionName: String get() = "$year.$release"
 
 val IDEVersion.buildNumber: String get() = "${year % 100}$release"

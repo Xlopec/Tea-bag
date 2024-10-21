@@ -23,20 +23,24 @@
  */
 
 import org.jetbrains.compose.compose
-import org.jetbrains.intellij.tasks.PatchPluginXmlTask
-import org.jetbrains.intellij.tasks.PublishPluginTask
 
 plugins {
     `maven-publish`
     `java-library`
     kotlin("jvm")
-    id("org.jetbrains.intellij")
+    id("org.jetbrains.intellij.platform")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
 repositories {
+    mavenCentral()
     maven("https://packages.jetbrains.team/maven/p/kpm/public/")
+
+    intellijPlatform {
+        // use the recommended repository list
+        defaultRepositories()
+    }
 }
 
 val supportedVersions = listOf(
@@ -44,7 +48,7 @@ val supportedVersions = listOf(
     IDEVersion(Product.IC, 2024, 1),
 )
 
-intellij {
+/*intellij {
     val idePath = getenvSafe("IJ_C")
 
     if (isCiEnv || idePath == null) {
@@ -57,9 +61,9 @@ intellij {
     }
 
     plugins.add("com.intellij.java")
-}
+}*/
 
-tasks.named<org.jetbrains.intellij.tasks.RunPluginVerifierTask>("runPluginVerifier") {
+/*tasks.named<org.jetbrains.intellij.tasks.RunPluginVerifierTask>("runPluginVerifier") {
     ideVersions.set(supportedVersions.map { it.versionName })
 }
 
@@ -72,7 +76,7 @@ tasks.named<PublishPluginTask>("publishPlugin") {
     token.set(ciVariable("PUBLISH_PLUGIN_TOKEN"))
     channels.set(pluginReleaseChannels)
     dependsOn("runPluginVerifier")
-}
+}*/
 
 tasks.withType<JavaCompile>().configureEach {
     targetCompatibility = "17"
@@ -141,7 +145,7 @@ fun shouldUseForcedCoroutinesVersion(
         details.requested.module.name.startsWith("kotlinx-coroutines") &&
         details.requested.version != version
 
-configurations.configureEach {
+/*configurations.configureEach {
     resolutionStrategy.eachDependency {
         val forcedVersion = "1.6.4"
         if (shouldUseForcedCoroutinesVersion(this@configureEach, this@eachDependency, forcedVersion)) {
@@ -154,11 +158,55 @@ configurations.configureEach {
             )
         }
     }
+}*/
+
+intellijPlatform {
+    pluginConfiguration {
+        id = "com.github.Xlopec.elm.time.travel"
+        name = "Time Travel Debugger"
+        vendor {
+            name = "Maksym Oliinyk"
+            email = "maksimolejn720@gmail.com"
+        }
+        version.set(libraryVersion.toVersionName())
+        ideaVersion {
+            sinceBuild.set(supportedVersions.oldest().buildNumber)
+        }
+    }
+
+    publishing {
+        token.set(ciVariable("PUBLISH_PLUGIN_TOKEN"))
+        channels.set(pluginReleaseChannels)
+    }
+
+    /*pluginVerification {
+        ides {
+            recommended()
+        }
+    }*/
 }
 
 dependencies {
+    intellijPlatform {
+        pluginVerifier()
+        val idePath = getenvSafe("IJ_C")
 
-    implementation(project(":tea-core"))
+        if (isCiEnv || idePath == null) {
+            val ideVersion = supportedVersions.latest().versionName
+            logger.info("IDE of version $ideVersion will be used")
+            intellijIdeaCommunity(ideVersion)
+        } else {
+            logger.info("Local IDE distribution will be used located at $idePath")
+            local(idePath)
+        }
+
+        instrumentationTools()
+        bundledPlugin("com.intellij.java")
+    }
+
+    implementation(project(":tea-core")) {
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
+    }
     implementation(project(":tea-time-travel-protocol"))
     implementation(project(":tea-time-travel-adapter-gson"))
     implementation(project(":tea-data"))
@@ -170,8 +218,13 @@ dependencies {
 
     implementation("org.jetbrains.jewel:jewel-ide-laf-bridge-242:0.25.0")
 
+    api(compose.desktop.currentOs) {
+        exclude(group = "org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.kotlinx")
+    }
+
     // FIXME this is a temporary workaround
-    implementation(compose.desktop.macos_arm64) {
+    /*implementation(compose.desktop.macos_arm64) {
         exclude("org.jetbrains.compose.material")
     }
     implementation(compose.desktop.macos_x64) {
@@ -185,15 +238,21 @@ dependencies {
     }
     implementation(compose.desktop.windows_x64) {
         exclude("org.jetbrains.compose.material")
-    }
+    }*/
 
     @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-    implementation(compose.desktop.components.splitPane)
-    implementation("com.bybutter.compose:compose-jetbrains-theme")
+    implementation(compose.desktop.components.splitPane) {
+        exclude(group = "org.jetbrains.kotlinx")
+    }
+    implementation("com.bybutter.compose:compose-jetbrains-theme") {
+        exclude(group = "org.jetbrains.kotlinx")
+    }
     implementation(libs.logging)
 
-    implementation(libs.bundles.ktor.server)
-    implementation(libs.coroutines.core)
+    implementation(libs.bundles.ktor.server) {
+        exclude(group = "org.jetbrains.kotlinx")
+    }
+    //implementation(libs.coroutines.core)
     implementation(libs.collections.immutable)
 
     testImplementation(libs.ktor.server.tests)
