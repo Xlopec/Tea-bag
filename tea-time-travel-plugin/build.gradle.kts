@@ -35,9 +35,13 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+repositories {
+    maven("https://packages.jetbrains.team/maven/p/kpm/public/")
+}
+
 val supportedVersions = listOf(
-    IDEVersion(Product.IC, 2023, 3),
-    IDEVersion(Product.IC, 2023, 2),
+    IDEVersion(Product.IC, 2024, 2),
+    IDEVersion(Product.IC, 2024, 1),
 )
 
 intellij {
@@ -163,6 +167,8 @@ dependencies {
     implementation(libs.stdlib)
     implementation(libs.stdlib.reflect)
     implementation(libs.arrow.core)
+
+    implementation("org.jetbrains.jewel:jewel-ide-laf-bridge-242:0.25.0")
 
     // FIXME this is a temporary workaround
     implementation(compose.desktop.macos_arm64) {
