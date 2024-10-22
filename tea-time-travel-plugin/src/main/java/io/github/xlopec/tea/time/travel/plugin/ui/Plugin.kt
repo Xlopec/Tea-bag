@@ -21,7 +21,6 @@ package io.github.xlopec.tea.time.travel.plugin.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,12 +29,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowExceptionHandler
 import com.google.gson.GsonBuilder
@@ -43,8 +45,9 @@ import com.intellij.diagnostic.AttachmentFactory
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
+import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.RemoveComponent
+import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.SelectComponent
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.Component
-import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTab
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.info.InfoView
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
@@ -59,6 +62,7 @@ import io.github.xlopec.tea.time.travel.plugin.model.hasAttachedComponents
 import io.github.xlopec.tea.time.travel.plugin.model.isStarted
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginTheme
 import io.github.xlopec.tea.time.travel.plugin.util.toJson
+import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -70,6 +74,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import org.jetbrains.jewel.foundation.theme.JewelTheme
+import org.jetbrains.jewel.ui.component.SimpleTabContent
+import org.jetbrains.jewel.ui.component.TabData
+import org.jetbrains.jewel.ui.component.TabStrip
+import org.jetbrains.jewel.ui.theme.defaultTabStyle
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -77,6 +86,10 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 internal val LocalPlatform = staticCompositionLocalOf<Platform> { error("No platform implementation provided") }
+
+internal fun ComponentTabTag(
+    id: ComponentId,
+) = "component tab '${id.value}'"
 
 context (Logger, Project) @OptIn(ExperimentalComposeUiApi::class)
 internal fun PluginSwingAdapter(
@@ -176,20 +189,39 @@ internal fun CoroutineScope.messageHandlerFor(
 @Composable
 private fun ComponentsView(
     state: State,
-    events: MessageHandler,
+    handler: MessageHandler,
 ) {
     val debugger = state.debugger
 
     require(debugger.components.isNotEmpty())
     requireNotNull(debugger.selectedComponent)
 
-    Row {
-        debugger.components.values.forEach { component ->
-            ComponentTab(component.id, debugger.selectedComponent, events)
+    val data by remember(debugger.components.values) {
+        derivedStateOf {
+            debugger.components.values.map { component ->
+                TabData.Default(
+                    selected = debugger.selectedComponent == component.id,
+                    content = { tabState ->
+                        SimpleTabContent(
+                            modifier = Modifier.testTag(ComponentTabTag(component.id)),
+                            label = component.id.value,
+                            state = tabState,
+                        )
+                    },
+                    onClose = { handler(RemoveComponent(component.id)) },
+                    onClick = { handler(SelectComponent(component.id)) },
+                )
+            }
         }
     }
 
-    Component(state, debugger.componentOrThrow(debugger.selectedComponent), events)
+    TabStrip(
+        modifier = Modifier.fillMaxWidth(),
+        tabs = data,
+        style = JewelTheme.defaultTabStyle,
+    )
+
+    Component(state, debugger.componentOrThrow(debugger.selectedComponent), handler)
 }
 
 context (Logger) private fun handleFatalException(

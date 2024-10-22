@@ -244,9 +244,9 @@ dependencies {
     implementation(compose.desktop.components.splitPane) {
         exclude(group = "org.jetbrains.kotlinx")
     }
-    implementation("com.bybutter.compose:compose-jetbrains-theme") {
+   /* implementation("com.bybutter.compose:compose-jetbrains-theme") {
         exclude(group = "org.jetbrains.kotlinx")
-    }
+    }*/
     implementation(libs.logging)
 
     implementation(libs.bundles.ktor.server) {
