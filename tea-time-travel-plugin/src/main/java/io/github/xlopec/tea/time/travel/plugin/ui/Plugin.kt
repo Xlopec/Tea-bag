@@ -19,7 +19,6 @@
 package io.github.xlopec.tea.time.travel.plugin.ui
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -91,7 +90,8 @@ internal fun ComponentTabTag(
     id: ComponentId,
 ) = "component tab '${id.value}'"
 
-context (Logger, Project) @OptIn(ExperimentalComposeUiApi::class)
+context (Logger, Project)
+@OptIn(ExperimentalComposeUiApi::class)
 internal fun PluginSwingAdapter(
     component: (Flow<Message>) -> Flow<State>,
 ) = ComposePanel()
@@ -112,17 +112,15 @@ internal fun Plugin(
     component: (Flow<Message>) -> Flow<State>,
     messages: MutableSharedFlow<Message> = remember { MutableSharedFlow() },
 ) {
-    Box {
-        val stateFlow = remember { component(messages) }
-        val state = stateFlow.collectAsState(initial = null).value
+    val stateFlow = remember { component(messages) }
+    val state = stateFlow.collectAsState(initial = null).value
 
-        if (state != null) {
-            CompositionLocalProvider(LocalPlatform provides platform) {
-                val scope = rememberCoroutineScope()
-                val messageHandler = remember { scope.messageHandlerFor(messages) }
+    if (state != null) {
+        CompositionLocalProvider(LocalPlatform provides platform) {
+            val scope = rememberCoroutineScope()
+            val messageHandler = remember { scope.messageHandlerFor(messages) }
 
-                Plugin(state, messageHandler)
-            }
+            Plugin(state, messageHandler)
         }
     }
 }
@@ -196,20 +194,20 @@ private fun ComponentsView(
     require(debugger.components.isNotEmpty())
     requireNotNull(debugger.selectedComponent)
 
-    val data by remember(debugger.components.values) {
+    val tabData by remember(debugger.components.keys, debugger.selectedComponent) {
         derivedStateOf {
-            debugger.components.values.map { component ->
+            debugger.components.keys.map { id ->
                 TabData.Default(
-                    selected = debugger.selectedComponent == component.id,
+                    selected = debugger.selectedComponent == id,
                     content = { tabState ->
                         SimpleTabContent(
-                            modifier = Modifier.testTag(ComponentTabTag(component.id)),
-                            label = component.id.value,
+                            modifier = Modifier.testTag(ComponentTabTag(id)),
+                            label = id.value,
                             state = tabState,
                         )
                     },
-                    onClose = { handler(RemoveComponent(component.id)) },
-                    onClick = { handler(SelectComponent(component.id)) },
+                    onClose = { handler(RemoveComponent(id)) },
+                    onClick = { handler(SelectComponent(id)) },
                 )
             }
         }
@@ -217,7 +215,7 @@ private fun ComponentsView(
 
     TabStrip(
         modifier = Modifier.fillMaxWidth(),
-        tabs = data,
+        tabs = tabData,
         style = JewelTheme.defaultTabStyle,
     )
 
