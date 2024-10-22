@@ -79,9 +79,10 @@ import io.github.xlopec.tea.time.travel.plugin.model.stringValue
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons.Expand
 import io.github.xlopec.tea.time.travel.plugin.util.clickable
 import io.kanro.compose.jetbrains.LocalTypography
-import io.kanro.compose.jetbrains.control.DropdownMenu
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.Icon
+import org.jetbrains.jewel.ui.component.MenuScope
+import org.jetbrains.jewel.ui.component.PopupMenu
 import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.icon.IconKey
 import org.jetbrains.jewel.ui.icons.AllIconsKeys
@@ -111,7 +112,7 @@ fun Tree(
     modifier: Modifier = Modifier,
     root: Value,
     formatter: TreeFormatter,
-    valuePopupContent: @Composable (Value) -> Unit,
+    valuePopupContent: MenuScope.(Value) -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -142,8 +143,8 @@ fun Tree(
     modifier: Modifier = Modifier,
     roots: List<FilteredSnapshot>,
     formatter: TreeFormatter,
-    valuePopupContent: @Composable (Value) -> Unit,
-    snapshotPopupContent: @Composable (FilteredSnapshot) -> Unit,
+    valuePopupContent: MenuScope.(Value) -> Unit,
+    snapshotPopupContent: MenuScope.(FilteredSnapshot) -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -180,7 +181,7 @@ private fun SubTree(
     level: Int,
     text: String,
     state: TreeSelectionState,
-    valuePopupContent: @Composable (Value) -> Unit,
+    valuePopupContent: MenuScope.(Value) -> Unit,
 ) = when (value) {
     is StringWrapper, is CharWrapper, is NumberWrapper, is BooleanWrapper, Null -> LeafNode(
         modifier = Modifier.fillMaxWidth().testTag(Tag(value)),
@@ -200,8 +201,8 @@ private fun SubTree(
 private fun SnapshotSubTree(
     snapshot: FilteredSnapshot,
     state: TreeSelectionState,
-    valuePopupContent: @Composable (Value) -> Unit,
-    snapshotPopupContent: @Composable (FilteredSnapshot) -> Unit,
+    valuePopupContent: MenuScope.(Value) -> Unit,
+    snapshotPopupContent: MenuScope.(FilteredSnapshot) -> Unit,
 ) {
     val expanded = LocalInitialExpandState.current
     val expandState = remember { mutableStateOf(expanded) }
@@ -272,7 +273,7 @@ private fun ReferenceSubTree(
     text: String,
     ref: Ref,
     state: TreeSelectionState,
-    valuePopupContent: @Composable (Value) -> Unit,
+    valuePopupContent: MenuScope.(Value) -> Unit,
 ) {
     if (ref.properties.isEmpty()) {
         LeafNode(
@@ -315,7 +316,7 @@ private fun CollectionSubTree(
     level: Int,
     text: String,
     state: TreeSelectionState,
-    valuePopupContent: @Composable (Value) -> Unit,
+    valuePopupContent: MenuScope.(Value) -> Unit,
 ) {
     if (collection.items.isEmpty()) {
         LeafNode(
@@ -359,19 +360,18 @@ private fun LeafNode(
     icon: IconKey,
     node: Any,
     state: TreeSelectionState,
-    popupContent: @Composable () -> Unit,
+    popupContent: MenuScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(modifier = modifier) {
         val showPopup = remember { mutableStateOf(false) }
-        val offset = remember { mutableStateOf(DpOffset(0.dp, 0.dp)) }
 
-        DropdownMenu(
-            onDismissRequest = { showPopup.value = false },
-            expanded = showPopup.value,
-            offset = offset.value,
-        ) {
-            popupContent()
+        if (showPopup.value) {
+            PopupMenu(
+                onDismissRequest = { showPopup.value = false; true },
+                horizontalAlignment = Alignment.Start,
+                content = popupContent
+            )
         }
 
         TreeRow(
@@ -384,7 +384,6 @@ private fun LeafNode(
                     state.value = node
 
                     if (buttons.isSecondaryPressed) {
-                        offset.value = upOffset + PointerCaptureInputAvoidanceOffset
                         showPopup.value = true
                     }
                 },
@@ -403,19 +402,18 @@ private fun ExpandableNode(
     node: Any,
     state: TreeSelectionState,
     expandedState: MutableState<Boolean>,
-    popupContent: @Composable () -> Unit,
+    popupContent: MenuScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(modifier = modifier) {
         val showPopup = remember { mutableStateOf(false) }
-        val offset = remember { mutableStateOf(DpOffset(0.dp, 0.dp)) }
 
-        DropdownMenu(
-            onDismissRequest = { showPopup.value = false },
-            expanded = showPopup.value,
-            offset = offset.value,
-        ) {
-            popupContent()
+        if (showPopup.value) {
+            PopupMenu(
+                onDismissRequest = { showPopup.value = false; true },
+                horizontalAlignment = Alignment.Start,
+                content = popupContent
+            )
         }
 
         TreeRow(
@@ -429,7 +427,6 @@ private fun ExpandableNode(
                     if (buttons.isPrimaryPressed) {
                         expandedState.value = !expandedState.value
                     } else if (buttons.isSecondaryPressed) {
-                        offset.value = upOffset + PointerCaptureInputAvoidanceOffset
                         showPopup.value = true
                     }
                 },
