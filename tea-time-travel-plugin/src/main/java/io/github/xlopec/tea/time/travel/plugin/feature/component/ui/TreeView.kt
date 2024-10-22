@@ -31,7 +31,6 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.component.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -56,14 +55,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.github.xlopec.tea.time.travel.plugin.model.BooleanWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.CharWrapper
@@ -76,9 +73,7 @@ import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
 import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
 import io.github.xlopec.tea.time.travel.plugin.model.Value
 import io.github.xlopec.tea.time.travel.plugin.model.stringValue
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons.Expand
 import io.github.xlopec.tea.time.travel.plugin.util.clickable
-import io.kanro.compose.jetbrains.LocalTypography
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.Icon
 import org.jetbrains.jewel.ui.component.MenuScope
@@ -102,11 +97,6 @@ internal fun Tag(
 internal val LocalInitialExpandState = compositionLocalOf { false }
 private val LocalTreeFormatter = compositionLocalOf<TreeFormatter> { error("TreeFormatter wasn't provided") }
 
-/**
- * Additional `y` offset so that when user opens DropDown menu the top most item isn't hovered by pointer input
- */
-private val PointerCaptureInputAvoidanceOffset = DpOffset(0.dp, 3.dp)
-
 @Composable
 fun Tree(
     modifier: Modifier = Modifier,
@@ -124,7 +114,7 @@ fun Tree(
             CompositionLocalProvider(LocalTreeFormatter provides formatter) {
                 Text(
                     modifier = Modifier.padding(all = 4.dp),
-                    style = LocalTypography.current.defaultBold,
+                    style = JewelTheme.defaultTextStyle.copy(fontWeight = FontWeight.SemiBold),
                     text = "State"
                 )
                 SubTree(root, 0, formatter(root), selection, valuePopupContent)
@@ -237,7 +227,7 @@ private fun SnapshotSubTree(
         if (snapshot.message != null) {
 
             Text(
-                style = LocalTypography.current.defaultBold,
+                style = JewelTheme.defaultTextStyle.copy(fontWeight = FontWeight.SemiBold),
                 modifier = Modifier.fillMaxWidth().indentLevel(1),
                 text = "Message"
             )
@@ -247,7 +237,7 @@ private fun SnapshotSubTree(
 
         if (snapshot.state != null) {
             Text(
-                style = LocalTypography.current.defaultBold,
+                style = JewelTheme.defaultTextStyle.copy(fontWeight = FontWeight.SemiBold),
                 modifier = Modifier.fillMaxWidth().indentLevel(1),
                 text = "State"
             )
@@ -257,7 +247,7 @@ private fun SnapshotSubTree(
 
         if (snapshot.commands != null) {
             Text(
-                style = LocalTypography.current.defaultBold,
+                style = JewelTheme.defaultTextStyle.copy(fontWeight = FontWeight.SemiBold),
                 modifier = Modifier.fillMaxWidth().indentLevel(1),
                 text = "Commands"
             )
@@ -405,42 +395,38 @@ private fun ExpandableNode(
     popupContent: MenuScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    BoxWithConstraints(modifier = modifier) {
-        val showPopup = remember { mutableStateOf(false) }
+    val showPopup = remember { mutableStateOf(false) }
 
-        if (showPopup.value) {
-            PopupMenu(
-                onDismissRequest = { showPopup.value = false; true },
-                horizontalAlignment = Alignment.Start,
-                content = popupContent
-            )
-        }
-
-        TreeRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .selected(state.value === node)
-                .indentLevel(level)
-                .clickable { _, upOffset ->
-                    state.value = node
-
-                    if (buttons.isPrimaryPressed) {
-                        expandedState.value = !expandedState.value
-                    } else if (buttons.isSecondaryPressed) {
-                        showPopup.value = true
-                    }
-                },
-            text = text,
-            icon = icon,
-            leadingIcon = {
-                Image(
-                    modifier = Modifier.graphicsLayer(rotationZ = if (expandedState.value) 90f else 0f),
-                    painter = Expand,
-                    contentDescription = null
-                )
-            }
+    if (showPopup.value) {
+        PopupMenu(
+            onDismissRequest = { showPopup.value = false; true },
+            horizontalAlignment = Alignment.Start,
+            content = popupContent
         )
     }
+
+    TreeRow(
+        modifier = modifier
+            .selected(state.value === node)
+            .indentLevel(level)
+            .clickable { _, upOffset ->
+                state.value = node
+
+                if (buttons.isPrimaryPressed) {
+                    expandedState.value = !expandedState.value
+                } else if (buttons.isSecondaryPressed) {
+                    showPopup.value = true
+                }
+            },
+        text = text,
+        icon = icon,
+        leadingIcon = {
+            Icon(
+                key = if (expandedState.value) AllIconsKeys.General.ChevronDown else AllIconsKeys.General.ChevronRight,
+                contentDescription = null
+            )
+        }
+    )
 }
 
 @Composable
@@ -469,8 +455,6 @@ private fun TreeRow(
     }
 }
 
-private val IndentPadding = 12.dp
-
 @Composable
 private fun Modifier.selected(
     isSelected: Boolean,
@@ -478,10 +462,12 @@ private fun Modifier.selected(
 
 private fun Modifier.indentLevel(
     level: Int,
-    step: Dp = IndentPadding,
-) = padding(
-    start = Dp(step.value * level) + 4.dp,
-    top = 2.dp,
-    end = 4.dp,
-    bottom = 2.dp
-)
+) = composed {
+    val indentSize = JewelTheme.treeStyle.metrics.indentSize
+    padding(
+        start = (indentSize * level) + 4.dp,
+        top = 2.dp,
+        end = 4.dp,
+        bottom = 2.dp
+    )
+}
