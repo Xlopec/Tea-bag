@@ -17,15 +17,12 @@
 package io.github.xlopec.tea.time.travel.plugin.ui.theme
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.sp
-import com.intellij.ide.ui.UISettings
 import io.kanro.compose.jetbrains.JBTheme
 import io.kanro.compose.jetbrains.JBTypography
 import io.kanro.compose.jetbrains.color.PanelColors
@@ -36,11 +33,11 @@ import org.jetbrains.jewel.foundation.ExperimentalJewelApi
 
 private val PreviewPanelColors = PanelColors(Color.Black, Color.Gray, Color(45, 48, 50))
 
-@Suppress("unused")
+/*@Suppress("unused")
 val JBTheme.contrastBorderColor: Color
     @ReadOnlyComposable
     @Composable
-    get() = LocalPluginColors.current.contrastBorderColor
+    get() = LocalPluginColors.current.contrastBorderColor*/
 
 @OptIn(ExperimentalJewelApi::class)
 @Composable

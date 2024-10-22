@@ -5,16 +5,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.canExport
 import io.github.xlopec.tea.time.travel.plugin.model.canStart
 import io.github.xlopec.tea.time.travel.plugin.model.isStarted
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons
-import io.kanro.compose.jetbrains.control.ActionButton
-import io.kanro.compose.jetbrains.control.Icon
+import org.jetbrains.jewel.ui.component.ActionButton
+import org.jetbrains.jewel.ui.component.Icon
+import org.jetbrains.jewel.ui.icon.IntelliJIconKey
+import org.jetbrains.jewel.ui.icons.AllIconsKeys
 
 internal const val ImportButtonTag = "import button"
 internal const val ExportButtonTag = "export button"
@@ -36,21 +36,21 @@ internal fun ActionsMenu(
     ) {
         ActionButton(
             modifier = Modifier.testTag(SettingsButtonTag),
-            painter = ActionIcons.Settings,
+            icon = AllIconsKeys.Actions.InlayGear,
             contentDescription = "Settings",
             onClick = onSettingsAction,
         )
 
         ActionButton(
             modifier = Modifier.testTag(ImportButtonTag),
-            painter = ActionIcons.Import,
+            icon = AllIconsKeys.ToolbarDecorator.Import,
             contentDescription = "Import session",
             onClick = onImportSession,
         )
 
         ActionButton(
             modifier = Modifier.testTag(ExportButtonTag),
-            painter = ActionIcons.Export,
+            icon = AllIconsKeys.ToolbarDecorator.Export,
             contentDescription = "Export session",
             onClick = onExportSession,
             enabled = state.canExport
@@ -58,7 +58,7 @@ internal fun ActionsMenu(
 
         ActionButton(
             modifier = Modifier.testTag(ServerActionButtonTag),
-            painter = state.serverActionIcon,
+            icon = state.serverActionIcon,
             contentDescription = "Start/Stop server",
             onClick = onServerAction,
             enabled = state.isStarted || state.canStart
@@ -69,7 +69,7 @@ internal fun ActionsMenu(
 @Composable
 internal fun ActionButton(
     modifier: Modifier,
-    painter: Painter,
+    icon: IntelliJIconKey,
     contentDescription: String,
     onClick: () -> Unit,
     enabled: Boolean = true,
@@ -80,12 +80,11 @@ internal fun ActionButton(
         onClick = onClick
     ) {
         Icon(
-            painter = painter,
-            contentDescription = contentDescription
+            key = icon,
+            contentDescription = contentDescription,
         )
     }
 }
 
-private val State.serverActionIcon: Painter
-    @Composable
-    get() = if (server == null) ActionIcons.Execute else ActionIcons.Suspend
+private val State.serverActionIcon: IntelliJIconKey
+    get() = if (server == null) AllIconsKeys.Actions.Execute else AllIconsKeys.Actions.Suspend

@@ -1,6 +1,9 @@
 package io.github.xlopec.tea.time.travel.plugin.ui.theme
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import com.intellij.ide.ui.LafManagerListener
 import com.intellij.openapi.application.ApplicationManager
@@ -16,7 +19,7 @@ import io.kanro.compose.jetbrains.color.ToolBarColors
 import javax.swing.UIManager
 import java.awt.Color as AWTColor
 
-val LocalPluginColors = compositionLocalOf<PluginThemeColors> { error("theme colors aren't provided") }
+//val LocalPluginColors = compositionLocalOf<PluginThemeColors> { error("theme colors aren't provided") }
 
 interface PluginThemeColors {
     val toolbarColors: ToolBarColors

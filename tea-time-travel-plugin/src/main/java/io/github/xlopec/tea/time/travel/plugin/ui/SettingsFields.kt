@@ -21,7 +21,7 @@ import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.areSettingsModifiable
 import io.github.xlopec.tea.time.travel.plugin.ui.control.ValidatedTextField
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
-import io.kanro.compose.jetbrains.control.Text
+import org.jetbrains.jewel.ui.component.Text
 import kotlin.math.roundToInt
 
 internal const val HostFieldTag = "host field"

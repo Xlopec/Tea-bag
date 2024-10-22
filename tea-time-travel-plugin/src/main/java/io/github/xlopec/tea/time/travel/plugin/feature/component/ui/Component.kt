@@ -2,8 +2,13 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.component.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -12,13 +17,14 @@ import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.isStarted
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.contrastBorderColor
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
-import io.kanro.compose.jetbrains.JBTheme
-import io.kanro.compose.jetbrains.control.jBorder
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.VerticalSplitPane
 import org.jetbrains.compose.splitpane.rememberSplitPaneState
+import org.jetbrains.jewel.foundation.Stroke
+import org.jetbrains.jewel.foundation.modifier.border
+import org.jetbrains.jewel.foundation.theme.JewelTheme
+import org.jetbrains.jewel.ui.theme.dividerStyle
 
 private val SplitPaneMinContentHeight = 100.dp
 
@@ -51,7 +57,7 @@ internal fun Component(
         VerticalSplitPane(splitPaneState = splitterState) {
             first(SplitPaneMinContentHeight) {
                 Tree(
-                    modifier = Modifier.fillMaxSize().jBorder(all = 1.dp, JBTheme.contrastBorderColor),
+                    modifier = Modifier.fillMaxSize().border(Stroke.Alignment.Inside, 1.dp, JewelTheme.dividerStyle.color),
                     roots = component.filteredSnapshots,
                     formatter = formatter,
                     valuePopupContent = { value -> ValuePopup(value, formatter) },
@@ -61,7 +67,7 @@ internal fun Component(
 
             second(SplitPaneMinContentHeight) {
                 Tree(
-                    modifier = Modifier.fillMaxSize().jBorder(all = 1.dp, JBTheme.contrastBorderColor),
+                    modifier = Modifier.fillMaxSize().border(Stroke.Alignment.Inside, 1.dp, JewelTheme.dividerStyle.color),
                     root = component.state,
                     formatter = formatter,
                     valuePopupContent = { ValuePopup(it, formatter) }
@@ -74,7 +80,6 @@ internal fun Component(
                         Modifier
                             .width(1.dp)
                             .fillMaxHeight()
-                            .background(JBTheme.contrastBorderColor)
                     )
                 }
             }

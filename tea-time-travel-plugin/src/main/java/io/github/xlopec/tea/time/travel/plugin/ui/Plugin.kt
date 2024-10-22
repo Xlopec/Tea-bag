@@ -18,8 +18,21 @@
 
 package io.github.xlopec.tea.time.travel.plugin.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
@@ -39,13 +52,24 @@ import io.github.xlopec.tea.time.travel.plugin.feature.server.StopServer
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.ImportSession
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.integration.Platform
-import io.github.xlopec.tea.time.travel.plugin.model.*
 import io.github.xlopec.tea.time.travel.plugin.model.State
+import io.github.xlopec.tea.time.travel.plugin.model.componentIds
+import io.github.xlopec.tea.time.travel.plugin.model.componentOrThrow
+import io.github.xlopec.tea.time.travel.plugin.model.hasAttachedComponents
+import io.github.xlopec.tea.time.travel.plugin.model.isStarted
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginTheme
 import io.github.xlopec.tea.time.travel.plugin.util.toJson
-import io.kanro.compose.jetbrains.control.JPanel
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -75,7 +99,7 @@ internal fun Plugin(
     component: (Flow<Message>) -> Flow<State>,
     messages: MutableSharedFlow<Message> = remember { MutableSharedFlow() },
 ) {
-    JPanel(modifier = Modifier.fillMaxSize()) {
+    Box {
         val stateFlow = remember { component(messages) }
         val state = stateFlow.collectAsState(initial = null).value
 

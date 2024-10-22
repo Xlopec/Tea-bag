@@ -37,10 +37,10 @@ import arrow.typeclasses.Semigroup
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons
-import io.kanro.compose.jetbrains.control.ActionButton
-import io.kanro.compose.jetbrains.control.Icon
-import io.kanro.compose.jetbrains.control.Text
+import org.jetbrains.jewel.ui.component.ActionButton
+import org.jetbrains.jewel.ui.component.Icon
+import org.jetbrains.jewel.ui.component.Text
+import org.jetbrains.jewel.ui.icons.AllIconsKeys
 import java.util.*
 
 internal const val InfoViewTag = "info view"
@@ -57,7 +57,11 @@ fun InfoView(
     ) {
         val content = remember(state.server, state.debugger.settings) { state.toContent(handler) }
 
-        Text(text = content.description, textAlign = Justify, inlineContent = content.inlineContent)
+        Text(
+            text = content.description,
+            textAlign = Justify,
+            inlineContent = content.inlineContent,
+        )
     }
 }
 
@@ -106,7 +110,7 @@ private fun serverCanRunContent(handler: MessageHandler): InfoViewContent {
                 onClick = { handler(StartServer) }
             ) {
                 Icon(
-                    painter = ActionIcons.Execute,
+                    key = AllIconsKeys.Actions.Execute,
                     modifier = Modifier.fillMaxSize(),
                     contentDescription = "Start server"
                 )
