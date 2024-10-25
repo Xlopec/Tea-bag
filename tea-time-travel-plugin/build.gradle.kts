@@ -23,6 +23,7 @@
  */
 
 import org.jetbrains.compose.ExperimentalComposeLibrary
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 
 plugins {
     `maven-publish`
@@ -144,11 +145,12 @@ intellijPlatform {
         channels.set(pluginReleaseChannels)
     }
 
-    /*pluginVerification {
+    pluginVerification {
         ides {
-            recommended()
+            ide(type = IntelliJPlatformType.IntellijIdeaCommunity, supportedVersions.latest().versionName)
+            ide(type = IntelliJPlatformType.IntellijIdeaCommunity, supportedVersions.oldest().versionName)
         }
-    }*/
+    }
 }
 
 dependencies {

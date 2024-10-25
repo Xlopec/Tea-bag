@@ -46,7 +46,6 @@ data class ApplyMessage(
     val snapshotId: SnapshotId
 ) : ComponentMessage
 
-@Deprecated("remove?")
 data class ApplyState(
     val componentId: ComponentId,
     val snapshotId: SnapshotId
