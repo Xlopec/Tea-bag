@@ -135,31 +135,6 @@ sourceSets {
     }
 }
 
-fun shouldUseForcedCoroutinesVersion(
-    configuration: Configuration,
-    details: DependencyResolveDetails,
-    version: String,
-): Boolean =
-    !configuration.name.startsWith("test") &&
-        details.requested.group == "org.jetbrains.kotlinx" &&
-        details.requested.module.name.startsWith("kotlinx-coroutines") &&
-        details.requested.version != version
-
-/*configurations.configureEach {
-    resolutionStrategy.eachDependency {
-        val forcedVersion = "1.6.4"
-        if (shouldUseForcedCoroutinesVersion(this@configureEach, this@eachDependency, forcedVersion)) {
-            useVersion(forcedVersion)
-            because(
-                """
-                We must use bundled coroutines version, latest compatible coroutines dependency version 
-                for IJ 2022.1 is $forcedVersion, see https://www.jetbrains.com/legal/third-party-software/?product=iic&version=2022.3.2
-            """.trimIndent()
-            )
-        }
-    }
-}*/
-
 intellijPlatform {
     pluginConfiguration {
         id = "com.github.Xlopec.elm.time.travel"
@@ -216,7 +191,7 @@ dependencies {
     implementation(libs.stdlib.reflect)
     implementation(libs.arrow.core)
 
-    implementation("org.jetbrains.jewel:jewel-ide-laf-bridge-242:0.25.0")
+    implementation(libs.jewel.ide.bridge)
 
     api(compose.desktop.currentOs) {
         exclude(group = "org.jetbrains.compose.material")
@@ -244,15 +219,13 @@ dependencies {
     implementation(compose.desktop.components.splitPane) {
         exclude(group = "org.jetbrains.kotlinx")
     }
-   /* implementation("com.bybutter.compose:compose-jetbrains-theme") {
-        exclude(group = "org.jetbrains.kotlinx")
-    }*/
+
     implementation(libs.logging)
 
     implementation(libs.bundles.ktor.server) {
         exclude(group = "org.jetbrains.kotlinx")
     }
-    //implementation(libs.coroutines.core)
+
     implementation(libs.collections.immutable)
 
     testImplementation(libs.ktor.server.tests)

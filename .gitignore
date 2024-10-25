@@ -1,6 +1,7 @@
 *.iml
 *.jks
 .gradle
+.intellijPlatform/
 /local.properties
 # User-specific stuff:
 .idea/*

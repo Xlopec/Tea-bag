@@ -49,6 +49,7 @@ compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version =
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.9.20" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.1" }
+jewel-ide-bridge = { module = "org.jetbrains.jewel:jewel-ide-laf-bridge-242", version = "0.26.0" }
 
 [bundles]
 ktor-server = ["ktor-server-core", "ktor-server-netty", "ktor-server-websockets", "ktor-server-headers", "ktor-server-logging-jvm"]
