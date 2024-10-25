@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.compose
 
 plugins {
@@ -215,7 +216,7 @@ dependencies {
         exclude("org.jetbrains.compose.material")
     }*/
 
-    @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+    @OptIn(ExperimentalComposeLibrary::class)
     implementation(compose.desktop.components.splitPane) {
         exclude(group = "org.jetbrains.kotlinx")
     }
@@ -228,9 +229,10 @@ dependencies {
 
     implementation(libs.collections.immutable)
 
+    testImplementation(libs.jewel.ui.standalone)
+    testImplementation(compose.desktop.uiTestJUnit4)
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.kotlin.test)
     testImplementation(project(":tea-test"))
-    testImplementation(compose("org.jetbrains.compose.ui:ui-test-junit4"))
 }

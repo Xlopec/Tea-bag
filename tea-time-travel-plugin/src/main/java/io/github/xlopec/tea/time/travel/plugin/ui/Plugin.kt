@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -36,7 +37,6 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowExceptionHandler
 import com.google.gson.GsonBuilder
@@ -61,7 +61,6 @@ import io.github.xlopec.tea.time.travel.plugin.model.hasAttachedComponents
 import io.github.xlopec.tea.time.travel.plugin.model.isStarted
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginTheme
 import io.github.xlopec.tea.time.travel.plugin.util.toJson
-import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -86,10 +85,6 @@ import kotlin.time.Duration.Companion.seconds
 
 internal val LocalPlatform = staticCompositionLocalOf<Platform> { error("No platform implementation provided") }
 
-internal fun ComponentTabTag(
-    id: ComponentId,
-) = "component tab '${id.value}'"
-
 context (Logger, Project)
 @OptIn(ExperimentalComposeUiApi::class)
 internal fun PluginSwingAdapter(
@@ -112,7 +107,12 @@ internal fun Plugin(
     component: (Flow<Message>) -> Flow<State>,
     messages: MutableSharedFlow<Message> = remember { MutableSharedFlow() },
 ) {
-    val stateFlow = remember { component(messages) }
+    LaunchedEffect(messages) {
+        messages.collect {
+            println("New message $it")
+        }
+    }
+    val stateFlow = remember { component.invoke(messages) }
     val state = stateFlow.collectAsState(initial = null).value
 
     if (state != null) {
@@ -201,7 +201,6 @@ private fun ComponentsView(
                     selected = debugger.selectedComponent == id,
                     content = { tabState ->
                         SimpleTabContent(
-                            modifier = Modifier.testTag(ComponentTabTag(id)),
                             label = id.value,
                             state = tabState,
                         )

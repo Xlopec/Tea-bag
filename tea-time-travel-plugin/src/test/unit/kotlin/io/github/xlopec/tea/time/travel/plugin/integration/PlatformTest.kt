@@ -6,6 +6,7 @@ import io.github.xlopec.tea.time.travel.plugin.util.LoggerStub
 import io.github.xlopec.tea.time.travel.plugin.util.ProjectStub
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import java.lang.Class
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 

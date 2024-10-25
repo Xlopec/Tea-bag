@@ -6,30 +6,47 @@ import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.toStatesComponent
-import io.github.xlopec.tea.time.travel.plugin.data.*
+import io.github.xlopec.tea.time.travel.plugin.data.ComponentDebugState
+import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
+import io.github.xlopec.tea.time.travel.plugin.data.TestAppStateValue
+import io.github.xlopec.tea.time.travel.plugin.data.TestComponentId1
+import io.github.xlopec.tea.time.travel.plugin.data.TestSnapshotId1
+import io.github.xlopec.tea.time.travel.plugin.data.TestSnapshotId2
+import io.github.xlopec.tea.time.travel.plugin.data.TestTimestamp1
+import io.github.xlopec.tea.time.travel.plugin.data.TestTimestamp2
+import io.github.xlopec.tea.time.travel.plugin.data.TestUserValue
+import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.environment.TestEnvironment
 import io.github.xlopec.tea.time.travel.plugin.environment.TestPlatform
-import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTabTag
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.Tag
 import io.github.xlopec.tea.time.travel.plugin.feature.info.InfoViewTag
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.AppendSnapshot
 import io.github.xlopec.tea.time.travel.plugin.integration.Message
 import io.github.xlopec.tea.time.travel.plugin.integration.PluginComponent
-import io.github.xlopec.tea.time.travel.plugin.model.*
+import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Debugger
+import io.github.xlopec.tea.time.travel.plugin.model.FilteredSnapshot
+import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
+import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
+import io.github.xlopec.tea.time.travel.plugin.model.State
+import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
 import io.github.xlopec.tea.time.travel.plugin.ui.Plugin
 import io.github.xlopec.tea.time.travel.plugin.util.invoke
-import io.github.xlopec.tea.time.travel.plugin.util.onCloseTabActionNode
+import io.github.xlopec.tea.time.travel.plugin.util.onCloseTabNode
 import io.github.xlopec.tea.time.travel.plugin.util.setContentWithEnv
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Rule
 import org.junit.Test
 
@@ -79,33 +96,33 @@ class ComponentScenarios {
 
         scheduler.advanceUntilIdle()
         awaitIdle()
-        onNodeWithTag(ComponentTabTag(idA)).assertExists(TabDoesNotExistMessage(idA)).assertIsSelected()
-        onNodeWithTag(ComponentTabTag(idB)).assertExists(TabDoesNotExistMessage(idB)).assertIsNotSelected()
-        onNodeWithTag(ComponentTabTag(idC)).assertExists(TabDoesNotExistMessage(idC)).assertIsNotSelected()
+        onNodeWithText(idA.value).assertExists(TabDoesNotExistMessage(idA)).assertIsSelected()
+        onNodeWithText(idB.value).assertExists(TabDoesNotExistMessage(idB)).assertIsNotSelected()
+        onNodeWithText(idC.value).assertExists(TabDoesNotExistMessage(idC)).assertIsNotSelected()
 
-        onCloseTabActionNode(idB).performClick()
+        onCloseTabNode(idB).performClick()
         scheduler.advanceUntilIdle()
         awaitIdle()
 
-        onNodeWithTag(ComponentTabTag(idA)).assertExists(TabDoesNotExistMessage(idA)).assertIsSelected()
-        onNodeWithTag(ComponentTabTag(idB)).assertDoesNotExist()
-        onNodeWithTag(ComponentTabTag(idC)).assertExists(TabDoesNotExistMessage(idC)).assertIsNotSelected()
+        onNodeWithText(idA.value).assertExists(TabDoesNotExistMessage(idA)).assertIsSelected()
+        onNodeWithText(idB.value).assertDoesNotExist()
+        onNodeWithText(idC.value).assertExists(TabDoesNotExistMessage(idC)).assertIsNotSelected()
 
-        onCloseTabActionNode(idC).performClick()
+        onCloseTabNode(idC).performClick()
         scheduler.advanceUntilIdle()
         awaitIdle()
 
-        onNodeWithTag(ComponentTabTag(idA)).assertExists(TabDoesNotExistMessage(idA)).assertIsSelected()
-        onNodeWithTag(ComponentTabTag(idB)).assertDoesNotExist()
-        onNodeWithTag(ComponentTabTag(idC)).assertDoesNotExist()
+        onNodeWithText(idA.value).assertExists(TabDoesNotExistMessage(idA)).assertIsSelected()
+        onNodeWithText(idB.value).assertDoesNotExist()
+        onNodeWithText(idC.value).assertDoesNotExist()
 
-        onCloseTabActionNode(idA).performClick()
+        onCloseTabNode(idA).performClick()
         scheduler.advanceUntilIdle()
         awaitIdle()
 
-        onNodeWithTag(ComponentTabTag(idA)).assertDoesNotExist()
-        onNodeWithTag(ComponentTabTag(idB)).assertDoesNotExist()
-        onNodeWithTag(ComponentTabTag(idC)).assertDoesNotExist()
+        onNodeWithText(idA.value).assertDoesNotExist()
+        onNodeWithText(idB.value).assertDoesNotExist()
+        onNodeWithText(idC.value).assertDoesNotExist()
         onNodeWithTag(InfoViewTag).assertExists()
     }
 
@@ -148,17 +165,17 @@ class ComponentScenarios {
 
         scheduler.advanceUntilIdle()
         awaitIdle()
-        onNodeWithTag(ComponentTabTag(idB)).performClick()
+        onNodeWithText(idB.value).performClick()
         scheduler.advanceUntilIdle()
         awaitIdle()
 
-        onNodeWithTag(ComponentTabTag(idB)).assertIsSelected()
+        onNodeWithText(idB.value).assertIsSelected()
 
-        onNodeWithTag(ComponentTabTag(idC)).performClick()
+        onNodeWithText(idC.value).performClick()
         scheduler.advanceUntilIdle()
         awaitIdle()
 
-        onNodeWithTag(ComponentTabTag(idC)).assertIsSelected()
+        onNodeWithText(idC.value).assertIsSelected()
     }
 
     /**
@@ -168,10 +185,11 @@ class ComponentScenarios {
      * * When component emits snapshots with id [TestSnapshotId2]
      * * Then check that snapshots with ids [TestSnapshotId1] and [TestSnapshotId2] exist in composition
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `test component snapshots are rendered when new snapshots are emitted`() = rule {
         val scheduler = TestCoroutineScheduler()
-        val environment = TestEnvironment(scope = CoroutineScope(StandardTestDispatcher(scheduler)))
+        val environment = TestEnvironment(scope = CoroutineScope(UnconfinedTestDispatcher(scheduler)))
         val messages = MutableSharedFlow<Message>()
 
         val snapshotMeta1 = SnapshotMeta(TestSnapshotId1, TestTimestamp1)
@@ -179,27 +197,27 @@ class ComponentScenarios {
 
         setContentWithEnv(environment) {
             val debugger = Debugger(
-                ValidTestSettings,
-                persistentMapOf(
+                settings = ValidTestSettings,
+                components = persistentMapOf(
                     ComponentDebugState(
-                        TestComponentId1,
-                        persistentListOf(
+                        componentId = TestComponentId1,
+                        snapshots = persistentListOf(
                             OriginalSnapshot(
-                                snapshotMeta1,
-                                StringWrapper("message"),
-                                TestUserValue,
-                                CollectionWrapper()
+                                meta = snapshotMeta1,
+                                message = StringWrapper("message"),
+                                state = TestUserValue,
+                                commands = CollectionWrapper()
                             )
                         ),
-                        persistentListOf(
+                        filteredSnapshots = persistentListOf(
                             FilteredSnapshot(
-                                snapshotMeta1,
-                                StringWrapper("message"),
-                                TestUserValue,
-                                CollectionWrapper()
+                                meta = snapshotMeta1,
+                                message = StringWrapper("message"),
+                                state = TestUserValue,
+                                commands = CollectionWrapper()
                             )
                         ),
-                        TestUserValue
+                        state = TestUserValue
                     )
                 )
             )
@@ -207,8 +225,8 @@ class ComponentScenarios {
             Plugin(
                 platform = TestPlatform(),
                 component = PluginComponent(
-                    environment,
-                    Initializer(State(debugger, StartedTestServerStub))
+                    environment = environment,
+                    initializer = Initializer(State(debugger, StartedTestServerStub))
                 ).toStatesComponent(),
                 messages = messages
             )
@@ -223,12 +241,12 @@ class ComponentScenarios {
 
         messages.emit(
             AppendSnapshot(
-                TestComponentId1,
-                snapshotMeta2,
-                StringWrapper("nullify"),
-                TestUserValue,
-                TestAppStateValue,
-                CollectionWrapper()
+                componentId = TestComponentId1,
+                meta = snapshotMeta2,
+                message = StringWrapper("nullify"),
+                oldState = TestUserValue,
+                newState = TestAppStateValue,
+                commands = CollectionWrapper()
             )
         )
         scheduler.advanceUntilIdle()

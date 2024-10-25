@@ -1,7 +1,9 @@
 package io.github.xlopec.tea.time.travel.plugin.scenario
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.toStatesComponent
@@ -11,7 +13,6 @@ import io.github.xlopec.tea.time.travel.plugin.data.TestUserValue
 import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.environment.TestEnvironment
 import io.github.xlopec.tea.time.travel.plugin.environment.TestPlatform
-import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTabTag
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.ComponentTag
 import io.github.xlopec.tea.time.travel.plugin.feature.info.InfoViewTag
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.ComponentAttached
@@ -88,19 +89,18 @@ class StartPluginScenarios {
 
         scheduler.advanceUntilIdle()
         awaitIdle()
-        onNodeWithTag(ComponentTabTag(TestComponentId1)).assertDoesNotExist()
+        onNodeWithText(TestComponentId1.value).assertDoesNotExist()
         onNodeWithTag(ComponentTag(TestComponentId1)).assertDoesNotExist()
         onNodeWithTag(ServerActionButtonTag).performClick()
         scheduler.advanceUntilIdle()
         awaitIdle()
-        // fixme assertExists should be replaced with assertIsDisplayed
-        onNodeWithTag(InfoViewTag).assertExists()
+        onNodeWithTag(InfoViewTag).assertIsDisplayed()
 
         messages.emit(ComponentAttached(TestComponentId1, TestSnapshotMeta1, TestUserValue, CollectionWrapper()))
 
         scheduler.advanceUntilIdle()
         awaitIdle()
-        onNodeWithTag(ComponentTabTag(TestComponentId1)).assertExists()
-        onNodeWithTag(ComponentTag(TestComponentId1)).assertExists()
+        onNodeWithText(TestComponentId1.value).assertIsDisplayed()
+        onNodeWithTag(ComponentTag(TestComponentId1)).assertIsDisplayed()
     }
 }

@@ -30,13 +30,14 @@ import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
 fun State.onUpdateForComponentMessage(
     message: ComponentMessage,
-): Update<State, Command> =
-    when {
+): Update<State, Command> {
+    return when {
         message is UpdateDebugSettings -> onUpdateDebugSettings(
             message.isDetailedToStringEnabled,
             message.clearSnapshotsOnComponentAttach,
             message.maxSnapshots,
         )
+
         message is UpdateServerSettings && !isStarted -> onUpdateServerSettings(message)
         message is RemoveSnapshots -> onRemoveSnapshots(message.componentId, message.ids)
         message is RemoveAllSnapshots -> onRemoveSnapshots(message.componentId)
@@ -47,6 +48,7 @@ fun State.onUpdateForComponentMessage(
         message is UpdateFilter -> onUpdateFilter(message)
         else -> onUnhandledMessage(message)
     }
+}
 
 private fun State.onUpdateDebugSettings(
     isDetailedToStringEnabled: Boolean,

@@ -4,6 +4,7 @@ coroutines = "1.9.0"
 sqldelight = "1.5.5"
 arrow = "1.2.4"
 coil = "3.0.0-alpha09"
+jewel = "0.26.0"
 
 [libraries]
 decompose-backHandler = { module = "com.arkivanov.essenty:back-handler", version = "2.2.0-beta01" }
@@ -49,7 +50,8 @@ compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version =
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.9.20" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.1" }
-jewel-ide-bridge = { module = "org.jetbrains.jewel:jewel-ide-laf-bridge-242", version = "0.26.0" }
+jewel-ide-bridge = { module = "org.jetbrains.jewel:jewel-ide-laf-bridge-242", version.ref = "jewel" }
+jewel-ui-standalone = { module = "org.jetbrains.jewel:jewel-int-ui-standalone-242", version.ref = "jewel" }
 
 [bundles]
 ktor-server = ["ktor-server-core", "ktor-server-netty", "ktor-server-websockets", "ktor-server-headers", "ktor-server-logging-jvm"]
