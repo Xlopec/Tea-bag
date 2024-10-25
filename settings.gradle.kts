@@ -24,12 +24,18 @@
 
 @file:Suppress("UnstableApiUsage")
 
+import org.jetbrains.intellij.platform.gradle.extensions.intellijPlatform
+
 rootProject.name = "Tea-bag"
 
 pluginManagement {
     repositories {
         gradlePluginPortal()
     }
+}
+
+plugins {
+    id("org.jetbrains.intellij.platform.settings") version "2.1.0"
 }
 
 include(
@@ -46,4 +52,17 @@ include(
     ":samples:counter",
 )
 
-dependencyResolutionManagement {}
+dependencyResolutionManagement {
+    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+
+    repositories {
+        mavenCentral()
+        google()
+        maven("https://packages.jetbrains.team/maven/p/kpm/public/")
+
+        intellijPlatform {
+            // use the recommended repository list
+            defaultRepositories()
+        }
+    }
+}

@@ -33,16 +33,6 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-repositories {
-    mavenCentral()
-    maven("https://packages.jetbrains.team/maven/p/kpm/public/")
-
-    intellijPlatform {
-        // use the recommended repository list
-        defaultRepositories()
-    }
-}
-
 val supportedVersions = listOf(
     IDEVersion(Product.IC, 2024, 2),
     IDEVersion(Product.IC, 2024, 1),
