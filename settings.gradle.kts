@@ -46,10 +46,4 @@ include(
     ":samples:counter",
 )
 
-/*includeBuild("compose-jetbrains-theme") {
-    dependencySubstitution {
-        substitute(module("com.bybutter.compose:compose-jetbrains-theme")).using(project(":"))
-    }
-}*/
-
 dependencyResolutionManagement {}

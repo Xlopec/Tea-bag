@@ -6,13 +6,15 @@ import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import io.github.xlopec.tea.time.travel.plugin.environment.TestEnvironment
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
  operator fun ComposeContentTestRule.invoke(
+     timeout: Duration = 15.seconds,
      body: suspend ComposeContentTestRule.() -> Unit
 ) {
     runBlocking {
-        withTimeout(30.seconds) {
+        withTimeout(timeout) {
             body()
         }
     }

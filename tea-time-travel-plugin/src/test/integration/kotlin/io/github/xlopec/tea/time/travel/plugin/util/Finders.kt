@@ -6,5 +6,6 @@ import androidx.compose.ui.test.onChild
 import androidx.compose.ui.test.onNodeWithText
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 
-internal fun SemanticsNodeInteractionsProvider.onCloseTabNode(id: ComponentId): SemanticsNodeInteraction =
-    onNodeWithText(id.value).onChild()
+internal fun SemanticsNodeInteractionsProvider.onCloseTabNode(
+    id: ComponentId,
+): SemanticsNodeInteraction = onNodeWithText(id.value).onChild()

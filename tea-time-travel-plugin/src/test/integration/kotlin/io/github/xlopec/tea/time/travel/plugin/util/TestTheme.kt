@@ -10,7 +10,7 @@ import org.jetbrains.jewel.ui.icon.LocalNewUiChecker
 import org.jetbrains.jewel.ui.icon.NewUiChecker
 import org.jetbrains.jewel.ui.theme.BaseJewelTheme
 
-private object TestNewUiChecker : NewUiChecker {
+private data object TestNewUiChecker : NewUiChecker {
     override fun isNewUi(): Boolean = false
 }
 
@@ -18,7 +18,6 @@ private object TestNewUiChecker : NewUiChecker {
 fun TestTheme(
     content: @Composable () -> Unit
 ) {
-
     BaseJewelTheme(
         theme = JewelTheme.Companion.darkThemeDefinition(),
         styling = ComponentStyling.default(),

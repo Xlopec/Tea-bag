@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -107,11 +106,6 @@ internal fun Plugin(
     component: (Flow<Message>) -> Flow<State>,
     messages: MutableSharedFlow<Message> = remember { MutableSharedFlow() },
 ) {
-    LaunchedEffect(messages) {
-        messages.collect {
-            println("New message $it")
-        }
-    }
     val stateFlow = remember { component.invoke(messages) }
     val state = stateFlow.collectAsState(initial = null).value
 

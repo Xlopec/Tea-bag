@@ -23,7 +23,6 @@
  */
 
 import org.jetbrains.compose.ExperimentalComposeLibrary
-import org.jetbrains.compose.compose
 
 plugins {
     `maven-publish`
@@ -194,27 +193,27 @@ dependencies {
 
     implementation(libs.jewel.ide.bridge)
 
-    api(compose.desktop.currentOs) {
+    // FIXME this is a temporary workaround
+    implementation(compose.desktop.macos_arm64) {
         exclude(group = "org.jetbrains.compose.material")
         exclude(group = "org.jetbrains.kotlinx")
     }
-
-    // FIXME this is a temporary workaround
-    /*implementation(compose.desktop.macos_arm64) {
-        exclude("org.jetbrains.compose.material")
-    }
     implementation(compose.desktop.macos_x64) {
-        exclude("org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.kotlinx")
     }
     implementation(compose.desktop.linux_x64) {
-        exclude("org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.kotlinx")
     }
     implementation(compose.desktop.linux_arm64) {
-        exclude("org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.kotlinx")
     }
     implementation(compose.desktop.windows_x64) {
-        exclude("org.jetbrains.compose.material")
-    }*/
+        exclude(group = "org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.kotlinx")
+    }
 
     @OptIn(ExperimentalComposeLibrary::class)
     implementation(compose.desktop.components.splitPane) {
