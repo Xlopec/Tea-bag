@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import arrow.core.Valid
+import arrow.core.Either
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.UpdateServerSettings
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
@@ -128,8 +128,8 @@ private fun SettingsFieldsPreview() {
                 .padding(all = 16.dp),
             state = State(
                 settings = Settings(
-                    host = Input("localhost", Valid(Host.newOrNull("localhost")!!)),
-                    port = Input("8080", Valid(Port(8080))),
+                    host = Input("localhost", Either.Right(Host.newOrNull("localhost")!!)),
+                    port = Input("8080", Either.Right(Port(8080))),
                     isDetailedOutput = false,
                     clearSnapshotsOnAttach = true,
                 )

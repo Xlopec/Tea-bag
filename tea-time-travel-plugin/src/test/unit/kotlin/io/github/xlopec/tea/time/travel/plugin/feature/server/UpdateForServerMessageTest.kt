@@ -18,9 +18,7 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
-import arrow.core.Invalid
-import arrow.core.Valid
-import arrow.core.valueOr
+import arrow.core.Either
 import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
 import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
 import io.github.xlopec.tea.time.travel.plugin.feature.notification.DoWarnUnacceptableMessage
@@ -32,6 +30,7 @@ import io.github.xlopec.tea.time.travel.plugin.model.Debugger
 import io.github.xlopec.tea.time.travel.plugin.model.Input
 import io.github.xlopec.tea.time.travel.plugin.model.Server
 import io.github.xlopec.tea.time.travel.plugin.model.State
+import io.github.xlopec.tea.time.travel.plugin.model.isValid
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -43,32 +42,32 @@ val TestHost = Host.newOrNull("localhost")!!
 val TestPort = Port(123)
 
 private val TestHosts = listOf(
-    Input("", Invalid("")),
-    Input("some", Invalid("message")),
-    Input("", Invalid("")),
+    Input("", Either.Left("")),
+    Input("some", Either.Left("message")),
+    Input("", Either.Left("")),
     Input(
         TestHost.value,
-        Valid(TestHost)
+        Either.Right(TestHost)
     ),
-    Input("some", Invalid("message")),
+    Input("some", Either.Left("message")),
     Input(
         "www.google.com",
-        Valid(Host.newOrNull("www.google.com")!!)
+        Either.Right(Host.newOrNull("www.google.com")!!)
     )
 )
 
 private val TestPorts = listOf(
-    Input("", Invalid("")),
-    Input("some", Invalid("message")),
-    Input("", Invalid("")),
+    Input("", Either.Left("")),
+    Input("some", Either.Left("message")),
+    Input("", Either.Left("")),
     Input(
         TestPort.value.toString(),
-        Valid(TestPort)
+        Either.Right(TestPort)
     ),
-    Input("some", Invalid("message")),
+    Input("some", Either.Left("message")),
     Input(
         "100",
-        Valid(Port(100))
+        Either.Right(Port(100))
     )
 )
 
@@ -88,8 +87,13 @@ internal class UpdateForServerMessageTest {
             assertTrue("test failed for settings $settings") {
                 if (settings.host.value.isValid && settings.port.value.isValid) {
                     state === stopped &&
-                            commands == setOf(
-                        DoStartServer(ServerAddress(settings.host.value.valueOr(::error), settings.port.value.valueOr(::error)))
+                        commands == setOf(
+                        DoStartServer(
+                            ServerAddress(
+                                host = requireNotNull(settings.host.value.getOrNull()),
+                                port = requireNotNull(settings.port.value.getOrNull()),
+                            )
+                        )
                     )
                 } else {
                     state === stopped && commands.isEmpty()

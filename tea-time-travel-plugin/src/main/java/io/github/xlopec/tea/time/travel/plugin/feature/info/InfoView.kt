@@ -32,8 +32,8 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign.Companion.Justify
 import androidx.compose.ui.unit.sp
-import arrow.core.zip
-import arrow.typeclasses.Semigroup
+import arrow.core.Either.Companion.zipOrAccumulate
+import arrow.core.NonEmptyList
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
 import io.github.xlopec.tea.time.travel.plugin.model.State
@@ -82,13 +82,15 @@ private fun State.toContent(
 
 private fun State.toNonRunningContent(
     handler: MessageHandler
-) = debugger.settings.host.value.mapLeft { "${it.lowercase()},\n" }
-    .zip(Semigroup.string(), debugger.settings.port.value.mapLeft(String::lowercase)) { _, _ -> serverCanRunContent(handler) }
-    .fold(fe = ::invalidSettingsContent, fa = { it })
+): InfoViewContent = zipOrAccumulate(
+    debugger.settings.host.value.mapLeft(String::lowercase),
+    debugger.settings.port.value.mapLeft(String::lowercase)
+) { _, _ -> serverCanRunContent(handler) }
+    .fold(ifLeft = ::invalidSettingsContent, ifRight = { it })
 
 private fun invalidSettingsContent(
-    description: String
-) = InfoViewContent(description = "Can't start debug server: $description")
+    description: NonEmptyList<String>
+) = InfoViewContent(description = "Can't start debug server: ${description.joinToString(separator = ",\n")}")
 
 private fun String.lowercase() = replaceFirstChar { it.lowercase(Locale.getDefault()) }
 

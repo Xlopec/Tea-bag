@@ -18,12 +18,35 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.component.integration
 
-import arrow.core.Valid
-import io.github.xlopec.tea.time.travel.plugin.data.*
+import arrow.core.Either
+import io.github.xlopec.tea.time.travel.plugin.data.ComponentDebugState
+import io.github.xlopec.tea.time.travel.plugin.data.ComponentDebugStates
+import io.github.xlopec.tea.time.travel.plugin.data.EmptyFilteredSnapshot
+import io.github.xlopec.tea.time.travel.plugin.data.EmptyOriginalSnapshot
+import io.github.xlopec.tea.time.travel.plugin.data.NonEmptyComponentDebugState
+import io.github.xlopec.tea.time.travel.plugin.data.RandomSnapshotId
+import io.github.xlopec.tea.time.travel.plugin.data.StartedFromPairs
+import io.github.xlopec.tea.time.travel.plugin.data.StartedTestServerStub
+import io.github.xlopec.tea.time.travel.plugin.data.TestTimestamp1
+import io.github.xlopec.tea.time.travel.plugin.data.ValidTestSettings
+import io.github.xlopec.tea.time.travel.plugin.data.times
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.server.DoApplyState
 import io.github.xlopec.tea.time.travel.plugin.feature.storage.DoStoreSettings
-import io.github.xlopec.tea.time.travel.plugin.model.*
+import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.DebuggableComponent
+import io.github.xlopec.tea.time.travel.plugin.model.FilterOption
+import io.github.xlopec.tea.time.travel.plugin.model.FilteredSnapshot
+import io.github.xlopec.tea.time.travel.plugin.model.Null
+import io.github.xlopec.tea.time.travel.plugin.model.OriginalSnapshot
+import io.github.xlopec.tea.time.travel.plugin.model.Server
+import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
+import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.brokenComponents
+import io.github.xlopec.tea.time.travel.plugin.model.componentOrThrow
+import io.github.xlopec.tea.time.travel.plugin.model.toFiltered
+import io.github.xlopec.tea.time.travel.plugin.model.toInt
+import io.github.xlopec.tea.time.travel.plugin.model.toPInt
 import io.github.xlopec.tea.time.travel.plugin.util.map
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import kotlinx.collections.immutable.persistentListOf
@@ -31,7 +54,12 @@ import kotlinx.collections.immutable.toPersistentList
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 @RunWith(JUnit4::class)
 internal class UpdateForComponentMessageTest {
@@ -213,7 +241,7 @@ internal class UpdateForComponentMessageTest {
         with(state.debugger.componentOrThrow(componentId)) {
             assertFalse(filter.ignoreCase)
             assertSame(FilterOption.SUBSTRING, filter.option)
-            assertIs<Valid<String>>(filter.predicate.value)
+            assertIs<Either.Right<String>>(filter.predicate.value)
             assertEquals("", filter.predicate.input)
 
             assertEquals(snapshots.size, filteredSnapshots.size)
@@ -261,7 +289,7 @@ internal class UpdateForComponentMessageTest {
         assertSame(FilterOption.SUBSTRING, component.filter.option)
 
         assertNotNull(component.filter.predicate)
-        assertIs<Valid<String>>(component.filter.predicate.value)
+        assertIs<Either.Right<String>>(component.filter.predicate.value)
     }
 
     @Test

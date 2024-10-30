@@ -9,12 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import arrow.core.Valid
+import arrow.core.Either
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Port
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.plugin.model.Input
 import io.github.xlopec.tea.time.travel.plugin.model.State
+import io.github.xlopec.tea.time.travel.plugin.model.isInvalid
 import io.github.xlopec.tea.time.travel.plugin.ui.ActionsMenu
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
 import org.jetbrains.jewel.ui.Outline
@@ -22,8 +23,8 @@ import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.component.TextField
 
 private val PreviewSettings = Settings(
-    Input("192.168.1.1", Valid(Host.newOrNull("192.168.1.1")!!)),
-    Input("8080", Valid(Port(8080))),
+    Input("192.168.1.1", Either.Right(Host.newOrNull("192.168.1.1")!!)),
+    Input("8080", Either.Right(Port(8080))),
     isDetailedOutput = false,
     clearSnapshotsOnAttach = true
 )
@@ -74,7 +75,7 @@ private fun ValidatedTextFieldPreview() {
     PluginPreviewTheme {
         Box(modifier = Modifier.fillMaxSize()) {
             ValidatedTextField(
-                validated = Input("text field input", Valid("input")),
+                validated = Input("text field input", Either.Right("input")),
                 placeholder = "Placeholder",
                 modifier = Modifier,
                 onValueChange = {}

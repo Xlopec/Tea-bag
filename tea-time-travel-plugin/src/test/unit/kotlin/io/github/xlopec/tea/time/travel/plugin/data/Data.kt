@@ -18,8 +18,7 @@
 
 package io.github.xlopec.tea.time.travel.plugin.data
 
-import arrow.core.Invalid
-import arrow.core.Valid
+import arrow.core.Either
 import com.google.gson.internal.LazilyParsedNumber
 import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
@@ -54,15 +53,15 @@ val TestHost = Host.newOrNull("localhost")!!
 val TestPort = Port(123)
 
 val ValidTestSettings = Settings(
-    host = Input(TestHost.value, Valid(TestHost)),
-    port = Input(TestPort.value.toString(), Valid(TestPort)),
+    host = Input(TestHost.value, Either.Right(TestHost)),
+    port = Input(TestPort.value.toString(), Either.Right(TestPort)),
     isDetailedOutput = false,
     clearSnapshotsOnAttach = true
 )
 
 val InvalidTestSettings = Settings(
-    host = Input("abc", Invalid("Provide host")),
-    port = Input("port", Invalid("Provide port")),
+    host = Input("abc", Either.Left("Provide host")),
+    port = Input("port", Either.Left("Provide port")),
     isDetailedOutput = false,
     clearSnapshotsOnAttach = true
 )
