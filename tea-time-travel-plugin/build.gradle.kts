@@ -39,36 +39,6 @@ val supportedVersions = listOf(
     IDEVersion(Product.IC, 2024, 1),
 )
 
-/*intellij {
-    val idePath = getenvSafe("IJ_C")
-
-    if (isCiEnv || idePath == null) {
-        val ideVersion = supportedVersions.latest().versionName
-        logger.info("IDE of version $ideVersion will be used")
-        version.set(ideVersion)
-    } else {
-        logger.info("Local IDE distribution will be used located at $idePath")
-        localPath.set(idePath)
-    }
-
-    plugins.add("com.intellij.java")
-}*/
-
-/*tasks.named<org.jetbrains.intellij.tasks.RunPluginVerifierTask>("runPluginVerifier") {
-    ideVersions.set(supportedVersions.map { it.versionName })
-}
-
-tasks.named<PatchPluginXmlTask>("patchPluginXml") {
-    version.set(libraryVersion.toVersionName())
-    sinceBuild.set(supportedVersions.oldest().buildNumber)
-}
-
-tasks.named<PublishPluginTask>("publishPlugin") {
-    token.set(ciVariable("PUBLISH_PLUGIN_TOKEN"))
-    channels.set(pluginReleaseChannels)
-    dependsOn("runPluginVerifier")
-}*/
-
 tasks.withType<JavaCompile>().configureEach {
     targetCompatibility = "17"
     sourceCompatibility = "17"
@@ -156,7 +126,7 @@ intellijPlatform {
 dependencies {
     intellijPlatform {
         pluginVerifier()
-        val idePath = getenvSafe("IJ_C")
+        val idePath = getenvSafe("IJ_PATH") ?: findProperty("ijPath")?.toString()
 
         if (isCiEnv || idePath == null) {
             val ideVersion = supportedVersions.latest().versionName
