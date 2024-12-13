@@ -1,16 +1,22 @@
 package io.github.xlopec.tea.time.travel.plugin.integration
 
+import com.intellij.mock.MockApplication
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.IndexNotReadyException
 import io.github.xlopec.tea.time.travel.plugin.model.Type
 import io.github.xlopec.tea.time.travel.plugin.util.LoggerStub
 import io.github.xlopec.tea.time.travel.plugin.util.ProjectStub
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import java.lang.Class
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 
 class PlatformTest {
+
+    private companion object {
+        val NoOpDisposable = Disposable {}
+    }
 
     @Test
     fun `test psiClassFor returns null and logs exception when exception occurs internally`() = runTest {
@@ -26,6 +32,7 @@ class PlatformTest {
             }
         }
 
+        ApplicationManager.setApplication(MockApplication(NoOpDisposable), NoOpDisposable)
         val platform = Platform(project, logger)
         val psiClass = platform.psiClassFor(Type.of("java.util.StringJoiner"))
 
