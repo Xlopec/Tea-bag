@@ -18,9 +18,8 @@ import io.github.xlopec.tea.time.travel.plugin.model.FilterOption.WORDS
 import io.github.xlopec.tea.time.travel.plugin.ui.control.ValidatedTextField
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
-import io.kanro.compose.jetbrains.control.CheckBox
-import io.kanro.compose.jetbrains.control.JPanel
-import io.kanro.compose.jetbrains.control.Text
+import org.jetbrains.jewel.ui.component.Checkbox
+import org.jetbrains.jewel.ui.component.Text
 
 @Composable
 internal fun FiltersHeader(
@@ -73,14 +72,12 @@ internal fun FiltersHeader(
 @Composable
 private fun FiltersHeaderPreview() {
     PluginPreviewTheme {
-        JPanel {
-            FiltersHeader(
-                modifier = Modifier.padding(4.dp),
-                id = ComponentId("Preview"),
-                filter = Filter.new("abc", REGEX, ignoreCase = true),
-                events = {}
-            )
-        }
+        FiltersHeader(
+            modifier = Modifier.padding(4.dp),
+            id = ComponentId("Preview"),
+            filter = Filter.new("abc", REGEX, ignoreCase = true),
+            events = {}
+        )
     }
 }
 
@@ -92,7 +89,7 @@ private fun TextCheckbox(
     modifier: Modifier = Modifier
 ) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        CheckBox(checked = checked, onCheckedChange = onCheckedChange)
+        Checkbox(checked = checked, onCheckedChange = onCheckedChange)
         Spacer(Modifier.width(4.dp))
         Text(text = text)
     }

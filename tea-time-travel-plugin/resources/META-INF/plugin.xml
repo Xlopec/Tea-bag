@@ -26,6 +26,9 @@
         <!-- Add your extensions here -->
         <toolWindow anchor="right"
                     factoryClass="io.github.xlopec.tea.time.travel.plugin.ui.SideToolWindowFactory"
+                    secondary="false"
+                    canCloseContents="false"
+                    icon="TeaBagIcons.ToolWindowIcon"
                     id="Time Traveller"/>
 
         <projectConfigurable id="io.github.xlopec.tea.core.plugin"

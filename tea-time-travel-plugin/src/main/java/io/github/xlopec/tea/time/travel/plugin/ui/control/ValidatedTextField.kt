@@ -1,25 +1,30 @@
 package io.github.xlopec.tea.time.travel.plugin.ui.control
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import arrow.core.Valid
+import arrow.core.Either
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Host
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Port
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.Settings
 import io.github.xlopec.tea.time.travel.plugin.model.Input
 import io.github.xlopec.tea.time.travel.plugin.model.State
+import io.github.xlopec.tea.time.travel.plugin.model.isInvalid
 import io.github.xlopec.tea.time.travel.plugin.ui.ActionsMenu
 import io.github.xlopec.tea.time.travel.plugin.ui.theme.PluginPreviewTheme
-import io.kanro.compose.jetbrains.control.JPanel
-import io.kanro.compose.jetbrains.control.Text
-import io.kanro.compose.jetbrains.control.TextField
+import org.jetbrains.jewel.ui.Outline
+import org.jetbrains.jewel.ui.component.Text
+import org.jetbrains.jewel.ui.component.TextField
 
 private val PreviewSettings = Settings(
-    Input("192.168.1.1", Valid(Host.newOrNull("192.168.1.1")!!)),
-    Input("8080", Valid(Port(8080))),
+    Input("192.168.1.1", Either.Right(Host.newOrNull("192.168.1.1")!!)),
+    Input("8080", Either.Right(Port(8080))),
     isDetailedOutput = false,
     clearSnapshotsOnAttach = true
 )
@@ -28,7 +33,7 @@ private val PreviewSettings = Settings(
 @Composable
 fun BottomActionMenuPreview() {
     PluginPreviewTheme {
-        JPanel {
+        Box {
             ActionsMenu(
                 modifier = Modifier.fillMaxWidth(),
                 onImportSession = {},
@@ -49,13 +54,17 @@ fun ValidatedTextField(
     onValueChange: (newValue: String) -> Unit,
     enabled: Boolean = true,
 ) {
+    val state = remember { TextFieldState(validated.input) }
+
+    LaunchedEffect(state.text) {
+        onValueChange(state.text.toString())
+    }
+
     TextField(
         modifier = modifier,
-        value = validated.input,
-        onValueChange = { onValueChange(it) },
+        state = state,
+        outline = if (validated.value.isInvalid) Outline.Error else Outline.None,
         placeholder = { Text(text = placeholder) },
-        isError = validated.value.isInvalid,
-        singleLine = true,
         enabled = enabled
     )
 }
@@ -64,9 +73,9 @@ fun ValidatedTextField(
 @Composable
 private fun ValidatedTextFieldPreview() {
     PluginPreviewTheme {
-        JPanel(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize()) {
             ValidatedTextField(
-                validated = Input("text field input", Valid("input")),
+                validated = Input("text field input", Either.Right("input")),
                 placeholder = "Placeholder",
                 modifier = Modifier,
                 onValueChange = {}

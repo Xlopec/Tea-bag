@@ -18,9 +18,15 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.component.model
 
-import arrow.core.Valid
+import arrow.core.Either
 import com.google.gson.internal.LazilyParsedNumber
-import io.github.xlopec.tea.time.travel.plugin.model.*
+import io.github.xlopec.tea.time.travel.plugin.model.NumberWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Predicate
+import io.github.xlopec.tea.time.travel.plugin.model.Property
+import io.github.xlopec.tea.time.travel.plugin.model.Ref
+import io.github.xlopec.tea.time.travel.plugin.model.RegexPredicate
+import io.github.xlopec.tea.time.travel.plugin.model.Type
+import io.github.xlopec.tea.time.travel.plugin.model.applyTo
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -54,7 +60,7 @@ internal class FiltersTest {
             testProperties
         )
 
-        val filtered = (RegexPredicate("com\\.example\\.Test", false).value as Valid<Predicate>).value.applyTo(ref)
+        val filtered = (RegexPredicate("com\\.example\\.Test", false).value as Either.Right<Predicate>).value.applyTo(ref)
 
         assertEquals(ref, filtered)
     }
@@ -144,4 +150,4 @@ internal class FiltersTest {
 private fun UnsafeRegexPredicate(
     input: String,
     ignoreCase: Boolean = false,
-) = (RegexPredicate(input, ignoreCase).value as Valid).value
+) = (RegexPredicate(input, ignoreCase).value as Either.Right).value

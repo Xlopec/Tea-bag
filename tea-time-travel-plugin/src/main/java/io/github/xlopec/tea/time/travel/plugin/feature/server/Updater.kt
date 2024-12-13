@@ -1,7 +1,6 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.server
 
-import arrow.core.zip
-import arrow.typeclasses.Semigroup
+import arrow.core.Either
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
@@ -25,7 +24,7 @@ private fun State.onStopServer(server: Server) =
     this command DoStopServer(server)
 
 private fun State.onStartServer(): Update<State, Command> {
-    val command = debugger.settings.host.value.zip(Semigroup.string(), debugger.settings.port.value) { host, port ->
+    val command = Either.Companion.zipOrAccumulate(debugger.settings.host.value, debugger.settings.port.value) { host, port ->
         DoStartServer(ServerAddress(host, port))
     }.fold({ null }, { it }) ?: return noCommand()
 

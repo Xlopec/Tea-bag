@@ -18,7 +18,8 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.settings
 
-import arrow.core.Validated
+import arrow.core.left
+import arrow.core.right
 import io.github.xlopec.tea.time.travel.plugin.model.Input
 import io.github.xlopec.tea.time.travel.plugin.model.PInt
 import io.github.xlopec.tea.time.travel.plugin.model.toPInt
@@ -82,8 +83,8 @@ data class Settings(
 
 fun ValidatedHost(
     input: String?
-) = Input(input ?: "", Validated.fromNullable(Host.newOrNull(input)) { "Host can't be blank or empty" })
+) = Input(input ?: "", Host.newOrNull(input)?.right() ?: "Host can't be blank or empty".left())
 
 fun ValidatedPort(
     input: String?
-) = Input(input ?: "", Validated.fromNullable(input?.toIntOrNull()?.let(::Port)) { "Invalid port" })
+) = Input(input ?: "", input?.toIntOrNull()?.let(::Port)?.right() ?: "Invalid port".left())

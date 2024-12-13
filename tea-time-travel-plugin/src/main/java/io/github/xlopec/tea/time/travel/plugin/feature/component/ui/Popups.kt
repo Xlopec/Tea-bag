@@ -1,159 +1,117 @@
 package io.github.xlopec.tea.time.travel.plugin.feature.component.ui
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.unit.dp
-import com.intellij.psi.PsiClass
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.ApplyMessage
-import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.ApplyState
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.RemoveAllSnapshots
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.RemoveSnapshots
-import io.github.xlopec.tea.time.travel.plugin.model.*
-import io.github.xlopec.tea.time.travel.plugin.ui.LocalPlatform
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon
+import io.github.xlopec.tea.time.travel.plugin.integration.Platform
+import io.github.xlopec.tea.time.travel.plugin.model.BooleanWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.CharWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Null
+import io.github.xlopec.tea.time.travel.plugin.model.NumberWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Ref
+import io.github.xlopec.tea.time.travel.plugin.model.SnapshotId
+import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Type
+import io.github.xlopec.tea.time.travel.plugin.model.Value
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
-import io.kanro.compose.jetbrains.control.DropdownMenuItem
-import io.kanro.compose.jetbrains.control.Text
-import kotlinx.coroutines.launch
+import org.jetbrains.jewel.ui.component.MenuScope
+import org.jetbrains.jewel.ui.component.Text
+import org.jetbrains.jewel.ui.icons.AllIconsKeys
 
-@Composable
-fun ValuePopup(
+data class PopupDependencies(
+    val formatter: TreeFormatter,
+    val clipboardManager: ClipboardManager,
+    val platform: Platform,
+)
+
+fun MenuScope.valuePopup(
     value: Value,
-    formatter: TreeFormatter,
+    dependencies: PopupDependencies,
 ) {
     when (value) {
-        is CollectionWrapper -> CopyActionItem(AnnotatedString(formatter(value)))
-        is Ref -> RefActionItems(value.type)
-        Null, is BooleanWrapper, is CharWrapper, is NumberWrapper, is StringWrapper -> LeafActionItems(value)
+        is CollectionWrapper -> copyActionItem(AnnotatedString(dependencies.formatter(value)), dependencies)
+        is Ref -> refActionItems(value.type, dependencies)
+        Null, is BooleanWrapper, is CharWrapper, is NumberWrapper, is StringWrapper -> leafActionItems(value, dependencies)
     }
 }
 
-@Composable
-fun LeafActionItems(
-    value: Value,
-) {
-
-    val clipboardValue = value.clipboardValue
-
-    if (clipboardValue != null) {
-        Column {
-            CopyActionItem(AnnotatedString(clipboardValue))
-        }
-    }
-}
-
-@Composable
-fun CopyActionItem(
-    clipboard: AnnotatedString,
-) {
-    val clipboardManager = LocalClipboardManager.current
-
-    PopupItem(ActionIcons.Copy, "Copy value") {
-        clipboardManager.setText(clipboard)
-    }
-}
-
-@Composable
-fun RefActionItems(
-    type: Type,
-) {
-    Column {
-        CopyActionItem(AnnotatedString(type.name))
-        val platform = LocalPlatform.current
-        val psiClass = remember { mutableStateOf<PsiClass?>(null) }
-
-        LaunchedEffect(Unit) {
-            psiClass.value = platform.psiClassFor(type)
-        }
-
-        val currentPsiClass = psiClass.value
-
-        if (currentPsiClass != null) {
-            JumpToSourcesActionItem(currentPsiClass)
-        }
-    }
-}
-
-@Composable
-fun JumpToSourcesActionItem(
-    psiClass: PsiClass,
-) {
-    val platform = LocalPlatform.current
-    val scope = rememberCoroutineScope()
-    PopupItem(ValueIcon.Class, "Jump to sources") {
-        scope.launch {
-            platform.navigateToSources(psiClass)
-        }
-    }
-}
-
-@Composable
-fun SnapshotActionItems(
+fun MenuScope.snapshotActionItems(
     componentId: ComponentId,
     snapshotId: SnapshotId,
     serverStarted: Boolean,
     handler: MessageHandler,
 ) {
-    Column {
-        PopupItem(
-            painter = ActionIcons.Remove,
-            text = "Delete all"
+    selectableItem(
+        selected = false,
+        iconKey = AllIconsKeys.General.Remove,
+        onClick = { handler(RemoveAllSnapshots(componentId)) }
+    ) {
+        Text(text = "Delete all")
+    }
+
+    selectableItem(
+        selected = false,
+        iconKey = AllIconsKeys.General.Remove,
+        onClick = { handler(RemoveSnapshots(componentId, snapshotId)) }
+    ) {
+        Text(text = "Delete")
+    }
+
+    if (serverStarted) {
+        selectableItem(
+            selected = false,
+            iconKey = null,
+            onClick = { handler(ApplyMessage(componentId, snapshotId)) },
         ) {
-            handler(RemoveAllSnapshots(componentId))
-        }
-        PopupItem(
-            painter = ActionIcons.Remove,
-            text = "Delete"
-        ) {
-            handler(RemoveSnapshots(componentId, snapshotId))
-        }
-        if (serverStarted) {
-            PopupItem(
-                painter = ActionIcons.UpdateRunningApplication,
-                text = "Deploy state to all connected clients",
-            ) {
-                handler(ApplyState(componentId, snapshotId))
-            }
-            PopupItem(
-                painter = ActionIcons.UpdateRunningApplication,
-                text = "Deploy message to all connected clients",
-            ) {
-                handler(ApplyMessage(componentId, snapshotId))
-            }
+            Text(text = "Deploy message to all connected clients")
         }
     }
 }
 
-@Composable
-fun PopupItem(
-    painter: Painter,
-    text: String,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
+private fun MenuScope.leafActionItems(
+    value: Value,
+    dependencies: PopupDependencies,
 ) {
-    DropdownMenuItem(
-        onClick = onClick,
-        enabled = enabled
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
-        ) {
-            Image(
-                modifier = Modifier.size(16.dp),
-                painter = painter,
-                contentDescription = text
-            )
+    val clipboardValue = value.clipboardValue
 
-            Text(text = text)
+    if (clipboardValue != null) {
+        copyActionItem(AnnotatedString(clipboardValue), dependencies)
+    }
+}
+
+private fun MenuScope.copyActionItem(
+    clipboard: AnnotatedString,
+    dependencies: PopupDependencies,
+) {
+    selectableItem(
+        selected = false,
+        iconKey = AllIconsKeys.General.Copy,
+        onClick = { dependencies.clipboardManager.setText(clipboard) },
+    ) {
+        Text("Copy value")
+    }
+}
+
+private fun MenuScope.refActionItems(
+    type: Type,
+    dependencies: PopupDependencies,
+) {
+    copyActionItem(AnnotatedString(type.name), dependencies)
+
+    val psiClass = dependencies.platform.psiClassFor(type)
+
+    if (psiClass != null) {
+        selectableItem(
+            selected = false,
+            iconKey = AllIconsKeys.Nodes.Class,
+            onClick = {
+                dependencies.platform.navigateToSources(psiClass)
+            }
+        ) {
+            Text("Jump to sources")
         }
     }
 }

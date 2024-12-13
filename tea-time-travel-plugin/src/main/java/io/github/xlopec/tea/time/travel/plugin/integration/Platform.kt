@@ -69,7 +69,7 @@ private class PlatformImpl(
     override fun psiClassFor(type: Type): PsiClass? =
         // findClass throws exception when indexing is in progress
         runCatching { project.javaPsiFacade.findClass(type.name, GlobalSearchScope.projectScope(project)) }
-            .onFailure { logger.warn("Exception when searching for psi class for $type", it) }
+            .onFailure { logger.warn("Exception while searching for psi class for $type", it) }
             .getOrNull()
 
     override fun navigateToSources(psiClass: PsiClass) = PsiNavigateUtil.navigate(psiClass)

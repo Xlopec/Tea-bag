@@ -30,30 +30,58 @@
 
 package io.github.xlopec.tea.time.travel.plugin.feature.component.ui
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.xlopec.tea.time.travel.plugin.model.*
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons.Expand
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Class
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Property
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ValueIcon.Snapshot
+import io.github.xlopec.tea.time.travel.plugin.model.BooleanWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.CharWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.CollectionWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.FilteredSnapshot
+import io.github.xlopec.tea.time.travel.plugin.model.Null
+import io.github.xlopec.tea.time.travel.plugin.model.NumberWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Ref
+import io.github.xlopec.tea.time.travel.plugin.model.SnapshotMeta
+import io.github.xlopec.tea.time.travel.plugin.model.StringWrapper
+import io.github.xlopec.tea.time.travel.plugin.model.Value
+import io.github.xlopec.tea.time.travel.plugin.model.stringValue
 import io.github.xlopec.tea.time.travel.plugin.util.clickable
-import io.kanro.compose.jetbrains.JBTheme
-import io.kanro.compose.jetbrains.LocalTypography
-import io.kanro.compose.jetbrains.control.DropdownMenu
-import io.kanro.compose.jetbrains.control.Text
+import org.jetbrains.jewel.foundation.theme.JewelTheme
+import org.jetbrains.jewel.ui.component.Icon
+import org.jetbrains.jewel.ui.component.MenuScope
+import org.jetbrains.jewel.ui.component.PopupMenu
+import org.jetbrains.jewel.ui.component.Text
+import org.jetbrains.jewel.ui.icon.IconKey
+import org.jetbrains.jewel.ui.icons.AllIconsKeys
+import org.jetbrains.jewel.ui.theme.treeStyle
 
 typealias TreeFormatter = (Value) -> String
 typealias TreeSelectionState = MutableState<Any?>
@@ -69,17 +97,12 @@ internal fun Tag(
 internal val LocalInitialExpandState = compositionLocalOf { false }
 private val LocalTreeFormatter = compositionLocalOf<TreeFormatter> { error("TreeFormatter wasn't provided") }
 
-/**
- * Additional `y` offset so that when user opens DropDown menu the top most item isn't hovered by pointer input
- */
-private val PointerCaptureInputAvoidanceOffset = DpOffset(0.dp, 3.dp)
-
 @Composable
 fun Tree(
     modifier: Modifier = Modifier,
     root: Value,
     formatter: TreeFormatter,
-    valuePopupContent: @Composable (Value) -> Unit,
+    valuePopupContent: MenuScope.(Value) -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -91,7 +114,7 @@ fun Tree(
             CompositionLocalProvider(LocalTreeFormatter provides formatter) {
                 Text(
                     modifier = Modifier.padding(all = 4.dp),
-                    style = LocalTypography.current.defaultBold,
+                    style = JewelTheme.defaultTextStyle.copy(fontWeight = FontWeight.SemiBold),
                     text = "State"
                 )
                 SubTree(root, 0, formatter(root), selection, valuePopupContent)
@@ -110,8 +133,8 @@ fun Tree(
     modifier: Modifier = Modifier,
     roots: List<FilteredSnapshot>,
     formatter: TreeFormatter,
-    valuePopupContent: @Composable (Value) -> Unit,
-    snapshotPopupContent: @Composable (FilteredSnapshot) -> Unit,
+    valuePopupContent: MenuScope.(Value) -> Unit,
+    snapshotPopupContent: MenuScope.(FilteredSnapshot) -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -123,7 +146,7 @@ fun Tree(
             CompositionLocalProvider(LocalTreeFormatter provides formatter) {
                 Text(
                     modifier = Modifier.padding(all = 4.dp),
-                    style = LocalTypography.current.defaultBold,
+                    style = JewelTheme.defaultTextStyle.copy(fontWeight = FontWeight.SemiBold),
                     text = "Snapshots"
                 )
 
@@ -148,13 +171,13 @@ private fun SubTree(
     level: Int,
     text: String,
     state: TreeSelectionState,
-    valuePopupContent: @Composable (Value) -> Unit,
+    valuePopupContent: MenuScope.(Value) -> Unit,
 ) = when (value) {
     is StringWrapper, is CharWrapper, is NumberWrapper, is BooleanWrapper, Null -> LeafNode(
         modifier = Modifier.fillMaxWidth().testTag(Tag(value)),
         level = level,
         text = text,
-        painter = Property,
+        icon = AllIconsKeys.Nodes.Property,
         node = value,
         state = state,
         popupContent = { valuePopupContent(value) }
@@ -168,8 +191,8 @@ private fun SubTree(
 private fun SnapshotSubTree(
     snapshot: FilteredSnapshot,
     state: TreeSelectionState,
-    valuePopupContent: @Composable (Value) -> Unit,
-    snapshotPopupContent: @Composable (FilteredSnapshot) -> Unit,
+    valuePopupContent: MenuScope.(Value) -> Unit,
+    snapshotPopupContent: MenuScope.(FilteredSnapshot) -> Unit,
 ) {
     val expanded = LocalInitialExpandState.current
     val expandState = remember { mutableStateOf(expanded) }
@@ -180,7 +203,7 @@ private fun SnapshotSubTree(
             modifier = Modifier.fillMaxWidth().testTag(Tag(snapshot.meta)),
             level = 0,
             text = text,
-            painter = Snapshot,
+            icon = AllIconsKeys.FileTypes.Any_type,
             node = snapshot,
             state = state,
             popupContent = { snapshotPopupContent(snapshot) }
@@ -190,7 +213,7 @@ private fun SnapshotSubTree(
             modifier = Modifier.fillMaxWidth().testTag(Tag(snapshot.meta)),
             level = 0,
             text = text,
-            painter = Snapshot,
+            icon = AllIconsKeys.FileTypes.Any_type,
             node = snapshot,
             state = state,
             expandedState = expandState,
@@ -204,7 +227,7 @@ private fun SnapshotSubTree(
         if (snapshot.message != null) {
 
             Text(
-                style = LocalTypography.current.defaultBold,
+                style = JewelTheme.defaultTextStyle.copy(fontWeight = FontWeight.SemiBold),
                 modifier = Modifier.fillMaxWidth().indentLevel(1),
                 text = "Message"
             )
@@ -214,7 +237,7 @@ private fun SnapshotSubTree(
 
         if (snapshot.state != null) {
             Text(
-                style = LocalTypography.current.defaultBold,
+                style = JewelTheme.defaultTextStyle.copy(fontWeight = FontWeight.SemiBold),
                 modifier = Modifier.fillMaxWidth().indentLevel(1),
                 text = "State"
             )
@@ -224,7 +247,7 @@ private fun SnapshotSubTree(
 
         if (snapshot.commands != null) {
             Text(
-                style = LocalTypography.current.defaultBold,
+                style = JewelTheme.defaultTextStyle.copy(fontWeight = FontWeight.SemiBold),
                 modifier = Modifier.fillMaxWidth().indentLevel(1),
                 text = "Commands"
             )
@@ -240,14 +263,14 @@ private fun ReferenceSubTree(
     text: String,
     ref: Ref,
     state: TreeSelectionState,
-    valuePopupContent: @Composable (Value) -> Unit,
+    valuePopupContent: MenuScope.(Value) -> Unit,
 ) {
     if (ref.properties.isEmpty()) {
         LeafNode(
             modifier = Modifier.fillMaxWidth().testTag(Tag(ref)),
             level = level,
             text = text,
-            painter = Class,
+            icon = AllIconsKeys.Nodes.Class,
             node = ref,
             state = state,
             popupContent = { valuePopupContent(ref) }
@@ -260,7 +283,7 @@ private fun ReferenceSubTree(
             modifier = Modifier.fillMaxWidth().testTag(Tag(ref)),
             level = level,
             text = text,
-            painter = Class,
+            icon = AllIconsKeys.Nodes.Class,
             node = ref,
             state = state,
             expandedState = expandState,
@@ -283,14 +306,14 @@ private fun CollectionSubTree(
     level: Int,
     text: String,
     state: TreeSelectionState,
-    valuePopupContent: @Composable (Value) -> Unit,
+    valuePopupContent: MenuScope.(Value) -> Unit,
 ) {
     if (collection.items.isEmpty()) {
         LeafNode(
             modifier = Modifier.fillMaxWidth().testTag(Tag(collection)),
             level = level,
             text = text,
-            painter = Property,
+            icon = AllIconsKeys.Nodes.Property,
             node = collection,
             state = state,
             popupContent = { valuePopupContent(collection) }
@@ -303,7 +326,7 @@ private fun CollectionSubTree(
             modifier = Modifier.fillMaxWidth().testTag(Tag(collection)),
             level = level,
             text = text,
-            painter = Property,
+            icon = AllIconsKeys.Nodes.Property,
             node = collection,
             state = state,
             expandedState = expandState,
@@ -324,22 +347,21 @@ private fun CollectionSubTree(
 private fun LeafNode(
     level: Int,
     text: String,
-    painter: Painter,
+    icon: IconKey,
     node: Any,
     state: TreeSelectionState,
-    popupContent: @Composable () -> Unit,
+    popupContent: MenuScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(modifier = modifier) {
         val showPopup = remember { mutableStateOf(false) }
-        val offset = remember { mutableStateOf(DpOffset(0.dp, 0.dp)) }
 
-        DropdownMenu(
-            onDismissRequest = { showPopup.value = false },
-            expanded = showPopup.value,
-            offset = offset.value,
-        ) {
-            popupContent()
+        if (showPopup.value) {
+            PopupMenu(
+                onDismissRequest = { showPopup.value = false; true },
+                horizontalAlignment = Alignment.Start,
+                content = popupContent
+            )
         }
 
         TreeRow(
@@ -352,12 +374,11 @@ private fun LeafNode(
                     state.value = node
 
                     if (buttons.isSecondaryPressed) {
-                        offset.value = upOffset + PointerCaptureInputAvoidanceOffset
                         showPopup.value = true
                     }
                 },
             text = text,
-            painter = painter
+            icon = icon
         )
     }
 }
@@ -367,67 +388,61 @@ private fun LeafNode(
 private fun ExpandableNode(
     level: Int,
     text: String,
-    painter: Painter,
+    icon: IconKey,
     node: Any,
     state: TreeSelectionState,
     expandedState: MutableState<Boolean>,
-    popupContent: @Composable () -> Unit,
+    popupContent: MenuScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    BoxWithConstraints(modifier = modifier) {
-        val showPopup = remember { mutableStateOf(false) }
-        val offset = remember { mutableStateOf(DpOffset(0.dp, 0.dp)) }
+    val showPopup = remember { mutableStateOf(false) }
 
-        DropdownMenu(
-            onDismissRequest = { showPopup.value = false },
-            expanded = showPopup.value,
-            offset = offset.value,
-        ) {
-            popupContent()
-        }
-
-        TreeRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .selected(state.value === node)
-                .indentLevel(level)
-                .clickable { _, upOffset ->
-                    state.value = node
-
-                    if (buttons.isPrimaryPressed) {
-                        expandedState.value = !expandedState.value
-                    } else if (buttons.isSecondaryPressed) {
-                        offset.value = upOffset + PointerCaptureInputAvoidanceOffset
-                        showPopup.value = true
-                    }
-                },
-            text = text,
-            painter = painter,
-            leadingIcon = {
-                Image(
-                    modifier = Modifier.graphicsLayer(rotationZ = if (expandedState.value) 90f else 0f),
-                    painter = Expand,
-                    contentDescription = null
-                )
-            }
+    if (showPopup.value) {
+        PopupMenu(
+            onDismissRequest = { showPopup.value = false; true },
+            horizontalAlignment = Alignment.Start,
+            content = popupContent
         )
     }
+
+    TreeRow(
+        modifier = modifier
+            .selected(state.value === node)
+            .indentLevel(level)
+            .clickable { _, upOffset ->
+                state.value = node
+
+                if (buttons.isPrimaryPressed) {
+                    expandedState.value = !expandedState.value
+                } else if (buttons.isSecondaryPressed) {
+                    showPopup.value = true
+                }
+            },
+        text = text,
+        icon = icon,
+        leadingIcon = {
+            Icon(
+                key = if (expandedState.value) AllIconsKeys.General.ChevronDown else AllIconsKeys.General.ChevronRight,
+                contentDescription = null
+            )
+        }
+    )
 }
 
 @Composable
 private fun TreeRow(
     modifier: Modifier,
     text: String,
-    painter: Painter,
+    icon: IconKey,
     leadingIcon: (@Composable () -> Unit)? = null,
 ) {
     Row(
         modifier = modifier,
     ) {
 
-        Image(
+        Icon(
             modifier = Modifier.size(16.dp),
-            painter = painter,
+            key = icon,
             contentDescription = null
         )
 
@@ -440,19 +455,19 @@ private fun TreeRow(
     }
 }
 
-private val IndentPadding = 12.dp
-
 @Composable
 private fun Modifier.selected(
     isSelected: Boolean,
-) = background(if (isSelected) JBTheme.selectionColors.active else Color.Unspecified)
+) = background(if (isSelected) JewelTheme.treeStyle.colors.elementBackgroundSelected else Color.Unspecified)
 
 private fun Modifier.indentLevel(
     level: Int,
-    step: Dp = IndentPadding,
-) = padding(
-    start = Dp(step.value * level) + 4.dp,
-    top = 2.dp,
-    end = 4.dp,
-    bottom = 2.dp
-)
+) = composed {
+    val indentSize = JewelTheme.treeStyle.metrics.indentSize
+    padding(
+        start = (indentSize * level) + 4.dp,
+        top = 2.dp,
+        end = 4.dp,
+        bottom = 2.dp
+    )
+}

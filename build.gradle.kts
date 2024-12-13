@@ -55,12 +55,6 @@ nexusPublishing {
 }
 
 allprojects {
-    repositories {
-        mavenCentral()
-        google()
-        mavenLocal()
-    }
-
     apply {
         plugin("io.gitlab.arturbosch.detekt")
     }

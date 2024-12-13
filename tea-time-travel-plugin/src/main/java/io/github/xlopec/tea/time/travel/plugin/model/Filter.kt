@@ -19,8 +19,7 @@
 package io.github.xlopec.tea.time.travel.plugin.model
 
 import androidx.compose.runtime.Immutable
-import arrow.core.Valid
-import arrow.core.Validated
+import arrow.core.Either
 import io.github.xlopec.tea.time.travel.plugin.model.FilterOption.*
 import java.util.*
 
@@ -33,7 +32,7 @@ enum class FilterOption {
     WORDS
 }
 
-private val MatchAllValidatedPredicate: Input<String, Predicate> = Input("", Valid(value = { true }))
+private val MatchAllValidatedPredicate: Input<String, Predicate> = Input("", Either.Right(value = { true }))
 
 @Immutable
 class Filter private constructor(
@@ -62,13 +61,14 @@ class Filter private constructor(
                 SUBSTRING -> Filter(
                     SUBSTRING,
                     ignoreCase,
-                    Input(filter, Valid(SubstringPredicate(filter, ignoreCase)))
+                    Input(filter, Either.Right(SubstringPredicate(filter, ignoreCase)))
                 )
+
                 REGEX -> Filter(REGEX, ignoreCase, RegexPredicate(filter, ignoreCase))
                 WORDS -> Filter(
                     WORDS,
                     ignoreCase,
-                    Input(filter, Valid(WordsPredicate(filter, ignoreCase)))
+                    Input(filter, Either.Right(WordsPredicate(filter, ignoreCase)))
                 )
             }
         }
@@ -119,7 +119,7 @@ fun RegexPredicate(
 ): Input<String, Predicate> {
 
     @Suppress("SuspiciousCallableReferenceInLambda")
-    val validatedRegex = Validated.catch {
+    val validatedRegex = Either.catch {
         when {
             rawRegex.isEmpty() && ignoreCase -> ALL_MATCH_IGNORING_CASE_REGEX
             rawRegex.isEmpty() && !ignoreCase -> ALL_MATCH_REGEX
@@ -158,20 +158,20 @@ private fun Predicate.applyToRef(
             property
         } else {
             applyTo(property.v)
-            ?.let { filteredValue ->
-                Property(
-                    property.name,
-                    filteredValue
-                )
-            }
+                ?.let { filteredValue ->
+                    Property(
+                        property.name,
+                        filteredValue
+                    )
+                }
         }
 
     return if (this(ref.type.name)) {
         ref
     } else {
         ref.properties.mapNotNullTo(HashSet(ref.properties.size), ::applyToProp)
-        .takeIf(Collection<*>::isNotEmpty)
-        ?.let { ref.copy(properties = it) }
+            .takeIf(Collection<*>::isNotEmpty)
+            ?.let { ref.copy(properties = it) }
     }
 }
 

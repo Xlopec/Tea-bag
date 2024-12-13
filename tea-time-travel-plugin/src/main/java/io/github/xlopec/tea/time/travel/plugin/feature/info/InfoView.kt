@@ -32,15 +32,15 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign.Companion.Justify
 import androidx.compose.ui.unit.sp
-import arrow.core.zip
-import arrow.typeclasses.Semigroup
+import arrow.core.Either.Companion.zipOrAccumulate
+import arrow.core.NonEmptyList
 import io.github.xlopec.tea.time.travel.plugin.feature.component.ui.MessageHandler
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StartServer
 import io.github.xlopec.tea.time.travel.plugin.model.State
-import io.github.xlopec.tea.time.travel.plugin.ui.theme.ActionIcons
-import io.kanro.compose.jetbrains.control.ActionButton
-import io.kanro.compose.jetbrains.control.Icon
-import io.kanro.compose.jetbrains.control.Text
+import org.jetbrains.jewel.ui.component.ActionButton
+import org.jetbrains.jewel.ui.component.Icon
+import org.jetbrains.jewel.ui.component.Text
+import org.jetbrains.jewel.ui.icons.AllIconsKeys
 import java.util.*
 
 internal const val InfoViewTag = "info view"
@@ -57,7 +57,11 @@ fun InfoView(
     ) {
         val content = remember(state.server, state.debugger.settings) { state.toContent(handler) }
 
-        Text(text = content.description, textAlign = Justify, inlineContent = content.inlineContent)
+        Text(
+            text = content.description,
+            textAlign = Justify,
+            inlineContent = content.inlineContent,
+        )
     }
 }
 
@@ -78,13 +82,15 @@ private fun State.toContent(
 
 private fun State.toNonRunningContent(
     handler: MessageHandler
-) = debugger.settings.host.value.mapLeft { "${it.lowercase()},\n" }
-    .zip(Semigroup.string(), debugger.settings.port.value.mapLeft(String::lowercase)) { _, _ -> serverCanRunContent(handler) }
-    .fold(fe = ::invalidSettingsContent, fa = { it })
+): InfoViewContent = zipOrAccumulate(
+    debugger.settings.host.value.mapLeft(String::lowercase),
+    debugger.settings.port.value.mapLeft(String::lowercase)
+) { _, _ -> serverCanRunContent(handler) }
+    .fold(ifLeft = ::invalidSettingsContent, ifRight = { it })
 
 private fun invalidSettingsContent(
-    description: String
-) = InfoViewContent(description = "Can't start debug server: $description")
+    description: NonEmptyList<String>
+) = InfoViewContent(description = "Can't start debug server: ${description.joinToString(separator = ",\n")}")
 
 private fun String.lowercase() = replaceFirstChar { it.lowercase(Locale.getDefault()) }
 
@@ -106,7 +112,7 @@ private fun serverCanRunContent(handler: MessageHandler): InfoViewContent {
                 onClick = { handler(StartServer) }
             ) {
                 Icon(
-                    painter = ActionIcons.Execute,
+                    key = AllIconsKeys.Actions.Execute,
                     modifier = Modifier.fillMaxSize(),
                     contentDescription = "Start server"
                 )

@@ -22,53 +22,23 @@
  * SOFTWARE.
  */
 
-import org.jetbrains.compose.compose
-import org.jetbrains.intellij.tasks.PatchPluginXmlTask
-import org.jetbrains.intellij.tasks.PublishPluginTask
+import org.jetbrains.compose.ExperimentalComposeLibrary
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 
 plugins {
     `maven-publish`
     `java-library`
     kotlin("jvm")
-    id("org.jetbrains.intellij")
+    id("org.jetbrains.intellij.platform")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
 val supportedVersions = listOf(
-    IDEVersion(Product.IC, 2023, 3),
-    IDEVersion(Product.IC, 2023, 2),
+    IDEVersion(Product.IC, 2024, 3),
+    IDEVersion(Product.IC, 2024, 2),
+    IDEVersion(Product.IC, 2024, 1),
 )
-
-intellij {
-    val idePath = getenvSafe("IJ_C")
-
-    if (isCiEnv || idePath == null) {
-        val ideVersion = supportedVersions.latest().versionName
-        logger.info("IDE of version $ideVersion will be used")
-        version.set(ideVersion)
-    } else {
-        logger.info("Local IDE distribution will be used located at $idePath")
-        localPath.set(idePath)
-    }
-
-    plugins.add("com.intellij.java")
-}
-
-tasks.named<org.jetbrains.intellij.tasks.RunPluginVerifierTask>("runPluginVerifier") {
-    ideVersions.set(supportedVersions.map { it.versionName })
-}
-
-tasks.named<PatchPluginXmlTask>("patchPluginXml") {
-    version.set(libraryVersion.toVersionName())
-    sinceBuild.set(supportedVersions.oldest().buildNumber)
-}
-
-tasks.named<PublishPluginTask>("publishPlugin") {
-    token.set(ciVariable("PUBLISH_PLUGIN_TOKEN"))
-    channels.set(pluginReleaseChannels)
-    dependsOn("runPluginVerifier")
-}
 
 tasks.withType<JavaCompile>().configureEach {
     targetCompatibility = "17"
@@ -127,34 +97,54 @@ sourceSets {
     }
 }
 
-fun shouldUseForcedCoroutinesVersion(
-    configuration: Configuration,
-    details: DependencyResolveDetails,
-    version: String,
-): Boolean =
-    !configuration.name.startsWith("test") &&
-        details.requested.group == "org.jetbrains.kotlinx" &&
-        details.requested.module.name.startsWith("kotlinx-coroutines") &&
-        details.requested.version != version
+intellijPlatform {
+    pluginConfiguration {
+        id = "com.github.Xlopec.elm.time.travel"
+        name = "Time Travel Debugger"
+        vendor {
+            name = "Maksym Oliinyk"
+            email = "maksimolejn720@gmail.com"
+        }
+        version.set(libraryVersion.toVersionName())
+        ideaVersion {
+            sinceBuild.set(supportedVersions.oldest().buildNumber)
+        }
+    }
 
-configurations.configureEach {
-    resolutionStrategy.eachDependency {
-        val forcedVersion = "1.6.4"
-        if (shouldUseForcedCoroutinesVersion(this@configureEach, this@eachDependency, forcedVersion)) {
-            useVersion(forcedVersion)
-            because(
-                """
-                We must use bundled coroutines version, latest compatible coroutines dependency version 
-                for IJ 2022.1 is $forcedVersion, see https://www.jetbrains.com/legal/third-party-software/?product=iic&version=2022.3.2
-            """.trimIndent()
-            )
+    publishing {
+        token.set(ciVariable("PUBLISH_PLUGIN_TOKEN"))
+        channels.set(pluginReleaseChannels)
+    }
+
+    pluginVerification {
+        ides {
+            ide(type = IntelliJPlatformType.IntellijIdeaCommunity, supportedVersions.latest().versionName)
+            ide(type = IntelliJPlatformType.IntellijIdeaCommunity, supportedVersions.oldest().versionName)
         }
     }
 }
 
 dependencies {
+    intellijPlatform {
+        pluginVerifier()
+        val idePath = getenvSafe("IJ_PATH") ?: findProperty("ijPath")?.toString()
 
-    implementation(project(":tea-core"))
+        if (isCiEnv || idePath == null) {
+            val ideVersion = supportedVersions.latest().versionName
+            logger.info("IDE of version $ideVersion will be used")
+            intellijIdeaCommunity(ideVersion)
+        } else {
+            logger.info("Local IDE distribution will be used located at $idePath")
+            local(idePath)
+        }
+
+        instrumentationTools()
+        bundledPlugin("com.intellij.java")
+    }
+
+    implementation(project(":tea-core")) {
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
+    }
     implementation(project(":tea-time-travel-protocol"))
     implementation(project(":tea-time-travel-adapter-gson"))
     implementation(project(":tea-data"))
@@ -164,35 +154,47 @@ dependencies {
     implementation(libs.stdlib.reflect)
     implementation(libs.arrow.core)
 
+    implementation(libs.jewel.ide.bridge)
+
     // FIXME this is a temporary workaround
     implementation(compose.desktop.macos_arm64) {
-        exclude("org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.kotlinx")
     }
     implementation(compose.desktop.macos_x64) {
-        exclude("org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.kotlinx")
     }
     implementation(compose.desktop.linux_x64) {
-        exclude("org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.kotlinx")
     }
     implementation(compose.desktop.linux_arm64) {
-        exclude("org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.kotlinx")
     }
     implementation(compose.desktop.windows_x64) {
-        exclude("org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.compose.material")
+        exclude(group = "org.jetbrains.kotlinx")
     }
 
-    @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-    implementation(compose.desktop.components.splitPane)
-    implementation("com.bybutter.compose:compose-jetbrains-theme")
+    @OptIn(ExperimentalComposeLibrary::class)
+    implementation(compose.desktop.components.splitPane) {
+        exclude(group = "org.jetbrains.kotlinx")
+    }
+
     implementation(libs.logging)
 
-    implementation(libs.bundles.ktor.server)
-    implementation(libs.coroutines.core)
+    implementation(libs.bundles.ktor.server) {
+        exclude(group = "org.jetbrains.kotlinx")
+    }
+
     implementation(libs.collections.immutable)
 
+    testImplementation(libs.jewel.ui.standalone)
+    testImplementation(compose.desktop.uiTestJUnit4)
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.kotlin.test)
     testImplementation(project(":tea-test"))
-    testImplementation(compose("org.jetbrains.compose.ui:ui-test-junit4"))
 }

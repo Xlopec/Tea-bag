@@ -11,7 +11,6 @@ import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.messages.MessageBus
-import kotlinx.coroutines.CoroutineScope
 
 open class ProjectStub : Project {
     override fun <T : Any?> getUserData(p0: Key<T>): T? {
@@ -133,11 +132,6 @@ open class ProjectStub : Project {
     }
 
     override fun isInitialized(): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun getCoroutineScope(): CoroutineScope {
         TODO("Not yet implemented")
     }
 }

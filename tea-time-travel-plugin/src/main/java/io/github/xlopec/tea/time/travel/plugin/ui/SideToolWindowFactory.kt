@@ -11,19 +11,33 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
-import io.github.xlopec.tea.core.*
+import io.github.xlopec.tea.core.Component
+import io.github.xlopec.tea.core.ExperimentalTeaApi
+import io.github.xlopec.tea.core.invoke
+import io.github.xlopec.tea.core.subscribeIn
+import io.github.xlopec.tea.core.toStatesComponent
 import io.github.xlopec.tea.time.travel.plugin.feature.component.integration.UpdateDebugSettings
 import io.github.xlopec.tea.time.travel.plugin.feature.server.StopServer
 import io.github.xlopec.tea.time.travel.plugin.feature.settings.PluginSettingsNotifier
-import io.github.xlopec.tea.time.travel.plugin.integration.*
+import io.github.xlopec.tea.time.travel.plugin.integration.AppInitializer
+import io.github.xlopec.tea.time.travel.plugin.integration.Command
+import io.github.xlopec.tea.time.travel.plugin.integration.Environment
+import io.github.xlopec.tea.time.travel.plugin.integration.Message
+import io.github.xlopec.tea.time.travel.plugin.integration.PluginComponent
+import io.github.xlopec.tea.time.travel.plugin.integration.PluginLogger
 import io.github.xlopec.tea.time.travel.plugin.model.State
 import io.github.xlopec.tea.time.travel.plugin.model.isStarted
 import io.github.xlopec.tea.time.travel.plugin.util.mergeWith
 import io.github.xlopec.tea.time.travel.plugin.util.properties
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
+import org.jetbrains.jewel.foundation.enableNewSwingCompositing
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -36,6 +50,8 @@ class SideToolWindowFactory : ToolWindowFactory, DumbAware {
         val events = MutableSharedFlow<Message>()
         val environment = Environment(project.properties, project, events)
         val component = PluginComponent(environment, AppInitializer(project.properties))
+
+        enableNewSwingCompositing()
 
         with(PluginLogger) {
             with(project) {

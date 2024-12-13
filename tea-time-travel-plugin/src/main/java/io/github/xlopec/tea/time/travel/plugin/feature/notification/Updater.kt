@@ -28,8 +28,8 @@ import java.util.*
 
 internal fun State.updateForNotificationMessage(
     message: NotificationMessage,
-): Update<State, Command> =
-    when (message) {
+): Update<State, Command> {
+    return when (message) {
         is ServerStarted -> onStarted(message.server)
         is ServerStopped -> onStopped()
         is AppendSnapshot -> onAppendSnapshot(message)
@@ -41,6 +41,7 @@ internal fun State.updateForNotificationMessage(
         is OperationException -> onOperationException(message)
         else -> onUnhandledMessage(message)
     }
+}
 
 private fun State.onComponentImportResult(
     message: ComponentImportResult
