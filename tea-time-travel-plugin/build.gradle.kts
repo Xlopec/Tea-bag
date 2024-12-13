@@ -35,6 +35,7 @@ plugins {
 }
 
 val supportedVersions = listOf(
+    IDEVersion(Product.IC, 2024, 3),
     IDEVersion(Product.IC, 2024, 2),
     IDEVersion(Product.IC, 2024, 1),
 )
