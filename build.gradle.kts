@@ -22,10 +22,6 @@
  * SOFTWARE.
  */
 
-import io.gitlab.arturbosch.detekt.Detekt
-import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 // Top-level build file where you can add configuration options common to all subprojects/modules.
 
 installGitHooks()

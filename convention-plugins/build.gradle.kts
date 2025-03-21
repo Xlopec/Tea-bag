@@ -7,7 +7,6 @@ plugins {
 group = "io.github.xlopec"
 version = "SNAPSHOT"
 
-
 afterEvaluate {
     tasks.withType<Test>().configureEach {
         val buildDir = File(File(File(rootProject.rootDir.parentFile, "build"), "junit-reports"), project.name)

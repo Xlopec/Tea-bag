@@ -35,7 +35,6 @@ private val Project.androidExtension: AndroidExtensions
                 " or android library gradle script"
         )
 
-
 fun Project.androidConfig(block: AndroidExtensions.() -> Unit): Unit = block(androidExtension)
 
 fun Project.kotlinJvmCompilerOptions(block: KotlinJvmCompilerOptions.() -> Unit) {
