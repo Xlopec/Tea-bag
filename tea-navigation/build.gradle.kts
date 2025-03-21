@@ -23,7 +23,7 @@
  */
 
 plugins {
-    `published-multiplatform-library-convention`
+    id("published-multiplatform-library-convention")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
 }

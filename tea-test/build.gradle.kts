@@ -23,14 +23,10 @@
  */
 
 plugins {
-    kotlin("multiplatform")
+    id("common-kotlin-convention")
 }
 
 kotlin {
-
-    compilerOptions {
-        optIn.addAll(DefaultOptIns)
-    }
 
     jvm {
         withJava()

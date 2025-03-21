@@ -27,14 +27,14 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTes
  */
 
 plugins {
-    kotlin("multiplatform")
+    id("common-kotlin-convention")
 }
 
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
-kotlin {
+kotlinMultiplatform {
     explicitApi()
 
     jvm {
@@ -53,12 +53,6 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
     applyDefaultHierarchyTemplate()
-
-    compilerOptions {
-        optIn.addAll(DefaultOptIns)
-        freeCompilerArgs.add("-Xexpect-actual-classes")
-        freeCompilerArgs.add("-Xconsistent-data-class-copy-visibility")
-    }
 
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
         compilerOptions {

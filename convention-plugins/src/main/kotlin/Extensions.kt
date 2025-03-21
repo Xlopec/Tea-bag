@@ -36,7 +36,6 @@ private val Project.androidExtension: AndroidExtensions
         )
 
 
-
 fun Project.androidConfig(block: AndroidExtensions.() -> Unit): Unit = block(androidExtension)
 
 fun Project.kotlinJvmCompilerOptions(block: KotlinJvmCompilerOptions.() -> Unit) {
@@ -45,21 +44,20 @@ fun Project.kotlinJvmCompilerOptions(block: KotlinJvmCompilerOptions.() -> Unit)
     }
 }
 
-internal
-fun org.gradle.api.Project.`signing`(configure: Action<org.gradle.plugins.signing.SigningExtension>): Unit =
+internal fun Project.signing(configure: Action<org.gradle.plugins.signing.SigningExtension>): Unit =
     (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("signing", configure)
 
-internal
-val TaskContainer.`classes`: TaskProvider<org.gradle.api.DefaultTask>
+internal val TaskContainer.classes: TaskProvider<org.gradle.api.DefaultTask>
     get() = named<org.gradle.api.DefaultTask>("classes")
 
-internal
-fun ArtifactHandler.`archives`(artifactNotation: Any): PublishArtifact =
+internal fun ArtifactHandler.archives(artifactNotation: Any): PublishArtifact =
     add("archives", artifactNotation)
 
-internal
-fun org.gradle.api.Project.kotlin(configure: Action<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>): Unit =
+internal fun Project.kotlinMultiplatform(configure: Action<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>): Unit =
     (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("kotlin", configure)
 
-internal fun org.gradle.api.Project.publishing(configure: Action<org.gradle.api.publish.PublishingExtension>): Unit =
+internal fun Project.kotlinJvm(configure: Action<org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension>): Unit =
+    (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("kotlin", configure)
+
+internal fun Project.publishing(configure: Action<org.gradle.api.publish.PublishingExtension>): Unit =
     (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("publishing", configure)

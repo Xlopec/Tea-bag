@@ -25,16 +25,9 @@ import org.jetbrains.compose.ExperimentalComposeLibrary
  */
 
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
+    id("android-app-convention")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
-}
-
-kotlin {
-    compilerOptions {
-        optIn.addAll(DefaultOptIns + "kotlinx.coroutines.ExperimentalCoroutinesApi")
-    }
 }
 
 android {

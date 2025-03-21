@@ -32,6 +32,7 @@ pluginManagement {
     includeBuild("convention-plugins")
     repositories {
         gradlePluginPortal()
+        maven("https://maven.google.com/")
     }
 }
 

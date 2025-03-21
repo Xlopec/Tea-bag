@@ -23,7 +23,7 @@
  */
 
 plugins {
-    `published-jvm-library-convention`
+    id("published-jvm-library-convention")
 }
 
 tasks.test {

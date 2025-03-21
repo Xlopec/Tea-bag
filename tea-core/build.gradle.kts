@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
  */
 
 plugins {
-    `published-multiplatform-library-convention`
+    id("published-multiplatform-library-convention")
 }
 
 val prepareTestJar by tasks.creating(Jar::class) {
