@@ -1,7 +1,7 @@
 
 plugins {
     `kotlin-dsl`
-    `kotlin-dsl-precompiled-script-plugins`
+   // `kotlin-dsl-precompiled-script-plugins`
 }
 
 group = "io.github.xlopec"
@@ -23,11 +23,11 @@ afterEvaluate {
 
 //noinspection UseTomlInstead
 dependencies {
-    implementation(libs.convention.agp)
     implementation(libs.convention.kotlin)
     implementation(libs.convention.intellij.platform)
     implementation(libs.convention.dokka)
     implementation(libs.convention.serializtion)
+    implementation(libs.convention.agp)
     implementation(libs.convention.sqldelight)
     implementation(libs.convention.compose.plugin)
     implementation(libs.convention.compose.compiler)
