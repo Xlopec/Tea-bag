@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
  */
 
 plugins {
-    id("common-kotlin-convention")
+    id("multiplatform-convention")
     id("com.android.library")
     id("com.squareup.sqldelight")
     kotlin("plugin.serialization")

@@ -27,9 +27,6 @@
 installGitHooks()
 
 plugins {
-    alias(libs.plugins.jvm)
-    alias(libs.plugins.detekt)
-    alias(libs.plugins.version.check)
     alias(libs.plugins.nexus.publishing)
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.compose.compiler) apply false

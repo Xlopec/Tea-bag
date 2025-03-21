@@ -23,7 +23,7 @@
  */
 
 plugins {
-    id("common-kotlin-convention")
+    id("multiplatform-convention")
 }
 
 kotlin {

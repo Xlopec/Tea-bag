@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTes
  */
 
 plugins {
-    id("common-kotlin-convention")
+    id("multiplatform-convention")
 }
 
 version = libraryVersion.toVersionName()
