@@ -21,49 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import java.net.URI
 
-@file:Suppress("UnstableApiUsage")
-
-import org.jetbrains.intellij.platform.gradle.extensions.intellijPlatform
-
-rootProject.name = "Tea-bag"
+rootProject.name = "convention-plugins"
 
 pluginManagement {
-    includeBuild("convention-plugins")
     repositories {
         gradlePluginPortal()
     }
 }
-
-plugins {
-    id("org.jetbrains.intellij.platform.settings") version "2.1.0"
-}
-
-include(
-    ":tea-core",
-    ":tea-time-travel",
-    ":tea-time-travel-protocol",
-    ":tea-time-travel-plugin",
-    ":tea-test",
-    ":tea-time-travel-adapter-gson",
-    ":tea-data",
-    ":tea-navigation",
-    ":samples:app",
-    ":samples:shared-app-lib",
-    ":samples:counter",
-)
 
 dependencyResolutionManagement {
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
 
     repositories {
         mavenCentral()
+        maven("https://plugins.gradle.org/m2/")
         google()
-        maven("https://packages.jetbrains.team/maven/p/kpm/public/")
+        maven {
+            url = URI("https://androidx.dev/storage/compose-compiler/repository/")
+        }
+    }
 
-        intellijPlatform {
-            // use the recommended repository list
-            defaultRepositories()
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
         }
     }
 }
