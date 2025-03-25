@@ -33,11 +33,8 @@ dependencies {
     implementation(libs.convention.nexus.publish)
     implementation(libs.convention.detekt)
     implementation(libs.convention.versions)
-    /*
-
-
 
     testImplementation("junit:junit:4.13.2")
     // used for tests under buildSrc directory
-    testImplementation("io.kotlintest:kotlintest-runner-junit4:3.4.2")*/
+    testImplementation("io.kotlintest:kotlintest-runner-junit4:3.4.2")
 }

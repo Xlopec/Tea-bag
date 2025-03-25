@@ -33,7 +33,7 @@ internal class IDEVersionTest {
 
     @Test
     fun `when convert to version name, then correct version name returned`() {
-        LatestVersion.versionName shouldBe "IC-2022.5"
+        LatestVersion.versionName shouldBe "2022.5"
     }
 
     @Test

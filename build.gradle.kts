@@ -60,3 +60,7 @@ allprojects {
         plugin("common-config")
     }
 }
+
+tasks.register("check") {
+    dependsOn(gradle.includedBuild("convention-plugins").task(":check"))
+}
