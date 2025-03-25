@@ -25,6 +25,7 @@ convention-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin
 decompose-backHandler = { module = "com.arkivanov.essenty:back-handler", version = "2.2.0-beta01" }
 decompose-extensions = { module = "com.arkivanov.decompose:extensions-compose", version = "3.1.0" }
 junit = { module = "junit:junit", version = "4.13.2" }
+junit-runner = { module = "io.kotlintest:kotlintest-runner-junit4", version = "3.4.2" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlin-test-annotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common" }
 compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version = "compose" }

@@ -20,7 +20,6 @@ afterEvaluate {
     }
 }
 
-//noinspection UseTomlInstead
 dependencies {
     implementation(libs.convention.kotlin)
     implementation(libs.convention.intellij.platform)
@@ -34,7 +33,6 @@ dependencies {
     implementation(libs.convention.detekt)
     implementation(libs.convention.versions)
 
-    testImplementation("junit:junit:4.13.2")
-    // used for tests under buildSrc directory
-    testImplementation("io.kotlintest:kotlintest-runner-junit4:3.4.2")
+    testImplementation(libs.junit)
+    testImplementation(libs.junit.runner)
 }
