@@ -40,7 +40,7 @@ detekt {
 
 tasks.withType<Detekt>().configureEach {
     include("**/*.kt", "**/*.kts")
-    exclude("compose-jetbrains-theme/**", "resources/", "**/build/**", "**/test/java/**")
+    exclude("resources/", "**/build/**", "**/test/java/**")
     setSource(files(projectDir))
     reports {
         xml.required.set(false)
@@ -56,7 +56,7 @@ val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) 
     config.setFrom(detektConfig)
     baseline.set(detektBaseline)
     include("**/*.kt", "**/*.kts")
-    exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
+    exclude("**/resources/**", "**/build/**")
 }
 
 val detektFormat by tasks.registering(Detekt::class) {
@@ -66,7 +66,7 @@ val detektFormat by tasks.registering(Detekt::class) {
     setSource(files(projectDir))
 
     include("**/*.kt", "**/*.kts")
-    exclude("compose-jetbrains-theme/**", "**/resources/**", "**/build/**")
+    exclude("**/resources/**", "**/build/**")
 
     config.setFrom(detektConfig)
     baseline.set(detektBaseline)
