@@ -27,6 +27,8 @@
 installGitHooks()
 
 plugins {
+    id("common-config")
+    alias(libs.plugins.version.check)
     alias(libs.plugins.nexus.publishing)
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.compose.compiler) apply false
@@ -35,7 +37,6 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.sqldelight) apply false
     alias(libs.plugins.kotlinx.serialization) apply false
-    id("common-config")
 }
 
 version = libraryVersion.toVersionName()

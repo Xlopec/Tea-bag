@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("io.gitlab.arturbosch.detekt")
+    id("com.github.ben-manes.versions")
 }
 
 //noinspection UseTomlInstead
