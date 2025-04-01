@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 /*
  * MIT License
@@ -49,9 +48,6 @@ kotlin {
 
     androidTarget {
         publishAllLibraryVariants()
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_11
-        }
     }
 
     iosX64()

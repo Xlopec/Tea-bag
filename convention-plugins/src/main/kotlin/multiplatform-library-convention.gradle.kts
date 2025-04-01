@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
 
 /*
@@ -42,10 +41,6 @@ kotlinMultiplatform {
 
         testRuns["test"].executionTask.configure {
             useJUnit()
-        }
-
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_11
         }
     }
 
