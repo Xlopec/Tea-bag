@@ -28,14 +28,12 @@ package io.github.xlopec.reader.app
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 
 public class IosComponent(
     systemDarkModeEnabled: Boolean
 ) {
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val componentScope = CoroutineScope(Job() + Default.limitedParallelism(1))
     internal val component = AppComponent(systemDarkModeEnabled, componentScope)
 

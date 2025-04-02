@@ -29,8 +29,6 @@ plugins {
 kotlin {
 
     jvm {
-        withJava()
-
         testRuns["test"].executionTask.configure {
             useJUnit()
         }

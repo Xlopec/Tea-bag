@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
 
 /*
@@ -32,13 +31,10 @@ plugins {
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
 
-@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlinMultiplatform {
     explicitApi()
 
     jvm {
-        withJava()
-
         testRuns["test"].executionTask.configure {
             useJUnit()
         }

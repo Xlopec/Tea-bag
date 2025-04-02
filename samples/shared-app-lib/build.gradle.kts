@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 /*
  * MIT License
  *
@@ -35,7 +33,6 @@ plugins {
 
 version = "1.0.0"
 
-@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     explicitApi()
 

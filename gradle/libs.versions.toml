@@ -6,7 +6,7 @@ arrow = "1.2.4"
 coil = "3.0.0-alpha09"
 jewel = "0.26.0"
 agp = "8.5.2"
-kotlin = "2.0.21"
+kotlin = "2.1.20"
 
 [libraries]
 # Convention plugins
@@ -14,10 +14,10 @@ convention-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", vers
 convention-intellij-platform = { module = "org.jetbrains.intellij.platform:intellij-platform-gradle-plugin", version = "2.1.0" }
 convention-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 convention-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "1.9.20" }
-convention-serializtion = { module = "org.jetbrains.kotlin:kotlin-serialization", version = "2.0.21" }
+convention-serializtion = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 convention-sqldelight = { module = "com.squareup.sqldelight:gradle-plugin", version = "1.5.5" }
 convention-compose-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version = "1.7.0" }
-convention-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version = "2.0.21" }
+convention-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 convention-versions = { module = "com.github.ben-manes:gradle-versions-plugin", version = "0.51.0" }
 convention-nexus-publish = { module = "io.github.gradle-nexus:publish-plugin", version = "2.0.0" }
 convention-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.23.7" }
