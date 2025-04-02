@@ -29,8 +29,10 @@ import org.jetbrains.intellij.platform.gradle.extensions.intellijPlatform
 rootProject.name = "Tea-bag"
 
 pluginManagement {
+    includeBuild("convention-plugins")
     repositories {
         gradlePluginPortal()
+        maven("https://maven.google.com/")
     }
 }
 

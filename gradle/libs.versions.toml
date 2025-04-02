@@ -5,11 +5,27 @@ sqldelight = "1.5.5"
 arrow = "1.2.4"
 coil = "3.0.0-alpha09"
 jewel = "0.26.0"
+agp = "8.5.2"
+kotlin = "2.0.21"
 
 [libraries]
+# Convention plugins
+convention-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+convention-intellij-platform = { module = "org.jetbrains.intellij.platform:intellij-platform-gradle-plugin", version = "2.1.0" }
+convention-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+convention-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "1.9.20" }
+convention-serializtion = { module = "org.jetbrains.kotlin:kotlin-serialization", version = "2.0.21" }
+convention-sqldelight = { module = "com.squareup.sqldelight:gradle-plugin", version = "1.5.5" }
+convention-compose-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version = "1.7.0" }
+convention-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version = "2.0.21" }
+convention-versions = { module = "com.github.ben-manes:gradle-versions-plugin", version = "0.51.0" }
+convention-nexus-publish = { module = "io.github.gradle-nexus:publish-plugin", version = "2.0.0" }
+convention-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.23.7" }
+
 decompose-backHandler = { module = "com.arkivanov.essenty:back-handler", version = "2.2.0-beta01" }
 decompose-extensions = { module = "com.arkivanov.decompose:extensions-compose", version = "3.1.0" }
 junit = { module = "junit:junit", version = "4.13.2" }
+junit-runner = { module = "io.kotlintest:kotlintest-runner-junit4", version = "3.4.2" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlin-test-annotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common" }
 compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version = "compose" }
@@ -58,3 +74,16 @@ ktor-server = ["ktor-server-core", "ktor-server-netty", "ktor-server-websockets"
 coil = ["coil-compose", "coil-network"]
 
 [plugins]
+multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.6" }
+version-check = { id = "com.github.ben-manes.versions", version = "0.51.0" }
+jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+compose = { id = "org.jetbrains.compose", version = "1.7.0" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+nexus-publishing = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
+sqldelight = { id = "com.squareup.sqldelight", version = "1.5.5" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

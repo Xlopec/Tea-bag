@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 /*
  * MIT License
@@ -26,7 +25,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
  */
 
 plugins {
-    kotlin("multiplatform")
+    id("multiplatform-convention")
     id("com.android.library")
     id("com.squareup.sqldelight")
     kotlin("plugin.serialization")
@@ -45,18 +44,10 @@ kotlin {
             "kotlinx.serialization.ExperimentalSerializationApi",
             "io.github.xlopec.tea.core.ExperimentalTeaApi",
         )
-
-        optIn.addAll(DefaultOptIns)
-
-        freeCompilerArgs.add("-Xexpect-actual-classes")
-        freeCompilerArgs.add("-Xconsistent-data-class-copy-visibility")
     }
 
     androidTarget {
         publishAllLibraryVariants()
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_11
-        }
     }
 
     iosX64()

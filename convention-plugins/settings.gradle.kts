@@ -21,17 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import java.net.URI
 
-package io.github.xlopec.tea.data
+rootProject.name = "convention-plugins"
 
-/*
-public actual typealias Date = NSDate
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
 
-public actual fun now(): Date = NSDate()
+dependencyResolutionManagement {
+    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
 
-public actual fun fromMillis(
-    millis: Long
-): Date = NSDate.dateWithTimeIntervalSince1970(millis / 1000.0)
+    repositories {
+        mavenCentral()
+        maven("https://plugins.gradle.org/m2/")
+        google()
+        maven {
+            url = URI("https://androidx.dev/storage/compose-compiler/repository/")
+        }
+    }
 
-public actual fun Date.toMillis(): Long = (timeIntervalSince1970() * 1000.0).toLong()
-*/
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
+    }
+}

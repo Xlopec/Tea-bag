@@ -35,7 +35,7 @@ plugins {
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
 
-kotlin {
+kotlinJvm {
     explicitApi()
     compilerOptions {
         optIn.addAll(DefaultOptIns)

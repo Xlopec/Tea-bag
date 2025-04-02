@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
+
 /*
  * MIT License
  *
@@ -22,4 +25,41 @@
  * SOFTWARE.
  */
 
-// empty file for ide to run tests in buildSrc
+plugins {
+    id("multiplatform-convention")
+}
+
+version = libraryVersion.toVersionName()
+group = "io.github.xlopec"
+
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
+kotlinMultiplatform {
+    explicitApi()
+
+    jvm {
+        withJava()
+
+        testRuns["test"].executionTask.configure {
+            useJUnit()
+        }
+    }
+
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+    applyDefaultHierarchyTemplate()
+
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        compilerOptions {
+            freeCompilerArgs.add("-Xexport-kdoc")
+        }
+    }
+
+    targets.withType(KotlinNativeTargetWithSimulatorTests::class.java) {
+        testRuns["test"].deviceId = "iPhone 15"
+    }
+}
+
+tasks.named<TestReport>("allTests").configure {
+    configureOutputLocation(testReportsDir("multiplatform"))
+}
