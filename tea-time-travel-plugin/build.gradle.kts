@@ -61,7 +61,7 @@ val copyArtifacts by tasks.registering(Copy::class) {
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
 }
 
-val allTests by tasks.creating(Task::class) {
+val allTests by tasks.registering(Task::class) {
     dependsOn("test")
 }
 

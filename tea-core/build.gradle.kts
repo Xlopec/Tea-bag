@@ -28,7 +28,7 @@ plugins {
 
 // see https://youtrack.jetbrains.com/issue/KT-35073
 // https://youtrack.jetbrains.com/issue/KT-63142/Add-support-for-Gradle-Test-Fixtures-in-non-JVM-platforms
-val prepareTestJar by tasks.creating(Jar::class) {
+val prepareTestJar by tasks.registering(Jar::class) {
     from(sourceSets.named("jvmTest").get().output)
     archiveClassifier.set("test")
 }

@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `kotlin-dsl`
@@ -6,6 +7,17 @@ plugins {
 
 group = "io.github.xlopec"
 version = "SNAPSHOT"
+
+tasks.withType<KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    targetCompatibility = "17"
+    sourceCompatibility = "17"
+}
 
 afterEvaluate {
     tasks.withType<Test>().configureEach {
