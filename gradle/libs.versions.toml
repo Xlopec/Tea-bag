@@ -4,8 +4,7 @@ coroutines = "1.10.1"
 sqldelight = "1.5.5"
 arrow = "2.0.1"
 coil = "3.1.0"
-jewel = "0.26.0"
-agp = "8.8.0-alpha05"
+agp = "8.8.2"
 kotlin = "2.1.20"
 
 [libraries]
@@ -36,12 +35,6 @@ coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-androi
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
 stdlib-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
-ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
-ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
-ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
-ktor-server-headers = { module = "io.ktor:ktor-server-conditional-headers", version.ref = "ktor" }
-ktor-server-logging-jvm = { module = "io.ktor:ktor-server-call-logging-jvm", version.ref = "ktor" }
-ktor-server-tests = { module = "io.ktor:ktor-server-tests", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-ios = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
@@ -66,11 +59,8 @@ compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version =
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.9.40" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.2" }
-jewel-ide-bridge = { module = "org.jetbrains.jewel:jewel-ide-laf-bridge-242", version.ref = "jewel" }
-jewel-ui-standalone = { module = "org.jetbrains.jewel:jewel-int-ui-standalone-242", version.ref = "jewel" }
 
 [bundles]
-ktor-server = ["ktor-server-core", "ktor-server-netty", "ktor-server-websockets", "ktor-server-headers", "ktor-server-logging-jvm"]
 coil = ["coil-compose", "coil-network"]
 
 [plugins]

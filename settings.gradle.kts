@@ -24,8 +24,6 @@
 
 @file:Suppress("UnstableApiUsage")
 
-import org.jetbrains.intellij.platform.gradle.extensions.intellijPlatform
-
 rootProject.name = "Tea-bag"
 
 pluginManagement {
@@ -36,16 +34,10 @@ pluginManagement {
     }
 }
 
-plugins {
-    id("org.jetbrains.intellij.platform.settings") version "2.1.0"
-}
-
 include(
     ":tea-core",
     ":tea-time-travel",
     ":tea-time-travel-protocol",
-    ":tea-time-travel-plugin",
-    ":tea-test",
     ":tea-time-travel-adapter-gson",
     ":tea-data",
     ":tea-navigation",
@@ -61,10 +53,5 @@ dependencyResolutionManagement {
         mavenCentral()
         google()
         maven("https://packages.jetbrains.team/maven/p/kpm/public/")
-
-        intellijPlatform {
-            // use the recommended repository list
-            defaultRepositories()
-        }
     }
 }
