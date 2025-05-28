@@ -42,7 +42,7 @@ kotlinJvm {
     }
 }
 
-val packSourcesJar by tasks.creating(Jar::class) {
+val packSourcesJar by tasks.registering(Jar::class) {
     dependsOn(tasks.classes)
     archiveClassifier.set("sources")
     from(projectSourceSets["main"].allSource)

@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 /*
  * MIT License
  *
@@ -28,7 +26,6 @@ plugins {
     id("published-multiplatform-library-convention")
 }
 
-@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     compilerOptions {
         optIn.addAll(

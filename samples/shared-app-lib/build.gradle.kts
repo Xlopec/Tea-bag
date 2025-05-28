@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 /*
  * MIT License
  *
@@ -35,7 +33,6 @@ plugins {
 
 version = "1.0.0"
 
-@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     explicitApi()
 
@@ -67,7 +64,7 @@ kotlin {
     }
 
     targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests::class.java) {
-        testRuns["test"].deviceId = "iPhone 15"
+        testRuns["test"].deviceId = "iPhone 16"
     }
 
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
