@@ -23,8 +23,6 @@
  */
 
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.provider.Provider
 import org.jetbrains.dokka.gradle.GradleDokkaSourceSetBuilder
 import java.io.File
 import java.net.URL
@@ -58,7 +56,3 @@ fun GradleDokkaSourceSetBuilder.linkSourcesForSourceSet(
     remoteUrl.set(URL("https://github.com/Xlopec/Tea-bag/tree/$branchOrDefault/${project.name}/src/$sourceSetName/kotlin"))
     remoteLineSuffix.set("#L")
 }
-
-fun Provider<out Task>.dependsOn(
-    vararg other: String
-): Task = get().dependsOn(*other)
