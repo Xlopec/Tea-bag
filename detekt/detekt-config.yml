@@ -33,7 +33,7 @@ console-reports:
 
 comments:
   active: true
-  excludes: "**/test/**,**/androidTest/**,**/commonTest/**,**/jvmTest/**,**/iosTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt,**/app/**,**/convention-plugins/**,**/tea-test/**,**/tea-time-travel-plugin/**,**/samples/**"
+  excludes: "**/test/**,**/androidTest/**,**/commonTest/**,**/jvmTest/**,**/iosTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt,**/app/**,**/convention-plugins/**,**/samples/**"
   CommentOverPrivateFunction:
     active: false
   CommentOverPrivateProperty:
@@ -97,7 +97,7 @@ complexity:
     ignoreStringsRegex: '$^'
   TooManyFunctions:
     active: true
-    excludes: "**/tea-test/**,**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
+    excludes: "**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
     thresholdInFiles: 20
     thresholdInClasses: 20
     thresholdInInterfaces: 20
@@ -555,7 +555,7 @@ style:
     maxJumpCount: 1
   MagicNumber:
     active: true
-    excludes: "**/test/**,**/commonTest/**,**/convention-plugins/**,**/screens/**,**/tea-test/**,**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt,**/build.gradle.kts,**/tea-time-travel-plugin/**,**/samples/**"
+    excludes: "**/test/**,**/commonTest/**,**/convention-plugins/**,**/screens/**,**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt,**/build.gradle.kts,**/samples/**"
     ignoreNumbers: [ '-1','0','1','2' ]
     ignoreHashCodeFunction: true
     ignorePropertyDeclaration: false

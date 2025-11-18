@@ -22,9 +22,7 @@
  * SOFTWARE.
  */
 
-import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.kotlin.dsl.DependencyHandlerScope
-import org.gradle.kotlin.dsl.add
 
 fun DependencyHandlerScope.remoteImplementation(dependencyNotation: Any) {
     add("remoteImplementation", dependencyNotation)
@@ -32,15 +30,4 @@ fun DependencyHandlerScope.remoteImplementation(dependencyNotation: Any) {
 
 fun DependencyHandlerScope.remoteApi(dependencyNotation: Any) {
     add("remoteApi", dependencyNotation)
-}
-
-fun DependencyHandlerScope.integrationTestImplementation(dependencyNotation: Any) {
-    add("integrationTestImplementation", dependencyNotation)
-}
-
-inline fun DependencyHandlerScope.integrationTestImplementation(
-    dependencyNotation: String,
-    configuration: ExternalModuleDependency.() -> Unit
-) {
-    add("integrationTestImplementation", dependencyNotation, configuration)
 }

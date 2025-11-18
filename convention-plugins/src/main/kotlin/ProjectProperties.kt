@@ -44,14 +44,6 @@ private const val RefTag = "refs/tags/"
 val isCiEnv: Boolean
     get() = getenvSafe("CI")?.toBoolean() == true
 
-val pluginReleaseChannels: Collection<String>
-    get() = when (libraryVersion) {
-        is Snapshot -> listOf("dev")
-        is Alpha -> listOf("eap")
-        is ReleaseCandidate -> listOf("rc")
-        is Stable -> listOf()
-    }
-
 val branch: String?
     get() = getenvSafe("GITHUB_REF")
         ?.takeIf { it.startsWith(RefBranch) || it.startsWith(RefTag) }
@@ -93,9 +85,6 @@ val Project.documentationDir: Provider<out Directory>
 
 val Project.libsDir: Provider<out Directory>
     get() = layout.buildDirectory.map { it.dir("libs") }
-
-val Project.distributionsDir: Provider<out Directory>
-    get() = layout.buildDirectory.map { it.dir("distributions") }
 
 val Project.artifactsDir: Provider<out Directory>
     get() = rootMostProject.layout.buildDirectory.map { it.dir("artifacts").dir(name) }

@@ -24,8 +24,10 @@
 
 @file:Suppress("FunctionName")
 
-package io.github.xlopec.tea.data
+package io.github.xlopec.tea.time.travel.gson.serialization.data
 
+import io.github.xlopec.tea.data.Url
+import io.github.xlopec.tea.data.UrlFor
 import kotlin.jvm.JvmInline
 import kotlin.uuid.Uuid
 
