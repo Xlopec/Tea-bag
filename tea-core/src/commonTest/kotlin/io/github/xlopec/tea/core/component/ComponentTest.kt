@@ -35,9 +35,9 @@ import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.computeSnapshots
 import io.github.xlopec.tea.core.misc.TestTimeoutMillis
 import io.github.xlopec.tea.core.misc.expectCompletionAndCancel
-import io.github.xlopec.tea.core.misc.noOpSink
 import io.github.xlopec.tea.core.misc.testEnv
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.runTest
@@ -65,14 +65,14 @@ class ComponentTest : ComponentTestBase(::Component) {
 
         fun testInput(
             input: Initial<String, Char>,
-        ) = input.commands.asFlow()
+        ): Flow<Char> = input.commands.asFlow()
             .onStart {
                 if (input !== initialStates.last()) {
                     delay(Long.MAX_VALUE)
                 }
             }
 
-        env.computeSnapshots(initialStates.asFlow(), ::noOpSink, ::testInput).test {
+        env.computeSnapshots(initialStates.asFlow(), testInput(lastInitial)).test {
             val (state, commands) = lastInitial
             val expectedStates = initialStates + Regular(state, commands, state, commands.first())
 

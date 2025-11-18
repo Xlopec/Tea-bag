@@ -38,7 +38,7 @@ public fun AppComponent(
 ): Component<Message, AppState, Command> =
     Component(
         initializer = initializer,
-        resolver = { snapshot, ctx -> with(environment) { resolve(snapshot, ctx) } },
+        resolver = { snapshots, ctx -> with(environment) { resolve(snapshots, ctx) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment,
         shareOptions = ShareOptions(SharingStarted.WhileSubscribed())

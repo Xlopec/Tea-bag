@@ -18,20 +18,45 @@ import com.arkivanov.essenty.backhandler.BackEvent
 private val InitialBackstackScreenOffset = 50.dp
 
 public interface PredictiveBackAnimation {
+    /**
+     * Modifier for the previous screen in the stack.
+     */
     public val previousModifier: Modifier
+
+    /**
+     * Modifier for the current screen in the stack.
+     */
     public val currentModifier: Modifier
 
+    /**
+     * Animates the transition according to the [event].
+     *
+     * @param event back event with progress
+     */
     public suspend fun animate(event: BackEvent)
+
+    /**
+     * Resets the animation to the initial state.
+     */
     public suspend fun reset()
+
+    /**
+     * Finishes the animation (e.g. when back is confirmed).
+     */
     public suspend fun finishAnimation()
+
+    /**
+     * Cancels the animation (e.g. when back is cancelled).
+     */
     public suspend fun cancelAnimation()
 }
 
 /**
- * Creates custom predictive back animation
+ * Creates custom predictive back animation.
  *
  * @param previousModifierProvider lambda to calculate Modifier for a screen in a backstack
  * @param currentModifierProvider lambda to calculate Modifier for a currently visible screen
+ * @return configured [PredictiveBackAnimation]
  */
 @Composable
 public fun rememberPredictiveBackAnimation(
@@ -49,9 +74,10 @@ public fun rememberPredictiveBackAnimation(
 }
 
 /**
- * Creates IOS-like predictive back animation
+ * Creates IOS-like predictive back animation.
  *
  * @param screenWidth width occupied by a currently visible screen
+ * @return configured [PredictiveBackAnimation]
  */
 @Composable
 public fun rememberDefaultPredictiveBackAnimation(

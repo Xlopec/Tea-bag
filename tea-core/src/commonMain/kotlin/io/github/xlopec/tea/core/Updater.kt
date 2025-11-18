@@ -25,67 +25,66 @@
 package io.github.xlopec.tea.core
 
 /**
- * Updater is just a regular **pure** function that accepts incoming message, state and calculates
- * a [pair][Update] that contains a new state and, possibly, empty set of commands to be resolved
+ * Updater is a regular **pure** function that accepts an incoming message and a state and calculates
+ * an [Update] that contains a new state and, optionally, a set of commands to be resolved.
  *
  * ### Exceptions
  *
  * Any exception that happens inside this function will be delivered to a [Component]'s scope and handled
  * by it.
  *
- * @param M incoming messages
- * @param S state of the application
- * @param C commands to be executed
+ * @param M message type
+ * @param S state type
+ * @param C command type
+ * @param message incoming message
+ * @param state current state
  */
 public typealias Updater<M, S, C> = (message: M, state: S) -> Update<S, C>
 
 /**
- * Alias for kotlin's [Pair]. It can be created using the following [extensions][command]
+ * Alias for Kotlin's [Pair]. It can be created using the [command] extensions.
  *
- * @param S state of the component
- * @param C commands to be executed. There's **NO GUARANTEE** of commands ordering, they can be
- * executed in any order. That implies calculation correctness mustn't depend on the ordering
- *
- * @param S state of the application
- * @param C commands to be executed
+ * @param S state type
+ * @param C command type. There's **NO GUARANTEE** of command ordering; they can be
+ * executed in any order. This implies that calculation correctness mustn't depend on the ordering.
  */
 public typealias Update<S, C> = Pair<S, Set<C>>
 
 /**
- * Extension to combine state with command
+ * Combines a state with a command.
  *
- * @receiver state to combine with command
- * @param S state to combine with command
- * @param C command
- * @param command command to combine with state
- * @return [Update] instance with given state and set that consists from a single command
+ * @receiver state to combine with a command
+ * @param S state type
+ * @param C command type
+ * @param command command to combine with the state
+ * @return [Update] instance with the given state and a set consisting of a single command
  */
 public infix fun <S, C> S.command(
     command: C,
 ): Update<S, C> = this to setOf(command)
 
 /**
- * Extension to combine state with a single command provider
+ * Combines a state with a single command provider.
  *
- * @receiver state to combine with command
- * @param S state to combine with command
- * @param C command
- * @param command command to combine with state
- * @return [Update] instance with given state and set that consists from a single command
+ * @receiver state to combine with a command
+ * @param S state type
+ * @param C command type
+ * @param command command provider to combine with the state
+ * @return [Update] instance with the given state and a set consisting of a single command
  */
 public inline infix fun <S, C> S.command(
     command: S.() -> C,
 ): Update<S, C> = this to setOf(run(command))
 
 /**
- * Extension to combine state with two commands
+ * Combines a state with two commands.
  *
  * @receiver state to combine with commands
- * @param S state to combine with command
- * @param C command
- * @param first the first command to combine with state
- * @param second the second command to combine with state
- * @return [Update] instance with given state and set of commands
+ * @param S state type
+ * @param C command type
+ * @param first the first command to combine with the state
+ * @param second the second command to combine with the state
+ * @return [Update] instance with the given state and a set of commands
  */
 public fun <S, C> S.command(
     first: C,
@@ -93,15 +92,15 @@ public fun <S, C> S.command(
 ): Update<S, C> = this to setOf(first, second)
 
 /**
- * Extension to combine state with three commands
+ * Combines a state with three commands.
  *
  * @receiver state to combine with commands
- * @param S state to combine with command
- * @param C command
- * @param first the first command to combine with state
- * @param second the second command to combine with state
- * @param third the third command to combine with state
- * @return [Update] instance with given state and set of commands
+ * @param S state type
+ * @param C command type
+ * @param first the first command to combine with the state
+ * @param second the second command to combine with the state
+ * @param third the third command to combine with the state
+ * @return [Update] instance with the given state and a set of commands
  */
 public fun <S, C> S.command(
     first: C,
@@ -111,46 +110,48 @@ public fun <S, C> S.command(
     this to setOf(first, second, third)
 
 /**
- * Extension to combine state with multiple commands
+ * Combines a state with multiple commands.
  *
  * @receiver state to combine with commands
- * @param S state to combine with command
- * @param C command
- * @param commands commands to combine with state
- * @return [Update] instance with given state and set of commands
+ * @param S state type
+ * @param C command type
+ * @param commands commands to combine with the state
+ * @return [Update] instance with the given state and a set of commands
  */
 public fun <S, C> S.command(
     vararg commands: C,
 ): Update<S, C> = this command setOf(*commands)
 
 /**
- * Extension to combine state with set of commands
+ * Combines a state with a set of commands.
  *
  * @receiver state to combine with commands
- * @param S state to combine with command
- * @param C command
- * @param commands commands to combine with state
- * @return [Update] instance with given state and set of commands
+ * @param S state type
+ * @param C command type
+ * @param commands commands to combine with the state
+ * @return [Update] instance with the given state and the set of commands
  */
 public infix fun <S, C> S.command(
     commands: Set<C>,
 ): Update<S, C> = this to commands
 
 /**
- * Extension to combine state with empty set of commands
+ * Combines a state with an empty set of commands.
  *
- * @receiver state to combine with commands
- * @param S state to combine with command
- * @return [Update] instance with given state and empty set of commands
+ * @receiver state to combine with an empty set of commands
+ * @param S state type
+ * @return [Update] instance with the given state and an empty set of commands
  */
 public fun <S> S.noCommand(): Update<S, Nothing> = this to setOf()
 
 /**
- * Appends a command to an update
+ * Appends a command to an update.
  *
  * @receiver update to append a command to
+ * @param S state type
+ * @param C command type
  * @param command command to append
- * @return [Update] instance with command appended
+ * @return [Update] instance with the command appended
  */
 public operator fun <S, C> Update<S, C>.plus(
     command: C,
@@ -161,11 +162,13 @@ public operator fun <S, C> Update<S, C>.plus(
 }
 
 /**
- * Appends commands to an update
+ * Appends commands to an update.
  *
  * @receiver update to append commands to
+ * @param S state type
+ * @param C command type
  * @param additionalCommands commands to append
- * @return [Update] instance with commands appended
+ * @return [Update] instance with the commands appended
  */
 public operator fun <S, C> Update<S, C>.plus(
     additionalCommands: Collection<C>,

@@ -44,10 +44,13 @@ import kotlinx.coroutines.withContext
 public typealias Initializer<S, C> = suspend () -> Initial<S, C>
 
 /**
- * Constructs initializer using initial [state] and set of [commands]
+ * Constructs initializer using initial [state] and set of [commands].
  *
+ * @param S state
+ * @param C command
  * @param state initial state
  * @param commands initial set of commands
+ * @return initializer that returns initial state and commands
  */
 public fun <S, C> Initializer(
     state: S,
@@ -55,12 +58,13 @@ public fun <S, C> Initializer(
 ): Initializer<S, C> = { Initial(state, commands) }
 
 /**
- * Constructs initializer using initial [state] and array of [commands]
+ * Constructs initializer using initial [state] and array of [commands].
  *
  * @param S state
  * @param C command
  * @param state initial state
  * @param commands initial set of commands
+ * @return initializer that returns initial state and commands
  */
 public fun <S, C> Initializer(
     state: S,
@@ -68,12 +72,13 @@ public fun <S, C> Initializer(
 ): Initializer<S, C> = Initializer(state, setOf(*commands))
 
 /**
- * Constructs initializer using [block] that will be run on specified [dispatcher]
+ * Constructs initializer using [block] that will be run on specified [dispatcher].
  *
  * @param S state
  * @param C command
  * @param dispatcher coroutine dispatcher to run block on
  * @param block initializer block to run
+ * @return initializer that runs [block] on [dispatcher]
  */
 public fun <S, C> Initializer(
     dispatcher: CoroutineDispatcher,

@@ -95,7 +95,7 @@ kotlin {
                 api(project(":tea-data"))
                 api(project(":tea-navigation"))
                 api(libs.arrow.core)
-                api(libs.collections.immutable)
+                api(libs.immutable.collections)
                 api(libs.coroutines.core)
                 api(libs.compose.ui)
                 api(libs.compose.runtime)

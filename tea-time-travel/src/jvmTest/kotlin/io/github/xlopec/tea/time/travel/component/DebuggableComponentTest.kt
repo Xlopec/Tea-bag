@@ -26,19 +26,36 @@ package io.github.xlopec.tea.time.travel.component
 
 import app.cash.turbine.test
 import com.google.gson.JsonElement
-import io.github.xlopec.tea.core.*
+import io.github.xlopec.tea.core.Env
+import io.github.xlopec.tea.core.Initial
+import io.github.xlopec.tea.core.Initializer
+import io.github.xlopec.tea.core.Regular
 import io.github.xlopec.tea.core.component.ComponentTestBase
+import io.github.xlopec.tea.core.invoke
 import io.github.xlopec.tea.core.misc.runTestCancellingChildren
+import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentAttached
 import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentSnapshot
-import io.github.xlopec.tea.time.travel.misc.*
+import io.github.xlopec.tea.time.travel.misc.TestComponentId
+import io.github.xlopec.tea.time.travel.misc.TestDebugEnv
+import io.github.xlopec.tea.time.travel.misc.TestDebugSession
+import io.github.xlopec.tea.time.travel.misc.TestSerializer
+import io.github.xlopec.tea.time.travel.misc.TestSettings
 import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.junit.Test
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEnv(env)) }) {
 
@@ -47,13 +64,20 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
         val exceptions = mutableListOf<Throwable>()
         val env = Env<Char, String, Char>(
             Initializer(""),
-            { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
+            { snapshots, ctx ->
+                ctx.launch {
+                    snapshots.collect { snapshot ->
+                        check(
+                            snapshot.commands.isEmpty()
+                        ) { "Non empty snapshot $snapshot" }
+                    }
+                }
+            },
             { m, _ -> m.toString().noCommand() },
             CoroutineScope(Job() + CoroutineExceptionHandler { _, th -> exceptions += th })
         )
 
         runCatching {
-
             val component = Component(
                 TestDebugEnv(
                     env = env,
@@ -77,7 +101,7 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
             TestDebugEnv(
                 env = Env<Char, String, Char>(
                     Initializer(""),
-                    { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
+                    { snapshots, ctx -> ctx.launch { snapshots.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
                     { m, _ -> m.toString().noCommand() },
                     this
                 ),

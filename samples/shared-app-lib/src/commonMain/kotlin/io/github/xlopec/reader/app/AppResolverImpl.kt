@@ -37,25 +37,30 @@ import io.github.xlopec.reader.app.feature.filter.FiltersResolver
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import io.github.xlopec.tea.core.effects
 import io.github.xlopec.tea.core.sideEffect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 public fun <Env> AppResolver(): AppResolver<Env> where
         Env : ArticlesResolver<Env>,
         Env : LocalStorage,
         Env : FiltersResolver<Env>,
         Env : ArticleDetailsResolver =
-    AppResolver { snapshot, ctx ->
-        snapshot.commands.forEach { cmd ->
-            when (cmd) {
-                is ArticlesCommand -> ctx effects { resolve(cmd) }
-                is DoOpenInBrowser -> ctx sideEffect { resolve(cmd) }
-                is DoStoreDarkMode -> ctx sideEffect {
-                    storeDarkModePreferences(cmd.userDarkModeEnabled, cmd.syncWithSystemDarkModeEnabled)
+    AppResolver { snapshots, ctx ->
+        snapshots.onEach { snapshot ->
+            snapshot.commands.forEach { cmd ->
+                when (cmd) {
+                    is ArticlesCommand -> ctx effects { resolve(cmd) }
+                    is DoOpenInBrowser -> ctx sideEffect { resolve(cmd) }
+                    is DoStoreDarkMode -> ctx sideEffect {
+                        storeDarkModePreferences(cmd.userDarkModeEnabled, cmd.syncWithSystemDarkModeEnabled)
+                    }
+
+                    is FilterCommand -> ctx effects { resolve(cmd) }
+                    is DoLog -> ctx sideEffect { log(cmd) }
+                    else -> error("Shouldn't get here $cmd")
                 }
-                is FilterCommand -> ctx effects { resolve(cmd) }
-                is DoLog -> ctx sideEffect { log(cmd) }
-                else -> error("Shouldn't get here $cmd")
             }
-        }
+        }.launchIn(ctx)
     }
 
 private fun log(

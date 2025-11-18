@@ -3,6 +3,8 @@
 package io.github.xlopec.counter
 
 import io.github.xlopec.tea.core.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 /**Async initializer, provides initial state*/
@@ -10,10 +12,12 @@ suspend fun initializer(): Initial<Int, Int> = Initial(0)
 
 /**Some tracker*/
 fun track(
-    event: Snapshot<Int, Int, Int>,
+    events: Flow<Snapshot<Int, Int, Int>>,
     ctx: ResolveCtx<Int>,
 ) {
-    ctx sideEffect { println("Track: \"$event\"") }
+    ctx.launch {
+        events.collect { event -> ctx sideEffect { println("Track: \"$event\"") } }
+    }
 }
 
 /**App logic, for now it just adds delta to count and returns this as result*/
