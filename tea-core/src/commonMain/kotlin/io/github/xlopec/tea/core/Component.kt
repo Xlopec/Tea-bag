@@ -28,10 +28,28 @@ package io.github.xlopec.tea.core
 
 import io.github.xlopec.tea.core.internal.mergeWith
 import io.github.xlopec.tea.core.internal.startFrom
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.RENDEZVOUS
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Conceptually, component is a function that accepts [flow][Flow] of messages and returns [flow][Flow]
@@ -301,12 +319,12 @@ public fun <M, S, C> Env<M, S, C>.computeSnapshots(
     // channel flow is for parallel decomposition
     channelFlow {
         var snapshot: Snapshot<M, S, C> = initial
-        val context = ResolveCtx(sink, this@channelFlow)
+        val scope = this@channelFlow
 
         input
             .map { message -> nextSnapshot(snapshot, message) }
             .onEach { snapshot = it }
-            .onEach { resolver(it, context) }
+            .onEach { context(sink, scope) { resolver(it) } }
             .collect(::send)
     }.startFrom(initial)
 
@@ -342,7 +360,10 @@ public fun <T> Flow<T>.shareIn(
 @InternalTeaApi
 public fun <M, S, C> Env<M, S, C>.resolveAsFlow(
     snapshot: Snapshot<M, S, C>,
-): Flow<M> = channelFlow { resolver(snapshot, ResolveCtx(::send, this)) }
+): Flow<M> = channelFlow {
+    context(::send, this@channelFlow) { resolver(snapshot) }
+    awaitCancellation()
+}
 
 /**
  * Merges messages flow produced by [initialCommands] and [messages] into single messages flow

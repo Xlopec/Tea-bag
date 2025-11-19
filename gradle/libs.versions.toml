@@ -4,8 +4,8 @@ coroutines = "1.10.1"
 sqldelight = "1.5.5"
 arrow = "2.0.1"
 coil = "3.1.0"
-agp = "8.8.2"
-kotlin = "2.1.20"
+agp = "8.12.0"
+kotlin = "2.2.21"
 
 [libraries]
 # Convention plugins
@@ -19,7 +19,7 @@ convention-compose-plugin = { module = "org.jetbrains.compose:compose-gradle-plu
 convention-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 convention-versions = { module = "com.github.ben-manes:gradle-versions-plugin", version = "0.51.0" }
 convention-nexus-publish = { module = "io.github.gradle-nexus:publish-plugin", version = "2.0.0" }
-convention-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.23.7" }
+convention-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.23.8" }
 
 decompose-backHandler = { module = "com.arkivanov.essenty:back-handler", version = "2.5.0" }
 decompose-extensions = { module = "com.arkivanov.decompose:extensions-compose", version = "3.3.0" }
@@ -51,7 +51,6 @@ sqldelight-driver-android = { module = "com.squareup.sqldelight:android-driver",
 sqldelight-driver-native = { module = "com.squareup.sqldelight:native-driver", version.ref = "sqldelight" }
 desugar-jdk = { module = "com.android.tools:desugar_jdk_libs", version = "2.1.5" }
 gson = { module = "com.google.code.gson:gson", version = "2.12.1" }
-logging = { module = "ch.qos.logback:logback-classic", version = "1.5.3" }
 collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.8" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor2", version.ref = "coil" }

@@ -35,28 +35,27 @@ import io.github.xlopec.reader.app.feature.article.list.ArticlesResolver
 import io.github.xlopec.reader.app.feature.filter.FilterCommand
 import io.github.xlopec.reader.app.feature.filter.FiltersResolver
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
-import io.github.xlopec.tea.core.effects
 import io.github.xlopec.tea.core.sideEffect
 
 public fun <Env> AppResolver(): AppResolver<Env> where
-        Env : ArticlesResolver<Env>,
-        Env : LocalStorage,
-        Env : FiltersResolver<Env>,
-        Env : ArticleDetailsResolver =
-    AppResolver { snapshot, ctx ->
-        snapshot.commands.forEach { cmd ->
-            when (cmd) {
-                is ArticlesCommand -> ctx effects { resolve(cmd) }
-                is DoOpenInBrowser -> ctx sideEffect { resolve(cmd) }
-                is DoStoreDarkMode -> ctx sideEffect {
-                    storeDarkModePreferences(cmd.userDarkModeEnabled, cmd.syncWithSystemDarkModeEnabled)
-                }
-                is FilterCommand -> ctx effects { resolve(cmd) }
-                is DoLog -> ctx sideEffect { log(cmd) }
-                else -> error("Shouldn't get here $cmd")
+    Env : ArticlesResolver<Env>,
+    Env : LocalStorage,
+    Env : FiltersResolver<Env>,
+    Env : ArticleDetailsResolver = AppResolver { snapshot ->
+    snapshot.commands.forEach { cmd ->
+        when (cmd) {
+            is ArticlesCommand -> resolveForArticles(cmd)
+            is DoOpenInBrowser -> resolveForOpenInBrowser(cmd)
+            is DoStoreDarkMode -> sideEffect {
+                storeDarkModePreferences(cmd.userDarkModeEnabled, cmd.syncWithSystemDarkModeEnabled)
             }
+
+            is FilterCommand -> resolveForFilter(cmd)
+            is DoLog -> sideEffect { log(cmd) }
+            else -> error("Shouldn't get here $cmd")
         }
     }
+}
 
 private fun log(
     cmd: DoLog,
