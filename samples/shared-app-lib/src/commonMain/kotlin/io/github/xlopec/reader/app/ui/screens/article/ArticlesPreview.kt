@@ -47,10 +47,11 @@ import io.github.xlopec.reader.app.ui.theme.ThemedPreview
 import io.github.xlopec.tea.data.UrlFor
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlin.uuid.Uuid
 
 @Composable
@@ -187,6 +188,7 @@ private fun ArticlesState(
     )
 )
 
+@OptIn(ExperimentalTime::class)
 private val PreviewArticle = Article(
     url = UrlFor("https://www.google.com"),
     title = Title("Jetpack Compose app"),

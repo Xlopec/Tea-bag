@@ -52,7 +52,7 @@ kotlinMultiplatform {
     }
 
     targets.withType(KotlinNativeTargetWithSimulatorTests::class.java) {
-        testRuns["test"].deviceId = "iPhone 16"
+        testRuns["test"].deviceId = "iPhone 17"
     }
 }
 

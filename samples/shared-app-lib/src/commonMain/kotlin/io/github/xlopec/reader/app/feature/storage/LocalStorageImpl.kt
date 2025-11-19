@@ -54,11 +54,11 @@ import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 internal fun LocalStorage(
     driver: SqlDriver,
@@ -77,6 +77,7 @@ private class LocalStorageImpl(
 
     private val database = AppDatabase(driver)
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun insertArticle(
         article: Article,
     ) = articlesQuery {
@@ -90,7 +91,7 @@ private class LocalStorageImpl(
                     url_to_image = urlToImage?.toExternalValue(),
                     // I don't expect performance issues here as we aren't going
                     // to store thousands of articles in a row
-                    saved_on = Clock.System.now().toEpochMilliseconds(),
+                    saved_on = kotlin.time.Clock.System.now().toEpochMilliseconds(),
                     published = published.toInstant(TimeZone.UTC).toEpochMilliseconds(),
                     is_favorite = isFavorite,
                     source = article.source?.value
@@ -135,6 +136,7 @@ private class LocalStorageImpl(
         settings[SyncWithSystemDarkModeEnabledKey] = syncWithSystemDarkMode
     }
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun storeFilter(
         filter: Filter,
         storeSuggestionsLimit: UInt,
@@ -154,7 +156,7 @@ private class LocalStorageImpl(
 
         if (filter.query != null) {
             searchesQuery {
-                insert(filter.query.value, type, Clock.System.now().toEpochMilliseconds())
+                insert(filter.query.value, type, kotlin.time.Clock.System.now().toEpochMilliseconds())
                 deleteOutdated(type, type, storeSuggestionsLimit.toLong())
             }
         }
@@ -207,6 +209,7 @@ private fun FiltersQueries.findInputByType(
     .executeAsOneOrNull()
     .let(Query.Companion::of)
 
+@OptIn(ExperimentalTime::class)
 private fun SqlCursor.toArticle() =
     Article(
         url = UrlFor(getString(0)!!),

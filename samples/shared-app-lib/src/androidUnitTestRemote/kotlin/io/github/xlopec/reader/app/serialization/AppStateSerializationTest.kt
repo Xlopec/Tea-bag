@@ -45,7 +45,6 @@ import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
 import io.github.xlopec.tea.time.travel.protocol.ServerMessage
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -54,6 +53,8 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.net.URI
 import kotlin.test.assertEquals
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlin.uuid.Uuid
 
 @RunWith(JUnit4::class)
@@ -65,6 +66,7 @@ internal class AppStateSerializationTest {
         registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer)
     }
 
+    @OptIn(ExperimentalTime::class)
     private val previewScreenState = ArticlesState(
         tab = Tab.Feed,
         filter = Filter(FilterType.Regular, Query.of("android")),

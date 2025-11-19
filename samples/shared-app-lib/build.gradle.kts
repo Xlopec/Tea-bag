@@ -64,7 +64,7 @@ kotlin {
     }
 
     targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests::class.java) {
-        testRuns["test"].deviceId = "iPhone 16"
+        testRuns["test"].deviceId = "iPhone 17"
     }
 
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
@@ -153,11 +153,11 @@ afterEvaluate {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 36
     namespace = "io.github.xlopec.shared"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdk = 21
+        minSdk = 23
         consumerProguardFile("proguard-rules.pro")
     }
 
