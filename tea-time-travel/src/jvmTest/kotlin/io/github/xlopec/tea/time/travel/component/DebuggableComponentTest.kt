@@ -46,14 +46,13 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
     fun `test debuggable component throws expected exception when it can't connect to a server`() = runTestCancellingChildren {
         val exceptions = mutableListOf<Throwable>()
         val env = Env<Char, String, Char>(
-            Initializer(""),
-            { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
-            { m, _ -> m.toString().noCommand() },
-            CoroutineScope(Job() + CoroutineExceptionHandler { _, th -> exceptions += th })
+            initializer = Initializer(""),
+            resolver = { snapshot -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
+            updater = { m, _ -> m.toString().noCommand() },
+            scope = CoroutineScope(Job() + CoroutineExceptionHandler { _, th -> exceptions += th })
         )
 
         runCatching {
-
             val component = Component(
                 TestDebugEnv(
                     env = env,
@@ -76,10 +75,10 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
         val component = Component(
             TestDebugEnv(
                 env = Env<Char, String, Char>(
-                    Initializer(""),
-                    { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
-                    { m, _ -> m.toString().noCommand() },
-                    this
+                    initializer = Initializer(""),
+                    resolver = { snapshot -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
+                    updater = { m, _ -> m.toString().noCommand() },
+                    scope = this
                 ),
                 settings = TestSettings(
                     sessionFactory = { _, block -> testSession.apply { block() } }

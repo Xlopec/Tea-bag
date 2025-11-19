@@ -50,7 +50,7 @@ public fun DebuggableAppComponent(
     Component(
         id = ComponentId("News Reader App"),
         initializer = initializer,
-        resolver = { c, ctx -> with(environment) { resolve(c, ctx) } },
+        resolver = { c -> with(environment) { resolve(c) } },
         updater = { m, s -> with(environment) { update(m, s) } },
         scope = environment,
         url = Url("http://10.0.2.2:8080"),

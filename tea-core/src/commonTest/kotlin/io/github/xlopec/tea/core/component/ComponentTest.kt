@@ -50,9 +50,9 @@ class ComponentTest : ComponentTestBase(::Component) {
     @Test
     fun `when upstream receives new input then previous downstream is canceled`() = runTest(timeout = TestTimeoutMillis.milliseconds) {
         val env = testEnv(
-            Initializer(""),
-            { _, _ -> },
-            { message: Char, state -> state command message }
+            initializer = Initializer(""),
+            resolver = { _ -> },
+            updater = { message: Char, state -> state command message }
         )
 
         val lastInitial = Initial("b", setOf('e'))
