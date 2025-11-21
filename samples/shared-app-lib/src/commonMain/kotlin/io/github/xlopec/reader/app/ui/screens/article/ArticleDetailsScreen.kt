@@ -71,9 +71,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.multiplatform.webview.web.LoadingState
@@ -82,6 +81,7 @@ import com.multiplatform.webview.web.WebViewNavigator
 import com.multiplatform.webview.web.WebViewState
 import com.multiplatform.webview.web.rememberWebViewNavigator
 import com.multiplatform.webview.web.rememberWebViewState
+import io.github.xlopec.reader.app.ClipEntry
 import io.github.xlopec.reader.app.MessageHandler
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsState
@@ -95,6 +95,7 @@ import io.github.xlopec.reader.app.ui.screens.BackHandler
 import io.github.xlopec.tea.data.isSecureProtocol
 import io.github.xlopec.tea.data.protocol
 import io.github.xlopec.tea.data.toExternalValue
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun ArticleDetailsScreen(
@@ -148,7 +149,8 @@ private fun ArticleDetailsToolbar(
     article: Article,
     handler: MessageHandler,
 ) {
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
 
     ProgressInsetAwareTopAppBar(
         progress = (state.loadingState as? LoadingState.Loading)?.progress?.let { it * 100 }?.toInt(),
@@ -181,7 +183,9 @@ private fun ArticleDetailsToolbar(
                         .clip(RoundedCornerShape(3.dp))
                         .combinedClickable(
                             onLongClick = {
-                                clipboardManager.setText(AnnotatedString(article.url.toString()))
+                                scope.launch {
+                                    clipboard.setClipEntry(ClipEntry(label = article.title.value, url = article.url))
+                                }
                             },
                             onLongClickLabel = "Copy to Clipboard",
                             onClick = { handler(OpenInBrowser(id)) }
@@ -244,7 +248,9 @@ private fun ArticleDetailsToolbar(
                 DropdownMenuItem(
                     onClick = {
                         expanded = false
-                        clipboardManager.setText(AnnotatedString(article.url.toString()))
+                        scope.launch {
+                            clipboard.setClipEntry(ClipEntry(label = article.title.value, url = article.url))
+                        }
                     },
                     imageVector = Icons.Outlined.ContentCopy,
                     text = "Copy URL"
