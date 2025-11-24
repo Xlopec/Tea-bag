@@ -51,6 +51,7 @@ internal fun RowMessage(
 ) {
     FlowRow(
         modifier = modifier,
+        itemVerticalAlignment = Alignment.CenterVertically,
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
     ) {
