@@ -26,14 +26,21 @@ package io.github.xlopec.reader.app.ui.screens.filters
 
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons.Default
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,6 +48,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.dp
 import io.github.xlopec.reader.app.FilterUpdated
 import io.github.xlopec.reader.app.MessageHandler
@@ -115,6 +124,11 @@ internal fun FiltersScreen(
         modifier = modifier,
     ) { innerPadding ->
 
+        val onSearch = {
+            performSearch = true
+            closeScreen = true
+        }
+
         LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
@@ -134,9 +148,44 @@ internal fun FiltersScreen(
                     inputText = inputState.value?.value ?: "",
                     placeholderText = state.filter.type.toSearchHint(),
                     onQueryUpdate = { inputState.value = Query.of(it) },
-                    onSearch = {
-                        performSearch = true
-                        closeScreen = true
+                    onSearch = onSearch,
+                    trailingIcon = {
+                        // todo use subcompose layout
+                        var iconWidth by remember { mutableIntStateOf(0) }
+
+                        Row(
+                            modifier = Modifier.graphicsLayer {
+                                translationX = (1f - childTransition.contentAlpha) * iconWidth
+                            }
+                        ) {
+                            IconButton(
+                                onClick = onSearch
+                            ) {
+                                Icon(
+                                    imageVector = Default.Search,
+                                    contentDescription = "Search"
+                                )
+                            }
+
+                            IconButton(
+                                modifier =
+                                    Modifier
+                                        .onPlaced {
+                                            iconWidth = it.size.width
+                                        }
+                                        .graphicsLayer {
+                                            alpha = childTransition.contentAlpha
+                                        },
+                                onClick = {
+                                    closeScreen = true
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Default.Close,
+                                    contentDescription = "Close"
+                                )
+                            }
+                        }
                     },
                     shape = RoundedCornerShape(headerTransition.cornerRadius),
                     colors = headerTransition.textFieldTransitionColors()
