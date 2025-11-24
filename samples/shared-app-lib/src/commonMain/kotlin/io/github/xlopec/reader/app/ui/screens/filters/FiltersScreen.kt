@@ -24,8 +24,13 @@
 
 package io.github.xlopec.reader.app.ui.screens.filters
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -40,7 +45,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,8 +52,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.dp
 import io.github.xlopec.reader.app.FilterUpdated
 import io.github.xlopec.reader.app.MessageHandler
@@ -150,13 +152,8 @@ internal fun FiltersScreen(
                     onQueryUpdate = { inputState.value = Query.of(it) },
                     onSearch = onSearch,
                     trailingIcon = {
-                        // todo use subcompose layout
-                        var iconWidth by remember { mutableIntStateOf(0) }
-
                         Row(
-                            modifier = Modifier.graphicsLayer {
-                                translationX = (1f - childTransition.contentAlpha) * iconWidth
-                            }
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             IconButton(
                                 onClick = onSearch
@@ -167,23 +164,21 @@ internal fun FiltersScreen(
                                 )
                             }
 
-                            IconButton(
-                                modifier =
-                                    Modifier
-                                        .onPlaced {
-                                            iconWidth = it.size.width
-                                        }
-                                        .graphicsLayer {
-                                            alpha = childTransition.contentAlpha
-                                        },
-                                onClick = {
-                                    closeScreen = true
-                                },
+                            AnimatedVisibility(
+                                visible = screenTransitionState == Finish,
+                                enter = fadeIn() + expandHorizontally(expandFrom = Alignment.Start, clip = false),
+                                exit = fadeOut() + shrinkHorizontally(shrinkTowards = Alignment.Start, clip = false),
                             ) {
-                                Icon(
-                                    imageVector = Default.Close,
-                                    contentDescription = "Close"
-                                )
+                                IconButton(
+                                    onClick = {
+                                        closeScreen = true
+                                    },
+                                ) {
+                                    Icon(
+                                        imageVector = Default.Close,
+                                        contentDescription = "Close"
+                                    )
+                                }
                             }
                         }
                     },
