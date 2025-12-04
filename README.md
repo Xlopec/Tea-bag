@@ -24,43 +24,52 @@ them to an appropriate `Component` builder overload.
 
 package io.github.xlopec.counter
 
-import io.github.xlopec.tea.core.*
+import io.github.xlopec.tea.core.Component
+import io.github.xlopec.tea.core.ExperimentalTeaApi
+import io.github.xlopec.tea.core.Initial
+import io.github.xlopec.tea.core.Sink
+import io.github.xlopec.tea.core.Snapshot
+import io.github.xlopec.tea.core.Update
+import io.github.xlopec.tea.core.command
+import io.github.xlopec.tea.core.invoke
+import io.github.xlopec.tea.core.sideEffect
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 
 /**Async initializer, provides initial state*/
 suspend fun initializer(): Initial<Int, Int> = Initial(0)
 
 /**Some tracker*/
+context(_: Sink<Int>, _: CoroutineScope)
 fun track(
-  event: Snapshot<Int, Int, Int>,
-  ctx: ResolveCtx<Int>,
+    event: Snapshot<Int, Int, Int>,
 ) {
-  ctx sideEffect { println("Track: \"$event\"") }
+    event sideEffect { println("Track: \"$this\"") }
 }
 
 /**App logic, for now it just adds delta to count and returns this as result*/
 fun add(
-  delta: Int,
-  counter: Int,
+    delta: Int,
+    counter: Int,
 ): Update<Int, Int> = (counter + delta) command delta
 
 /**Some UI, e.g. console*/
 suspend fun display(
-  snapshot: Snapshot<*, *, *>,
+    snapshot: Snapshot<*, *, *>,
 ) {
-  println("Display: $snapshot")
+    println("Display: $snapshot")
 }
 
 fun main() = runBlocking {
-  // Somewhere at the application level
-  val component = Component(
-    initializer = ::initializer,
-    resolver = ::track,
-    updater = ::add,
-    scope = this,
-  )
-  // UI = component([message1, message2, ..., message N])
-  component(+1, +2, -3).collect(::display)
+    // Somewhere at the application level
+    val component = Component(
+        initializer = ::initializer,
+        resolver = { snapshot ->  track(snapshot) },
+        updater = ::add,
+        scope = this,
+    )
+    // UI = component([message1, message2, ..., message N])
+    component(+1, +2, -3).collect(::display)
 }
 ```
 
