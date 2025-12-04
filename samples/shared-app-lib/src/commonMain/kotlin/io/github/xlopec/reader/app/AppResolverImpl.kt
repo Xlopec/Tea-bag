@@ -46,12 +46,12 @@ public fun <Env> AppResolver(): AppResolver<Env> where
         when (cmd) {
             is ArticlesCommand -> resolveForArticles(cmd)
             is DoOpenInBrowser -> resolveForOpenInBrowser(cmd)
-            is DoStoreDarkMode -> sideEffect {
-                storeDarkModePreferences(cmd.userDarkModeEnabled, cmd.syncWithSystemDarkModeEnabled)
+            is DoStoreDarkMode -> cmd sideEffect {
+                storeDarkModePreferences(userDarkModeEnabled, syncWithSystemDarkModeEnabled)
             }
 
             is FilterCommand -> resolveForFilter(cmd)
-            is DoLog -> sideEffect { log(cmd) }
+            is DoLog -> cmd sideEffect { log(this) }
             else -> error("Shouldn't get here $cmd")
         }
     }
