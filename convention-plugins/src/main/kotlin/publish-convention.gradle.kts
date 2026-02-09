@@ -34,7 +34,7 @@ version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
 
 val packJavadocJar by tasks.registering(Jar::class) {
-    dependsOn(tasks.named("dokkaHtml"))
+    dependsOn(tasks.named("dokkaGeneratePublicationHtml"))
     archiveClassifier.set("javadoc")
     from(documentationDir)
 

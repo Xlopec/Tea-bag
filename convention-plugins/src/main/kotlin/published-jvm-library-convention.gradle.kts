@@ -52,7 +52,7 @@ val packSourcesJar by tasks.registering(Jar::class) {
 }
 
 val packJavadocJar by tasks.registering(Jar::class) {
-    dependsOn(tasks.named("dokkaHtml"))
+    dependsOn(tasks.named("dokkaGeneratePublicationHtml"))
     archiveClassifier.set("javadoc")
     from(documentationDir)
 
