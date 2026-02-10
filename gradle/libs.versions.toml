@@ -5,7 +5,7 @@ sqldelight = "2.2.1"
 arrow = "2.0.1"
 coil = "3.1.0"
 agp = "9.0.0"
-kotlin = "2.1.21"
+kotlin = "2.3.10"
 
 [libraries]
 # Convention plugins
@@ -15,11 +15,11 @@ convention-agp = { module = "com.android.tools.build:gradle", version.ref = "agp
 convention-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "2.1.0" }
 convention-serializtion = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 convention-sqldelight = { module = "app.cash.sqldelight:gradle-plugin", version.ref = "sqldelight" }
-convention-compose-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version = "1.7.3" }
+convention-compose-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version = "1.10.0" }
 convention-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
-convention-versions = { module = "com.github.ben-manes:gradle-versions-plugin", version = "0.51.0" }
+convention-versions = { module = "com.github.ben-manes:gradle-versions-plugin", version = "0.53.0" }
 convention-nexus-publish = { module = "io.github.gradle-nexus:publish-plugin", version = "2.0.0" }
-convention-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.23.7" }
+convention-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.23.8" }
 
 decompose-backHandler = { module = "com.arkivanov.essenty:back-handler", version = "2.5.0" }
 decompose-extensions = { module = "com.arkivanov.decompose:extensions-compose", version = "3.3.0" }
@@ -57,7 +57,7 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor2", version.ref = "coil" }
 compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.7.8" }
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
-webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.9.40" }
+webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "2.0.3" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.2" }
 
 [bundles]
@@ -68,7 +68,7 @@ version-check = { id = "com.github.ben-manes.versions", version = "0.53.0" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-compose = { id = "org.jetbrains.compose", version = "1.7.3" }
+compose = { id = "org.jetbrains.compose", version = "1.10.0" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 nexus-publishing = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
