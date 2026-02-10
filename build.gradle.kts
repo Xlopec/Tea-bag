@@ -42,6 +42,13 @@ plugins {
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
 
+// dependencyUpdates fails in parallel mode with Gradle 9+ (https://github.com/ben-manes/gradle-versions-plugin/issues/968)
+tasks.named("dependencyUpdates") {
+    doFirst {
+        gradle.startParameter.isParallelProjectExecutionEnabled = false
+    }
+}
+
 nexusPublishing {
     repositories {
         sonatype {

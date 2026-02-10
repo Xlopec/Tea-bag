@@ -64,7 +64,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version 
 coil = ["coil-compose", "coil-network"]
 
 [plugins]
-version-check = { id = "com.github.ben-manes.versions", version = "0.51.0" }
+version-check = { id = "com.github.ben-manes.versions", version = "0.53.0" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
