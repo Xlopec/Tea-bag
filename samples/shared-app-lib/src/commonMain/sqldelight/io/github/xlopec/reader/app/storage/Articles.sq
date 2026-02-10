@@ -1,3 +1,5 @@
+import kotlin.Boolean;
+
 CREATE TABLE Articles(
   url TEXT NOT NULL,-- url TEXT PRIMARY KEY NOT NULL definition doesn't work for IOS
   title TEXT NOT NULL,
@@ -8,7 +10,7 @@ CREATE TABLE Articles(
   saved_on INTEGER NOT NULL,
   is_favorite INTEGER AS Boolean NOT NULL DEFAULT 0,
   source TEXT DEFAULT NULL,
-  FOREIGN KEY (source) REFERENCES Source ON DELETE SET DEFAULT
+  FOREIGN KEY (source) REFERENCES Source(source) ON DELETE SET DEFAULT
 );
 
 insertArticle:

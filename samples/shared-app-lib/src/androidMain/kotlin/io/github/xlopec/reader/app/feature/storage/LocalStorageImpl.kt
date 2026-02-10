@@ -29,7 +29,7 @@
 package io.github.xlopec.reader.app.feature.storage
 
 import android.app.Application
-import com.squareup.sqldelight.android.AndroidSqliteDriver
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import io.github.xlopec.reader.app.storage.AppDatabase
 
 private const val DBfileName = "app.db"

@@ -25,7 +25,7 @@
 plugins {
     id("multiplatform-convention")
     id("com.android.library")
-    id("com.squareup.sqldelight")
+    id("app.cash.sqldelight")
     kotlin("plugin.serialization")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
@@ -198,7 +198,10 @@ android {
 }
 
 sqldelight {
-    database("AppDatabase") {
-        packageName = "io.github.xlopec.reader.app.storage"
+    databases {
+        create("AppDatabase") {
+            packageName.set("io.github.xlopec.reader.app.storage")
+            //dialect("app.cash.sqldelight:sqlite-3-38-dialect:2.2.1")
+        }
     }
 }

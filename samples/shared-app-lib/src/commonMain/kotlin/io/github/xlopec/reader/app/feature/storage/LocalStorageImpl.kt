@@ -24,13 +24,13 @@
 
 package io.github.xlopec.reader.app.feature.storage
 
+import app.cash.sqldelight.db.QueryResult
+import app.cash.sqldelight.db.SqlCursor
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.db.SqlPreparedStatement
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set
-import com.squareup.sqldelight.db.SqlCursor
-import com.squareup.sqldelight.db.SqlDriver
-import com.squareup.sqldelight.db.SqlPreparedStatement
-import com.squareup.sqldelight.db.use
 import io.github.xlopec.reader.app.feature.article.list.Page
 import io.github.xlopec.reader.app.misc.mapNotNullToPersistentList
 import io.github.xlopec.reader.app.model.Article
@@ -49,6 +49,7 @@ import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.UrlFor
 import io.github.xlopec.tea.data.toExternalValue
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.Dispatchers
@@ -103,20 +104,21 @@ private class LocalStorageImpl(
         url: Url,
     ) = articlesQuery {
         deleteArticle(url.toExternalValue())
+        Unit
     }
 
     override suspend fun findAllArticles(
         filter: Filter,
     ) = articlesQuery {
-        Page(driver.executeQuery(filter).toPersistentList(SqlCursor::toArticle))
+        Page(driver.executeQuery(filter).value)
     }
 
     override suspend fun isFavoriteArticle(
         url: Url,
     ): Boolean = articlesQuery {
         isFavoriteArticle(url.toExternalValue())
-            .execute()
-            .use { cursor -> cursor.next() && cursor.isFavorite }
+            .executeAsOneOrNull()?.is_favorite == true
+        // .use { cursor -> cursor.next() && cursor.isFavorite }
     }
 
     override suspend fun isDarkModeEnabled(): Boolean = articlesQuery {
@@ -173,12 +175,13 @@ private class LocalStorageImpl(
     }
 
     override suspend fun deleteRecentSearch(type: FilterType, query: Query) = searchesQuery {
-        delete(type.ordinal.toLong(), query.value)
+        delete(type.ordinal.toLong(), query.value).value
+        Unit
     }
 
     private suspend inline fun <T> articlesQuery(
         crossinline block: ArticlesQueries.() -> T,
-    ) = withContext(Dispatchers.IO) {
+    ): T = withContext(Dispatchers.IO) {
         database.articlesQueries.run(block)
     }
 
@@ -222,10 +225,8 @@ private fun SqlCursor.toArticle() =
 private fun <T> SqlCursor.toPersistentList(
     mapper: SqlCursor.() -> T,
 ) = persistentListOf<T>().builder().apply {
-    use { cursor ->
-        while (cursor.next()) {
-            add(mapper.invoke(this@toPersistentList))
-        }
+    while (next().value) {
+        add(mapper.invoke(this@toPersistentList))
     }
 }.build()
 
@@ -284,7 +285,12 @@ private fun SqlPreparedStatement.bindValues(
 
 private fun SqlDriver.executeQuery(
     filter: Filter,
-) = executeQuery(null, filter.toSqlQuery(), filter.parametersCount) {
+): QueryResult<PersistentList<Article>> = executeQuery(
+    identifier = null,
+    sql = filter.toSqlQuery(),
+    mapper = { QueryResult.Value(it.toPersistentList { it.toArticle() }) },
+    parameters = filter.parametersCount
+) {
     bindValues(filter)
 }
 
