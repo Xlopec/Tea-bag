@@ -153,7 +153,7 @@ afterEvaluate {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 36
     namespace = "io.github.xlopec.shared"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
@@ -201,7 +201,7 @@ sqldelight {
     databases {
         create("AppDatabase") {
             packageName.set("io.github.xlopec.reader.app.storage")
-            //dialect("app.cash.sqldelight:sqlite-3-38-dialect:2.2.1")
+            dialect("app.cash.sqldelight:sqlite-3-18-dialect:2.2.1")
         }
     }
 }
