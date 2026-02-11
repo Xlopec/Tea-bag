@@ -106,4 +106,4 @@ private fun GenerateNestedScreens(
 private fun testScreenBelongsToTab(
     screen: TabScreen,
     tab: Tab,
-) = (screen as? TabScreen)?.tab == tab
+) = screen.tab == tab
