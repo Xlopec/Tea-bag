@@ -44,28 +44,6 @@ plugins {
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
 
-// dependencyUpdates fails in parallel mode with Gradle 9+ (https://github.com/ben-manes/gradle-versions-plugin/issues/968)
-tasks.named("dependencyUpdates", DependencyUpdatesTask::class.java) {
-    doFirst {
-        gradle.startParameter.isParallelProjectExecutionEnabled = false
-    }
-
-    rejectVersionIf {
-        val r = isNonStable(candidate.version) && !isNonStable(currentVersion)
-
-        println("Checking $r ${this.metadata?.id} ${currentVersion} -> ${candidate.version} ")
-
-        r
-    }
-}
-
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
-    val regex = "^[0-9,.]+$".toRegex()
-    val isStable = stableKeyword || regex.matches(version)
-    return isStable.not()
-}
-
 nexusPublishing {
     repositories {
         sonatype {
@@ -83,20 +61,6 @@ nexusPublishing {
 allprojects {
     apply {
         plugin("common-config")
-    }
-
-    tasks.named("dependencyUpdates", DependencyUpdatesTask::class.java) {
-        doFirst {
-            gradle.startParameter.isParallelProjectExecutionEnabled = false
-        }
-
-        rejectVersionIf {
-            val r = isNonStable(candidate.version) && !isNonStable(currentVersion)
-
-           // println("Checking $r ${this.metadata?.id} ${currentVersion} -> ${candidate.version} ")
-
-            r
-        }
     }
 }
 
