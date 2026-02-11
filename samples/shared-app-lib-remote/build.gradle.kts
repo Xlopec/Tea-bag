@@ -23,102 +23,52 @@
  */
 
 plugins {
-    id("multiplatform-convention")
-    id("com.android.kotlin.multiplatform.library")
+    id("com.android.built-in-kotlin")
+    id("com.android.library")
 }
 
-version = "1.0.0"
+android {
+    compileSdk = 36
+    namespace = "io.github.xlopec.shared"
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    defaultConfig {
+        minSdk = 21
+        consumerProguardFile("proguard-rules.pro")
+    }
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    dependencies {
+        api(project(":tea-time-travel"))
+        api(project(":tea-time-travel-adapter-gson"))
+        api(project(":samples:shared-app-lib"))
+        implementation(libs.ktor.http)
+        implementation(libs.gson)
+        testImplementation(kotlin("test-junit"))
+        coreLibraryDesugaring(libs.desugar.jdk)
+    }
+}
 
 kotlin {
     explicitApi()
 
     compilerOptions {
         optIn.addAll(
-            "kotlinx.serialization.ExperimentalSerializationApi",
-            "io.github.xlopec.tea.core.ExperimentalTeaApi",
+            DefaultOptIns +
+                "kotlinx.serialization.ExperimentalSerializationApi" +
+                "io.github.xlopec.tea.core.ExperimentalTeaApi",
         )
     }
-
-    androidLibrary {
-        compileSdk = 36
-        minSdk = 23
-        namespace = "io.github.xlopec.shared.remote"
-        enableCoreLibraryDesugaring = true
-
-        withHostTest {
-        }
-
-        androidResources {
-            enable = true
-        }
-
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
-        }
-
-        optimization {
-            consumerKeepRules.apply {
-                publish = true
-                file("proguard-rules.pro")
-            }
-        }
-    }
-
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-    applyDefaultHierarchyTemplate()
-
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "SharedAppLib"
-            isStatic = true
-        }
-    }
-
-    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests::class.java) {
-        testRuns["test"].deviceId = "iPhone 17"
-    }
-
-    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-        compilerOptions {
-            freeCompilerArgs.add("-Xexport-kdoc")
-        }
-    }
-
-    sourceSets {
-        androidMain {
-            dependencies {
-                api(project(":samples:shared-app-lib"))
-                api(project(":tea-time-travel"))
-                api(project(":tea-time-travel-adapter-gson"))
-                implementation(libs.stdlib)
-                implementation(libs.ktor.client.cio)
-            }
-        }
-
-        getByName("androidHostTest") {
-            dependencies {
-                implementation(kotlin("test-junit"))
-            }
-        }
-    }
 }
 
-tasks.named<TestReport>("allTests").configure {
-    configureOutputLocation(testReportsDir("multiplatform"))
+val allTests by tasks.registering(Task::class) {
+    dependsOn("test")
 }
 
-afterEvaluate {
-    tasks.withType<Test>().configureEach {
-        configureOutputLocation(testReportsDir(name, "html"), testReportsDir(name, "xml"))
-    }
-}
-
-dependencies {
-    coreLibraryDesugaring(libs.desugar.jdk)
+tasks.withType<Test>().configureEach {
+    configureOutputLocation(testReportsDir(name, "html"), testReportsDir(name, "xml"))
 }

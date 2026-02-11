@@ -156,11 +156,11 @@ tasks.named<TestReport>("allTests").configure {
     configureOutputLocation(testReportsDir("multiplatform"))
 }
 
-afterEvaluate {
+//afterEvaluate {
     tasks.withType<Test>().configureEach {
         configureOutputLocation(testReportsDir(name, "html"), testReportsDir(name, "xml"))
     }
-}
+//}
 
 /*android {
     compileSdk = 36
