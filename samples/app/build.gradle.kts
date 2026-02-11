@@ -149,7 +149,7 @@ dependencies {
 
     implementation(project(":tea-core"))
     implementation(project(":samples:shared-app-lib"))
-    remoteImplementation(project(":samples:shared-app-lib"))
+    remoteImplementation(project(":samples:shared-app-lib-remote"))
 
     coreLibraryDesugaring(libs.desugar.jdk)
 

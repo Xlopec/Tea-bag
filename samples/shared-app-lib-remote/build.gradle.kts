@@ -46,7 +46,7 @@ kotlin {
     androidLibrary {
         compileSdk = 36
         minSdk = 23
-        namespace = "io.github.xlopec.shared"
+        namespace = "io.github.xlopec.shared.remote"
         enableCoreLibraryDesugaring = true
 
         androidResources {
@@ -94,16 +94,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(project(":tea-core"))
-                api(project(":tea-data"))
-                api(project(":tea-navigation"))
-                api(libs.arrow.core)
-                api(libs.collections.immutable)
-                api(libs.coroutines.core)
-                api(compose.ui)
-                api(compose.runtime)
-                api(compose.foundation)
-                api(compose.components.uiToolingPreview)
+                api(project(":samples:shared-app-lib"))
                 implementation(compose.components.resources)
                 implementation(libs.bundles.coil)
                 implementation(libs.kotlinx.datetime)
@@ -132,6 +123,8 @@ kotlin {
         androidMain {
             dependencies {
                 //todo move to global dependencies "androidRuntimeClasspath"(libs.androidx.compose.ui.tooling)
+                api(project(":tea-time-travel"))
+                api(project(":tea-time-travel-adapter-gson"))
                 implementation(compose.preview)
                 implementation(libs.compose.fonts)
                 implementation(libs.ktor.client.cio)
@@ -142,6 +135,20 @@ kotlin {
                 implementation(libs.sqldelight.driver.android)
             }
         }
+
+/*        val androidUnitTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit"))
+                implementation(libs.junit)
+            }
+        }
+
+        val androidUnitTestRemote by creating {
+            dependsOn(androidUnitTest)
+            dependencies {
+              //  implementation(project(":tea-time-travel-test"))
+            }
+        }*/
 
         iosMain {
             dependencies {
@@ -208,10 +215,6 @@ afterEvaluate {
 }*/
 
 dependencies {
-    //remoteApi(project(":tea-time-travel"))
-    //remoteApi(project(":tea-time-travel-adapter-gson"))
-    //remoteImplementation(libs.gson)
-    //  debugImplementation(compose.uiTooling)
     coreLibraryDesugaring(libs.desugar.jdk)
 }
 

@@ -43,6 +43,7 @@ include(
     ":tea-navigation",
     ":samples:app",
     ":samples:shared-app-lib",
+    ":samples:shared-app-lib-remote",
     ":samples:counter",
 )
 
