@@ -104,7 +104,6 @@ android {
     buildFeatures {
         compose = true
         aidl = false
-        renderScript = false
         resValues = false
         shaders = false
         buildConfig = true
@@ -133,10 +132,10 @@ android {
     sourceSets {
 
         maybeCreate("remote")
-            .java.srcDirs("remote/kotlin", "main/kotlin")
+            .java.directories.addAll(listOf("remote/kotlin", "main/kotlin"))
 
         maybeCreate("default")
-            .java.srcDirs("default/kotlin", "main/kotlin")
+            .java.directories.addAll(listOf("default/kotlin", "main/kotlin"))
     }
 }
 

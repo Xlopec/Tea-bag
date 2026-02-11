@@ -122,7 +122,8 @@ val Project.hasKotlinJvmPlugin: Boolean
     get() = plugins.hasPlugin("org.jetbrains.kotlin.jvm")
 
 val localBranch: String?
-    get() = Runtime.getRuntime().exec("git rev-parse --abbrev-ref HEAD")
+    get() = ProcessBuilder("git", "rev-parse", "--abbrev-ref", "HEAD")
+        .start()
         .also { it.waitFor() }
         .takeIf { it.exitValue() == 0 }
         ?.let { BufferedReader(InputStreamReader(it.inputStream)) }

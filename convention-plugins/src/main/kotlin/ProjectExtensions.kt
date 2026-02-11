@@ -25,7 +25,7 @@
 import org.gradle.api.Project
 import org.jetbrains.dokka.gradle.GradleDokkaSourceSetBuilder
 import java.io.File
-import java.net.URL
+import java.net.URI
 
 val DefaultOptIns = listOf(
     "kotlin.RequiresOptIn",
@@ -53,6 +53,6 @@ fun GradleDokkaSourceSetBuilder.linkSourcesForSourceSet(
     sourceSetName: String
 ) = sourceLink {
     localDirectory.set(project.file("src/$sourceSetName/kotlin"))
-    remoteUrl.set(URL("https://github.com/Xlopec/Tea-bag/tree/$branchOrDefault/${project.name}/src/$sourceSetName/kotlin"))
+    remoteUrl.set(URI("https://github.com/Xlopec/Tea-bag/tree/$branchOrDefault/${project.name}/src/$sourceSetName/kotlin").toURL())
     remoteLineSuffix.set("#L")
 }

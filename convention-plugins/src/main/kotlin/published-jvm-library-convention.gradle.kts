@@ -23,7 +23,7 @@
  */
 
 import org.jetbrains.dokka.gradle.DokkaTask
-import java.net.URL
+import java.net.URI
 
 plugins {
     kotlin("jvm")
@@ -101,10 +101,10 @@ tasks.withType<DokkaTask>().configureEach {
 
             linkSourcesForSourceSet(project, "main")
             externalDocumentationLink(
-                URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
+                URI.create("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/").toURL()
             )
             externalDocumentationLink(
-                URL("https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/")
+                URI.create("https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/").toURL()
             )
         }
     }
