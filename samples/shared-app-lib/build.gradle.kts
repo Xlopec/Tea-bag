@@ -24,7 +24,7 @@
 
 plugins {
     id("multiplatform-convention")
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("app.cash.sqldelight")
     kotlin("plugin.serialization")
     id("org.jetbrains.compose")
@@ -43,8 +43,19 @@ kotlin {
         )
     }
 
-    androidTarget {
-        publishAllLibraryVariants()
+    androidLibrary {
+        compileSdk = 36
+        minSdk = 23
+        namespace = "io.github.xlopec.shared"
+        enableCoreLibraryDesugaring = true
+
+        androidResources {
+            enable = true
+        }
+
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
     }
 
     iosX64()
@@ -124,12 +135,27 @@ kotlin {
             }
         }
 
-        val androidUnitTest by getting {
+        val androidRemote by creating {
+            dependsOn(androidMain)
+            dependencies {
+                api(project(":tea-time-travel"))
+                api(project(":tea-time-travel-adapter-gson"))
+            }
+        }
+
+/*        val androidUnitTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation(libs.junit)
             }
         }
+
+        val androidUnitTestRemote by creating {
+            dependsOn(androidUnitTest)
+            dependencies {
+              //  implementation(project(":tea-time-travel-test"))
+            }
+        }*/
 
         val iosMain by getting {
             dependencies {
@@ -152,7 +178,7 @@ afterEvaluate {
     }
 }
 
-android {
+/*android {
     compileSdk = 36
     namespace = "io.github.xlopec.shared"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -161,14 +187,14 @@ android {
         consumerProguardFile("proguard-rules.pro")
     }
 
-    sourceSets {
+    *//*sourceSets {
 
         maybeCreate("remote")
             .java.srcDirs("remote/kotlin", "main/kotlin")
 
         maybeCreate("default")
             .java.srcDirs("default/kotlin", "main/kotlin")
-    }
+    }*//*
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -176,7 +202,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    flavorDimensions += "remote"
+    *//*flavorDimensions += "remote"
     productFlavors {
 
         create("remote") {
@@ -186,15 +212,23 @@ android {
         create("default") {
             dimension = "remote"
         }
-    }
+    }*//*
 
     dependencies {
-        remoteApi(project(":tea-time-travel"))
-        remoteApi(project(":tea-time-travel-adapter-gson"))
-        remoteImplementation(libs.gson)
-        debugImplementation(compose.uiTooling)
+        //remoteApi(project(":tea-time-travel"))
+        //remoteApi(project(":tea-time-travel-adapter-gson"))
+        //remoteImplementation(libs.gson)
+      //  debugImplementation(compose.uiTooling)
         coreLibraryDesugaring(libs.desugar.jdk)
     }
+}*/
+
+dependencies {
+    //remoteApi(project(":tea-time-travel"))
+    //remoteApi(project(":tea-time-travel-adapter-gson"))
+    //remoteImplementation(libs.gson)
+    //  debugImplementation(compose.uiTooling)
+    coreLibraryDesugaring(libs.desugar.jdk)
 }
 
 sqldelight {
