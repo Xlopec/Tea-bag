@@ -49,6 +49,10 @@ public value class Query private constructor(
             input: String?
         ): Query? = input?.coerceIn(MinQueryLength, MaxQueryLength)?.replace("\n", "")?.let(::Query)
     }
+
+    init {
+        require(value.isNotBlank()) { "Query cannot be blank" }
+    }
 }
 
 public data class Filter(
