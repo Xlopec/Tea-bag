@@ -93,7 +93,7 @@ allprojects {
         rejectVersionIf {
             val r = isNonStable(candidate.version) && !isNonStable(currentVersion)
 
-         //   println("Checking $r ${this.metadata?.id} ${currentVersion} -> ${candidate.version} ")
+           // println("Checking $r ${this.metadata?.id} ${currentVersion} -> ${candidate.version} ")
 
             r
         }
