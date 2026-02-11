@@ -40,14 +40,14 @@ public enum class FilterType {
 public value class Query private constructor(
     public val value: String
 ) {
-    internal companion object {
+    public companion object {
 
         private const val MaxQueryLength = 500U
         private const val MinQueryLength = 1U
 
-        fun of(
+        public fun of(
             input: String?
-        ) = input?.coerceIn(MinQueryLength, MaxQueryLength)?.replace("\n", "")?.let(::Query)
+        ): Query? = input?.coerceIn(MinQueryLength, MaxQueryLength)?.replace("\n", "")?.let(::Query)
     }
 }
 

@@ -64,15 +64,15 @@ public data class ArticlesState(
 
     override val id: ScreenId by tab::id
 
-    internal companion object {
+    public companion object {
 
-        const val ArticlesPerPage = 10
+        public const val ArticlesPerPage: Int = 10
 
-        fun newLoading(
+        public fun newLoading(
             tab: Tab,
             filter: Filter,
             articles: PersistentList<Article> = persistentListOf(),
-        ) = ArticlesState(tab, filter, Loadable.newLoading(articles))
+        ): ArticlesState = ArticlesState(tab, filter, Loadable.newLoading(articles))
     }
 }
 

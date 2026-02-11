@@ -58,6 +58,7 @@ compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version =
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
 webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "2.0.3" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.2" }
+ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version = "1.10.2" }
 
 [bundles]
 coil = ["coil-compose", "coil-network"]
