@@ -25,10 +25,6 @@
 plugins {
     id("multiplatform-convention")
     id("com.android.kotlin.multiplatform.library")
-    id("app.cash.sqldelight")
-    kotlin("plugin.serialization")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 version = "1.0.0"
@@ -48,6 +44,9 @@ kotlin {
         minSdk = 23
         namespace = "io.github.xlopec.shared.remote"
         enableCoreLibraryDesugaring = true
+
+        withHostTest {
+        }
 
         androidResources {
             enable = true
@@ -92,68 +91,19 @@ kotlin {
     }
 
     sourceSets {
-        commonMain {
-            dependencies {
-                api(project(":samples:shared-app-lib"))
-                implementation(compose.components.resources)
-                implementation(libs.bundles.coil)
-                implementation(libs.kotlinx.datetime)
-                implementation(compose.material)
-                implementation(compose.materialIconsExtended)
-                implementation(libs.stdlib)
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.logging)
-                implementation(libs.ktor.client.negotiation)
-                implementation(libs.ktor.serialization.json)
-                implementation(libs.serialization.core)
-                implementation(libs.settings.core)
-                implementation(libs.sqldelight.runtime)
-                implementation(libs.webview)
-                implementation(compose.runtime)
-            }
-        }
-
-        commonTest {
-            dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
-            }
-        }
-
         androidMain {
             dependencies {
-                //todo move to global dependencies "androidRuntimeClasspath"(libs.androidx.compose.ui.tooling)
+                api(project(":samples:shared-app-lib"))
                 api(project(":tea-time-travel"))
                 api(project(":tea-time-travel-adapter-gson"))
-                implementation(compose.preview)
-                implementation(libs.compose.fonts)
+                implementation(libs.stdlib)
                 implementation(libs.ktor.client.cio)
-                implementation(libs.ktor.client.logging)
-                implementation(libs.coroutines.android)
-                implementation(libs.compose.activity)
-                implementation(libs.ktor.client.cio)
-                implementation(libs.sqldelight.driver.android)
             }
         }
 
-/*        val androidUnitTest by getting {
+        getByName("androidHostTest") {
             dependencies {
                 implementation(kotlin("test-junit"))
-                implementation(libs.junit)
-            }
-        }
-
-        val androidUnitTestRemote by creating {
-            dependsOn(androidUnitTest)
-            dependencies {
-              //  implementation(project(":tea-time-travel-test"))
-            }
-        }*/
-
-        iosMain {
-            dependencies {
-                implementation(libs.ktor.client.ios)
-                implementation(libs.sqldelight.driver.native)
             }
         }
     }
@@ -169,60 +119,6 @@ afterEvaluate {
     }
 }
 
-/*android {
-    compileSdk = 36
-    namespace = "io.github.xlopec.shared"
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    defaultConfig {
-        minSdk = 21
-        consumerProguardFile("proguard-rules.pro")
-    }
-
-    *//*sourceSets {
-
-        maybeCreate("remote")
-            .java.srcDirs("remote/kotlin", "main/kotlin")
-
-        maybeCreate("default")
-            .java.srcDirs("default/kotlin", "main/kotlin")
-    }*//*
-
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    *//*flavorDimensions += "remote"
-    productFlavors {
-
-        create("remote") {
-            dimension = "remote"
-        }
-
-        create("default") {
-            dimension = "remote"
-        }
-    }*//*
-
-    dependencies {
-        //remoteApi(project(":tea-time-travel"))
-        //remoteApi(project(":tea-time-travel-adapter-gson"))
-        //remoteImplementation(libs.gson)
-      //  debugImplementation(compose.uiTooling)
-        coreLibraryDesugaring(libs.desugar.jdk)
-    }
-}*/
-
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk)
-}
-
-sqldelight {
-    databases {
-        create("AppDatabase") {
-            packageName.set("io.github.xlopec.reader.app.storage")
-            dialect("app.cash.sqldelight:sqlite-3-18-dialect:2.2.1")
-        }
-    }
 }

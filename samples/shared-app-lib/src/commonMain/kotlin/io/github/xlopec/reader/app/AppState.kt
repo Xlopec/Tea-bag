@@ -37,7 +37,7 @@ import kotlin.uuid.Uuid
 public typealias ScreenId = Uuid
 
 @Immutable
-public data class AppState internal constructor(
+public data class AppState(
     val settings: Settings,
     val screens: AppNavigationStack,
 ) {
