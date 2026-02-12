@@ -35,9 +35,9 @@ kotlin {
             dependencies {
                 implementation(libs.stdlib)
                 implementation(project(":tea-core"))
-                api(compose.ui)
-                api(compose.runtime)
-                api(compose.foundation)
+                api(libs.compose.ui)
+                api(libs.compose.runtime)
+                api(libs.compose.foundation)
                 api(libs.collections.immutable)
             }
         }
