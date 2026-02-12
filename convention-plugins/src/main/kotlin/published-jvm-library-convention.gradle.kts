@@ -22,14 +22,11 @@
  * SOFTWARE.
  */
 
-import org.jetbrains.dokka.gradle.DokkaTask
-import java.net.URI
-
 plugins {
     kotlin("jvm")
     `maven-publish`
     id("signing-convention")
-    id("org.jetbrains.dokka")
+    id("documented-convention")
 }
 
 version = libraryVersion.toVersionName()
@@ -88,24 +85,4 @@ publishing {
 artifacts {
     archives(packSourcesJar)
     archives(packJavadocJar)
-}
-
-tasks.withType<DokkaTask>().configureEach {
-    outputDirectory.set(documentationDir)
-
-    dokkaSourceSets {
-        named("main") {
-            reportUndocumented.set(true)
-            includeNonPublic.set(false)
-            skipEmptyPackages.set(true)
-
-            linkSourcesForSourceSet(project, "main")
-            externalDocumentationLink(
-                URI.create("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/").toURL()
-            )
-            externalDocumentationLink(
-                URI.create("https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/").toURL()
-            )
-        }
-    }
 }

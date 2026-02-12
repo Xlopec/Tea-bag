@@ -1,3 +1,7 @@
+import gradle.kotlin.dsl.accessors._b5fa57b50bd07a92cb9fecc2023336d1.dokkaSourceSets
+import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
+import java.net.URI
+
 /*
  * MIT License
  *
@@ -22,22 +26,26 @@
  * SOFTWARE.
  */
 
-import org.gradle.api.Project
-import java.io.File
+plugins {
+    id("org.jetbrains.dokka")
+}
 
-val DefaultOptIns = listOf(
-    "kotlin.RequiresOptIn",
-    "kotlin.ExperimentalStdlibApi",
-    "kotlin.contracts.ExperimentalContracts",
-    "kotlin.uuid.ExperimentalUuidApi",
-)
+dokka {
+    dokkaPublications.all {
+        outputDirectory.set(documentationDir)
+    }
 
-fun Project.installGitHooks() = afterEvaluate {
-    projectHooksDir.listFiles { f -> f.extension == "sh" }
-        ?.forEach { f ->
-            val target = File(gitHooksDir, f.nameWithoutExtension)
+    dokkaSourceSets {
+        configureEach {
+            sourceLink {
+                localDirectory.set(project.file("src/${this@configureEach.name}/kotlin"))
+                remoteUrl.set(URI("https://github.com/Xlopec/Tea-bag/tree/$branchOrDefault/${project.name}/src/${this@configureEach.name}/kotlin"))
+                remoteLineSuffix.set("#L")
+            }
 
-            f.copyTo(target, overwrite = true)
-            target.setExecutable(true, false)
+            reportUndocumented.set(true)
+            documentedVisibilities.set(setOf(VisibilityModifier.Public))
+            skipEmptyPackages.set(true)
         }
+    }
 }

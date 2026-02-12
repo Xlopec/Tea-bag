@@ -22,12 +22,10 @@
  * SOFTWARE.
  */
 
-import org.jetbrains.dokka.gradle.DokkaTask
-
 plugins {
     `maven-publish`
     id("signing-convention")
-    id("org.jetbrains.dokka")
+    id("documented-convention")
 }
 
 version = libraryVersion.toVersionName()
@@ -63,10 +61,6 @@ publishing {
     repositories {
         mavenLocal()
     }
-}
-
-tasks.withType<DokkaTask>().configureEach {
-    outputDirectory.set(documentationDir)
 }
 
 val signingTasks = tasks.withType<Sign>()

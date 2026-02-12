@@ -13,7 +13,6 @@ import com.arkivanov.essenty.backhandler.BackDispatcher
 import io.github.xlopec.reader.app.FullScreen
 import io.github.xlopec.reader.app.IosComponent
 import io.github.xlopec.reader.app.Message
-import io.github.xlopec.reader.app.Screen
 import io.github.xlopec.reader.app.feature.navigation.Pop
 import io.github.xlopec.reader.app.messageHandler
 import io.github.xlopec.reader.app.ui.theme.AppTheme
@@ -58,7 +57,7 @@ internal fun App(
                 stack = currentState.screens,
                 animation = animation,
                 previousScreenFor = { stack, current ->
-                    stack.getOrNull<Screen>(stack.lastIndex - 1)?.takeIf { current is FullScreen }
+                    stack.getOrNull(stack.lastIndex - 1)?.takeIf { current is FullScreen }
                 },
                 onBackComplete = {
                     handler(Pop)
