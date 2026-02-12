@@ -119,6 +119,7 @@ kotlin {
                 implementation(libs.sqldelight.runtime)
                 implementation(libs.webview)
                 implementation(compose.runtime)
+                implementation(libs.ui.tooling.preview)
             }
         }
 
@@ -131,8 +132,6 @@ kotlin {
 
         androidMain {
             dependencies {
-                //todo move to global dependencies "androidRuntimeClasspath"(libs.androidx.compose.ui.tooling)
-                implementation(compose.preview)
                 implementation(libs.compose.fonts)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.client.logging)
@@ -213,6 +212,7 @@ dependencies {
     //remoteImplementation(libs.gson)
     //  debugImplementation(compose.uiTooling)
     coreLibraryDesugaring(libs.desugar.jdk)
+    androidRuntimeClasspath(libs.ui.tooling)
 }
 
 sqldelight {
