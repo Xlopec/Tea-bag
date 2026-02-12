@@ -27,8 +27,6 @@ package io.github.xlopec.tea.core
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 
 /**
  * Alias for a possibly **impure** function that resolves commands to messages and performs side
