@@ -66,9 +66,9 @@ android {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
         managedDevices {
             localDevices {
-                create("pixel2api30") {
+                create("pixel2api36") {
                     device = "Pixel 2"
-                    apiLevel = 30
+                    apiLevel = 36
                     systemImageSource = "aosp-atd"
                 }
             }
@@ -123,12 +123,6 @@ android {
         }
     }
 
-    androidComponents {
-        beforeVariants(selector().withName("remoteRelease")) { builder ->
-            builder.enable = false
-        }
-    }
-
     sourceSets {
 
         maybeCreate("remote")
@@ -136,6 +130,12 @@ android {
 
         maybeCreate("default")
             .java.directories.addAll(listOf("default/kotlin", "main/kotlin"))
+    }
+}
+
+androidComponents {
+    beforeVariants(selector().withName("remoteRelease")) { builder ->
+        builder.enable = false
     }
 }
 

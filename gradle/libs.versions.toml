@@ -44,7 +44,7 @@ ktor-http = { module = "io.ktor:ktor-http", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-compose-activity = { module = "androidx.activity:activity-compose", version = "1.12.3" }
+compose-activity = { module = "androidx.activity:activity-compose", version = "1.12.4" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
@@ -63,13 +63,13 @@ gson = { module = "com.google.code.gson:gson", version = "2.13.2" }
 collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.4.0" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor2", version.ref = "coil" }
-compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.10.2" }
+compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.10.3" }
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
 ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose" }
 ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
 webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "2.0.3" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.2" }
-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version = "1.10.2" }
+ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version = "1.10.3" }
 
 [bundles]
 coil = ["coil-compose", "coil-network"]
