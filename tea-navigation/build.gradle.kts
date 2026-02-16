@@ -31,7 +31,7 @@ plugins {
 kotlin {
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(libs.stdlib)
                 implementation(project(":tea-core"))
@@ -41,20 +41,20 @@ kotlin {
                 api(libs.collections.immutable)
             }
         }
-        val iosMain by getting {
+        iosMain {
             dependencies {
                 // todo consider replacing with implementation
                 api(libs.decompose.extensions)
                 api(libs.decompose.backHandler)
             }
         }
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
             }
         }
-        val jvmTest by getting {
+        jvmTest {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation(libs.junit)
