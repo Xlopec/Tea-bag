@@ -28,7 +28,7 @@ junit = { module = "junit:junit", version = "4.13.2" }
 junit-runner = { module = "io.kotlintest:kotlintest-runner-junit4", version = "3.4.2" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlin-test-annotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common" }
-compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version = "compose" }
+compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }
 android-test-orchestrator = { module = "androidx.test:orchestrator", version = "1.6.1" }
 turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -58,6 +58,7 @@ arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
 sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-driver-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+sqldelight-sqlight-dialect = { module = "app.cash.sqldelight:sqlite-3-18-dialect", version = "2.2.1" }
 desugar-jdk = { module = "com.android.tools:desugar_jdk_libs", version = "2.1.5" }
 gson = { module = "com.google.code.gson:gson", version = "2.13.2" }
 collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.4.0" }
@@ -69,7 +70,7 @@ ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "co
 ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
 webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "2.0.3" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.2" }
-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version = "1.10.3" }
+ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose" }
 
 [bundles]
 coil = ["coil-compose", "coil-network"]

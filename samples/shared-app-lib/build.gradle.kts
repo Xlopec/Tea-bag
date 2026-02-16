@@ -155,62 +155,11 @@ tasks.named<TestReport>("allTests").configure {
     configureOutputLocation(testReportsDir("multiplatform"))
 }
 
-//afterEvaluate {
-    tasks.withType<Test>().configureEach {
-        configureOutputLocation(testReportsDir(name, "html"), testReportsDir(name, "xml"))
-    }
-//}
-
-/*android {
-    compileSdk = 36
-    namespace = "io.github.xlopec.shared"
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    defaultConfig {
-        minSdk = 21
-        consumerProguardFile("proguard-rules.pro")
-    }
-
-    *//*sourceSets {
-
-        maybeCreate("remote")
-            .java.srcDirs("remote/kotlin", "main/kotlin")
-
-        maybeCreate("default")
-            .java.srcDirs("default/kotlin", "main/kotlin")
-    }*//*
-
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    *//*flavorDimensions += "remote"
-    productFlavors {
-
-        create("remote") {
-            dimension = "remote"
-        }
-
-        create("default") {
-            dimension = "remote"
-        }
-    }*//*
-
-    dependencies {
-        //remoteApi(project(":tea-time-travel"))
-        //remoteApi(project(":tea-time-travel-adapter-gson"))
-        //remoteImplementation(libs.gson)
-      //  debugImplementation(compose.uiTooling)
-        coreLibraryDesugaring(libs.desugar.jdk)
-    }
-}*/
+tasks.withType<Test>().configureEach {
+    configureOutputLocation(testReportsDir(name, "html"), testReportsDir(name, "xml"))
+}
 
 dependencies {
-    //remoteApi(project(":tea-time-travel"))
-    //remoteApi(project(":tea-time-travel-adapter-gson"))
-    //remoteImplementation(libs.gson)
-    //  debugImplementation(compose.uiTooling)
     coreLibraryDesugaring(libs.desugar.jdk)
     androidRuntimeClasspath(libs.ui.tooling)
 }
@@ -219,7 +168,7 @@ sqldelight {
     databases {
         create("AppDatabase") {
             packageName.set("io.github.xlopec.reader.app.storage")
-            dialect("app.cash.sqldelight:sqlite-3-18-dialect:2.2.1")
+            dialect(libs.sqldelight.sqlight.dialect)
         }
     }
 }
