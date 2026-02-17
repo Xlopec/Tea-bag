@@ -97,7 +97,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     needs: Check
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v5
         with:
@@ -130,7 +130,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     needs: [Unit-tests, IOS-app-build]
-    runs-on: macos-14
+    runs-on: macos-15
     # tags should be of the form:
     # <no-value> -> dev build
     # v1.2.3-alpha1 -> alpha build
