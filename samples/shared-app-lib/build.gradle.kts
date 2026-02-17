@@ -78,6 +78,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "SharedAppLib"
             isStatic = true
+            binaryOption("bundleId", "io.github.xlopec.shared")
         }
     }
 
