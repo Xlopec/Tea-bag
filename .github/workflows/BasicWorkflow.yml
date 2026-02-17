@@ -89,7 +89,7 @@ jobs:
         with:
           project: samples/iosApp/iosApp.xcodeproj
           scheme: iosApp
-          destination: 'platform=iOS Simulator,name=iPhone 17'
+          destination: 'platform=iOS Simulator,name=iPhone 16'
           configuration: Debug
           action: build
 
