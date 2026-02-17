@@ -24,37 +24,37 @@
 
 plugins {
     id("published-multiplatform-library-convention")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(libs.stdlib)
                 implementation(project(":tea-core"))
-                api(compose.ui)
-                api(compose.runtime)
-                api(compose.foundation)
+                api(libs.compose.ui)
+                api(libs.compose.runtime)
+                api(libs.compose.foundation)
                 api(libs.collections.immutable)
             }
         }
-        val iosMain by getting {
+        iosMain {
             dependencies {
                 // todo consider replacing with implementation
                 api(libs.decompose.extensions)
                 api(libs.decompose.backHandler)
             }
         }
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
             }
         }
-        val jvmTest by getting {
+        jvmTest {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation(libs.junit)

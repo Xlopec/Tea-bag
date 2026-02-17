@@ -97,10 +97,10 @@ import io.github.xlopec.reader.app.ui.misc.SearchHeader
 import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.toExternalValue
 
-internal const val ProgressIndicatorTag = "Progress Indicator"
+public const val ProgressIndicatorTag: String = "Progress Indicator"
 
 @Composable
-internal fun Articles(
+public fun Articles(
     state: ArticlesState,
     listState: LazyListState,
     modifier: Modifier = Modifier,
@@ -128,9 +128,9 @@ internal fun Articles(
     }
 }
 
-internal fun ArticleTestTag(
+public fun ArticleTestTag(
     url: Url,
-) = "Article $url"
+): String = "Article $url"
 
 private fun LazyListScope.articleItems(
     screen: ArticlesState,

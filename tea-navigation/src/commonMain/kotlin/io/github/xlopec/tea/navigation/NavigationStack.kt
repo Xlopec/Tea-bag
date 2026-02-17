@@ -41,7 +41,7 @@ public class NavigationStack<out T> internal constructor(
 /**
  * Creates a new navigation stack
  */
-public fun <R, T : NavStackEntry<R>> stackOf(
+public fun <R : Any, T : NavStackEntry<R>> stackOf(
     top: T,
     vararg other: T,
 ): NavigationStack<T> = NavigationStack(persistentListOf(top, *other))
@@ -49,7 +49,7 @@ public fun <R, T : NavStackEntry<R>> stackOf(
 /**
  * Creates a new navigation stack
  */
-public fun <R, T : NavStackEntry<R>> stackOf(
+public fun <R : Any, T : NavStackEntry<R>> stackOf(
     top: T,
     other: Collection<T>,
 ): NavigationStack<T> = NavigationStack(persistentListOf(top) + other)
@@ -57,11 +57,11 @@ public fun <R, T : NavStackEntry<R>> stackOf(
 /**
  * Creates a new navigation stack
  */
-public fun <R, T : NavStackEntry<R>> stackOf(
+public fun <R : Any, T : NavStackEntry<R>> stackOf(
     top: T,
 ): NavigationStack<T> = NavigationStack(persistentListOf(top))
 
 /**
  * Converts list to navigation stack or returns null if the list is null
  */
-public fun <R, T : NavStackEntry<R>> List<T>.toStackOrNull(): NavigationStack<T>? = firstOrNull()?.let { stackOf(it, drop(1)) }
+public fun <R : Any, T : NavStackEntry<R>> List<T>.toStackOrNull(): NavigationStack<T>? = firstOrNull()?.let { stackOf(it, drop(1)) }

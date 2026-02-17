@@ -23,24 +23,24 @@
  */
 
 plugins {
-    id("published-multiplatform-library-convention")
+    id("multiplatform-library-convention")
 }
 
 kotlin {
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(libs.stdlib)
             }
         }
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
             }
         }
-        val jvmTest by getting {
+        jvmTest {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation(libs.junit)

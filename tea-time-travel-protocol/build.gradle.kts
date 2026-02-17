@@ -29,9 +29,8 @@ plugins {
 kotlin {
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
-                implementation(project(":tea-data"))
                 implementation(libs.stdlib)
                 implementation(libs.kotlinx.datetime)
             }

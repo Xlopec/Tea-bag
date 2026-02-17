@@ -22,14 +22,11 @@
  * SOFTWARE.
  */
 
-import org.jetbrains.dokka.gradle.DokkaTask
-import java.net.URL
-
 plugins {
     kotlin("jvm")
     `maven-publish`
     id("signing-convention")
-    id("org.jetbrains.dokka")
+    id("documented-convention")
 }
 
 version = libraryVersion.toVersionName()
@@ -52,7 +49,7 @@ val packSourcesJar by tasks.registering(Jar::class) {
 }
 
 val packJavadocJar by tasks.registering(Jar::class) {
-    dependsOn(tasks.named("dokkaHtml"))
+    dependsOn(tasks.named("dokkaGeneratePublicationHtml"))
     archiveClassifier.set("javadoc")
     from(documentationDir)
 
@@ -88,24 +85,4 @@ publishing {
 artifacts {
     archives(packSourcesJar)
     archives(packJavadocJar)
-}
-
-tasks.withType<DokkaTask>().configureEach {
-    outputDirectory.set(documentationDir)
-
-    dokkaSourceSets {
-        named("main") {
-            reportUndocumented.set(true)
-            includeNonPublic.set(false)
-            skipEmptyPackages.set(true)
-
-            linkSourcesForSourceSet(project, "main")
-            externalDocumentationLink(
-                URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/")
-            )
-            externalDocumentationLink(
-                URL("https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/")
-            )
-        }
-    }
 }

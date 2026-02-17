@@ -22,19 +22,17 @@
  * SOFTWARE.
  */
 
-import org.jetbrains.dokka.gradle.DokkaTask
-
 plugins {
     `maven-publish`
     id("signing-convention")
-    id("org.jetbrains.dokka")
+    id("documented-convention")
 }
 
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
 
 val packJavadocJar by tasks.registering(Jar::class) {
-    dependsOn(tasks.named("dokkaHtml"))
+    dependsOn(tasks.named("dokkaGeneratePublicationHtml"))
     archiveClassifier.set("javadoc")
     from(documentationDir)
 
@@ -63,10 +61,6 @@ publishing {
     repositories {
         mavenLocal()
     }
-}
-
-tasks.withType<DokkaTask>().configureEach {
-    outputDirectory.set(documentationDir)
 }
 
 val signingTasks = tasks.withType<Sign>()

@@ -1,5 +1,3 @@
-import org.jetbrains.compose.ExperimentalComposeLibrary
-
 /*
  * MIT License
  *
@@ -25,9 +23,10 @@ import org.jetbrains.compose.ExperimentalComposeLibrary
  */
 
 plugins {
-    id("android-app-convention")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.kotlin.android.temp)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -39,13 +38,13 @@ android {
             keyAlias = getenvSafe("KEY_ALIAS")
         }
     }
-    compileSdk = 35
+    compileSdk = 36
     namespace = "io.github.xlopec.reader"
 
     defaultConfig {
         applicationId = "io.github.xlopec.news.reader"
-        minSdk = 21
-        targetSdk = 35
+        minSdk = 23
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -60,9 +59,9 @@ android {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
         managedDevices {
             localDevices {
-                create("pixel2api30") {
+                create("pixel2api36") {
                     device = "Pixel 2"
-                    apiLevel = 30
+                    apiLevel = 36
                     systemImageSource = "aosp-atd"
                 }
             }
@@ -98,7 +97,6 @@ android {
     buildFeatures {
         compose = true
         aidl = false
-        renderScript = false
         resValues = false
         shaders = false
         buildConfig = true
@@ -118,19 +116,19 @@ android {
         }
     }
 
-    androidComponents {
-        beforeVariants(selector().withName("remoteRelease")) { builder ->
-            builder.enable = false
-        }
-    }
-
     sourceSets {
 
         maybeCreate("remote")
-            .java.srcDirs("remote/kotlin", "main/kotlin")
+            .java.directories.addAll(listOf("remote/kotlin", "main/kotlin"))
 
         maybeCreate("default")
-            .java.srcDirs("default/kotlin", "main/kotlin")
+            .java.directories.addAll(listOf("default/kotlin", "main/kotlin"))
+    }
+}
+
+androidComponents {
+    beforeVariants(selector().withName("remoteRelease")) { builder ->
+        builder.enable = false
     }
 }
 
@@ -144,7 +142,7 @@ dependencies {
 
     implementation(project(":tea-core"))
     implementation(project(":samples:shared-app-lib"))
-    remoteImplementation(project(":samples:shared-app-lib"))
+    remoteImplementation(project(":samples:shared-app-lib-remote"))
 
     coreLibraryDesugaring(libs.desugar.jdk)
 
@@ -157,9 +155,8 @@ dependencies {
     testImplementation(libs.kotlinx.datetime)
     androidTestImplementation(project(":tea-data"))
     androidTestImplementation(libs.kotlinx.datetime)
+    androidTestImplementation(libs.ui.test.junit4)
 
     androidTestUtil(libs.android.test.orchestrator)
-    @OptIn(ExperimentalComposeLibrary::class)
-    androidTestImplementation(compose.uiTest)
     debugImplementation(libs.compose.test.manifest)
 }

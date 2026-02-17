@@ -1,3 +1,7 @@
+import gradle.kotlin.dsl.accessors._b5fa57b50bd07a92cb9fecc2023336d1.dokkaSourceSets
+import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
+import java.net.URI
+
 /*
  * MIT License
  *
@@ -22,37 +26,28 @@
  * SOFTWARE.
  */
 
-@file:Suppress("UnstableApiUsage")
-
-rootProject.name = "Tea-bag"
-
-pluginManagement {
-    includeBuild("convention-plugins")
-    repositories {
-        gradlePluginPortal()
-        maven("https://maven.google.com/")
-    }
+plugins {
+    id("org.jetbrains.dokka")
 }
 
-include(
-    ":tea-core",
-    ":tea-time-travel",
-    ":tea-time-travel-protocol",
-    ":tea-time-travel-adapter-gson",
-    ":tea-data",
-    ":tea-navigation",
-    ":samples:app",
-    ":samples:shared-app-lib",
-    ":samples:shared-app-lib-remote",
-    ":samples:counter",
-)
+dokka {
+    dokkaPublications.all {
+        outputDirectory.set(documentationDir)
+    }
 
-dependencyResolutionManagement {
-    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+    dokkaSourceSets {
+        configureEach {
+            sourceLink {
+                localDirectory.set(project.file("src/${this@configureEach.name}/kotlin"))
+                remoteUrl.set(
+                    URI("https://github.com/Xlopec/Tea-bag/tree/$branchOrDefault/${project.name}/src/${this@configureEach.name}/kotlin")
+                )
+                remoteLineSuffix.set("#L")
+            }
 
-    repositories {
-        mavenCentral()
-        google()
-        maven("https://packages.jetbrains.team/maven/p/kpm/public/")
+            reportUndocumented.set(true)
+            documentedVisibilities.set(setOf(VisibilityModifier.Public))
+            skipEmptyPackages.set(true)
+        }
     }
 }

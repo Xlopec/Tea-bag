@@ -100,10 +100,10 @@ public object UrlSerializer : KSerializer<Url> {
     override fun deserialize(decoder: Decoder): Url = UrlFor(decoder.decodeString())
 }
 
-internal fun LocalDateTime.toJson(): String = toInstant(TimeZone.UTC)
+public fun LocalDateTime.toJson(): String = toInstant(TimeZone.UTC)
     .format(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
 
-internal fun String.toDate(): LocalDateTime {
+public fun String.toDate(): LocalDateTime {
     return Instant.parse(this, DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
         .toLocalDateTime(TimeZone.currentSystemDefault())
 }

@@ -89,10 +89,6 @@ internal fun Title.Companion.isValid(
     return s.isNonEmpty()
 }
 
-internal fun Title.Companion.tryCreate(
-    s: String?,
-) = if (isValid(s)) Title(s) else null
-
 internal fun Author.Companion.isValid(
     s: String?,
 ): Boolean {

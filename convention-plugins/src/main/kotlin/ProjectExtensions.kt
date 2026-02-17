@@ -23,9 +23,7 @@
  */
 
 import org.gradle.api.Project
-import org.jetbrains.dokka.gradle.GradleDokkaSourceSetBuilder
 import java.io.File
-import java.net.URL
 
 val DefaultOptIns = listOf(
     "kotlin.RequiresOptIn",
@@ -42,17 +40,4 @@ fun Project.installGitHooks() = afterEvaluate {
             f.copyTo(target, overwrite = true)
             target.setExecutable(true, false)
         }
-}
-
-fun Project.sourceSetDir(
-    sourceSetName: String
-): File = file("src/$sourceSetName/kotlin")
-
-fun GradleDokkaSourceSetBuilder.linkSourcesForSourceSet(
-    project: Project,
-    sourceSetName: String
-) = sourceLink {
-    localDirectory.set(project.file("src/$sourceSetName/kotlin"))
-    remoteUrl.set(URL("https://github.com/Xlopec/Tea-bag/tree/$branchOrDefault/${project.name}/src/$sourceSetName/kotlin"))
-    remoteLineSuffix.set("#L")
 }

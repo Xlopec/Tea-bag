@@ -28,7 +28,6 @@ package io.github.xlopec.tea.time.travel.gson.serialization.data
 
 import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.UrlFor
-import kotlin.jvm.JvmInline
 import kotlin.uuid.Uuid
 
 data class User(
@@ -57,5 +56,3 @@ value class Photo(
 )
 
 fun Photo(urlSpec: String) = Photo(UrlFor(urlSpec))
-
-fun Avatar(s: String) = UrlFor(s)
