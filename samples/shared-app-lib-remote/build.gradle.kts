@@ -23,8 +23,8 @@
  */
 
 plugins {
-    id("com.android.built-in-kotlin")
-    id("com.android.library")
+    alias(libs.plugins.kotlin.android.temp)
+    alias(libs.plugins.android.library)
 }
 
 android {

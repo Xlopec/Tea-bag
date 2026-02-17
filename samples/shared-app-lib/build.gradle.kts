@@ -24,11 +24,11 @@
 
 plugins {
     id("multiplatform-convention")
-    id("com.android.kotlin.multiplatform.library")
-    id("app.cash.sqldelight")
-    kotlin("plugin.serialization")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.sqldelight)
+    alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.compiler)
 }
 
 version = "1.0.0"

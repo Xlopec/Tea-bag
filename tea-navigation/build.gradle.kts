@@ -24,8 +24,8 @@
 
 plugins {
     id("published-multiplatform-library-convention")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
