@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
-
 /*
  * MIT License
  *
@@ -49,10 +47,6 @@ kotlinMultiplatform {
         compilerOptions {
             freeCompilerArgs.add("-Xexport-kdoc")
         }
-    }
-
-    targets.withType(KotlinNativeTargetWithSimulatorTests::class.java) {
-        testRuns["test"].deviceId = "iPhone 16"
     }
 }
 
