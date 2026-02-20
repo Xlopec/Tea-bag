@@ -34,9 +34,8 @@ import java.net.URI
 import java.nio.file.Paths
 
 const val CommitHashLength = 6
-const val SonatypeProfileId = "1c78bd5d6fbb0c"
-val NexusUrl = URI("https://s01.oss.sonatype.org/service/local/")
-val SnapshotNexusUrl = URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+val NexusUrl = URI("https://ossrh-staging-api.central.sonatype.com/service/local/")
+val SnapshotNexusUrl = URI("https://central.sonatype.com/repository/maven-snapshots/")
 
 private const val RefBranch = "refs/heads/"
 private const val RefTag = "refs/tags/"
@@ -114,12 +113,6 @@ val Project.detektBaseline: File
 
 val Project.metricsDir: Provider<out Directory>
     get() = layout.buildDirectory.map { it.dir("compose_metrics") }
-
-val Project.hasKotlinMultiplatformPlugin: Boolean
-    get() = plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")
-
-val Project.hasKotlinJvmPlugin: Boolean
-    get() = plugins.hasPlugin("org.jetbrains.kotlin.jvm")
 
 val localBranch: String?
     get() = ProcessBuilder("git", "rev-parse", "--abbrev-ref", "HEAD")

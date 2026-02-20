@@ -24,8 +24,6 @@
 
 @file:Suppress("FunctionName")
 
-import java.net.URI
-
 /*
 * MIT License
 *
@@ -185,12 +183,6 @@ fun Version.toVersionName(): String =
         is Alpha -> "${mainVersion.versionName}-alpha$alpha"
         is ReleaseCandidate -> "${mainVersion.versionName}-${alpha?.let { "alpha$it-" } ?: ""}rc$candidate"
         is Stable -> mainVersion.versionName
-    }
-
-fun Version.toOssrhDeploymentUri(): URI =
-    when (this) {
-        is Snapshot -> URI("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-        is Alpha, is Stable, is ReleaseCandidate -> URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
     }
 
 val MajorMinorPatch.versionName

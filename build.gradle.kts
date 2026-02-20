@@ -46,7 +46,6 @@ group = "io.github.xlopec"
 nexusPublishing {
     repositories {
         sonatype {
-            stagingProfileId.set(SonatypeProfileId)
             nexusUrl.set(NexusUrl)
             snapshotRepositoryUrl.set(SnapshotNexusUrl)
             username.set(project.ossrhUser)
