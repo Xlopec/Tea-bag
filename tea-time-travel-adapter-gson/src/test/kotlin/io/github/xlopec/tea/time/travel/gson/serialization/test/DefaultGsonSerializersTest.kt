@@ -27,11 +27,10 @@ package io.github.xlopec.tea.time.travel.gson.serialization.test
 import com.google.gson.JsonNull
 import com.google.gson.JsonPrimitive
 import com.google.gson.reflect.TypeToken
-import io.github.xlopec.tea.data.Id
-import io.github.xlopec.tea.data.Name
-import io.github.xlopec.tea.data.Photo
-import io.github.xlopec.tea.data.UUID
-import io.github.xlopec.tea.data.User
+import io.github.xlopec.tea.time.travel.gson.serialization.data.Id
+import io.github.xlopec.tea.time.travel.gson.serialization.data.Name
+import io.github.xlopec.tea.time.travel.gson.serialization.data.Photo
+import io.github.xlopec.tea.time.travel.gson.serialization.data.User
 import io.github.xlopec.tea.time.travel.gson.Gson
 import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
 import io.github.xlopec.tea.time.travel.gson.serialization.data.Singleton
@@ -44,12 +43,13 @@ import io.github.xlopec.tea.time.travel.protocol.NotifyComponentAttached
 import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
 import io.github.xlopec.tea.time.travel.protocol.NotifyServer
 import io.github.xlopec.tea.time.travel.protocol.ServerMessage
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertNull
+import kotlin.uuid.Uuid
 
 @RunWith(JUnit4::class)
 internal class DefaultGsonSerializersTest {
@@ -57,7 +57,7 @@ internal class DefaultGsonSerializersTest {
     private val gsonSerializer = Gson()
 
     private val testUser = User(
-        Id(UUID.randomUUID()),
+        Id(Uuid.random()),
         Name("John"),
         listOf(
             Photo("https://www.google.com"),
@@ -211,7 +211,7 @@ internal class DefaultGsonSerializersTest {
     fun `test NotifyServer gets serialized correctly`() = with(gsonSerializer) {
 
         val message = NotifyServer(
-            UUID.randomUUID(),
+            Uuid.random(),
             ComponentId("some"),
             NotifyComponentAttached(toJsonTree(testUser), setOf())
         )
@@ -227,7 +227,7 @@ internal class DefaultGsonSerializersTest {
 private fun NotifyClient(
     message: GsonClientMessage
 ) = NotifyClient(
-    UUID.randomUUID(),
+    Uuid.random(),
     ComponentId("test"),
     message
 )

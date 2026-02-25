@@ -23,14 +23,14 @@
  */
 
 plugins {
-    `published-jvm-library-convention`
+    id("published-jvm-library-convention")
 }
 
 tasks.test {
     useJUnit()
 }
 
-val allTests by tasks.creating(Task::class) {
+val allTests by tasks.registering(Task::class) {
     dependsOn("test")
 }
 
@@ -39,12 +39,15 @@ dependencies {
     api(project(":tea-time-travel-protocol"))
     api(libs.gson)
     implementation(project(":tea-data"))
+    implementation(libs.kotlinx.datetime)
     implementation(libs.stdlib.reflect)
 
     implementation(libs.stdlib)
 
-    testImplementation(project(":tea-test"))
     testImplementation(project(":tea-time-travel-protocol"))
     testImplementation(libs.collections.immutable)
     testImplementation(libs.junit)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlin.test.annotations)
 }

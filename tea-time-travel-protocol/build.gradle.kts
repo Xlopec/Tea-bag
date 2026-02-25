@@ -23,16 +23,16 @@
  */
 
 plugins {
-    `published-multiplatform-library-convention`
+    id("published-multiplatform-library-convention")
 }
 
 kotlin {
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
-                implementation(project(":tea-data"))
                 implementation(libs.stdlib)
+                implementation(libs.kotlinx.datetime)
             }
         }
     }

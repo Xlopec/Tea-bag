@@ -48,6 +48,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.abs
 import kotlin.test.assertNotEquals
+import kotlin.time.Duration.Companion.milliseconds
 
 const val TestTimeoutMillis = 10 * 1000L
 
@@ -63,7 +64,7 @@ fun runTestCancellingChildren(
     context: CoroutineContext = EmptyCoroutineContext,
     dispatchTimeoutMs: Long = TestTimeoutMillis,
     testBody: suspend TestScope.() -> Unit,
-): TestResult = runTest(context, dispatchTimeoutMs) {
+): TestResult = runTest(context, timeout = dispatchTimeoutMs.milliseconds) {
     testBody()
     job.cancelChildren()
 }

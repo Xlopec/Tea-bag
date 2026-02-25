@@ -26,7 +26,7 @@
 
 package io.github.xlopec.tea.time.travel.protocol
 
-import io.github.xlopec.tea.data.UUID
+import kotlin.uuid.Uuid
 
 /**
  * Message that notifies a debug server about component's state changes
@@ -37,7 +37,7 @@ import io.github.xlopec.tea.data.UUID
  * @param J json specific implementation
  */
 public data class NotifyServer<out J>(
-    val messageId: UUID,
+    val messageId: Uuid,
     val componentId: ComponentId,
     val payload: ServerMessage<J>,
 )
@@ -51,7 +51,7 @@ public data class NotifyServer<out J>(
  * @param J json specific implementation
  */
 public data class NotifyClient<out J>(
-    val id: UUID,
+    val id: Uuid,
     val component: ComponentId,
     val message: ClientMessage<J>,
 )

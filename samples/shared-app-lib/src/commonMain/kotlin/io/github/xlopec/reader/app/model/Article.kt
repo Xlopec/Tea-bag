@@ -26,8 +26,8 @@
 package io.github.xlopec.reader.app.model
 
 import androidx.compose.runtime.Immutable
-import io.github.xlopec.tea.data.Date
 import io.github.xlopec.tea.data.Url
+import kotlinx.datetime.LocalDateTime
 import kotlin.contracts.contract
 import kotlin.jvm.JvmInline
 
@@ -38,7 +38,7 @@ public data class Article(
     val author: Author?,
     val description: Description?,
     val urlToImage: Url?,
-    val published: Date,
+    val published: LocalDateTime,
     val isFavorite: Boolean,
     val source: SourceId?
 )
@@ -88,10 +88,6 @@ internal fun Title.Companion.isValid(
 
     return s.isNonEmpty()
 }
-
-internal fun Title.Companion.tryCreate(
-    s: String?,
-) = if (isValid(s)) Title(s) else null
 
 internal fun Author.Companion.isValid(
     s: String?,

@@ -28,8 +28,8 @@ import io.github.xlopec.reader.app.model.Author
 import io.github.xlopec.reader.app.model.Description
 import io.github.xlopec.reader.app.model.SourceId
 import io.github.xlopec.reader.app.model.Title
-import io.github.xlopec.tea.data.Date
 import io.github.xlopec.tea.data.Url
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -43,7 +43,7 @@ public data class ArticleElement(
     val description: Description? = null,
     @SerialName("publishedAt")
     @Serializable(with = CommonDateSerializer::class)
-    val publishedAt: Date,
+    val publishedAt: LocalDateTime,
     @SerialName("title")
     @Serializable(with = TitleSerializer::class)
     val title: Title,

@@ -27,8 +27,10 @@
 rootProject.name = "Tea-bag"
 
 pluginManagement {
+    includeBuild("convention-plugins")
     repositories {
         gradlePluginPortal()
+        maven("https://maven.google.com/")
     }
 }
 
@@ -36,20 +38,21 @@ include(
     ":tea-core",
     ":tea-time-travel",
     ":tea-time-travel-protocol",
-    ":tea-time-travel-plugin",
-    ":tea-test",
     ":tea-time-travel-adapter-gson",
     ":tea-data",
     ":tea-navigation",
     ":samples:app",
     ":samples:shared-app-lib",
+    ":samples:shared-app-lib-remote",
     ":samples:counter",
 )
 
-includeBuild("compose-jetbrains-theme") {
-    dependencySubstitution {
-        substitute(module("com.bybutter.compose:compose-jetbrains-theme")).using(project(":"))
+dependencyResolutionManagement {
+    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+
+    repositories {
+        mavenCentral()
+        google()
+        maven("https://packages.jetbrains.team/maven/p/kpm/public/")
     }
 }
-
-dependencyResolutionManagement {}

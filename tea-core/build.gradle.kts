@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 /*
  * MIT License
  *
@@ -25,11 +23,13 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
  */
 
 plugins {
-    `published-multiplatform-library-convention`
+    id("published-multiplatform-library-convention")
 }
 
-val prepareTestJar by tasks.creating(Jar::class) {
-    from(sourceSets.named("test").get().output)
+// see https://youtrack.jetbrains.com/issue/KT-35073
+// https://youtrack.jetbrains.com/issue/KT-63142/Add-support-for-Gradle-Test-Fixtures-in-non-JVM-platforms
+val prepareTestJar by tasks.registering(Jar::class) {
+    from(sourceSets.named("jvmTest").get().output)
     archiveClassifier.set("test")
 }
 
@@ -41,7 +41,6 @@ artifacts {
     add("testOutput", prepareTestJar)
 }
 
-@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     compilerOptions {
         optIn.addAll(
@@ -55,14 +54,14 @@ kotlin {
 
     sourceSets {
 
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 api(libs.coroutines.core)
                 implementation(libs.stdlib)
             }
         }
 
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)

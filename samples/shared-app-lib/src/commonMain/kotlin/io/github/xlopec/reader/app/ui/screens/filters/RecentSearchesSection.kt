@@ -24,7 +24,6 @@
 
 package io.github.xlopec.reader.app.ui.screens.filters
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -60,7 +59,7 @@ import kotlin.math.abs
 
 private val RecentSearchSwipeThreshold = 120.dp
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 internal fun LazyListScope.recentSearchesSection(
     suggestions: List<Query>,
     childTransitionState: ChildTransitionState,
@@ -89,7 +88,7 @@ internal fun LazyListScope.recentSearchesSection(
         SwipeToDismiss(
             modifier = Modifier.fillParentMaxWidth()
                 .clickable { onSelect(item) }
-                .animateItemPlacement()
+                .animateItem()
                 .alpha(childTransitionState.contentAlpha)
                 .offset(y = childTransitionState.listItemOffsetY),
             state = dismissState,

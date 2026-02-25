@@ -29,15 +29,15 @@ import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.feature.navigation.AppNavigationStack
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
-import io.github.xlopec.tea.data.UUID
 import io.github.xlopec.tea.navigation.mutate
 import io.github.xlopec.tea.navigation.screen
 import io.github.xlopec.tea.navigation.stackOf
+import kotlin.uuid.Uuid
 
-public typealias ScreenId = UUID
+public typealias ScreenId = Uuid
 
 @Immutable
-public data class AppState internal constructor(
+public data class AppState(
     val settings: Settings,
     val screens: AppNavigationStack,
 ) {
@@ -51,7 +51,7 @@ public data class AppState internal constructor(
 public inline val AppState.screen: Screen
     get() = screens.screen
 
-public inline fun <reified T : Screen> AppState.updateScreen(
+internal inline fun <reified T : Screen> AppState.updateScreen(
     id: ScreenId? = null,
     noinline how: (T) -> Update<T, Command>,
 ): Update<AppState, Command> {

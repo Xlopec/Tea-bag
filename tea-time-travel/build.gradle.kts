@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 /*
  * MIT License
  *
@@ -25,10 +23,9 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
  */
 
 plugins {
-    `published-multiplatform-library-convention`
+    id("published-multiplatform-library-convention")
 }
 
-@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     compilerOptions {
         optIn.addAll(
@@ -41,10 +38,11 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(project(":tea-core"))
                 implementation(project(":tea-data"))
+                implementation(libs.kotlinx.datetime)
                 implementation(project(":tea-time-travel-protocol"))
 
                 implementation(libs.arrow.core)
@@ -54,7 +52,7 @@ kotlin {
             }
         }
 
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
@@ -62,13 +60,13 @@ kotlin {
             }
         }
 
-        val jvmMain by getting {
+        jvmMain {
             dependencies {
                 implementation(libs.ktor.client.cio)
             }
         }
 
-        val jvmTest by getting {
+        jvmTest {
             dependencies {
                 implementation(project(":tea-time-travel-adapter-gson"))
                 implementation(project(":tea-core")) {
@@ -77,7 +75,7 @@ kotlin {
             }
         }
 
-        val iosMain by getting {
+        iosMain {
             dependencies {
                 implementation(libs.ktor.client.ios)
             }

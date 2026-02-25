@@ -27,7 +27,6 @@
 package io.github.xlopec.tea.time.travel.component
 
 import io.github.xlopec.tea.core.*
-import io.github.xlopec.tea.data.RandomUUID
 import io.github.xlopec.tea.time.travel.component.internal.mergeWith
 import io.github.xlopec.tea.time.travel.protocol.*
 import io.github.xlopec.tea.time.travel.session.*
@@ -36,6 +35,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.RENDEZVOUS
 import kotlinx.coroutines.flow.*
+import kotlin.uuid.Uuid
 
 /**
  * Creates new debuggable [component][Component]
@@ -133,7 +133,7 @@ private suspend fun <M, S, C, J> DebugSession<M, S, J>.notifyServer(
     env: DebugEnv<M, S, C, J>,
     snapshot: Snapshot<M, S, C>,
 ) = with(env.settings) {
-    invoke(NotifyServer(RandomUUID(), id, serializer.toServerMessage(snapshot)))
+    invoke(NotifyServer(Uuid.random(), id, serializer.toServerMessage(snapshot)))
 }
 
 private fun <M, S, C, J> JsonSerializer<J>.toServerMessage(

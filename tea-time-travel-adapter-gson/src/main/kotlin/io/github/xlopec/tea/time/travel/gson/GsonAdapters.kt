@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-@file:Suppress("UNCHECKED_CAST", "FunctionName")
+@file:Suppress("FunctionName")
 
 package io.github.xlopec.tea.time.travel.gson
 
@@ -34,28 +34,27 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import io.github.xlopec.tea.data.UUID
-import io.github.xlopec.tea.data.toHumanReadable
 import io.github.xlopec.tea.time.travel.protocol.ApplyMessage
 import io.github.xlopec.tea.time.travel.protocol.ApplyState
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.protocol.NotifyComponentAttached
 import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
 import java.lang.reflect.Type
+import kotlin.uuid.Uuid
 
-internal object UUIDAdapter : JsonSerializer<UUID>, JsonDeserializer<UUID> {
+internal object UUIDAdapter : JsonSerializer<Uuid>, JsonDeserializer<Uuid> {
 
     override fun serialize(
-        src: UUID,
+        src: Uuid,
         typeOfSrc: Type?,
         context: JsonSerializationContext
-    ): JsonElement = JsonPrimitive(src.toHumanReadable())
+    ): JsonElement = JsonPrimitive(src.toString())
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
         context: JsonDeserializationContext
-    ): UUID = UUID.fromString(json.asString)
+    ): Uuid = Uuid.parse(json.asString)
 }
 
 internal object ComponentIdAdapter : JsonSerializer<ComponentId>, JsonDeserializer<ComponentId> {

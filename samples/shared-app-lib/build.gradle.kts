@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 /*
  * MIT License
  *
@@ -26,17 +23,16 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
  */
 
 plugins {
-    kotlin("multiplatform")
-    id("com.android.library")
-    id("com.squareup.sqldelight")
-    kotlin("plugin.serialization")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.compose")
+    id("multiplatform-convention")
+    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.sqldelight)
+    alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.compiler)
 }
 
 version = "1.0.0"
 
-@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     explicitApi()
 
@@ -45,16 +41,27 @@ kotlin {
             "kotlinx.serialization.ExperimentalSerializationApi",
             "io.github.xlopec.tea.core.ExperimentalTeaApi",
         )
-
-        optIn.addAll(DefaultOptIns)
-
-        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    androidTarget {
-        publishAllLibraryVariants()
+    androidLibrary {
+        compileSdk = 36
+        minSdk = 23
+        namespace = "io.github.xlopec.shared"
+        enableCoreLibraryDesugaring = true
+
+        androidResources {
+            enable = true
+        }
+
         compilerOptions {
-            jvmTarget = JvmTarget.JVM_11
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
+
+        optimization {
+            consumerKeepRules.apply {
+                publish = true
+                file("proguard-rules.pro")
+            }
         }
     }
 
@@ -71,11 +78,8 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "SharedAppLib"
             isStatic = true
+            binaryOption("bundleId", "io.github.xlopec.shared")
         }
-    }
-
-    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests::class.java) {
-        testRuns["test"].deviceId = "iPhone 15"
     }
 
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
@@ -85,7 +89,7 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 api(project(":tea-core"))
                 api(project(":tea-data"))
@@ -93,14 +97,15 @@ kotlin {
                 api(libs.arrow.core)
                 api(libs.collections.immutable)
                 api(libs.coroutines.core)
-                api(compose.ui)
-                api(compose.runtime)
-                api(compose.foundation)
-                api(compose.components.uiToolingPreview)
-                implementation(compose.components.resources)
+                api(libs.compose.ui)
+                api(libs.compose.runtime)
+                api(libs.compose.foundation)
+                api(libs.compose.components.ui.tooling.preview)
+                api(libs.kotlinx.datetime)
+                implementation(libs.compose.components.resources)
                 implementation(libs.bundles.coil)
-                implementation(compose.material)
-                implementation(compose.materialIconsExtended)
+                implementation(libs.compose.material)
+                implementation(libs.compose.material.icons.extended)
                 implementation(libs.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.logging)
@@ -110,20 +115,20 @@ kotlin {
                 implementation(libs.settings.core)
                 implementation(libs.sqldelight.runtime)
                 implementation(libs.webview)
-                implementation(compose.runtime)
+                implementation(libs.compose.runtime)
+                implementation(libs.ui.tooling.preview)
             }
         }
 
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
             }
         }
 
-        val androidMain by getting {
+        androidMain {
             dependencies {
-                implementation(compose.preview)
                 implementation(libs.compose.fonts)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.client.logging)
@@ -134,21 +139,12 @@ kotlin {
             }
         }
 
-        val androidUnitTest by getting {
-            dependencies {
-                implementation(kotlin("test-junit"))
-                implementation(libs.junit)
-            }
-        }
-
-        val iosMain by getting {
+        iosMain {
             dependencies {
                 implementation(libs.ktor.client.ios)
                 implementation(libs.sqldelight.driver.native)
             }
         }
-
-        val iosTest by getting
     }
 }
 
@@ -156,59 +152,20 @@ tasks.named<TestReport>("allTests").configure {
     configureOutputLocation(testReportsDir("multiplatform"))
 }
 
-afterEvaluate {
-    tasks.withType<Test>().configureEach {
-        configureOutputLocation(testReportsDir(name, "html"), testReportsDir(name, "xml"))
-    }
+tasks.withType<Test>().configureEach {
+    configureOutputLocation(testReportsDir(name, "html"), testReportsDir(name, "xml"))
 }
 
-android {
-    compileSdk = 33
-    namespace = "io.github.xlopec.shared"
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    defaultConfig {
-        minSdk = 21
-        consumerProguardFile("proguard-rules.pro")
-    }
-
-    sourceSets {
-
-        maybeCreate("remote")
-            .java.srcDirs("remote/kotlin", "main/kotlin")
-
-        maybeCreate("default")
-            .java.srcDirs("default/kotlin", "main/kotlin")
-    }
-
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    flavorDimensions += "remote"
-    productFlavors {
-
-        create("remote") {
-            dimension = "remote"
-        }
-
-        create("default") {
-            dimension = "remote"
-        }
-    }
-
-    dependencies {
-        remoteApi(project(":tea-time-travel"))
-        remoteApi(project(":tea-time-travel-adapter-gson"))
-        remoteImplementation(libs.gson)
-        debugImplementation(compose.uiTooling)
-        coreLibraryDesugaring(libs.desugar.jdk)
-    }
+dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk)
+    androidRuntimeClasspath(libs.ui.tooling)
 }
 
 sqldelight {
-    database("AppDatabase") {
-        packageName = "io.github.xlopec.reader.app.storage"
+    databases {
+        create("AppDatabase") {
+            packageName.set("io.github.xlopec.reader.app.storage")
+            dialect(libs.sqldelight.sqlight.dialect)
+        }
     }
 }

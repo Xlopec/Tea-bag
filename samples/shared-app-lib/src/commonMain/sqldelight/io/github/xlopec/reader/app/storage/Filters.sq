@@ -6,7 +6,7 @@ CREATE TABLE Filter(
 CREATE TABLE Source(
   source TEXT NOT NULL PRIMARY KEY, -- source id
   type INTEGER NOT NULL,
-  FOREIGN KEY (type) REFERENCES Filter ON DELETE CASCADE
+  FOREIGN KEY (type) REFERENCES Filter(type) ON DELETE CASCADE
 );
 
 insertFilter:

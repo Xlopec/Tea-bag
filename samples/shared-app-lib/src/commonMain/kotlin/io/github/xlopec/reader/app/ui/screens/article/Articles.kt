@@ -55,14 +55,11 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextAlign
@@ -100,10 +97,10 @@ import io.github.xlopec.reader.app.ui.misc.SearchHeader
 import io.github.xlopec.tea.data.Url
 import io.github.xlopec.tea.data.toExternalValue
 
-internal const val ProgressIndicatorTag = "Progress Indicator"
+public const val ProgressIndicatorTag: String = "Progress Indicator"
 
 @Composable
-internal fun Articles(
+public fun Articles(
     state: ArticlesState,
     listState: LazyListState,
     modifier: Modifier = Modifier,
@@ -131,9 +128,9 @@ internal fun Articles(
     }
 }
 
-internal fun ArticleTestTag(
+public fun ArticleTestTag(
     url: Url,
-) = "Article $url"
+): String = "Article $url"
 
 private fun LazyListScope.articleItems(
     screen: ArticlesState,
@@ -393,7 +390,6 @@ private fun ArticlesError(
 }
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 internal fun ArticleSearchHeader(
     state: ArticlesState,
     onMessage: MessageHandler,
@@ -401,29 +397,25 @@ internal fun ArticleSearchHeader(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    CompositionLocalProvider(
-        LocalTextInputService provides null
-    ) {
-        SearchHeader(
-            inputText = state.filter.query?.value ?: "",
-            placeholderText = state.filter.type.toSearchHint(),
-            onQueryUpdate = { },
-            onSearch = {
-                keyboardController?.hide()
-                onMessage(LoadArticles(state.id))
-            },
-            onFocusChanged = { focusState ->
-                if (focusState.isFocused) {
-                    onMessage(
-                        NavigateToFilters(
-                            state.id,
-                            state.filter,
-                        )
+    SearchHeader(
+        inputText = state.filter.query?.value ?: "",
+        placeholderText = state.filter.type.toSearchHint(),
+        onQueryUpdate = { },
+        onSearch = {
+            keyboardController?.hide()
+            onMessage(LoadArticles(state.id))
+        },
+        onFocusChanged = { focusState ->
+            if (focusState.isFocused) {
+                onMessage(
+                    NavigateToFilters(
+                        state.id,
+                        state.filter,
                     )
-                }
+                )
             }
-        )
-    }
+        }
+    )
 }
 
 private val CardElevation = 4.dp

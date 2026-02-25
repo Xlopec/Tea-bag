@@ -1,5 +1,5 @@
 package io.github.xlopec.reader.app.model
 
-import io.github.xlopec.tea.data.Date
+import kotlinx.datetime.LocalDateTime
 
-public expect fun Date.formatted(): String
+public expect fun LocalDateTime.formatted(): String

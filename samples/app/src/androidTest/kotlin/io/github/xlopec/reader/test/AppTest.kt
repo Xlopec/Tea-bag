@@ -33,6 +33,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import io.github.xlopec.reader.app.AppComponent
 import io.github.xlopec.reader.app.AppInitializer
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
+import io.github.xlopec.reader.app.feature.navigation.Tab
 import io.github.xlopec.reader.app.feature.network.ArticleElement
 import io.github.xlopec.reader.app.feature.network.SourceElement
 import io.github.xlopec.reader.app.model.Author
@@ -49,15 +50,14 @@ import io.github.xlopec.reader.app.ui.screens.article.ProgressIndicatorTag
 import io.github.xlopec.reader.app.ui.theme.AppTheme
 import io.github.xlopec.reader.environment.ArticleResponse
 import io.github.xlopec.reader.environment.anyArticleRequest
+import io.github.xlopec.reader.environment.invoke
 import io.github.xlopec.reader.environment.setTestContent
 import io.github.xlopec.tea.core.ExperimentalTeaApi
-import io.github.xlopec.tea.core.toStatesComponent
-import io.github.xlopec.tea.data.RandomUUID
+import io.github.xlopec.tea.data.Url
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.datetime.LocalDateTime
 import org.junit.Rule
 import org.junit.Test
-import java.net.URI
-import java.util.*
 
 internal class AppTest {
 
@@ -70,7 +70,7 @@ internal class AppTest {
             AppTheme(isDarkModeEnabled = true) {
                 Articles(
                     state = ArticlesState.newLoading(
-                        id = RandomUUID(),
+                        tab = Tab.Feed,
                         filter = Filter(Regular, Query.of("Input text")),
                         articles = persistentListOf()
                     ),
@@ -94,7 +94,7 @@ internal class AppTest {
                 AppComponent(
                     environment = this,
                     initializer = AppInitializer(systemDarkModeEnabled = false, this)
-                ).toStatesComponent()
+                )
             )
 
             testScheduler.advanceUntilIdle()
@@ -104,9 +104,9 @@ internal class AppTest {
     }
 }
 
-private val TestUrl = URI("https://www.google.com")
+private val TestUrl = Url("https://www.google.com")
 
-private val TestDate = Date(2021, 11, 17)
+private val TestDate = LocalDateTime(2021, 11, 17, 0, 0)
 
 private val TestArticleElement = ArticleElement(
     author = Author("Max"),
