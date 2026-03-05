@@ -1,7 +1,27 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm")
+    kotlin("multiplatform")
+    id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
-dependencies {
-    implementation(project(":tea-core"))
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
+
+    jvm()
+
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.stdlib)
+                implementation(libs.coroutines.core)
+                implementation(project(":tea-compose"))
+            }
+        }
+    }
 }

@@ -26,6 +26,7 @@ package io.github.xlopec.tea.core
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 /**
@@ -35,33 +36,37 @@ import kotlinx.coroutines.launch
  * ### Exceptions
  *
  * Any exception that happens inside this function will be delivered to a [Component]'s scope and handled
- * by it. For more information regarding error handling see [shareIn][kotlinx.coroutines.flow.shareIn]
+ * by it. For more information regarding error handling, see [shareIn][kotlinx.coroutines.flow.shareIn].
  *
  */
-public typealias Resolver<M, S, C> = (snapshot: Snapshot<M, S, C>, context: ResolveCtx<M>) -> Unit
+public typealias Resolver<M, S, C> = (snapshot: Flow<Snapshot<M, S, C>>, context: ResolveCtx<M>) -> Unit
 
 /**
- * This class represents a resolver context that used to resolve effects.
- * To consume resolved messages use [ResolveCtx.invoke]. This class implements [CoroutineScope] to launch long-running component lifecycle
- * aware operations.
- * Do ***not*** store reference to [ResolveCtx] since it might change between invocations
+ * This class represents a resolver context that is used to resolve effects.
+ * To consume resolved messages, use [ResolveCtx.invoke]. This class implements [CoroutineScope]
+ * to launch long-running component-lifecycle-aware operations.
+ * Do ***not*** store a reference to [ResolveCtx] since it might change between invocations.
  */
 // todo replace with multi receivers
-public class ResolveCtx<in M> internal constructor(
+public class ResolveCtx<in M> @InternalTeaApi public constructor(
     sink: Sink<M>,
     scope: CoroutineScope,
 ) : CoroutineScope by scope, Sink<M> by sink
 
 /**
- * Type alias for suspending function that accepts incoming values a puts it to a queue for later
- * processing
+ * Type alias for a suspending function that accepts incoming values and puts them into a queue for later
+ * processing.
  *
- * @param T incoming values
+ * @param T incoming values type
  */
 public typealias Sink<T> = suspend (T) -> Unit
 
 /**
- * Resolves [action] to set of messages using provided [resolver context][ResolveCtx]
+ * Resolves [action] that returns a set of messages.
+ *
+ * @param M message type
+ * @param action suspending function that returns a set of messages to be consumed
+ * @return job that performs [action]
  */
 @ExperimentalTeaApi
 public inline infix fun <M> ResolveCtx<M>.effects(
@@ -69,7 +74,11 @@ public inline infix fun <M> ResolveCtx<M>.effects(
 ): Job = launch { invoke(action()) }
 
 /**
- * Resolves [action] to set of messages using provided [resolver context][ResolveCtx]
+ * Resolves [action] that returns a single message.
+ *
+ * @param M message type
+ * @param action suspending function that returns a message to be consumed, or `null` if no message should be consumed
+ * @return job that performs [action]
  */
 @ExperimentalTeaApi
 public inline infix fun <M> ResolveCtx<M>.effect(
@@ -77,17 +86,33 @@ public inline infix fun <M> ResolveCtx<M>.effect(
 ): Job = launch { action()?.also { invoke(it) } }
 
 /**
- * Resolves [action] to empty set of messages using provided [resolver context][ResolveCtx]
+ * Resolves [action] that doesn't return any messages.
+ *
+ * @param M message type
+ * @param action suspending function that performs a side effect
+ * @return job that performs [action]
  */
 @ExperimentalTeaApi
 public inline infix fun <M> ResolveCtx<M>.sideEffect(
     crossinline action: suspend () -> Unit,
 ): Job = launch { action() }
 
+/**
+ * Consumes [elements].
+ *
+ * @param T element type
+ * @param elements messages to be consumed
+ */
 public suspend operator fun <T> Sink<T>.invoke(
     elements: Iterable<T>,
 ): Unit = elements.forEach { t -> invoke(t) }
 
+/**
+ * Consumes [elements].
+ *
+ * @param T element type
+ * @param elements messages to be consumed
+ */
 public suspend operator fun <T> Sink<T>.invoke(
     vararg elements: T,
 ): Unit = elements.forEach { t -> invoke(t) }

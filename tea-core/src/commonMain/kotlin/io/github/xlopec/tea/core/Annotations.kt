@@ -55,6 +55,7 @@ public annotation class ExperimentalTeaApi
     AnnotationTarget.TYPEALIAS,
     AnnotationTarget.PROPERTY,
     AnnotationTarget.FUNCTION,
-    AnnotationTarget.CLASS
+    AnnotationTarget.CLASS,
+    AnnotationTarget.CONSTRUCTOR,
 )
 public annotation class InternalTeaApi

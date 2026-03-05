@@ -80,10 +80,11 @@ public typealias GsonNotifyComponentAttached = NotifyComponentAttached<JsonEleme
  *
  * This function is a preferred way to use [Gson] in couple with debuggable component
  * as the resulting json will have all needed meta information appended that in turn
- * is needed by the debug plugin to work correctly
+ * is needed by the debug plugin to work correctly.
  *
  * @see TypeAppenderAdapterFactory
  * @param config configuration block
+ * @return configured [Gson] instance
  */
 public fun Gson(
     config: GsonBuilder.() -> Unit = {},

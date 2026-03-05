@@ -28,12 +28,12 @@ import io.github.xlopec.tea.time.travel.protocol.NotifyServer
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Debug session with ability to observe messages and states from
- * debug server and ability to send notifications
+ * A debug session with the ability to observe messages and states from
+ * the debug server and the ability to send notifications.
  *
  * @param M message type
  * @param S state type
- * @param J json tree type
+ * @param J JSON tree type
  */
 public interface DebugSession<M, S, J> {
 
@@ -49,7 +49,9 @@ public interface DebugSession<M, S, J> {
     public val states: Flow<S>
 
     /**
-     * Sends packet to debug server
+     * Sends [packet] to debug server.
+     *
+     * @param packet notification to be sent to the server
      */
     public suspend operator fun invoke(
         packet: NotifyServer<J>

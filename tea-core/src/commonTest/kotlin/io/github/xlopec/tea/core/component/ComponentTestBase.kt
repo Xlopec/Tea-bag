@@ -75,7 +75,7 @@ abstract class ComponentTestBase(
     fun `when component receives input then it emits correct sequence of snapshots`() = runTestCancellingChildren {
         val env = testEnv<Char, String, Char>(
             Initializer(""),
-            { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
+            { snapshot, ctx -> ctx.launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $snapshot" } } } },
             { m, _ -> m.toString().noCommand() }
         )
 
@@ -98,9 +98,13 @@ abstract class ComponentTestBase(
             val env = testEnv<Char, String, Char>(
                 Initializer(""),
                 { snapshot, ctx ->
-                    snapshot.commands.forEach { ch ->
-                        // only message 'b' should be consumed
-                        ctx effects { if (ch == 'a') ('b'..'d').toSet() else setOf() }
+                    ctx.launch {
+                        snapshot.collect {
+                            it.commands.forEach { ch ->
+                                // only message 'b' should be consumed
+                                ctx effects { if (ch == 'a') ('b'..'d').toSet() else setOf() }
+                            }
+                        }
                     }
                 },
                 { m, str -> (str + m).command(m) }
@@ -121,8 +125,12 @@ abstract class ComponentTestBase(
         val env = testEnv<Char, String, Char>(
             Initializer(""),
             { snapshot, ctx ->
-                snapshot.commands.forEach { c ->
-                    ctx effects { setOf(c) }
+                ctx.launch {
+                    snapshot.collect {
+                        it.commands.forEach { c ->
+                            ctx effects { setOf(c) }
+                        }
+                    }
                 }
             },
             { m, _ -> m.toString().noCommand() },
@@ -142,16 +150,20 @@ abstract class ComponentTestBase(
         val env = testEnv<Char, String, Char>(
             Initializer(""),
             { snapshot, ctx ->
-                snapshot.commands.forEach { ch ->
-                    ctx effects {
-                        if (ch == 'a') {
-                            setOf(
-                            ch + 1, // only this message should be consumed
-                            ch + 2,
-                            ch + 3
-                        )
-                        } else {
-                            setOf()
+                ctx.launch {
+                    snapshot.collect {
+                        it.commands.forEach { ch ->
+                            ctx effects {
+                                if (ch == 'a') {
+                                    setOf(
+                                        ch + 1, // only this message should be consumed
+                                        ch + 2,
+                                        ch + 3
+                                    )
+                                } else {
+                                    setOf()
+                                }
+                            }
                         }
                     }
                 }
@@ -189,7 +201,7 @@ abstract class ComponentTestBase(
         var invocations = 0
         val env = testEnv<Char, String, Char>(
             { invocations++; yield(); Initial("bar", setOf()) },
-            { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
+            { snapshot, ctx -> ctx.launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
             { _, s -> s.noCommand() },
             // SharingStarted.Lazily since in case of default option replay
             // cache will be disposed immediately causing test to fail
@@ -232,7 +244,7 @@ abstract class ComponentTestBase(
     fun `when component has multiple consumers then it can serve multiple message sources`() = runTestCancellingChildren {
         val env = testEnv<Char, String, Char>(
             Initializer(""),
-            { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
+            { snapshot, ctx -> ctx.launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
             { m, _ -> m.toString().noCommand() }
         )
 
@@ -290,7 +302,7 @@ abstract class ComponentTestBase(
 
         val component = Component(
             Initializer("", "a"),
-            { snapshot, _ -> throw ComponentException("Unexpected snapshot $snapshot") },
+            { snapshot, ctx -> ctx.launch { snapshot.collect { /* no-op */ } } },
             { m: String, s -> throw ComponentException("message=$m, state=$s") },
             scope
         )
@@ -314,7 +326,7 @@ abstract class ComponentTestBase(
         val component = Component(
             Env<String, Nothing, Nothing>(
                 initializer = ThrowingInitializer(expectedException),
-                resolver = { snapshot, _ -> throw ComponentException("Unexpected snapshot $snapshot") },
+                resolver = { snapshot, ctx -> ctx.launch { snapshot.collect { /* no-op */ } } },
                 updater = { _, s -> s },
                 scope = scope
             )
@@ -339,7 +351,7 @@ abstract class ComponentTestBase(
         val mainThreadNamePrefix = async { currentThreadName() }
         val env = CoroutineScope(Dispatchers.Default).testEnv<Char, String, Char>(
             Initializer(""),
-            { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
+            { snapshot, ctx -> ctx.launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
             CheckingUpdater(mainThreadNamePrefix.await())
         )
 

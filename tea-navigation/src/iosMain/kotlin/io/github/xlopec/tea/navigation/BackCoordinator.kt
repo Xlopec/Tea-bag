@@ -17,13 +17,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
- * Creates and configures [BackCoordinator] to be used for a given [NavigationStack]
+ * Creates and configures [BackCoordinator] to be used for a given [NavigationStack].
  *
+ * @param T entry type
  * @param dispatcher current back dispatcher
  * @param stack current navigation stack
  * @param previousScreenFor lambda to find previous screen for currently visible screen. Return null if there is no previous screen
  * @param animation animation to use
  * @param onBackComplete lambda to invoke when back animation completes
+ * @return configured [BackCoordinator]
  */
 @Composable
 public fun <T : NavStackEntry<*>> rememberPredictiveBackCoordinator(

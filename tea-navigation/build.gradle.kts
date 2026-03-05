@@ -38,7 +38,7 @@ kotlin {
                 api(libs.compose.ui)
                 api(libs.compose.runtime)
                 api(libs.compose.foundation)
-                api(libs.collections.immutable)
+                api(libs.immutable.collections)
             }
         }
         iosMain {
