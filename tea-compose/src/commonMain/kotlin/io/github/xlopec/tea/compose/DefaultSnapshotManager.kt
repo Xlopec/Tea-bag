@@ -11,18 +11,28 @@ import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 /**
- * Manages registering the callback for the global snapshot states and sending an apply
- * notification for each callback checking if has not started with [started]. You typically
- * call [ensureStarted] before creating a composition. This is a slightly different implementation
- * of androidx.compose.ui.platform.GlobalSnapshotManager.
+ * Manages registering an observer for global snapshot changes and sending apply notifications
+ * when state changes are detected.
+ *
+ * This class is an alternative implementation of `androidx.compose.ui.platform.GlobalSnapshotManager`
+ * intended for use in environments where the standard UI-based snapshot manager is not available.
+ * Typically, [ensureStarted] is called before creating a composition.
  */
 @OptIn(ExperimentalAtomicApi::class)
-internal object DefaultSnapshotManager {
+internal class DefaultSnapshotManager {
+
     private val started = AtomicBoolean(false)
 
     /**
-     * Registers an observer to global snapshot states and sends an apply notification
-     * for each callback if it has not already started.
+     * Starts the snapshot management loop.
+     *
+     * This function registers a global write observer and calls [Snapshot.sendApplyNotifications]
+     * whenever a write occurs. It is a long-running suspending function that remains active
+     * until the calling coroutine scope is cancelled.
+     *
+     * Multiple concurrent calls to this function are safe; only the first one will start the
+     * management loop, subsequent calls will return immediately if it's already started.
+     * However, the loop is tied to the scope of the **first** successful caller.
      */
     suspend fun ensureStarted() = coroutineScope {
         if (started.compareAndSet(expectedValue = false, newValue = true)) {
