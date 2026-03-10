@@ -8,7 +8,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.Snapshot
-import io.github.xlopec.compose.nanoTime
 import io.github.xlopec.tea.compose.SnapshotNotifierPolicy.External
 import io.github.xlopec.tea.compose.SnapshotNotifierPolicy.WhileActive
 import io.github.xlopec.tea.core.ExperimentalTeaApi

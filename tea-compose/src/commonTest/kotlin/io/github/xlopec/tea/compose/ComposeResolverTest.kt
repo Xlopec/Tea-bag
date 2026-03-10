@@ -1,6 +1,5 @@
 package io.github.xlopec.tea.compose
 
-import androidx.compose.runtime.BroadcastFrameClock
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -9,31 +8,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.test.runTest
 import kotlin.concurrent.atomics.AtomicInt
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalAtomicApi::class)
 class ComposeResolverTest {
 
-    @OptIn(ExperimentalAtomicApi::class)
     @Test
-    fun `when composing items then correct sequence of values is produced`() = runTest {
-        val job = Job()
-        val clock = BroadcastFrameClock()
-        val scope = CoroutineScope(coroutineContext + job + clock)
+    fun `when composing items then correct sequence of values is produced`() = runTestWith { _, clock, scope ->
         val value = AtomicInt(0)
 
         ComposeResolver(
@@ -70,17 +63,11 @@ class ComposeResolverTest {
         runCurrent()
         clock.sendFrame(0)
         assertEquals(2, value.load())
-
-        job.cancelAndJoin()
     }
 
     @Test
-    fun `when compose block throws then exception is propagated immediately`() = runTest {
-        val job = Job()
-        val clock = BroadcastFrameClock()
-        val scope = CoroutineScope(coroutineContext + job + clock)
-
-        val runtimeException = object : RuntimeException() {}
+    fun `when compose block throws then exception is propagated immediately`() = runTestWith { _, _, scope ->
+        val runtimeException = RuntimeException()
         val exception = runCatching {
             ComposeResolver(scope) {
                 throw runtimeException
@@ -88,39 +75,32 @@ class ComposeResolverTest {
         }.exceptionOrNull()
 
         assertEquals(runtimeException, exception)
-        job.cancelAndJoin()
     }
 
     @Test
-    fun `when effect throws then exception is caught by handler and scope is canceled`() = runTest {
-        val job = Job()
-        val clock = BroadcastFrameClock()
-        val exceptionHandler = RecordingExceptionHandler()
-        val scope = CoroutineScope(coroutineContext + job + clock + exceptionHandler)
+    fun `when effect throws then exception is caught by handler and scope is canceled`() =
+        runTestWith(RecordingExceptionHandler()) { job, clock, scope ->
+            val exceptionHandler = scope.coroutineContext[CoroutineExceptionHandler.Key] as RecordingExceptionHandler
 
-        val runtimeException = object : RuntimeException() {}
-        ComposeResolver(scope) {
-            LaunchedEffect(Unit) {
-                delay(50)
-                throw runtimeException
+            val runtimeException = object : RuntimeException() {}
+            ComposeResolver(scope) {
+                LaunchedEffect(Unit) {
+                    delay(50)
+                    throw runtimeException
+                }
             }
+
+            advanceTimeBy(50)
+            runCurrent()
+            clock.sendFrame(0)
+            runCurrent()
+            assertEquals(runtimeException, exceptionHandler.exceptions.single())
+
+            assertTrue(job.isCompleted)
         }
 
-        advanceTimeBy(50)
-        runCurrent()
-        clock.sendFrame(0)
-        runCurrent()
-        assertEquals(runtimeException, exceptionHandler.exceptions.single())
-
-        assertTrue(job.isCompleted)
-    }
-
     @Test
-    fun `when scope is canceled then disposable effect is disposed`() = runTest {
-        val job = Job()
-        val clock = BroadcastFrameClock()
-        val scope = CoroutineScope(coroutineContext + job + clock)
-
+    fun `when scope is canceled then disposable effect is disposed`() = runTestWith { job, _, scope ->
         var state: DisposableEffectState = DisposableEffectState.NOT_LAUNCHED
 
         ComposeResolver(
@@ -145,80 +125,68 @@ class ComposeResolverTest {
     }
 
     @Test
-    fun `when composing then provided coroutine context is used`() = runTest {
-        val job = Job()
-        val clock = BroadcastFrameClock()
-        val expectedName = CoroutineName("test_key")
-        val scope = CoroutineScope(coroutineContext + job + clock + expectedName)
+    fun `when composing then provided coroutine context is used`() =
+        runTestWith(CoroutineName("test_key")) { _, _, scope ->
+            val expectedName = CoroutineName("test_key")
 
-        var actualName: CoroutineName? = null
-        ComposeResolver(scope) {
-            actualName = rememberCoroutineScope().coroutineContext[CoroutineName]
+            var actualName: CoroutineName? = null
+            ComposeResolver(scope) {
+                actualName = rememberCoroutineScope().coroutineContext[CoroutineName]
+            }
+            assertEquals(expectedName, actualName)
         }
-        assertEquals(expectedName, actualName)
-        job.cancelAndJoin()
-    }
 
-    @OptIn(ExperimentalAtomicApi::class)
     @Test
-    fun `when snapshot notifier policy is WhileActive then composition is automatically notified of state mutation`() = runTest {
-        val job = Job()
-        val clock = BroadcastFrameClock()
-        val scope = CoroutineScope(coroutineContext + job + clock)
-        val value = AtomicInt(-1)
+    fun `when snapshot notifier policy is WhileActive then composition is automatically notified of state mutation`() =
+        runTestWith { _, clock, scope ->
+            val value = AtomicInt(-1)
 
-        var count by mutableIntStateOf(0)
+            var count by mutableIntStateOf(0)
 
-        ComposeResolver(
-            scope = scope,
-            clockPolicy = ClockPolicy.External,
-            snapshotManagerPolicy = SnapshotNotifierPolicy.WhileActive
-        ) {
-            value.store(count)
+            ComposeResolver(
+                scope = scope,
+                clockPolicy = ClockPolicy.External,
+                snapshotManagerPolicy = SnapshotNotifierPolicy.WhileActive
+            ) {
+                value.store(count)
+            }
+
+            assertEquals(0, value.load())
+
+            // The composition is automatically notified of the state mutation.
+            count++
+            runCurrent()
+            clock.sendFrame(0)
+            assertEquals(1, value.load())
         }
 
-        assertEquals(0, value.load())
-
-        // The composition is automatically notified of state mutation.
-        count++
-        runCurrent()
-        clock.sendFrame(0)
-        assertEquals(1, value.load())
-
-        job.cancelAndJoin()
-    }
-
-    @OptIn(ExperimentalAtomicApi::class)
     @Test
-    fun `when snapshot notifier policy is External then composition isn't automatically notified of state mutation`() = runTest {
-        val job = Job()
-        val clock = BroadcastFrameClock()
-        val scope = CoroutineScope(coroutineContext + job + clock)
-        val value = AtomicInt(-1)
+    fun `when snapshot notifier policy is External then composition isn't automatically notified of state mutation`() =
+        runTestWith { _, clock, scope ->
+            val value = AtomicInt(-1)
 
-        var count by mutableIntStateOf(0)
+            var count by mutableIntStateOf(0)
 
-        ComposeResolver(
-            scope = scope,
-            clockPolicy = ClockPolicy.External,
-            snapshotManagerPolicy = SnapshotNotifierPolicy.External
-        ) {
-            value.store(count)
+            ComposeResolver(
+                scope = scope,
+                clockPolicy = ClockPolicy.External,
+                snapshotManagerPolicy = SnapshotNotifierPolicy.External
+            ) {
+                value.store(count)
+            }
+
+            assertEquals(0, value.load())
+
+            // The composition isn't automatically notified of the state mutation.
+            count++
+            runCurrent()
+            clock.sendFrame(0)
+            assertEquals(0, value.load())
+
+            // The composition notified of state mutation when sendApplyNotifications is called.
+            Snapshot.sendApplyNotifications()
+            runCurrent()
+            clock.sendFrame(0)
+            assertEquals(1, value.load())
         }
-
-        assertEquals(0, value.load())
-
-        // The composition isn't automatically notified of state mutation.
-        count++
-        runCurrent()
-        clock.sendFrame(0)
-        assertEquals(0, value.load())
-
-        Snapshot.sendApplyNotifications()
-        runCurrent()
-        clock.sendFrame(0)
-        assertEquals(1, value.load())
-
-        job.cancelAndJoin()
-    }
 }
