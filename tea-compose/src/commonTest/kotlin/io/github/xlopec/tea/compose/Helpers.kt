@@ -12,11 +12,12 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 internal class RecordingExceptionHandler : CoroutineExceptionHandler {
     override val key = CoroutineExceptionHandler.Key
+    private val _exceptions = mutableListOf<Throwable>()
     val exceptions: List<Throwable>
-        field = mutableListOf<Throwable>()
+        get() = _exceptions
 
     override fun handleException(context: CoroutineContext, exception: Throwable) {
-        exceptions += exception
+        _exceptions += exception
     }
 }
 
