@@ -46,6 +46,7 @@ include(
     ":samples:shared-app-lib",
     ":samples:shared-app-lib-remote",
     ":samples:counter",
+    ":samples:compose-effects",
 )
 
 dependencyResolutionManagement {

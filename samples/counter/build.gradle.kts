@@ -1,7 +1,5 @@
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 kotlin {
@@ -16,11 +14,11 @@ kotlin {
     iosSimulatorArm64()
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(libs.stdlib)
                 implementation(libs.coroutines.core)
-                implementation(project(":tea-compose"))
+                implementation(project(":tea-core"))
             }
         }
     }

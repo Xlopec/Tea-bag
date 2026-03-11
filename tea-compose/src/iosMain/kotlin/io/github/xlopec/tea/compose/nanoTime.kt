@@ -1,4 +1,4 @@
-package io.github.xlopec.compose
+package io.github.xlopec.tea.compose
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.convert
