@@ -29,20 +29,28 @@ package io.github.xlopec.reader.app
 
 import android.app.Activity
 import android.app.Application
+import androidx.compose.runtime.MonotonicFrameClock
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.tea.core.Component
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Job
+import kotlin.coroutines.CoroutineContext
 
 class AndroidApp : Application() {
-    val component by lazy {
-        AppComponent(this, CoroutineScope(Job() + Default.limitedParallelism(1)))
+
+    private var component: Component<Message, AppState, Command>? = null
+
+    fun getComponent(context: CoroutineContext): Component<Message, AppState, Command> {
+        if (component == null) {
+            component = AppComponent(this, CoroutineScope(context[MonotonicFrameClock.Key]!! + Job() + Default.limitedParallelism(1)))
+        }
+        return component!!
     }
 }
 
 inline val Activity.androidApp: AndroidApp
     get() = application as AndroidApp
-
+/*
 inline val Activity.component: Component<Message, AppState, Command>
-    get() = androidApp.component
+    get() = androidApp.component*/

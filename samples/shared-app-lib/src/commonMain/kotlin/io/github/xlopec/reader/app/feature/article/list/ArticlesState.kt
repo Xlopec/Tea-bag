@@ -62,7 +62,8 @@ public data class ArticlesState(
     val scrollState: ScrollState = ScrollState.Initial,
 ) : TabScreen {
 
-    override val id: ScreenId by tab::id
+    override val id: ScreenId
+        get() = tab.id
 
     public companion object {
 

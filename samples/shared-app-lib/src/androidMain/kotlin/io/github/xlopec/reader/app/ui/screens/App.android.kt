@@ -3,6 +3,7 @@ package io.github.xlopec.reader.app.ui.screens
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -23,26 +24,33 @@ public fun App(
 ) {
     val messages = remember { MutableSharedFlow<Message>() }
     val snapshots = remember { component(messages) }
-    val snapshot = snapshots.collectAsNullableState(context = Dispatchers.Main).value ?: return
-    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
-    val handler = remember { scope.messageHandler(messages) }
-    val currentState = snapshot.currentState
+    val snapshot = snapshots.collectAsNullableState(context = Dispatchers.Main).value
 
-    AppTheme(
-        isDarkModeEnabled = currentState.settings.appDarkModeEnabled
-    ) {
-        ScreenTransition(
-            modifier = Modifier.fillMaxSize(),
-            screen = currentState.screen,
-            snapshot = snapshot,
-            handler = handler,
-        )
+    LaunchedEffect(snapshot) {
+        println("Snapshot UI: $snapshot")
     }
 
-    val systemUiController = rememberWindowInsetsController()
+    if (snapshot != null) {
+        val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
+        val handler = remember { scope.messageHandler(messages) }
+        val currentState = snapshot.currentState
 
-    LaunchedEffect(currentState.settings.appDarkModeEnabled) {
-        systemUiController.isAppearanceLightStatusBars = !currentState.settings.appDarkModeEnabled
-        systemUiController.isAppearanceLightNavigationBars = !currentState.settings.appDarkModeEnabled
+        AppTheme(
+            isDarkModeEnabled = currentState.settings.appDarkModeEnabled
+        ) {
+            ScreenTransition(
+                modifier = Modifier.fillMaxSize(),
+                screen = currentState.screen,
+                snapshot = snapshot,
+                handler = handler,
+            )
+        }
+
+        val systemUiController = rememberWindowInsetsController()
+
+        LaunchedEffect(currentState.settings.appDarkModeEnabled) {
+            systemUiController.isAppearanceLightStatusBars = !currentState.settings.appDarkModeEnabled
+            systemUiController.isAppearanceLightNavigationBars = !currentState.settings.appDarkModeEnabled
+        }
     }
 }

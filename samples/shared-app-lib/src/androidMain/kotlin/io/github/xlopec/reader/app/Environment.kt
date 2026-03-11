@@ -46,7 +46,7 @@ public fun Environment(
 ): Environment {
 
     if (debug) {
-        setupStrictAppPolicies()
+    //    setupStrictAppPolicies()
     }
 
     return object : Environment,

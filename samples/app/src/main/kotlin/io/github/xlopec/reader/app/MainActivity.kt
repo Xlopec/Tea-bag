@@ -28,6 +28,9 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.currentRecomposeScope
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.core.view.WindowCompat
 import io.github.xlopec.reader.R
 import io.github.xlopec.reader.app.feature.settings.SystemDarkModeChanged
@@ -37,7 +40,10 @@ import io.github.xlopec.tea.core.subscribeIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
@@ -50,13 +56,17 @@ class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        val component = component
+       // launch { androidApp.getComponent(coroutineContext).invoke(flow { delay(Long.MAX_VALUE) }).collect { println(it) }}
 
+      //  return
         setContent {
+            val ctx = rememberCoroutineScope().coroutineContext
+            val component = androidApp.getComponent(ctx)
+
             App(component = component)
         }
 
-        component.subscribeIn(systemDarkModeChanges, this)
+       // component.subscribeIn(systemDarkModeChanges, this)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

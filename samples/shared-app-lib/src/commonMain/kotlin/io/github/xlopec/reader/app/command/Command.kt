@@ -30,6 +30,10 @@ import io.github.xlopec.reader.app.ScreenId
 /*sealed*/
 public interface Command
 
+public interface ScreenCommand : Command {
+    public val id: ScreenId?
+}
+
 // App wide commands
 
 public data class DoLog(
