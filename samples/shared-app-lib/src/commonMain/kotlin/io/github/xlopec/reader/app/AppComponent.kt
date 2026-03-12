@@ -39,7 +39,7 @@ public fun AppComponent(
     Component(
         initializer = initializer,
         resolver = { snapshots -> with(environment) { resolve(snapshots) } },
-        updater = { m, s -> with(environment) { update(m, s) } },
+        updater = { m, s -> update(m, s) },
         scope = environment,
         shareOptions = ShareOptions(SharingStarted.WhileSubscribed())
     )

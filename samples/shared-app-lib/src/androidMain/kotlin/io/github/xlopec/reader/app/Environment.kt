@@ -50,7 +50,6 @@ public fun Environment(
     }
 
     return object : Environment,
-        AppModule<Environment> by AppModule(),
         NewsApi by NewsApi(application),
         LocalStorage by LocalStorage(application),
         ShareArticle by AndroidShareArticle(application),
@@ -77,7 +76,6 @@ private fun setupStrictAppPolicies() {
 }
 
 public actual interface Environment :
-    AppModule<Environment>,
     ShareArticle,
     BrowserLauncher,
     NewsApi,

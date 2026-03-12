@@ -30,4 +30,4 @@ import io.github.xlopec.reader.app.feature.article.list.ShareArticle
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import kotlinx.coroutines.CoroutineScope
 
-public expect interface Environment : AppModule<Environment>, CoroutineScope, NewsApi, ShareArticle, LocalStorage, BrowserLauncher
+public expect interface Environment : CoroutineScope, NewsApi, ShareArticle, LocalStorage, BrowserLauncher

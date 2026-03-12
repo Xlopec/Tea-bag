@@ -37,7 +37,6 @@ public fun Environment(
 ): Environment =
     object : Environment,
         ShareArticle by IosShareArticle,
-        AppModule<Environment> by AppModule(),
         BrowserLauncher by BrowserLauncherImpl,
         LocalStorage by LocalStorage(),
         NewsApi by NewsApi(),
@@ -45,7 +44,6 @@ public fun Environment(
     }
 
 public actual interface Environment :
-    AppModule<Environment>,
     BrowserLauncher,
     ShareArticle,
     LocalStorage,
