@@ -2,6 +2,7 @@ package io.github.xlopec.tea.compose
 
 import androidx.compose.runtime.snapshots.ObserverHandle
 import androidx.compose.runtime.snapshots.Snapshot
+import io.github.xlopec.tea.compose.DefaultSnapshotManager.ensureStarted
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
@@ -19,7 +20,7 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
  * Typically, [ensureStarted] is called before creating a composition.
  */
 @OptIn(ExperimentalAtomicApi::class)
-internal class DefaultSnapshotManager {
+internal object DefaultSnapshotManager {
 
     private val started = AtomicBoolean(false)
 
@@ -36,19 +37,20 @@ internal class DefaultSnapshotManager {
      */
     suspend fun ensureStarted() = coroutineScope {
         if (started.compareAndSet(expectedValue = false, newValue = true)) {
-            val channel = Channel<Unit>(Channel.CONFLATED)
-            launch {
-                channel.consumeEach {
-                    Snapshot.sendApplyNotifications()
-                }
-            }
             var handle: ObserverHandle? = null
             try {
+                val channel = Channel<Unit>(Channel.CONFLATED)
+                launch {
+                    channel.consumeEach {
+                        Snapshot.sendApplyNotifications()
+                    }
+                }
                 handle = Snapshot.registerGlobalWriteObserver {
-                    channel.trySend(Unit)
+                    channel.trySend(Unit).getOrThrow()
                 }
                 awaitCancellation()
             } finally {
+                started.compareAndSet(expectedValue = true, newValue = false)
                 handle?.dispose()
             }
         }

@@ -26,8 +26,16 @@
 
 package io.github.xlopec.reader.app
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
+import androidx.compose.ui.util.fastForEachIndexed
+import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.command.DoLog
 import io.github.xlopec.reader.app.command.DoStoreDarkMode
+import io.github.xlopec.reader.app.command.ScreenCommand
 import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsResolver
 import io.github.xlopec.reader.app.feature.article.details.DoOpenInBrowser
 import io.github.xlopec.reader.app.feature.article.list.ArticlesCommand
@@ -35,33 +43,100 @@ import io.github.xlopec.reader.app.feature.article.list.ArticlesResolver
 import io.github.xlopec.reader.app.feature.filter.FilterCommand
 import io.github.xlopec.reader.app.feature.filter.FiltersResolver
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
+import io.github.xlopec.tea.compose.ClockPolicy
+import io.github.xlopec.tea.compose.ComposeResolver
+import io.github.xlopec.tea.compose.SnapshotNotifierPolicy
+import io.github.xlopec.tea.compose.TrackingEffect
+import io.github.xlopec.tea.core.ResolveCtx
 import io.github.xlopec.tea.core.effects
 import io.github.xlopec.tea.core.sideEffect
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.transform
 
 public fun <Env> AppResolver(): AppResolver<Env> where
-        Env : ArticlesResolver<Env>,
-        Env : LocalStorage,
-        Env : FiltersResolver<Env>,
-        Env : ArticleDetailsResolver =
+    Env : ArticlesResolver<Env>,
+    Env : LocalStorage,
+    Env : FiltersResolver<Env>,
+    Env : ArticleDetailsResolver =
     AppResolver { snapshots, ctx ->
-        snapshots.onEach { snapshot ->
-            snapshot.commands.forEach { cmd ->
-                when (cmd) {
-                    is ArticlesCommand -> ctx effects { resolve(cmd) }
-                    is DoOpenInBrowser -> ctx sideEffect { resolve(cmd) }
-                    is DoStoreDarkMode -> ctx sideEffect {
-                        storeDarkModePreferences(cmd.userDarkModeEnabled, cmd.syncWithSystemDarkModeEnabled)
-                    }
+        ComposeResolver(
+            scope = CoroutineScope(ctx.coroutineContext + Job(ctx.coroutineContext[Job.Key]) + Dispatchers.Default),
+            // todo do something with clock
+            clockPolicy = ClockPolicy.Internal,
+            snapshotManagerPolicy = SnapshotNotifierPolicy.External,
+        ) {
+            val snapshot by snapshots.collectAsState(null)
+            val currentSnapshot = snapshot
 
-                    is FilterCommand -> ctx effects { resolve(cmd) }
-                    is DoLog -> ctx sideEffect { log(cmd) }
-                    else -> error("Shouldn't get here $cmd")
+            if (currentSnapshot != null) {
+                val commands = remember(snapshots) {
+                    snapshots
+                        .transform { snapshot -> snapshot.commands.forEach { emit(it) } }
+                        // command is gone by the time we compose the first tracking effect
+                        .onStart { currentSnapshot.commands.forEach { emit(it) } }
+                        // command emitted BEFORE LaunchedEffect has a chance to collect items
+                        .shareIn(ctx, SharingStarted.Lazily, 1)
+                }
+
+                currentSnapshot.currentState.screens.fastForEachIndexed { i, screen ->
+                    key(screen.id) {
+                        TrackingEffect(screen.id) {
+                            println("Effect for ${screen.id} at $i")
+                            try {
+                                commands
+                                    .onEach { println("Cmd1 detected by ${screen.id} at $i $it ") }
+                                    .filter { it is ScreenCommand && it.id == screen.id }
+                                    .onEach { println("Cmd11 $it") }
+                                    .collect { command ->
+                                        println("resolve $command")
+                                        resolve(command, ctx)
+                                    }
+                            } finally {
+                                println("Done with ${screen.id} at $i")
+                            }
+                        }
+                    }
+                }
+
+                LaunchedEffect(Unit) {
+                    commands
+                        .onEach { println("Cmd2 $it") }
+                        .filter { it !is ScreenCommand || it.id == null }
+                        .onEach { println("Cmd22 $it") }
+                        .collect { command ->
+                            resolve(command, ctx)
+                        }
                 }
             }
-        }.launchIn(ctx)
+        }
     }
+
+private fun <Env> Env.resolve(
+    cmd: Command,
+    ctx: ResolveCtx<Message>,
+) where Env : ArticlesResolver<Env>,
+        Env : LocalStorage,
+        Env : FiltersResolver<Env>,
+        Env : ArticleDetailsResolver {
+    when (cmd) {
+        is ArticlesCommand -> ctx effects { resolve(cmd) }
+        is DoOpenInBrowser -> ctx sideEffect { resolve(cmd) }
+        is DoStoreDarkMode -> ctx sideEffect {
+            storeDarkModePreferences(cmd.userDarkModeEnabled, cmd.syncWithSystemDarkModeEnabled)
+        }
+
+        is FilterCommand -> ctx effects { resolve(cmd) }
+        is DoLog -> ctx sideEffect { log(cmd) }
+        else -> error("Shouldn't get here $cmd")
+    }
+}
 
 private fun log(
     cmd: DoLog,

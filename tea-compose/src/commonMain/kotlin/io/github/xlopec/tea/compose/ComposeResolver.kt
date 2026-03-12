@@ -41,6 +41,7 @@ import io.github.xlopec.tea.core.Snapshot as ComponentSnapshot
  * @param content A composable function receiving the current state [S] and a [Flow] of
  *                commands [C] to process and render UI.
  */
+@Deprecated("remove")
 @Suppress("FunctionName")
 public fun <M, S, C> ComposeResolver(
     scope: CoroutineScope,
@@ -95,13 +96,21 @@ public fun ComposeResolver(
             }
         }
     }
-
-    val recomposer = Recomposer(scope.coroutineContext + clockContext)
+    // todo fix wrong contenxt - should be only one clock
+    val finalContext = scope.coroutineContext + clockContext
+    val recomposer = Recomposer(finalContext)
     val composition = Composition(NoOpApplier, recomposer)
 
-    scope.launch(start = CoroutineStart.UNDISPATCHED) {
+    scope.launch(finalContext, start = CoroutineStart.UNDISPATCHED) {
         try {
-            recomposer.runRecomposer(clockContext, snapshotManagerPolicy)
+            when (snapshotManagerPolicy) {
+                External -> Unit
+                WhileActive -> launch(start = CoroutineStart.UNDISPATCHED) {
+                    DefaultSnapshotManager.ensureStarted()
+                }
+            }
+
+            recomposer.runRecomposeAndApplyChanges()
         } finally {
             recomposer.cancel()
             composition.dispose()
@@ -116,19 +125,16 @@ private suspend fun Recomposer.runRecomposer(
     frameClockContext: CoroutineContext,
     snapshotNotifierPolicy: SnapshotNotifierPolicy
 ) = coroutineScope {
+    when (snapshotNotifierPolicy) {
+        External -> Unit
+        WhileActive -> launch {
+            DefaultSnapshotManager.ensureStarted()
+        }
+    }
 
     launch(frameClockContext, CoroutineStart.UNDISPATCHED) {
         runRecomposeAndApplyChanges()
     }
-
-    when (snapshotNotifierPolicy) {
-        External -> Unit
-        WhileActive -> launch {
-            DefaultSnapshotManager().ensureStarted()
-        }
-    }
-
-    awaitIdle()
 }
 
 @OptIn(ExperimentalTeaApi::class)
