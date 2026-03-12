@@ -25,10 +25,13 @@
 package io.github.xlopec.reader.app.feature.article.list
 
 import io.github.xlopec.reader.app.Message
+import io.github.xlopec.tea.core.Sink
+import kotlinx.coroutines.CoroutineScope
 
 public interface ArticlesResolver<Env> {
 
-    public suspend fun Env.resolve(
+    context(_: Sink<Message>, _: CoroutineScope)
+    public fun Env.resolveForArticles(
         command: ArticlesCommand
-    ): Set<Message>
+    )
 }

@@ -25,9 +25,12 @@
 package io.github.xlopec.tea.core
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Alias for a possibly **impure** function that resolves commands to messages and performs side
@@ -39,19 +42,7 @@ import kotlinx.coroutines.launch
  * by it. For more information regarding error handling, see [shareIn][kotlinx.coroutines.flow.shareIn].
  *
  */
-public typealias Resolver<M, S, C> = (snapshot: Flow<Snapshot<M, S, C>>, context: ResolveCtx<M>) -> Unit
-
-/**
- * This class represents a resolver context that is used to resolve effects.
- * To consume resolved messages, use [ResolveCtx.invoke]. This class implements [CoroutineScope]
- * to launch long-running component-lifecycle-aware operations.
- * Do ***not*** store a reference to [ResolveCtx] since it might change between invocations.
- */
-// todo replace with multi receivers
-public class ResolveCtx<in M> @InternalTeaApi public constructor(
-    sink: Sink<M>,
-    scope: CoroutineScope,
-) : CoroutineScope by scope, Sink<M> by sink
+public typealias Resolver<M, S, C> = context(Sink<M>, CoroutineScope) (snapshot: Flow<Snapshot<M, S, C>>) -> Unit
 
 /**
  * Type alias for a suspending function that accepts incoming values and puts them into a queue for later
@@ -69,9 +60,10 @@ public typealias Sink<T> = suspend (T) -> Unit
  * @return job that performs [action]
  */
 @ExperimentalTeaApi
-public inline infix fun <M> ResolveCtx<M>.effects(
-    crossinline action: suspend () -> Set<M>,
-): Job = launch { invoke(action()) }
+context(sink: Sink<M>, scope: CoroutineScope)
+public inline infix fun <M, C> C.effects(
+    crossinline action: suspend C.() -> Set<M>,
+): Job = effects(EmptyCoroutineContext, CoroutineStart.DEFAULT, action)
 
 /**
  * Resolves [action] that returns a single message.
@@ -81,9 +73,40 @@ public inline infix fun <M> ResolveCtx<M>.effects(
  * @return job that performs [action]
  */
 @ExperimentalTeaApi
-public inline infix fun <M> ResolveCtx<M>.effect(
-    crossinline action: suspend () -> M?,
-): Job = launch { action()?.also { invoke(it) } }
+context(sink: Sink<M>, scope: CoroutineScope)
+public inline fun <M, C> C.effects(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    crossinline action: suspend C.() -> Set<M>,
+): Job {
+    return scope.launch(context, start) { sink(action()) }
+}
+
+/**
+ * Resolves [action] that returns a single message.
+ *
+ * @param M message type
+ * @param action suspending function that returns a message to be consumed, or `null` if no message should be consumed
+ * @return job that performs [action]
+ */
+@ExperimentalTeaApi
+context(sink: Sink<M>, scope: CoroutineScope)
+public inline infix fun <M, C> C.effect(
+    crossinline action: suspend C.() -> M?,
+): Job = effect(EmptyCoroutineContext, CoroutineStart.DEFAULT, action)
+
+/**
+ * Resolves [action] and emits message to the [sink] if any
+ */
+@ExperimentalTeaApi
+context(sink: Sink<M>, scope: CoroutineScope)
+public inline fun <M, C> C.effect(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    crossinline action: suspend C.() -> M?,
+): Job {
+    return scope.launch(context, start) { action()?.also { sink(it) } }
+}
 
 /**
  * Resolves [action] that doesn't return any messages.
@@ -93,9 +116,27 @@ public inline infix fun <M> ResolveCtx<M>.effect(
  * @return job that performs [action]
  */
 @ExperimentalTeaApi
-public inline infix fun <M> ResolveCtx<M>.sideEffect(
-    crossinline action: suspend () -> Unit,
-): Job = launch { action() }
+context(_: Sink<M>, scope: CoroutineScope)
+public inline infix fun <M, C> C.sideEffect(
+    crossinline action: suspend C.() -> Unit,
+): Job = sideEffect(EmptyCoroutineContext, CoroutineStart.DEFAULT, action)
+
+/**
+ * Resolves [action] that doesn't return any messages.
+ *
+ * @param M message type
+ * @param action suspending function that performs a side effect
+ * @return job that performs [action]
+ */
+@ExperimentalTeaApi
+context(_: Sink<M>, scope: CoroutineScope)
+public inline fun <M, C> C.sideEffect(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    crossinline action: suspend C.() -> Unit,
+): Job {
+    return scope.launch(context, start) { action() }
+}
 
 /**
  * Consumes [elements].

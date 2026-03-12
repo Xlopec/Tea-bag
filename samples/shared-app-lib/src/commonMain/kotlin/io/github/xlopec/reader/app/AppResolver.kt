@@ -25,14 +25,15 @@
 package io.github.xlopec.reader.app
 
 import io.github.xlopec.reader.app.command.Command
-import io.github.xlopec.tea.core.ResolveCtx
+import io.github.xlopec.tea.core.Sink
 import io.github.xlopec.tea.core.Snapshot
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
 public fun interface AppResolver<Env> {
 
+    context(sink: Sink<Message>, scope: CoroutineScope)
     public fun Env.resolve(
         snapshots: Flow<Snapshot<Message, AppState, Command>>,
-        context: ResolveCtx<Message>
     )
 }

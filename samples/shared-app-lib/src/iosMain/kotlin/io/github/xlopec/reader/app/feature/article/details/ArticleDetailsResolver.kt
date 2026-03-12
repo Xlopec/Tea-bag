@@ -26,15 +26,19 @@
 
 package io.github.xlopec.reader.app.feature.article.details
 
+import io.github.xlopec.reader.app.Message
+import io.github.xlopec.tea.core.Sink
+import io.github.xlopec.tea.core.sideEffect
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import platform.UIKit.UIApplication
 
 public fun ArticleDetailsResolver(): ArticleDetailsResolver =
     object : ArticleDetailsResolver {
-        override suspend fun resolve(command: DoOpenInBrowser) {
-            withContext(Dispatchers.Main) {
-                UIApplication.sharedApplication.openURL(command.article.url)
+        context(_: Sink<Message>, _: CoroutineScope)
+        override fun resolveForOpenInBrowser(command: DoOpenInBrowser) {
+            command.sideEffect(Dispatchers.Main) {
+                UIApplication.sharedApplication.openURL(article.url)
             }
         }
     }

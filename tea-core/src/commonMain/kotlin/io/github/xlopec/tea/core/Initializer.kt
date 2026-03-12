@@ -26,9 +26,9 @@
 
 package io.github.xlopec.tea.core
 
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Initializer is an **impure** function that computes [initial][Initial] snapshot
@@ -76,11 +76,11 @@ public fun <S, C> Initializer(
  *
  * @param S state
  * @param C command
- * @param dispatcher coroutine dispatcher to run block on
+ * @param context coroutine context to use
  * @param block initializer block to run
  * @return initializer that runs [block] on [dispatcher]
  */
 public fun <S, C> Initializer(
-    dispatcher: CoroutineDispatcher,
+    context: CoroutineContext,
     block: suspend CoroutineScope.() -> Initial<S, C>
-): Initializer<S, C> = { withContext(dispatcher, block) }
+): Initializer<S, C> = { withContext(context, block) }

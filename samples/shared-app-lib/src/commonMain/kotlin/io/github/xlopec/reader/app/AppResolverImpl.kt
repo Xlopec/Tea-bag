@@ -27,7 +27,6 @@
 package io.github.xlopec.reader.app
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -49,9 +48,9 @@ import io.github.xlopec.tea.compose.ClockPolicy
 import io.github.xlopec.tea.compose.ComposeResolver
 import io.github.xlopec.tea.compose.SnapshotNotifierPolicy
 import io.github.xlopec.tea.compose.TrackingEffect
-import io.github.xlopec.tea.core.ResolveCtx
+import io.github.xlopec.tea.compose.TrackingScope
+import io.github.xlopec.tea.core.Sink
 import io.github.xlopec.tea.core.Snapshot
-import io.github.xlopec.tea.core.effects
 import io.github.xlopec.tea.core.sideEffect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -69,9 +68,12 @@ public fun <Env> AppResolver(): AppResolver<Env> where
     Env : LocalStorage,
     Env : FiltersResolver<Env>,
     Env : ArticleDetailsResolver =
-    AppResolver { snapshots, ctx ->
+    AppResolver { snapshots ->
+        val appScope = contextOf<CoroutineScope>()
+        val sink = contextOf<Sink<Message>>()
+        val compositionScope = CoroutineScope(appScope.coroutineContext + Job(appScope.coroutineContext[Job.Key]) + Dispatchers.Default)
         ComposeResolver(
-            scope = CoroutineScope(ctx.coroutineContext + Job(ctx.coroutineContext[Job.Key]) + Dispatchers.Default),
+            scope = compositionScope,
             // todo do something with clock
             clockPolicy = ClockPolicy.Internal,
             snapshotManagerPolicy = SnapshotNotifierPolicy.External,
@@ -93,7 +95,7 @@ public fun <Env> AppResolver(): AppResolver<Env> where
                                     .onEach { println("Cmd11 $it") }
                                     .collect { command ->
                                         println("resolve $command")
-                                        resolve(command, ctx)
+                                        context(sink) { resolve(command) }
                                     }
                             } finally {
                                 println("Done with ${screen.id}")
@@ -102,35 +104,35 @@ public fun <Env> AppResolver(): AppResolver<Env> where
                     }
                 }
 
-                LaunchedEffect(Unit) {
+                TrackingEffect(Unit) {
                     commands
                         .onEach { println("Cmd2 $it") }
                         .filter { it !is ScreenCommand || it.id == null }
                         .onEach { println("Cmd22 $it") }
                         .collect { command ->
-                            resolve(command, ctx)
+                            context(sink) { resolve(command) }
                         }
                 }
             }
         }
     }
 
+context(_: Sink<Message>, scope: TrackingScope)
 private fun <Env> Env.resolve(
     cmd: Command,
-    ctx: ResolveCtx<Message>,
 ) where Env : ArticlesResolver<Env>,
         Env : LocalStorage,
         Env : FiltersResolver<Env>,
         Env : ArticleDetailsResolver {
     when (cmd) {
-        is ArticlesCommand -> ctx effects { resolve(cmd) }
-        is DoOpenInBrowser -> ctx sideEffect { resolve(cmd) }
-        is DoStoreDarkMode -> ctx sideEffect {
+        is ArticlesCommand -> resolveForArticles(cmd)
+        is DoOpenInBrowser -> resolveForOpenInBrowser(cmd)
+        is DoStoreDarkMode -> sideEffect {
             storeDarkModePreferences(cmd.userDarkModeEnabled, cmd.syncWithSystemDarkModeEnabled)
         }
 
-        is FilterCommand -> ctx effects { resolve(cmd) }
-        is DoLog -> ctx sideEffect { log(cmd) }
+        is FilterCommand -> resolveForFilter(cmd)
+        is DoLog -> sideEffect { log(cmd) }
         else -> error("Shouldn't get here $cmd")
     }
 }

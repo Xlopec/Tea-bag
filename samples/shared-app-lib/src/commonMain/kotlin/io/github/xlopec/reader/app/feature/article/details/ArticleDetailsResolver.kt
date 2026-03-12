@@ -24,9 +24,14 @@
 
 package io.github.xlopec.reader.app.feature.article.details
 
+import io.github.xlopec.reader.app.Message
+import io.github.xlopec.tea.core.Sink
+import kotlinx.coroutines.CoroutineScope
+
 public interface ArticleDetailsResolver {
 
-    public suspend fun resolve(
+    context(_: Sink<Message>, _: CoroutineScope)
+    public fun resolveForOpenInBrowser(
         command: DoOpenInBrowser
     )
 }
