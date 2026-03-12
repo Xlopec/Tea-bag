@@ -58,7 +58,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.transform
@@ -87,28 +86,18 @@ public fun <Env> AppResolver(): AppResolver<Env> where
                 currentSnapshot.currentState.screens.fastForEach { screen ->
                     key(screen.id) {
                         TrackingEffect(screen.id) {
-                            println("Effect for ${screen.id}")
-                            try {
-                                commands
-                                    .onEach { println("Cmd1 detected by ${screen.id} $it ") }
-                                    .filter { it is ScreenCommand && it.id == screen.id }
-                                    .onEach { println("Cmd11 $it") }
-                                    .collect { command ->
-                                        println("resolve $command")
-                                        context(sink) { resolve(command) }
-                                    }
-                            } finally {
-                                println("Done with ${screen.id}")
-                            }
+                            commands
+                                .filter { it is ScreenCommand && it.id == screen.id }
+                                .collect { command ->
+                                    context(sink) { resolve(command) }
+                                }
                         }
                     }
                 }
 
                 TrackingEffect(Unit) {
                     commands
-                        .onEach { println("Cmd2 $it") }
                         .filter { it !is ScreenCommand || it.id == null }
-                        .onEach { println("Cmd22 $it") }
                         .collect { command ->
                             context(sink) { resolve(command) }
                         }
@@ -117,7 +106,7 @@ public fun <Env> AppResolver(): AppResolver<Env> where
         }
     }
 
-context(_: Sink<Message>, scope: TrackingScope)
+context(_: Sink<Message>, _: TrackingScope)
 private fun <Env> Env.resolve(
     cmd: Command,
 ) where Env : ArticlesResolver<Env>,
