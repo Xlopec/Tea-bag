@@ -26,12 +26,14 @@
 
 package io.github.xlopec.reader.app
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.ui.util.fastForEachIndexed
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.util.fastForEach
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.command.DoLog
 import io.github.xlopec.reader.app.command.DoStoreDarkMode
@@ -48,11 +50,13 @@ import io.github.xlopec.tea.compose.ComposeResolver
 import io.github.xlopec.tea.compose.SnapshotNotifierPolicy
 import io.github.xlopec.tea.compose.TrackingEffect
 import io.github.xlopec.tea.core.ResolveCtx
+import io.github.xlopec.tea.core.Snapshot
 import io.github.xlopec.tea.core.effects
 import io.github.xlopec.tea.core.sideEffect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
@@ -76,22 +80,15 @@ public fun <Env> AppResolver(): AppResolver<Env> where
             val currentSnapshot = snapshot
 
             if (currentSnapshot != null) {
-                val commands = remember(snapshots) {
-                    snapshots
-                        .transform { snapshot -> snapshot.commands.forEach { emit(it) } }
-                        // command is gone by the time we compose the first tracking effect
-                        .onStart { currentSnapshot.commands.forEach { emit(it) } }
-                        // command emitted BEFORE LaunchedEffect has a chance to collect items
-                        .shareIn(ctx, SharingStarted.Lazily, 1)
-                }
+                val commands = snapshots.rememberCommands(currentSnapshot)
 
-                currentSnapshot.currentState.screens.fastForEachIndexed { i, screen ->
+                currentSnapshot.currentState.screens.fastForEach { screen ->
                     key(screen.id) {
                         TrackingEffect(screen.id) {
-                            println("Effect for ${screen.id} at $i")
+                            println("Effect for ${screen.id}")
                             try {
                                 commands
-                                    .onEach { println("Cmd1 detected by ${screen.id} at $i $it ") }
+                                    .onEach { println("Cmd1 detected by ${screen.id} $it ") }
                                     .filter { it is ScreenCommand && it.id == screen.id }
                                     .onEach { println("Cmd11 $it") }
                                     .collect { command ->
@@ -99,7 +96,7 @@ public fun <Env> AppResolver(): AppResolver<Env> where
                                         resolve(command, ctx)
                                     }
                             } finally {
-                                println("Done with ${screen.id} at $i")
+                                println("Done with ${screen.id}")
                             }
                         }
                     }
@@ -135,6 +132,20 @@ private fun <Env> Env.resolve(
         is FilterCommand -> ctx effects { resolve(cmd) }
         is DoLog -> ctx sideEffect { log(cmd) }
         else -> error("Shouldn't get here $cmd")
+    }
+}
+
+@Composable
+private fun Flow<Snapshot<*, AppState, Command>>.rememberCommands(
+    initialSnapshot: Snapshot<*, AppState, Command>,
+): Flow<Command> {
+    val scope = rememberCoroutineScope()
+    return remember(this, scope) {
+        transform { snapshot -> snapshot.commands.forEach { emit(it) } }
+            // command is gone by the time we compose the first tracking effect
+            .onStart { initialSnapshot.commands.forEach { emit(it) } }
+            // command emitted BEFORE LaunchedEffect has a chance to collect items
+            .shareIn(scope, SharingStarted.Lazily, 1)
     }
 }
 
