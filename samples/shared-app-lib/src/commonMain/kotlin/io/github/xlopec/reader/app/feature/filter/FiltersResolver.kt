@@ -40,29 +40,14 @@ import io.github.xlopec.tea.data.UrlFor
 import io.github.xlopec.tea.data.domain
 import kotlinx.coroutines.CoroutineScope
 
-public interface FiltersResolver<Env> {
-
-    context(_: Sink<Message>, _: CoroutineScope)
-    public fun Env.resolveForFilter(
-        command: FilterCommand,
-    )
-}
-
-public fun <Env> FiltersResolver(): FiltersResolver<Env>
-    where Env : LocalStorage, Env : NewsApi = FiltersResolverImpl()
-
-private class FiltersResolverImpl<Env> : FiltersResolver<Env>
-    where Env : LocalStorage, Env : NewsApi {
-
-    context(_: Sink<Message>, _: CoroutineScope)
-    override fun Env.resolveForFilter(
-        command: FilterCommand,
-    ) {
-        when (command) {
-            is DoLoadRecentSearches -> fetchRecentSearches(command)
-            is DoLoadSources -> fetchSources(command)
-            is DoRemoveRecentSearch -> removeRecentSearch(command)
-        }
+context(_: Sink<Message>, _: CoroutineScope)
+public fun <Env> Env.resolveForFilter(
+    command: FilterCommand,
+) where Env : LocalStorage, Env : NewsApi {
+    when (command) {
+        is DoLoadRecentSearches -> fetchRecentSearches(command)
+        is DoLoadSources -> fetchSources(command)
+        is DoRemoveRecentSearch -> removeRecentSearch(command)
     }
 }
 

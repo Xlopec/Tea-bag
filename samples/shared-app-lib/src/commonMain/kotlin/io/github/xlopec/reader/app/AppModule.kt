@@ -26,18 +26,11 @@
 
 package io.github.xlopec.reader.app
 
-import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsResolver
-import io.github.xlopec.reader.app.feature.article.list.ArticlesResolver
-import io.github.xlopec.reader.app.feature.filter.FiltersResolver
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 
-public interface AppModule<Env> : AppUpdater<Env>, AppResolver<Env>
+public interface AppModule<Env> : AppUpdater<Env>
 
-public fun <Env> AppModule(): AppModule<Env> where Env : ArticlesResolver<Env>,
-                                            Env : FiltersResolver<Env>,
-                                            Env : ArticleDetailsResolver,
-                                            Env : LocalStorage =
+public fun <Env> AppModule(): AppModule<Env> where Env : LocalStorage =
     object : AppModule<Env>,
-        AppUpdater<Env> by AppUpdater(),
-        AppResolver<Env> by AppResolver() {
+        AppUpdater<Env> by AppUpdater() {
     }

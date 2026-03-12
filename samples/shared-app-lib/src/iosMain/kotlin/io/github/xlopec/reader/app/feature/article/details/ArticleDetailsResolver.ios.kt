@@ -26,31 +26,13 @@
 
 package io.github.xlopec.reader.app.feature.article.details
 
-import android.app.Application
-import android.content.Intent
-import androidx.core.net.toUri
-import io.github.xlopec.reader.app.Message
-import io.github.xlopec.tea.core.Sink
-import io.github.xlopec.tea.core.sideEffect
-import kotlinx.coroutines.CoroutineScope
+import io.github.xlopec.tea.data.Url
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import platform.UIKit.UIApplication
 
-internal fun ArticleDetailsResolver(
-    application: Application,
-): ArticleDetailsResolver =
-    object : ArticleDetailsResolver {
-
-        context(_: Sink<Message>, _: CoroutineScope)
-        override fun resolveForOpenInBrowser(
-            command: DoOpenInBrowser,
-        ) {
-            command.sideEffect(Dispatchers.Main) {
-                val intent = Intent(Intent.ACTION_VIEW, article.url.toString().toUri())
-                    .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
-
-                if (intent.resolveActivity(application.packageManager) != null) {
-                    application.startActivity(intent)
-                }
-            }
-        }
+internal object BrowserLauncherImpl : BrowserLauncher {
+    override suspend fun launch(url: Url): Unit = withContext(Dispatchers.Main) {
+        UIApplication.sharedApplication.openURL(url)
     }
+}

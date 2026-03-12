@@ -24,11 +24,11 @@
 
 package io.github.xlopec.reader.app
 
-import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsModule
-import io.github.xlopec.reader.app.feature.article.list.ArticlesModule
+import io.github.xlopec.reader.app.feature.article.details.BrowserLauncher
+import io.github.xlopec.reader.app.feature.article.details.BrowserLauncherImpl
 import io.github.xlopec.reader.app.feature.article.list.IosShareArticle
 import io.github.xlopec.reader.app.feature.article.list.NewsApi
-import io.github.xlopec.reader.app.feature.filter.FiltersModule
+import io.github.xlopec.reader.app.feature.article.list.ShareArticle
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import kotlinx.coroutines.CoroutineScope
 
@@ -36,10 +36,9 @@ public fun Environment(
     scope: CoroutineScope,
 ): Environment =
     object : Environment,
+        ShareArticle by IosShareArticle,
         AppModule<Environment> by AppModule(),
-        ArticlesModule<Environment> by ArticlesModule(IosShareArticle),
-        FiltersModule<Environment> by FiltersModule(),
-        ArticleDetailsModule by ArticleDetailsModule(),
+        BrowserLauncher by BrowserLauncherImpl,
         LocalStorage by LocalStorage(),
         NewsApi by NewsApi(),
         CoroutineScope by scope {
@@ -47,9 +46,8 @@ public fun Environment(
 
 public actual interface Environment :
     AppModule<Environment>,
-    ArticlesModule<Environment>,
-    FiltersModule<Environment>,
-    ArticleDetailsModule,
+    BrowserLauncher,
+    ShareArticle,
     LocalStorage,
     NewsApi,
     CoroutineScope
