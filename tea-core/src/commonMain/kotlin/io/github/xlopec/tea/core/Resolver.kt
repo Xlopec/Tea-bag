@@ -60,7 +60,7 @@ public typealias Sink<T> = suspend (T) -> Unit
  * @return job that performs [action]
  */
 @ExperimentalTeaApi
-context(sink: Sink<M>, scope: CoroutineScope)
+context(_: Sink<M>, _: CoroutineScope)
 public inline infix fun <M, C> C.effects(
     crossinline action: suspend C.() -> Set<M>,
 ): Job = effects(EmptyCoroutineContext, CoroutineStart.DEFAULT, action)
@@ -90,7 +90,7 @@ public inline fun <M, C> C.effects(
  * @return job that performs [action]
  */
 @ExperimentalTeaApi
-context(sink: Sink<M>, scope: CoroutineScope)
+context(_: Sink<M>, _: CoroutineScope)
 public inline infix fun <M, C> C.effect(
     crossinline action: suspend C.() -> M?,
 ): Job = effect(EmptyCoroutineContext, CoroutineStart.DEFAULT, action)
@@ -116,7 +116,7 @@ public inline fun <M, C> C.effect(
  * @return job that performs [action]
  */
 @ExperimentalTeaApi
-context(_: Sink<M>, scope: CoroutineScope)
+context(_: Sink<M>, _: CoroutineScope)
 public inline infix fun <M, C> C.sideEffect(
     crossinline action: suspend C.() -> Unit,
 ): Job = sideEffect(EmptyCoroutineContext, CoroutineStart.DEFAULT, action)
