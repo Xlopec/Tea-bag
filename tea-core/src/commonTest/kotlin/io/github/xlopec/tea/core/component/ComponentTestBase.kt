@@ -102,7 +102,7 @@ abstract class ComponentTestBase(
             val env = testEnv<Char, String, Char>(
                 initializer = Initializer(""),
                 resolver = { snapshot ->
-                    this@runTestCancellingChildren.launch {
+                    contextOf<CoroutineScope>().launch {
                         snapshot.collect {
                             it.commands.forEach { ch ->
                                 // only message 'b' should be consumed
@@ -130,7 +130,7 @@ abstract class ComponentTestBase(
         val env = testEnv<Char, String, Char>(
             initializer = Initializer(""),
             resolver = { snapshot ->
-                this@runTestCancellingChildren.launch {
+                contextOf<CoroutineScope>().launch {
                     snapshot.collect {
                         it.commands.forEach { c ->
                             effects { setOf(c) }
@@ -156,7 +156,7 @@ abstract class ComponentTestBase(
         val env = testEnv<Char, String, Char>(
             initializer = Initializer(""),
             resolver = { snapshot ->
-                this@runTestCancellingChildren.launch {
+                contextOf<CoroutineScope>().launch {
                     snapshot.collect {
                         it.commands.forEach { ch ->
                             effects {
@@ -208,7 +208,7 @@ abstract class ComponentTestBase(
         var invocations = 0
         val env = testEnv<Char, String, Char>(
             initializer = { invocations++; yield(); Initial("bar", setOf()) },
-            resolver = { snapshot -> this@runTestCancellingChildren.launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
+            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
             updater = { _, s -> s.noCommand() },
             scope = this,
             // SharingStarted.Lazily since in case of default option replay
@@ -253,7 +253,7 @@ abstract class ComponentTestBase(
     fun `when component has multiple consumers then it can serve multiple message sources`() = runTestCancellingChildren {
         val env = testEnv<Char, String, Char>(
             initializer = Initializer(""),
-            resolver = { snapshot -> this@runTestCancellingChildren.launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
+            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
             updater = { m, _ -> m.toString().noCommand() },
             scope = this
         )
