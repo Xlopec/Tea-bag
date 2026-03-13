@@ -1,8 +1,8 @@
 package io.github.xlopec.reader.app.ui.misc
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Preview
 @Composable

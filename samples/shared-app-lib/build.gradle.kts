@@ -43,7 +43,7 @@ kotlin {
         )
     }
 
-    androidLibrary {
+    android {
         compileSdk = 36
         minSdk = 23
         namespace = "io.github.xlopec.shared"
