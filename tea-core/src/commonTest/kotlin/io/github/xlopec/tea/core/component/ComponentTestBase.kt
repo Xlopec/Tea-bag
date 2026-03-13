@@ -57,12 +57,12 @@ abstract class ComponentTestBase(
     @Test
     fun `when subscriber disconnects then component initializer is re-invoked`() = runTestCancellingChildren {
         var counter = 0
-        val initial = Initial<String, Char>("", setOf())
+        val initial = Initial<String, Char>(currentState = "", commands = setOf())
         val env = testEnv(
-            { counter++; initial },
-            { _ -> },
-            { m: Char, str -> (str + m).command(m) },
-            this
+            initializer = { counter++; initial },
+            resolver = { _ -> },
+            updater = { m: Char, str -> (str + m).command(m) },
+            scope = this
         )
 
         val component = factory(env)
@@ -86,10 +86,10 @@ abstract class ComponentTestBase(
         val messages = arrayOf('a', 'b', 'c')
         val actualSnapshots = factory(env)(*messages).take(messages.size + 1).toList()
         val expectedSnapshots = listOf<Snapshot<Char, String, Char>>(
-            Initial("", setOf()),
-            Regular("a", setOf(), "", 'a'),
-            Regular("b", setOf(), "a", 'b'),
-            Regular("c", setOf(), "b", 'c')
+            Initial(currentState = "", commands = setOf()),
+            Regular(currentState = "a", commands = setOf(), previousState = "", message = 'a'),
+            Regular(currentState = "b", commands = setOf(), previousState = "a", message = 'b'),
+            Regular(currentState = "c", commands = setOf(), previousState = "b", message = 'c')
         )
 
         assertContentEquals(expectedSnapshots, actualSnapshots)
@@ -117,9 +117,9 @@ abstract class ComponentTestBase(
 
             val actualSnapshots = factory(env)('a').take(3).toList()
             val expectedSnapshots = listOf(
-                Initial("", setOf()),
-                Regular("a", setOf('a'), "", 'a'),
-                Regular("ab", setOf('b'), "a", 'b')
+                Initial(currentState = "", commands = setOf()),
+                Regular(currentState = "a", commands = setOf('a'), previousState = "", message = 'a'),
+                Regular(currentState = "ab", commands = setOf('b'), previousState = "a", message = 'b')
             )
 
             assertContentEquals(expectedSnapshots, actualSnapshots)
@@ -186,9 +186,9 @@ abstract class ComponentTestBase(
             val consumer2 = component('a').take(take).testIn(this)
 
             val expectedSnapshots = listOf(
-                Initial("", setOf()),
-                Regular("a", setOf('a'), "", 'a'),
-                Regular("ab", setOf('b'), "a", 'b')
+                Initial(currentState = "", commands = setOf()),
+                Regular(currentState = "a", commands = setOf('a'), previousState = "", message = 'a'),
+                Regular(currentState = "ab", commands = setOf('b'), previousState = "a", message = 'b')
             )
 
             expectedSnapshots.forEach { expectedSnapshot ->
@@ -281,15 +281,15 @@ abstract class ComponentTestBase(
             val expectedSnapshots: List<Snapshot<Char, String, Char>> =
                 listOf(
                     Initial(
-                        "",
-                        setOf<Char>()
+                        currentState = "",
+                        commands = setOf<Char>()
                     )
                 ) + range.mapIndexed { index, ch ->
                     Regular(
-                        ch.toString(),
-                        setOf(),
-                        if (index == 0) "" else ch.dec().toString(),
-                        ch
+                        currentState = ch.toString(),
+                        commands = setOf(),
+                        previousState = if (index == 0) "" else ch.dec().toString(),
+                        message = ch
                     )
                 }
 

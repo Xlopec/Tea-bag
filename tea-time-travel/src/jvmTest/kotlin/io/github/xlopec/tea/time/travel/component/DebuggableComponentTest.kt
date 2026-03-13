@@ -63,7 +63,7 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
     fun `test debuggable component throws expected exception when it can't connect to a server`() = runTestCancellingChildren {
         val exceptions = mutableListOf<Throwable>()
         val env = Env<Char, String, Char>(
-            Initializer(""),
+            initializer = Initializer(""),
             resolver = { snapshots ->
                 (this as CoroutineScope).launch {
                     snapshots.collect { snapshot ->
@@ -73,8 +73,8 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
                     }
                 }
             },
-            { m, _ -> m.toString().noCommand() },
-            CoroutineScope(Job() + CoroutineExceptionHandler { _, th -> exceptions += th })
+            updater = { m, _ -> m.toString().noCommand() },
+            scope = CoroutineScope(Job() + CoroutineExceptionHandler { _, th -> exceptions += th })
         )
 
         runCatching {
@@ -100,10 +100,10 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
         val component = Component(
             TestDebugEnv(
                 env = Env<Char, String, Char>(
-                    Initializer(""),
+                    initializer = Initializer(""),
                     resolver = { snapshots -> contextOf<CoroutineScope>().launch { snapshots.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
-                    { m, _ -> m.toString().noCommand() },
-                    this
+                    updater = { m, _ -> m.toString().noCommand() },
+                    scope = this
                 ),
                 settings = TestSettings(
                     sessionFactory = { _, block -> testSession.apply { block() } }
@@ -113,10 +113,10 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
         val messages = arrayOf('a', 'b', 'c')
 
         component(*messages).take(messages.size + 1).test {
-            assertEquals(Initial("", emptySet()), awaitItem())
-            assertEquals(Regular("a", emptySet(), "", 'a'), awaitItem())
-            assertEquals(Regular("b", emptySet(), "a", 'b'), awaitItem())
-            assertEquals(Regular("c", emptySet(), "b", 'c'), awaitItem())
+            assertEquals(Initial(currentState = "", commands = emptySet()), awaitItem())
+            assertEquals(Regular(currentState = "a", commands = emptySet(), previousState = "", message = 'a'), awaitItem())
+            assertEquals(Regular(currentState = "b", commands = emptySet(), previousState = "a", message = 'b'), awaitItem())
+            assertEquals(Regular(currentState = "c", commands = emptySet(), previousState = "b", message = 'c'), awaitItem())
             awaitComplete()
             cancel()
         }

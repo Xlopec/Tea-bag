@@ -67,7 +67,7 @@ internal class AppStateSerializationTest {
 
     private val previewScreenState = ArticlesState(
         tab = Tab.Feed,
-        filter = Filter(FilterType.Regular, Query.of("android")),
+        filter = Filter(type = FilterType.Regular, query = Query.of("android")),
         loadable = ArticlesLoadable(
             data = persistentListOf(
                 Article(
@@ -87,8 +87,8 @@ internal class AppStateSerializationTest {
     )
 
     private val loadingScreenState = ArticlesState.newLoading(
-        Tab.Feed,
-        Filter(FilterType.Regular, Query.of("test"))
+        tab = Tab.Feed,
+        filter = Filter(type = FilterType.Regular, query = Query.of("test"))
     )
 
     private val testState = AppState(
