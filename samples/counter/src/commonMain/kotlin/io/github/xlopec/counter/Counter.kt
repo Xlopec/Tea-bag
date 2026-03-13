@@ -11,6 +11,7 @@ import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.invoke
 import io.github.xlopec.tea.core.sideEffect
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking

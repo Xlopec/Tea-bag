@@ -156,11 +156,11 @@ fun main(): Unit = runBlocking {
     val component = AppComponent(
         scope = this,
         app = app,
-        resolver = { snapshots, context ->
+        resolver = { snapshots ->
             // ComposeResolver is used here to manage effects in a way that integrates
             // with Jetpack Compose's lifecycle (using TrackingEffect).
             ComposeResolver(
-                scope = context,
+                scope = contextOf<CoroutineScope>(),
                 snapshots = snapshots,
                 clockPolicy = ClockPolicy.Internal,
                 snapshotManagerPolicy = SnapshotNotifierPolicy.WhileActive
@@ -175,7 +175,7 @@ fun main(): Unit = runBlocking {
                                     screen.id == (cmd as? DoLoad)?.screenId
                                 }
                                 .collect { cmd ->
-                                    resolve(cmd, context, this)
+                                    resolve(cmd)
                                 }
                         }
                     }
@@ -187,7 +187,7 @@ fun main(): Unit = runBlocking {
                             cmd !is DoLoad
                         }
                         .collect { cmd ->
-                            resolve(cmd, context, this)
+                            resolve(cmd)
                         }
                 }
             }
@@ -221,7 +221,8 @@ fun main(): Unit = runBlocking {
  * @param sink a function to send messages back to the component.
  * @param scope the [TrackingScope] used to launch asynchronous tasks.
  */
-internal fun resolve(command: Command, sink: Sink<Message>, scope: TrackingScope) {
+context(sink: Sink<Message>, scope: TrackingScope)
+internal fun resolve(command: Command) {
     println("Resolving command: $command")
 
     when (command) {

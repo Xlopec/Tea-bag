@@ -69,17 +69,18 @@ fun runTestCancellingChildren(
     job.cancelChildren()
 }
 
-fun <M, S, C> CoroutineScope.testEnv(
+fun <M, S, C> testEnv(
     initializer: Initializer<S, C>,
     resolver: Resolver<M, S, C>,
     updater: Updater<M, S, C>,
+    scope: CoroutineScope,
     shareOptions: ShareOptions = ShareStateWhileSubscribed,
 ) = Env(
-    initializer,
-    resolver,
-    updater,
-    this,
-    shareOptions
+    initializer = initializer,
+    resolver = { snapshot -> resolver(snapshot) },
+    updater = updater,
+    scope = scope,
+    shareOptions = shareOptions
 )
 
 @Suppress("UNUSED_PARAMETER")

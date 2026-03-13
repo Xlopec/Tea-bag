@@ -31,7 +31,6 @@ import io.github.xlopec.tea.core.Env
 import io.github.xlopec.tea.core.Initial
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.Regular
-import io.github.xlopec.tea.core.ResolveCtx
 import io.github.xlopec.tea.core.Resolver
 import io.github.xlopec.tea.core.ShareOptions
 import io.github.xlopec.tea.core.ShareStateWhileSubscribed
@@ -119,11 +118,10 @@ public fun <M, S, C, J> Component(
 ): Component<M, S, C> {
 
     val input = Channel<M>(RENDEZVOUS)
-    val context = ResolveCtx(input::send, debugEnv.env.scope)
     val upstream = debugEnv.computeSnapshots(input)
         .shareIn(debugEnv.env.scope, debugEnv.env.shareOptions)
 
-    debugEnv.env.resolver(upstream, context)
+    context(input::send, debugEnv.env.scope) { debugEnv.env.resolver(upstream) }
 
     return { messages -> upstream.attachMessageCollector(messages, input::send) }
 }

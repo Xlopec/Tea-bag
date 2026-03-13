@@ -14,7 +14,7 @@ import io.github.xlopec.tea.core.effects
 import io.github.xlopec.tea.core.invoke
 import io.github.xlopec.tea.core.misc.CheckingUpdater
 import io.github.xlopec.tea.core.misc.ComponentException
-import io.github.xlopec.tea.core.misc.ForeverWaitingResolver
+import io.github.xlopec.tea.core.misc.SnapshotsCollector
 import io.github.xlopec.tea.core.misc.ThrowingInitializer
 import io.github.xlopec.tea.core.misc.collectRanged
 import io.github.xlopec.tea.core.misc.currentThreadName
@@ -26,7 +26,9 @@ import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.core.with
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
@@ -58,8 +60,9 @@ abstract class ComponentTestBase(
         val initial = Initial<String, Char>("", setOf())
         val env = testEnv(
             { counter++; initial },
-            { _, _ -> },
+            { _ -> },
             { m: Char, str -> (str + m).command(m) },
+            this
         )
 
         val component = factory(env)
@@ -74,9 +77,10 @@ abstract class ComponentTestBase(
     @Test
     fun `when component receives input then it emits correct sequence of snapshots`() = runTestCancellingChildren {
         val env = testEnv<Char, String, Char>(
-            Initializer(""),
-            { snapshot, ctx -> ctx.launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $snapshot" } } } },
-            { m, _ -> m.toString().noCommand() }
+            initializer = Initializer(""),
+            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $snapshot" } } } },
+            updater = { m, _ -> m.toString().noCommand() },
+            scope = this
         )
 
         val messages = arrayOf('a', 'b', 'c')
@@ -96,18 +100,19 @@ abstract class ComponentTestBase(
         runTestCancellingChildren {
 
             val env = testEnv<Char, String, Char>(
-                Initializer(""),
-                { snapshot, ctx ->
-                    ctx.launch {
+                initializer = Initializer(""),
+                resolver = { snapshot ->
+                    this@runTestCancellingChildren.launch {
                         snapshot.collect {
                             it.commands.forEach { ch ->
                                 // only message 'b' should be consumed
-                                ctx effects { if (ch == 'a') ('b'..'d').toSet() else setOf() }
+                                effects { if (ch == 'a') ('b'..'d').toSet() else setOf() }
                             }
                         }
                     }
                 },
-                { m, str -> (str + m).command(m) }
+                updater = { m, str -> (str + m).command(m) },
+                scope = this
             )
 
             val actualSnapshots = factory(env)('a').take(3).toList()
@@ -123,17 +128,18 @@ abstract class ComponentTestBase(
     @Test
     fun `when attaching interceptor to component then original sequence of snapshots pipes through it`() = runTestCancellingChildren {
         val env = testEnv<Char, String, Char>(
-            Initializer(""),
-            { snapshot, ctx ->
-                ctx.launch {
+            initializer = Initializer(""),
+            resolver = { snapshot ->
+                this@runTestCancellingChildren.launch {
                     snapshot.collect {
                         it.commands.forEach { c ->
-                            ctx effects { setOf(c) }
+                            effects { setOf(c) }
                         }
                     }
                 }
             },
-            { m, _ -> m.toString().noCommand() },
+            updater = { m, _ -> m.toString().noCommand() },
+            scope = this
         )
 
         val sink = mutableListOf<Snapshot<Char, String, Char>>()
@@ -148,12 +154,12 @@ abstract class ComponentTestBase(
     @Test
     fun `when component has multiple consumers then snapshots are shared among them`() = runTestCancellingChildren {
         val env = testEnv<Char, String, Char>(
-            Initializer(""),
-            { snapshot, ctx ->
-                ctx.launch {
+            initializer = Initializer(""),
+            resolver = { snapshot ->
+                this@runTestCancellingChildren.launch {
                     snapshot.collect {
                         it.commands.forEach { ch ->
-                            ctx effects {
+                            effects {
                                 if (ch == 'a') {
                                     setOf(
                                         ch + 1, // only this message should be consumed
@@ -168,7 +174,8 @@ abstract class ComponentTestBase(
                     }
                 }
             },
-            { m, str -> (str + m).command(m) }
+            updater = { m, str -> (str + m).command(m) },
+            scope = this
         )
 
         val take = 3
@@ -200,9 +207,10 @@ abstract class ComponentTestBase(
     fun `when component has multiple consumers then component is initialized only once`() = runTestCancellingChildren {
         var invocations = 0
         val env = testEnv<Char, String, Char>(
-            { invocations++; yield(); Initial("bar", setOf()) },
-            { snapshot, ctx -> ctx.launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
-            { _, s -> s.noCommand() },
+            initializer = { invocations++; yield(); Initial("bar", setOf()) },
+            resolver = { snapshot -> this@runTestCancellingChildren.launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
+            updater = { _, s -> s.noCommand() },
+            scope = this,
             // SharingStarted.Lazily since in case of default option replay
             // cache will be disposed immediately causing test to fail
             shareOptions = ShareOptions(SharingStarted.Lazily, 1U)
@@ -220,11 +228,12 @@ abstract class ComponentTestBase(
 
     @Test
     fun `test component's job gets canceled properly`() = runTestCancellingChildren {
-        val resolver = ForeverWaitingResolver<Char, String, Char>()
+        val resolver = SnapshotsCollector<Char, String, Char>()
         val env = testEnv(
-            Initializer(""),
-            resolver,
-            { message, state -> state command message }
+            initializer = Initializer(""),
+            resolver = { snapshots -> resolver.collect(snapshots) },
+            updater = { message, state -> state command message },
+            scope = this
         )
 
         val messages = 'a'..'z'
@@ -243,9 +252,10 @@ abstract class ComponentTestBase(
     @Test
     fun `when component has multiple consumers then it can serve multiple message sources`() = runTestCancellingChildren {
         val env = testEnv<Char, String, Char>(
-            Initializer(""),
-            { snapshot, ctx -> ctx.launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
-            { m, _ -> m.toString().noCommand() }
+            initializer = Initializer(""),
+            resolver = { snapshot -> this@runTestCancellingChildren.launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
+            updater = { m, _ -> m.toString().noCommand() },
+            scope = this
         )
 
         val range = 'a'..'h'
@@ -301,10 +311,10 @@ abstract class ComponentTestBase(
         val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
 
         val component = Component(
-            Initializer("", "a"),
-            { snapshot, ctx -> ctx.launch { snapshot.collect { /* no-op */ } } },
-            { m: String, s -> throw ComponentException("message=$m, state=$s") },
-            scope
+            initializer = Initializer("", "a"),
+            resolver = { snapshot -> scope.launch { snapshot.collect { /* no-op */ } } },
+            updater = { m: String, s -> throw ComponentException("message=$m, state=$s") },
+            scope = scope
         )
 
         val job = scope.launch { component("").collect() }
@@ -326,7 +336,7 @@ abstract class ComponentTestBase(
         val component = Component(
             Env<String, Nothing, Nothing>(
                 initializer = ThrowingInitializer(expectedException),
-                resolver = { snapshot, ctx -> ctx.launch { snapshot.collect { /* no-op */ } } },
+                resolver = { snapshot -> scope.launch { snapshot.collect { /* no-op */ } } },
                 updater = { _, s -> s },
                 scope = scope
             )
@@ -349,12 +359,15 @@ abstract class ComponentTestBase(
         // All test schedulers use 'Test worker' as prefix, so to work around this issue we use
         // custom dispatcher with different thread naming strategy
         val mainThreadNamePrefix = async { currentThreadName() }
-        val env = CoroutineScope(Dispatchers.Default).testEnv<Char, String, Char>(
-            Initializer(""),
-            { snapshot, ctx -> ctx.launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
-            CheckingUpdater(mainThreadNamePrefix.await())
+        val scope = CoroutineScope(coroutineContext + Job(coroutineContext[Job.Key]) + Dispatchers.Default)
+        val env = testEnv<Char, String, Char>(
+            initializer = Initializer(""),
+            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
+            updater = CheckingUpdater(mainThreadNamePrefix.await()),
+            scope = scope,
         )
 
         factory(env)('a'..'d').take('d' - 'a').collect()
+        scope.cancel()
     }
 }

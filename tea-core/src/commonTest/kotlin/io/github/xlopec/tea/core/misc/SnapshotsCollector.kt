@@ -24,25 +24,24 @@
 
 package io.github.xlopec.tea.core.misc
 
-import io.github.xlopec.tea.core.ResolveCtx
-import io.github.xlopec.tea.core.Resolver
 import io.github.xlopec.tea.core.Snapshot
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
-class ForeverWaitingResolver<M, S, C> : Resolver<M, S, C> {
+class SnapshotsCollector<M, S, C> {
 
     private val _messages = Channel<Snapshot<M, S, C>>()
 
     val messages: ReceiveChannel<Snapshot<M, S, C>> = _messages
 
-    override fun invoke(snapshot: Flow<Snapshot<M, S, C>>, context: ResolveCtx<M>) {
-        context.launch {
-            snapshot.collect {
-                _messages.send(it)
-            }
-        }
+    context(scope: CoroutineScope)
+    fun collect(snapshot: Flow<Snapshot<M, S, C>>) {
+        snapshot
+            .onEach { _messages.send(it) }
+            .launchIn(scope)
     }
 }
