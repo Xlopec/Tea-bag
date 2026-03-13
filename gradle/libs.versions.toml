@@ -59,7 +59,7 @@ arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
 sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-driver-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
-sqldelight-sqlight-dialect = { module = "app.cash.sqldelight:sqlite-3-18-dialect", version = "2.2.1" }
+sqldelight-sqlight-dialect = { module = "app.cash.sqldelight:sqlite-3-18-dialect", version.ref = "sqldelight" }
 desugar-jdk = { module = "com.android.tools:desugar_jdk_libs", version = "2.1.5" }
 gson = { module = "com.google.code.gson:gson", version = "2.13.2" }
 immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.4.0" }
