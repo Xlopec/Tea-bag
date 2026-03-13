@@ -75,8 +75,9 @@ internal class AppTest {
                         articles = persistentListOf()
                     ),
                     listState = LazyListState(firstVisibleItemIndex = 0, firstVisibleItemScrollOffset = 0),
-                    modifier = Modifier
-                ) {}
+                    modifier = Modifier,
+                    onMessage = {}
+                )
             }
         }
 
@@ -90,12 +91,12 @@ internal class AppTest {
 
             anyArticleRequest() yields ArticleResponse(TestArticleElement)
 
-            App(
+            App { messages ->
                 AppComponent(
                     environment = this,
                     initializer = AppInitializer(systemDarkModeEnabled = false, this)
-                )
-            )
+                )(messages)
+            }
 
             testScheduler.advanceUntilIdle()
         }
