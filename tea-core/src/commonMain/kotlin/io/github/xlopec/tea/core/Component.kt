@@ -267,6 +267,7 @@ public fun <M, S, C> Component(
 
     val input = Channel<M>(RENDEZVOUS)
     val upstream = computeSnapshots(initial(), input.receiveAsFlow())
+        // TODO using default buffer size might not be flexible enough, consider config options
         .shareIn(scope, shareOptions)
 
     context(input::send, scope) { resolver(upstream) }
