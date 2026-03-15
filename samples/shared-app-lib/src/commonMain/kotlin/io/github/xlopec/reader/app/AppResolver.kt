@@ -31,7 +31,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.util.fastForEach
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.command.DoLog
@@ -130,8 +129,7 @@ private fun <Env> Env.resolve(
 
 @Composable
 private fun Flow<Snapshot<*, AppState, Command>>.rememberCommands(): Flow<Command> {
-    val scope = rememberCoroutineScope()
-    return remember(this, scope) {
+    return remember(this) {
         transform { snapshot -> snapshot.commands.forEach { emit(it) } }
     }
 }
