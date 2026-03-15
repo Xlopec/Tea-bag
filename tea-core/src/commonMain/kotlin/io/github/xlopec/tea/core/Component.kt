@@ -269,7 +269,7 @@ public fun <M, S, C> Component(
     val upstream = computeSnapshots(initial(), input.receiveAsFlow())
         .shareIn(scope, shareOptions)
 
-    context(input::send, env.scope) { resolver(upstream) }
+    context(input::send, scope) { resolver(upstream) }
 
     return { messages -> upstream.attachMessageCollector(messages, input::send) }
 }

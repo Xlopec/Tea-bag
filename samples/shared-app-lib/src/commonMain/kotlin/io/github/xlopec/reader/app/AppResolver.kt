@@ -59,10 +59,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.transform
 
 context(sink: Sink<Message>, scope: CoroutineScope)
@@ -86,7 +83,7 @@ public fun <Env> Env.resolve(
         val currentSnapshot = snapshot
 
         if (currentSnapshot != null) {
-            val commands = snapshots.rememberCommands(currentSnapshot)
+            val commands = snapshots.rememberCommands()
 
             currentSnapshot.currentState.screens.fastForEach { screen ->
                 key(screen.id) {
@@ -132,16 +129,10 @@ private fun <Env> Env.resolve(
 }
 
 @Composable
-private fun Flow<Snapshot<*, AppState, Command>>.rememberCommands(
-    initialSnapshot: Snapshot<*, AppState, Command>,
-): Flow<Command> {
+private fun Flow<Snapshot<*, AppState, Command>>.rememberCommands(): Flow<Command> {
     val scope = rememberCoroutineScope()
     return remember(this, scope) {
         transform { snapshot -> snapshot.commands.forEach { emit(it) } }
-            // command is gone by the time we compose the first tracking effect
-            .onStart { initialSnapshot.commands.forEach { emit(it) } }
-            // command emitted BEFORE LaunchedEffect has a chance to collect items
-            .shareIn(scope, SharingStarted.Lazily, 1)
     }
 }
 

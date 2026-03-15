@@ -62,7 +62,6 @@ private fun setupStrictAppPolicies() {
     setThreadPolicy(
         ThreadPolicy.Builder()
             .detectAll()
-            .penaltyFlashScreen()
             .penaltyLog()
             .build()
     )
