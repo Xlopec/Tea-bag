@@ -266,11 +266,11 @@ public fun <M, S, C> Component(
 ): Component<M, S, C> = with(env) {
 
     val input = Channel<M>(RENDEZVOUS)
-    val context = ResolveCtx(input::send, env.scope)
     val upstream = computeSnapshots(initial(), input.receiveAsFlow())
+        // TODO using default buffer size might not be flexible enough, consider config options
         .shareIn(scope, shareOptions)
 
-    resolver(upstream, context)
+    context(input::send, scope) { resolver(upstream) }
 
     return { messages -> upstream.attachMessageCollector(messages, input::send) }
 }

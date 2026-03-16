@@ -24,9 +24,12 @@
 
 package io.github.xlopec.reader.app.feature.article.details
 
-import io.github.xlopec.reader.app.command.Command
+import io.github.xlopec.reader.app.ScreenId
+import io.github.xlopec.reader.app.command.ScreenCommand
 import io.github.xlopec.reader.app.model.Article
 
 public data class DoOpenInBrowser internal constructor(
     val article: Article,
-) : Command
+) : ScreenCommand {
+    override val id: ScreenId? = null
+}

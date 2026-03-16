@@ -38,8 +38,8 @@ public fun AppComponent(
 ): Component<Message, AppState, Command> =
     Component(
         initializer = initializer,
-        resolver = { snapshots, ctx -> with(environment) { resolve(snapshots, ctx) } },
-        updater = { m, s -> with(environment) { update(m, s) } },
+        resolver = { snapshots -> with(environment) { resolve(snapshots) } },
+        updater = { m, s -> update(m, s) },
         scope = environment,
-        shareOptions = ShareOptions(SharingStarted.WhileSubscribed())
+        shareOptions = ShareOptions(started = SharingStarted.WhileSubscribed(), replay = 1U)
     )

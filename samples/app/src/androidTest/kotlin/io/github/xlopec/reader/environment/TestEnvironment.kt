@@ -30,16 +30,15 @@ import android.app.Application
 import androidx.compose.ui.test.IdlingResource
 import arrow.core.Either
 import io.github.xlopec.reader.app.AppException
-import io.github.xlopec.reader.app.AppModule
 import io.github.xlopec.reader.app.Environment
-import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsModule
+import io.github.xlopec.reader.app.feature.article.details.BrowserLauncher
 import io.github.xlopec.reader.app.feature.article.list.AndroidShareArticle
-import io.github.xlopec.reader.app.feature.article.list.ArticlesModule
 import io.github.xlopec.reader.app.feature.article.list.NewsApi
-import io.github.xlopec.reader.app.feature.filter.FiltersModule
+import io.github.xlopec.reader.app.feature.article.list.ShareArticle
 import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.network.SourcesResponse
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
+import io.github.xlopec.tea.data.Url
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.TestDispatcher
@@ -64,19 +63,25 @@ interface MockNewsApi : NewsApi, IdlingResource {
     )
 }
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 fun TestEnvironment(
     application: Application,
     dispatcher: TestDispatcher = UnconfinedTestDispatcher()
 ): TestEnvironment {
     val testScope = TestScope(dispatcher)
     return object : TestEnvironment,
-        AppModule<Environment> by AppModule(),
-        ArticlesModule<Environment> by ArticlesModule(AndroidShareArticle(application)),
-        ArticleDetailsModule by ArticleDetailsModule(application),
-        FiltersModule<Environment> by FiltersModule(),
         MockNewsApi by TestNewsApi(dispatcher),
         LocalStorage by LocalStorage(application),
+        ShareArticle by AndroidShareArticle(application),
+        BrowserLauncher by TestBrowserLauncher,
         CoroutineScope by testScope {
         override val testScheduler: TestCoroutineScheduler by testScope::testScheduler
+    }
+}
+
+private object TestBrowserLauncher : BrowserLauncher {
+
+    override suspend fun launch(url: Url) {
+        // no-op
     }
 }

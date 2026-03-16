@@ -25,24 +25,27 @@
 package io.github.xlopec.reader.app.feature.filter
 
 import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.command.Command
+import io.github.xlopec.reader.app.command.ScreenCommand
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.Query
 import kotlin.jvm.JvmInline
 
-public sealed interface FilterCommand : Command
+public sealed interface FilterCommand : ScreenCommand
 
 @JvmInline
 public value class DoLoadSources(
-    internal val id: ScreenId,
+    override val id: ScreenId,
 ) : FilterCommand
 
 public data class DoLoadRecentSearches(
-    val id: ScreenId,
+    override val id: ScreenId,
     val type: FilterType,
 ) : FilterCommand
 
 public data class DoRemoveRecentSearch(
     val type: FilterType,
     val query: Query,
-) : FilterCommand
+) : FilterCommand {
+    override val id: ScreenId?
+        get() = null
+}

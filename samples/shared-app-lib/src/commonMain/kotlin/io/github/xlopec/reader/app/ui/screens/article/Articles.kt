@@ -51,7 +51,9 @@ import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Default
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
@@ -396,15 +398,24 @@ internal fun ArticleSearchHeader(
 ) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
+    val onSearch = {
+        keyboardController?.hide()
+        onMessage(LoadArticles(state.id))
+    }
 
     SearchHeader(
         inputText = state.filter.query?.value ?: "",
         placeholderText = state.filter.type.toSearchHint(),
         onQueryUpdate = { },
-        onSearch = {
-            keyboardController?.hide()
-            onMessage(LoadArticles(state.id))
+        trailingIcon = {
+            IconButton(onClick = onSearch) {
+                Icon(
+                    imageVector = Default.Search,
+                    contentDescription = "Search"
+                )
+            }
         },
+        onSearch = onSearch,
         onFocusChanged = { focusState ->
             if (focusState.isFocused) {
                 onMessage(

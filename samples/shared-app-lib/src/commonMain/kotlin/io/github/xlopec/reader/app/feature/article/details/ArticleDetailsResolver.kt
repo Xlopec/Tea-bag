@@ -24,9 +24,19 @@
 
 package io.github.xlopec.reader.app.feature.article.details
 
-public interface ArticleDetailsResolver {
+import io.github.xlopec.reader.app.Message
+import io.github.xlopec.tea.core.Sink
+import io.github.xlopec.tea.core.sideEffect
+import io.github.xlopec.tea.data.Url
+import kotlinx.coroutines.CoroutineScope
 
-    public suspend fun resolve(
-        command: DoOpenInBrowser
-    )
+context(_: Sink<Message>, _: CoroutineScope)
+internal fun <Env : BrowserLauncher> Env.resolveForOpenInBrowser(command: DoOpenInBrowser) {
+    sideEffect {
+        launch(command.article.url)
+    }
+}
+
+public interface BrowserLauncher {
+    public suspend fun launch(url: Url)
 }

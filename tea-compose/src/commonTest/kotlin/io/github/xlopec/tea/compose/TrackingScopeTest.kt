@@ -49,9 +49,9 @@ class TrackingScopeTest {
 
     @Test
     fun `when launchSingle is called then it launches a coroutine`() = runTest(timeout = TestTimeout.milliseconds) {
-        val scope = TrackingScope(EmptyCoroutineContext)
+        val scope = TrackingScope(context = EmptyCoroutineContext)
         val deferred = CompletableDeferred<Unit>()
-        scope.launchSingle("id") {
+        scope.launchSingle(id = "id") {
             deferred.complete(Unit)
         }
 
@@ -61,11 +61,11 @@ class TrackingScopeTest {
     @Test
     fun `when launchSingle is called with the same id then it cancels the previous coroutine`() =
         runTest(timeout = TestTimeout.milliseconds) {
-            val scope = TrackingScope(EmptyCoroutineContext)
+            val scope = TrackingScope(context = EmptyCoroutineContext)
             val started = CompletableDeferred<Unit>()
             val canceled = CompletableDeferred<Unit>()
 
-            val job1 = scope.launchSingle("id") {
+            val job1 = scope.launchSingle(id = "id") {
                 started.complete(Unit)
                 try {
                     delay(Long.MAX_VALUE)
@@ -76,7 +76,7 @@ class TrackingScopeTest {
 
             started.await()
             // Launch another one with the same ID
-            val job2 = scope.launchSingle("id") {
+            val job2 = scope.launchSingle(id = "id") {
                 delay(Long.MAX_VALUE)
             }
 

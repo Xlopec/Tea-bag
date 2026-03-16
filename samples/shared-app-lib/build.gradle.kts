@@ -43,7 +43,7 @@ kotlin {
         )
     }
 
-    androidLibrary {
+    android {
         compileSdk = 36
         minSdk = 23
         namespace = "io.github.xlopec.shared"
@@ -94,6 +94,7 @@ kotlin {
                 api(project(":tea-core"))
                 api(project(":tea-data"))
                 api(project(":tea-navigation"))
+                implementation(project(":tea-compose"))
                 api(libs.arrow.core)
                 api(libs.immutable.collections)
                 api(libs.coroutines.core)

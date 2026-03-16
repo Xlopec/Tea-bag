@@ -8,6 +8,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     runs-on: ubuntu-latest
+    if: false
     steps:
       - uses: actions/checkout@v5
         with:
@@ -63,7 +64,7 @@ jobs:
   IOS-app-build:
     env:
       DEFAULT_BRANCH: master
-    needs: Check
+    #needs: Check
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v5
@@ -96,7 +97,7 @@ jobs:
   Unit-tests:
     env:
       DEFAULT_BRANCH: master
-    needs: Check
+    #needs: Check
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v5

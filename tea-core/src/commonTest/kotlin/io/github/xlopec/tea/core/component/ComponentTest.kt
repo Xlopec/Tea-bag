@@ -50,16 +50,17 @@ class ComponentTest : ComponentTestBase(::Component) {
     @Test
     fun `when upstream receives new input then previous downstream is canceled`() = runTest(timeout = TestTimeoutMillis.milliseconds) {
         val env = testEnv(
-            Initializer(""),
-            { _, _ -> },
-            { message: Char, state -> state command message }
+            initializer = Initializer(""),
+            resolver = { _ -> },
+            updater = { message: Char, state -> state command message },
+            scope = this
         )
 
-        val lastInitial = Initial("b", setOf('e'))
+        val lastInitial = Initial(currentState = "b", commands = setOf('e'))
 
         val initialStates = listOf(
-            Initial("", setOf('c')),
-            Initial("a", setOf('d')),
+            Initial(currentState = "", commands = setOf('c')),
+            Initial(currentState = "a", commands = setOf('d')),
             lastInitial
         )
 
@@ -72,9 +73,9 @@ class ComponentTest : ComponentTestBase(::Component) {
                 }
             }
 
-        env.computeSnapshots(initialStates.asFlow(), testInput(lastInitial)).test {
+        env.computeSnapshots(initialSnapshots = initialStates.asFlow(), input = testInput(lastInitial)).test {
             val (state, commands) = lastInitial
-            val expectedStates = initialStates + Regular(state, commands, state, commands.first())
+            val expectedStates = initialStates + Regular(currentState = state, commands = commands, previousState = state, message = commands.first())
 
             expectedStates.forEach { expectedState ->
                 assertEquals(expectedState, awaitItem())

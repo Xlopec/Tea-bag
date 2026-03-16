@@ -26,15 +26,13 @@
 
 package io.github.xlopec.reader.app.feature.article.details
 
+import io.github.xlopec.tea.data.Url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import platform.UIKit.UIApplication
 
-public fun ArticleDetailsResolver(): ArticleDetailsResolver =
-    object : ArticleDetailsResolver {
-        override suspend fun resolve(command: DoOpenInBrowser) {
-            withContext(Dispatchers.Main) {
-                UIApplication.sharedApplication.openURL(command.article.url)
-            }
-        }
+internal object BrowserLauncherImpl : BrowserLauncher {
+    override suspend fun launch(url: Url): Unit = withContext(Dispatchers.Main) {
+        UIApplication.sharedApplication.openURL(url)
     }
+}

@@ -2,7 +2,16 @@
 
 package io.github.xlopec.counter
 
-import io.github.xlopec.tea.core.*
+import io.github.xlopec.tea.core.Component
+import io.github.xlopec.tea.core.ExperimentalTeaApi
+import io.github.xlopec.tea.core.Initial
+import io.github.xlopec.tea.core.Sink
+import io.github.xlopec.tea.core.Snapshot
+import io.github.xlopec.tea.core.Update
+import io.github.xlopec.tea.core.command
+import io.github.xlopec.tea.core.invoke
+import io.github.xlopec.tea.core.sideEffect
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -11,12 +20,12 @@ import kotlinx.coroutines.runBlocking
 suspend fun initializer(): Initial<Int, Int> = Initial(0)
 
 /**Some tracker*/
+context(_: Sink<Int>, scope: CoroutineScope)
 fun track(
     events: Flow<Snapshot<Int, Int, Int>>,
-    ctx: ResolveCtx<Int>,
 ) {
-    ctx.launch {
-        events.collect { event -> ctx sideEffect { println("Track: \"$event\"") } }
+    scope.launch {
+        events.collect { event -> sideEffect { println("Track: \"$event\"") } }
     }
 }
 
@@ -37,7 +46,7 @@ fun main() = runBlocking {
     // Somewhere at the application level
     val component = Component(
         initializer = ::initializer,
-        resolver = ::track,
+        resolver = { snapshot -> track(snapshot) },
         updater = ::add,
         scope = this,
     )

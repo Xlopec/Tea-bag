@@ -30,7 +30,7 @@ public actual typealias Url = java.net.URI
 
 public actual fun UrlFor(
     s: String
-): Url = java.net.URI(s)
+): Url = java.net.URI(s.replace("|", "%7C"))
 
 public actual fun Url.toExternalValue(): String = toASCIIString()
 

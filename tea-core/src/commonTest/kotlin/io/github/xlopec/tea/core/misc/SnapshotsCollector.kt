@@ -22,13 +22,26 @@
  * SOFTWARE.
  */
 
-@file:JvmName("AndroidArticleDetailsModule")
-@file:Suppress("FunctionName")
+package io.github.xlopec.tea.core.misc
 
-package io.github.xlopec.reader.app.feature.article.details
+import io.github.xlopec.tea.core.Snapshot
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
-import android.app.Application
+class SnapshotsCollector<M, S, C> {
 
-public fun ArticleDetailsModule(
-    application: Application
-): ArticleDetailsModule = ArticleDetailsResolver(application)
+    private val _messages = Channel<Snapshot<M, S, C>>()
+
+    val messages: ReceiveChannel<Snapshot<M, S, C>> = _messages
+
+    context(scope: CoroutineScope)
+    fun collect(snapshot: Flow<Snapshot<M, S, C>>) {
+        snapshot
+            .onEach { _messages.send(it) }
+            .launchIn(scope)
+    }
+}
