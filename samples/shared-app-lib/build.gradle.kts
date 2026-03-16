@@ -92,7 +92,6 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":tea-core"))
-                api(project(":tea-data"))
                 api(project(":tea-navigation"))
                 implementation(project(":tea-compose"))
                 api(libs.arrow.core)

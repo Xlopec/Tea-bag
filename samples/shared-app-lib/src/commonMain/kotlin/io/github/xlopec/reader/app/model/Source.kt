@@ -24,7 +24,6 @@
 
 package io.github.xlopec.reader.app.model
 
-import io.github.xlopec.tea.data.Url
 import kotlin.jvm.JvmInline
 
 public data class Source(

@@ -90,11 +90,11 @@ import io.github.xlopec.reader.app.feature.article.details.ToggleArticleIsFavori
 import io.github.xlopec.reader.app.feature.article.list.OnShareArticle
 import io.github.xlopec.reader.app.feature.navigation.Pop
 import io.github.xlopec.reader.app.model.Article
+import io.github.xlopec.reader.app.model.isSecureProtocol
+import io.github.xlopec.reader.app.model.protocol
+import io.github.xlopec.reader.app.model.toExternalValue
 import io.github.xlopec.reader.app.ui.misc.ProgressInsetAwareTopAppBar
 import io.github.xlopec.reader.app.ui.screens.BackHandler
-import io.github.xlopec.tea.data.isSecureProtocol
-import io.github.xlopec.tea.data.protocol
-import io.github.xlopec.tea.data.toExternalValue
 import kotlinx.coroutines.launch
 
 @Composable

@@ -24,32 +24,18 @@
 
 @file:Suppress("FunctionName")
 
-package io.github.xlopec.tea.data
+package io.github.xlopec.reader.app.model
 
-public expect class Url
+public actual typealias Url = java.net.URI
 
-public expect val Url.domain: String
-
-public expect val Url.protocol: String?
-
-public val Url.isSecureProtocol: Boolean
-    get() = protocol == "https"
-
-/**
- * Creates a new [Url] from the given string.
- *
- * @param s string to create [Url] from
- * @return new [Url] instance
- * @throws IllegalArgumentException if the string is not a valid URL
- */
-public expect fun UrlFor(
+public actual fun UrlFor(
     s: String
-): Url
+): Url = java.net.URI(s.replace("|", "%7C"))
 
-/**
- * Converts this [Url] to its external string representation.
- *
- * @receiver URL to convert
- * @return string representation of the URL
- */
-public expect fun Url.toExternalValue(): String
+public actual fun Url.toExternalValue(): String = toASCIIString()
+
+public actual val Url.domain: String
+    get() = host
+
+public actual val Url.protocol: String?
+ get() = scheme

@@ -41,13 +41,13 @@ import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.SourceId
 import io.github.xlopec.reader.app.model.Title
+import io.github.xlopec.reader.app.model.Url
+import io.github.xlopec.reader.app.model.UrlFor
+import io.github.xlopec.reader.app.model.toExternalValue
 import io.github.xlopec.reader.app.storage.AppDatabase
 import io.github.xlopec.reader.app.storage.ArticlesQueries
 import io.github.xlopec.reader.app.storage.FiltersQueries
 import io.github.xlopec.reader.app.storage.RecentSearchesQueries
-import io.github.xlopec.tea.data.Url
-import io.github.xlopec.tea.data.UrlFor
-import io.github.xlopec.tea.data.toExternalValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
