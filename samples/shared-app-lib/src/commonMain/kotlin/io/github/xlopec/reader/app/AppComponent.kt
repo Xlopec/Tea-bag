@@ -29,8 +29,6 @@ package io.github.xlopec.reader.app
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.tea.core.Component
 import io.github.xlopec.tea.core.Initializer
-import io.github.xlopec.tea.core.ShareOptions
-import kotlinx.coroutines.flow.SharingStarted
 
 public fun AppComponent(
     environment: Environment,
@@ -41,5 +39,4 @@ public fun AppComponent(
         resolver = { snapshots -> with(environment) { resolve(snapshots) } },
         updater = { m, s -> update(m, s) },
         scope = environment,
-        shareOptions = ShareOptions(started = SharingStarted.WhileSubscribed(), replay = 1U)
     )

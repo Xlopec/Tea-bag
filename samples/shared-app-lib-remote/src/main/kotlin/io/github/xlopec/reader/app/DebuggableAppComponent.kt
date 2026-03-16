@@ -33,7 +33,6 @@ import io.github.xlopec.reader.app.serialization.PersistentListSerializer
 import io.github.xlopec.reader.app.serialization.PersistentSetSerializer
 import io.github.xlopec.tea.core.Component
 import io.github.xlopec.tea.core.Initializer
-import io.github.xlopec.tea.core.ShareStateWhileSubscribed
 import io.github.xlopec.tea.time.travel.component.Component
 import io.github.xlopec.tea.time.travel.gson.GsonSerializer
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
@@ -55,7 +54,6 @@ public fun DebuggableAppComponent(
         scope = environment,
         url = Url("http://10.0.2.2:8080"),
         jsonSerializer = AppGsonSerializer(),
-        shareOptions = ShareStateWhileSubscribed,
     )
 
 private fun AppGsonSerializer(): JsonSerializer<JsonElement> = GsonSerializer {

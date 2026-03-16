@@ -44,5 +44,5 @@ public data class Env<M, S, C>(
     val updater: Updater<M, S, C>,
     // todo: group to reduce number of arguments
     val scope: CoroutineScope,
-    val shareOptions: ShareOptions = ShareStateWhileSubscribed,
+    val shareOptions: ShareOptions<Snapshot<M, S, C>> = ShareStateWhileSubscribed(),
 )

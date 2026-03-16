@@ -7,7 +7,6 @@ import io.github.xlopec.tea.core.Env
 import io.github.xlopec.tea.core.Initial
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.Regular
-import io.github.xlopec.tea.core.ShareOptions
 import io.github.xlopec.tea.core.Snapshot
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.effects
@@ -35,6 +34,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.isActive
@@ -213,7 +213,9 @@ abstract class ComponentTestBase(
             scope = this,
             // SharingStarted.Lazily since in case of default option replay
             // cache will be disposed immediately causing test to fail
-            shareOptions = ShareOptions(SharingStarted.Lazily, 1U)
+            shareOptions = { scope, upstream ->
+                upstream.shareIn(scope, SharingStarted.Lazily, 1)
+            }
         )
 
         val component = factory(env)

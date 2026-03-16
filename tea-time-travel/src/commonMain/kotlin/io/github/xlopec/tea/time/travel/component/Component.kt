@@ -40,7 +40,6 @@ import io.github.xlopec.tea.core.Updater
 import io.github.xlopec.tea.core.attachMessageCollector
 import io.github.xlopec.tea.core.computeSnapshots
 import io.github.xlopec.tea.core.initial
-import io.github.xlopec.tea.core.shareIn
 import io.github.xlopec.tea.time.travel.component.internal.mergeWith
 import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
@@ -94,7 +93,7 @@ public inline fun <reified M : Any, reified S : Any, reified C, J> Component(
     // see https://youtrack.jetbrains.com/issue/KT-47195
     // see https://github.com/Kotlin/kotlinx.coroutines/issues/3005#issuecomment-1014577573
     noinline sessionFactory: SessionFactory<M, S, J> = { settings, block -> HttpClient.session(settings, block) },
-    shareOptions: ShareOptions = ShareStateWhileSubscribed,
+    noinline shareOptions: ShareOptions<Snapshot<M, S, C>> = ShareStateWhileSubscribed(),
 ): Component<M, S, C> =
     Component(
         DebugEnv(
@@ -115,13 +114,12 @@ public inline fun <reified M : Any, reified S : Any, reified C, J> Component(
  */
 public fun <M, S, C, J> Component(
     debugEnv: DebugEnv<M, S, C, J>,
-): Component<M, S, C> {
+): Component<M, S, C> = with(debugEnv.env) {
 
     val input = Channel<M>(RENDEZVOUS)
-    val upstream = debugEnv.computeSnapshots(input)
-        .shareIn(debugEnv.env.scope, debugEnv.env.shareOptions)
+    val upstream = shareOptions(scope, debugEnv.computeSnapshots(input))
 
-    context(input::send, debugEnv.env.scope) { debugEnv.env.resolver(upstream) }
+    context(input::send, scope) { resolver(upstream) }
 
     return { messages -> upstream.attachMessageCollector(messages, input::send) }
 }

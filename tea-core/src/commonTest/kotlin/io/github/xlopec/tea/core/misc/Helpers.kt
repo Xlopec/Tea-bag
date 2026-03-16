@@ -33,6 +33,7 @@ import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.Resolver
 import io.github.xlopec.tea.core.ShareOptions
 import io.github.xlopec.tea.core.ShareStateWhileSubscribed
+import io.github.xlopec.tea.core.Snapshot
 import io.github.xlopec.tea.core.Updater
 import io.github.xlopec.tea.core.invoke
 import io.github.xlopec.tea.core.noCommand
@@ -74,7 +75,7 @@ fun <M, S, C> testEnv(
     resolver: Resolver<M, S, C>,
     updater: Updater<M, S, C>,
     scope: CoroutineScope,
-    shareOptions: ShareOptions = ShareStateWhileSubscribed,
+    shareOptions: ShareOptions<Snapshot<M, S, C>> = ShareStateWhileSubscribed(),
 ) = Env(
     initializer = initializer,
     resolver = { snapshot -> resolver(snapshot) },
