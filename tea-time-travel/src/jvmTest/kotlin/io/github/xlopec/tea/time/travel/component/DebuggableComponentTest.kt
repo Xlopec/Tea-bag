@@ -32,7 +32,6 @@ import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.Regular
 import io.github.xlopec.tea.core.component.ComponentTestBase
 import io.github.xlopec.tea.core.invoke
-import io.github.xlopec.tea.core.misc.runTestCancellingChildren
 import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentAttached
 import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentSnapshot
@@ -45,11 +44,13 @@ import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -60,42 +61,47 @@ import kotlin.test.assertTrue
 class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEnv(env)) }) {
 
     @Test
-    fun `test debuggable component throws expected exception when it can't connect to a server`() = runTestCancellingChildren {
+    fun `test debuggable component throws expected exception when it can't connect to a server`() = runTest {
         val exceptions = mutableListOf<Throwable>()
-        val env = Env<Char, String, Char>(
-            initializer = Initializer(""),
-            resolver = { snapshots ->
-                (this as CoroutineScope).launch {
-                    snapshots.collect { snapshot ->
-                        check(
-                            snapshot.commands.isEmpty()
-                        ) { "Non empty snapshot $snapshot" }
+        val scope = CoroutineScope(Job() + CoroutineExceptionHandler { _, th -> exceptions += th })
+        try {
+            val env = Env<Char, String, Char>(
+                initializer = Initializer(""),
+                resolver = { snapshots ->
+                    contextOf<CoroutineScope>().launch {
+                        snapshots.collect { snapshot ->
+                            check(
+                                snapshot.commands.isEmpty()
+                            ) { "Non empty snapshot $snapshot" }
+                        }
                     }
-                }
-            },
-            updater = { m, _ -> m.toString().noCommand() },
-            scope = CoroutineScope(Job() + CoroutineExceptionHandler { _, th -> exceptions += th })
-        )
-
-        runCatching {
-            val component = Component(
-                TestDebugEnv(
-                    env = env,
-                    settings = TestSettings(sessionFactory = { _, _ -> throw ComponentException("Couldn't connect to debug server") })
-                )
+                },
+                updater = { m, _ -> m.toString().noCommand() },
+                scope = scope
             )
-            val job = env.scope.launch { component(flowOf('a')).collect() }
 
-            job.join()
+            runCatching {
+                val component = Component(
+                    TestDebugEnv(
+                        env = env,
+                        settings = TestSettings(sessionFactory = { _, _ -> throw ComponentException("Couldn't connect to debug server") })
+                    )
+                )
+                val job = env.scope.launch { component(flowOf('a')).collect() }
+
+                job.join()
+            }
+
+            assertFalse(env.scope.isActive)
+            assertTrue(exceptions.isNotEmpty())
+            assertIs<ComponentException>(exceptions.first())
+        } finally {
+            scope.cancel()
         }
-
-        assertFalse(env.scope.isActive)
-        assertTrue(exceptions.isNotEmpty())
-        assertIs<ComponentException>(exceptions.first())
     }
 
     @Test
-    fun `test debuggable component sends the same sequence of events as the original component`() = runTestCancellingChildren {
+    fun `test debuggable component sends the same sequence of events as the original component`() = runTest {
         val testSession = TestDebugSession<Char, String>()
         val component = Component(
             TestDebugEnv(
@@ -103,7 +109,7 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
                     initializer = Initializer(""),
                     resolver = { snapshots -> contextOf<CoroutineScope>().launch { snapshots.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
                     updater = { m, _ -> m.toString().noCommand() },
-                    scope = this
+                    scope = backgroundScope
                 ),
                 settings = TestSettings(
                     sessionFactory = { _, block -> testSession.apply { block() } }
