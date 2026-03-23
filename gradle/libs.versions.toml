@@ -1,12 +1,13 @@
 [versions]
 ktor = "3.4.1"
 coroutines = "1.10.2"
-sqldelight = "2.3.1"
-arrow = "2.2.2"
+sqldelight = "2.3.2"
+arrow = "2.2.2.1"
 coil = "3.4.0"
 agp = "9.1.0"
-kotlin = "2.3.10"
-compose = "1.10.2"
+kotlin = "2.3.20"
+compose = "1.10.3"
+compose-testing = "1.10.5"
 
 [libraries]
 # Convention plugins
@@ -23,12 +24,12 @@ convention-nexus-publish = { module = "io.github.gradle-nexus:publish-plugin", v
 convention-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.23.8" }
 
 decompose-backHandler = { module = "com.arkivanov.essenty:back-handler", version = "2.5.0" }
-decompose-extensions = { module = "com.arkivanov.decompose:extensions-compose", version = "3.4.0" }
+decompose-extensions = { module = "com.arkivanov.decompose:extensions-compose", version = "3.5.0" }
 junit = { module = "junit:junit", version = "4.13.2" }
 junit-runner = { module = "io.kotlintest:kotlintest-runner-junit4", version = "3.4.2" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlin-test-annotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common" }
-compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }
+compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose-testing" }
 android-test-orchestrator = { module = "androidx.test:orchestrator", version = "1.6.1" }
 concurrent-collections = { module = "co.touchlab:stately-concurrent-collections", version = "2.1.0" }
 turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
@@ -71,7 +72,7 @@ ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "co
 ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
 webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "2.0.3" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.2" }
-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose" }
+ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose-testing" }
 
 [bundles]
 coil = ["coil-compose", "coil-network"]

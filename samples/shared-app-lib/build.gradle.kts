@@ -134,7 +134,6 @@ kotlin {
                 implementation(libs.ktor.client.logging)
                 implementation(libs.coroutines.android)
                 implementation(libs.compose.activity)
-                implementation(libs.ktor.client.cio)
                 implementation(libs.sqldelight.driver.android)
             }
         }
