@@ -14,7 +14,7 @@ compose-testing = "1.10.5"
 convention-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 convention-intellij-platform = { module = "org.jetbrains.intellij.platform:intellij-platform-gradle-plugin", version = "2.3.0" }
 convention-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
-convention-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "2.1.0" }
+convention-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "2.2.0" }
 convention-serializtion = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 convention-sqldelight = { module = "app.cash.sqldelight:gradle-plugin", version.ref = "sqldelight" }
 convention-compose-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose" }
