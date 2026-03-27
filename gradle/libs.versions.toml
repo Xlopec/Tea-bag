@@ -1,5 +1,5 @@
 [versions]
-ktor = "3.4.1"
+ktor = "3.4.2"
 coroutines = "1.10.2"
 sqldelight = "2.3.2"
 arrow = "2.2.2.1"
@@ -7,12 +7,11 @@ coil = "3.4.0"
 agp = "9.1.0"
 kotlin = "2.3.20"
 compose = "1.10.3"
-compose-testing = "1.10.5"
+compose-testing = "1.10.6"
 
 [libraries]
 # Convention plugins
 convention-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-convention-intellij-platform = { module = "org.jetbrains.intellij.platform:intellij-platform-gradle-plugin", version = "2.3.0" }
 convention-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 convention-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "2.2.0" }
 convention-serializtion = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
@@ -66,7 +65,7 @@ gson = { module = "com.google.code.gson:gson", version = "2.13.2" }
 immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.4.0" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor2", version.ref = "coil" }
-compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.10.5" }
+compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.10.6" }
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
 ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose" }
 ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
