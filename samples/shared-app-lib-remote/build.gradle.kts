@@ -48,7 +48,7 @@ android {
         api(project(":samples:shared-app-lib"))
         implementation(libs.ktor.http)
         implementation(libs.gson)
-        testImplementation(kotlin("test-junit"))
+        testImplementation(libs.kotlin.test)
         coreLibraryDesugaring(libs.desugar.jdk)
     }
 }

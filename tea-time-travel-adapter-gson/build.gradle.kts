@@ -43,10 +43,8 @@ dependencies {
 
     implementation(libs.stdlib)
 
-    testImplementation(project(":tea-time-travel-protocol"))
     testImplementation(libs.immutable.collections)
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.kotlin.test)
-    testImplementation(libs.kotlin.test.annotations)
 }

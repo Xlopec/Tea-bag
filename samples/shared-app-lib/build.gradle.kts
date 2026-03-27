@@ -115,15 +115,12 @@ kotlin {
                 implementation(libs.settings.core)
                 implementation(libs.sqldelight.runtime)
                 implementation(libs.webview)
-                implementation(libs.compose.runtime)
-                implementation(libs.ui.tooling.preview)
             }
         }
 
         commonTest {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
+                implementation(libs.kotlin.test)
             }
         }
 
@@ -131,7 +128,6 @@ kotlin {
             dependencies {
                 implementation(libs.compose.fonts)
                 implementation(libs.ktor.client.cio)
-                implementation(libs.ktor.client.logging)
                 implementation(libs.coroutines.android)
                 implementation(libs.compose.activity)
                 implementation(libs.sqldelight.driver.android)
