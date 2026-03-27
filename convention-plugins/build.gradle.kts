@@ -34,7 +34,6 @@ afterEvaluate {
 
 dependencies {
     implementation(libs.convention.kotlin)
-    implementation(libs.convention.intellij.platform)
     implementation(libs.convention.dokka)
     implementation(libs.convention.serializtion)
     implementation(libs.convention.agp)

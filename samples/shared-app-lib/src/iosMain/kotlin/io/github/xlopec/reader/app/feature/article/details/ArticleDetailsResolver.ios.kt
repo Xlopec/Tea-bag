@@ -26,7 +26,7 @@
 
 package io.github.xlopec.reader.app.feature.article.details
 
-import io.github.xlopec.tea.data.Url
+import io.github.xlopec.reader.app.model.Url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import platform.UIKit.UIApplication

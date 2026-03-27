@@ -93,11 +93,11 @@ import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.FilterType.Favorite
 import io.github.xlopec.reader.app.model.FilterType.Regular
 import io.github.xlopec.reader.app.model.FilterType.Trending
+import io.github.xlopec.reader.app.model.Url
 import io.github.xlopec.reader.app.model.formatted
+import io.github.xlopec.reader.app.model.toExternalValue
 import io.github.xlopec.reader.app.ui.misc.ColumnMessage
 import io.github.xlopec.reader.app.ui.misc.SearchHeader
-import io.github.xlopec.tea.data.Url
-import io.github.xlopec.tea.data.toExternalValue
 
 public const val ProgressIndicatorTag: String = "Progress Indicator"
 

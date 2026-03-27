@@ -27,7 +27,7 @@ package io.github.xlopec.reader.app.feature.network
 import io.github.xlopec.reader.app.model.SourceDescription
 import io.github.xlopec.reader.app.model.SourceId
 import io.github.xlopec.reader.app.model.SourceName
-import io.github.xlopec.tea.data.Url
+import io.github.xlopec.reader.app.model.Url
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

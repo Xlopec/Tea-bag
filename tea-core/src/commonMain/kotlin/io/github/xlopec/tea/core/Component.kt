@@ -34,8 +34,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.RENDEZVOUS
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
@@ -46,7 +44,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -84,21 +81,6 @@ public typealias Component<M, S, C> = (messages: Flow<M>) -> Flow<Snapshot<M, S,
  * @param C command
  */
 public typealias Interceptor<M, S, C> = suspend (snapshot: Snapshot<M, S, C>) -> Unit
-
-/**
- * Share options used to configure the sharing coroutine.
- *
- * @param started sharing strategy
- * @param replay number of states to be replayed to the downstream subscribers
- * @see [SharingStarted]
- */
-public data class ShareOptions(
-    val started: SharingStarted,
-    val replay: UInt = 0U,
-)
-
-@ExperimentalTeaApi
-public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)
 
 /**
  * Transforms [Component] into a flow of snapshots.
@@ -248,7 +230,7 @@ public fun <M, S, C> Component(
     resolver: Resolver<M, S, C>,
     updater: Updater<M, S, C>,
     scope: CoroutineScope,
-    shareOptions: ShareOptions = ShareStateWhileSubscribed,
+    shareOptions: ShareOptions<Snapshot<M, S, C>> = ShareStateWhileSubscribed(),
 ): Component<M, S, C> =
     Component(Env(initializer, resolver, updater, scope, shareOptions))
 
@@ -266,9 +248,7 @@ public fun <M, S, C> Component(
 ): Component<M, S, C> = with(env) {
 
     val input = Channel<M>(RENDEZVOUS)
-    val upstream = computeSnapshots(initial(), input.receiveAsFlow())
-        // TODO using default buffer size might not be flexible enough, consider config options
-        .shareIn(scope, shareOptions)
+    val upstream = shareOptions(scope, computeSnapshots(initial(), input.receiveAsFlow()))
 
     context(input::send, scope) { resolver(upstream) }
 
@@ -374,25 +354,6 @@ public suspend fun <M, S, C> Env<M, S, C>.nextSnapshot(
 
     return Regular(newState, commands, current.currentState, message)
 }
-
-/**
- * Shorthand for
- *
- * ```kotlin
- * flow.shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
- * ```
- *
- * @param T type of flow
- * @receiver flow to share
- * @param scope scope in which the sharing coroutine is started
- * @param shareOptions sharing options
- * @return shared flow
- */
-@InternalTeaApi
-public fun <T> Flow<T>.shareIn(
-    scope: CoroutineScope,
-    shareOptions: ShareOptions,
-): SharedFlow<T> = shareIn(scope, shareOptions.started, shareOptions.replay.toInt())
 
 private suspend fun <M, S, C> Env<M, S, C>.update(
     message: M,

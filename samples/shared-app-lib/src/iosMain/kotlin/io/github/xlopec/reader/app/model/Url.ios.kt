@@ -24,11 +24,10 @@
 
 @file:Suppress("FunctionName")
 
-package io.github.xlopec.tea.data
+package io.github.xlopec.reader.app.model
 
 import platform.Foundation.NSURL
 
-@Suppress("CONFLICTING_OVERLOADS")
 public actual typealias Url = NSURL
 
 public actual fun UrlFor(

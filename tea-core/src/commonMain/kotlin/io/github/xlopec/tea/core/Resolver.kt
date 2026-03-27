@@ -61,8 +61,8 @@ public typealias Sink<T> = suspend (T) -> Unit
  */
 @ExperimentalTeaApi
 context(_: Sink<M>, _: CoroutineScope)
-public inline infix fun <M, C> C.effects(
-    crossinline action: suspend C.() -> Set<M>,
+public infix fun <M, C> C.effects(
+    action: suspend C.() -> Set<M>,
 ): Job = effects(EmptyCoroutineContext, CoroutineStart.DEFAULT, action)
 
 /**
@@ -74,10 +74,10 @@ public inline infix fun <M, C> C.effects(
  */
 @ExperimentalTeaApi
 context(sink: Sink<M>, scope: CoroutineScope)
-public inline fun <M, C> C.effects(
+public fun <M, C> C.effects(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
-    crossinline action: suspend C.() -> Set<M>,
+    action: suspend C.() -> Set<M>,
 ): Job {
     return scope.launch(context, start) { sink(action()) }
 }
@@ -91,8 +91,8 @@ public inline fun <M, C> C.effects(
  */
 @ExperimentalTeaApi
 context(_: Sink<M>, _: CoroutineScope)
-public inline infix fun <M, C> C.effect(
-    crossinline action: suspend C.() -> M?,
+public infix fun <M, C> C.effect(
+    action: suspend C.() -> M?,
 ): Job = effect(EmptyCoroutineContext, CoroutineStart.DEFAULT, action)
 
 /**
@@ -100,10 +100,10 @@ public inline infix fun <M, C> C.effect(
  */
 @ExperimentalTeaApi
 context(sink: Sink<M>, scope: CoroutineScope)
-public inline fun <M, C> C.effect(
+public fun <M, C> C.effect(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
-    crossinline action: suspend C.() -> M?,
+    action: suspend C.() -> M?,
 ): Job {
     return scope.launch(context, start) { action()?.also { sink(it) } }
 }
@@ -117,8 +117,8 @@ public inline fun <M, C> C.effect(
  */
 @ExperimentalTeaApi
 context(_: Sink<M>, _: CoroutineScope)
-public inline infix fun <M, C> C.sideEffect(
-    crossinline action: suspend C.() -> Unit,
+public infix fun <M, C> C.sideEffect(
+    action: suspend C.() -> Unit,
 ): Job = sideEffect(EmptyCoroutineContext, CoroutineStart.DEFAULT, action)
 
 /**
@@ -130,10 +130,10 @@ public inline infix fun <M, C> C.sideEffect(
  */
 @ExperimentalTeaApi
 context(_: Sink<M>, scope: CoroutineScope)
-public inline fun <M, C> C.sideEffect(
+public fun <M, C> C.sideEffect(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
-    crossinline action: suspend C.() -> Unit,
+    action: suspend C.() -> Unit,
 ): Job {
     return scope.launch(context, start) { action() }
 }

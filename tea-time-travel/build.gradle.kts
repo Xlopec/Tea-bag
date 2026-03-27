@@ -41,7 +41,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":tea-core"))
-                implementation(project(":tea-data"))
                 implementation(libs.kotlinx.datetime)
                 implementation(project(":tea-time-travel-protocol"))
 

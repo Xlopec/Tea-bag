@@ -151,9 +151,9 @@ dependencies {
 
     implementation(libs.splashscreen)
 
-    testImplementation(project(":tea-data"))
+    testImplementation(project(":samples:shared-app-lib"))
     testImplementation(libs.kotlinx.datetime)
-    androidTestImplementation(project(":tea-data"))
+    androidTestImplementation(project(":samples:shared-app-lib"))
     androidTestImplementation(libs.kotlinx.datetime)
     androidTestImplementation(libs.ui.test.junit4)
 

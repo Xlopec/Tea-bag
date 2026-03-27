@@ -92,7 +92,6 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":tea-core"))
-                api(project(":tea-data"))
                 api(project(":tea-navigation"))
                 implementation(project(":tea-compose"))
                 api(libs.arrow.core)
@@ -135,7 +134,6 @@ kotlin {
                 implementation(libs.ktor.client.logging)
                 implementation(libs.coroutines.android)
                 implementation(libs.compose.activity)
-                implementation(libs.ktor.client.cio)
                 implementation(libs.sqldelight.driver.android)
             }
         }

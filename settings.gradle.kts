@@ -40,7 +40,6 @@ include(
     ":tea-time-travel",
     ":tea-time-travel-protocol",
     ":tea-time-travel-adapter-gson",
-    ":tea-data",
     ":tea-navigation",
     ":samples:app",
     ":samples:shared-app-lib",

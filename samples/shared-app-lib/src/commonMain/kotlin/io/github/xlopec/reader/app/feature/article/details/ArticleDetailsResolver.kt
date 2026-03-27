@@ -25,9 +25,9 @@
 package io.github.xlopec.reader.app.feature.article.details
 
 import io.github.xlopec.reader.app.Message
+import io.github.xlopec.reader.app.model.Url
 import io.github.xlopec.tea.core.Sink
 import io.github.xlopec.tea.core.sideEffect
-import io.github.xlopec.tea.data.Url
 import kotlinx.coroutines.CoroutineScope
 
 context(_: Sink<Message>, _: CoroutineScope)

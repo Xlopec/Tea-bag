@@ -26,7 +26,6 @@
 package io.github.xlopec.reader.app.model
 
 import androidx.compose.runtime.Immutable
-import io.github.xlopec.tea.data.Url
 import kotlinx.datetime.LocalDateTime
 import kotlin.contracts.contract
 import kotlin.jvm.JvmInline
