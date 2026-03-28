@@ -34,7 +34,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.stdlib)
-                implementation(project(":tea-core"))
+                implementation(projects.teaCore)
                 api(libs.compose.ui)
                 api(libs.compose.runtime)
                 api(libs.compose.foundation)

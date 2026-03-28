@@ -40,9 +40,9 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(project(":tea-core"))
+                implementation(projects.teaCore)
                 implementation(libs.kotlinx.datetime)
-                implementation(project(":tea-time-travel-protocol"))
+                implementation(projects.teaTimeTravelProtocol)
 
                 implementation(libs.arrow.core)
                 implementation(libs.stdlib)
@@ -67,8 +67,8 @@ kotlin {
 
         jvmTest {
             dependencies {
-                implementation(project(":tea-time-travel-adapter-gson"))
-                implementation(project(":tea-core")) {
+                implementation(projects.teaTimeTravelAdapterGson)
+                implementation(projects.teaCore) {
                     targetConfiguration = "testOutput"
                 }
             }

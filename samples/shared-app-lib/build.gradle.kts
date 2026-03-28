@@ -91,9 +91,9 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(project(":tea-core"))
-                api(project(":tea-navigation"))
-                implementation(project(":tea-compose"))
+                api(projects.teaCore)
+                api(projects.teaNavigation)
+                implementation(projects.teaCompose)
                 api(libs.arrow.core)
                 api(libs.immutable.collections)
                 api(libs.coroutines.core)

@@ -140,7 +140,7 @@ afterEvaluate {
 
 dependencies {
 
-    implementation(project(":tea-core"))
+    implementation(projects.teaCore)
     implementation(project(":samples:shared-app-lib"))
     remoteImplementation(project(":samples:shared-app-lib-remote"))
 

@@ -42,7 +42,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(project(":tea-core"))
+                api(projects.teaCore)
                 api(libs.compose.runtime)
                 implementation(libs.stdlib)
                 implementation(libs.concurrent.collections)
