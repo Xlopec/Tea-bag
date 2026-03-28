@@ -100,7 +100,7 @@ kotlin {
                 api(libs.compose.ui)
                 api(libs.compose.runtime)
                 api(libs.compose.foundation)
-                api(libs.compose.components.ui.tooling.preview)
+                api(libs.ui.tooling.preview)
                 api(libs.kotlinx.datetime)
                 implementation(libs.compose.components.resources)
                 implementation(libs.bundles.coil)

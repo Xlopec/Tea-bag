@@ -49,6 +49,7 @@ android {
         implementation(libs.ktor.http)
         implementation(libs.gson)
         testImplementation(libs.kotlin.test)
+        testImplementation(libs.junit)
         coreLibraryDesugaring(libs.desugar.jdk)
     }
 }
