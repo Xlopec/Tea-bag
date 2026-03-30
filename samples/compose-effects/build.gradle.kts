@@ -23,8 +23,8 @@ kotlin {
             dependencies {
                 implementation(libs.stdlib)
                 implementation(libs.coroutines.core)
-                implementation(project(":tea-core"))
-                implementation(project(":tea-compose"))
+                implementation(projects.teaCore)
+                implementation(projects.teaCompose)
             }
         }
     }

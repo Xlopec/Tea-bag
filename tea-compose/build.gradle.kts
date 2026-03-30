@@ -24,8 +24,8 @@
 
 plugins {
     id("published-multiplatform-library-convention")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
@@ -42,7 +42,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(project(":tea-core"))
+                api(projects.teaCore)
                 api(libs.compose.runtime)
                 implementation(libs.stdlib)
                 implementation(libs.concurrent.collections)

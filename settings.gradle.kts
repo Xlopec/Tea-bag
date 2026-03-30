@@ -26,6 +26,8 @@
 
 rootProject.name = "Tea-bag"
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     includeBuild("convention-plugins")
     repositories {

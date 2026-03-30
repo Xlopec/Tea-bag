@@ -36,17 +36,15 @@ val allTests by tasks.registering(Task::class) {
 
 dependencies {
 
-    api(project(":tea-time-travel-protocol"))
+    api(projects.teaTimeTravelProtocol)
     api(libs.gson)
     implementation(libs.kotlinx.datetime)
     implementation(libs.stdlib.reflect)
 
     implementation(libs.stdlib)
 
-    testImplementation(project(":tea-time-travel-protocol"))
     testImplementation(libs.immutable.collections)
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.kotlin.test)
-    testImplementation(libs.kotlin.test.annotations)
 }

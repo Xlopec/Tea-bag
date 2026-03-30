@@ -43,12 +43,13 @@ android {
     }
 
     dependencies {
-        api(project(":tea-time-travel"))
-        api(project(":tea-time-travel-adapter-gson"))
+        api(projects.teaTimeTravel)
+        api(projects.teaTimeTravelAdapterGson)
         api(project(":samples:shared-app-lib"))
         implementation(libs.ktor.http)
         implementation(libs.gson)
-        testImplementation(kotlin("test-junit"))
+        testImplementation(libs.kotlin.test)
+        testImplementation(libs.junit)
         coreLibraryDesugaring(libs.desugar.jdk)
     }
 }

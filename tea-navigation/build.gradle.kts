@@ -34,7 +34,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.stdlib)
-                implementation(project(":tea-core"))
+                implementation(projects.teaCore)
                 api(libs.compose.ui)
                 api(libs.compose.runtime)
                 api(libs.compose.foundation)
@@ -50,13 +50,11 @@ kotlin {
         }
         commonTest {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
+                implementation(libs.kotlin.test)
             }
         }
         jvmTest {
             dependencies {
-                implementation(kotlin("test-junit"))
                 implementation(libs.junit)
             }
         }
