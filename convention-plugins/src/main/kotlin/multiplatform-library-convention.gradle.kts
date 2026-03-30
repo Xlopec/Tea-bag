@@ -38,6 +38,7 @@ kotlinMultiplatform {
         }
     }
 
+    macosArm64()
     iosX64()
     iosArm64()
     iosSimulatorArm64()
