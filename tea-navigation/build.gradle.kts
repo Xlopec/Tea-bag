@@ -29,6 +29,7 @@ plugins {
 }
 
 kotlin {
+    enableUiTargets()
 
     sourceSets {
         commonMain {
@@ -41,7 +42,7 @@ kotlin {
                 api(libs.immutable.collections)
             }
         }
-        iosMain {
+        appleMain {
             dependencies {
                 // todo consider replacing with implementation
                 api(libs.decompose.extensions)

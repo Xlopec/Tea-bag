@@ -29,6 +29,8 @@ plugins {
 }
 
 kotlin {
+    enableAllTargets()
+
     compilerOptions {
         optIn.addAll(
             "kotlinx.coroutines.ExperimentalCoroutinesApi",

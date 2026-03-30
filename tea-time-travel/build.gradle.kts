@@ -27,6 +27,8 @@ plugins {
 }
 
 kotlin {
+    enableUiTargets()
+
     compilerOptions {
         optIn.addAll(
             "kotlinx.coroutines.ExperimentalCoroutinesApi",
@@ -74,7 +76,7 @@ kotlin {
             }
         }
 
-        iosMain {
+        appleMain {
             dependencies {
                 implementation(libs.ktor.client.ios)
             }
