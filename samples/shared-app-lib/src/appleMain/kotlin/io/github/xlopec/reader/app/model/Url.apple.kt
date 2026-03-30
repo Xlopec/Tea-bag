@@ -40,4 +40,4 @@ public actual val Url.domain: String
     get() = host ?: error("No domain: ${toExternalValue()}")
 
 public actual val Url.protocol: String?
- get() = scheme
+    get() = scheme
