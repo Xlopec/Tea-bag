@@ -4,35 +4,8 @@ import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.artifacts.dsl.ArtifactHandler
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-
-fun KotlinMultiplatformExtension.enableAllTargets() {
-    enableUiTargets()
-    // additional targets
-    linuxX64()
-    linuxArm64()
-    mingwX64()
-    watchosSimulatorArm64()
-    watchosArm32()
-    watchosArm64()
-    tvosSimulatorArm64()
-    tvosArm64()
-}
-
-fun KotlinMultiplatformExtension.enableUiTargets() {
-    jvm {
-        testRuns["test"].executionTask.configure {
-            useJUnit()
-        }
-    }
-
-    macosArm64()
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-}
 
 internal fun Project.signing(configure: Action<org.gradle.plugins.signing.SigningExtension>): Unit =
     (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("signing", configure)
