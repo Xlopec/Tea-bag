@@ -205,7 +205,7 @@ abstract class ComponentTestBase(
             },
             resolver = { /*do not subscribe or the initializer invokes*/ },
             updater = { _, s -> s.noCommand() },
-            scope = CoroutineScope(Job() + UnconfinedTestDispatcher(scheduler = testScheduler)),
+            scope = backgroundScope,
             // SharingStarted.Lazily since in case of default option replay
             // cache will be disposed immediately causing test to fail
             shareOptions = { scope, upstream ->
