@@ -37,6 +37,7 @@ public typealias SourcesState = Loadable<Source>
 
 public data class FiltersState(
     override val id: ScreenId,
+    val parentId: ScreenId,
     val filter: Filter,
     val sourcesState: SourcesState,
     val recentSearches: PersistentList<Query> = persistentListOf(),

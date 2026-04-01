@@ -98,17 +98,18 @@ internal fun FiltersScreen(
             focusRequester.freeFocus()
 
             if (performSearch) {
-                handler(LoadArticles(state.id))
+                handler(LoadArticles(state.parentId))
             }
             handler(Pop)
         }
     } else {
         LaunchedEffect(Unit) {
-            screenTransitionState = Finish
-        }
-
-        if (screenTransition transitionedTo Finish) {
+            // Request focus before kicking off the visual transition so the
+            // hand-off from the Articles search field happens within the same
+            // frame Articles unmounts. Waiting until the Begin→Finish
+            // animation completes lets the keyboard dismiss and re-show.
             focusRequester.requestFocus()
+            screenTransitionState = Finish
         }
     }
 

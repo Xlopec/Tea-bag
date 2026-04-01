@@ -40,13 +40,12 @@ kotlin {
                 api(libs.compose.runtime)
                 api(libs.compose.foundation)
                 api(libs.immutable.collections)
+                implementation("org.jetbrains.compose.animation:animation-core:1.10.3")
             }
         }
         appleMain {
             dependencies {
                 // todo consider replacing with implementation
-                api(libs.decompose.extensions)
-                api(libs.decompose.backHandler)
             }
         }
         commonTest {

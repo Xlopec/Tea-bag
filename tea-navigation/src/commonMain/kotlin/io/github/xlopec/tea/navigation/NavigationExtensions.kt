@@ -119,10 +119,9 @@ public class NavigationStackMutator<I : Any, E : NavStackEntry<I>, C> internal c
                 // now we have one less screen to proceed,
                 // decrease [hi] to keep it untouched
                 hi--
-            }
-            // we cannot proceed until we move the group,
-            // so we stay on the same index
-            if (!belongsToTab(mutator[lo], tab)) {
+            } else {
+                // we cannot proceed until we move the group,
+                // so we stay on the same index
                 lo++
             }
         }
@@ -172,7 +171,7 @@ public class NavigationStackMutator<I : Any, E : NavStackEntry<I>, C> internal c
      *
      * @return removed entry
      */
-    public fun pop(): E = mutator.removeLast()
+    public fun pop(): E = mutator.removeAt(mutator.lastIndex)
 
     /**
      * Removes ***ALL*** stack entries that match given [predicate]. You can provide [onPop] callback

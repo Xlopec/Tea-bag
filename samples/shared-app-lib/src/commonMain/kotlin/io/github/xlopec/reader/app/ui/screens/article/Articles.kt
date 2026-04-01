@@ -420,8 +420,8 @@ internal fun ArticleSearchHeader(
             if (focusState.isFocused) {
                 onMessage(
                     NavigateToFilters(
-                        state.id,
-                        state.filter,
+                        parentId = state.id,
+                        filter = state.filter,
                     )
                 )
             }
