@@ -26,4 +26,4 @@ package io.github.xlopec.tea.core.misc
 
 import platform.Foundation.NSThread
 
-actual fun currentThreadName(): String = NSThread.currentThread.toString().replaceAfterLast('@', "")
+actual fun currentThreadName(): String = NSThread.currentThread.toString()

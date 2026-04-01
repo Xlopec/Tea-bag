@@ -364,7 +364,7 @@ abstract class ComponentTestBase(
         // All test schedulers use 'Test worker' as prefix, so to work around this issue we use
         // custom dispatcher with different thread naming strategy
         val mainThreadNamePrefix = async { currentThreadName() }
-        val scope = CoroutineScope(backgroundScope.job + Dispatchers.Default)
+        val scope = CoroutineScope(Job() + Dispatchers.Default)
         val env = TestEnv<Char, String, Char>(
             initializer = Initializer(""),
             resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
@@ -372,6 +372,8 @@ abstract class ComponentTestBase(
             scope = scope,
         )
 
-        factory(env)('a'..'d').take('d' - 'a').collect()
+        val job = scope.launch { factory(env)('a'..'d').take('d' - 'a').collect() }
+
+        job.join()
     }
 }
