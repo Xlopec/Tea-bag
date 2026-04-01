@@ -1,5 +1,7 @@
 package io.github.xlopec.tea.core.misc
 
+import platform.windows.GetCurrentThreadId
+
 actual fun currentThreadName(): String {
-    TODO("Not yet implemented")
+    return "Thread-${GetCurrentThreadId()}"
 }
