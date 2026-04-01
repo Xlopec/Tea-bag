@@ -27,6 +27,7 @@
 installGitHooks()
 
 plugins {
+    id("base")
     id("common-config")
     alias(libs.plugins.version.check)
     alias(libs.plugins.nexus.publishing)
@@ -56,12 +57,12 @@ nexusPublishing {
     useStaging.set(!libraryVersion.isSnapshot)
 }
 
-allprojects {
+subprojects {
     apply {
         plugin("common-config")
     }
 }
 
-tasks.register("check") {
+tasks.named("check") {
     dependsOn(gradle.includedBuild("convention-plugins").task(":check"))
 }
