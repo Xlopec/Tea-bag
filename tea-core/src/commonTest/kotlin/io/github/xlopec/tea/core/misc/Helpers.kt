@@ -71,10 +71,9 @@ fun <M, S> CheckingUpdater(
     mainThreadName: String,
 ): Updater<M, S, Nothing> = { _, s ->
 
-    val actualThreadNamePrefix = currentThreadName().replaceAfterLast('@', "")
-    val mainThreadNamePrefix = mainThreadName.replaceAfterLast('@', "")
+    val actualThreadNamePrefix = currentThreadName()
 
-    assertNotEquals(mainThreadNamePrefix, actualThreadNamePrefix)
+    assertNotEquals(mainThreadName, actualThreadNamePrefix)
 
     s.noCommand()
 }
