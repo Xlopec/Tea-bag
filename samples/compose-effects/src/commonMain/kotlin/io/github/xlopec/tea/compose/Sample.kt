@@ -2,19 +2,26 @@
 
 package io.github.xlopec.tea.compose
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import io.github.xlopec.tea.compose.Command.DoLoad
 import io.github.xlopec.tea.core.Component
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.Resolver
 import io.github.xlopec.tea.core.Sink
+import io.github.xlopec.tea.core.Snapshot
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.jvm.JvmInline
@@ -161,34 +168,40 @@ fun main(): Unit = runBlocking {
             // with Jetpack Compose's lifecycle (using TrackingEffect).
             ComposeResolver(
                 scope = contextOf<CoroutineScope>(),
-                snapshots = snapshots,
                 clockPolicy = ClockPolicy.Internal,
                 snapshotManagerPolicy = SnapshotNotifierPolicy.WhileActive
-            ) { state, commands ->
-                for (screen in state.stack) {
-                    key(screen.id) {
-                        // TrackingEffect allows grouping command execution by a key (screen.id),
-                        // ensuring that commands for a specific screen are handled in its own scope.
-                        TrackingEffect(screen.id) {
-                            commands
-                                .filter { cmd ->
-                                    screen.id == (cmd as? DoLoad)?.screenId
-                                }
-                                .collect { cmd ->
-                                    resolve(cmd)
-                                }
+            ) {
+                val snapshot by snapshots.collectAsState(null)
+                val state = snapshot?.currentState
+
+                if (state != null) {
+                    val commands = snapshots.rememberCommands()
+
+                    for (screen in state.stack) {
+                        key(screen.id) {
+                            // TrackingEffect allows grouping command execution by a key (screen.id),
+                            // ensuring that commands for a specific screen are handled in its own scope.
+                            TrackingEffect(screen.id) {
+                                commands
+                                    .filter { cmd ->
+                                        screen.id == (cmd as? DoLoad)?.screenId
+                                    }
+                                    .collect { cmd ->
+                                        resolve(cmd)
+                                    }
+                            }
                         }
                     }
-                }
 
-                TrackingEffect(Unit) {
-                    commands
-                        .filter { cmd ->
-                            cmd !is DoLoad
-                        }
-                        .collect { cmd ->
-                            resolve(cmd)
-                        }
+                    TrackingEffect(Unit) {
+                        commands
+                            .filter { cmd ->
+                                cmd !is DoLoad
+                            }
+                            .collect { cmd ->
+                                resolve(cmd)
+                            }
+                    }
                 }
             }
         }
@@ -237,5 +250,12 @@ internal fun resolve(command: Command) {
         }
 
         is Command.DoLog -> println("Log: ${command.message}")
+    }
+}
+
+@Composable
+private fun Flow<Snapshot<*, *, Command>>.rememberCommands(): Flow<Command> {
+    return remember(this) {
+        transform { snapshot -> snapshot.commands.forEach { emit(it) } }
     }
 }

@@ -36,15 +36,11 @@ import io.github.xlopec.tea.core.ShareStateWhileSubscribed
 import io.github.xlopec.tea.core.Snapshot
 import io.github.xlopec.tea.core.Updater
 import io.github.xlopec.tea.core.invoke
-import io.github.xlopec.tea.core.noCommand
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlin.math.abs
-import kotlin.test.assertNotEquals
-
-const val TestTimeoutMillis = 10 * 1000L
 
 inline val CoroutineScope.job: Job
     get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")
@@ -66,18 +62,6 @@ fun <M, S, C> TestEnv(
 fun ThrowingInitializer(
     th: Throwable,
 ): Initializer<Nothing, Nothing> = { throw th }
-
-fun <M, S> CheckingUpdater(
-    mainThreadName: String,
-): Updater<M, S, Nothing> = { _, s ->
-
-    val actualThreadNamePrefix = currentThreadName().replaceAfterLast('@', "")
-    val mainThreadNamePrefix = mainThreadName.replaceAfterLast('@', "")
-
-    assertNotEquals(mainThreadNamePrefix, actualThreadNamePrefix)
-
-    s.noCommand()
-}
 
 internal val CharRange.size: Int
     get() = 1 + abs(last - first)

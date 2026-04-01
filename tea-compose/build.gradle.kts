@@ -29,6 +29,8 @@ plugins {
 }
 
 kotlin {
+    enableAllTargets()
+
     compilerOptions {
         optIn.addAll(
             "kotlinx.coroutines.ExperimentalCoroutinesApi",
@@ -46,6 +48,12 @@ kotlin {
                 api(libs.compose.runtime)
                 implementation(libs.stdlib)
                 implementation(libs.concurrent.collections)
+            }
+        }
+
+        webMain {
+            dependencies {
+                implementation(libs.kotlinx.browser)
             }
         }
 

@@ -4,9 +4,6 @@ import androidx.compose.runtime.BroadcastFrameClock
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.Recomposer
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.Snapshot
 import io.github.xlopec.tea.compose.SnapshotNotifierPolicy.External
 import io.github.xlopec.tea.compose.SnapshotNotifierPolicy.WhileActive
@@ -23,43 +20,6 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.ExperimentalTime
 import io.github.xlopec.tea.core.Snapshot as ComponentSnapshot
-
-/**
- * Resolves and composes the given snapshot flow in the provided coroutine scope
- * while reacting to component state and commands.
- *
- * ***NOTE*** some snapshots might be skipped if published too frequently, see [androidx.compose.runtime.produceState] for more info
- *
- * @param M The type representing messages in the composition.
- * @param S The type representing state in the composition.
- * @param C The type representing commands in the composition.
- * @param scope The [CoroutineScope] in which the [ComposeResolver] is executed.
- * @param snapshots A [Flow] emitting [ComponentSnapshot] instances, representing
- *                  the state and commands of a component.
- * @param snapshotManagerPolicy The policy determining how snapshot change notifications
- *                               are handled during composition. Defaults to [External].
- * @param content A composable function receiving the current state [S] and a [Flow] of
- *                commands [C] to process and render UI.
- */
-@Deprecated("remove")
-@Suppress("FunctionName")
-public fun <M, S, C> ComposeResolver(
-    scope: CoroutineScope,
-    snapshots: Flow<ComponentSnapshot<M, S, C>>,
-    clockPolicy: ClockPolicy = ClockPolicy.External,
-    snapshotManagerPolicy: SnapshotNotifierPolicy = External,
-    content: @Composable (S, Flow<C>) -> Unit,
-) {
-    ComposeResolver(scope, clockPolicy, snapshotManagerPolicy) {
-        val currentSnapshot by snapshots.collectAsState(null)
-        val snapshot = currentSnapshot
-
-        if (snapshot != null) {
-            val commands = remember(snapshots) { snapshots.flattenCommands() }
-            content(snapshot.currentState, commands)
-        }
-    }
-}
 
 /**
  * Resolves and composes the given snapshot flow in the provided coroutine scope

@@ -34,7 +34,7 @@ struct ComposeViewController: UIViewControllerRepresentable {
     let component: IosComponent
 
     func makeUIViewController(context: Context) -> UIViewController {
-        App_iosKt.appController(component: component)
+        App_appleKt.appController(component: component)
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {

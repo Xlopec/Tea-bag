@@ -32,17 +32,6 @@ group = "io.github.xlopec"
 kotlinMultiplatform {
     explicitApi()
 
-    jvm {
-        testRuns["test"].executionTask.configure {
-            useJUnit()
-        }
-    }
-
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-    applyDefaultHierarchyTemplate()
-
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
         compilerOptions {
             freeCompilerArgs.add("-Xexport-kdoc")
@@ -50,6 +39,8 @@ kotlinMultiplatform {
     }
 }
 
-tasks.named<TestReport>("allTests").configure {
-    configureOutputLocation(testReportsDir("multiplatform"))
+afterEvaluate {
+    tasks.named<TestReport>("allTests").configure {
+        configureOutputLocation(testReportsDir("multiplatform"))
+    }
 }

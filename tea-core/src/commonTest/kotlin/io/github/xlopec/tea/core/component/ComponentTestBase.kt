@@ -11,22 +11,17 @@ import io.github.xlopec.tea.core.Snapshot
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.effects
 import io.github.xlopec.tea.core.invoke
-import io.github.xlopec.tea.core.misc.CheckingUpdater
 import io.github.xlopec.tea.core.misc.ComponentException
 import io.github.xlopec.tea.core.misc.SnapshotsCollector
 import io.github.xlopec.tea.core.misc.TestEnv
 import io.github.xlopec.tea.core.misc.ThrowingInitializer
 import io.github.xlopec.tea.core.misc.collectRanged
-import io.github.xlopec.tea.core.misc.currentThreadName
 import io.github.xlopec.tea.core.misc.expectCompletionAndCancel
-import io.github.xlopec.tea.core.misc.job
 import io.github.xlopec.tea.core.misc.size
 import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.core.with
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
@@ -210,7 +205,7 @@ abstract class ComponentTestBase(
             },
             resolver = { /*do not subscribe or the initializer invokes*/ },
             updater = { _, s -> s.noCommand() },
-            scope = CoroutineScope(backgroundScope.job + UnconfinedTestDispatcher(scheduler = testScheduler)),
+            scope = backgroundScope,
             // SharingStarted.Lazily since in case of default option replay
             // cache will be disposed immediately causing test to fail
             shareOptions = { scope, upstream ->
@@ -357,21 +352,5 @@ abstract class ComponentTestBase(
             th is RuntimeException && th.message == expectedException.message
         }
         assertTrue(!scope.isActive)
-    }
-
-    @Test
-    fun `when collecting component with specific dispatcher then updater runs on this dispatcher`() = runTest {
-        // All test schedulers use 'Test worker' as prefix, so to work around this issue we use
-        // custom dispatcher with different thread naming strategy
-        val mainThreadNamePrefix = async { currentThreadName() }
-        val scope = CoroutineScope(backgroundScope.job + Dispatchers.Default)
-        val env = TestEnv<Char, String, Char>(
-            initializer = Initializer(""),
-            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
-            updater = CheckingUpdater(mainThreadNamePrefix.await()),
-            scope = scope,
-        )
-
-        factory(env)('a'..'d').take('d' - 'a').collect()
     }
 }

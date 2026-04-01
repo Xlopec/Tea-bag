@@ -1,35 +1,11 @@
-import com.android.build.api.dsl.ApplicationExtension
-import com.android.build.api.dsl.CommonExtension
-import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.artifacts.dsl.ArtifactHandler
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-
-private typealias AndroidExtensions = CommonExtension
-
-private val Project.androidExtension: AndroidExtensions
-    get() = extensions.findByType(ApplicationExtension::class)
-        ?: extensions.findByType(LibraryExtension::class)
-        ?: error(
-            "\"Project.androidExtension\" value may be called only from android application" +
-                " or android library gradle script"
-        )
-
-fun Project.androidConfig(block: AndroidExtensions.() -> Unit): Unit = block(androidExtension)
-
-fun Project.kotlinJvmCompilerOptions(block: KotlinJvmCompilerOptions.() -> Unit) {
-    tasks.withType<KotlinJvmCompile>().configureEach {
-        compilerOptions(block)
-    }
-}
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 internal fun Project.signing(configure: Action<org.gradle.plugins.signing.SigningExtension>): Unit =
     (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("signing", configure)
@@ -40,7 +16,7 @@ internal val TaskContainer.classes: TaskProvider<org.gradle.api.DefaultTask>
 internal fun ArtifactHandler.archives(artifactNotation: Any): PublishArtifact =
     add("archives", artifactNotation)
 
-internal fun Project.kotlinMultiplatform(configure: Action<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>): Unit =
+internal fun Project.kotlinMultiplatform(configure: Action<KotlinMultiplatformExtension>): Unit =
     (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("kotlin", configure)
 
 internal fun Project.kotlinJvm(configure: Action<org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension>): Unit =

@@ -27,6 +27,7 @@ plugins {
 }
 
 kotlin {
+    enableAllTargets()
 
     sourceSets {
         commonMain {
