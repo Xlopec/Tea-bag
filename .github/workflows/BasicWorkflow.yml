@@ -98,7 +98,10 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     #needs: Check
-    runs-on: macos-15
+    strategy:
+      matrix:
+        os: [ macos-15, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
         with:
