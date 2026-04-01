@@ -7,16 +7,16 @@
 
 Tea Bag is a simple implementation of [TEA](https://guide.elm-lang.org/architecture/)
 architecture written in Kotlin. This library is based on Kotlin's coroutines, extensively uses
-extension-based approach and supports both ```jvm``` and ```ios``` targets.
+extension-based approach and supports many targets including ```jvm```, ```js```, ```wasmJs```, ```ios```, ```macos```, ```tvos```,
+```watchos```, ```linux``` and ```mingw```.
 
-This library isn't production ready yet and was originally intended as pet project to give TEA a
-try. Later I found that it'd be nice to make it simpler and more lightweight than analogs, add
-debugging capabilities...
+This library is designed to be a lightweight, simple, and multiplatform-first implementation of
+the TEA architecture. It provides a minimal set of abstractions to build TEA app
 
 ## Quick Sample
 
 Nothing special, we just need to code our initializer, resolver (`tracker` function),
-updater (`computeNewState`function), and UI (`renderSnapshot,` function). After that we should pass
+updater (`computeNewState` function), and UI (`renderSnapshot,` function). After that we should pass
 them to an appropriate `Component` builder overload.
 
 ```kotlin
@@ -87,7 +87,8 @@ For more info visit [Wiki](https://github.com/Xlopec/Tea-bag/wiki) page
 
 ## Main Features
 
-- **Multiplatform** this library supports ```jvm```, ```iosX64``` and ```iosArm64``` targets
+- **Multiplatform** this library supports ```jvm```, ```js```, ```wasmJs```, ```ios```, ```macos```, ```tvos```, ```watchos```, ```linux```
+  and ```mingw``` targets
 - **Scalability** it is build on the top of a simple idea of having pure functions that operate on
   plain data separated from impure one. Those functions are building blocks and form testable
   components that can be combined to build complex applications
@@ -103,9 +104,11 @@ Add the dependency:
 
 ```kotlin
 implementation("io.github.xlopec:tea-core:[version]")
+implementation("io.github.xlopec:tea-compose:[version]")
+implementation("io.github.xlopec:tea-navigation:[version]")
 implementation("io.github.xlopec:tea-time-travel:[version]")
 implementation("io.github.xlopec:tea-time-travel-adapter-gson:[version]")
-implementation("io.github.xlopec:tea-navigation:[version]")
+implementation("io.github.xlopec:tea-time-travel-protocol:[version]")
 ```
 
 Make sure that you have `mavenCentral()` in the list of repositories.
@@ -121,12 +124,12 @@ Plugin is available on [JetBrains marketplace](https://plugins.jetbrains.com/plu
 ## Main Modules
 
 - **tea-core** - contains core types along with basic component implementation
+- **tea-compose** - contains Compose Multiplatform integration
 - **tea-navigation** - contains navigation extensions as well as predictive back navigation for iOS target
 - **tea-time-travel** - contains debuggable version of the component
 - **tea-time-travel-adapter-gson** - implements debug protocol and serialization by means
   of [Gson](https://github.com/google/gson) library. Should be added as dependency together with **tea-time-travel** module
 - **tea-time-travel-protocol** - contains debug protocol types definitions
-- **tea-time-travel-plugin** - contains Intellij plugin implementation
 
 ## How to build and run
 
