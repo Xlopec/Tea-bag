@@ -17,7 +17,6 @@ import io.github.xlopec.tea.core.misc.TestEnv
 import io.github.xlopec.tea.core.misc.ThrowingInitializer
 import io.github.xlopec.tea.core.misc.collectRanged
 import io.github.xlopec.tea.core.misc.expectCompletionAndCancel
-import io.github.xlopec.tea.core.misc.job
 import io.github.xlopec.tea.core.misc.size
 import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.core.with
@@ -206,7 +205,7 @@ abstract class ComponentTestBase(
             },
             resolver = { /*do not subscribe or the initializer invokes*/ },
             updater = { _, s -> s.noCommand() },
-            scope = CoroutineScope(backgroundScope.job + UnconfinedTestDispatcher(scheduler = testScheduler)),
+            scope = CoroutineScope(Job() + UnconfinedTestDispatcher(scheduler = testScheduler)),
             // SharingStarted.Lazily since in case of default option replay
             // cache will be disposed immediately causing test to fail
             shareOptions = { scope, upstream ->
