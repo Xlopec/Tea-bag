@@ -49,6 +49,11 @@ public interface PredictiveBackAnimation {
      * Cancels the animation (e.g. when back is cancelled).
      */
     public suspend fun cancelAnimation()
+
+    /**
+     * Indicates whether the predictive back animation is currently running.
+     */
+    public val isRunning: Boolean
 }
 
 /**
@@ -121,6 +126,8 @@ internal class DefaultPredictiveBackAnimation(
 
     override val currentModifier: Modifier
         get() = currentModifierProvider(animatable.value)
+
+    override val isRunning: Boolean by animatable::isRunning
 
     override suspend fun animate(event: BackEvent) {
         animatable.animateTo(event.progress)

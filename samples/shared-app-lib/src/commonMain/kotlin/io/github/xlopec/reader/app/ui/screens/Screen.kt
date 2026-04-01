@@ -24,7 +24,6 @@
 
 package io.github.xlopec.reader.app.ui.screens
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.End
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Start
@@ -69,27 +68,29 @@ internal fun ScreenTransition(
     modifier: Modifier,
     screen: Screen,
     snapshot: Snapshot<*, AppState, *>,
+    animationRunning: () -> Boolean,
     handler: MessageHandler,
 ) {
     val currentScreen by rememberUpdatedState(screen)
     val currentState by rememberUpdatedState(snapshot.currentState)
     val previousScreen by rememberUpdatedState((snapshot as? Regular)?.previousState?.screen)
     val previousState by rememberUpdatedState((snapshot as? Regular)?.previousState)
+    val currentAnimationRunning by rememberUpdatedState(animationRunning)
     val transition = updateTransition(targetState = screen, label = "Screen transition")
 
-    transition.AnimatedContent(
+    /*transition.AnimatedContent(
         transitionSpec = {
-            screenTransition(currentScreen, previousScreen, currentState, previousState)
+            screenTransition(currentScreen, previousScreen, currentState, previousState, currentAnimationRunning)
         },
         contentKey = { it.id.toString() }
-    ) { animatedScreen ->
+    ) { animatedScreen ->*/
         Screen(
             modifier = modifier,
-            screen = animatedScreen,
+            screen = screen,
             app = currentState,
             handler = handler,
         )
-    }
+    //  }
 }
 
 @Composable
@@ -136,17 +137,22 @@ internal fun AnimatedContentTransitionScope<*>.screenTransition(
     currentScreen: Screen,
     previousScreen: Screen?,
     currentState: AppState,
-    previousState: AppState?
-): ContentTransform = when {
-    skipTransition(currentScreen, previousScreen) -> NoTransition
-    forwardNavigation(currentState, previousState) -> slideIntoContainer(Start) + fadeIn() togetherWith ExitTransition.None
-    else -> slideIntoContainer(End) + fadeIn() togetherWith ExitTransition.None
+    previousState: AppState?,
+    currentAnimationRunning: () -> Boolean
+): ContentTransform {
+    val currentAnimationRunning1 = currentAnimationRunning()
+    return when {
+        currentAnimationRunning1 || skipTransition(currentScreen, previousScreen) -> NoTransition
+        forwardNavigation(currentState, previousState) -> slideIntoContainer(Start) + fadeIn() togetherWith ExitTransition.None
+        else -> slideIntoContainer(End) + fadeIn() togetherWith ExitTransition.None
+    }
 }
 
 private fun skipTransition(
     currentScreen: Screen,
     previousScreen: Screen?,
 ): Boolean {
+    println("Current ${currentScreen.id}, prev ${previousScreen?.id}")
     return currentScreen.id == previousScreen?.id ||
         (currentScreen is TabScreen && (previousScreen == null || tabChanged(previousScreen, currentScreen)))
 }

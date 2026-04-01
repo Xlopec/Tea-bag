@@ -75,6 +75,7 @@ internal fun App(
                     screen = screen,
                     snapshot = snapshot,
                     handler = handler,
+                    animationRunning = { animation.isRunning },
                 )
             }
         }

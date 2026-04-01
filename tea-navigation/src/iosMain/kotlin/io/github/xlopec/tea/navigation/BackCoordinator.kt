@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.backhandler.BackDispatcher
@@ -101,8 +102,10 @@ public class BackCoordinator<T : NavStackEntry<*>> internal constructor(
         scope.launch {
             animation.finishAnimation()
             onBackComplete(current)
-            this@BackCoordinator.current = previous
-            this@BackCoordinator.previous = null
+            Snapshot.withMutableSnapshot {
+                this@BackCoordinator.current = previous
+                this@BackCoordinator.previous = null
+            }
             animation.reset()
         }
     }
@@ -120,8 +123,8 @@ public class BackCoordinator<T : NavStackEntry<*>> internal constructor(
 
     override fun onBackCancelled() {
         scope.launch {
-            animation.cancelAnimation()
             previous = null
+            animation.cancelAnimation()
             animation.reset()
         }
     }
