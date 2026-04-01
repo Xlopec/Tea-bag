@@ -27,11 +27,23 @@ fun KotlinMultiplatformExtension.enableUiTargets() {
     }
 
     js {
-        browser()
+        browser {
+            testTask {
+                useMocha {
+                    timeout = "60s"
+                }
+            }
+        }
     }
 
     wasmJs {
-        browser()
+        browser {
+            testTask {
+                useMocha {
+                    timeout = "60s"
+                }
+            }
+        }
     }
 
     macosArm64()
