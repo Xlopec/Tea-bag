@@ -1,4 +1,6 @@
 import org.gradle.kotlin.dsl.get
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 fun KotlinMultiplatformExtension.enableAllTargets() {
@@ -14,15 +16,40 @@ fun KotlinMultiplatformExtension.enableAllTargets() {
     tvosArm64()
 }
 
+@OptIn(ExperimentalWasmDsl::class)
 fun KotlinMultiplatformExtension.enableUiTargets() {
+    applyProjectHierarchyTemplate()
+    
     jvm {
         testRuns["test"].executionTask.configure {
             useJUnit()
         }
     }
 
+    js {
+        browser()
+    }
+
+    wasmJs {
+        browser()
+    }
+
     macosArm64()
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+}
+
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
+private fun KotlinMultiplatformExtension.applyProjectHierarchyTemplate() {
+    applyDefaultHierarchyTemplate {
+        group("common") {
+            group("nonWeb") {
+                group("native")
+                group("jvm") {
+                    withJvm()
+                }
+            }
+        }
+    }
 }

@@ -30,6 +30,7 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose-testing" }
 android-test-orchestrator = { module = "androidx.test:orchestrator", version = "1.6.1" }
 concurrent-collections = { module = "co.touchlab:stately-concurrent-collections", version = "2.1.0" }
+kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version = "0.5.0" }
 turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }

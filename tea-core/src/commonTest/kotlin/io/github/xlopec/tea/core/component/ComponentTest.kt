@@ -34,7 +34,6 @@ import io.github.xlopec.tea.core.Regular
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.computeSnapshots
 import io.github.xlopec.tea.core.misc.TestEnv
-import io.github.xlopec.tea.core.misc.TestTimeoutMillis
 import io.github.xlopec.tea.core.misc.expectCompletionAndCancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -43,12 +42,11 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.time.Duration.Companion.milliseconds
 
 class ComponentTest : ComponentTestBase(::Component) {
 
     @Test
-    fun `when upstream receives new input then previous downstream is canceled`() = runTest(timeout = TestTimeoutMillis.milliseconds) {
+    fun `when upstream receives new input then previous downstream is canceled`() = runTest {
         val env = TestEnv(
             initializer = Initializer(""),
             resolver = { _ -> },

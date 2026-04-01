@@ -51,6 +51,12 @@ kotlin {
             }
         }
 
+        webMain {
+            dependencies {
+                implementation(libs.kotlinx.browser)
+            }
+        }
+
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)

@@ -31,7 +31,6 @@ group = "io.github.xlopec"
 
 kotlinMultiplatform {
     explicitApi()
-    applyDefaultHierarchyTemplate()
 
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
         compilerOptions {
