@@ -37,13 +37,7 @@ fun KotlinMultiplatformExtension.enableUiTargets() {
     }
 
     wasmJs {
-        browser {
-            testTask {
-                useMocha {
-                    timeout = "60s"
-                }
-            }
-        }
+        browser()
     }
 
     macosArm64()
@@ -55,7 +49,7 @@ fun KotlinMultiplatformExtension.enableUiTargets() {
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 private fun KotlinMultiplatformExtension.applyProjectHierarchyTemplate() {
     applyDefaultHierarchyTemplate {
-        group("common") {
+        common {
             group("nonWeb") {
                 group("native")
                 group("jvm") {
