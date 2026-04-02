@@ -29,7 +29,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run static code analysis
-        run: ./gradlew detekt --no-configuration-cache
+        run: ./gradlew detekt --no-configuration-cache --no-daemon
 
   Android-emulator-tests:
     env:
@@ -59,7 +59,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run connected Android tests
-        run: ./gradlew samples:app:pixel2api30DefaultDebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect" -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1 --no-configuration-cache
+        run: ./gradlew samples:app:pixel2api30DefaultDebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect" -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1 --no-configuration-cache --no-daemon
 
   IOS-app-build:
     env:
@@ -122,7 +122,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run tests
-        run: ./gradlew check -x detekt --no-configuration-cache
+        run: ./gradlew check -x detekt --no-configuration-cache --no-daemon
       - name: Archive test reports
         if: success() || failure()
         uses: actions/upload-artifact@v4
@@ -161,7 +161,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Publish artifacts
-        run: ./gradlew publishToSonatype closeSonatypeStagingRepository copyArtifacts --no-configure-on-demand --no-configuration-cache
+        run: ./gradlew publishToSonatype closeSonatypeStagingRepository copyArtifacts --no-configure-on-demand --no-configuration-cache --no-daemon
         env:
           OSSRH_USER: ${{ secrets.OSSRH_USER }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
