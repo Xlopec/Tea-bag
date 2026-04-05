@@ -1,44 +1,67 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2026. Maksym Oliinyk.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package io.github.xlopec.tea.compose
 
 /**
- * The different snapshot notification modes for the composition.
+ * Policies for snapshot change notification in a composition.
  *
- * Compose uses snapshots to provide a consistent view of state. Mutations to state outside of the
- * composition are not automatically observed, and notifications of changes must be manually sent.
- * This can be achieved by registering a global write observer, for which you need at-least one
- * per process. Applications which use other Compose-based systems like Compose UI likely already
- * have one in place, whereas applications that only use this library need its automatic registering
- * of this notifier.
+ * Compose uses a snapshot system to maintain state consistency. However, mutations occurring outside
+ * of the composition's immediate context are not automatically observed, and notification of these
+ * changes must be manually dispatched.
+ *
+ * This is typically managed by registering a global write observer, with at least one required per process.
+ * Applications using other Compose-based frameworks (like Compose UI) usually have this mechanism in place.
+ * Applications using only this library can rely on its automatic notifier registration.
  *
  * @see androidx.compose.runtime.snapshots.Snapshot.sendApplyNotifications
  */
 public enum class SnapshotNotifierPolicy {
     /**
-     * Rely on some other external system for sending snapshot change notifications.
+     * Delegates snapshot change notification to an external system.
      *
-     * This should only be used if you can guarantee that someone else is listening to global
-     * snapshot writes and sending apply notifications. Usually this means that some other
-     * Compose-based system is being used in your application, and that it will always be
-     * initialized prior to or at the same time as the composition.
+     * This policy should only be used if another component in the application is guaranteed to listen for
+     * global snapshot writes and send apply notifications. This is common when using other Compose-based
+     * frameworks that are initialized alongside or before the composition.
      *
-     * Failure to ensure someone else is sending apply notifications will result in state writes
-     * not triggering additional recomposition.
+     * Warning: If no external system sends apply notifications, state changes will not trigger recomposition.
      *
-     * Some examples where this policy can be used:
-     * - On Android, using Compose UI _before_ the component starts (e.g., even just calling `setContent { }` on
-     *   an `Activity` or `ComposeView`) will start a singleton snapshot write listener and applier.
-     *   If you are sure that this will _always_ happen, specifying this policy for all compositions
-     *   is valid.
-     * - On JetBrains' Compose UI for Desktop, calling the `application { }` function is enough to
-     *   ensure their singleton snapshot write listener and applier is started (you do not have to
-     *   even show a window).
+     * Examples:
+     * - **Android with Compose UI**: Calling `setContent { }` on an `Activity` or `ComposeView`
+     *   automatically starts a global snapshot write listener.
+     * - **Compose HTML**: The framework manages snapshot notifications internally.
+     * - **Compose UI for Desktop**: Calling `application { }` ensures the global snapshot listener
+     *   is active, even without showing a window.
      */
     External,
 
     /**
-     * Register a global snapshot write observer and send apply notifications when new writes occur
-     * using a coroutine launched on the same scope as the composition. This coroutine will be
-     * canceled and observer unregistered when that scope is canceled.
+     * Automatically manages snapshot notifications during the composition's lifecycle.
+     *
+     * Registers a global snapshot write observer and dispatches apply notifications via a coroutine
+     * launched in the composition's scope. The observer is automatically unregistered and the coroutine
+     * canceled when the composition is disposed.
      */
     WhileActive,
 }

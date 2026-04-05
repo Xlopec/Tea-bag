@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -63,13 +63,16 @@ import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.article.list.RefreshArticles
 import io.github.xlopec.reader.app.feature.article.list.ScrollState
 import io.github.xlopec.reader.app.feature.article.list.SyncScrollPosition
-import io.github.xlopec.reader.app.feature.navigation.Tab
-import io.github.xlopec.reader.app.feature.navigation.Tab.*
 import io.github.xlopec.reader.app.feature.navigation.NavigateToFavorite
 import io.github.xlopec.reader.app.feature.navigation.NavigateToFeed
 import io.github.xlopec.reader.app.feature.navigation.NavigateToSettings
 import io.github.xlopec.reader.app.feature.navigation.NavigateToTrending
 import io.github.xlopec.reader.app.feature.navigation.Navigation
+import io.github.xlopec.reader.app.feature.navigation.Tab
+import io.github.xlopec.reader.app.feature.navigation.Tab.Favorite
+import io.github.xlopec.reader.app.feature.navigation.Tab.Feed
+import io.github.xlopec.reader.app.feature.navigation.Tab.Settings
+import io.github.xlopec.reader.app.feature.navigation.Tab.Trending
 import io.github.xlopec.reader.app.feature.settings.SettingsScreen
 import io.github.xlopec.reader.app.misc.isException
 import io.github.xlopec.reader.app.misc.isIdle

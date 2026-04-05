@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ import io.github.xlopec.tea.time.travel.protocol.ComponentId
 import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
 import io.github.xlopec.tea.time.travel.session.DebugSession
 import io.github.xlopec.tea.time.travel.session.SessionFactory
-import io.ktor.http.Url
+import io.ktor.http.*
 
 /**
  * The same as [environment][Env] but with extra settings.
