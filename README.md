@@ -106,9 +106,6 @@ Add the dependency:
 implementation("io.github.xlopec:tea-core:[version]")
 implementation("io.github.xlopec:tea-compose:[version]")
 implementation("io.github.xlopec:tea-navigation:[version]")
-implementation("io.github.xlopec:tea-time-travel:[version]")
-implementation("io.github.xlopec:tea-time-travel-adapter-gson:[version]")
-implementation("io.github.xlopec:tea-time-travel-protocol:[version]")
 ```
 
 Make sure that you have `mavenCentral()` in the list of repositories.
