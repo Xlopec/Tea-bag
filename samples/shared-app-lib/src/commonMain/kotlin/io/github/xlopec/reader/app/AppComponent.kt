@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,6 @@ package io.github.xlopec.reader.app
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.tea.core.Component
 import io.github.xlopec.tea.core.Initializer
-import io.github.xlopec.tea.core.ShareOptions
-import kotlinx.coroutines.flow.SharingStarted
 
 public fun AppComponent(
     environment: Environment,
@@ -38,8 +36,7 @@ public fun AppComponent(
 ): Component<Message, AppState, Command> =
     Component(
         initializer = initializer,
-        resolver = { snapshot, ctx -> with(environment) { resolve(snapshot, ctx) } },
-        updater = { m, s -> with(environment) { update(m, s) } },
+        resolver = { snapshots -> with(environment) { resolve(snapshots) } },
+        updater = { m, s -> update(m, s) },
         scope = environment,
-        shareOptions = ShareOptions(SharingStarted.WhileSubscribed())
     )

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,19 @@
 
 package io.github.xlopec.reader.app.feature.article.details
 
-public interface ArticleDetailsResolver {
+import io.github.xlopec.reader.app.Message
+import io.github.xlopec.reader.app.model.Url
+import io.github.xlopec.tea.core.Sink
+import io.github.xlopec.tea.core.sideEffect
+import kotlinx.coroutines.CoroutineScope
 
-    public suspend fun resolve(
-        command: DoOpenInBrowser
-    )
+context(_: Sink<Message>, _: CoroutineScope)
+internal fun <Env : BrowserLauncher> Env.resolveForOpenInBrowser(command: DoOpenInBrowser) {
+    sideEffect {
+        launch(command.article.url)
+    }
+}
+
+public interface BrowserLauncher {
+    public suspend fun launch(url: Url)
 }

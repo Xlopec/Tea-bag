@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,17 +32,6 @@ group = "io.github.xlopec"
 kotlinMultiplatform {
     explicitApi()
 
-    jvm {
-        testRuns["test"].executionTask.configure {
-            useJUnit()
-        }
-    }
-
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-    applyDefaultHierarchyTemplate()
-
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
         compilerOptions {
             freeCompilerArgs.add("-Xexport-kdoc")
@@ -50,6 +39,8 @@ kotlinMultiplatform {
     }
 }
 
-tasks.named<TestReport>("allTests").configure {
-    configureOutputLocation(testReportsDir("multiplatform"))
+afterEvaluate {
+    tasks.named<TestReport>("allTests").configure {
+        configureOutputLocation(testReportsDir("multiplatform"))
+    }
 }

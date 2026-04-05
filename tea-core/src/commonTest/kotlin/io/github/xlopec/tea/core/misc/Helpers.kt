@@ -33,73 +33,35 @@ import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.Resolver
 import io.github.xlopec.tea.core.ShareOptions
 import io.github.xlopec.tea.core.ShareStateWhileSubscribed
+import io.github.xlopec.tea.core.Snapshot
 import io.github.xlopec.tea.core.Updater
 import io.github.xlopec.tea.core.invoke
-import io.github.xlopec.tea.core.noCommand
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.test.TestResult
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.runTest
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.abs
-import kotlin.test.assertNotEquals
-import kotlin.time.Duration.Companion.milliseconds
-
-const val TestTimeoutMillis = 10 * 1000L
 
 inline val CoroutineScope.job: Job
     get() = coroutineContext[Job.Key] ?: error("scope doesn't have job $this")
 
-/**
- * Same as [runTest] but cancels child jobs before leaving test.
- * This is useful when testing running [Component] since component's upstream doesn't get
- * destroyed until host scope is canceled
- */
-fun runTestCancellingChildren(
-    context: CoroutineContext = EmptyCoroutineContext,
-    dispatchTimeoutMs: Long = TestTimeoutMillis,
-    testBody: suspend TestScope.() -> Unit,
-): TestResult = runTest(context, timeout = dispatchTimeoutMs.milliseconds) {
-    testBody()
-    job.cancelChildren()
-}
-
-fun <M, S, C> CoroutineScope.testEnv(
+fun <M, S, C> TestEnv(
     initializer: Initializer<S, C>,
     resolver: Resolver<M, S, C>,
     updater: Updater<M, S, C>,
-    shareOptions: ShareOptions = ShareStateWhileSubscribed,
+    scope: CoroutineScope,
+    shareOptions: ShareOptions<Snapshot<M, S, C>> = ShareStateWhileSubscribed(),
 ) = Env(
-    initializer,
-    resolver,
-    updater,
-    this,
-    shareOptions
+    initializer = initializer,
+    resolver = { snapshot -> resolver(snapshot) },
+    updater = updater,
+    scope = scope,
+    shareOptions = shareOptions
 )
-
-@Suppress("UNUSED_PARAMETER")
-fun noOpSink(t: Any?) = Unit
 
 fun ThrowingInitializer(
     th: Throwable,
 ): Initializer<Nothing, Nothing> = { throw th }
-
-fun <M, S> CheckingUpdater(
-    mainThreadName: String,
-): Updater<M, S, Nothing> = { _, s ->
-
-    val actualThreadNamePrefix = currentThreadName().replaceAfterLast('@', "")
-    val mainThreadNamePrefix = mainThreadName.replaceAfterLast('@', "")
-
-    assertNotEquals(mainThreadNamePrefix, actualThreadNamePrefix)
-
-    s.noCommand()
-}
 
 internal val CharRange.size: Int
     get() = 1 + abs(last - first)

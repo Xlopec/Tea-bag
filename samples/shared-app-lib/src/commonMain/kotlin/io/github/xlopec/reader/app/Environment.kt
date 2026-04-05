@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,10 @@
 
 package io.github.xlopec.reader.app
 
+import io.github.xlopec.reader.app.feature.article.details.BrowserLauncher
+import io.github.xlopec.reader.app.feature.article.list.NewsApi
+import io.github.xlopec.reader.app.feature.article.list.ShareArticle
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import kotlinx.coroutines.CoroutineScope
 
-public expect interface Environment : AppModule<Environment>, CoroutineScope, LocalStorage
+public expect interface Environment : CoroutineScope, NewsApi, ShareArticle, LocalStorage, BrowserLauncher

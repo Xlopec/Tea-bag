@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,31 +27,31 @@ package io.github.xlopec.tea.time.travel.protocol
 import kotlin.reflect.KClass
 
 /**
- * Object to json converter
+ * An object-to-JSON converter.
  *
- * @param J json tree
+ * @param J JSON tree type
  */
 public interface JsonSerializer<J> {
 
     /**
-     * Converts object instance to a json tree representation.
-     * Json representation is library specific. For example, Gson
-     * has JsonElement whereas other libraries use [Map]
+     * Converts an object instance to a JSON tree representation.
+     * The JSON representation is library-specific. For example, Gson
+     * has JsonElement, whereas other libraries use [Map].
      *
-     * @param any object to convert to json tree
+     * @param any object to convert to a JSON tree
      * @param T object type
-     * @return json tree
+     * @return JSON tree
      */
     public fun <T> toJsonTree(
         any: T
     ): J
 
     /**
-     * Converts json tree to object instance
+     * Converts a JSON tree to an object instance.
      *
-     * @param json json tree
-     * @param cl object class
      * @param T object type
+     * @param json JSON tree
+     * @param cl object class
      * @return parsed object instance
      */
     public fun <T : Any> fromJsonTree(
@@ -60,22 +60,22 @@ public interface JsonSerializer<J> {
     ): T
 
     /**
-     * Converts object instance to a json string
+     * Converts an object instance to a JSON string.
      *
-     * @param any object to convert to json string
      * @param T object type
-     * @return parsed object instance
+     * @param any object to convert to a JSON string
+     * @return JSON string representation
      */
     public fun <T> toJson(
         any: T
     ): String
 
     /**
-     * Converts json tree to object instance
+     * Converts a JSON string to an object instance.
      *
-     * @param json json string
-     * @param cl object class
      * @param T object type
+     * @param json JSON string
+     * @param cl object class
      * @return parsed object instance
      */
     public fun <T : Any> fromJson(

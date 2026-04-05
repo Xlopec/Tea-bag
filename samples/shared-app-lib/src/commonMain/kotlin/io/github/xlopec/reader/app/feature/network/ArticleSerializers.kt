@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,10 @@ package io.github.xlopec.reader.app.feature.network
 import io.github.xlopec.reader.app.model.Author
 import io.github.xlopec.reader.app.model.Description
 import io.github.xlopec.reader.app.model.Title
+import io.github.xlopec.reader.app.model.Url
+import io.github.xlopec.reader.app.model.UrlFor
+import io.github.xlopec.reader.app.model.toExternalValue
 import io.github.xlopec.reader.app.model.tryCreate
-import io.github.xlopec.tea.data.Url
-import io.github.xlopec.tea.data.UrlFor
-import io.github.xlopec.tea.data.toExternalValue
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone

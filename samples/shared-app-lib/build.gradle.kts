@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ kotlin {
         )
     }
 
-    androidLibrary {
+    android {
         compileSdk = 36
         minSdk = 23
         namespace = "io.github.xlopec.shared"
@@ -91,16 +91,16 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(project(":tea-core"))
-                api(project(":tea-data"))
-                api(project(":tea-navigation"))
+                api(projects.teaCore)
+                api(projects.teaNavigation)
+                implementation(projects.teaCompose)
                 api(libs.arrow.core)
-                api(libs.collections.immutable)
+                api(libs.immutable.collections)
                 api(libs.coroutines.core)
                 api(libs.compose.ui)
                 api(libs.compose.runtime)
                 api(libs.compose.foundation)
-                api(libs.compose.components.ui.tooling.preview)
+                api(libs.ui.tooling.preview)
                 api(libs.kotlinx.datetime)
                 implementation(libs.compose.components.resources)
                 implementation(libs.bundles.coil)
@@ -115,15 +115,12 @@ kotlin {
                 implementation(libs.settings.core)
                 implementation(libs.sqldelight.runtime)
                 implementation(libs.webview)
-                implementation(libs.compose.runtime)
-                implementation(libs.ui.tooling.preview)
             }
         }
 
         commonTest {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
+                implementation(libs.kotlin.test)
             }
         }
 
@@ -131,10 +128,8 @@ kotlin {
             dependencies {
                 implementation(libs.compose.fonts)
                 implementation(libs.ktor.client.cio)
-                implementation(libs.ktor.client.logging)
                 implementation(libs.coroutines.android)
                 implementation(libs.compose.activity)
-                implementation(libs.ktor.client.cio)
                 implementation(libs.sqldelight.driver.android)
             }
         }

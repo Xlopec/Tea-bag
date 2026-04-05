@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,19 +29,20 @@ plugins {
 }
 
 kotlin {
+    enableUiTargets()
 
     sourceSets {
         commonMain {
             dependencies {
                 implementation(libs.stdlib)
-                implementation(project(":tea-core"))
+                implementation(projects.teaCore)
                 api(libs.compose.ui)
                 api(libs.compose.runtime)
                 api(libs.compose.foundation)
-                api(libs.collections.immutable)
+                api(libs.immutable.collections)
             }
         }
-        iosMain {
+        appleMain {
             dependencies {
                 // todo consider replacing with implementation
                 api(libs.decompose.extensions)
@@ -50,13 +51,11 @@ kotlin {
         }
         commonTest {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
+                implementation(libs.kotlin.test)
             }
         }
         jvmTest {
             dependencies {
-                implementation(kotlin("test-junit"))
                 implementation(libs.junit)
             }
         }

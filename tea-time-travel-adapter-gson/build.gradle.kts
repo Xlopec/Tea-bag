@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,18 +36,15 @@ val allTests by tasks.registering(Task::class) {
 
 dependencies {
 
-    api(project(":tea-time-travel-protocol"))
+    api(projects.teaTimeTravelProtocol)
     api(libs.gson)
-    implementation(project(":tea-data"))
     implementation(libs.kotlinx.datetime)
     implementation(libs.stdlib.reflect)
 
     implementation(libs.stdlib)
 
-    testImplementation(project(":tea-time-travel-protocol"))
-    testImplementation(libs.collections.immutable)
+    testImplementation(libs.immutable.collections)
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.kotlin.test)
-    testImplementation(libs.kotlin.test.annotations)
 }

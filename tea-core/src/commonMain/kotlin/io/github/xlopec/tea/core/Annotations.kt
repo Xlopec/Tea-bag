@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,6 +55,7 @@ public annotation class ExperimentalTeaApi
     AnnotationTarget.TYPEALIAS,
     AnnotationTarget.PROPERTY,
     AnnotationTarget.FUNCTION,
-    AnnotationTarget.CLASS
+    AnnotationTarget.CLASS,
+    AnnotationTarget.CONSTRUCTOR,
 )
 public annotation class InternalTeaApi

@@ -7,41 +7,37 @@ import io.github.xlopec.tea.core.Env
 import io.github.xlopec.tea.core.Initial
 import io.github.xlopec.tea.core.Initializer
 import io.github.xlopec.tea.core.Regular
-import io.github.xlopec.tea.core.ShareOptions
 import io.github.xlopec.tea.core.Snapshot
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.effects
 import io.github.xlopec.tea.core.invoke
-import io.github.xlopec.tea.core.misc.CheckingUpdater
 import io.github.xlopec.tea.core.misc.ComponentException
-import io.github.xlopec.tea.core.misc.ForeverWaitingResolver
+import io.github.xlopec.tea.core.misc.SnapshotsCollector
+import io.github.xlopec.tea.core.misc.TestEnv
 import io.github.xlopec.tea.core.misc.ThrowingInitializer
 import io.github.xlopec.tea.core.misc.collectRanged
-import io.github.xlopec.tea.core.misc.currentThreadName
 import io.github.xlopec.tea.core.misc.expectCompletionAndCancel
-import io.github.xlopec.tea.core.misc.runTestCancellingChildren
 import io.github.xlopec.tea.core.misc.size
-import io.github.xlopec.tea.core.misc.testEnv
 import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.core.with
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.yield
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -53,13 +49,14 @@ abstract class ComponentTestBase(
 ) {
 
     @Test
-    fun `when subscriber disconnects then component initializer is re-invoked`() = runTestCancellingChildren {
+    fun `when subscriber disconnects then component initializer is re-invoked`() = runTest {
         var counter = 0
-        val initial = Initial<String, Char>("", setOf())
-        val env = testEnv(
-            { counter++; initial },
-            { _, _ -> },
-            { m: Char, str -> (str + m).command(m) },
+        val initial = Initial<String, Char>(currentState = "", commands = setOf())
+        val env = TestEnv(
+            initializer = { counter++; initial },
+            resolver = { _ -> },
+            updater = { m: Char, str -> (str + m).command(m) },
+            scope = backgroundScope
         )
 
         val component = factory(env)
@@ -72,60 +69,70 @@ abstract class ComponentTestBase(
     }
 
     @Test
-    fun `when component receives input then it emits correct sequence of snapshots`() = runTestCancellingChildren {
-        val env = testEnv<Char, String, Char>(
-            Initializer(""),
-            { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
-            { m, _ -> m.toString().noCommand() }
+    fun `when component receives input then it emits correct sequence of snapshots`() = runTest {
+        val env = TestEnv<Char, String, Char>(
+            initializer = Initializer(""),
+            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $snapshot" } } } },
+            updater = { m, _ -> m.toString().noCommand() },
+            scope = backgroundScope
         )
 
         val messages = arrayOf('a', 'b', 'c')
         val actualSnapshots = factory(env)(*messages).take(messages.size + 1).toList()
         val expectedSnapshots = listOf<Snapshot<Char, String, Char>>(
-            Initial("", setOf()),
-            Regular("a", setOf(), "", 'a'),
-            Regular("b", setOf(), "a", 'b'),
-            Regular("c", setOf(), "b", 'c')
+            Initial(currentState = "", commands = setOf()),
+            Regular(currentState = "a", commands = setOf(), previousState = "", message = 'a'),
+            Regular(currentState = "b", commands = setOf(), previousState = "a", message = 'b'),
+            Regular(currentState = "c", commands = setOf(), previousState = "b", message = 'c')
         )
 
         assertContentEquals(expectedSnapshots, actualSnapshots)
     }
 
     @Test
-    fun `when component receives input given recursive calculations then it emits correct sequence of snapshots`() =
-        runTestCancellingChildren {
+    fun `when component receives input given recursive calculations then it emits correct sequence of snapshots`() = runTest {
 
-            val env = testEnv<Char, String, Char>(
-                Initializer(""),
-                { snapshot, ctx ->
-                    snapshot.commands.forEach { ch ->
-                        // only message 'b' should be consumed
-                        ctx effects { if (ch == 'a') ('b'..'d').toSet() else setOf() }
+        val env = TestEnv<Char, String, Char>(
+            initializer = Initializer(""),
+            resolver = { snapshot ->
+                contextOf<CoroutineScope>().launch {
+                    snapshot.collect {
+                        it.commands.forEach { ch ->
+                            // only message 'b' should be consumed
+                            effects { if (ch == 'a') ('b'..'d').toSet() else setOf() }
+                        }
                     }
-                },
-                { m, str -> (str + m).command(m) }
-            )
-
-            val actualSnapshots = factory(env)('a').take(3).toList()
-            val expectedSnapshots = listOf(
-                Initial("", setOf()),
-                Regular("a", setOf('a'), "", 'a'),
-                Regular("ab", setOf('b'), "a", 'b')
-            )
-
-            assertContentEquals(expectedSnapshots, actualSnapshots)
-        }
-
-    @Test
-    fun `when attaching interceptor to component then original sequence of snapshots pipes through it`() = runTestCancellingChildren {
-        val env = testEnv<Char, String, Char>(
-            Initializer(""),
-            { snapshot, ctx ->
-                snapshot.commands.forEach { c ->
-                    ctx effects { setOf(c) }
                 }
             },
-            { m, _ -> m.toString().noCommand() },
+            updater = { m, str -> (str + m).command(m) },
+            scope = backgroundScope
+        )
+
+        val actualSnapshots = factory(env)('a').take(3).toList()
+        val expectedSnapshots = listOf(
+            Initial(currentState = "", commands = setOf()),
+            Regular(currentState = "a", commands = setOf('a'), previousState = "", message = 'a'),
+            Regular(currentState = "ab", commands = setOf('b'), previousState = "a", message = 'b')
+        )
+
+        assertContentEquals(expectedSnapshots, actualSnapshots)
+    }
+
+    @Test
+    fun `when attaching interceptor to component then original sequence of snapshots pipes through it`() = runTest {
+        val env = TestEnv<Char, String, Char>(
+            initializer = Initializer(""),
+            resolver = { snapshot ->
+                contextOf<CoroutineScope>().launch {
+                    snapshot.collect {
+                        it.commands.forEach { c ->
+                            effects { setOf(c) }
+                        }
+                    }
+                }
+            },
+            updater = { m, _ -> m.toString().noCommand() },
+            scope = backgroundScope
         )
 
         val sink = mutableListOf<Snapshot<Char, String, Char>>()
@@ -138,25 +145,30 @@ abstract class ComponentTestBase(
     }
 
     @Test
-    fun `when component has multiple consumers then snapshots are shared among them`() = runTestCancellingChildren {
-        val env = testEnv<Char, String, Char>(
-            Initializer(""),
-            { snapshot, ctx ->
-                snapshot.commands.forEach { ch ->
-                    ctx effects {
-                        if (ch == 'a') {
-                            setOf(
-                            ch + 1, // only this message should be consumed
-                            ch + 2,
-                            ch + 3
-                        )
-                        } else {
-                            setOf()
+    fun `when component has multiple consumers then snapshots are shared among them`() = runTest {
+        val env = TestEnv<Char, String, Char>(
+            initializer = Initializer(""),
+            resolver = { snapshot ->
+                contextOf<CoroutineScope>().launch {
+                    snapshot.collect {
+                        it.commands.forEach { ch ->
+                            effects {
+                                if (ch == 'a') {
+                                    setOf(
+                                        ch + 1, // only this message should be consumed
+                                        ch + 2,
+                                        ch + 3
+                                    )
+                                } else {
+                                    setOf()
+                                }
+                            }
                         }
                     }
                 }
             },
-            { m, str -> (str + m).command(m) }
+            updater = { m, str -> (str + m).command(m) },
+            scope = backgroundScope
         )
 
         val take = 3
@@ -167,9 +179,9 @@ abstract class ComponentTestBase(
             val consumer2 = component('a').take(take).testIn(this)
 
             val expectedSnapshots = listOf(
-                Initial("", setOf()),
-                Regular("a", setOf('a'), "", 'a'),
-                Regular("ab", setOf('b'), "a", 'b')
+                Initial(currentState = "", commands = setOf()),
+                Regular(currentState = "a", commands = setOf('a'), previousState = "", message = 'a'),
+                Regular(currentState = "ab", commands = setOf('b'), previousState = "a", message = 'b')
             )
 
             expectedSnapshots.forEach { expectedSnapshot ->
@@ -185,34 +197,43 @@ abstract class ComponentTestBase(
     }
 
     @Test
-    fun `when component has multiple consumers then component is initialized only once`() = runTestCancellingChildren {
+    fun `when component has multiple consumers then component is initialized only once`() = runTest {
         var invocations = 0
-        val env = testEnv<Char, String, Char>(
-            { invocations++; yield(); Initial("bar", setOf()) },
-            { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
-            { _, s -> s.noCommand() },
+        val env = TestEnv<Char, String, Char>(
+            initializer = {
+                invocations++; Initial("bar", setOf())
+            },
+            resolver = { /*do not subscribe or the initializer invokes*/ },
+            updater = { _, s -> s.noCommand() },
+            scope = backgroundScope,
             // SharingStarted.Lazily since in case of default option replay
             // cache will be disposed immediately causing test to fail
-            shareOptions = ShareOptions(SharingStarted.Lazily, 1U)
+            shareOptions = { scope, upstream ->
+                upstream.shareIn(scope, SharingStarted.Lazily, 1)
+            }
         )
 
         val component = factory(env)
         // Ensure component builder won't invoke initializer before first consumer arrives
         assertEquals(0, invocations)
+        val jobs = mutableListOf<Job>()
 
-        repeat(1_000) { launch { component('a').first() } }
+        repeat(1_000) {
+            jobs += backgroundScope.launch { component('a').first() }
+        }
 
-        advanceUntilIdle()
+        jobs.joinAll()
         assertEquals(1, invocations)
     }
 
     @Test
-    fun `test component's job gets canceled properly`() = runTestCancellingChildren {
-        val resolver = ForeverWaitingResolver<Char, String, Char>()
-        val env = testEnv(
-            Initializer(""),
-            resolver,
-            { message, state -> state command message }
+    fun `test component's job gets canceled properly`() = runTest {
+        val resolver = SnapshotsCollector<Char, String, Char>()
+        val env = TestEnv(
+            initializer = Initializer(""),
+            resolver = { snapshots -> resolver.collect(snapshots) },
+            updater = { message, state -> state command message },
+            scope = backgroundScope
         )
 
         val messages = 'a'..'z'
@@ -229,11 +250,12 @@ abstract class ComponentTestBase(
     }
 
     @Test
-    fun `when component has multiple consumers then it can serve multiple message sources`() = runTestCancellingChildren {
-        val env = testEnv<Char, String, Char>(
-            Initializer(""),
-            { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
-            { m, _ -> m.toString().noCommand() }
+    fun `when component has multiple consumers then it can serve multiple message sources`() = runTest {
+        val env = TestEnv<Char, String, Char>(
+            initializer = Initializer(""),
+            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
+            updater = { m, _ -> m.toString().noCommand() },
+            scope = backgroundScope
         )
 
         val range = 'a'..'h'
@@ -259,15 +281,15 @@ abstract class ComponentTestBase(
             val expectedSnapshots: List<Snapshot<Char, String, Char>> =
                 listOf(
                     Initial(
-                        "",
-                        setOf<Char>()
+                        currentState = "",
+                        commands = setOf<Char>()
                     )
                 ) + range.mapIndexed { index, ch ->
                     Regular(
-                        ch.toString(),
-                        setOf(),
-                        if (index == 0) "" else ch.dec().toString(),
-                        ch
+                        currentState = ch.toString(),
+                        commands = setOf(),
+                        previousState = if (index == 0) "" else ch.dec().toString(),
+                        message = ch
                     )
                 }
 
@@ -289,10 +311,10 @@ abstract class ComponentTestBase(
         val scope = TestScope(UnconfinedTestDispatcher(name = "Failing host scope"))
 
         val component = Component(
-            Initializer("", "a"),
-            { snapshot, _ -> throw ComponentException("Unexpected snapshot $snapshot") },
-            { m: String, s -> throw ComponentException("message=$m, state=$s") },
-            scope
+            initializer = Initializer("", "a"),
+            resolver = { snapshot -> scope.launch { snapshot.collect { /* no-op */ } } },
+            updater = { m: String, s -> throw ComponentException("message=$m, state=$s") },
+            scope = scope
         )
 
         val job = scope.launch { component("").collect() }
@@ -314,7 +336,7 @@ abstract class ComponentTestBase(
         val component = Component(
             Env<String, Nothing, Nothing>(
                 initializer = ThrowingInitializer(expectedException),
-                resolver = { snapshot, _ -> throw ComponentException("Unexpected snapshot $snapshot") },
+                resolver = { snapshot -> scope.launch { snapshot.collect { /* no-op */ } } },
                 updater = { _, s -> s },
                 scope = scope
             )
@@ -330,19 +352,5 @@ abstract class ComponentTestBase(
             th is RuntimeException && th.message == expectedException.message
         }
         assertTrue(!scope.isActive)
-    }
-
-    @Test
-    fun `when collecting component with specific dispatcher then updater runs on this dispatcher`() = runTestCancellingChildren {
-        // All test schedulers use 'Test worker' as prefix, so to work around this issue we use
-        // custom dispatcher with different thread naming strategy
-        val mainThreadNamePrefix = async { currentThreadName() }
-        val env = CoroutineScope(Dispatchers.Default).testEnv<Char, String, Char>(
-            Initializer(""),
-            { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
-            CheckingUpdater(mainThreadNamePrefix.await())
-        )
-
-        factory(env)('a'..'d').take('d' - 'a').collect()
     }
 }

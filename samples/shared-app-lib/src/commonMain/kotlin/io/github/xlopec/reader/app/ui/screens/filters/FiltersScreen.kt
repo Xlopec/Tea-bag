@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,24 @@
 
 package io.github.xlopec.reader.app.ui.screens.filters
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons.Default
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -115,6 +126,11 @@ internal fun FiltersScreen(
         modifier = modifier,
     ) { innerPadding ->
 
+        val onSearch = {
+            performSearch = true
+            closeScreen = true
+        }
+
         LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
@@ -134,9 +150,37 @@ internal fun FiltersScreen(
                     inputText = inputState.value?.value ?: "",
                     placeholderText = state.filter.type.toSearchHint(),
                     onQueryUpdate = { inputState.value = Query.of(it) },
-                    onSearch = {
-                        performSearch = true
-                        closeScreen = true
+                    onSearch = onSearch,
+                    trailingIcon = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            IconButton(
+                                onClick = onSearch
+                            ) {
+                                Icon(
+                                    imageVector = Default.Search,
+                                    contentDescription = "Search"
+                                )
+                            }
+
+                            AnimatedVisibility(
+                                visible = screenTransitionState == Finish,
+                                enter = fadeIn() + expandHorizontally(expandFrom = Alignment.Start, clip = false),
+                                exit = fadeOut() + shrinkHorizontally(shrinkTowards = Alignment.Start, clip = false),
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        closeScreen = true
+                                    },
+                                ) {
+                                    Icon(
+                                        imageVector = Default.Close,
+                                        contentDescription = "Close"
+                                    )
+                                }
+                            }
+                        }
                     },
                     shape = RoundedCornerShape(headerTransition.cornerRadius),
                     colors = headerTransition.textFieldTransitionColors()

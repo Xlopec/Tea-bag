@@ -71,12 +71,13 @@ internal class AppTest {
                 Articles(
                     state = ArticlesState.newLoading(
                         tab = Tab.Feed,
-                        filter = Filter(Regular, Query.of("Input text")),
+                        filter = Filter(type = Regular, query = Query.of("Input text")),
                         articles = persistentListOf()
                     ),
-                    listState = LazyListState(0, 0),
-                    modifier = Modifier
-                ) {}
+                    listState = LazyListState(firstVisibleItemIndex = 0, firstVisibleItemScrollOffset = 0),
+                    modifier = Modifier,
+                    onMessage = {}
+                )
             }
         }
 
@@ -90,12 +91,12 @@ internal class AppTest {
 
             anyArticleRequest() yields ArticleResponse(TestArticleElement)
 
-            App(
+            App { messages ->
                 AppComponent(
                     environment = this,
                     initializer = AppInitializer(systemDarkModeEnabled = false, this)
-                )
-            )
+                )(messages)
+            }
 
             testScheduler.advanceUntilIdle()
         }
@@ -115,5 +116,5 @@ private val TestArticleElement = ArticleElement(
     title = Title("Android"),
     url = TestUrl,
     urlToImage = null,
-    source = SourceElement(SourceId("cnn"))
+    source = SourceElement(id = SourceId("cnn"))
 )

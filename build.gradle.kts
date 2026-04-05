@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@
 installGitHooks()
 
 plugins {
+    id("base")
     id("common-config")
     alias(libs.plugins.version.check)
     alias(libs.plugins.nexus.publishing)
@@ -56,12 +57,12 @@ nexusPublishing {
     useStaging.set(!libraryVersion.isSnapshot)
 }
 
-allprojects {
+subprojects {
     apply {
         plugin("common-config")
     }
 }
 
-tasks.register("check") {
+tasks.named("check") {
     dependsOn(gradle.includedBuild("convention-plugins").task(":check"))
 }

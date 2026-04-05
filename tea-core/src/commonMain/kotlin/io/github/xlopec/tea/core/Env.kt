@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,16 +27,16 @@ package io.github.xlopec.tea.core
 import kotlinx.coroutines.CoroutineScope
 
 /**
- * Environment is an application component responsible for holding application dependencies
+ * Environment is an application component responsible for holding application dependencies.
  *
- * @param initializer initializer to be used to provide initial values for application
- * @param resolver resolver to be used to resolve messages from commands
- * @param updater updater to be used to compute a new state with set of commands to execute
- * @param scope scope in which the sharing coroutine is started
- * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
  * @param M message type
  * @param S state type
  * @param C command type
+ * @param initializer initializer to be used to provide initial values for the application
+ * @param resolver resolver to be used to resolve messages from commands
+ * @param updater updater to be used to compute a new state with a set of commands to execute
+ * @param scope scope in which the sharing coroutine is started
+ * @param shareOptions sharing options, see [shareIn][kotlinx.coroutines.flow.shareIn] for more info
  */
 public data class Env<M, S, C>(
     val initializer: Initializer<S, C>,
@@ -44,5 +44,5 @@ public data class Env<M, S, C>(
     val updater: Updater<M, S, C>,
     // todo: group to reduce number of arguments
     val scope: CoroutineScope,
-    val shareOptions: ShareOptions = ShareStateWhileSubscribed,
+    val shareOptions: ShareOptions<Snapshot<M, S, C>> = ShareStateWhileSubscribed(),
 )

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,10 @@ import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
 import kotlin.reflect.KClass
 
 /**
- * Configures and creates a new [converter][GsonSerializer] instance
+ * Configures and creates a new [converter][JsonSerializer] instance using [Gson].
+ *
+ * @param config [GsonBuilder] configuration block
+ * @return a configured [JsonSerializer] instance
  */
 public fun GsonSerializer(
     config: GsonBuilder.() -> Unit = {}

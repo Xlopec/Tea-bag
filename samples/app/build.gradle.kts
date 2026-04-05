@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -140,7 +140,7 @@ afterEvaluate {
 
 dependencies {
 
-    implementation(project(":tea-core"))
+    implementation(projects.teaCore)
     implementation(project(":samples:shared-app-lib"))
     remoteImplementation(project(":samples:shared-app-lib-remote"))
 
@@ -151,9 +151,9 @@ dependencies {
 
     implementation(libs.splashscreen)
 
-    testImplementation(project(":tea-data"))
+    testImplementation(project(":samples:shared-app-lib"))
     testImplementation(libs.kotlinx.datetime)
-    androidTestImplementation(project(":tea-data"))
+    androidTestImplementation(project(":samples:shared-app-lib"))
     androidTestImplementation(libs.kotlinx.datetime)
     androidTestImplementation(libs.ui.test.junit4)
 

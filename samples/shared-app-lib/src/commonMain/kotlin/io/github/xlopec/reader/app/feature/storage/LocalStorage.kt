@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.Filter.Companion.StoreSourcesLimit
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.Query
-import io.github.xlopec.tea.data.Url
+import io.github.xlopec.reader.app.model.Url
 import kotlinx.collections.immutable.ImmutableList
 
 public interface LocalStorage {

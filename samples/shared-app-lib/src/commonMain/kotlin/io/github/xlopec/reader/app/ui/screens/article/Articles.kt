@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,9 @@ import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Default
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
@@ -91,11 +93,11 @@ import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.FilterType.Favorite
 import io.github.xlopec.reader.app.model.FilterType.Regular
 import io.github.xlopec.reader.app.model.FilterType.Trending
+import io.github.xlopec.reader.app.model.Url
 import io.github.xlopec.reader.app.model.formatted
+import io.github.xlopec.reader.app.model.toExternalValue
 import io.github.xlopec.reader.app.ui.misc.ColumnMessage
 import io.github.xlopec.reader.app.ui.misc.SearchHeader
-import io.github.xlopec.tea.data.Url
-import io.github.xlopec.tea.data.toExternalValue
 
 public const val ProgressIndicatorTag: String = "Progress Indicator"
 
@@ -396,15 +398,24 @@ internal fun ArticleSearchHeader(
 ) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
+    val onSearch = {
+        keyboardController?.hide()
+        onMessage(LoadArticles(state.id))
+    }
 
     SearchHeader(
         inputText = state.filter.query?.value ?: "",
         placeholderText = state.filter.type.toSearchHint(),
         onQueryUpdate = { },
-        onSearch = {
-            keyboardController?.hide()
-            onMessage(LoadArticles(state.id))
+        trailingIcon = {
+            IconButton(onClick = onSearch) {
+                Icon(
+                    imageVector = Default.Search,
+                    contentDescription = "Search"
+                )
+            }
         },
+        onSearch = onSearch,
         onFocusChanged = { focusState ->
             if (focusState.isFocused) {
                 onMessage(

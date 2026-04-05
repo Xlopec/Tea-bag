@@ -26,60 +26,90 @@ package io.github.xlopec.tea.time.travel.component
 
 import app.cash.turbine.test
 import com.google.gson.JsonElement
-import io.github.xlopec.tea.core.*
+import io.github.xlopec.tea.core.Env
+import io.github.xlopec.tea.core.Initial
+import io.github.xlopec.tea.core.Initializer
+import io.github.xlopec.tea.core.Regular
 import io.github.xlopec.tea.core.component.ComponentTestBase
-import io.github.xlopec.tea.core.misc.runTestCancellingChildren
+import io.github.xlopec.tea.core.invoke
+import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentAttached
 import io.github.xlopec.tea.time.travel.gson.GsonNotifyComponentSnapshot
-import io.github.xlopec.tea.time.travel.misc.*
+import io.github.xlopec.tea.time.travel.misc.TestComponentId
+import io.github.xlopec.tea.time.travel.misc.TestDebugEnv
+import io.github.xlopec.tea.time.travel.misc.TestDebugSession
+import io.github.xlopec.tea.time.travel.misc.TestSerializer
+import io.github.xlopec.tea.time.travel.misc.TestSettings
 import io.github.xlopec.tea.time.travel.protocol.JsonSerializer
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEnv(env)) }) {
 
     @Test
-    fun `test debuggable component throws expected exception when it can't connect to a server`() = runTestCancellingChildren {
+    fun `test debuggable component throws expected exception when it can't connect to a server`() = runTest {
         val exceptions = mutableListOf<Throwable>()
-        val env = Env<Char, String, Char>(
-            Initializer(""),
-            { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
-            { m, _ -> m.toString().noCommand() },
-            CoroutineScope(Job() + CoroutineExceptionHandler { _, th -> exceptions += th })
-        )
-
-        runCatching {
-
-            val component = Component(
-                TestDebugEnv(
-                    env = env,
-                    settings = TestSettings(sessionFactory = { _, _ -> throw ComponentException("Couldn't connect to debug server") })
-                )
+        val scope = CoroutineScope(Job() + CoroutineExceptionHandler { _, th -> exceptions += th })
+        try {
+            val env = Env<Char, String, Char>(
+                initializer = Initializer(""),
+                resolver = { snapshots ->
+                    contextOf<CoroutineScope>().launch {
+                        snapshots.collect { snapshot ->
+                            check(
+                                snapshot.commands.isEmpty()
+                            ) { "Non empty snapshot $snapshot" }
+                        }
+                    }
+                },
+                updater = { m, _ -> m.toString().noCommand() },
+                scope = scope
             )
-            val job = env.scope.launch { component(flowOf('a')).collect() }
 
-            job.join()
+            runCatching {
+                val component = Component(
+                    TestDebugEnv(
+                        env = env,
+                        settings = TestSettings(sessionFactory = { _, _ -> throw ComponentException("Couldn't connect to debug server") })
+                    )
+                )
+                val job = env.scope.launch { component(flowOf('a')).collect() }
+
+                job.join()
+            }
+
+            assertFalse(env.scope.isActive)
+            assertTrue(exceptions.isNotEmpty())
+            assertIs<ComponentException>(exceptions.first())
+        } finally {
+            scope.cancel()
         }
-
-        assertFalse(env.scope.isActive)
-        assertTrue(exceptions.isNotEmpty())
-        assertIs<ComponentException>(exceptions.first())
     }
 
     @Test
-    fun `test debuggable component sends the same sequence of events as the original component`() = runTestCancellingChildren {
+    fun `test debuggable component sends the same sequence of events as the original component`() = runTest {
         val testSession = TestDebugSession<Char, String>()
         val component = Component(
             TestDebugEnv(
                 env = Env<Char, String, Char>(
-                    Initializer(""),
-                    { snapshot, _ -> check(snapshot.commands.isEmpty()) { "Non empty snapshot $snapshot" } },
-                    { m, _ -> m.toString().noCommand() },
-                    this
+                    initializer = Initializer(""),
+                    resolver = { snapshots -> contextOf<CoroutineScope>().launch { snapshots.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
+                    updater = { m, _ -> m.toString().noCommand() },
+                    scope = backgroundScope
                 ),
                 settings = TestSettings(
                     sessionFactory = { _, block -> testSession.apply { block() } }
@@ -89,10 +119,10 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
         val messages = arrayOf('a', 'b', 'c')
 
         component(*messages).take(messages.size + 1).test {
-            assertEquals(Initial("", emptySet()), awaitItem())
-            assertEquals(Regular("a", emptySet(), "", 'a'), awaitItem())
-            assertEquals(Regular("b", emptySet(), "a", 'b'), awaitItem())
-            assertEquals(Regular("c", emptySet(), "b", 'c'), awaitItem())
+            assertEquals(Initial(currentState = "", commands = emptySet()), awaitItem())
+            assertEquals(Regular(currentState = "a", commands = emptySet(), previousState = "", message = 'a'), awaitItem())
+            assertEquals(Regular(currentState = "b", commands = emptySet(), previousState = "a", message = 'b'), awaitItem())
+            assertEquals(Regular(currentState = "c", commands = emptySet(), previousState = "b", message = 'c'), awaitItem())
             awaitComplete()
             cancel()
         }

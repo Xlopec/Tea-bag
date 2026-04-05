@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,9 @@
 
 package io.github.xlopec.tea.core
 
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Initializer is an **impure** function that computes [initial][Initial] snapshot
@@ -44,10 +44,13 @@ import kotlinx.coroutines.withContext
 public typealias Initializer<S, C> = suspend () -> Initial<S, C>
 
 /**
- * Constructs initializer using initial [state] and set of [commands]
+ * Constructs initializer using initial [state] and set of [commands].
  *
+ * @param S state
+ * @param C command
  * @param state initial state
  * @param commands initial set of commands
+ * @return initializer that returns initial state and commands
  */
 public fun <S, C> Initializer(
     state: S,
@@ -55,12 +58,13 @@ public fun <S, C> Initializer(
 ): Initializer<S, C> = { Initial(state, commands) }
 
 /**
- * Constructs initializer using initial [state] and array of [commands]
+ * Constructs initializer using initial [state] and array of [commands].
  *
  * @param S state
  * @param C command
  * @param state initial state
  * @param commands initial set of commands
+ * @return initializer that returns initial state and commands
  */
 public fun <S, C> Initializer(
     state: S,
@@ -68,14 +72,15 @@ public fun <S, C> Initializer(
 ): Initializer<S, C> = Initializer(state, setOf(*commands))
 
 /**
- * Constructs initializer using [block] that will be run on specified [dispatcher]
+ * Constructs initializer using [block] that will be run on specified [dispatcher].
  *
  * @param S state
  * @param C command
- * @param dispatcher coroutine dispatcher to run block on
+ * @param context coroutine context to use
  * @param block initializer block to run
+ * @return initializer that runs [block] on [dispatcher]
  */
 public fun <S, C> Initializer(
-    dispatcher: CoroutineDispatcher,
+    context: CoroutineContext,
     block: suspend CoroutineScope.() -> Initial<S, C>
-): Initializer<S, C> = { withContext(dispatcher, block) }
+): Initializer<S, C> = { withContext(context, block) }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,8 @@ plugins {
 }
 
 kotlin {
+    enableUiTargets()
+
     compilerOptions {
         optIn.addAll(
             "kotlinx.coroutines.ExperimentalCoroutinesApi",
@@ -40,10 +42,9 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(project(":tea-core"))
-                implementation(project(":tea-data"))
+                implementation(projects.teaCore)
                 implementation(libs.kotlinx.datetime)
-                implementation(project(":tea-time-travel-protocol"))
+                implementation(projects.teaTimeTravelProtocol)
 
                 implementation(libs.arrow.core)
                 implementation(libs.stdlib)
@@ -68,14 +69,14 @@ kotlin {
 
         jvmTest {
             dependencies {
-                implementation(project(":tea-time-travel-adapter-gson"))
-                implementation(project(":tea-core")) {
+                implementation(projects.teaTimeTravelAdapterGson)
+                implementation(projects.teaCore) {
                     targetConfiguration = "testOutput"
                 }
             }
         }
 
-        iosMain {
+        appleMain {
             dependencies {
                 implementation(libs.ktor.client.ios)
             }

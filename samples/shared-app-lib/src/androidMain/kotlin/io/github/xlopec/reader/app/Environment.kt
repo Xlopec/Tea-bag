@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,11 +31,11 @@ import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
 import android.os.StrictMode.setThreadPolicy
 import android.os.StrictMode.setVmPolicy
-import io.github.xlopec.reader.app.feature.article.details.ArticleDetailsModule
+import io.github.xlopec.reader.app.feature.article.details.BrowserLauncher
+import io.github.xlopec.reader.app.feature.article.details.BrowserLauncherImpl
 import io.github.xlopec.reader.app.feature.article.list.AndroidShareArticle
-import io.github.xlopec.reader.app.feature.article.list.ArticlesModule
 import io.github.xlopec.reader.app.feature.article.list.NewsApi
-import io.github.xlopec.reader.app.feature.filter.FiltersModule
+import io.github.xlopec.reader.app.feature.article.list.ShareArticle
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import kotlinx.coroutines.CoroutineScope
 
@@ -50,12 +50,10 @@ public fun Environment(
     }
 
     return object : Environment,
-        AppModule<Environment> by AppModule(),
-        ArticlesModule<Environment> by ArticlesModule(AndroidShareArticle(application)),
-        ArticleDetailsModule by ArticleDetailsModule(application),
-        FiltersModule<Environment> by FiltersModule(),
         NewsApi by NewsApi(application),
         LocalStorage by LocalStorage(application),
+        ShareArticle by AndroidShareArticle(application),
+        BrowserLauncher by BrowserLauncherImpl(application),
         CoroutineScope by scope {
         }
 }
@@ -64,7 +62,6 @@ private fun setupStrictAppPolicies() {
     setThreadPolicy(
         ThreadPolicy.Builder()
             .detectAll()
-            .penaltyFlashScreen()
             .penaltyLog()
             .build()
     )
@@ -78,10 +75,8 @@ private fun setupStrictAppPolicies() {
 }
 
 public actual interface Environment :
-    AppModule<Environment>,
-    ArticlesModule<Environment>,
-    FiltersModule<Environment>,
-    ArticleDetailsModule,
+    ShareArticle,
+    BrowserLauncher,
     NewsApi,
     LocalStorage,
     CoroutineScope

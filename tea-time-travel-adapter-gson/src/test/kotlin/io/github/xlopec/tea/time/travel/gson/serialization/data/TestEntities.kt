@@ -26,15 +26,14 @@
 
 package io.github.xlopec.tea.time.travel.gson.serialization.data
 
-import io.github.xlopec.tea.data.Url
-import io.github.xlopec.tea.data.UrlFor
+import java.net.URL
 import kotlin.uuid.Uuid
 
 data class User(
     val id: Id,
     val name: Name,
     val photos: List<Photo>,
-    val avatar: Url? = null
+    val avatar: URL? = null
 )
 
 @JvmInline
@@ -52,7 +51,7 @@ data class Name(
 
 @JvmInline
 value class Photo(
-    val url: Url
+    val url: URL
 )
 
-fun Photo(urlSpec: String) = Photo(UrlFor(urlSpec))
+fun Photo(urlSpec: String) = Photo(URL(urlSpec))

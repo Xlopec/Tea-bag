@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,11 @@ val copyArtifacts by tasks.registering(Copy::class) {
     from(libsDir)
     into(artifactsDir)
 
-    mustRunAfter("publishToSonatype", "publishToMavenLocal")
+    mustRunAfter(
+        "publishToSonatype",
+        "publishToMavenLocal",
+        tasks.filter { it.name.endsWith("MetadataElements") }
+    )
 
     group = "release"
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
@@ -63,8 +67,6 @@ publishing {
     }
 }
 
-val signingTasks = tasks.withType<Sign>()
-
 tasks.withType<AbstractPublishToMaven>().configureEach {
-    dependsOn(signingTasks)
+    dependsOn(tasks.withType<Sign>())
 }

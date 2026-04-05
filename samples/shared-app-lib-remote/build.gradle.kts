@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,12 +43,13 @@ android {
     }
 
     dependencies {
-        api(project(":tea-time-travel"))
-        api(project(":tea-time-travel-adapter-gson"))
+        api(projects.teaTimeTravel)
+        api(projects.teaTimeTravelAdapterGson)
         api(project(":samples:shared-app-lib"))
         implementation(libs.ktor.http)
         implementation(libs.gson)
-        testImplementation(kotlin("test-junit"))
+        testImplementation(libs.kotlin.test)
+        testImplementation(libs.junit)
         coreLibraryDesugaring(libs.desugar.jdk)
     }
 }
@@ -57,6 +58,7 @@ kotlin {
     explicitApi()
 
     compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
         optIn.addAll(
             DefaultOptIns +
                 "kotlinx.serialization.ExperimentalSerializationApi" +

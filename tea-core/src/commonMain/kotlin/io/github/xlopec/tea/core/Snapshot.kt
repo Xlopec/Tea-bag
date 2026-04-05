@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,29 +25,29 @@
 package io.github.xlopec.tea.core
 
 /**
- * Snapshot is data structure that describes component's current state
+ * A snapshot is a data structure that describes a component's current state.
  *
- * @param M message
- * @param S state
- * @param C command
+ * @param M message type
+ * @param S state type
+ * @param C command type
  */
 public sealed interface Snapshot<out M, out S, out C> {
     /**
-     * Current state of a component
+     * The current state of a component.
      */
     public val currentState: S
 
     /**
-     * Set of commands to be resolved and executed
+     * A set of commands to be resolved and executed.
      */
     public val commands: Set<C>
 }
 
 /**
- * [Snapshot] that describes component's initial state
+ * [Snapshot] that describes a component's initial state.
  *
- * @param S state
- * @param C command
+ * @param S state type
+ * @param C command type
  */
 public data class Initial<out S, out C>(
     override val currentState: S,
@@ -55,27 +55,29 @@ public data class Initial<out S, out C>(
 ) : Snapshot<Nothing, S, C>
 
 /**
- * [Snapshot] that describes component's state
+ * [Snapshot] that describes a component's state.
  *
- * @param M message
- * @param S state
- * @param C command
+ * @param M message type
+ * @param S state type
+ * @param C command type
  */
 public data class Regular<out M, out S, out C>(
     override val currentState: S,
     override val commands: Set<C>,
     /**
-     * Previous state of a component
+     * The previous state of a component.
      */
     val previousState: S,
     /**
-     * Message that triggered state update
+     * The message that triggered the state update.
      */
     val message: M,
 ) : Snapshot<M, S, C>
 
 /**
- * Extension to enable destructuring declaration on the [snapshot][Snapshot]
+ * Extension to enable destructuring declaration on the [snapshot][Snapshot].
+ *
+ * @return current state of the snapshot
  */
 public operator fun <S> Snapshot<*, S, *>.component1(): S = when (this) {
     is Initial -> currentState
@@ -83,7 +85,9 @@ public operator fun <S> Snapshot<*, S, *>.component1(): S = when (this) {
 }
 
 /**
- * Extension to enable destructuring declaration on the [snapshot][Snapshot]
+ * Extension to enable destructuring declaration on the [snapshot][Snapshot].
+ *
+ * @return commands of the snapshot
  */
 public operator fun <C> Snapshot<*, *, C>.component2(): Set<C> = when (this) {
     is Initial -> commands
@@ -91,7 +95,9 @@ public operator fun <C> Snapshot<*, *, C>.component2(): Set<C> = when (this) {
 }
 
 /**
- * Extension to enable destructuring declaration on the [snapshot][Snapshot]
+ * Extension to enable destructuring declaration on the [snapshot][Snapshot].
+ *
+ * @return previous state of the snapshot if it's a [Regular] snapshot, or `null` otherwise
  */
 public operator fun <S> Snapshot<*, S, *>.component3(): S? = when (this) {
     is Initial -> null
@@ -99,7 +105,9 @@ public operator fun <S> Snapshot<*, S, *>.component3(): S? = when (this) {
 }
 
 /**
- * Extension to enable destructuring declaration on the [snapshot][Snapshot]
+ * Extension to enable destructuring declaration on the [snapshot][Snapshot].
+ *
+ * @return message of the snapshot if it's a [Regular] snapshot, or `null` otherwise
  */
 public operator fun <M> Snapshot<M, *, *>.component4(): M? = when (this) {
     is Initial -> null

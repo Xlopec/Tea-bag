@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2026. Maksym Oliinyk.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package io.github.xlopec.tea.navigation
 
 import androidx.compose.ui.util.fastForEachIndexed
@@ -9,13 +33,19 @@ import kotlinx.collections.immutable.PersistentList
 private annotation class NavigationStackMutatorScope
 
 /**
- * Returns current screen to draw
+ * Returns the current screen to draw.
  */
 public inline val <T> NavigationStack<T>.screen: T
     get() = last()
 
 /**
- * Mutates a navigation stack by applying [block] to it
+ * Mutates a navigation stack by applying [block] to it.
+ *
+ * @param I ID type of the entries
+ * @param E entry type
+ * @param C command type
+ * @param block mutation block
+ * @return update with new navigation stack and commands
  */
 public fun <I : Any, E : NavStackEntry<I>, C> NavigationStack<E>.mutate(
     block: NavigationStackMutator<I, E, C>.() -> Unit,
@@ -29,40 +59,42 @@ public fun <I : Any, E : NavStackEntry<I>, C> NavigationStack<E>.mutate(
 }
 
 /**
- * Helper class that allows performing mutable operations on [NavigationStack]
+ * Helper class that allows performing mutable operations on a [NavigationStack].
  */
 @NavigationStackMutatorScope
 public class NavigationStackMutator<I : Any, E : NavStackEntry<I>, C> internal constructor(
     builder: PersistentList.Builder<E>,
 ) {
     /**
-     * Commands to be executed after update
+     * Commands to be executed after the update.
      */
     public val commands: MutableSet<C> = mutableSetOf()
 
     /**
-     * Mutable navigation stack to be used after update
+     * Mutable navigation stack to be used after the update.
      */
     public val mutator: MutableList<E> = builder
 
     /**
-     * Switches navigation stack to a given [tab]. To maintain a proper tab navigation stack must contain tabs in the following order:
+     * Switches the navigation stack to a given [tab]. To maintain proper tab navigation,
+     * the stack must contain tabs in the following order:
      *
      * `[H, h1, h2, ... hi, A, a1, a2, a3, ... ai]`
      *
-     * Where `H`, `A` are tab roots, `h1 ... hi` and `a1 ... ai` are child tab entries.
-     * Sequence `[H, h1, ... , hi]` forms a tab group - H
+     * Where `H` and `A` are tab roots, and `h1 ... hi` and `a1 ... ai` are child tab entries.
+     * The sequence `[H, h1, ... , hi]` forms a tab group — H.
      *
-     * **Note** such groups can't be mixed, e.g. the following sequence:
+     * **Note:** such groups can't be mixed. For example, the following sequence:
      *
      * `[H, h2, A, h1, a3, a2, a1]`
      *
      * is prohibited.
      *
      * #### Example:
-     * User switches to tab group H given stack state is `[H, h1, h2, ... hi, A, a1, a2, a3, ... ai]`. After tab switch
-     * stack's state becomes `[A, a1, a2, a3, ... ai, H, h1, h2, ... hi]`
+     * A user switches to tab group H, given the stack state is `[H, h1, h2, ... hi, A, a1, a2, a3, ... ai]`. After the tab switch,
+     * the stack's state becomes `[A, a1, a2, a3, ... ai, H, h1, h2, ... hi]`.
      *
+     * @param T tab type
      * @param tab tab to switch to
      * @param belongsToTab predicate to check if a stack entry [E] belongs to a tab [T]
      */
@@ -97,9 +129,10 @@ public class NavigationStackMutator<I : Any, E : NavStackEntry<I>, C> internal c
     }
 
     /**
-     * Modifies ***ALL*** entries that are instance of [S] using provided [updater]
-     * and records produced commands
+     * Modifies ***ALL*** entries that are instances of [S] using the provided [updater]
+     * and records the produced commands.
      *
+     * @param S entry subtype to update
      * @param updater updater to use
      */
     public inline fun <reified S : E> updateInstanceOf(
@@ -117,8 +150,9 @@ public class NavigationStackMutator<I : Any, E : NavStackEntry<I>, C> internal c
 
     /**
      * Modifies first entry that is instance of [S] with [id] using provided [updater]
-     * and records produced commands
+     * and records produced commands.
      *
+     * @param S entry subtype to update
      * @param updater updater to use
      * @param id stack entry identifier
      */
@@ -134,7 +168,9 @@ public class NavigationStackMutator<I : Any, E : NavStackEntry<I>, C> internal c
     }
 
     /**
-     * Removes lastly added screen
+     * Removes lastly added screen.
+     *
+     * @return removed entry
      */
     public fun pop(): E = mutator.removeLast()
 
@@ -159,7 +195,7 @@ public class NavigationStackMutator<I : Any, E : NavStackEntry<I>, C> internal c
     }
 
     /**
-     * Pushes stack entry and records commands produced by [init] on the top of stack
+     * Pushes stack entry and records commands produced by [init] on the top of stack.
      *
      * @param init entry initializer
      */
@@ -171,7 +207,7 @@ public class NavigationStackMutator<I : Any, E : NavStackEntry<I>, C> internal c
     }
 
     /**
-     * Pushes stack [entry] on the top of stack
+     * Pushes stack [entry] on the top of stack.
      *
      * @param entry entry to push
      */

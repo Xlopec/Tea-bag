@@ -49,16 +49,16 @@ fun <M, S> TestSettings(
         TestDebugSession<M, S>().apply { block() }
     }
 ) = Settings(
-    componentId,
-    converter,
-    url,
-    sessionFactory
+    id = componentId,
+    serializer = converter,
+    url = url,
+    sessionFactory = sessionFactory
 )
 
 fun <M, S, C> TestDebugEnv(
     env: Env<M, S, C>,
     settings: Settings<M, S, JsonElement> = TestSettings()
 ) = DebugEnv(
-    env,
-    settings
+    env = env,
+    settings = settings
 )

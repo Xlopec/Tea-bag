@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2022. Maksym Oliinyk.
+ * Copyright (c) 2026. Maksym Oliinyk.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,12 +33,12 @@ import io.ktor.http.*
 import io.ktor.http.HttpMethod.Companion.Get
 
 /**
- * Function that for a given server settings creates a new connection
- * to a debug server
+ * A function that for given server settings creates a new connection
+ * to a debug server.
  *
  * @param M message type
  * @param S state type
- * @param J json type
+ * @param J JSON tree type
  */
 public typealias SessionFactory<M, S, J> = suspend (
     settings: Settings<M, S, J>,
@@ -46,14 +46,14 @@ public typealias SessionFactory<M, S, J> = suspend (
 ) -> Unit
 
 /**
- * Creates a new web socket session using supplied settings
+ * Creates a new web socket session using the supplied settings.
  *
- * @receiver configured [HttpClient] instance. **Web socket** feature must be installed and configured for http client
+ * @receiver configured [HttpClient] instance. The **WebSockets** feature must be installed and configured for the HTTP client.
  * @param settings server settings
  * @param block lambda to interact with [session][DebugSession]
  * @param M message type
  * @param S state type
- * @param J json type
+ * @param J JSON tree type
  */
 public suspend inline fun <reified M : Any, reified S : Any, J> HttpClient.session(
     settings: Settings<M, S, J>,
