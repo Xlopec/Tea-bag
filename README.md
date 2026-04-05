@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.xlopec/tea-core?style=plastic&versionPrefix=1.0.0-alpha8)](https://mvnrepository.com/artifact/io.github.xlopec/tea-core)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.xlopec/tea-core?style=plastic&versionPrefix=1.0.0-alpha9)](https://mvnrepository.com/artifact/io.github.xlopec/tea-core)
 [![Jetbrains Market Place](https://img.shields.io/jetbrains/plugin/d/14254)](https://plugins.jetbrains.com/plugin/14254-time-travel-debugger)
 
 # TEA Bag
@@ -15,8 +15,8 @@ the TEA architecture. It provides a minimal set of abstractions to build TEA app
 
 ## Quick Sample
 
-Nothing special, we just need to code our initializer, resolver (`tracker` function),
-updater (`computeNewState` function), and UI (`renderSnapshot,` function). After that we should pass
+Nothing special: we just need to code our initializer, resolver (`tracker` function),
+updater (`computeNewState` function), and UI (`renderSnapshot` function). After that, we should pass
 them to an appropriate `Component` builder overload.
 
 ```kotlin
@@ -77,13 +77,13 @@ Display: Regular(currentState=3, commands=[2], previousState=1, message=2)
 Display: Regular(currentState=0, commands=[-3], previousState=3, message=-3)
 ```
 
-Real world examples include [Android](https://github.com/Xlopec/Tea-bag/tree/master/samples/app) and
-[IOS](https://github.com/Xlopec/Tea-bag/tree/master/samples/iosApp) app samples that use the same application component 
-and share common entities, application and navigation logic.
-[Intellij plugin](https://github.com/Xlopec/Tea-bag/tree/master/tea-time-travel-plugin) is built on the top of the library
+Real-world examples include [Android](https://github.com/Xlopec/Tea-bag/tree/master/samples/app) and
+[iOS](https://github.com/Xlopec/Tea-bag/tree/master/samples/iosApp) app samples that use the same application component
+and share common entities, application, and navigation logic.
+[IntelliJ plugin](https://github.com/Xlopec/Tea-bag/tree/master/tea-time-travel-plugin) is built on top of the library
 as well.
 
-For more info visit [Wiki](https://github.com/Xlopec/Tea-bag/wiki) page
+For more info, visit the [Wiki](https://github.com/Xlopec/Tea-bag/wiki) page.
 
 ## Main Features
 
@@ -130,26 +130,26 @@ Plugin is available on [JetBrains marketplace](https://plugins.jetbrains.com/plu
 
 ## How to build and run
 
-To build plugin from sources use ```./gradlew tea-time-travel-plugin:buildPlugin``` command.
-Installable plugin will be located in ```tea-time-travel-plugin/build/distributions``` directory.
+To build the plugin from sources, use the ```./gradlew tea-time-travel-plugin:buildPlugin``` command.
+The installable plugin will be located in the ```tea-time-travel-plugin/build/distributions``` directory.
 
-To run Intellij Idea with installed plugin use ```./gradlew tea-time-travel-plugin:runIde```
+To run IntelliJ IDEA with the installed plugin, use the ```./gradlew tea-time-travel-plugin:runIde```
 command.
 
-To build android app sample run ```./gradlew :samples:app:assembleDefaultDebug``` or ```./gradlew :samples:app:assembleRemoteDebug```.
-The last command assembles debuggable version on of the application that connects to the currently running instance of 
-debugger (will try connecting to http://localhost:8080).
+To build the Android app sample, run ```./gradlew :samples:app:assembleDefaultDebug``` or ```./gradlew :samples:app:assembleRemoteDebug```.
+The last command assembles a debuggable version of the application that connects to the currently running instance of
+the debugger (will try connecting to http://localhost:8080).
 
 ## Planned features and TODOs
 
-- Re-implement client-server communication protocol from scratch
-- Migrate from gson to `kotlinx.serialization.json`
-- Release v1.0.0
-- Add GitHub Wiki
-- Rework component builders and possibly replace it with some kind of DSL
-- Add keyboard shortcuts for plugin, consider improving plugin UX
+- Re-implement client-server communication protocol from scratch.
+- Migrate from Gson to `kotlinx.serialization.json`.
+- Release v1.0.0.
+- Add GitHub Wiki.
+- Rework component builders and possibly replace them with some kind of DSL.
+- Add keyboard shortcuts for the plugin; consider improving plugin UX.
 
 ## Contribution
 
-Contributions are more than welcome. If something cannot be done, not convenient, or does not work -
-create an issue or PR  
+Contributions are more than welcome. If something cannot be done, is not convenient, or does not work -
+create an issue or PR.
