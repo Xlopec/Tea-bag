@@ -104,10 +104,6 @@ internal fun FiltersScreen(
         }
     } else {
         LaunchedEffect(Unit) {
-            // Request focus before kicking off the visual transition so the
-            // hand-off from the Articles search field happens within the same
-            // frame Articles unmounts. Waiting until the Begin→Finish
-            // animation completes lets the keyboard dismiss and re-show.
             focusRequester.requestFocus()
             screenTransitionState = Finish
         }

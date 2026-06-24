@@ -64,11 +64,6 @@ private val PushTransition = PushTransitionSpec<Screen>()
 private val PopTransition = PopTransitionSpec<Screen>()
 private val PredictivePopTransition = PredictivePopTransitionSpec<Screen>()
 
-/**
- * Shared App body — renders the navigation stack inside [AppTheme]. The platform
- * App composables own component subscription, snapshot collection, and any
- * platform-specific side effects (e.g. system bar appearance on Android).
- */
 @Composable
 internal fun App(
     currentState: AppState,
