@@ -34,6 +34,7 @@ import androidx.compose.ui.util.fastForEach
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.command.DoLog
 import io.github.xlopec.reader.app.command.DoStoreDarkMode
+import io.github.xlopec.reader.app.command.ScreenCommand
 import io.github.xlopec.reader.app.feature.article.details.BrowserLauncher
 import io.github.xlopec.reader.app.feature.article.details.DoOpenInBrowser
 import io.github.xlopec.reader.app.feature.article.details.resolveForOpenInBrowser
@@ -45,6 +46,7 @@ import io.github.xlopec.reader.app.feature.filter.FilterCommand
 import io.github.xlopec.reader.app.feature.filter.resolveForFilter
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import io.github.xlopec.tea.compose.ClockPolicy
+import io.github.xlopec.tea.compose.CommandRouter
 import io.github.xlopec.tea.compose.ComposeResolver
 import io.github.xlopec.tea.compose.SnapshotNotifierPolicy
 import io.github.xlopec.tea.compose.TrackingEffect
@@ -67,7 +69,9 @@ public fun <Env> Env.resolve(
 
     val appScope = contextOf<CoroutineScope>()
     val sink = contextOf<Sink<Message>>()
-    val compositionScope = CoroutineScope(appScope.coroutineContext + Job(appScope.coroutineContext[Job.Key]) + Dispatchers.Default)
+    val compositionScope = CoroutineScope(
+        appScope.coroutineContext + Job(appScope.coroutineContext[Job.Key]) + Dispatchers.Default
+    )
     ComposeResolver(
         scope = compositionScope,
         // todo do something with clock
@@ -78,20 +82,21 @@ public fun <Env> Env.resolve(
         val currentSnapshot = snapshot
 
         if (currentSnapshot != null) {
-            val router = remember { CommandRouter() }
+            val router = remember {
+                CommandRouter<ScreenId, Command> { (it as? ScreenCommand)?.id }
+            }
 
             TrackingEffect(router) {
                 snapshots.collect { snapshot ->
                     val liveIds = snapshot.currentState.screens.mapTo(HashSet()) { it.id }
-                    router.retainOnly(liveIds)
-                    snapshot.commands.forEach { router.route(it, liveIds) }
+                    router.dispatch(liveIds, snapshot.commands)
                 }
             }
 
             currentSnapshot.currentState.screens.fastForEach { screen ->
                 key(screen.id) {
                     TrackingEffect(screen.id) {
-                        router.consumeScreen(screen.id) { command ->
+                        router.consume(screen.id) { command ->
                             context(sink) { resolve(command) }
                         }
                     }
@@ -99,7 +104,7 @@ public fun <Env> Env.resolve(
             }
 
             TrackingEffect(router) {
-                router.consumeApp { command ->
+                router.consume(key = null) { command ->
                     context(sink) { resolve(command) }
                 }
             }

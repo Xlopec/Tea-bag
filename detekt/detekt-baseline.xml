@@ -1,32 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  ~ MIT License
-  ~
-  ~ Copyright (c) 2026. Maksym Oliinyk.
-  ~
-  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
-  ~ of this software and associated documentation files (the "Software"), to deal
-  ~ in the Software without restriction, including without limitation the rights
-  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  ~ copies of the Software, and to permit persons to whom the Software is
-  ~ furnished to do so, subject to the following conditions:
-  ~
-  ~ The above copyright notice and this permission notice shall be included in all
-  ~ copies or substantial portions of the Software.
-  ~
-  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  ~ SOFTWARE.
-  -->
-
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>ComplexCondition:CollectionExtensions.kt$x &lt; size &amp;&amp; (y == replaceWith.size || (y &lt; replaceWith.size &amp;&amp; !diffCallback.areItemsTheSame(this[x], replaceWith[y])))</ID>
+    <ID>ArgumentListWrapping:ComponentTestBase.kt$ComponentTestBase$(it.commands.isEmpty())</ID>
+    <ID>ArgumentListWrapping:ComponentUpdaterThreadingTest.kt$ComponentUpdaterThreadingTest$(it.commands.isEmpty())</ID>
+    <ID>ArgumentListWrapping:DebuggableComponentTest.kt$DebuggableComponentTest$(it.commands.isEmpty())</ID>
     <ID>ConstructorParameterNaming:Transitions.kt$ChildTransitionState$val _contentAlpha: State&lt;Float></ID>
     <ID>ConstructorParameterNaming:Transitions.kt$ChildTransitionState$val _listItemOffsetY: State&lt;Dp></ID>
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _cornerRadius: State&lt;Dp></ID>
@@ -34,56 +12,62 @@
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _horizontalPadding: State&lt;Dp></ID>
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _indicatorColor: State&lt;Color></ID>
     <ID>ConstructorParameterNaming:Transitions.kt$HeaderTransitionState$val _textBackground: State&lt;Color></ID>
-    <ID>FunctionOnlyReturningConstant:RenderExtensions.kt$@Suppress("unused") internal fun Null.toReadableString(): String</ID>
-    <ID>MagicNumber:Date.ios.kt$1000.0</ID>
-    <ID>TooGenericExceptionCaught:NettyServer.kt$e: Throwable</ID>
-    <ID>UndocumentedPublicClass:Date.kt$Date</ID>
-    <ID>UndocumentedPublicClass:PredictiveBackAnimation.kt$BackCoordinator&lt;T : NavStackEntry&lt;*>> : BackCallback</ID>
-    <ID>UndocumentedPublicClass:PredictiveBackAnimation.kt$PredictiveBackAnimation</ID>
-    <ID>UndocumentedPublicClass:UUID.kt$UUID</ID>
-    <ID>UndocumentedPublicClass:Url.kt$Url</ID>
-    <ID>UndocumentedPublicFunction:Date.ios.kt$public actual fun Date.toMillis(): Long</ID>
-    <ID>UndocumentedPublicFunction:Date.ios.kt$public actual fun fromMillis( millis: Long ): Date</ID>
-    <ID>UndocumentedPublicFunction:Date.ios.kt$public actual fun now(): Date</ID>
-    <ID>UndocumentedPublicFunction:Date.jvm.kt$public actual fun Date.toMillis(): Long</ID>
-    <ID>UndocumentedPublicFunction:Date.jvm.kt$public actual fun fromMillis( millis: Long ): Date</ID>
-    <ID>UndocumentedPublicFunction:Date.jvm.kt$public actual fun now(): Date</ID>
-    <ID>UndocumentedPublicFunction:Date.kt$public expect fun Date.toMillis(): Long</ID>
-    <ID>UndocumentedPublicFunction:Date.kt$public expect fun fromMillis( millis: Long ): Date</ID>
-    <ID>UndocumentedPublicFunction:Date.kt$public expect fun now(): Date</ID>
-    <ID>UndocumentedPublicFunction:PredictiveBackAnimation.kt$@Composable public fun &lt;T : NavStackEntry&lt;*>> rememberPredictiveBackCoordinator( dispatcher: BackDispatcher, stack: NavigationStack&lt;T>, animation: PredictiveBackAnimation, onBackComplete: (T) -> Unit, ): BackCoordinator&lt;T></ID>
-    <ID>UndocumentedPublicFunction:PredictiveBackAnimation.kt$@Composable public fun rememberDefaultPredictiveBackAnimation( maxWidth: Dp, ): PredictiveBackAnimation</ID>
-    <ID>UndocumentedPublicFunction:PredictiveBackAnimation.kt$PredictiveBackAnimation$public suspend fun animate(event: BackEvent)</ID>
-    <ID>UndocumentedPublicFunction:PredictiveBackAnimation.kt$PredictiveBackAnimation$public suspend fun cancelAnimation()</ID>
-    <ID>UndocumentedPublicFunction:PredictiveBackAnimation.kt$PredictiveBackAnimation$public suspend fun finishAnimation()</ID>
-    <ID>UndocumentedPublicFunction:PredictiveBackAnimation.kt$PredictiveBackAnimation$public suspend fun reset()</ID>
-    <ID>UndocumentedPublicFunction:PredictiveBackContainer.kt$@Composable public fun &lt;T : NavStackEntry&lt;*>> PredictiveBackContainer( backDispatcher: BackDispatcher, coordinator: BackCoordinator&lt;T>, modifier: Modifier = Modifier, backIcon: (@Composable (progress: Float, edge: BackEvent.SwipeEdge) -> Unit)? = null, startEdgeEnabled: Boolean = true, endEdgeEnabled: Boolean = true, edgeWidth: Dp = 16.dp, activationOffsetThreshold: Dp = 16.dp, confirmationProgressThreshold: Float = 0.2F, onClose: (() -> Unit)? = null, content: @Composable (Modifier, T) -> Unit, )</ID>
-    <ID>UndocumentedPublicFunction:Resolver.kt$public suspend operator fun &lt;T> Sink&lt;T>.invoke( elements: Iterable&lt;T>, ): Unit</ID>
-    <ID>UndocumentedPublicFunction:Resolver.kt$public suspend operator fun &lt;T> Sink&lt;T>.invoke( vararg elements: T, ): Unit</ID>
-    <ID>UndocumentedPublicFunction:UUID.ios.kt$public actual fun RandomUUID(): UUID</ID>
-    <ID>UndocumentedPublicFunction:UUID.ios.kt$public actual fun UUID.toHumanReadable(): String</ID>
-    <ID>UndocumentedPublicFunction:UUID.ios.kt$public actual fun UUIDFrom( value: String, ): UUID</ID>
-    <ID>UndocumentedPublicFunction:UUID.jvm.kt$public actual fun RandomUUID(): UUID</ID>
-    <ID>UndocumentedPublicFunction:UUID.jvm.kt$public actual fun UUID.toHumanReadable(): String</ID>
-    <ID>UndocumentedPublicFunction:UUID.jvm.kt$public actual fun UUIDFrom( value: String ): UUID</ID>
-    <ID>UndocumentedPublicFunction:UUID.kt$public expect fun RandomUUID(): UUID</ID>
-    <ID>UndocumentedPublicFunction:UUID.kt$public expect fun UUID.toHumanReadable(): String</ID>
-    <ID>UndocumentedPublicFunction:UUID.kt$public expect fun UUIDFrom( value: String ): UUID</ID>
-    <ID>UndocumentedPublicFunction:Url.ios.kt$public actual fun Url.toExternalValue(): String</ID>
-    <ID>UndocumentedPublicFunction:Url.ios.kt$public actual fun UrlFor( s: String ): Url</ID>
-    <ID>UndocumentedPublicFunction:Url.jvm.kt$public actual fun Url.toExternalValue(): String</ID>
-    <ID>UndocumentedPublicFunction:Url.jvm.kt$public actual fun UrlFor( s: String ): Url</ID>
-    <ID>UndocumentedPublicFunction:Url.kt$public expect fun Url.toExternalValue(): String</ID>
-    <ID>UndocumentedPublicFunction:Url.kt$public expect fun UrlFor( s: String ): Url</ID>
-    <ID>UndocumentedPublicProperty:Component.kt$@ExperimentalTeaApi public val ShareStateWhileSubscribed: ShareOptions = ShareOptions(SharingStarted.WhileSubscribed(), 1U)</ID>
-    <ID>UndocumentedPublicProperty:PredictiveBackAnimation.kt$PredictiveBackAnimation$public val currentModifier: Modifier</ID>
-    <ID>UndocumentedPublicProperty:PredictiveBackAnimation.kt$PredictiveBackAnimation$public val previousModifier: Modifier</ID>
-    <ID>UndocumentedPublicProperty:Url.ios.kt$public actual val Url.domain: String get() = host ?: error("No domain: ${toExternalValue()}")</ID>
-    <ID>UndocumentedPublicProperty:Url.ios.kt$public actual val Url.protocol: String? get() = scheme</ID>
-    <ID>UndocumentedPublicProperty:Url.jvm.kt$public actual val Url.domain: String get() = host</ID>
-    <ID>UndocumentedPublicProperty:Url.jvm.kt$public actual val Url.protocol: String? get() = scheme</ID>
-    <ID>UndocumentedPublicProperty:Url.kt$public expect val Url.domain: String</ID>
-    <ID>UndocumentedPublicProperty:Url.kt$public expect val Url.protocol: String?</ID>
-    <ID>UndocumentedPublicProperty:Url.kt$public val Url.isSecureProtocol: Boolean get() = protocol == "https"</ID>
+    <ID>FinalNewline:ComponentUpdaterThreadingTest.kt$io.github.xlopec.tea.core.component.ComponentUpdaterThreadingTest.kt</ID>
+    <ID>FinalNewline:Sample.kt$io.github.xlopec.tea.compose.Sample.kt</ID>
+    <ID>FinalNewline:currentThreadName.linux.kt$io.github.xlopec.tea.core.misc.currentThreadName.linux.kt</ID>
+    <ID>FinalNewline:currentThreadName.mingw.kt$io.github.xlopec.tea.core.misc.currentThreadName.mingw.kt</ID>
+    <ID>FinalNewline:nanoTime.mingw.kt$io.github.xlopec.tea.compose.nanoTime.mingw.kt</ID>
+    <ID>FinalNewline:nanoTime.web.kt$io.github.xlopec.tea.compose.nanoTime.web.kt</ID>
+    <ID>LongParameterList:PredictiveBackGestureOverlay.kt$( enabled: Boolean, leftEdgeEnabled: Boolean, rightEdgeEnabled: Boolean, edgeWidth: Dp, activationOffsetThreshold: Dp, confirmationProgressThreshold: Float, onStart: (SwipeEdge) -> Unit, onProgress: (Float) -> Unit, onConfirm: () -> Unit, onCancel: () -> Unit, )</ID>
+    <ID>LongParameterList:PredictiveBackGestureOverlay.kt$BackGestureHandler$( private val pointerId: PointerId, private val startPosition: Offset, private val size: IntSize, private val edge: SwipeEdge, private val ignoreOffsetThreshold: Float, private val activationOffsetThreshold: Float, private val progressConfirmationThreshold: Float, private val onStart: (SwipeEdge) -> Unit, private val onProgress: (Float) -> Unit, private val onConfirm: () -> Unit, private val onCancel: () -> Unit, )</ID>
+    <ID>MagicNumber:PredictiveBackContainer.kt$1_000_000</ID>
+    <ID>MagicNumber:nanoTime.linux.kt$1_000_000L</ID>
+    <ID>MagicNumber:nanoTime.mingw.kt$1_000_000L</ID>
+    <ID>MagicNumber:nanoTime.web.kt$1_000_000</ID>
+    <ID>MaxLineLength:ComponentTest.kt$ComponentTest$val expectedStates = initialStates + Regular(currentState = state, commands = commands, previousState = state, message = commands.first())</ID>
+    <ID>MaxLineLength:ComponentTestBase.kt$ComponentTestBase$resolver = { snapshot -> contextOf&lt;CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } }</ID>
+    <ID>MaxLineLength:ComponentTestBase.kt$ComponentTestBase$resolver = { snapshot -> contextOf&lt;CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $snapshot" } } } }</ID>
+    <ID>MaxLineLength:ComponentUpdaterThreadingTest.kt$ComponentUpdaterThreadingTest$resolver = { snapshot -> contextOf&lt;CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } }</ID>
+    <ID>MaxLineLength:DebuggableComponentTest.kt$DebuggableComponentTest$resolver = { snapshots -> contextOf&lt;CoroutineScope>().launch { snapshots.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } }</ID>
+    <ID>MaximumLineLength:ComponentTest.kt$ComponentTest$ </ID>
+    <ID>MaximumLineLength:ComponentTestBase.kt$ComponentTestBase$ </ID>
+    <ID>MaximumLineLength:ComponentUpdaterThreadingTest.kt$ComponentUpdaterThreadingTest$ </ID>
+    <ID>MaximumLineLength:DebuggableComponentTest.kt$DebuggableComponentTest$ </ID>
+    <ID>NewLineAtEndOfFile:ComponentUpdaterThreadingTest.kt$io.github.xlopec.tea.core.component.ComponentUpdaterThreadingTest.kt</ID>
+    <ID>NewLineAtEndOfFile:Sample.kt$io.github.xlopec.tea.compose.Sample.kt</ID>
+    <ID>NewLineAtEndOfFile:currentThreadName.linux.kt$io.github.xlopec.tea.core.misc.currentThreadName.linux.kt</ID>
+    <ID>NewLineAtEndOfFile:currentThreadName.mingw.kt$io.github.xlopec.tea.core.misc.currentThreadName.mingw.kt</ID>
+    <ID>NewLineAtEndOfFile:nanoTime.mingw.kt$io.github.xlopec.tea.compose.nanoTime.mingw.kt</ID>
+    <ID>NewLineAtEndOfFile:nanoTime.web.kt$io.github.xlopec.tea.compose.nanoTime.web.kt</ID>
+    <ID>NoTrailingSpaces:KotlinPluginExtensions.kt$ </ID>
+    <ID>NoUnusedImports:ArticleDetailsResolver.kt$io.github.xlopec.reader.app.feature.article.details.ArticleDetailsResolver.kt</ID>
+    <ID>NoUnusedImports:ArticlesResolver.kt$io.github.xlopec.reader.app.feature.article.list.ArticlesResolver.kt</ID>
+    <ID>NoUnusedImports:Counter.kt$io.github.xlopec.counter.Counter.kt</ID>
+    <ID>NoUnusedImports:FiltersResolver.kt$io.github.xlopec.reader.app.feature.filter.FiltersResolver.kt</ID>
+    <ID>NoUnusedImports:Sample.kt$io.github.xlopec.tea.compose.Sample.kt</ID>
+    <ID>NoUnusedImports:SnapshotsCollector.kt$io.github.xlopec.tea.core.misc.SnapshotsCollector.kt</ID>
+    <ID>SpacingAroundColon:ArticleDetailsResolver.kt$:</ID>
+    <ID>SpacingAroundColon:ArticlesResolver.kt$:</ID>
+    <ID>SpacingAroundColon:Counter.kt$:</ID>
+    <ID>SpacingAroundColon:FiltersResolver.kt$:</ID>
+    <ID>SpacingAroundColon:Resolver.kt$:</ID>
+    <ID>SpacingAroundColon:Sample.kt$:</ID>
+    <ID>SpacingAroundColon:SnapshotsCollector.kt$SnapshotsCollector$:</ID>
+    <ID>UndocumentedPublicClass:ComponentUpdaterThreadingTest.kt$ComponentUpdaterThreadingTest</ID>
+    <ID>UndocumentedPublicClass:PredictiveBackGestureOverlay.kt$SwipeEdge</ID>
+    <ID>UndocumentedPublicFunction:ComponentUpdaterThreadingTest.kt$ComponentUpdaterThreadingTest$@Test fun `when collecting component with specific dispatcher then updater runs on this dispatcher`()</ID>
+    <ID>UndocumentedPublicFunction:NonMainThreadCheckingUpdater.kt$@Suppress("TestFunctionName") fun &lt;M, S> NonMainThreadCheckingUpdater( mainThreadName: String, ): Updater&lt;M, S, Nothing></ID>
+    <ID>UndocumentedPublicFunction:Resolver.kt$public fun &lt;M, C> C.effect( context: CoroutineContext = EmptyCoroutineContext, start: CoroutineStart = CoroutineStart.DEFAULT, action: suspend C.() -> M?, ): Job</ID>
+    <ID>UndocumentedPublicFunction:Resolver.kt$public fun &lt;M, C> C.effects( context: CoroutineContext = EmptyCoroutineContext, start: CoroutineStart = CoroutineStart.DEFAULT, action: suspend C.() -> Set&lt;M>, ): Job</ID>
+    <ID>UndocumentedPublicFunction:Resolver.kt$public fun &lt;M, C> C.sideEffect( context: CoroutineContext = EmptyCoroutineContext, start: CoroutineStart = CoroutineStart.DEFAULT, action: suspend C.() -> Unit, ): Job</ID>
+    <ID>UndocumentedPublicFunction:Resolver.kt$public infix fun &lt;M, C> C.effect( action: suspend C.() -> M?, ): Job</ID>
+    <ID>UndocumentedPublicFunction:Resolver.kt$public infix fun &lt;M, C> C.effects( action: suspend C.() -> Set&lt;M>, ): Job</ID>
+    <ID>UndocumentedPublicFunction:Resolver.kt$public infix fun &lt;M, C> C.sideEffect( action: suspend C.() -> Unit, ): Job</ID>
+    <ID>UndocumentedPublicFunction:currentThreadName.apple.kt$actual fun currentThreadName(): String</ID>
+    <ID>UndocumentedPublicFunction:currentThreadName.kt$expect fun currentThreadName(): String</ID>
+    <ID>UndocumentedPublicFunction:currentThreadName.linux.kt$@OptIn(ExperimentalForeignApi::class) actual fun currentThreadName(): String</ID>
+    <ID>UndocumentedPublicFunction:currentThreadName.mingw.kt$actual fun currentThreadName(): String</ID>
+    <ID>UndocumentedPublicProperty:PredictiveBackGestureOverlay.kt$SwipeEdge$LEFT</ID>
+    <ID>UndocumentedPublicProperty:PredictiveBackGestureOverlay.kt$SwipeEdge$RIGHT</ID>
   </CurrentIssues>
 </SmellBaseline>

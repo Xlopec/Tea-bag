@@ -80,7 +80,8 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     modifier: Modifier = Modifier,
     transitionSpec: AnimatedContentTransitionScope<T>.() -> ContentTransform = PushTransitionSpec(),
     popTransitionSpec: AnimatedContentTransitionScope<T>.() -> ContentTransform = PopTransitionSpec(),
-    predictivePopTransitionSpec: AnimatedContentTransitionScope<T>.() -> ContentTransform = PredictivePopTransitionSpec(),
+    predictivePopTransitionSpec: AnimatedContentTransitionScope<T>.() -> ContentTransform =
+        PredictivePopTransitionSpec(),
     startEdgeEnabled: Boolean = true,
     endEdgeEnabled: Boolean = true,
     edgeWidth: Dp = 16.dp,
@@ -196,8 +197,11 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                     animationSpec = tween(remaining),
                 ) { value, _ ->
                     this@LaunchedEffect.launch {
-                        if (value != 0F) transitionState.seekTo(value)
-                        else transitionState.snapTo(current)
+                        if (value != 0F) {
+                            transitionState.seekTo(value)
+                        } else {
+                            transitionState.snapTo(current)
+                        }
                     }
                 }
             }
