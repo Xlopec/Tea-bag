@@ -80,14 +80,9 @@ import io.github.xlopec.reader.app.feature.article.list.OnShareArticle
 import io.github.xlopec.reader.app.feature.article.list.ToggleArticleIsFavorite
 import io.github.xlopec.reader.app.feature.navigation.NavigateToArticleDetails
 import io.github.xlopec.reader.app.feature.navigation.NavigateToFilters
-import io.github.xlopec.reader.app.misc.Exception
-import io.github.xlopec.reader.app.misc.Idle
-import io.github.xlopec.reader.app.misc.LoadableState
-import io.github.xlopec.reader.app.misc.Loading
-import io.github.xlopec.reader.app.misc.LoadingNext
-import io.github.xlopec.reader.app.misc.Refreshing
-import io.github.xlopec.reader.app.misc.isLoading
 import io.github.xlopec.reader.app.model.Article
+import io.github.xlopec.tea.data.Paginatable
+import io.github.xlopec.tea.data.isLoading
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.FilterType.Favorite
@@ -122,7 +117,7 @@ public fun Articles(
             loadableContent(
                 state.id,
                 state.loadable.data.isEmpty(),
-                state.loadable.loadableState,
+                state.loadable.state,
                 state.filter.type,
                 onMessage
             )
@@ -184,7 +179,7 @@ private fun LazyListScope.articleItems(
 private fun LazyListScope.loadableContent(
     id: ScreenId,
     isEmpty: Boolean,
-    loadableState: LoadableState,
+    loadableState: Paginatable.State<AppException>,
     filterType: FilterType,
     onMessage: MessageHandler,
 ) = item(
@@ -192,16 +187,16 @@ private fun LazyListScope.loadableContent(
     contentType = loadableState::class
 ) {
     when (loadableState) {
-        is Exception ->
+        is Paginatable.Exception ->
             ArticlesError(
                 modifier = if (isEmpty) Modifier.fillParentMaxSize() else Modifier.fillParentMaxWidth(),
-                message = loadableState.th.readableMessage,
+                message = loadableState.error.readableMessage,
                 onRetry = { onMessage(if (isEmpty) LoadArticles(id) else LoadNextArticles(id)) }
             )
 
-        is Loading -> ArticlesProgress(modifier = Modifier.fillParentMaxSize())
-        is LoadingNext -> ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
-        is Idle, is Refreshing -> {
+        is Paginatable.Loading -> ArticlesProgress(modifier = Modifier.fillParentMaxSize())
+        is Paginatable.LoadingNext -> ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
+        is Paginatable.Idle, is Paginatable.Refreshing -> {
             if (isEmpty) {
                 ColumnMessage(
                     modifier = Modifier

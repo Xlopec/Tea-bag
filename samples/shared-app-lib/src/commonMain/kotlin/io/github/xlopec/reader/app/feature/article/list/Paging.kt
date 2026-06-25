@@ -25,12 +25,6 @@
 package io.github.xlopec.reader.app.feature.article.list
 
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState.Companion.ArticlesPerPage
-import kotlinx.collections.immutable.ImmutableList
-
-public data class Page<out T>(
-    val data: ImmutableList<T>,
-    val hasMore: Boolean = false
-)
 
 public data class Paging(
     val currentSize: Int,

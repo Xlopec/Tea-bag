@@ -46,7 +46,7 @@ import kotlin.native.ObjCName
  * @property data value the producer has emitted so far; the meaning depends on [state]
  * @property state lifecycle of the producer
  */
-public data class Loadable<out T, out Err> internal constructor(
+public data class Loadable<out T, out Err>(
     val data: T,
     val state: State<Err>,
 ) {

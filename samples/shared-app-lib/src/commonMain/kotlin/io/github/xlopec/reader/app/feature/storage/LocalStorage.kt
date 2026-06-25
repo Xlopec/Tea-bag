@@ -26,7 +26,7 @@
 
 package io.github.xlopec.reader.app.feature.storage
 
-import io.github.xlopec.reader.app.feature.article.list.Page
+import io.github.xlopec.tea.data.Page
 import io.github.xlopec.reader.app.feature.filter.FiltersState.Companion.StoreSuggestionsLimit
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter

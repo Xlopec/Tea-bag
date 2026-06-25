@@ -27,9 +27,6 @@ package io.github.xlopec.reader.app.feature.filter
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.FilterUpdated
 import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.feature.article.list.Page
-import io.github.xlopec.reader.app.misc.toException
-import io.github.xlopec.reader.app.misc.toIdle
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.Source
@@ -37,6 +34,9 @@ import io.github.xlopec.reader.app.model.SourceId
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
+import io.github.xlopec.tea.data.Page
+import io.github.xlopec.tea.data.toException
+import io.github.xlopec.tea.data.toIdle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentHashSetOf

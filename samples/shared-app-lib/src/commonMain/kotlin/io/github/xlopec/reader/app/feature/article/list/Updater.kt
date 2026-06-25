@@ -27,7 +27,6 @@ package io.github.xlopec.reader.app.feature.article.list
 import io.github.xlopec.reader.app.FilterUpdated
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.feature.article.list.Paging.Companion.FirstPage
-import io.github.xlopec.reader.app.misc.isIdle
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.FilterType.Favorite
@@ -37,6 +36,8 @@ import io.github.xlopec.reader.app.model.toggleFavorite
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
+import io.github.xlopec.tea.data.Page
+import io.github.xlopec.tea.data.isIdle
 
 internal fun ArticlesState.toArticlesUpdate(
     message: ArticlesMessage,
