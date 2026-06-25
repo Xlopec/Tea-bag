@@ -39,6 +39,7 @@ pluginManagement {
 include(
     ":tea-core",
     ":tea-compose",
+    ":tea-data",
     ":tea-time-travel",
     ":tea-time-travel-protocol",
     ":tea-time-travel-adapter-gson",

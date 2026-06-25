@@ -72,13 +72,14 @@ import io.github.xlopec.reader.app.feature.filter.ClearSelection
 import io.github.xlopec.reader.app.feature.filter.FiltersState
 import io.github.xlopec.reader.app.feature.filter.LoadSources
 import io.github.xlopec.reader.app.feature.filter.ToggleSourceSelection
-import io.github.xlopec.reader.app.misc.Exception
-import io.github.xlopec.reader.app.misc.Idle
-import io.github.xlopec.reader.app.misc.Loadable
-import io.github.xlopec.reader.app.misc.Loading
-import io.github.xlopec.reader.app.misc.LoadingNext
-import io.github.xlopec.reader.app.misc.Refreshing
+import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.model.Source
+import io.github.xlopec.tea.data.Paginatable
+import io.github.xlopec.tea.data.Paginatable.Exception
+import io.github.xlopec.tea.data.Paginatable.Idle
+import io.github.xlopec.tea.data.Paginatable.Loading
+import io.github.xlopec.tea.data.Paginatable.LoadingNext
+import io.github.xlopec.tea.data.Paginatable.Refreshing
 import io.github.xlopec.reader.app.model.Url
 import io.github.xlopec.reader.app.model.toExternalValue
 import io.github.xlopec.reader.app.ui.misc.RowMessage
@@ -88,7 +89,7 @@ internal fun SourcesSection(
     state: FiltersState,
     id: ScreenId,
     modifier: Modifier,
-    sources: Loadable<Source>,
+    sources: Paginatable<Source, AppException>,
     childTransitionState: ChildTransitionState,
     handler: MessageHandler,
 ) {
@@ -117,12 +118,12 @@ internal fun SourcesSection(
             }
         }
 
-        when (val loadable = sources.loadableState) {
+        when (val loadable = sources.state) {
             LoadingNext -> Unit
             is Exception -> {
                 RowMessage(
                     modifier = modifier.padding(horizontal = 16.dp),
-                    message = loadable.th.message,
+                    message = loadable.error.message,
                     onClick = { handler(LoadSources(id)) }
                 )
             }

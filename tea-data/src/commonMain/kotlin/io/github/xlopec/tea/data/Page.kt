@@ -22,19 +22,29 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+package io.github.xlopec.tea.data
 
-package io.github.xlopec.reader.app.feature.filter
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
-import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.model.Filter
-import io.github.xlopec.tea.core.Update
-import io.github.xlopec.tea.core.command
-import io.github.xlopec.tea.data.Paginatable
-
-public fun FiltersInitialUpdate(
-    id: ScreenId,
-    parentId: ScreenId,
-    filter: Filter,
-): Update<FiltersState, FilterCommand> = FiltersState(id, parentId, filter, Paginatable.loadingList())
-    .command(DoLoadRecentSearches(id, filter.type), DoLoadSources(id))
+/**
+ * A single page of results returned by a paginated data source.
+ *
+ * Used together with [Paginatable.toIdle] to advance a paginated collection from a loading
+ * state into [Paginatable.Idle] after a fetch completes.
+ *
+ * @param T element type
+ * @param data items contained in this page
+ * @param hasMore `true` if the source has additional pages after this one
+ */
+public data class Page<out T>(
+    val data: ImmutableList<T>,
+    val hasMore: Boolean = false,
+) {
+    public companion object {
+        /**
+         * An empty page that signals the end of a paginated stream.
+         */
+        public val Empty: Page<Nothing> = Page(data = persistentListOf(), hasMore = false)
+    }
+}

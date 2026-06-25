@@ -30,12 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.navigation.Tab
-import io.github.xlopec.reader.app.misc.Idle
-import io.github.xlopec.reader.app.misc.Loadable
-import io.github.xlopec.reader.app.misc.LoadableState
-import io.github.xlopec.reader.app.misc.Loading
-import io.github.xlopec.reader.app.misc.LoadingNext
-import io.github.xlopec.reader.app.misc.Refreshing
+import io.github.xlopec.reader.app.AppException
+import io.github.xlopec.tea.data.Paginatable
+import io.github.xlopec.tea.data.Paginatable.Idle
+import io.github.xlopec.tea.data.Paginatable.Loading
+import io.github.xlopec.tea.data.Paginatable.LoadingNext
+import io.github.xlopec.tea.data.Paginatable.Refreshing
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Author
 import io.github.xlopec.reader.app.model.Description
@@ -61,7 +61,7 @@ internal fun ArticleSearchHeaderPreview() {
             state = ArticlesState(
                 tab = Tab.Trending,
                 filter = Filter(FilterType.Trending, Query.of("some input text")),
-                loadable = Loadable(data = persistentListOf(), hasMore = false, loadableState = Idle)
+                loadable = Paginatable(data = persistentListOf(), hasMore = false, state = Idle)
             ),
             onMessage = {}
         )
@@ -176,14 +176,14 @@ private fun ArticlesState(
     tab: Tab,
     type: FilterType,
     articles: PersistentList<Article>,
-    loadableState: LoadableState,
+    loadableState: Paginatable.State<AppException>,
 ) = ArticlesState(
     tab = tab,
     filter = Filter(type, Query.of("input")),
-    loadable = Loadable(
+    loadable = Paginatable(
         data = articles,
         hasMore = false,
-        loadableState = loadableState
+        state = loadableState
     )
 )
 

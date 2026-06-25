@@ -31,7 +31,7 @@ import app.cash.sqldelight.db.SqlPreparedStatement
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set
-import io.github.xlopec.reader.app.feature.article.list.Page
+import io.github.xlopec.tea.data.Page
 import io.github.xlopec.reader.app.misc.mapNotNullToPersistentList
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Author

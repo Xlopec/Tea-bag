@@ -22,19 +22,26 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
+package io.github.xlopec.reader.app.feature.article.list
 
-package io.github.xlopec.reader.app.feature.filter
+import io.github.xlopec.reader.app.feature.article.list.ArticlesState.Companion.ArticlesPerPage
 
-import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.model.Filter
-import io.github.xlopec.tea.core.Update
-import io.github.xlopec.tea.core.command
-import io.github.xlopec.tea.data.Paginatable
+public data class Paging(
+    val currentSize: Int,
+    val resultsPerPage: Int = ArticlesPerPage
+) {
+    internal companion object {
+        val FirstPage = Paging(currentSize = 0)
+    }
+}
 
-public fun FiltersInitialUpdate(
-    id: ScreenId,
-    parentId: ScreenId,
-    filter: Filter,
-): Update<FiltersState, FilterCommand> = FiltersState(id, parentId, filter, Paginatable.loadingList())
-    .command(DoLoadRecentSearches(id, filter.type), DoLoadSources(id))
+/**
+ * Calculates and returns next page for current Paging instance.
+ * For 0 page it'll return 1, which is acceptable by API
+ */
+internal inline val Paging.nextPage: Int
+    get() = (currentSize / resultsPerPage) + 1
+
+internal fun ArticlesState.nextPage(
+    resultsPerPage: Int = ArticlesPerPage
+) = Paging(loadable.data.size, resultsPerPage)

@@ -24,16 +24,17 @@
 
 package io.github.xlopec.reader.app.feature.filter
 
+import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.FullScreen
 import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.misc.Loadable
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.Source
+import io.github.xlopec.tea.data.Paginatable
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
-public typealias SourcesState = Loadable<Source>
+public typealias SourcesState = Paginatable<Source, AppException>
 
 public data class FiltersState(
     override val id: ScreenId,
