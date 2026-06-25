@@ -24,58 +24,48 @@
 
 package io.github.xlopec.tea.async.compose
 
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
 import io.github.xlopec.tea.async.Loadable
 
 /**
- * Routes a [Loadable] to one of the supplied slots based on its current state.
- *
- * [Loadable.Idle] and [Loadable.Refreshing] both invoke [onIdle] because the visible payload is
- * the same; differentiate them inside [onIdle] via [Loadable.isRefreshing] if needed.
- *
- * @param onLoading slot rendered when the producer is performing the initial load. No data is
- *   passed because [Loadable.data] in this state is a placeholder.
- * @param onException slot rendered when the producer is in the [Loadable.Exception] state. The
- *   state and the last observed [Loadable.data] are forwarded so the slot can show a banner over
- *   stale content or a full-screen error.
- * @param onIdle slot rendered when the producer is [Loadable.Idle] or [Loadable.Refreshing].
+ * Pure dispatcher from a [Loadable]'s state to one of four composable slots. Each state of the
+ * sealed [Loadable.State] hierarchy gets its own slot; no implicit collapsing, no empty-data
+ * branching — the caller owns every visual decision.
  */
 @Composable
 @Suppress("FunctionName")
 public fun <T, Err> Loadable(
     loadable: Loadable<T, Err>,
-    onLoading: @Composable () -> Unit,
-    onException: @Composable (state: Loadable.Exception<Err>, data: T) -> Unit,
+    onLoading: @Composable (data: T) -> Unit,
+    onRefreshing: @Composable (data: T) -> Unit,
+    onException: @Composable (error: Err, data: T) -> Unit,
     onIdle: @Composable (data: T) -> Unit,
 ) {
     when (val state = loadable.state) {
-        Loadable.Loading -> onLoading()
-        is Loadable.Exception -> onException(state, loadable.data)
-        Loadable.Idle, Loadable.Refreshing -> onIdle(loadable.data)
+        Loadable.Loading -> onLoading(loadable.data)
+        Loadable.Refreshing -> onRefreshing(loadable.data)
+        is Loadable.Exception -> onException(state.error, loadable.data)
+        Loadable.Idle -> onIdle(loadable.data)
     }
 }
 
 /**
- * [LazyListScope] variant of [Loadable] that wraps transient states ([Loadable.Loading],
- * [Loadable.Exception]) in a single `item { }` and delegates the data-bearing
- * [Loadable.Idle]/[Loadable.Refreshing] state to [onIdle], which receives a [LazyListScope] and
- * is expected to emit its own `item`/`items` calls.
- *
- * Each transient state uses a distinct item key so Compose treats them as different items;
- * `remember`-backed state inside a slot is discarded on transition and item-animations fire
- * correctly.
+ * [LazyListScope] variant of [Loadable]. Each slot receives the surrounding [LazyListScope] and
+ * is expected to emit its own `item`/`items` calls — the dispatcher itself does not wrap content
+ * or combine slots.
  */
 public inline fun <T, Err> LazyListScope.loadableItems(
     loadable: Loadable<T, Err>,
-    crossinline onLoading: @Composable LazyItemScope.() -> Unit,
-    crossinline onException: @Composable LazyItemScope.(state: Loadable.Exception<Err>, data: T) -> Unit,
+    onLoading: LazyListScope.(data: T) -> Unit,
+    onRefreshing: LazyListScope.(data: T) -> Unit,
+    onException: LazyListScope.(error: Err, data: T) -> Unit,
     onIdle: LazyListScope.(data: T) -> Unit,
 ) {
     when (val state = loadable.state) {
-        Loadable.Loading -> item(key = Loadable.Loading::class.simpleName) { onLoading() }
-        is Loadable.Exception -> item(key = Loadable.Exception::class.simpleName) { onException(state, loadable.data) }
-        Loadable.Idle, Loadable.Refreshing -> onIdle(loadable.data)
+        Loadable.Loading -> onLoading(loadable.data)
+        Loadable.Refreshing -> onRefreshing(loadable.data)
+        is Loadable.Exception -> onException(state.error, loadable.data)
+        Loadable.Idle -> onIdle(loadable.data)
     }
 }

@@ -113,27 +113,37 @@ public fun Articles(
             paginatableItems(
                 paginatable = state.loadable,
                 onLoading = {
-                    ArticlesProgress(modifier = Modifier.fillParentMaxSize())
+                    item(key = "loading") {
+                        ArticlesProgress(modifier = Modifier.fillParentMaxSize())
+                    }
                 },
-                onException = { exception, articles ->
+                onRefreshing = { articles ->
+                    articleItems(state, articles, onMessage)
+                },
+                onLoadingNext = { articles ->
+                    articleItems(state, articles, onMessage)
+                    item(key = "loading-next") {
+                        ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
+                    }
+                },
+                onException = { error, articles ->
                     val isEmpty = articles.isEmpty()
-                    ArticlesError(
-                        modifier = if (isEmpty) Modifier.fillParentMaxSize() else Modifier.fillParentMaxWidth(),
-                        message = exception.error.readableMessage,
-                        onRetry = {
-                            onMessage(if (isEmpty) LoadArticles(state.id) else LoadNextArticles(state.id))
-                        },
-                    )
-                },
-                onLoadingNext = {
-                    ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
+                    if (!isEmpty) {
+                        articleItems(state, articles, onMessage)
+                    }
+                    item(key = "error") {
+                        ArticlesError(
+                            modifier = if (isEmpty) Modifier.fillParentMaxSize() else Modifier.fillParentMaxWidth(),
+                            message = error.readableMessage,
+                            onRetry = {
+                                onMessage(if (isEmpty) LoadArticles(state.id) else LoadNextArticles(state.id))
+                            },
+                        )
+                    }
                 },
                 onIdle = { articles ->
                     if (articles.isEmpty()) {
-                        item(
-                            key = "empty",
-                            contentType = "empty",
-                        ) {
+                        item(key = "empty", contentType = "empty") {
                             ColumnMessage(
                                 modifier = Modifier
                                     .fillParentMaxSize()

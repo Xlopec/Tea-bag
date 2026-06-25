@@ -122,17 +122,28 @@ internal fun SourcesSection(
             userScrollEnabled = sources.data.isNotEmpty(),
             contentPadding = PaddingValues(horizontal = 16.dp),
         ) {
+            val onSourceClick: (Source) -> Unit = { handler(ToggleSourceSelection(id, it.id)) }
+
             paginatableItems(
                 paginatable = sources,
-                onLoading = { ShimmerSourcesRow() },
-                onException = { exception, _ ->
-                    RowMessage(
-                        modifier = Modifier.fillParentMaxWidth(),
-                        message = exception.error.message,
-                        onClick = { handler(LoadSources(id)) },
-                    )
+                onLoading = {
+                    item(key = "shimmer") { ShimmerSourcesRow() }
                 },
-                onLoadingNext = { },
+                onRefreshing = { items ->
+                    sourceItems(sources = items, onClick = onSourceClick, state = state)
+                },
+                onLoadingNext = { items ->
+                    sourceItems(sources = items, onClick = onSourceClick, state = state)
+                },
+                onException = { error, _ ->
+                    item(key = "error") {
+                        RowMessage(
+                            modifier = Modifier.fillParentMaxWidth(),
+                            message = error.message,
+                            onClick = { handler(LoadSources(id)) },
+                        )
+                    }
+                },
                 onIdle = { items ->
                     if (items.isEmpty()) {
                         item(key = "empty") {
@@ -143,11 +154,7 @@ internal fun SourcesSection(
                             )
                         }
                     } else {
-                        sourceItems(
-                            sources = items,
-                            onClick = { handler(ToggleSourceSelection(id, it.id)) },
-                            state = state,
-                        )
+                        sourceItems(sources = items, onClick = onSourceClick, state = state)
                     }
                 },
             )
