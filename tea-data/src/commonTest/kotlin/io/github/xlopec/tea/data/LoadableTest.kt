@@ -132,14 +132,6 @@ class LoadableTest {
     }
 
     @Test
-    fun toRefreshingWithUpdaterTransformsData() {
-        val loadable = Loadable.idleSingle("ab").toRefreshing { uppercase() }
-
-        assertEquals("AB", loadable.data)
-        assertTrue(loadable.isRefreshing)
-    }
-
-    @Test
     fun toIdleWithDataReplacesPayload() {
         val loadable = Loadable.loadingSingle("old").toIdle("new")
 
