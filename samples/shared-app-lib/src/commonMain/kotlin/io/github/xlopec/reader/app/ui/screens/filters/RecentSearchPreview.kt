@@ -41,6 +41,7 @@ import kotlin.uuid.Uuid
 
 private val PreviewState = FiltersState(
     id = Uuid.random(),
+    parentId = Uuid.random(),
     filter = Filter(FilterType.Regular, Query.of("Android")),
     sourcesState = Loadable.newLoading()
 )

@@ -46,8 +46,9 @@ public data class NavigateToArticleDetails(
 ) : Navigation
 
 public data class NavigateToFilters(
-    val id: ScreenId,
+    val parentId: ScreenId,
     val filter: Filter,
+    val id: ScreenId = Uuid.random(),
 ) : Navigation
 
 public sealed interface TabNavigation : Navigation {

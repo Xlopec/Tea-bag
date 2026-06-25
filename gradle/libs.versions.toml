@@ -11,6 +11,7 @@ compose-testing = "1.10.6"
 
 [libraries]
 # Convention plugins
+animation-core = { module = "org.jetbrains.compose.animation:animation-core", version.ref = "compose" }
 convention-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 convention-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 convention-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "2.2.0" }

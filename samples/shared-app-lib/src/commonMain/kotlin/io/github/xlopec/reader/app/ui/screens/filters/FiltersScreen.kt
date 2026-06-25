@@ -98,17 +98,14 @@ internal fun FiltersScreen(
             focusRequester.freeFocus()
 
             if (performSearch) {
-                handler(LoadArticles(state.id))
+                handler(LoadArticles(state.parentId))
             }
             handler(Pop)
         }
     } else {
         LaunchedEffect(Unit) {
-            screenTransitionState = Finish
-        }
-
-        if (screenTransition transitionedTo Finish) {
             focusRequester.requestFocus()
+            screenTransitionState = Finish
         }
     }
 

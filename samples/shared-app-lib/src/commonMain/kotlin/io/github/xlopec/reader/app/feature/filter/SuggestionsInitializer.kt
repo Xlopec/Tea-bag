@@ -34,6 +34,7 @@ import io.github.xlopec.tea.core.command
 
 public fun FiltersInitialUpdate(
     id: ScreenId,
+    parentId: ScreenId,
     filter: Filter,
-): Update<FiltersState, FilterCommand> = FiltersState(id, filter, Loadable.newLoading())
+): Update<FiltersState, FilterCommand> = FiltersState(id, parentId, filter, Loadable.newLoading())
     .command(DoLoadRecentSearches(id, filter.type), DoLoadSources(id))
