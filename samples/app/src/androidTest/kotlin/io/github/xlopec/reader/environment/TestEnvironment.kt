@@ -38,7 +38,7 @@ import io.github.xlopec.reader.app.feature.article.list.ShareArticle
 import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.network.SourcesResponse
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
-import io.github.xlopec.tea.async.Url
+import io.github.xlopec.reader.app.model.Url
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.TestDispatcher
