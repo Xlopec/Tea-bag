@@ -34,14 +34,14 @@ import io.github.xlopec.reader.app.misc.remove
 import io.github.xlopec.reader.app.misc.replace
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter
-import io.github.xlopec.tea.data.Page
-import io.github.xlopec.tea.data.Paginatable
-import io.github.xlopec.tea.data.data
-import io.github.xlopec.tea.data.toException
-import io.github.xlopec.tea.data.toIdle
-import io.github.xlopec.tea.data.toLoading
-import io.github.xlopec.tea.data.toLoadingNext
-import io.github.xlopec.tea.data.toRefreshing
+import io.github.xlopec.tea.async.Page
+import io.github.xlopec.tea.async.Paginatable
+import io.github.xlopec.tea.async.data
+import io.github.xlopec.tea.async.toException
+import io.github.xlopec.tea.async.toIdle
+import io.github.xlopec.tea.async.toLoading
+import io.github.xlopec.tea.async.toLoadingNext
+import io.github.xlopec.tea.async.toRefreshing
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 

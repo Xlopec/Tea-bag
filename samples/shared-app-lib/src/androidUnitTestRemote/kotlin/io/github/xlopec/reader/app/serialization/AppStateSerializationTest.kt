@@ -31,7 +31,7 @@ import io.github.xlopec.reader.app.feature.article.list.ArticlesLoadable
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.article.list.LoadArticles
 import io.github.xlopec.reader.app.feature.navigation.Tab
-import io.github.xlopec.tea.data.Paginatable
+import io.github.xlopec.tea.async.Paginatable
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Description
 import io.github.xlopec.reader.app.model.Filter
