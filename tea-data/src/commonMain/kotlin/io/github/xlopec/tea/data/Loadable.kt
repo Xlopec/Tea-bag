@@ -158,7 +158,7 @@ public inline val Loadable<*, *>.isException: Boolean
  * the current list.
  */
 @JvmName("dataList")
-public fun <T, Err> Loadable<PersistentList<T>, Err>.data(
+public inline fun <T, Err> Loadable<PersistentList<T>, Err>.data(
     f: PersistentList<T>.() -> PersistentList<T>,
 ): Loadable<PersistentList<T>, Err> = copy(data = f(data))
 
@@ -167,7 +167,7 @@ public fun <T, Err> Loadable<PersistentList<T>, Err>.data(
  * the current value.
  */
 @JvmName("dataSingle")
-public fun <T, Err> Loadable<T, Err>.data(
+public inline fun <T, Err> Loadable<T, Err>.data(
     f: T.() -> T,
 ): Loadable<T, Err> = copy(data = f(data))
 

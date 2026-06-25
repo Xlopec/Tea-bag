@@ -167,7 +167,7 @@ public inline val Paginatable<*, *>.isException: Boolean
  * Returns a copy of this [Paginatable] whose [Paginatable.data] is the result of applying
  * [f] to the current list.
  */
-public fun <T : Any, Err> Paginatable<T, Err>.data(
+public inline fun <T : Any, Err> Paginatable<T, Err>.data(
     f: PersistentList<T>.() -> PersistentList<T>,
 ): Paginatable<T, Err> = copy(data = f(data))
 
