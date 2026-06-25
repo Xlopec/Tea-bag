@@ -98,8 +98,8 @@ public inline fun <reified M : Any, reified S : Any, reified C, J> Component(
     Component(
         DebugEnv(
             Env(initializer, resolver, updater, scope, shareOptions),
-            Settings(id, jsonSerializer, url, sessionFactory)
-        )
+            Settings(id, jsonSerializer, url, sessionFactory),
+        ),
     )
 
 /**

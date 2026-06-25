@@ -37,24 +37,24 @@ import io.github.xlopec.shared.R
 private val GmsFontProvider = GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",
     providerPackage = "com.google.android.gms",
-    certificates = R.array.com_google_android_gms_fonts_certs
+    certificates = R.array.com_google_android_gms_fonts_certs,
 )
 
 private val Roboto = FontFamily(
     androidx.compose.ui.text.googlefonts.Font(
         googleFont = GoogleFont("Roboto"),
         fontProvider = GmsFontProvider,
-        weight = FontWeight.Normal
+        weight = FontWeight.Normal,
     ),
     androidx.compose.ui.text.googlefonts.Font(
         googleFont = GoogleFont("Roboto"),
         fontProvider = GmsFontProvider,
-        weight = FontWeight.Bold
+        weight = FontWeight.Bold,
     ),
     androidx.compose.ui.text.googlefonts.Font(
         googleFont = GoogleFont("Roboto"),
         fontProvider = GmsFontProvider,
-        weight = FontWeight.Medium
+        weight = FontWeight.Medium,
     ),
 )
 
@@ -65,52 +65,52 @@ internal actual fun typography(): Typography {
             h4 = TextStyle(
                 fontFamily = Roboto,
                 fontWeight = FontWeight.W600,
-                fontSize = 30.sp
+                fontSize = 30.sp,
             ),
             h5 = TextStyle(
                 fontFamily = Roboto,
                 fontWeight = FontWeight.W600,
-                fontSize = 24.sp
+                fontSize = 24.sp,
             ),
             h6 = TextStyle(
                 fontFamily = Roboto,
                 fontWeight = FontWeight.W600,
-                fontSize = 20.sp
+                fontSize = 20.sp,
             ),
             subtitle1 = TextStyle(
                 fontFamily = Roboto,
                 fontWeight = FontWeight.W600,
-                fontSize = 16.sp
+                fontSize = 16.sp,
             ),
             subtitle2 = TextStyle(
                 fontFamily = Roboto,
                 fontWeight = FontWeight.W500,
-                fontSize = 14.sp
+                fontSize = 14.sp,
             ),
             body1 = TextStyle(
                 fontFamily = Roboto,
                 fontWeight = FontWeight.Normal,
-                fontSize = 16.sp
+                fontSize = 16.sp,
             ),
             body2 = TextStyle(
                 fontFamily = Roboto,
-                fontSize = 14.sp
+                fontSize = 14.sp,
             ),
             button = TextStyle(
                 fontFamily = Roboto,
                 fontWeight = FontWeight.W500,
-                fontSize = 14.sp
+                fontSize = 14.sp,
             ),
             caption = TextStyle(
                 fontFamily = Roboto,
                 fontWeight = FontWeight.Normal,
-                fontSize = 12.sp
+                fontSize = 12.sp,
             ),
             overline = TextStyle(
                 fontFamily = Roboto,
                 fontWeight = FontWeight.W500,
-                fontSize = 12.sp
-            )
+                fontSize = 12.sp,
+            ),
         )
     }
 }

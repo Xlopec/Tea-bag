@@ -27,5 +27,5 @@ package io.github.xlopec.reader.app.feature.network
 import kotlinx.serialization.encoding.Encoder
 
 internal fun Encoder.encodeNullableString(
-    s: String?
+    s: String?,
 ) = s?.let(::encodeString) ?: encodeNull()

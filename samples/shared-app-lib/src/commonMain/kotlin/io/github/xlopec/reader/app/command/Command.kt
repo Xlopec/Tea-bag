@@ -45,5 +45,5 @@ public data class DoLog(
 
 public data class DoStoreDarkMode(
     val userDarkModeEnabled: Boolean,
-    val syncWithSystemDarkModeEnabled: Boolean
+    val syncWithSystemDarkModeEnabled: Boolean,
 ) : Command

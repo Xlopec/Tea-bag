@@ -32,7 +32,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 
 public class IosComponent(
-    systemDarkModeEnabled: Boolean
+    systemDarkModeEnabled: Boolean,
 ) {
     private val componentScope = CoroutineScope(Job() + Default.limitedParallelism(1))
     internal val component = AppComponent(systemDarkModeEnabled, componentScope)
@@ -44,6 +44,6 @@ public class IosComponent(
 
 private fun AppComponent(
     systemDarkModeEnabled: Boolean,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
 ) = Environment(coroutineScope)
     .let { AppComponent(it, AppInitializer(systemDarkModeEnabled, it)) }

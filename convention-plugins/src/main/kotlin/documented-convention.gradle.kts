@@ -63,7 +63,7 @@ dokka {
             sourceLink {
                 localDirectory.set(project.file("src/${this@configureEach.name}/kotlin"))
                 remoteUrl.set(
-                    URI("https://github.com/Xlopec/Tea-bag/tree/$branchOrDefault/${project.name}/src/${this@configureEach.name}/kotlin")
+                    URI("https://github.com/Xlopec/Tea-bag/tree/$branchOrDefault/${project.name}/src/${this@configureEach.name}/kotlin"),
                 )
                 remoteLineSuffix.set("#L")
             }

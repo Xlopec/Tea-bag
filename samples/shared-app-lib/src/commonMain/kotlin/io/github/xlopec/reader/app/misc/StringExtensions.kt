@@ -26,5 +26,5 @@ package io.github.xlopec.reader.app.misc
 
 internal fun String.coerceIn(
     min: UInt,
-    max: UInt
+    max: UInt,
 ): String? = take(max.toInt()).takeIf { it.length.toUInt() in min..max }

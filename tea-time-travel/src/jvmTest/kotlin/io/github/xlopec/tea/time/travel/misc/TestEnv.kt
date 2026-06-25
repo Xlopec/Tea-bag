@@ -47,18 +47,18 @@ fun <M, S> TestSettings(
     url: Url = Localhost,
     sessionFactory: SessionFactory<M, S, JsonElement> = { _, block ->
         TestDebugSession<M, S>().apply { block() }
-    }
+    },
 ) = Settings(
     id = componentId,
     serializer = converter,
     url = url,
-    sessionFactory = sessionFactory
+    sessionFactory = sessionFactory,
 )
 
 fun <M, S, C> TestDebugEnv(
     env: Env<M, S, C>,
-    settings: Settings<M, S, JsonElement> = TestSettings()
+    settings: Settings<M, S, JsonElement> = TestSettings(),
 ) = DebugEnv(
     env = env,
-    settings = settings
+    settings = settings,
 )

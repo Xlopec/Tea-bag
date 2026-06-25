@@ -8,7 +8,6 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     runs-on: ubuntu-latest
-    if: false
     steps:
       - uses: actions/checkout@v5
         with:

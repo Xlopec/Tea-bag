@@ -102,7 +102,7 @@ data class ReleaseCandidate(
                     rawTag,
                     group.toMajorMinorPatch(),
                     group[5].toIntOrNull(),
-                    group[6].toInt()
+                    group[6].toInt(),
                 )
             }
     }
@@ -121,7 +121,7 @@ data class Stable(
 
 fun Version(
     rawTag: String?,
-    commit: String?
+    commit: String?,
 ): Version =
     when {
         rawTag.isNullOrEmpty() -> Snapshot(commit)
@@ -134,9 +134,9 @@ fun Version(
                         listOf(
                             AlphaRegexp,
                             ReleaseCandidateRegexp,
-                            StableRegexp
+                            StableRegexp,
                         ).joinToString(transform = Regex::pattern)
-                    }"
+                    }",
         )
     }
 

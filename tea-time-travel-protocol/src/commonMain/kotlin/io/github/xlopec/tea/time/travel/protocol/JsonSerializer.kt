@@ -43,7 +43,7 @@ public interface JsonSerializer<J> {
      * @return JSON tree
      */
     public fun <T> toJsonTree(
-        any: T
+        any: T,
     ): J
 
     /**
@@ -56,7 +56,7 @@ public interface JsonSerializer<J> {
      */
     public fun <T : Any> fromJsonTree(
         json: J,
-        cl: KClass<T>
+        cl: KClass<T>,
     ): T
 
     /**
@@ -67,7 +67,7 @@ public interface JsonSerializer<J> {
      * @return JSON string representation
      */
     public fun <T> toJson(
-        any: T
+        any: T,
     ): String
 
     /**
@@ -80,6 +80,6 @@ public interface JsonSerializer<J> {
      */
     public fun <T : Any> fromJson(
         json: String,
-        cl: KClass<T>
+        cl: KClass<T>,
     ): T
 }

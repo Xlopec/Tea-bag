@@ -37,7 +37,7 @@ kotlin {
             "kotlinx.coroutines.FlowPreview",
             "kotlinx.coroutines.InternalCoroutinesApi",
             "io.github.xlopec.tea.core.InternalTeaApi",
-            "io.github.xlopec.tea.core.ExperimentalTeaApi"
+            "io.github.xlopec.tea.core.ExperimentalTeaApi",
         )
     }
 

@@ -58,7 +58,7 @@ public fun ComposeResolver(
     scope: CoroutineScope,
     clockPolicy: ClockPolicy = ClockPolicy.External,
     snapshotManagerPolicy: SnapshotNotifierPolicy = External,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val clockContext = when (clockPolicy) {
         ClockPolicy.External -> EmptyCoroutineContext
@@ -107,7 +107,7 @@ public fun ComposeResolver(
 @OptIn(ExperimentalTime::class)
 private suspend fun Recomposer.runRecomposer(
     frameClockContext: CoroutineContext,
-    snapshotNotifierPolicy: SnapshotNotifierPolicy
+    snapshotNotifierPolicy: SnapshotNotifierPolicy,
 ) = coroutineScope {
     when (snapshotNotifierPolicy) {
         External -> Unit

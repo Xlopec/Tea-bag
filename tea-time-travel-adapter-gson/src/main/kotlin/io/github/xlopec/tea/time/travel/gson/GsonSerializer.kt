@@ -39,28 +39,28 @@ import kotlin.reflect.KClass
  * @return a configured [JsonSerializer] instance
  */
 public fun GsonSerializer(
-    config: GsonBuilder.() -> Unit = {}
+    config: GsonBuilder.() -> Unit = {},
 ): JsonSerializer<JsonElement> = GsonSerializer(Gson(config))
 
 private class GsonSerializer(
-    private val gson: Gson
+    private val gson: Gson,
 ) : JsonSerializer<JsonElement> {
 
     override fun <T> toJsonTree(
-        any: T
+        any: T,
     ): JsonElement = gson.toJsonTree(any)
 
     override fun <T : Any> fromJsonTree(
         json: JsonElement,
-        cl: KClass<T>
+        cl: KClass<T>,
     ): T = gson.fromJson(json, cl.java)
 
     override fun <T> toJson(
-        any: T
+        any: T,
     ): String = gson.toJson(any)
 
     override fun <T : Any> fromJson(
         json: String,
-        cl: KClass<T>
+        cl: KClass<T>,
     ): T = gson.fromJson(json, cl.java)
 }

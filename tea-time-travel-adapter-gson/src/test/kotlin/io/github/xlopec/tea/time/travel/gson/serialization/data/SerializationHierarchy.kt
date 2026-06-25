@@ -29,7 +29,7 @@ internal sealed class A
 internal sealed class B : A()
 
 internal data class C(
-    val value: String = "C"
+    val value: String = "C",
 ) : B()
 
 internal data class D(
@@ -38,7 +38,7 @@ internal data class D(
     val l: List<C?> = listOf(C(), null),
     val arrC: Array<C?> = arrayOf(C(), null),
     val nilC: C? = null,
-    val nilMap: Map<String?, A?> = mapOf(null to C(), null to null, "some" to C(), "some" to null)
+    val nilMap: Map<String?, A?> = mapOf(null to C(), null to null, "some" to C(), "some" to null),
 ) : A() {
 
     override fun equals(other: Any?): Boolean {

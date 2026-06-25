@@ -56,7 +56,7 @@ fun <M, S, C> TestEnv(
     resolver = { snapshot -> resolver(snapshot) },
     updater = updater,
     scope = scope,
-    shareOptions = shareOptions
+    shareOptions = shareOptions,
 )
 
 fun ThrowingInitializer(

@@ -31,7 +31,7 @@ import platform.Foundation.NSURL
 public actual typealias Url = NSURL
 
 public actual fun UrlFor(
-    s: String
+    s: String,
 ): Url = NSURL(string = s)
 
 public actual fun Url.toExternalValue(): String = toString()

@@ -120,14 +120,14 @@ internal fun ArticleDetailsScreen(
                 modifier = Modifier
                     .padding(innerPadding)
                     .windowInsetsPadding(WindowInsets.navigationBars)
-                    .fillMaxSize()
+                    .fillMaxSize(),
             ) {
                 ArticleDetailsToolbar(
                     id = screen.id,
                     state = webViewState,
                     article = screen.article,
                     navigator = navigator,
-                    handler = handler
+                    handler = handler,
                 )
 
                 WebView(
@@ -136,7 +136,7 @@ internal fun ArticleDetailsScreen(
                     navigator = navigator,
                 )
             }
-        }
+        },
     )
 }
 
@@ -175,7 +175,7 @@ private fun ArticleDetailsToolbar(
                     modifier = Modifier.basicMarquee(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    text = state.pageTitle ?: article.title.value
+                    text = state.pageTitle ?: article.title.value,
                 )
 
                 Row(
@@ -188,10 +188,10 @@ private fun ArticleDetailsToolbar(
                                 }
                             },
                             onLongClickLabel = "Copy to Clipboard",
-                            onClick = { handler(OpenInBrowser(id)) }
+                            onClick = { handler(OpenInBrowser(id)) },
                         ),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
                     val contentColor = LocalContentColor.current.copy(alpha = 0.68f)
                     val linkStyle = MaterialTheme.typography.caption
@@ -209,7 +209,7 @@ private fun ArticleDetailsToolbar(
                             modifier = Modifier.size(iconSize),
                             imageVector = if (article.url.isSecureProtocol) Icons.Outlined.Lock else Icons.Outlined.LockOpen,
                             tint = contentColor,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     }
 
@@ -218,7 +218,7 @@ private fun ArticleDetailsToolbar(
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                         style = linkStyle,
-                        color = contentColor
+                        color = contentColor,
                     )
                 }
             }
@@ -228,13 +228,13 @@ private fun ArticleDetailsToolbar(
             IconButton(onClick = { expanded = true }) {
                 Icon(
                     contentDescription = null,
-                    imageVector = Icons.Outlined.MoreVert
+                    imageVector = Icons.Outlined.MoreVert,
                 )
             }
 
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
             ) {
                 DropdownMenuItem(
                     onClick = {
@@ -242,7 +242,7 @@ private fun ArticleDetailsToolbar(
                         navigator.reload()
                     },
                     imageVector = Default.Refresh,
-                    text = "Refresh"
+                    text = "Refresh",
                 )
 
                 DropdownMenuItem(
@@ -253,7 +253,7 @@ private fun ArticleDetailsToolbar(
                         }
                     },
                     imageVector = Icons.Outlined.ContentCopy,
-                    text = "Copy URL"
+                    text = "Copy URL",
                 )
 
                 DropdownMenuItem(
@@ -262,7 +262,7 @@ private fun ArticleDetailsToolbar(
                         handler(OnShareArticle(article))
                     },
                     imageVector = Default.Share,
-                    text = "Share"
+                    text = "Share",
                 )
 
                 DropdownMenuItem(
@@ -271,7 +271,7 @@ private fun ArticleDetailsToolbar(
                         handler(ToggleArticleIsFavorite(id))
                     },
                     imageVector = if (article.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    text = if (article.isFavorite) "Remove from favorite" else "Add to favorite"
+                    text = if (article.isFavorite) "Remove from favorite" else "Add to favorite",
                 )
 
                 DropdownMenuItem(
@@ -280,10 +280,10 @@ private fun ArticleDetailsToolbar(
                         handler(OpenInBrowser(id))
                     },
                     imageVector = Icons.Outlined.OpenInBrowser,
-                    text = "Open in default browser"
+                    text = "Open in default browser",
                 )
             }
-        }
+        },
     )
 }
 
@@ -300,7 +300,7 @@ private fun DropdownMenuItem(
         ) {
             Icon(
                 imageVector = imageVector,
-                contentDescription = null
+                contentDescription = null,
             )
 
             Text(text = text)

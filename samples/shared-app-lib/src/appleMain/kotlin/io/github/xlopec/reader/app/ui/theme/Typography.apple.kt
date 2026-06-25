@@ -42,7 +42,7 @@ internal actual fun typography(): Typography {
     val fontFamily = FontFamily(
         Font(Res.font.roboto_regular),
         Font(Res.font.roboto_medium),
-        Font(Res.font.roboto_bold)
+        Font(Res.font.roboto_bold),
     )
 
     return remember {
@@ -50,52 +50,52 @@ internal actual fun typography(): Typography {
             h4 = TextStyle(
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.W600,
-                fontSize = 30.sp
+                fontSize = 30.sp,
             ),
             h5 = TextStyle(
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.W600,
-                fontSize = 24.sp
+                fontSize = 24.sp,
             ),
             h6 = TextStyle(
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.W600,
-                fontSize = 20.sp
+                fontSize = 20.sp,
             ),
             subtitle1 = TextStyle(
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.W600,
-                fontSize = 16.sp
+                fontSize = 16.sp,
             ),
             subtitle2 = TextStyle(
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.W500,
-                fontSize = 14.sp
+                fontSize = 14.sp,
             ),
             body1 = TextStyle(
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.Normal,
-                fontSize = 16.sp
+                fontSize = 16.sp,
             ),
             body2 = TextStyle(
                 fontFamily = fontFamily,
-                fontSize = 14.sp
+                fontSize = 14.sp,
             ),
             button = TextStyle(
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.W500,
-                fontSize = 14.sp
+                fontSize = 14.sp,
             ),
             caption = TextStyle(
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.Normal,
-                fontSize = 12.sp
+                fontSize = 12.sp,
             ),
             overline = TextStyle(
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.W500,
-                fontSize = 12.sp
-            )
+                fontSize = 12.sp,
+            ),
         )
     }
 }

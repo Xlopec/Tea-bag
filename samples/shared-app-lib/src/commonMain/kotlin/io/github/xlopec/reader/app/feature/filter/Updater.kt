@@ -82,7 +82,7 @@ private fun FiltersState.onSourcesLoaded(
 ) = command(DoLoadSources(id))
 
 private fun FiltersState.onSourcesLoadResult(
-    result: SourcesLoadResult
+    result: SourcesLoadResult,
 ) = when (result) {
     is SourcesLoadException -> onSourcesLoadException(result.exception)
     is SourcesLoadSuccess -> onSourcesLoaded(result.sources)
@@ -101,7 +101,7 @@ private fun FiltersState.onRecentSearchesLoaded(
 ) = copy(recentSearches = suggestions.toPersistentList()).noCommand()
 
 private fun FiltersState.onRemoveRecentSearch(
-    query: Query
+    query: Query,
 ) = copy(recentSearches = recentSearches.remove(query)) command DoRemoveRecentSearch(filter.type, query)
 
 private fun FiltersState.updatedFilter(

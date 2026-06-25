@@ -43,7 +43,7 @@ public val Url.isSecureProtocol: Boolean
  * @throws IllegalArgumentException if the string is not a valid URL
  */
 public expect fun UrlFor(
-    s: String
+    s: String,
 ): Url
 
 /**

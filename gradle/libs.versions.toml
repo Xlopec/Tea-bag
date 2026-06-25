@@ -21,7 +21,7 @@ convention-compose-plugin = { module = "org.jetbrains.compose:compose-gradle-plu
 convention-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 convention-versions = { module = "com.github.ben-manes:gradle-versions-plugin", version = "0.53.0" }
 convention-nexus-publish = { module = "io.github.gradle-nexus:publish-plugin", version = "2.0.0" }
-convention-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.23.8" }
+convention-detekt = { module = "dev.detekt:detekt-gradle-plugin", version = "2.0.0-alpha.5" }
 
 decompose-backHandler = { module = "com.arkivanov.essenty:back-handler", version = "2.5.0" }
 decompose-extensions = { module = "com.arkivanov.decompose:extensions-compose", version = "3.5.0" }

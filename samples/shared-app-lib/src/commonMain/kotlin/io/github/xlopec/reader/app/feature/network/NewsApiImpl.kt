@@ -97,7 +97,7 @@ private fun HttpClient(
                 ignoreUnknownKeys = true
                 useAlternativeNames = false
                 isLenient = true
-            }
+            },
         )
     }
 
@@ -132,7 +132,7 @@ private suspend inline fun Throwable.wrap(
 private suspend fun ClientRequestException.toAppException(): AppException =
     NetworkException(
         errorMessage() ?: toGenericExceptionDescription(),
-        this
+        this,
     )
 
 private suspend fun ClientRequestException.errorMessage() = withContext(Dispatchers.IO) {
@@ -152,7 +152,7 @@ private fun NetworkException(
 private val SourcesRequest = HttpRequestBuilder(
     scheme = HTTPS.name,
     host = "newsapi.org",
-    path = "/v2/top-headlines/sources"
+    path = "/v2/top-headlines/sources",
 ) {
     with(parameters) {
         append("apiKey", ApiKey)
@@ -166,7 +166,7 @@ private fun EverythingRequest(
 ) = HttpRequestBuilder(
     scheme = HTTPS.name,
     host = "newsapi.org",
-    path = "/v2/everything"
+    path = "/v2/everything",
 ) {
     with(parameters) {
         appendApiKey(ApiKey)
@@ -183,7 +183,7 @@ private fun TopHeadlinesRequest(
 ) = HttpRequestBuilder(
     scheme = HTTPS.name,
     host = "newsapi.org",
-    path = "/v2/top-headlines"
+    path = "/v2/top-headlines",
 ) {
     with(parameters) {
         appendApiKey(ApiKey)
@@ -194,13 +194,13 @@ private fun TopHeadlinesRequest(
 }
 
 private fun ParametersBuilder.appendApiKey(
-    apiKey: String
+    apiKey: String,
 ) {
     append("apiKey", apiKey)
 }
 
 private fun ParametersBuilder.appendCountry(
-    country: Country
+    country: Country,
 ) {
     append("country", country.code)
 }

@@ -78,29 +78,29 @@ internal class AppStateSerializationTest {
                     urlToImage = null,
                     published = Clock.System.now().toLocalDateTime(TimeZone.UTC),
                     isFavorite = false,
-                    source = null
-                )
+                    source = null,
+                ),
             ),
             hasMore = false,
-            state = Paginatable.Idle
-        )
+            state = Paginatable.Idle,
+        ),
     )
 
     private val loadingScreenState = ArticlesState.newLoading(
         tab = Tab.Feed,
-        filter = Filter(type = FilterType.Regular, query = Query.of("test"))
+        filter = Filter(type = FilterType.Regular, query = Query.of("test")),
     )
 
     private val testState = AppState(
         screens = stackOf(
             previewScreenState,
-            loadingScreenState
+            loadingScreenState,
         ),
         settings = Settings(
             userDarkModeEnabled = true,
             systemDarkModeEnabled = false,
-            syncWithSystemDarkModeEnabled = false
-        )
+            syncWithSystemDarkModeEnabled = false,
+        ),
     )
 
     @Test
@@ -108,7 +108,7 @@ internal class AppStateSerializationTest {
 
         val message = NotifyComponentAttached(
             state = toJsonTree(testState),
-            commands = setOf()
+            commands = setOf(),
         )
         val json = toJson(message)
 
@@ -124,7 +124,7 @@ internal class AppStateSerializationTest {
             message = toJsonTree("Message"),
             oldState = toJsonTree(testState),
             newState = toJsonTree(loadingScreenState),
-            commands = setOf()
+            commands = setOf(),
         )
 
         val json = toJson(message)

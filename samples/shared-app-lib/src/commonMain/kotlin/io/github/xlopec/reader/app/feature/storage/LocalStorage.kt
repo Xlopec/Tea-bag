@@ -70,15 +70,15 @@ public interface LocalStorage {
     )
 
     public suspend fun findFilter(
-        type: FilterType
+        type: FilterType,
     ): Filter
 
     public suspend fun recentSearches(
-        type: FilterType
+        type: FilterType,
     ): ImmutableList<Query>
 
     public suspend fun deleteRecentSearch(
         type: FilterType,
-        query: Query
+        query: Query,
     )
 }

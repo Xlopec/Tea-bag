@@ -35,10 +35,10 @@ import io.github.xlopec.tea.core.command
 
 internal fun ArticlesInitialUpdate(
     tab: Tab,
-    type: FilterType
+    type: FilterType,
 ) = ArticlesState.newLoading(tab, Filter(type)) command DoLoadFilter(tab.id, type)
 
 public fun ArticlesInitialUpdate(
     tab: Tab,
-    filter: Filter
+    filter: Filter,
 ): Update<ArticlesState, DoLoadArticles> = ArticlesState.newLoading(tab, filter) command DoLoadArticles(tab.id, filter, FirstPage)

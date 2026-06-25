@@ -146,7 +146,7 @@ class ComposeResolverTest {
             ComposeResolver(
                 scope = scope,
                 clockPolicy = ClockPolicy.External,
-                snapshotManagerPolicy = SnapshotNotifierPolicy.WhileActive
+                snapshotManagerPolicy = SnapshotNotifierPolicy.WhileActive,
             ) {
                 value.store(count)
             }
@@ -170,7 +170,7 @@ class ComposeResolverTest {
             ComposeResolver(
                 scope = scope,
                 clockPolicy = ClockPolicy.External,
-                snapshotManagerPolicy = SnapshotNotifierPolicy.External
+                snapshotManagerPolicy = SnapshotNotifierPolicy.External,
             ) {
                 value.store(count)
             }

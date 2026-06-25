@@ -143,5 +143,5 @@ private suspend fun LocalStorage.toArticle(
     urlToImage = element.urlToImage,
     isFavorite = isFavoriteArticle(element.url),
     published = element.publishedAt,
-    source = element.source.id
+    source = element.source.id,
 )

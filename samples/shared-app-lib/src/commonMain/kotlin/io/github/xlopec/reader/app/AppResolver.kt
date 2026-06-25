@@ -70,7 +70,7 @@ public fun <Env> Env.resolve(
     val appScope = contextOf<CoroutineScope>()
     val sink = contextOf<Sink<Message>>()
     val compositionScope = CoroutineScope(
-        appScope.coroutineContext + Job(appScope.coroutineContext[Job.Key]) + Dispatchers.Default
+        appScope.coroutineContext + Job(appScope.coroutineContext[Job.Key]) + Dispatchers.Default,
     )
     ComposeResolver(
         scope = compositionScope,

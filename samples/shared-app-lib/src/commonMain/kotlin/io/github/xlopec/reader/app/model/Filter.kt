@@ -38,7 +38,7 @@ public enum class FilterType {
  */
 @JvmInline
 public value class Query private constructor(
-    public val value: String
+    public val value: String,
 ) {
     public companion object {
 
@@ -46,7 +46,7 @@ public value class Query private constructor(
         private const val MinQueryLength = 1U
 
         public fun of(
-            input: String?
+            input: String?,
         ): Query? = input?.coerceIn(MinQueryLength, MaxQueryLength)?.replace("\n", "")?.let(::Query)
     }
 
@@ -69,5 +69,5 @@ public data class Filter(
 }
 
 internal fun Filter.query(
-    query: Query?
+    query: Query?,
 ) = copy(query = query)

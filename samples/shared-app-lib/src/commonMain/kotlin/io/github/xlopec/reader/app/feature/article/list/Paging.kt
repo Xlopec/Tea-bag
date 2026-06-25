@@ -28,7 +28,7 @@ import io.github.xlopec.reader.app.feature.article.list.ArticlesState.Companion.
 
 public data class Paging(
     val currentSize: Int,
-    val resultsPerPage: Int = ArticlesPerPage
+    val resultsPerPage: Int = ArticlesPerPage,
 ) {
     internal companion object {
         val FirstPage = Paging(currentSize = 0)
@@ -43,5 +43,5 @@ internal inline val Paging.nextPage: Int
     get() = (currentSize / resultsPerPage) + 1
 
 internal fun ArticlesState.nextPage(
-    resultsPerPage: Int = ArticlesPerPage
+    resultsPerPage: Int = ArticlesPerPage,
 ) = Paging(loadable.data.size, resultsPerPage)

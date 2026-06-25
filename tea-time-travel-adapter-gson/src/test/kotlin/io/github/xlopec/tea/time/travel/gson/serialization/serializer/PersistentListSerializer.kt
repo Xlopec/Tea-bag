@@ -36,7 +36,7 @@ internal object PersistentListSerializer : JsonSerializer<PersistentList<*>>,
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type,
-        context: JsonDeserializationContext
+        context: JsonDeserializationContext,
     ): PersistentList<*> {
 
         val genericArgType = (typeOfT as ParameterizedType).actualTypeArguments[0] as Class<*>
@@ -45,7 +45,7 @@ internal object PersistentListSerializer : JsonSerializer<PersistentList<*>>,
             .map { element ->
                 context.deserialize<Any?>(
                     element,
-                    if (genericArgType.isJsonPrimitive) genericArgType else element.asJsonObject.type
+                    if (genericArgType.isJsonPrimitive) genericArgType else element.asJsonObject.type,
                 )
             }
             .toList()
@@ -55,7 +55,7 @@ internal object PersistentListSerializer : JsonSerializer<PersistentList<*>>,
     override fun serialize(
         src: PersistentList<*>,
         typeOfSrc: Type?,
-        context: JsonSerializationContext
+        context: JsonSerializationContext,
     ): JsonElement = JsonArray().apply {
         for (v in src) {
             add(context.serialize(v))

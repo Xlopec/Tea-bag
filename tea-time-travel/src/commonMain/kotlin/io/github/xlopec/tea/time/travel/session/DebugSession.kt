@@ -54,6 +54,6 @@ public interface DebugSession<M, S, J> {
      * @param packet notification to be sent to the server
      */
     public suspend operator fun invoke(
-        packet: NotifyServer<J>
+        packet: NotifyServer<J>,
     )
 }

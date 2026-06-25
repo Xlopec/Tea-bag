@@ -209,7 +209,7 @@ public infix fun <M, S, C> Component<M, S, C>.with(
 @ExperimentalTeaApi
 public fun <M> ((Flow<M>) -> Flow<*>).subscribeIn(
     input: Flow<M>,
-    scope: CoroutineScope
+    scope: CoroutineScope,
 ): Job = scope.launch { invoke(input).collect() }
 
 /**

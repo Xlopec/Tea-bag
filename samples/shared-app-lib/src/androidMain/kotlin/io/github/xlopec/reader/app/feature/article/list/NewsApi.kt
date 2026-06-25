@@ -33,7 +33,7 @@ import io.ktor.client.engine.cio.*
 import java.util.Locale.ENGLISH
 
 internal fun NewsApi(
-    application: Application
+    application: Application,
 ): NewsApi = NewsApiImpl(CIO, application.countryCode)
 
 private inline val Application.countryCode: Country

@@ -33,7 +33,7 @@ kotlin {
         optIn.addAll(
             "io.github.xlopec.tea.core.ExperimentalTeaApi",
             "kotlin.time.ExperimentalTime",
-            "androidx.compose.runtime.InternalComposeApi"
+            "androidx.compose.runtime.InternalComposeApi",
         )
     }
 

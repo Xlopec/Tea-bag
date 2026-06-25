@@ -36,17 +36,17 @@ public sealed interface ArticlesCommand : ScreenCommand
 public data class DoLoadArticles(
     override val id: ScreenId,
     val filter: Filter,
-    val paging: Paging
+    val paging: Paging,
 ) : ArticlesCommand
 
 public data class DoLoadFilter(
     override val id: ScreenId,
-    val type: FilterType
+    val type: FilterType,
 ) : ArticlesCommand
 
 @JvmInline
 public value class DoStoreFilter(
-    internal val filter: Filter
+    internal val filter: Filter,
 ) : ArticlesCommand {
     override val id: ScreenId?
         get() = null
