@@ -81,9 +81,9 @@ import io.github.xlopec.reader.app.feature.article.list.ToggleArticleIsFavorite
 import io.github.xlopec.reader.app.feature.navigation.NavigateToArticleDetails
 import io.github.xlopec.reader.app.feature.navigation.NavigateToFilters
 import io.github.xlopec.reader.app.model.Article
-import io.github.xlopec.tea.async.Paginatable
-import io.github.xlopec.tea.async.isLoading
+import io.github.xlopec.tea.async.compose.paginatableItems
 import io.github.xlopec.reader.app.model.Filter
+import kotlinx.collections.immutable.PersistentList
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.FilterType.Favorite
 import io.github.xlopec.reader.app.model.FilterType.Regular
@@ -110,16 +110,43 @@ public fun Articles(
 
         ArticlesContent(listState, state, onMessage) {
 
-            if (state.hasDataToDisplay) {
-                articleItems(state, onMessage)
-            }
-
-            loadableContent(
-                state.id,
-                state.loadable.data.isEmpty(),
-                state.loadable.state,
-                state.filter.type,
-                onMessage,
+            paginatableItems(
+                paginatable = state.loadable,
+                onLoading = {
+                    ArticlesProgress(modifier = Modifier.fillParentMaxSize())
+                },
+                onException = { exception, articles ->
+                    val isEmpty = articles.isEmpty()
+                    ArticlesError(
+                        modifier = if (isEmpty) Modifier.fillParentMaxSize() else Modifier.fillParentMaxWidth(),
+                        message = exception.error.readableMessage,
+                        onRetry = {
+                            onMessage(if (isEmpty) LoadArticles(state.id) else LoadNextArticles(state.id))
+                        },
+                    )
+                },
+                onLoadingNext = {
+                    ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
+                },
+                onIdle = { articles ->
+                    if (articles.isEmpty()) {
+                        item(
+                            key = "empty",
+                            contentType = "empty",
+                        ) {
+                            ColumnMessage(
+                                modifier = Modifier
+                                    .fillParentMaxSize()
+                                    .padding(16.dp),
+                                title = "No articles",
+                                message = state.filter.type.toEmptyStateDescription(),
+                                onClick = { onMessage(LoadArticles(state.id)) },
+                            )
+                        }
+                    } else {
+                        articleItems(state, articles, onMessage)
+                    }
+                },
             )
         }
     }
@@ -131,12 +158,9 @@ public fun ArticleTestTag(
 
 private fun LazyListScope.articleItems(
     screen: ArticlesState,
+    articles: PersistentList<Article>,
     onMessage: MessageHandler,
 ) {
-    val articles = screen.loadable.data
-
-    require(articles.isNotEmpty()) { "Empty articles for screen=$screen" }
-
     val title = screen.filter.toScreenTitle()
 
     item(
@@ -171,41 +195,6 @@ private fun LazyListScope.articleItems(
                 if (index == articles.lastIndex) {
                     onMessage(LoadNextArticles(screen.id))
                 }
-            }
-        }
-    }
-}
-
-private fun LazyListScope.loadableContent(
-    id: ScreenId,
-    isEmpty: Boolean,
-    loadableState: Paginatable.State<AppException>,
-    filterType: FilterType,
-    onMessage: MessageHandler,
-) = item(
-    key = loadableState::class.simpleName,
-    contentType = loadableState::class,
-) {
-    when (loadableState) {
-        is Paginatable.Exception ->
-            ArticlesError(
-                modifier = if (isEmpty) Modifier.fillParentMaxSize() else Modifier.fillParentMaxWidth(),
-                message = loadableState.error.readableMessage,
-                onRetry = { onMessage(if (isEmpty) LoadArticles(id) else LoadNextArticles(id)) },
-            )
-
-        is Paginatable.Loading -> ArticlesProgress(modifier = Modifier.fillParentMaxSize())
-        is Paginatable.LoadingNext -> ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
-        is Paginatable.Idle, is Paginatable.Refreshing -> {
-            if (isEmpty) {
-                ColumnMessage(
-                    modifier = Modifier
-                        .fillParentMaxSize()
-                        .padding(16.dp),
-                    title = "No articles",
-                    message = filterType.toEmptyStateDescription(),
-                    onClick = { onMessage(LoadArticles(id)) },
-                )
             }
         }
     }
@@ -455,8 +444,5 @@ private fun Url.toImageRequest(): ImageRequest = ImageRequest.Builder(LocalPlatf
     .data(toExternalValue())
     .crossfade(true)
     .build()
-
-private val ArticlesState.hasDataToDisplay: Boolean
-    get() = loadable.data.isNotEmpty() && !loadable.isLoading
 
 private fun String.toDisplayErrorMessage() = replaceFirstChar { it.lowercase() }

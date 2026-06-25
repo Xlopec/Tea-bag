@@ -75,11 +75,7 @@ import io.github.xlopec.reader.app.feature.filter.ToggleSourceSelection
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.model.Source
 import io.github.xlopec.tea.async.Paginatable
-import io.github.xlopec.tea.async.Paginatable.Exception
-import io.github.xlopec.tea.async.Paginatable.Idle
-import io.github.xlopec.tea.async.Paginatable.Loading
-import io.github.xlopec.tea.async.Paginatable.LoadingNext
-import io.github.xlopec.tea.async.Paginatable.Refreshing
+import io.github.xlopec.tea.async.compose.paginatableItems
 import io.github.xlopec.reader.app.model.Url
 import io.github.xlopec.reader.app.model.toExternalValue
 import io.github.xlopec.reader.app.ui.misc.RowMessage
@@ -118,75 +114,64 @@ internal fun SourcesSection(
             }
         }
 
-        when (val loadable = sources.state) {
-            LoadingNext -> Unit
-            is Exception -> {
-                RowMessage(
-                    modifier = modifier.padding(horizontal = 16.dp),
-                    message = loadable.error.message,
-                    onClick = { handler(LoadSources(id)) },
-                )
-            }
-
-            Loading, Refreshing, Idle -> {
-                val infiniteTransition = rememberInfiniteTransition()
-                val alpha by infiniteTransition.animateFloat(
-                    initialValue = 0f,
-                    targetValue = 1f,
-                    animationSpec = infiniteRepeatable(
-                        animation = keyframes {
-                            durationMillis = 1000
-                            0.7f at 500
-                        },
-                        repeatMode = RepeatMode.Reverse,
-                    ),
-                )
-
-                LazyRow(
-                    modifier = modifier
-                        .alpha(alpha = childTransitionState.contentAlpha)
-                        .offset(y = childTransitionState.listItemOffsetY),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    userScrollEnabled = sources.data.isNotEmpty(),
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                ) {
-
-                    when {
-                        loadable == Idle && sources.data.isEmpty() -> emptySourceItems(
-                            onClick = { handler(LoadSources(id)) },
-                        )
-
-                        loadable == Idle -> sourceItems(
-                            sources = sources.data,
+        LazyRow(
+            modifier = modifier
+                .alpha(alpha = childTransitionState.contentAlpha)
+                .offset(y = childTransitionState.listItemOffsetY),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            userScrollEnabled = sources.data.isNotEmpty(),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+        ) {
+            paginatableItems(
+                paginatable = sources,
+                onLoading = { ShimmerSourcesRow() },
+                onException = { exception, _ ->
+                    RowMessage(
+                        modifier = Modifier.fillParentMaxWidth(),
+                        message = exception.error.message,
+                        onClick = { handler(LoadSources(id)) },
+                    )
+                },
+                onLoadingNext = { },
+                onIdle = { items ->
+                    if (items.isEmpty()) {
+                        item(key = "empty") {
+                            RowMessage(
+                                modifier = Modifier.fillParentMaxWidth(),
+                                message = "No sources found",
+                                onClick = { handler(LoadSources(id)) },
+                            )
+                        }
+                    } else {
+                        sourceItems(
+                            sources = items,
                             onClick = { handler(ToggleSourceSelection(id, it.id)) },
                             state = state,
                         )
-
-                        else -> shimmerSourceItems(alpha = alpha)
                     }
-                }
-            }
+                },
+            )
         }
     }
 }
 
-private fun LazyListScope.emptySourceItems(
-    onClick: () -> Unit,
-) {
-    item {
-        RowMessage(
-            modifier = Modifier.fillParentMaxWidth(),
-            message = "No sources found",
-            onClick = onClick,
-        )
-    }
-}
+@Composable
+private fun ShimmerSourcesRow() {
+    val infiniteTransition = rememberInfiniteTransition()
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = 1000
+                0.7f at 500
+            },
+            repeatMode = RepeatMode.Reverse,
+        ),
+    )
 
-private fun LazyListScope.shimmerSourceItems(
-    alpha: Float,
-) {
-    repeat(10) {
-        item(it) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        repeat(10) {
             SourceItem(
                 modifier = Modifier.alpha(alpha),
                 painter = ColorPainter(Color.Gray),
