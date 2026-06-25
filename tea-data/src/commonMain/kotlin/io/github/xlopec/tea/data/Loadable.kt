@@ -95,7 +95,7 @@ public data class Loadable<out T, out Err>(
     public sealed interface State<out Err>
 
     /**
-     * Terminal failure state.
+     * Failure state carrying the cause reported by the producer.
      *
      * @property error cause of the failure
      */
@@ -141,14 +141,14 @@ public inline val Loadable<*, *>.isRefreshing: Boolean
     get() = state == Loadable.Refreshing
 
 /**
- * `true` when the producer is idle (including the terminal [Loadable.Exception] state) and
- * may accept new requests.
+ * `true` when the producer is idle (including the [Loadable.Exception] state) and may accept
+ * new requests.
  */
 public inline val Loadable<*, *>.isIdle: Boolean
     get() = state == Loadable.Idle || isException
 
 /**
- * `true` when the [Loadable] is in the terminal [Loadable.Exception] state.
+ * `true` when the [Loadable] is in the [Loadable.Exception] state.
  */
 public inline val Loadable<*, *>.isException: Boolean
     get() = state is Loadable.Exception<*>
@@ -219,8 +219,8 @@ public fun <T, Err> Loadable<PersistentList<T>, Err>.toIdle(
 )
 
 /**
- * Returns a copy of this list-typed [Loadable] in the terminal [Loadable.Exception] state
- * wrapping [error].
+ * Returns a copy of this list-typed [Loadable] in the [Loadable.Exception] state wrapping
+ * [error].
  */
 @JvmName("toExceptionList")
 public fun <T, Err> Loadable<PersistentList<T>, Err>.toException(
@@ -228,8 +228,7 @@ public fun <T, Err> Loadable<PersistentList<T>, Err>.toException(
 ): Loadable<PersistentList<T>, Err> = copy(state = Loadable.Exception(error))
 
 /**
- * Returns a copy of this [Loadable] in the terminal [Loadable.Exception] state wrapping
- * [error].
+ * Returns a copy of this [Loadable] in the [Loadable.Exception] state wrapping [error].
  */
 @JvmName("toExceptionSingle")
 public fun <T, Err> Loadable<T, Err>.toException(
