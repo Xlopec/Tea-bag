@@ -26,7 +26,6 @@
 
 package io.github.xlopec.reader.app
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -35,7 +34,6 @@ import androidx.compose.ui.util.fastForEach
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.reader.app.command.DoLog
 import io.github.xlopec.reader.app.command.DoStoreDarkMode
-import io.github.xlopec.reader.app.command.ScreenCommand
 import io.github.xlopec.reader.app.feature.article.details.BrowserLauncher
 import io.github.xlopec.reader.app.feature.article.details.DoOpenInBrowser
 import io.github.xlopec.reader.app.feature.article.details.resolveForOpenInBrowser
@@ -58,8 +56,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.transform
 
 context(sink: Sink<Message>, scope: CoroutineScope)
 public fun <Env> Env.resolve(
@@ -82,26 +78,30 @@ public fun <Env> Env.resolve(
         val currentSnapshot = snapshot
 
         if (currentSnapshot != null) {
-            val commands = snapshots.rememberCommands()
+            val router = remember { CommandRouter() }
+
+            TrackingEffect(router) {
+                snapshots.collect { snapshot ->
+                    val liveIds = snapshot.currentState.screens.mapTo(HashSet()) { it.id }
+                    router.retainOnly(liveIds)
+                    snapshot.commands.forEach { router.route(it, liveIds) }
+                }
+            }
 
             currentSnapshot.currentState.screens.fastForEach { screen ->
                 key(screen.id) {
                     TrackingEffect(screen.id) {
-                        commands
-                            .filter { it is ScreenCommand && it.id == screen.id }
-                            .collect { command ->
-                                context(sink) { resolve(command) }
-                            }
+                        router.consumeScreen(screen.id) { command ->
+                            context(sink) { resolve(command) }
+                        }
                     }
                 }
             }
 
-            TrackingEffect(Unit) {
-                commands
-                    .filter { it !is ScreenCommand || it.id == null }
-                    .collect { command ->
-                        context(sink) { resolve(command) }
-                    }
+            TrackingEffect(router) {
+                router.consumeApp { command ->
+                    context(sink) { resolve(command) }
+                }
             }
         }
     }
@@ -124,13 +124,6 @@ private fun <Env> Env.resolve(
         is FilterCommand -> resolveForFilter(cmd)
         is DoLog -> sideEffect { log(cmd) }
         else -> error("Shouldn't get here $cmd")
-    }
-}
-
-@Composable
-private fun Flow<Snapshot<*, AppState, Command>>.rememberCommands(): Flow<Command> {
-    return remember(this) {
-        transform { snapshot -> snapshot.commands.forEach { emit(it) } }
     }
 }
 
