@@ -125,51 +125,51 @@ public data class Loadable<out T, out Err>(
 /**
  * `true` when the [Loadable] is in a state from which a refresh may be triggered.
  */
-public val Loadable<*, *>.isRefreshable: Boolean
+public inline val Loadable<*, *>.isRefreshable: Boolean
     get() = isIdle
 
 /**
  * `true` when the [Loadable] is performing an initial load.
  */
-public val Loadable<*, *>.isLoading: Boolean
-    get() = state === Loadable.Loading
+public inline val Loadable<*, *>.isLoading: Boolean
+    get() = state == Loadable.Loading
 
 /**
  * `true` when the [Loadable] is performing a refresh of an already-loaded value.
  */
-public val Loadable<*, *>.isRefreshing: Boolean
-    get() = state === Loadable.Refreshing
+public inline val Loadable<*, *>.isRefreshing: Boolean
+    get() = state == Loadable.Refreshing
 
 /**
  * `true` when the producer is idle (including the terminal [Loadable.Exception] state) and
  * may accept new requests.
  */
-public val Loadable<*, *>.isIdle: Boolean
-    get() = state === Loadable.Idle || isException
+public inline val Loadable<*, *>.isIdle: Boolean
+    get() = state == Loadable.Idle || isException
 
 /**
  * `true` when the [Loadable] is in the terminal [Loadable.Exception] state.
  */
-public val Loadable<*, *>.isException: Boolean
+public inline val Loadable<*, *>.isException: Boolean
     get() = state is Loadable.Exception<*>
 
 /**
- * Returns a copy of this [Loadable] whose [Loadable.data] is the result of applying [how] to
+ * Returns a copy of this [Loadable] whose [Loadable.data] is the result of applying [f] to
  * the current list.
  */
 @JvmName("dataList")
-public fun <T, Err> Loadable<PersistentList<T>, Err>.dataList(
-    how: PersistentList<T>.() -> PersistentList<T>,
-): Loadable<PersistentList<T>, Err> = copy(data = how(data))
+public fun <T, Err> Loadable<PersistentList<T>, Err>.data(
+    f: PersistentList<T>.() -> PersistentList<T>,
+): Loadable<PersistentList<T>, Err> = copy(data = f(data))
 
 /**
- * Returns a copy of this [Loadable] whose [Loadable.data] is the result of applying [how] to
+ * Returns a copy of this [Loadable] whose [Loadable.data] is the result of applying [f] to
  * the current value.
  */
 @JvmName("dataSingle")
 public fun <T, Err> Loadable<T, Err>.data(
-    how: T.() -> T,
-): Loadable<T, Err> = copy(data = how(data))
+    f: T.() -> T,
+): Loadable<T, Err> = copy(data = f(data))
 
 /**
  * Returns a copy of this list-typed [Loadable] in the [Loadable.Loading] state with an empty
@@ -195,40 +195,16 @@ public fun <T, Err> Loadable<T, Err>.toRefreshing(): Loadable<T, Err> =
     copy(state = Loadable.Refreshing)
 
 /**
- * Returns a copy of this [Loadable] in the [Loadable.Refreshing] state, applying [updater]
- * to the existing [Loadable.data] before storing it.
- */
-public fun <T, Err> Loadable<T, Err>.toRefreshing(
-    updater: T.() -> T = { this },
-): Loadable<T, Err> =
-    copy(state = Loadable.Refreshing, data = updater(data))
-
-/**
- * Returns a copy of this [Loadable] in the [Loadable.Idle] state, preserving the existing
- * [Loadable.data].
- */
-@JvmName("toIdleSingle")
-public fun <T, Err> Loadable<T, Err>.toIdle(): Loadable<T, Err> = copy(state = Loadable.Idle)
-
-/**
  * Returns a copy of this [Loadable] in the [Loadable.Idle] state with [data] as the new
  * payload.
  */
-@JvmName("toIdleSingleWithData")
+@JvmName("toIdleSingle")
 public fun <T, Err> Loadable<T, Err>.toIdle(
-    data: T,
+    data: T = this.data,
 ): Loadable<T, Err> = copy(
     data = data,
     state = Loadable.Idle,
 )
-
-/**
- * Returns a copy of this list-typed [Loadable] in the [Loadable.Idle] state, preserving the
- * existing items.
- */
-@JvmName("toIdleList")
-public fun <T, Err> Loadable<PersistentList<T>, Err>.toIdle(): Loadable<PersistentList<T>, Err> =
-    copy(state = Loadable.Idle)
 
 /**
  * Returns a copy of this list-typed [Loadable] in the [Loadable.Idle] state with [loaded] as
@@ -236,7 +212,7 @@ public fun <T, Err> Loadable<PersistentList<T>, Err>.toIdle(): Loadable<Persiste
  */
 @JvmName("toIdleListWithData")
 public fun <T, Err> Loadable<PersistentList<T>, Err>.toIdle(
-    loaded: PersistentList<T>,
+    loaded: PersistentList<T> = data,
 ): Loadable<PersistentList<T>, Err> = copy(
     data = loaded,
     state = Loadable.Idle,
