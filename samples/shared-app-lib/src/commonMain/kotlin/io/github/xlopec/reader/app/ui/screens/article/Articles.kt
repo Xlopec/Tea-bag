@@ -81,8 +81,8 @@ import io.github.xlopec.reader.app.feature.article.list.ToggleArticleIsFavorite
 import io.github.xlopec.reader.app.feature.navigation.NavigateToArticleDetails
 import io.github.xlopec.reader.app.feature.navigation.NavigateToFilters
 import io.github.xlopec.reader.app.model.Article
-import io.github.xlopec.tea.data.Paginatable
-import io.github.xlopec.tea.data.isLoading
+import io.github.xlopec.tea.async.Paginatable
+import io.github.xlopec.tea.async.isLoading
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.FilterType.Favorite

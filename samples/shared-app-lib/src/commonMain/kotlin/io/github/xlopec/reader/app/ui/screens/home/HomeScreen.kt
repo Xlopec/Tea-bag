@@ -74,9 +74,9 @@ import io.github.xlopec.reader.app.feature.navigation.Tab.Feed
 import io.github.xlopec.reader.app.feature.navigation.Tab.Settings
 import io.github.xlopec.reader.app.feature.navigation.Tab.Trending
 import io.github.xlopec.reader.app.feature.settings.SettingsScreen
-import io.github.xlopec.tea.data.isException
-import io.github.xlopec.tea.data.isIdle
-import io.github.xlopec.tea.data.isRefreshing
+import io.github.xlopec.tea.async.isException
+import io.github.xlopec.tea.async.isIdle
+import io.github.xlopec.tea.async.isRefreshing
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.ui.misc.InsetAwareTopAppBar
 import io.github.xlopec.reader.app.ui.misc.InsetsAwareBottomNavigation

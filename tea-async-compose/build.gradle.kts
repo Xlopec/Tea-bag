@@ -22,28 +22,29 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.reader.app.feature.filter
+plugins {
+    id("published-multiplatform-library-convention")
+    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.compiler)
+}
 
-import io.github.xlopec.reader.app.AppException
-import io.github.xlopec.reader.app.FullScreen
-import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.model.Filter
-import io.github.xlopec.reader.app.model.Query
-import io.github.xlopec.reader.app.model.Source
-import io.github.xlopec.tea.async.Paginatable
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
+kotlin {
+    enableUiTargets()
 
-public typealias SourcesState = Paginatable<Source, AppException>
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(projects.teaAsync)
+                api(libs.compose.runtime)
+                api(libs.compose.foundation)
+                implementation(libs.stdlib)
+            }
+        }
 
-public data class FiltersState(
-    override val id: ScreenId,
-    val parentId: ScreenId,
-    val filter: Filter,
-    val sourcesState: SourcesState,
-    val recentSearches: PersistentList<Query> = persistentListOf(),
-) : FullScreen {
-    internal companion object {
-        const val StoreSuggestionsLimit = 10U
+        commonTest {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
+        }
     }
 }

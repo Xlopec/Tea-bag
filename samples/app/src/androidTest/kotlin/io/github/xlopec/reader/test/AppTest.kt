@@ -53,7 +53,7 @@ import io.github.xlopec.reader.environment.anyArticleRequest
 import io.github.xlopec.reader.environment.invoke
 import io.github.xlopec.reader.environment.setTestContent
 import io.github.xlopec.tea.core.ExperimentalTeaApi
-import io.github.xlopec.tea.data.Url
+import io.github.xlopec.tea.async.Url
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDateTime
 import org.junit.Rule

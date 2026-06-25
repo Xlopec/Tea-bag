@@ -22,28 +22,29 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.reader.app.feature.filter
+package io.github.xlopec.tea.async
 
-import io.github.xlopec.reader.app.AppException
-import io.github.xlopec.reader.app.FullScreen
-import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.model.Filter
-import io.github.xlopec.reader.app.model.Query
-import io.github.xlopec.reader.app.model.Source
-import io.github.xlopec.tea.async.Paginatable
-import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
-public typealias SourcesState = Paginatable<Source, AppException>
-
-public data class FiltersState(
-    override val id: ScreenId,
-    val parentId: ScreenId,
-    val filter: Filter,
-    val sourcesState: SourcesState,
-    val recentSearches: PersistentList<Query> = persistentListOf(),
-) : FullScreen {
-    internal companion object {
-        const val StoreSuggestionsLimit = 10U
+/**
+ * A single page of results returned by a paginated data source.
+ *
+ * Used together with [Paginatable.toIdle] to advance a paginated collection from a loading
+ * state into [Paginatable.Idle] after a fetch completes.
+ *
+ * @param T element type
+ * @param data items contained in this page
+ * @param hasMore `true` if the source has additional pages after this one
+ */
+public data class Page<out T>(
+    val data: ImmutableList<T>,
+    val hasMore: Boolean = false,
+) {
+    public companion object {
+        /**
+         * An empty page that signals the end of a paginated stream.
+         */
+        public val Empty: Page<Nothing> = Page(data = persistentListOf(), hasMore = false)
     }
 }

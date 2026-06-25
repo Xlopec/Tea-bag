@@ -31,11 +31,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.navigation.Tab
 import io.github.xlopec.reader.app.AppException
-import io.github.xlopec.tea.data.Paginatable
-import io.github.xlopec.tea.data.Paginatable.Idle
-import io.github.xlopec.tea.data.Paginatable.Loading
-import io.github.xlopec.tea.data.Paginatable.LoadingNext
-import io.github.xlopec.tea.data.Paginatable.Refreshing
+import io.github.xlopec.tea.async.Paginatable
+import io.github.xlopec.tea.async.Paginatable.Idle
+import io.github.xlopec.tea.async.Paginatable.Loading
+import io.github.xlopec.tea.async.Paginatable.LoadingNext
+import io.github.xlopec.tea.async.Paginatable.Refreshing
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Author
 import io.github.xlopec.reader.app.model.Description
