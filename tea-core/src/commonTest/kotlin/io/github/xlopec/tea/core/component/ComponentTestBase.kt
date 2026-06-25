@@ -72,7 +72,9 @@ abstract class ComponentTestBase(
     fun `when component receives input then it emits correct sequence of snapshots`() = runTest {
         val env = TestEnv<Char, String, Char>(
             initializer = Initializer(""),
-            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $snapshot" } } } },
+            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(
+                it.commands.isEmpty()
+            ) { "Non empty snapshot $snapshot" } } } },
             updater = { m, _ -> m.toString().noCommand() },
             scope = backgroundScope
         )
@@ -253,7 +255,9 @@ abstract class ComponentTestBase(
     fun `when component has multiple consumers then it can serve multiple message sources`() = runTest {
         val env = TestEnv<Char, String, Char>(
             initializer = Initializer(""),
-            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
+            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(
+                it.commands.isEmpty()
+            ) { "Non empty snapshot $it" } } } },
             updater = { m, _ -> m.toString().noCommand() },
             scope = backgroundScope
         )

@@ -107,7 +107,9 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
             TestDebugEnv(
                 env = Env<Char, String, Char>(
                     initializer = Initializer(""),
-                    resolver = { snapshots -> contextOf<CoroutineScope>().launch { snapshots.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
+                    resolver = { snapshots -> contextOf<CoroutineScope>().launch { snapshots.collect { check(
+                        it.commands.isEmpty()
+                    ) { "Non empty snapshot $it" } } } },
                     updater = { m, _ -> m.toString().noCommand() },
                     scope = backgroundScope
                 ),

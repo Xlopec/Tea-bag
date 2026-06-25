@@ -64,6 +64,7 @@ detekt {
 }
 
 tasks.withType<Detekt>().configureEach {
+    jvmTarget = "11"
     include("**/*.kt", "**/*.kts")
     exclude("resources/", "**/build/**", "**/test/java/**")
     setSource(files(projectDir))

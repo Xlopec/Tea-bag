@@ -26,7 +26,6 @@
 
 package io.github.xlopec.reader.app
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -47,6 +46,7 @@ import io.github.xlopec.reader.app.feature.filter.FilterCommand
 import io.github.xlopec.reader.app.feature.filter.resolveForFilter
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import io.github.xlopec.tea.compose.ClockPolicy
+import io.github.xlopec.tea.compose.CommandRouter
 import io.github.xlopec.tea.compose.ComposeResolver
 import io.github.xlopec.tea.compose.SnapshotNotifierPolicy
 import io.github.xlopec.tea.compose.TrackingEffect
@@ -58,8 +58,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.transform
 
 context(sink: Sink<Message>, scope: CoroutineScope)
 public fun <Env> Env.resolve(
@@ -71,7 +69,9 @@ public fun <Env> Env.resolve(
 
     val appScope = contextOf<CoroutineScope>()
     val sink = contextOf<Sink<Message>>()
-    val compositionScope = CoroutineScope(appScope.coroutineContext + Job(appScope.coroutineContext[Job.Key]) + Dispatchers.Default)
+    val compositionScope = CoroutineScope(
+        appScope.coroutineContext + Job(appScope.coroutineContext[Job.Key]) + Dispatchers.Default
+    )
     ComposeResolver(
         scope = compositionScope,
         // todo do something with clock
@@ -82,26 +82,31 @@ public fun <Env> Env.resolve(
         val currentSnapshot = snapshot
 
         if (currentSnapshot != null) {
-            val commands = snapshots.rememberCommands()
+            val router = remember {
+                CommandRouter<ScreenId, Command> { (it as? ScreenCommand)?.id }
+            }
+
+            TrackingEffect(router) {
+                snapshots.collect { snapshot ->
+                    val liveIds = snapshot.currentState.screens.mapTo(HashSet()) { it.id }
+                    router.dispatch(liveIds, snapshot.commands)
+                }
+            }
 
             currentSnapshot.currentState.screens.fastForEach { screen ->
                 key(screen.id) {
                     TrackingEffect(screen.id) {
-                        commands
-                            .filter { it is ScreenCommand && it.id == screen.id }
-                            .collect { command ->
-                                context(sink) { resolve(command) }
-                            }
+                        router.consume(screen.id) { command ->
+                            context(sink) { resolve(command) }
+                        }
                     }
                 }
             }
 
-            TrackingEffect(Unit) {
-                commands
-                    .filter { it !is ScreenCommand || it.id == null }
-                    .collect { command ->
-                        context(sink) { resolve(command) }
-                    }
+            TrackingEffect(router) {
+                router.consume(key = null) { command ->
+                    context(sink) { resolve(command) }
+                }
             }
         }
     }
@@ -124,13 +129,6 @@ private fun <Env> Env.resolve(
         is FilterCommand -> resolveForFilter(cmd)
         is DoLog -> sideEffect { log(cmd) }
         else -> error("Shouldn't get here $cmd")
-    }
-}
-
-@Composable
-private fun Flow<Snapshot<*, AppState, Command>>.rememberCommands(): Flow<Command> {
-    return remember(this) {
-        transform { snapshot -> snapshot.commands.forEach { emit(it) } }
     }
 }
 
