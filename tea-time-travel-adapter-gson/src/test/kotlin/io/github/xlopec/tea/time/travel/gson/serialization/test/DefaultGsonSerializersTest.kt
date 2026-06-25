@@ -62,12 +62,12 @@ internal class DefaultGsonSerializersTest {
         listOf(
             Photo("https://www.google.com"),
             Photo("https://www.google.com1"),
-            Photo("https://www.google.com2")
-        )
+            Photo("https://www.google.com2"),
+        ),
     )
 
     data class NullableListWrapper(
-        val nullablePhotos: List<Photo?>
+        val nullablePhotos: List<Photo?>,
     )
 
     @Test
@@ -75,7 +75,7 @@ internal class DefaultGsonSerializersTest {
 
         val message = NotifyComponentAttached(
             gsonSerializer.toJsonTree(testUser),
-            setOf(JsonNull.INSTANCE, JsonPrimitive(true), gsonSerializer.toJsonTree(testUser))
+            setOf(JsonNull.INSTANCE, JsonPrimitive(true), gsonSerializer.toJsonTree(testUser)),
         )
         val json = gsonSerializer.toJson(message)
         val fromJson = gsonSerializer.fromJson(json, ServerMessage::class.java)
@@ -94,10 +94,10 @@ internal class DefaultGsonSerializersTest {
                 listOf(
                     Photo("https://www.google.com"),
                     Photo("https://www.google.com1"),
-                    Photo("https://www.google.com2")
-                )
+                    Photo("https://www.google.com2"),
+                ),
             ),
-            setOf(JsonNull.INSTANCE, JsonPrimitive(true), gsonSerializer.toJsonTree(testUser))
+            setOf(JsonNull.INSTANCE, JsonPrimitive(true), gsonSerializer.toJsonTree(testUser)),
         )
 
         val json = gsonSerializer.toJson(message)
@@ -113,7 +113,7 @@ internal class DefaultGsonSerializersTest {
 
             val applyMessage =
                 NotifyClient(
-                    ApplyMessage(toJsonTree(testUser))
+                    ApplyMessage(toJsonTree(testUser)),
                 )
 
             val json = gsonSerializer.toJson(applyMessage)
@@ -136,10 +136,10 @@ internal class DefaultGsonSerializersTest {
                             null,
                             Photo("https://www.google.com1"),
                             Photo("https://www.google.com2"),
-                            null
-                        )
-                    )
-                )
+                            null,
+                        ),
+                    ),
+                ),
             )
 
             val json = toJson(applyMessage)
@@ -158,13 +158,13 @@ internal class DefaultGsonSerializersTest {
             null,
             Photo("https://www.google.com1"),
             Photo("https://www.google.com2"),
-            null
+            null,
         )
 
         val json = gsonSerializer.toJson(nullableList)
         val fromJson = gsonSerializer.fromJson<List<Photo?>>(
             json,
-            TypeToken.getParameterized(List::class.java, Photo::class.java).type
+            TypeToken.getParameterized(List::class.java, Photo::class.java).type,
         )
 
         assertEquals(nullableList, fromJson)
@@ -213,7 +213,7 @@ internal class DefaultGsonSerializersTest {
         val message = NotifyServer(
             Uuid.random(),
             ComponentId("some"),
-            NotifyComponentAttached(toJsonTree(testUser), setOf())
+            NotifyComponentAttached(toJsonTree(testUser), setOf()),
         )
         val json = toJson(message)
         val fromJson = fromJson(json, NotifyServer::class.java)
@@ -225,9 +225,9 @@ internal class DefaultGsonSerializersTest {
 
 @Suppress("TestFunctionName")
 private fun NotifyClient(
-    message: GsonClientMessage
+    message: GsonClientMessage,
 ) = NotifyClient(
     Uuid.random(),
     ComponentId("test"),
-    message
+    message,
 )

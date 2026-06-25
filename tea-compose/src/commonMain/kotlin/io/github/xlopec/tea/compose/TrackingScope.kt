@@ -53,12 +53,12 @@ public interface TrackingScope : CoroutineScope {
  * Creates a [TrackingScope] with the given [context].
  */
 public fun TrackingScope(
-    context: CoroutineContext
+    context: CoroutineContext,
 ): TrackingScope = TrackingScopeImpl(context)
 
 @OptIn(InternalCoroutinesApi::class)
 internal class TrackingScopeImpl(
-    context: CoroutineContext
+    context: CoroutineContext,
 ) : TrackingScope {
 
     override val coroutineContext: CoroutineContext = context + Job(parent = context[Job.Key])

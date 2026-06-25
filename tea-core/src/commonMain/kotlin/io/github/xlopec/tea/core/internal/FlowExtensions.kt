@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 internal fun <T> Flow<T>.mergeWith(
-    other: Flow<T>
+    other: Flow<T>,
 ): Flow<T> =
     channelFlow {
 
@@ -48,5 +48,5 @@ internal fun <T> Flow<T>.mergeWith(
     }
 
 internal fun <T> Flow<T>.startFrom(
-    t: T
+    t: T,
 ) = onStart { emit(t) }

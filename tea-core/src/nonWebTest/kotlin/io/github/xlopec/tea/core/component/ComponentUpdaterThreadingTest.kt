@@ -27,7 +27,7 @@ class ComponentUpdaterThreadingTest {
         val env = TestEnv<Char, String, Char>(
             initializer = Initializer(""),
             resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(
-                it.commands.isEmpty()
+                it.commands.isEmpty(),
             ) { "Non empty snapshot $it" } } } },
             updater = NonMainThreadCheckingUpdater(mainThreadNamePrefix.await()),
             scope = scope,

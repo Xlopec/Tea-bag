@@ -60,7 +60,7 @@ internal fun updateArticles(
 ) = if (message.filter.type == state.filter.type) state.toFilterUpdate(message.filter) else state.noCommand()
 
 private fun ArticlesState.onLoadResult(
-    message: ArticlesLoadResult
+    message: ArticlesLoadResult,
 ) = when (message) {
     is ArticlesLoadException -> onLoadException(message)
     is ArticlesLoaded -> onLoaded(message.page)
@@ -85,7 +85,7 @@ private fun ArticlesState.toLoadUpdate(
     newFilter: Filter = filter,
 ) = toLoading(filter = newFilter).command(
     toLoadCommand(FirstPage, newFilter),
-    DoStoreFilter(newFilter)
+    DoStoreFilter(newFilter),
 )
 
 private fun ArticlesState.toLoadNextUpdate() =

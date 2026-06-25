@@ -45,7 +45,7 @@ import io.ktor.http.*
  */
 public data class DebugEnv<M, S, C, J>(
     val env: Env<M, S, C>,
-    val settings: Settings<M, S, J>
+    val settings: Settings<M, S, J>,
 )
 
 /**
@@ -64,5 +64,5 @@ public data class Settings<M, S, J>(
     val id: ComponentId,
     val serializer: JsonSerializer<J>,
     val url: Url,
-    val sessionFactory: SessionFactory<M, S, J>
+    val sessionFactory: SessionFactory<M, S, J>,
 )

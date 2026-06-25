@@ -72,7 +72,7 @@ internal fun LazyListScope.recentSearchesSection(
                 .fillMaxWidth()
                 .padding(all = 16.dp)
                 .alpha(alpha = childTransitionState.contentAlpha),
-            text = "Recent searches"
+            text = "Recent searches",
         )
     }
 
@@ -105,23 +105,23 @@ internal fun LazyListScope.recentSearchesSection(
                                 .offset(x = maxWidth - dismissed)
                                 .background(Color.Red)
                                 .padding(start = 16.dp),
-                            contentAlignment = Alignment.CenterStart
+                            contentAlignment = Alignment.CenterStart,
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Delete,
-                                contentDescription = null
+                                contentDescription = null,
                             )
                         }
                     }
                 }
-            }
+            },
         ) {
             RecentSearchItem(
                 modifier = Modifier.padding(
                     horizontal = 16.dp,
-                    vertical = 8.dp
+                    vertical = 8.dp,
                 ),
-                suggestion = item
+                suggestion = item,
             )
         }
     }
@@ -135,16 +135,16 @@ internal fun RecentSearchItem(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Icon(
             imageVector = Icons.Default.QueryBuilder,
-            contentDescription = null
+            contentDescription = null,
         )
 
         Text(
             modifier = Modifier.weight(1f),
-            text = suggestion.value
+            text = suggestion.value,
         )
     }
 }

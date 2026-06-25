@@ -57,7 +57,7 @@ private val NoTransition: ContentTransform = ContentTransform(
     targetContentEnter = EnterTransition.None,
     initialContentExit = ExitTransition.None,
     targetContentZIndex = 0f,
-    sizeTransform = null
+    sizeTransform = null,
 )
 
 private val PushTransition = PushTransitionSpec<Screen>()
@@ -70,7 +70,7 @@ internal fun App(
     handler: MessageHandler,
 ) {
     AppTheme(
-        isDarkModeEnabled = currentState.settings.appDarkModeEnabled
+        isDarkModeEnabled = currentState.settings.appDarkModeEnabled,
     ) {
         PredictiveBackContainer(
             modifier = Modifier.fillMaxSize(),
@@ -92,7 +92,7 @@ internal fun App(
                 modifier = Modifier,
                 screen = screen,
                 app = currentState,
-                handler = handler
+                handler = handler,
             )
         }
     }

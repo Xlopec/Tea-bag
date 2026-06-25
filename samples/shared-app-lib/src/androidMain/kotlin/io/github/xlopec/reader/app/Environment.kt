@@ -42,7 +42,7 @@ import kotlinx.coroutines.CoroutineScope
 public fun Environment(
     debug: Boolean,
     application: Application,
-    scope: CoroutineScope
+    scope: CoroutineScope,
 ): Environment {
 
     if (debug) {
@@ -63,14 +63,14 @@ private fun setupStrictAppPolicies() {
         ThreadPolicy.Builder()
             .detectAll()
             .penaltyLog()
-            .build()
+            .build(),
     )
 
     setVmPolicy(
         VmPolicy.Builder()
             .detectAll()
             .penaltyLog()
-            .build()
+            .build(),
     )
 }
 

@@ -199,7 +199,7 @@ public class NavigationStackMutator<I : Any, E : NavStackEntry<I>, C> internal c
      * @param init entry initializer
      */
     public fun push(
-        init: Update<E, C>
+        init: Update<E, C>,
     ) {
         mutator.add(init.first)
         commands += init.second
@@ -211,7 +211,7 @@ public class NavigationStackMutator<I : Any, E : NavStackEntry<I>, C> internal c
      * @param entry entry to push
      */
     public fun push(
-        entry: E
+        entry: E,
     ) {
         mutator.add(entry)
     }

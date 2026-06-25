@@ -43,7 +43,7 @@ private val PreviewState = FiltersState(
     id = Uuid.random(),
     parentId = Uuid.random(),
     filter = Filter(FilterType.Regular, Query.of("Android")),
-    sourcesState = Paginatable.loadingList()
+    sourcesState = Paginatable.loadingList(),
 )
 
 @Preview
@@ -52,7 +52,7 @@ internal fun FiltersPreviewDark() {
     ThemedPreview {
         FiltersScreen(
             state = PreviewState,
-            handler = {}
+            handler = {},
         )
     }
 }
@@ -73,7 +73,7 @@ internal fun FiltersPreviewLight() {
 internal fun SuggestionItems() {
     ThemedPreview {
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             RecentSearchItem(
                 modifier = Modifier.fillMaxWidth(),

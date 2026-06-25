@@ -100,11 +100,11 @@ internal fun SourcesSection(
             modifier = modifier
                 .padding(all = 16.dp)
                 .alpha(childTransitionState.contentAlpha),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             FiltersSubtitle(
                 modifier = Modifier,
-                text = "Sources"
+                text = "Sources",
             )
 
             Spacer(Modifier.weight(1f))
@@ -113,7 +113,7 @@ internal fun SourcesSection(
 
             AnimatedVisibility(visible = filtersCount > 0U) {
                 ClearSelectionButton(
-                    filtersCount = filtersCount
+                    filtersCount = filtersCount,
                 ) { handler(ClearSelection(id)) }
             }
         }
@@ -124,7 +124,7 @@ internal fun SourcesSection(
                 RowMessage(
                     modifier = modifier.padding(horizontal = 16.dp),
                     message = loadable.error.message,
-                    onClick = { handler(LoadSources(id)) }
+                    onClick = { handler(LoadSources(id)) },
                 )
             }
 
@@ -138,8 +138,8 @@ internal fun SourcesSection(
                             durationMillis = 1000
                             0.7f at 500
                         },
-                        repeatMode = RepeatMode.Reverse
-                    )
+                        repeatMode = RepeatMode.Reverse,
+                    ),
                 )
 
                 LazyRow(
@@ -153,13 +153,13 @@ internal fun SourcesSection(
 
                     when {
                         loadable == Idle && sources.data.isEmpty() -> emptySourceItems(
-                            onClick = { handler(LoadSources(id)) }
+                            onClick = { handler(LoadSources(id)) },
                         )
 
                         loadable == Idle -> sourceItems(
                             sources = sources.data,
                             onClick = { handler(ToggleSourceSelection(id, it.id)) },
-                            state = state
+                            state = state,
                         )
 
                         else -> shimmerSourceItems(alpha = alpha)
@@ -177,7 +177,7 @@ private fun LazyListScope.emptySourceItems(
         RowMessage(
             modifier = Modifier.fillParentMaxWidth(),
             message = "No sources found",
-            onClick = onClick
+            onClick = onClick,
         )
     }
 }
@@ -191,7 +191,7 @@ private fun LazyListScope.shimmerSourceItems(
                 modifier = Modifier.alpha(alpha),
                 painter = ColorPainter(Color.Gray),
                 contentDescription = null,
-                onClick = {}
+                onClick = {},
             )
         }
     }
@@ -207,7 +207,7 @@ private fun LazyListScope.sourceItems(
             painter = source.logo.toAsyncImagePainter(),
             checked = source.id in state.filter.sources,
             contentDescription = source.name.value,
-            onClick = { onClick(source) }
+            onClick = { onClick(source) },
         )
     }
 }
@@ -223,12 +223,12 @@ private fun SourceItem(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Surface(
             elevation = 8.dp,
             shape = CircleShape,
-            onClick = onClick
+            onClick = onClick,
         ) {
             Image(
                 modifier = Modifier
@@ -236,7 +236,7 @@ private fun SourceItem(
                     .background(Color.White),
                 contentScale = ContentScale.Crop,
                 painter = painter,
-                contentDescription = contentDescription
+                contentDescription = contentDescription,
             )
 
             if (checked) {
@@ -247,7 +247,7 @@ private fun SourceItem(
                         .padding(SourceImageSize * 0.15f),
                     colorFilter = ColorFilter.tint(Color.White),
                     imageVector = Icons.Default.Check,
-                    contentDescription = contentDescription
+                    contentDescription = contentDescription,
                 )
             }
         }
@@ -263,7 +263,7 @@ private fun ClearSelectionButton(
         modifier = Modifier
             .clickable(onClick = onClick),
         text = if (filtersCount > 0U) "Clear ($filtersCount)" else "Clear",
-        style = MaterialTheme.typography.subtitle2
+        style = MaterialTheme.typography.subtitle2,
     )
 }
 
@@ -274,5 +274,5 @@ private fun Url.toAsyncImagePainter() = rememberAsyncImagePainter(
     ImageRequest.Builder(LocalPlatformContext.current)
         .data(toExternalValue())
         .crossfade(true)
-        .build()
+        .build(),
 )

@@ -57,7 +57,7 @@ internal fun RowMessage(
     ) {
         Text(
             text = message,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
 
         IconButton(onClick = onClick) {
@@ -82,7 +82,7 @@ internal fun ColumnMessage(
         Text(
             text = title,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.subtitle1
+            style = MaterialTheme.typography.subtitle1,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -90,7 +90,7 @@ internal fun ColumnMessage(
         Text(
             text = message,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.body1
+            style = MaterialTheme.typography.body1,
         )
 
         IconButton(onClick = onClick) {

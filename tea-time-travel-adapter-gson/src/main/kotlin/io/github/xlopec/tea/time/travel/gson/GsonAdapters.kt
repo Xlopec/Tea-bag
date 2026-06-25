@@ -47,13 +47,13 @@ internal object UUIDAdapter : JsonSerializer<Uuid>, JsonDeserializer<Uuid> {
     override fun serialize(
         src: Uuid,
         typeOfSrc: Type?,
-        context: JsonSerializationContext
+        context: JsonSerializationContext,
     ): JsonElement = JsonPrimitive(src.toString())
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext
+        context: JsonDeserializationContext,
     ): Uuid = Uuid.parse(json.asString)
 }
 
@@ -62,13 +62,13 @@ internal object ComponentIdAdapter : JsonSerializer<ComponentId>, JsonDeserializ
     override fun serialize(
         src: ComponentId,
         typeOfSrc: Type?,
-        context: JsonSerializationContext
+        context: JsonSerializationContext,
     ): JsonElement = JsonPrimitive(src.value)
 
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext
+        context: JsonDeserializationContext,
     ): ComponentId =
         ComponentId(json.asString)
 }
@@ -79,7 +79,7 @@ internal object ServerMessageAdapter : JsonSerializer<GsonServerMessage>,
     override fun serialize(
         src: GsonServerMessage,
         typeOfSrc: Type?,
-        context: JsonSerializationContext
+        context: JsonSerializationContext,
     ): JsonElement {
 
         val tree: JsonObject = when (src) {
@@ -95,7 +95,7 @@ internal object ServerMessageAdapter : JsonSerializer<GsonServerMessage>,
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext
+        context: JsonDeserializationContext,
     ): GsonServerMessage = json.asJsonObject.let { obj ->
 
         when (obj["@type"].asString) {
@@ -137,7 +137,7 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
     override fun serialize(
         src: GsonClientMessage,
         typeOfSrc: Type?,
-        context: JsonSerializationContext
+        context: JsonSerializationContext,
     ): JsonElement {
 
         val tree: JsonObject = when (src) {
@@ -153,7 +153,7 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext
+        context: JsonDeserializationContext,
     ): GsonClientMessage = json.asJsonObject.let { obj ->
 
         when (obj["@type"].asString) {
@@ -178,7 +178,7 @@ internal object ClientMessageAdapter : JsonSerializer<GsonClientMessage>,
 }
 
 private inline fun JsonObject(
-    builder: JsonObject.() -> Unit
+    builder: JsonObject.() -> Unit,
 ): JsonObject = JsonObject().apply(builder)
 
 private fun Set<JsonElement>.toJsonArray() = JsonArray(size).apply { this@toJsonArray.forEach(::add) }

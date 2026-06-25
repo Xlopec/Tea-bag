@@ -34,5 +34,5 @@ public data class ToggleDarkMode(
 ) : SettingsMessage
 
 public data class SystemDarkModeChanged(
-    val enabled: Boolean
+    val enabled: Boolean,
 ) : SettingsMessage

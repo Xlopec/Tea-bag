@@ -94,7 +94,7 @@ private class LocalStorageImpl(
                     saved_on = Clock.System.now().toEpochMilliseconds(),
                     published = published.toInstant(TimeZone.UTC).toEpochMilliseconds(),
                     is_favorite = isFavorite,
-                    source = article.source?.value
+                    source = article.source?.value,
                 )
             }
         }
@@ -219,7 +219,7 @@ private fun SqlCursor.toArticle() =
         urlToImage = getString(4)?.let(::UrlFor),
         published = Instant.fromEpochSeconds(getLong(5)!!).toLocalDateTime(TimeZone.UTC),
         isFavorite = isFavorite,
-        source = getString(8)?.let(::SourceId)
+        source = getString(8)?.let(::SourceId),
     )
 
 private fun <T> SqlCursor.toPersistentList(
@@ -289,7 +289,7 @@ private fun SqlDriver.executeQuery(
     identifier = null,
     sql = filter.toSqlQuery(),
     mapper = { QueryResult.Value(it.toPersistentList { it.toArticle() }) },
-    parameters = filter.parametersCount
+    parameters = filter.parametersCount,
 ) {
     bindValues(filter)
 }

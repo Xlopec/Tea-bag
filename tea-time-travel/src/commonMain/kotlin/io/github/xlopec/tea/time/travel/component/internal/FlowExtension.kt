@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
 
 internal fun <T> Flow<T>.mergeWith(
-    another: Flow<T>
+    another: Flow<T>,
 ): Flow<T> = channelFlow {
     coroutineScope {
         launch {

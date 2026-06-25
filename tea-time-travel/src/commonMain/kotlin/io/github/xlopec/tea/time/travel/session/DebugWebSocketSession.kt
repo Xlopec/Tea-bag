@@ -46,7 +46,7 @@ internal class DebugWebSocketSession<M : Any, S : Any, J>(
     private val mClass: KClass<M>,
     private val sClass: KClass<S>,
     private val settings: Settings<M, S, J>,
-    socketSession: WebSocketSession
+    socketSession: WebSocketSession,
 ) : DebugSession<M, S, J>, WebSocketSession by socketSession {
 
     private val incomingPackets: Flow<Either<M, S>> = incomingCommands(settings)
@@ -58,12 +58,12 @@ internal class DebugWebSocketSession<M : Any, S : Any, J>(
         send(settings.serializer.toJson(packet))
 
     private fun WebSocketSession.incomingCommands(
-        settings: Settings<M, S, J>
+        settings: Settings<M, S, J>,
     ) = incomingPackets(settings)
         .map { packet -> settings.serializer.toCommand(packet) }
 
     private fun JsonSerializer<J>.toCommand(
-        packet: NotifyClient<J>
+        packet: NotifyClient<J>,
     ) = when (val message = packet.message) {
         is ApplyMessage<J> -> Either.Left(fromJsonTree(message.message, mClass))
         is ApplyState<J> -> Either.Right(fromJsonTree(message.state, sClass))
@@ -77,7 +77,7 @@ private fun <M> Flow<Either<M, *>>.messages(): Flow<M> =
     filterIsInstance<Either.Left<M>>().map { (m) -> m }
 
 private fun <M, S, J> WebSocketSession.incomingPackets(
-    settings: Settings<M, S, J>
+    settings: Settings<M, S, J>,
 ): Flow<NotifyClient<J>> =
     incoming.receiveAsFlow().shareIn(this, SharingStarted.Lazily)
         .filterIsInstance<Frame.Text>()
@@ -87,5 +87,5 @@ private fun <M, S, J> WebSocketSession.incomingPackets(
 
 @Suppress("UNCHECKED_CAST")
 private fun <J> JsonSerializer<J>.asNotifyClientPacket(
-    json: String
+    json: String,
 ) = fromJson(json, NotifyClient::class) as NotifyClient<J>

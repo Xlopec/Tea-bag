@@ -53,7 +53,7 @@ internal fun InsetAwareTopAppBar(
     Surface(
         color = backgroundColor,
         elevation = elevation,
-        modifier = modifier
+        modifier = modifier,
     ) {
         TopAppBar(
             modifier = Modifier.statusBarsPadding(),
@@ -62,7 +62,7 @@ internal fun InsetAwareTopAppBar(
             actions = actions,
             backgroundColor = Color.Transparent,
             contentColor = contentColor,
-            elevation = 0.dp
+            elevation = 0.dp,
         )
     }
 }
@@ -83,11 +83,11 @@ internal fun ProgressInsetAwareTopAppBar(
     Surface(
         color = backgroundColor,
         elevation = elevation,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.BottomCenter
+            contentAlignment = Alignment.BottomCenter,
         ) {
             TopAppBar(
                 title = title,
@@ -96,7 +96,7 @@ internal fun ProgressInsetAwareTopAppBar(
                 backgroundColor = Color.Transparent,
                 contentColor = contentColor,
                 elevation = 0.dp,
-                modifier = Modifier.statusBarsPadding()
+                modifier = Modifier.statusBarsPadding(),
             )
 
             when {

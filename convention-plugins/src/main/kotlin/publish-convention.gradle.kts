@@ -47,7 +47,7 @@ val copyArtifacts by tasks.registering(Copy::class) {
     mustRunAfter(
         "publishToSonatype",
         "publishToMavenLocal",
-        tasks.filter { it.name.endsWith("MetadataElements") }
+        tasks.filter { it.name.endsWith("MetadataElements") },
     )
 
     group = "release"

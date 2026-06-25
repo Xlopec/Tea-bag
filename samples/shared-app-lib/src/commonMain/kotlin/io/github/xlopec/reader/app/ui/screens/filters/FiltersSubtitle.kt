@@ -39,6 +39,6 @@ internal fun FiltersSubtitle(
         text = text,
         modifier = modifier,
         textAlign = TextAlign.Start,
-        style = MaterialTheme.typography.subtitle1
+        style = MaterialTheme.typography.subtitle1,
     )
 }

@@ -57,7 +57,7 @@ class NavigationExtensionsTest {
                 initial $initialStack
                 actual $actualNavigationStack
                 expected $expectedNavigationStack
-            """.trimIndent()
+            """.trimIndent(),
         )
     }
 
@@ -90,7 +90,7 @@ private data class TestRootScreen(
 
 private fun Group(
     tab: Tab,
-    nestedItemsCount: UInt = 1U
+    nestedItemsCount: UInt = 1U,
 ) = arrayOf(
     // group root
     TestRootScreen(tab),
@@ -100,7 +100,7 @@ private fun Group(
 
 private fun GenerateNestedScreens(
     tab: Tab,
-    times: UInt
+    times: UInt,
 ) = (0U until times).map { TestNestedScreen(tab, Uuid.random()) }
 
 private fun testScreenBelongsToTab(

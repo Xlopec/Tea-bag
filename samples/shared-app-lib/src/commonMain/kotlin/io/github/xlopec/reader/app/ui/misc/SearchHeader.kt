@@ -63,7 +63,7 @@ internal fun SearchHeader(
             .statusBarsPadding()
             .fillMaxWidth(),
         elevation = elevation,
-        shape = shape
+        shape = shape,
     ) {
 
         TextField(
@@ -74,7 +74,7 @@ internal fun SearchHeader(
             placeholder = {
                 Text(
                     text = placeholderText,
-                    style = MaterialTheme.typography.subtitle2
+                    style = MaterialTheme.typography.subtitle2,
                 )
             },
             keyboardOptions = KeyboardOptions(imeAction = Search),
@@ -84,7 +84,7 @@ internal fun SearchHeader(
             colors = colors,
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
-            onValueChange = onQueryUpdate
+            onValueChange = onQueryUpdate,
         )
     }
 }

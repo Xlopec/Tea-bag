@@ -71,7 +71,7 @@ private fun NewsApi.fetchSources(
 ) = command effect {
     fetchNewsSources().fold(
         { SourcesLoadException(id, it) },
-        { SourcesLoadSuccess(id, it.sources.mapToPersistentList(SourceResponseElement::toSource)) }
+        { SourcesLoadSuccess(id, it.sources.mapToPersistentList(SourceResponseElement::toSource)) },
     )
 }
 

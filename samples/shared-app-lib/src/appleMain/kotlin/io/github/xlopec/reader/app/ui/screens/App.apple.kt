@@ -39,7 +39,7 @@ import kotlin.experimental.ExperimentalObjCName
 @OptIn(ExperimentalObjCName::class)
 @ObjCName("appController")
 public fun AppController(
-    component: IosComponent
+    component: IosComponent,
 ): UIViewController = ComposeUIViewController {
     App(component)
 }

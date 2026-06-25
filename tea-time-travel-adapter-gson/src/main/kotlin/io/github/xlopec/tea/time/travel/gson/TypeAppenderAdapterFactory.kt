@@ -72,21 +72,21 @@ internal object TypeAppenderAdapterFactory : TypeAdapterFactory {
 
     override fun <T> create(
         gson: Gson,
-        type: TypeToken<T>
+        type: TypeToken<T>,
     ): TypeAdapter<T> = object : TypeAdapter<T>() {
 
         val elementAdapter = gson.getAdapter(JsonElement::class.java)
 
         override fun write(
             out: JsonWriter,
-            value: T?
+            value: T?,
         ) = elementAdapter.write(
             out,
-            value.toJsonTree(gson, type, this@TypeAppenderAdapterFactory)
+            value.toJsonTree(gson, type, this@TypeAppenderAdapterFactory),
         )
 
         override fun read(
-            `in`: JsonReader
+            `in`: JsonReader,
         ): T? = elementAdapter
             .read(`in`)
             .let { element ->
@@ -104,7 +104,7 @@ internal object TypeAppenderAdapterFactory : TypeAdapterFactory {
 private fun <T> T?.toJsonTree(
     gson: Gson,
     type: TypeToken<T>,
-    skipFactory: TypeAdapterFactory
+    skipFactory: TypeAdapterFactory,
 ): JsonElement =
     gson.getDelegateAdapter(skipFactory, type)
         .toJsonTree(this@toJsonTree)
@@ -119,13 +119,13 @@ private fun <T> T?.toJsonTree(
 private fun <T> JsonObject.asAny(
     gson: Gson,
     skipFactory: TypeAdapterFactory,
-    type: TypeToken<T>
+    type: TypeToken<T>,
 ): T? = gson.getDelegateAdapter(skipFactory, type() ?: type)
     .fromJsonTree(this)
 
 @Suppress("UNCHECKED_CAST")
 private fun <T> TypeToken(
-    name: String
+    name: String,
 ): TypeToken<T> =
     typeTokenCache.getOrPut(name) { TypeToken.get(Class.forName(name)) } as TypeToken<T>
 
@@ -136,7 +136,7 @@ private fun <T> JsonObject.type(): TypeToken<T>? = get("@type")?.asString?.let(:
 @OptIn(ExperimentalContracts::class)
 private fun shouldAddTypeLabel(
     src: Any?,
-    srcAsJson: JsonElement
+    srcAsJson: JsonElement,
 ): Boolean {
     contract {
         returns(true) implies (srcAsJson is JsonObject)

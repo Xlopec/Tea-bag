@@ -110,7 +110,7 @@ class TestNewsApi(
         if (i < 0) {
             error(
                 "Couldn't find matching response for arguments input=$input, paging=$paging,\n" +
-                        "registered $articlesMockData"
+                        "registered $articlesMockData",
             )
         }
 

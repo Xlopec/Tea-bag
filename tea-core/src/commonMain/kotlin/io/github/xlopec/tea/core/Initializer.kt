@@ -54,7 +54,7 @@ public typealias Initializer<S, C> = suspend () -> Initial<S, C>
  */
 public fun <S, C> Initializer(
     state: S,
-    commands: Set<C> = emptySet()
+    commands: Set<C> = emptySet(),
 ): Initializer<S, C> = { Initial(state, commands) }
 
 /**
@@ -68,7 +68,7 @@ public fun <S, C> Initializer(
  */
 public fun <S, C> Initializer(
     state: S,
-    vararg commands: C
+    vararg commands: C,
 ): Initializer<S, C> = Initializer(state, setOf(*commands))
 
 /**
@@ -82,5 +82,5 @@ public fun <S, C> Initializer(
  */
 public fun <S, C> Initializer(
     context: CoroutineContext,
-    block: suspend CoroutineScope.() -> Initial<S, C>
+    block: suspend CoroutineScope.() -> Initial<S, C>,
 ): Initializer<S, C> = { withContext(context, block) }

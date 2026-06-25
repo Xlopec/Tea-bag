@@ -37,7 +37,7 @@ import kotlinx.coroutines.IO
 
 public fun AppInitializer(
     systemDarkModeEnabled: Boolean,
-    environment: Environment
+    environment: Environment,
 ): Initializer<AppState, Command> = Initializer(Dispatchers.IO) {
 
     val filter = environment.findFilter(Regular)
@@ -46,7 +46,7 @@ public fun AppInitializer(
     val settings = Settings(
         syncWithSystemDarkModeEnabled = environment.isSyncWithSystemDarkModeEnabled(),
         systemDarkModeEnabled = systemDarkModeEnabled,
-        userDarkModeEnabled = environment.isDarkModeEnabled()
+        userDarkModeEnabled = environment.isDarkModeEnabled(),
     )
 
     Initial(AppState(screen, settings), commands)

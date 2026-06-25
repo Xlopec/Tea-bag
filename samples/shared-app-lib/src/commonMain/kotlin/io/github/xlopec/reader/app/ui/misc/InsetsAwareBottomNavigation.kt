@@ -53,7 +53,7 @@ internal fun InsetsAwareBottomNavigation(
             elevation = 0.dp,
             backgroundColor = Color.Unspecified,
             contentColor = contentColorFor(background),
-            content = content
+            content = content,
         )
     }
 }

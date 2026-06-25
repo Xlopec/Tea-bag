@@ -44,11 +44,11 @@ public data class SourceResponseElement(
     val description: SourceDescription?,
     @SerialName("url")
     @Serializable(with = UrlSerializer::class)
-    val url: Url
+    val url: Url,
 )
 
 @Serializable
 public data class SourcesResponse(
     @SerialName("sources")
-    val sources: List<SourceResponseElement>
+    val sources: List<SourceResponseElement>,
 )

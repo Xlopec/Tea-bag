@@ -81,7 +81,7 @@ internal fun ArticlesState.toLoadingNext() =
     copy(loadable = loadable.toLoadingNext())
 
 internal fun ArticlesState.toLoading(
-    filter: Filter = this.filter
+    filter: Filter = this.filter,
 ) = copy(filter = filter, loadable = loadable.toLoading())
 
 internal fun ArticlesState.toRefreshing() =
