@@ -122,6 +122,7 @@ Plugin is available on [JetBrains marketplace](https://plugins.jetbrains.com/plu
 
 - **tea-core** - contains core types along with basic component implementation
 - **tea-compose** - contains Compose Multiplatform integration
+- **tea-data** - contains generic state containers (`Loadable`, `Paginatable`) for modelling asynchronous data
 - **tea-navigation** - contains navigation extensions as well as predictive back navigation for iOS target
 - **tea-time-travel** - contains debuggable version of the component
 - **tea-time-travel-adapter-gson** - implements debug protocol and serialization by means
