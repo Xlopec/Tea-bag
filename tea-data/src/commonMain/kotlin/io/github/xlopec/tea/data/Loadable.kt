@@ -26,7 +26,9 @@ package io.github.xlopec.tea.data
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlin.experimental.ExperimentalObjCName
 import kotlin.jvm.JvmName
+import kotlin.native.ObjCName
 
 /**
  * Container that wraps an arbitrary value together with the [State] of the operation that
@@ -40,12 +42,13 @@ import kotlin.jvm.JvmName
  * For paginated collections see [Paginatable].
  *
  * @param T type of the wrapped data
+ * @param Err type of the error produced when the operation fails.
  * @property data value the producer has emitted so far; the meaning depends on [state]
  * @property state lifecycle of the producer
  */
-public data class Loadable<out T> internal constructor(
+public data class Loadable<out T, out Err> internal constructor(
     val data: T,
-    val state: State,
+    val state: State<Err>,
 ) {
     public companion object {
 
@@ -55,24 +58,24 @@ public data class Loadable<out T> internal constructor(
          */
         public fun <T> idleSingle(
             data: T,
-        ): Loadable<T> = Loadable(data = data, state = Idle)
+        ): Loadable<T, Nothing> = Loadable(data = data, state = Idle)
 
         /**
          * Creates a [Loading] [Loadable] for an optional single value initialised to `null`.
          */
-        public fun <T> loadingSingle(): Loadable<T?> = Loadable(data = null, state = Loading)
+        public fun <T> loadingSingle(): Loadable<T?, Nothing> = Loadable(data = null, state = Loading)
 
         /**
          * Creates a [Loading] [Loadable] that already carries a non-`null` placeholder value.
          */
         public fun <T> loadingSingle(
             data: T,
-        ): Loadable<T> = Loadable(data = data, state = Loading)
+        ): Loadable<T, Nothing> = Loadable(data = data, state = Loading)
 
         /**
          * Creates a [Loading] [Loadable] holding an empty [PersistentList] of [T].
          */
-        public fun <T : Any> loadingList(): Loadable<PersistentList<T>> =
+        public fun <T : Any> loadingList(): Loadable<PersistentList<T>, Nothing> =
             Loadable(data = persistentListOf(), state = Loading)
 
         /**
@@ -80,95 +83,100 @@ public data class Loadable<out T> internal constructor(
          */
         public fun <T : Any> idleList(
             data: PersistentList<T> = persistentListOf(),
-        ): Loadable<PersistentList<T>> = Loadable(data = data, state = Idle)
+        ): Loadable<PersistentList<T>, Nothing> = Loadable(data = data, state = Idle)
     }
 
     /**
      * Lifecycle of the producer backing a [Loadable].
+     *
+     * @param Err type of error reported by [Exception]; [Loading], [Refreshing] and [Idle]
+     *   carry no error data and are typed as `State<Nothing>`.
      */
-    public sealed interface State
+    public sealed interface State<out Err>
 
     /**
      * Terminal failure state.
      *
-     * @property exception cause of the failure
+     * @property error cause of the failure
      */
-    public data class Exception internal constructor(
-        val exception: Throwable,
-    ) : State
+    @OptIn(ExperimentalObjCName::class)
+    @ObjCName("Error")
+    public data class Exception<out Err> internal constructor(
+        @param:ObjCName("error") val error: Err,
+    ) : State<Err>
 
     /**
      * Initial load is in progress; [data] should be considered a placeholder.
      */
-    public data object Loading : State
+    public data object Loading : State<Nothing>
 
     /**
      * A reload of an already-loaded [data] is in progress; [data] still represents the
      * previously observed value.
      */
-    public data object Refreshing : State
+    public data object Refreshing : State<Nothing>
 
     /**
      * The producer is idle and [data] holds the latest observed value.
      */
-    public data object Idle : State
+    public data object Idle : State<Nothing>
 }
 
 /**
  * `true` when the [Loadable] is in a state from which a refresh may be triggered.
  */
-public val Loadable<*>.isRefreshable: Boolean
+public val Loadable<*, *>.isRefreshable: Boolean
     get() = isIdle
 
 /**
  * `true` when the [Loadable] is performing an initial load.
  */
-public val Loadable<*>.isLoading: Boolean
+public val Loadable<*, *>.isLoading: Boolean
     get() = state === Loadable.Loading
 
 /**
  * `true` when the [Loadable] is performing a refresh of an already-loaded value.
  */
-public val Loadable<*>.isRefreshing: Boolean
+public val Loadable<*, *>.isRefreshing: Boolean
     get() = state === Loadable.Refreshing
 
 /**
  * `true` when the producer is idle (including the terminal [Loadable.Exception] state) and
  * may accept new requests.
  */
-public val Loadable<*>.isIdle: Boolean
+public val Loadable<*, *>.isIdle: Boolean
     get() = state === Loadable.Idle || isException
 
 /**
  * `true` when the [Loadable] is in the terminal [Loadable.Exception] state.
  */
-public val Loadable<*>.isException: Boolean
-    get() = state is Loadable.Exception
+public val Loadable<*, *>.isException: Boolean
+    get() = state is Loadable.Exception<*>
 
 /**
  * Returns a copy of this [Loadable] whose [Loadable.data] is the result of applying [how] to
  * the current list.
  */
 @JvmName("dataList")
-public fun <T> Loadable<PersistentList<T>>.dataList(
+public fun <T, Err> Loadable<PersistentList<T>, Err>.dataList(
     how: PersistentList<T>.() -> PersistentList<T>,
-): Loadable<PersistentList<T>> = copy(data = how(data))
+): Loadable<PersistentList<T>, Err> = copy(data = how(data))
 
 /**
  * Returns a copy of this [Loadable] whose [Loadable.data] is the result of applying [how] to
  * the current value.
  */
 @JvmName("dataSingle")
-public fun <T> Loadable<T>.data(
+public fun <T, Err> Loadable<T, Err>.data(
     how: T.() -> T,
-): Loadable<T> = copy(data = how(data))
+): Loadable<T, Err> = copy(data = how(data))
 
 /**
  * Returns a copy of this list-typed [Loadable] in the [Loadable.Loading] state with an empty
  * payload. Use this when restarting a load from scratch.
  */
 @JvmName("toLoadingList")
-public fun <T> Loadable<PersistentList<T>>.toLoading(): Loadable<PersistentList<T>> =
+public fun <T, Err> Loadable<PersistentList<T>, Err>.toLoading(): Loadable<PersistentList<T>, Err> =
     copy(state = Loadable.Loading, data = persistentListOf())
 
 /**
@@ -176,23 +184,23 @@ public fun <T> Loadable<PersistentList<T>>.toLoading(): Loadable<PersistentList<
  * with the value cleared to `null`.
  */
 @JvmName("toLoadingSingle")
-public fun <T> Loadable<T?>.toLoading(): Loadable<T?> =
+public fun <T, Err> Loadable<T?, Err>.toLoading(): Loadable<T?, Err> =
     copy(state = Loadable.Loading, data = null)
 
 /**
  * Returns a copy of this [Loadable] in the [Loadable.Refreshing] state, preserving the
  * existing [Loadable.data].
  */
-public fun <T> Loadable<T>.toRefreshing(): Loadable<T> =
+public fun <T, Err> Loadable<T, Err>.toRefreshing(): Loadable<T, Err> =
     copy(state = Loadable.Refreshing)
 
 /**
  * Returns a copy of this [Loadable] in the [Loadable.Refreshing] state, applying [updater]
  * to the existing [Loadable.data] before storing it.
  */
-public fun <T> Loadable<T>.toRefreshing(
+public fun <T, Err> Loadable<T, Err>.toRefreshing(
     updater: T.() -> T = { this },
-): Loadable<T> =
+): Loadable<T, Err> =
     copy(state = Loadable.Refreshing, data = updater(data))
 
 /**
@@ -200,16 +208,16 @@ public fun <T> Loadable<T>.toRefreshing(
  * [Loadable.data].
  */
 @JvmName("toIdleSingle")
-public fun <T> Loadable<T>.toIdle(): Loadable<T> = copy(state = Loadable.Idle)
+public fun <T, Err> Loadable<T, Err>.toIdle(): Loadable<T, Err> = copy(state = Loadable.Idle)
 
 /**
  * Returns a copy of this [Loadable] in the [Loadable.Idle] state with [data] as the new
  * payload.
  */
 @JvmName("toIdleSingleWithData")
-public fun <T> Loadable<T>.toIdle(
+public fun <T, Err> Loadable<T, Err>.toIdle(
     data: T,
-): Loadable<T> = copy(
+): Loadable<T, Err> = copy(
     data = data,
     state = Loadable.Idle,
 )
@@ -219,7 +227,7 @@ public fun <T> Loadable<T>.toIdle(
  * existing items.
  */
 @JvmName("toIdleList")
-public fun <T> Loadable<PersistentList<T>>.toIdle(): Loadable<PersistentList<T>> =
+public fun <T, Err> Loadable<PersistentList<T>, Err>.toIdle(): Loadable<PersistentList<T>, Err> =
     copy(state = Loadable.Idle)
 
 /**
@@ -227,27 +235,27 @@ public fun <T> Loadable<PersistentList<T>>.toIdle(): Loadable<PersistentList<T>>
  * the new payload.
  */
 @JvmName("toIdleListWithData")
-public fun <T> Loadable<PersistentList<T>>.toIdle(
+public fun <T, Err> Loadable<PersistentList<T>, Err>.toIdle(
     loaded: PersistentList<T>,
-): Loadable<PersistentList<T>> = copy(
+): Loadable<PersistentList<T>, Err> = copy(
     data = loaded,
     state = Loadable.Idle,
 )
 
 /**
  * Returns a copy of this list-typed [Loadable] in the terminal [Loadable.Exception] state
- * wrapping [cause].
+ * wrapping [error].
  */
 @JvmName("toExceptionList")
-public fun <T> Loadable<PersistentList<T>>.toException(
-    cause: Throwable,
-): Loadable<PersistentList<T>> = copy(state = Loadable.Exception(cause))
+public fun <T, Err> Loadable<PersistentList<T>, Err>.toException(
+    error: Err,
+): Loadable<PersistentList<T>, Err> = copy(state = Loadable.Exception(error))
 
 /**
  * Returns a copy of this [Loadable] in the terminal [Loadable.Exception] state wrapping
- * [cause].
+ * [error].
  */
 @JvmName("toExceptionSingle")
-public fun <T> Loadable<T>.toException(
-    cause: Throwable,
-): Loadable<T> = copy(state = Loadable.Exception(cause))
+public fun <T, Err> Loadable<T, Err>.toException(
+    error: Err,
+): Loadable<T, Err> = copy(state = Loadable.Exception(error))
