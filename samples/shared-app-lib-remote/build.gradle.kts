@@ -30,7 +30,6 @@ plugins {
 android {
     compileSdk = 36
     namespace = "io.github.xlopec.shared.remote"
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 21
         consumerProguardFile("proguard-rules.pro")
