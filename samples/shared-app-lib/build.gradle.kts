@@ -80,6 +80,13 @@ kotlin {
             isStatic = true
             binaryOption("bundleId", "io.github.xlopec.shared")
         }
+        iosTarget.binaries.all {
+            // Compose MP 1.11's ui-uikit references iOS 18 SDK symbols (e.g. UIViewLayoutRegion)
+            // and ships an iOS 18.5 skiko prebuilt; the link step needs the same minimum.
+            freeCompilerArgs += listOf(
+                "-Xoverride-konan-properties=osVersionMin.ios_arm64=18.0;osVersionMin.ios_simulator_arm64=18.0",
+            )
+        }
     }
 
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
