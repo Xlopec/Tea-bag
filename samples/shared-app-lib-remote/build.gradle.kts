@@ -57,7 +57,6 @@ kotlin {
     explicitApi()
 
     compilerOptions {
-        freeCompilerArgs.add("-Xcontext-parameters")
         optIn.addAll(
             DefaultOptIns +
                 "kotlinx.serialization.ExperimentalSerializationApi" +
@@ -66,7 +65,7 @@ kotlin {
     }
 }
 
-val allTests by tasks.registering(Task::class) {
+tasks.register("allTests") {
     dependsOn("test")
 }
 

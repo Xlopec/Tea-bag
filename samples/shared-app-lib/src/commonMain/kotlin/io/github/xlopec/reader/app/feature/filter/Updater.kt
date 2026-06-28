@@ -68,7 +68,7 @@ private fun FiltersState.onToggleSelection(
 private fun selectToggleOperation(
     id: SourceId,
     sources: PersistentSet<SourceId>,
-) = if (id in sources) PersistentSet<SourceId>::remove else PersistentSet<SourceId>::add
+) = if (id in sources) PersistentSet<SourceId>::removing else PersistentSet<SourceId>::adding
 
 private fun FiltersState.toFilterChangedUpdate(
     filter: Filter,
@@ -102,7 +102,7 @@ private fun FiltersState.onRecentSearchesLoaded(
 
 private fun FiltersState.onRemoveRecentSearch(
     query: Query,
-) = copy(recentSearches = recentSearches.remove(query)) command DoRemoveRecentSearch(filter.type, query)
+) = copy(recentSearches = recentSearches.removing(query)) command DoRemoveRecentSearch(filter.type, query)
 
 private fun FiltersState.updatedFilter(
     how: Filter.() -> Filter,

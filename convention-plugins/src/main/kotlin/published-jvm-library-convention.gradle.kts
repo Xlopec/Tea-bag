@@ -39,7 +39,7 @@ kotlinJvm {
     }
 }
 
-val packSourcesJar by tasks.registering(Jar::class) {
+val packSourcesJar = tasks.register<Jar>("packSourcesJar") {
     dependsOn(tasks.classes)
     archiveClassifier.set("sources")
     from(projectSourceSets["main"].allSource)
@@ -48,7 +48,7 @@ val packSourcesJar by tasks.registering(Jar::class) {
     description = "Packs sources jar depending on kotlin plugin applied"
 }
 
-val packJavadocJar by tasks.registering(Jar::class) {
+val packJavadocJar = tasks.register<Jar>("packJavadocJar") {
     dependsOn(tasks.named("dokkaGeneratePublicationHtml"))
     archiveClassifier.set("javadoc")
     from(documentationDir)
@@ -57,7 +57,7 @@ val packJavadocJar by tasks.registering(Jar::class) {
     description = "Packs javadoc jar"
 }
 
-val copyArtifacts by tasks.registering(Copy::class) {
+tasks.register<Copy>("copyArtifacts") {
     from(libsDir)
     into(artifactsDir)
 
@@ -82,7 +82,6 @@ publishing {
     }
 }
 
-artifacts {
-    archives(packSourcesJar)
-    archives(packJavadocJar)
+tasks.named("assemble") {
+    dependsOn(packSourcesJar, packJavadocJar)
 }

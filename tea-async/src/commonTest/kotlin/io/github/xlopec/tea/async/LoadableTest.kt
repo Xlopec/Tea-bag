@@ -156,7 +156,7 @@ class LoadableTest {
 
     @Test
     fun dataListAppliesUpdaterToList() {
-        val loadable = Loadable.idleList(persistentListOf(1, 2)).data { add(3) }
+        val loadable = Loadable.idleList(persistentListOf(1, 2)).data { adding(3) }
 
         assertEquals(persistentListOf(1, 2, 3), loadable.data)
     }

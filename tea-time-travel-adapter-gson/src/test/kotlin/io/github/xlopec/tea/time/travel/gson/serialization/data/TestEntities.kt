@@ -26,6 +26,7 @@
 
 package io.github.xlopec.tea.time.travel.gson.serialization.data
 
+import java.net.URI
 import java.net.URL
 import kotlin.uuid.Uuid
 
@@ -54,4 +55,4 @@ value class Photo(
     val url: URL,
 )
 
-fun Photo(urlSpec: String) = Photo(URL(urlSpec))
+fun Photo(urlSpec: String) = Photo(URI(urlSpec).toURL())

@@ -29,7 +29,7 @@ plugins {
 signing {
     useInMemoryPgpKeys(signingKey, signingPassword)
 
-    val publishing: PublishingExtension by project
+    val publishing = extensions.getByType<PublishingExtension>()
 
     sign(publishing.publications)
 }

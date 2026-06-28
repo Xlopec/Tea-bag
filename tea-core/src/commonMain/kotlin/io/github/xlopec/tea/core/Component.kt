@@ -46,6 +46,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.ContinuationInterceptor
 
 /**
  * Conceptually, component is a function that accepts [flow][Flow] of messages and returns [flow][Flow]
@@ -362,4 +363,4 @@ private suspend fun <M, S, C> Env<M, S, C>.update(
     withContext(scope.dispatcher ?: Dispatchers.Default) { updater(message, state) }
 
 private inline val CoroutineScope.dispatcher: CoroutineDispatcher?
-    get() = coroutineContext[CoroutineDispatcher.Key]
+    get() = coroutineContext[ContinuationInterceptor] as? CoroutineDispatcher

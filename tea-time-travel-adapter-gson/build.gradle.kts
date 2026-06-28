@@ -30,7 +30,7 @@ tasks.test {
     useJUnit()
 }
 
-val allTests by tasks.registering(Task::class) {
+tasks.register("allTests") {
     dependsOn("test")
 }
 

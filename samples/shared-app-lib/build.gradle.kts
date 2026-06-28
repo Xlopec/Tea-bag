@@ -49,6 +49,8 @@ kotlin {
         namespace = "io.github.xlopec.shared"
         enableCoreLibraryDesugaring = true
 
+        withHostTest {}
+
         androidResources {
             enable = true
         }

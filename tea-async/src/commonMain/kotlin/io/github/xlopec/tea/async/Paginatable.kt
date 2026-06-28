@@ -219,7 +219,7 @@ public fun <T : Any, Err> Paginatable<T, Err>.toIdle(
 ): Paginatable<T, Err> =
     when (state) {
         Paginatable.LoadingNext, is Paginatable.Exception<*> -> copy(
-            data = data.addAll(page.data),
+            data = data.addingAll(page.data),
             state = Paginatable.Idle,
             hasMore = page.hasMore,
         )

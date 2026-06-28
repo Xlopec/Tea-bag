@@ -76,7 +76,7 @@ tasks.withType<Detekt>().configureEach {
     }
 }
 
-val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) {
+tasks.register<DetektCreateBaselineTask>("detektProjectBaseline") {
     ignoreFailures.set(true)
     parallel.set(true)
     setSource(files(rootDir))
@@ -86,7 +86,7 @@ val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) 
     exclude("**/resources/**", "**/build/**")
 }
 
-val detektFormat by tasks.registering(Detekt::class) {
+tasks.register<Detekt>("detektFormat") {
     parallel = true
     autoCorrect = true
     ignoreFailures = false
