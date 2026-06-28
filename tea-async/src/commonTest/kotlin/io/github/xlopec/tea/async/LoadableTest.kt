@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.tea.data
+package io.github.xlopec.tea.async
 
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.test.Test
@@ -132,14 +132,6 @@ class LoadableTest {
     }
 
     @Test
-    fun toRefreshingWithUpdaterTransformsData() {
-        val loadable = Loadable.idleSingle("ab").toRefreshing { uppercase() }
-
-        assertEquals("AB", loadable.data)
-        assertTrue(loadable.isRefreshing)
-    }
-
-    @Test
     fun toIdleWithDataReplacesPayload() {
         val loadable = Loadable.loadingSingle("old").toIdle("new")
 
@@ -164,7 +156,7 @@ class LoadableTest {
 
     @Test
     fun dataListAppliesUpdaterToList() {
-        val loadable = Loadable.idleList(persistentListOf(1, 2)).dataList { add(3) }
+        val loadable = Loadable.idleList(persistentListOf(1, 2)).data { add(3) }
 
         assertEquals(persistentListOf(1, 2, 3), loadable.data)
     }

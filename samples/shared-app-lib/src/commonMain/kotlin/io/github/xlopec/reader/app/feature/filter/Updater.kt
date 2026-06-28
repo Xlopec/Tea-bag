@@ -34,9 +34,9 @@ import io.github.xlopec.reader.app.model.SourceId
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
-import io.github.xlopec.tea.data.Page
-import io.github.xlopec.tea.data.toException
-import io.github.xlopec.tea.data.toIdle
+import io.github.xlopec.tea.async.Page
+import io.github.xlopec.tea.async.toException
+import io.github.xlopec.tea.async.toIdle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentHashSetOf

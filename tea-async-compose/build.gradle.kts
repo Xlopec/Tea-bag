@@ -22,29 +22,29 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.tea.data
+plugins {
+    id("published-multiplatform-library-convention")
+    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.compiler)
+}
 
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
+kotlin {
+    enableUiTargets()
 
-/**
- * A single page of results returned by a paginated data source.
- *
- * Used together with [Paginatable.toIdle] to advance a paginated collection from a loading
- * state into [Paginatable.Idle] after a fetch completes.
- *
- * @param T element type
- * @param data items contained in this page
- * @param hasMore `true` if the source has additional pages after this one
- */
-public data class Page<out T>(
-    val data: ImmutableList<T>,
-    val hasMore: Boolean = false,
-) {
-    public companion object {
-        /**
-         * An empty page that signals the end of a paginated stream.
-         */
-        public val Empty: Page<Nothing> = Page(data = persistentListOf(), hasMore = false)
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(projects.teaAsync)
+                api(libs.compose.runtime)
+                api(libs.compose.foundation)
+                implementation(libs.stdlib)
+            }
+        }
+
+        commonTest {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
+        }
     }
 }

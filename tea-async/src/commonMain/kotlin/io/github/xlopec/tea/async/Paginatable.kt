@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.tea.data
+package io.github.xlopec.tea.async
 
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -40,7 +39,7 @@ import kotlin.native.ObjCName
  *
  * The lifecycle distinguishes [Loading] (initial fetch with an empty list), [LoadingNext]
  * (subsequent page appended to an already-loaded list), [Refreshing] (re-fetch of the first
- * page), [Idle] and a terminal [Exception] state. State transitions are encoded as `to…`
+ * page), [Idle] and an [Exception] state. State transitions are encoded as `to…`
  * extensions and a successful page fetch is recorded via [toIdle].
  *
  * @param T element type; must be non-nullable so list operations remain well-defined
@@ -80,7 +79,7 @@ public data class Paginatable<out T : Any, out Err>(
     public sealed interface State<out Err>
 
     /**
-     * Terminal failure state.
+     * Failure state carrying the cause reported by the producer.
      *
      * @property error cause of the failure
      */
@@ -115,7 +114,7 @@ public data class Paginatable<out T : Any, out Err>(
 /**
  * `true` when the producer is idle and a refresh may be triggered.
  */
-public val Paginatable<*, *>.isRefreshable: Boolean
+public inline val Paginatable<*, *>.isRefreshable: Boolean
     get() = isIdle
 
 /**
@@ -136,41 +135,41 @@ public fun <T : Any> Paginatable<T, *>.canLoadNextForItem(
 /**
  * `true` when the [Paginatable] is performing the initial fetch.
  */
-public val Paginatable<*, *>.isLoading: Boolean
-    get() = state === Paginatable.Loading
+public inline val Paginatable<*, *>.isLoading: Boolean
+    get() = state == Paginatable.Loading
 
 /**
  * `true` when the [Paginatable] is fetching an additional page.
  */
-public val Paginatable<*, *>.isLoadingNext: Boolean
-    get() = state === Paginatable.LoadingNext
+public inline val Paginatable<*, *>.isLoadingNext: Boolean
+    get() = state == Paginatable.LoadingNext
 
 /**
  * `true` when the [Paginatable] is performing a full re-fetch.
  */
-public val Paginatable<*, *>.isRefreshing: Boolean
-    get() = state === Paginatable.Refreshing
+public inline val Paginatable<*, *>.isRefreshing: Boolean
+    get() = state == Paginatable.Refreshing
 
 /**
- * `true` when the producer is idle (including the terminal [Paginatable.Exception] state) and
+ * `true` when the producer is idle (including the [Paginatable.Exception] state) and
  * may accept new requests.
  */
-public val Paginatable<*, *>.isIdle: Boolean
-    get() = state === Paginatable.Idle || isException
+public inline val Paginatable<*, *>.isIdle: Boolean
+    get() = state == Paginatable.Idle || isException
 
 /**
- * `true` when the [Paginatable] is in the terminal [Paginatable.Exception] state.
+ * `true` when the [Paginatable] is in the [Paginatable.Exception] state.
  */
-public val Paginatable<*, *>.isException: Boolean
+public inline val Paginatable<*, *>.isException: Boolean
     get() = state is Paginatable.Exception<*>
 
 /**
  * Returns a copy of this [Paginatable] whose [Paginatable.data] is the result of applying
- * [how] to the current list.
+ * [f] to the current list.
  */
-public fun <T : Any, Err> Paginatable<T, Err>.data(
-    how: PersistentList<T>.() -> PersistentList<T>,
-): Paginatable<T, Err> = copy(data = how(data))
+public inline fun <T : Any, Err> Paginatable<T, Err>.data(
+    f: PersistentList<T>.() -> PersistentList<T>,
+): Paginatable<T, Err> = copy(data = f(data))
 
 /**
  * Transitions the [Paginatable] to [Paginatable.LoadingNext].
@@ -205,14 +204,6 @@ public fun <T : Any, Err> Paginatable<T, Err>.toIdle(): Paginatable<T, Err> =
     copy(state = Paginatable.Idle)
 
 /**
- * Returns a copy of this [Paginatable] in the [Paginatable.Idle] state with [loaded] as the
- * final payload. `hasMore` is reset to `false`.
- */
-public fun <T : Any, Err> Paginatable<T, Err>.toIdle(
-    loaded: ImmutableList<T>,
-): Paginatable<T, Err> = toIdle(Page(data = loaded, hasMore = false))
-
-/**
  * Returns a copy of this [Paginatable] in the [Paginatable.Idle] state after applying [page].
  *
  * Behaviour depends on the current [Paginatable.state]:
@@ -241,8 +232,7 @@ public fun <T : Any, Err> Paginatable<T, Err>.toIdle(
     }
 
 /**
- * Returns a copy of this [Paginatable] in the terminal [Paginatable.Exception] state wrapping
- * [error].
+ * Returns a copy of this [Paginatable] in the [Paginatable.Exception] state wrapping [error].
  */
 public fun <T : Any, Err> Paginatable<T, Err>.toException(
     error: Err,

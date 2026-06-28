@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.xlopec.tea.data
+package io.github.xlopec.tea.async
 
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.test.Test
@@ -142,10 +142,10 @@ class PaginatableTest {
     }
 
     @Test
-    fun toIdleWithImmutableListResetsHasMore() {
+    fun toIdlePageWithHasMoreFalseAppendsAndStops() {
         val p = Paginatable.idleList(persistentListOf("a"))
             .toLoadingNext()
-            .toIdle(persistentListOf("b"))
+            .toIdle(Page(persistentListOf("b"), hasMore = false))
 
         assertEquals(persistentListOf("a", "b"), p.data)
         assertFalse(p.hasMore)
