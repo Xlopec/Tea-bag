@@ -31,7 +31,7 @@ plugins {
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
 
-val packJavadocJar by tasks.registering(Jar::class) {
+val packJavadocJar = tasks.register<Jar>("packJavadocJar") {
     dependsOn(tasks.named("dokkaGeneratePublicationHtml"))
     archiveClassifier.set("javadoc")
     from(documentationDir)
@@ -40,7 +40,7 @@ val packJavadocJar by tasks.registering(Jar::class) {
     description = "Packs javadoc jar"
 }
 
-val copyArtifacts by tasks.registering(Copy::class) {
+tasks.register<Copy>("copyArtifacts") {
     from(libsDir)
     into(artifactsDir)
 

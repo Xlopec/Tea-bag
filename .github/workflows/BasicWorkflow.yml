@@ -64,7 +64,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     #needs: Check
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v5
         with:
@@ -99,7 +99,7 @@ jobs:
     #needs: Check
     strategy:
       matrix:
-        os: [ macos-15, ubuntu-latest, windows-latest ]
+        os: [ macos-26, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
@@ -133,7 +133,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     needs: [Unit-tests, IOS-app-build]
-    runs-on: macos-15
+    runs-on: macos-26
     # tags should be of the form:
     # <no-value> -> dev build
     # v1.2.3-alpha1 -> alpha build

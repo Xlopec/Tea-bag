@@ -182,7 +182,7 @@ class PaginatableTest {
 
     @Test
     fun dataApplyTransformsList() {
-        val p = Paginatable.idleList(persistentListOf("a")).data { add("b") }
+        val p = Paginatable.idleList(persistentListOf("a")).data { adding("b") }
 
         assertEquals(persistentListOf("a", "b"), p.data)
     }

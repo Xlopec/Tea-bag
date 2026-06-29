@@ -42,7 +42,7 @@ internal inline fun <E> PersistentList<E>.replace(
     val i = indexOfFirst(predicate)
 
     return if (i >= 0) {
-        set(i, e)
+        replacingAt(i, e)
     } else {
         this
     }
@@ -54,7 +54,7 @@ internal inline fun <E> PersistentList<E>.remove(
     val i = indexOfFirst(predicate)
 
     return if (i >= 0) {
-        removeAt(i)
+        removingAt(i)
     } else {
         this
     }
