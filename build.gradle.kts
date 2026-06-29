@@ -1,3 +1,5 @@
+import java.time.Duration
+
 /*
  * MIT License
  *
@@ -55,6 +57,14 @@ nexusPublishing {
     }
 
     useStaging.set(!libraryVersion.isSnapshot)
+
+    clientTimeout.set(Duration.ofMinutes(10))
+    connectTimeout.set(Duration.ofMinutes(2))
+
+    transitionCheckOptions {
+        maxRetries.set(180)
+        delayBetween.set(Duration.ofSeconds(20))
+    }
 }
 
 subprojects {
