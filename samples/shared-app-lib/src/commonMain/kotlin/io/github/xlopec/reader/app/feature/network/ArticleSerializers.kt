@@ -31,7 +31,6 @@ import io.github.xlopec.reader.app.model.Url
 import io.github.xlopec.reader.app.model.UrlFor
 import io.github.xlopec.reader.app.model.toExternalValue
 import io.github.xlopec.reader.app.model.tryCreate
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
@@ -104,6 +103,7 @@ public fun LocalDateTime.toJson(): String = toInstant(TimeZone.UTC)
     .format(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
 
 public fun String.toDate(): LocalDateTime {
-    return Instant.parse(this, DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
+    return DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET.parse(this)
+        .toInstantUsingOffset()
         .toLocalDateTime(TimeZone.currentSystemDefault())
 }

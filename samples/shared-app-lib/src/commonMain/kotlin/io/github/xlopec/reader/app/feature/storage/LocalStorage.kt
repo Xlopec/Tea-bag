@@ -26,7 +26,7 @@
 
 package io.github.xlopec.reader.app.feature.storage
 
-import io.github.xlopec.reader.app.feature.article.list.Page
+import io.github.xlopec.tea.async.Page
 import io.github.xlopec.reader.app.feature.filter.FiltersState.Companion.StoreSuggestionsLimit
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter
@@ -70,15 +70,15 @@ public interface LocalStorage {
     )
 
     public suspend fun findFilter(
-        type: FilterType
+        type: FilterType,
     ): Filter
 
     public suspend fun recentSearches(
-        type: FilterType
+        type: FilterType,
     ): ImmutableList<Query>
 
     public suspend fun deleteRecentSearch(
         type: FilterType,
-        query: Query
+        query: Query,
     )
 }

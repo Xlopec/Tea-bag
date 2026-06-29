@@ -51,7 +51,7 @@ import io.github.xlopec.tea.core.noCommand
 
 public fun update(
     message: Message,
-    state: AppState
+    state: AppState,
 ): Update<AppState, Command> = when (message) {
     is Navigation -> navigate(message, state)
     is ScreenMessage -> updateScreen(message, state)
@@ -81,7 +81,7 @@ private fun updateScreen(
     }
 
 private fun Screen.toFiltersBroadcastUpdate(
-    message: FilterUpdated
+    message: FilterUpdated,
 ) = when (this) {
     is ArticlesState -> updateArticles(message, this)
     is FiltersState -> updateFilters(message, this)
@@ -89,7 +89,7 @@ private fun Screen.toFiltersBroadcastUpdate(
 }
 
 private fun AppState.toLogUpdate(
-    message: Log
+    message: Log,
 ) = command(DoLog(this, message.throwable, message.id, message.causedBy))
 
 private fun AppState.toSettingsUpdate(
@@ -99,12 +99,12 @@ private fun AppState.toSettingsUpdate(
         is ToggleDarkMode -> updateSettings {
             updated(
                 userDarkModeEnabled = message.userDarkModeEnabled,
-                syncWithSystemDarkModeEnabled = message.syncWithSystemDarkModeEnabled
+                syncWithSystemDarkModeEnabled = message.syncWithSystemDarkModeEnabled,
             )
         } command DoStoreDarkMode(message.userDarkModeEnabled, message.syncWithSystemDarkModeEnabled)
         is SystemDarkModeChanged -> updateSettings { updated(systemDarkModeEnabled = message.enabled) }.noCommand()
     }
 
 private fun AppState.updateSettings(
-    how: Settings.() -> Settings
+    how: Settings.() -> Settings,
 ) = copy(settings = settings.run(how))

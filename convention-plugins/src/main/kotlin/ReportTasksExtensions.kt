@@ -52,7 +52,7 @@ fun TestReport.configureOutputLocation(
 }
 
 internal fun File.commonParentDir(
-    other: File
+    other: File,
 ): File? {
     var first = IterableFile(this)
     var second = IterableFile(other)
@@ -72,7 +72,7 @@ internal fun File.commonParentDir(
 }
 
 private class IterableFile(
-    file: File
+    file: File,
 ) {
     var file: File = file
         private set

@@ -8,7 +8,6 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     runs-on: ubuntu-latest
-    if: false
     steps:
       - uses: actions/checkout@v5
         with:
@@ -65,7 +64,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     #needs: Check
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v5
         with:
@@ -100,7 +99,7 @@ jobs:
     #needs: Check
     strategy:
       matrix:
-        os: [ macos-15, ubuntu-latest, windows-latest ]
+        os: [ macos-26, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
@@ -134,7 +133,7 @@ jobs:
     env:
       DEFAULT_BRANCH: master
     needs: [Unit-tests, IOS-app-build]
-    runs-on: macos-15
+    runs-on: macos-26
     # tags should be of the form:
     # <no-value> -> dev build
     # v1.2.3-alpha1 -> alpha build
@@ -161,12 +160,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Publish artifacts
-        run: ./gradlew publishToSonatype closeSonatypeStagingRepository copyArtifacts --no-configure-on-demand --no-configuration-cache --no-daemon
+        run: ./gradlew publishAndReleaseToMavenCentral copyArtifacts --no-configure-on-demand --no-configuration-cache --no-daemon --stacktrace --info
         env:
-          OSSRH_USER: ${{ secrets.OSSRH_USER }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OSSRH_USER }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OSSRH_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
           PUBLISH_PLUGIN_TOKEN: ${{ secrets.PUBLISH_PLUGIN_TOKEN }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

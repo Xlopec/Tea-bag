@@ -141,7 +141,7 @@ internal data class App(
 private fun AppComponent(
     scope: CoroutineScope,
     app: App,
-    resolver: Resolver<Message, App, Command>
+    resolver: Resolver<Message, App, Command>,
 ): Component<Message, App, Command> {
     return Component(
         initializer = Initializer(app),
@@ -159,7 +159,7 @@ private fun AppComponent(
                         state.noCommand()
                     } else {
                         state.copy(
-                            stack = state.stack.mapIndexed { index, screen -> if (index == i) FirstScreen(message.data) else screen }
+                            stack = state.stack.mapIndexed { index, screen -> if (index == i) FirstScreen(message.data) else screen },
                         ).noCommand()
                     }
                 }
@@ -181,7 +181,7 @@ fun main(): Unit = runBlocking {
             SecondScreen,
             ThirdScreen,
             FourthScreen,
-        )
+        ),
     )
 
     val component = AppComponent(
@@ -193,7 +193,7 @@ fun main(): Unit = runBlocking {
             ComposeResolver(
                 scope = contextOf<CoroutineScope>(),
                 clockPolicy = ClockPolicy.Internal,
-                snapshotManagerPolicy = SnapshotNotifierPolicy.WhileActive
+                snapshotManagerPolicy = SnapshotNotifierPolicy.WhileActive,
             ) {
                 val snapshot by snapshots.collectAsState(null)
                 val state = snapshot?.currentState
@@ -228,7 +228,7 @@ fun main(): Unit = runBlocking {
                     }
                 }
             }
-        }
+        },
     )
 
     launch {
@@ -242,7 +242,7 @@ fun main(): Unit = runBlocking {
                     // some snapshots might be skipped if published too frequently,
                     // see [androidx.compose.runtime.produceState] for more info
                     delay(18.milliseconds)
-                }
+                },
         )
             .collect {
                 // Observe and print state snapshots as they are produced.

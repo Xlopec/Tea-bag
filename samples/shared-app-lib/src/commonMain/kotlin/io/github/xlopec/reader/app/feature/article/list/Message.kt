@@ -29,6 +29,7 @@ import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.ScreenMessage
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.tea.async.Page
 
 import kotlin.jvm.JvmInline
 

@@ -69,5 +69,5 @@ public data class ArticleResponse(
     @SerialName("totalResults")
     val totalResults: Int,
     @SerialName("articles")
-    val articles: List<ArticleElement>
+    val articles: List<ArticleElement>,
 )

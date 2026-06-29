@@ -71,21 +71,21 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
                     contextOf<CoroutineScope>().launch {
                         snapshots.collect { snapshot ->
                             check(
-                                snapshot.commands.isEmpty()
+                                snapshot.commands.isEmpty(),
                             ) { "Non empty snapshot $snapshot" }
                         }
                     }
                 },
                 updater = { m, _ -> m.toString().noCommand() },
-                scope = scope
+                scope = scope,
             )
 
             runCatching {
                 val component = Component(
                     TestDebugEnv(
                         env = env,
-                        settings = TestSettings(sessionFactory = { _, _ -> throw ComponentException("Couldn't connect to debug server") })
-                    )
+                        settings = TestSettings(sessionFactory = { _, _ -> throw ComponentException("Couldn't connect to debug server") }),
+                    ),
                 )
                 val job = env.scope.launch { component(flowOf('a')).collect() }
 
@@ -107,14 +107,16 @@ class DebuggableComponentTest : ComponentTestBase({ env -> Component(TestDebugEn
             TestDebugEnv(
                 env = Env<Char, String, Char>(
                     initializer = Initializer(""),
-                    resolver = { snapshots -> contextOf<CoroutineScope>().launch { snapshots.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
+                    resolver = { snapshots -> contextOf<CoroutineScope>().launch { snapshots.collect { check(
+                        it.commands.isEmpty(),
+                    ) { "Non empty snapshot $it" } } } },
                     updater = { m, _ -> m.toString().noCommand() },
-                    scope = backgroundScope
+                    scope = backgroundScope,
                 ),
                 settings = TestSettings(
-                    sessionFactory = { _, block -> testSession.apply { block() } }
-                )
-            )
+                    sessionFactory = { _, block -> testSession.apply { block() } },
+                ),
+            ),
         )
         val messages = arrayOf('a', 'b', 'c')
 

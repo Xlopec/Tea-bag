@@ -53,7 +53,7 @@ import io.github.xlopec.reader.environment.anyArticleRequest
 import io.github.xlopec.reader.environment.invoke
 import io.github.xlopec.reader.environment.setTestContent
 import io.github.xlopec.tea.core.ExperimentalTeaApi
-import io.github.xlopec.tea.data.Url
+import io.github.xlopec.tea.async.Url
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDateTime
 import org.junit.Rule
@@ -72,11 +72,11 @@ internal class AppTest {
                     state = ArticlesState.newLoading(
                         tab = Tab.Feed,
                         filter = Filter(type = Regular, query = Query.of("Input text")),
-                        articles = persistentListOf()
+                        articles = persistentListOf(),
                     ),
                     listState = LazyListState(firstVisibleItemIndex = 0, firstVisibleItemScrollOffset = 0),
                     modifier = Modifier,
-                    onMessage = {}
+                    onMessage = {},
                 )
             }
         }
@@ -94,7 +94,7 @@ internal class AppTest {
             App { messages ->
                 AppComponent(
                     environment = this,
-                    initializer = AppInitializer(systemDarkModeEnabled = false, this)
+                    initializer = AppInitializer(systemDarkModeEnabled = false, this),
                 )(messages)
             }
 
@@ -116,5 +116,5 @@ private val TestArticleElement = ArticleElement(
     title = Title("Android"),
     url = TestUrl,
     urlToImage = null,
-    source = SourceElement(id = SourceId("cnn"))
+    source = SourceElement(id = SourceId("cnn")),
 )

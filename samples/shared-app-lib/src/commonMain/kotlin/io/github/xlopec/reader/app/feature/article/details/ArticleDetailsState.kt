@@ -34,5 +34,5 @@ public data class ArticleDetailsState internal constructor(
 ) : FullScreen
 
 internal fun ArticleDetailsState.article(
-    toggled: Article
+    toggled: Article,
 ): ArticleDetailsState = copy(article = toggled)

@@ -35,6 +35,6 @@ import io.github.xlopec.reader.app.storage.AppDatabase
 private const val DBfileName = "app.db"
 
 public fun LocalStorage(
-    application: Application
+    application: Application,
 ): LocalStorage =
     LocalStorage(AndroidSqliteDriver(AppDatabase.Schema, application, DBfileName))

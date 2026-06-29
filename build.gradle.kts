@@ -30,7 +30,6 @@ plugins {
     id("base")
     id("common-config")
     alias(libs.plugins.version.check)
-    alias(libs.plugins.nexus.publishing)
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.kotlin.android.temp) apply false
@@ -43,19 +42,6 @@ plugins {
 
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
-
-nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl.set(NexusUrl)
-            snapshotRepositoryUrl.set(SnapshotNexusUrl)
-            username.set(project.ossrhUser)
-            password.set(project.ossrhPassword)
-        }
-    }
-
-    useStaging.set(!libraryVersion.isSnapshot)
-}
 
 subprojects {
     apply {

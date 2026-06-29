@@ -74,9 +74,9 @@ import io.github.xlopec.reader.app.feature.navigation.Tab.Feed
 import io.github.xlopec.reader.app.feature.navigation.Tab.Settings
 import io.github.xlopec.reader.app.feature.navigation.Tab.Trending
 import io.github.xlopec.reader.app.feature.settings.SettingsScreen
-import io.github.xlopec.reader.app.misc.isException
-import io.github.xlopec.reader.app.misc.isIdle
-import io.github.xlopec.reader.app.misc.isRefreshing
+import io.github.xlopec.tea.async.isException
+import io.github.xlopec.tea.async.isIdle
+import io.github.xlopec.tea.async.isRefreshing
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.ui.misc.InsetAwareTopAppBar
 import io.github.xlopec.reader.app.ui.misc.InsetsAwareBottomNavigation
@@ -142,9 +142,9 @@ private fun ArticlesScreen(
     Box(
         modifier = modifier.pullRefresh(
             state = refreshState,
-            enabled = state.isRefreshable
+            enabled = state.isRefreshable,
         ),
-        contentAlignment = Alignment.TopCenter
+        contentAlignment = Alignment.TopCenter,
     ) {
         val scrollTrigger = remember(state.id) { mutableIntStateOf(0) }
         val listState = remember(state.id) { state.scrollState.toLazyListState() }
@@ -165,7 +165,7 @@ private fun ArticlesScreen(
                         if (reselected) {
                             scrollTrigger.intValue++
                         }
-                    }
+                    },
                 ) {
                     bottomBar(state.filter.toMenuItem())
                 }
@@ -183,9 +183,9 @@ private fun ArticlesScreen(
                         .fillMaxSize(),
                     state = state,
                     listState = listState,
-                    onMessage = onMessage
+                    onMessage = onMessage,
                 )
-            }
+            },
         )
 
         PullRefreshIndicator(
@@ -209,14 +209,14 @@ private fun SettingsScreen(
             InsetAwareTopAppBar(
                 title = {
                     Text(text = "Settings")
-                }
+                },
             )
         },
         bottomBar = {
             CompositionLocalProvider(
                 LocalBottomBarListener provides { _, nav ->
                     onMessage(nav)
-                }
+                },
             ) {
                 bottomBar(Settings)
             }
@@ -225,9 +225,9 @@ private fun SettingsScreen(
             Settings(
                 innerPadding = innerPadding,
                 settings = state.settings,
-                onMessage = onMessage
+                onMessage = onMessage,
             )
-        }
+        },
     )
 }
 
@@ -245,44 +245,44 @@ internal fun BottomBar(
             icon = {
                 Icon(
                     imageVector = Outlined.Language,
-                    contentDescription = "Feed"
+                    contentDescription = "Feed",
                 )
             },
             selected = item === Feed,
-            onClick = { handler(item === Feed, NavigateToFeed) }
+            onClick = { handler(item === Feed, NavigateToFeed) },
         )
 
         BottomNavigationItem(
             icon = {
                 Icon(
                     imageVector = Outlined.FavoriteBorder,
-                    contentDescription = "Favorite"
+                    contentDescription = "Favorite",
                 )
             },
             selected = item === Favorite,
-            onClick = { handler(item === Favorite, NavigateToFavorite) }
+            onClick = { handler(item === Favorite, NavigateToFavorite) },
         )
 
         BottomNavigationItem(
             icon = {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.TrendingUp,
-                    contentDescription = "Trending"
+                    contentDescription = "Trending",
                 )
             },
             selected = item === Trending,
-            onClick = { handler(item === Trending, NavigateToTrending) }
+            onClick = { handler(item === Trending, NavigateToTrending) },
         )
 
         BottomNavigationItem(
             icon = {
                 Icon(
                     imageVector = Filled.Settings,
-                    contentDescription = "Settings"
+                    contentDescription = "Settings",
                 )
             },
             selected = item === Settings,
-            onClick = { handler(item === Settings, NavigateToSettings) }
+            onClick = { handler(item === Settings, NavigateToSettings) },
         )
     }
 }

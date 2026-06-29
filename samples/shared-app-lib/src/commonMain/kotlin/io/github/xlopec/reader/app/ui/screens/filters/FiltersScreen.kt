@@ -98,17 +98,14 @@ internal fun FiltersScreen(
             focusRequester.freeFocus()
 
             if (performSearch) {
-                handler(LoadArticles(state.id))
+                handler(LoadArticles(state.parentId))
             }
             handler(Pop)
         }
     } else {
         LaunchedEffect(Unit) {
-            screenTransitionState = Finish
-        }
-
-        if (screenTransition transitionedTo Finish) {
             focusRequester.requestFocus()
+            screenTransitionState = Finish
         }
     }
 
@@ -135,7 +132,7 @@ internal fun FiltersScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
             item(key = HeaderSectionId) {
@@ -143,7 +140,7 @@ internal fun FiltersScreen(
                     modifier = Modifier
                         .padding(
                             horizontal = headerTransition.horizontalPadding,
-                            vertical = 16.dp
+                            vertical = 16.dp,
                         )
                         .focusRequester(focusRequester),
                     elevation = headerTransition.elevation,
@@ -156,11 +153,11 @@ internal fun FiltersScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             IconButton(
-                                onClick = onSearch
+                                onClick = onSearch,
                             ) {
                                 Icon(
                                     imageVector = Default.Search,
-                                    contentDescription = "Search"
+                                    contentDescription = "Search",
                                 )
                             }
 
@@ -176,14 +173,14 @@ internal fun FiltersScreen(
                                 ) {
                                     Icon(
                                         imageVector = Default.Close,
-                                        contentDescription = "Close"
+                                        contentDescription = "Close",
                                     )
                                 }
                             }
                         }
                     },
                     shape = RoundedCornerShape(headerTransition.cornerRadius),
-                    colors = headerTransition.textFieldTransitionColors()
+                    colors = headerTransition.textFieldTransitionColors(),
                 )
             }
 
@@ -194,7 +191,7 @@ internal fun FiltersScreen(
                     sources = state.sourcesState,
                     childTransitionState = childTransition,
                     handler = handler,
-                    state = state
+                    state = state,
                 )
             }
 

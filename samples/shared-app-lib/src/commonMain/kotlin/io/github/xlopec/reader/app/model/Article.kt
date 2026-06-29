@@ -39,7 +39,7 @@ public data class Article(
     val urlToImage: Url?,
     val published: LocalDateTime,
     val isFavorite: Boolean,
-    val source: SourceId?
+    val source: SourceId?,
 )
 
 @JvmInline
@@ -120,7 +120,7 @@ internal fun Article.toggleFavorite(): Article = copy(isFavorite = !isFavorite)
 
 internal fun <T> tryCreate(
     s: String?,
-    constructor: (String) -> T
+    constructor: (String) -> T,
 ) = if (s?.isNonEmpty() == true) constructor(s) else null
 
 private fun String?.isNonEmpty(): Boolean {

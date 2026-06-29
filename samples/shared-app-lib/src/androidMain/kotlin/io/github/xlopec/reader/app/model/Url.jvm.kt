@@ -29,7 +29,7 @@ package io.github.xlopec.reader.app.model
 public actual typealias Url = java.net.URI
 
 public actual fun UrlFor(
-    s: String
+    s: String,
 ): Url = java.net.URI(s.replace("|", "%7C"))
 
 public actual fun Url.toExternalValue(): String = toASCIIString()

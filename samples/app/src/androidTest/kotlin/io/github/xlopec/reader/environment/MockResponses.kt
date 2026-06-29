@@ -33,11 +33,11 @@ import io.github.xlopec.reader.app.feature.network.ArticleResponse
 fun anyArticleRequest(): ArticlePredicate = { _, _ -> true }
 
 fun ArticleResponse(
-    vararg articles: ArticleElement
+    vararg articles: ArticleElement,
 ): Either.Right<ArticleResponse> =
     Either.Right(
         ArticleResponse(
             articles.size,
-            articles.toList()
-        )
+            articles.toList(),
+        ),
     )

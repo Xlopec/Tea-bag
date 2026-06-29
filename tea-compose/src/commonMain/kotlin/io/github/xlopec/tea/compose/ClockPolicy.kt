@@ -36,5 +36,5 @@ public enum class ClockPolicy {
     /**
      * Use internal clock.
      */
-    Internal
+    Internal,
 }

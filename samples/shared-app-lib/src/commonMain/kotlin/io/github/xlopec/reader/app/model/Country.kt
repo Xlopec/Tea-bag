@@ -28,5 +28,5 @@ import kotlin.jvm.JvmInline
 
 @JvmInline
 public value class Country(
-    internal val code: String
+    internal val code: String,
 )

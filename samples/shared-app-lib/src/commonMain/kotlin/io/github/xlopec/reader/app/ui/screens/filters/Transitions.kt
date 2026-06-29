@@ -76,7 +76,7 @@ internal data class HeaderTransitionState(
             focusedIndicatorColor = indicatorColor,
             unfocusedIndicatorColor = indicatorColor,
             disabledIndicatorColor = indicatorColor,
-            errorIndicatorColor = indicatorColor
+            errorIndicatorColor = indicatorColor,
         )
 }
 
@@ -113,7 +113,7 @@ internal fun Transition<ScreenAnimationState>.headerTransitionState(): HeaderTra
     val indicatorColor = textFieldColors.indicatorColor(
         enabled = true,
         isError = false,
-        interactionSource = remember { MutableInteractionSource() }
+        interactionSource = remember { MutableInteractionSource() },
     )
 
     val horizontalPadding = transition.animateDp(label = "Header padding") {
@@ -144,7 +144,7 @@ internal fun Transition<ScreenAnimationState>.headerTransitionState(): HeaderTra
             horizontalPadding,
             cornerRadius,
             elevation,
-            transition
+            transition,
         )
     }
 }

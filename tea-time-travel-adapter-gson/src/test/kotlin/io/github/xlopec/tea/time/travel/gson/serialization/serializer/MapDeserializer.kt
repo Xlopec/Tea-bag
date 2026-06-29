@@ -35,7 +35,7 @@ internal object MapDeserializer : JsonDeserializer<Map<*, *>> {
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type,
-        context: JsonDeserializationContext
+        context: JsonDeserializationContext,
     ): Map<*, *> {
 
         val genericKeyArgType = (typeOfT as ParameterizedType).actualTypeArguments[1] as Class<*>
@@ -44,7 +44,7 @@ internal object MapDeserializer : JsonDeserializer<Map<*, *>> {
             .associate { (k, v) ->
                 (if (k == "null") null else k) to context.deserialize<Any?>(
                     v,
-                    genericKeyArgType
+                    genericKeyArgType,
                 )
             }
     }

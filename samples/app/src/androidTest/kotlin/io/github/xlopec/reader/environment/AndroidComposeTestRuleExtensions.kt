@@ -32,13 +32,13 @@ import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 
 operator fun <A : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<A>, A>.invoke(
-    block: AndroidComposeTestRule<ActivityScenarioRule<A>, A>.() -> Unit
+    block: AndroidComposeTestRule<ActivityScenarioRule<A>, A>.() -> Unit,
 ) {
     apply(block)
 }
 
 fun AndroidComposeTestRule<*, *>.setTestContent(
-    composable: @Composable TestEnvironment.() -> Unit
+    composable: @Composable TestEnvironment.() -> Unit,
 ) = setContent {
 
     val environment = remember { TestEnvironment(activity.application) }

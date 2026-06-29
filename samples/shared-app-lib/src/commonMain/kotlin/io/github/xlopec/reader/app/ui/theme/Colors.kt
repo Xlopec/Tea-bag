@@ -39,7 +39,7 @@ internal val DarkThemeColors = darkColors(
     onSecondary = Color.White,
     onBackground = Color.White,
     onSurface = Color.White,
-    onError = Color.White
+    onError = Color.White,
 )
 
 internal val LightThemeColors = lightColors(
@@ -53,5 +53,5 @@ internal val LightThemeColors = lightColors(
     surface = Color.White,
     onSurface = Color.Black,
     error = Color(0xFFD00036),
-    onError = Color.White
+    onError = Color.White,
 )

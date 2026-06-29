@@ -36,5 +36,5 @@ public data class ToggleArticleIsFavorite(
 ) : ArticleDetailsMessage
 
 public data class OpenInBrowser(
-    override val id: ScreenId
+    override val id: ScreenId,
 ) : ArticleDetailsMessage

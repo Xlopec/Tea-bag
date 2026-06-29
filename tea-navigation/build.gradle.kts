@@ -40,13 +40,7 @@ kotlin {
                 api(libs.compose.runtime)
                 api(libs.compose.foundation)
                 api(libs.immutable.collections)
-            }
-        }
-        appleMain {
-            dependencies {
-                // todo consider replacing with implementation
-                api(libs.decompose.extensions)
-                api(libs.decompose.backHandler)
+                implementation(libs.animation.core)
             }
         }
         commonTest {

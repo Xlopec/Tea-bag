@@ -63,11 +63,11 @@ internal fun Settings(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
-            .padding(innerPadding)
+            .padding(innerPadding),
     ) {
 
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             SwitchItem(
                 icon = Icons.Default.Brightness5,
@@ -114,7 +114,7 @@ private fun SwitchItem(
         Icon(
             contentDescription = imageDescription,
             tint = MaterialTheme.colors.onSurface,
-            imageVector = icon
+            imageVector = icon,
         )
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -122,21 +122,21 @@ private fun SwitchItem(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.subtitle1
+                style = MaterialTheme.typography.subtitle1,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = description,
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1,
             )
         }
 
         Switch(
             enabled = enabled,
             checked = checked,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = onCheckedChange,
         )
     }
     Divider()
@@ -144,8 +144,8 @@ private fun SwitchItem(
 
 private fun Settings.toToggleDarkModeMessage(
     userDarkModeEnabled: Boolean = this.userDarkModeEnabled,
-    syncWithSystemDarkModeEnabled: Boolean = this.syncWithSystemDarkModeEnabled
+    syncWithSystemDarkModeEnabled: Boolean = this.syncWithSystemDarkModeEnabled,
 ) = ToggleDarkMode(
     userDarkModeEnabled = userDarkModeEnabled,
-    syncWithSystemDarkModeEnabled = syncWithSystemDarkModeEnabled
+    syncWithSystemDarkModeEnabled = syncWithSystemDarkModeEnabled,
 )

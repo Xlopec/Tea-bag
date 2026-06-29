@@ -28,7 +28,7 @@ plugins {
 
 // see https://youtrack.jetbrains.com/issue/KT-35073
 // https://youtrack.jetbrains.com/issue/KT-63142/Add-support-for-Gradle-Test-Fixtures-in-non-JVM-platforms
-val prepareTestJar by tasks.registering(Jar::class) {
+val prepareTestJar = tasks.register<Jar>("prepareTestJar") {
     from(sourceSets.named("jvmTest").get().output)
     archiveClassifier.set("test")
 }
@@ -50,7 +50,7 @@ kotlin {
             "kotlinx.coroutines.FlowPreview",
             "kotlinx.coroutines.InternalCoroutinesApi",
             "io.github.xlopec.tea.core.InternalTeaApi",
-            "io.github.xlopec.tea.core.ExperimentalTeaApi"
+            "io.github.xlopec.tea.core.ExperimentalTeaApi",
         )
     }
 

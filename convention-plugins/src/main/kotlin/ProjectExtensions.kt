@@ -33,6 +33,8 @@ val DefaultOptIns = listOf(
 )
 
 fun Project.installGitHooks() = afterEvaluate {
+    // In a git worktree, .git is a file (gitdir pointer), not a directory — skip in that case.
+    if (!gitHooksDir.isDirectory) return@afterEvaluate
     projectHooksDir.listFiles { f -> f.extension == "sh" }
         ?.forEach { f ->
             val target = File(gitHooksDir, f.nameWithoutExtension)

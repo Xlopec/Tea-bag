@@ -30,21 +30,22 @@ import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.ScreenId
 import io.github.xlopec.reader.app.TabScreen
 import io.github.xlopec.reader.app.feature.navigation.Tab
-import io.github.xlopec.reader.app.misc.Loadable
 import io.github.xlopec.reader.app.misc.remove
 import io.github.xlopec.reader.app.misc.replace
-import io.github.xlopec.reader.app.misc.toException
-import io.github.xlopec.reader.app.misc.toIdle
-import io.github.xlopec.reader.app.misc.toLoading
-import io.github.xlopec.reader.app.misc.toLoadingNext
-import io.github.xlopec.reader.app.misc.toRefreshing
-import io.github.xlopec.reader.app.misc.updated
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.tea.async.Page
+import io.github.xlopec.tea.async.Paginatable
+import io.github.xlopec.tea.async.data
+import io.github.xlopec.tea.async.toException
+import io.github.xlopec.tea.async.toIdle
+import io.github.xlopec.tea.async.toLoading
+import io.github.xlopec.tea.async.toLoadingNext
+import io.github.xlopec.tea.async.toRefreshing
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
-public typealias ArticlesLoadable = Loadable<Article>
+public typealias ArticlesLoadable = Paginatable<Article, AppException>
 
 public data class ScrollState(
     val firstVisibleItemIndex: Int,
@@ -72,7 +73,7 @@ public data class ArticlesState(
             tab: Tab,
             filter: Filter,
             articles: PersistentList<Article> = persistentListOf(),
-        ): ArticlesState = ArticlesState(tab, filter, Loadable.newLoading(articles))
+        ): ArticlesState = ArticlesState(tab, filter, Paginatable.loadingList(articles))
     }
 }
 
@@ -80,7 +81,7 @@ internal fun ArticlesState.toLoadingNext() =
     copy(loadable = loadable.toLoadingNext())
 
 internal fun ArticlesState.toLoading(
-    filter: Filter = this.filter
+    filter: Filter = this.filter,
 ) = copy(filter = filter, loadable = loadable.toLoading())
 
 internal fun ArticlesState.toRefreshing() =
@@ -97,9 +98,9 @@ internal fun ArticlesState.toException(
 internal fun ArticlesState.updateArticle(
     new: Article,
 ): ArticlesState =
-    copy(loadable = loadable.updated { replace(new) { it.url == new.url } })
+    copy(loadable = loadable.data { replace(new) { it.url == new.url } })
 
 internal fun ArticlesState.removeArticle(
     victim: Article,
 ): ArticlesState =
-    copy(loadable = loadable.updated { remove { it.url == victim.url } })
+    copy(loadable = loadable.data { remove { it.url == victim.url } })

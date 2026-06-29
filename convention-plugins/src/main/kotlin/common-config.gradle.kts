@@ -22,19 +22,19 @@
  * SOFTWARE.
  */
 
-import io.gitlab.arturbosch.detekt.Detekt
-import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
+import dev.detekt.gradle.Detekt
+import dev.detekt.gradle.DetektCreateBaselineTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("io.gitlab.arturbosch.detekt")
+    id("dev.detekt")
     id("com.github.ben-manes.versions")
 }
 
 //noinspection UseTomlInstead
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-rules-libraries:1.23.7")
+    detektPlugins("dev.detekt:detekt-rules-ktlint-wrapper:2.0.0-alpha.5")
+    detektPlugins("dev.detekt:detekt-rules-libraries:2.0.0-alpha.5")
 }
 
 afterEvaluate {
@@ -64,17 +64,19 @@ detekt {
 }
 
 tasks.withType<Detekt>().configureEach {
+    jvmTarget = "11"
     include("**/*.kt", "**/*.kts")
     exclude("resources/", "**/build/**", "**/test/java/**")
     setSource(files(projectDir))
     reports {
-        xml.required.set(false)
-        txt.required.set(false)
+        checkstyle.required.set(false)
+        sarif.required.set(false)
+        markdown.required.set(false)
         html.required.set(true)
     }
 }
 
-val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) {
+tasks.register<DetektCreateBaselineTask>("detektProjectBaseline") {
     ignoreFailures.set(true)
     parallel.set(true)
     setSource(files(rootDir))
@@ -84,7 +86,7 @@ val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) 
     exclude("**/resources/**", "**/build/**")
 }
 
-val detektFormat by tasks.registering(Detekt::class) {
+tasks.register<Detekt>("detektFormat") {
     parallel = true
     autoCorrect = true
     ignoreFailures = false

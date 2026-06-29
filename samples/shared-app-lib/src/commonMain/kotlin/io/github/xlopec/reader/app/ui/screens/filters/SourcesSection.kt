@@ -72,13 +72,10 @@ import io.github.xlopec.reader.app.feature.filter.ClearSelection
 import io.github.xlopec.reader.app.feature.filter.FiltersState
 import io.github.xlopec.reader.app.feature.filter.LoadSources
 import io.github.xlopec.reader.app.feature.filter.ToggleSourceSelection
-import io.github.xlopec.reader.app.misc.Exception
-import io.github.xlopec.reader.app.misc.Idle
-import io.github.xlopec.reader.app.misc.Loadable
-import io.github.xlopec.reader.app.misc.Loading
-import io.github.xlopec.reader.app.misc.LoadingNext
-import io.github.xlopec.reader.app.misc.Refreshing
+import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.model.Source
+import io.github.xlopec.tea.async.Paginatable
+import io.github.xlopec.tea.async.compose.paginatableItems
 import io.github.xlopec.reader.app.model.Url
 import io.github.xlopec.reader.app.model.toExternalValue
 import io.github.xlopec.reader.app.ui.misc.RowMessage
@@ -88,7 +85,7 @@ internal fun SourcesSection(
     state: FiltersState,
     id: ScreenId,
     modifier: Modifier,
-    sources: Loadable<Source>,
+    sources: Paginatable<Source, AppException>,
     childTransitionState: ChildTransitionState,
     handler: MessageHandler,
 ) {
@@ -99,11 +96,11 @@ internal fun SourcesSection(
             modifier = modifier
                 .padding(all = 16.dp)
                 .alpha(childTransitionState.contentAlpha),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             FiltersSubtitle(
                 modifier = Modifier,
-                text = "Sources"
+                text = "Sources",
             )
 
             Spacer(Modifier.weight(1f))
@@ -112,85 +109,81 @@ internal fun SourcesSection(
 
             AnimatedVisibility(visible = filtersCount > 0U) {
                 ClearSelectionButton(
-                    filtersCount = filtersCount
+                    filtersCount = filtersCount,
                 ) { handler(ClearSelection(id)) }
             }
         }
 
-        when (val loadable = sources.loadableState) {
-            LoadingNext -> Unit
-            is Exception -> {
-                RowMessage(
-                    modifier = modifier.padding(horizontal = 16.dp),
-                    message = loadable.th.message,
-                    onClick = { handler(LoadSources(id)) }
-                )
-            }
+        LazyRow(
+            modifier = modifier
+                .alpha(alpha = childTransitionState.contentAlpha)
+                .offset(y = childTransitionState.listItemOffsetY),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            userScrollEnabled = sources.data.isNotEmpty(),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+        ) {
+            val onSourceClick: (Source) -> Unit = { handler(ToggleSourceSelection(id, it.id)) }
 
-            Loading, Refreshing, Idle -> {
-                val infiniteTransition = rememberInfiniteTransition()
-                val alpha by infiniteTransition.animateFloat(
-                    initialValue = 0f,
-                    targetValue = 1f,
-                    animationSpec = infiniteRepeatable(
-                        animation = keyframes {
-                            durationMillis = 1000
-                            0.7f at 500
-                        },
-                        repeatMode = RepeatMode.Reverse
-                    )
-                )
-
-                LazyRow(
-                    modifier = modifier
-                        .alpha(alpha = childTransitionState.contentAlpha)
-                        .offset(y = childTransitionState.listItemOffsetY),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    userScrollEnabled = sources.data.isNotEmpty(),
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                ) {
-
-                    when {
-                        loadable == Idle && sources.data.isEmpty() -> emptySourceItems(
-                            onClick = { handler(LoadSources(id)) }
+            paginatableItems(
+                paginatable = sources,
+                onLoading = {
+                    item(key = "shimmer") { ShimmerSourcesRow() }
+                },
+                onRefreshing = { items ->
+                    sourceItems(sources = items, onClick = onSourceClick, state = state)
+                },
+                onLoadingNext = { items ->
+                    sourceItems(sources = items, onClick = onSourceClick, state = state)
+                },
+                onException = { error, _ ->
+                    item(key = "error") {
+                        RowMessage(
+                            modifier = Modifier.fillParentMaxWidth(),
+                            message = error.message,
+                            onClick = { handler(LoadSources(id)) },
                         )
-
-                        loadable == Idle -> sourceItems(
-                            sources = sources.data,
-                            onClick = { handler(ToggleSourceSelection(id, it.id)) },
-                            state = state
-                        )
-
-                        else -> shimmerSourceItems(alpha = alpha)
                     }
-                }
-            }
+                },
+                onIdle = { items ->
+                    if (items.isEmpty()) {
+                        item(key = "empty") {
+                            RowMessage(
+                                modifier = Modifier.fillParentMaxWidth(),
+                                message = "No sources found",
+                                onClick = { handler(LoadSources(id)) },
+                            )
+                        }
+                    } else {
+                        sourceItems(sources = items, onClick = onSourceClick, state = state)
+                    }
+                },
+            )
         }
     }
 }
 
-private fun LazyListScope.emptySourceItems(
-    onClick: () -> Unit,
-) {
-    item {
-        RowMessage(
-            modifier = Modifier.fillParentMaxWidth(),
-            message = "No sources found",
-            onClick = onClick
-        )
-    }
-}
+@Composable
+private fun ShimmerSourcesRow() {
+    val infiniteTransition = rememberInfiniteTransition()
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = 1000
+                0.7f at 500
+            },
+            repeatMode = RepeatMode.Reverse,
+        ),
+    )
 
-private fun LazyListScope.shimmerSourceItems(
-    alpha: Float,
-) {
-    repeat(10) {
-        item(it) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        repeat(10) {
             SourceItem(
                 modifier = Modifier.alpha(alpha),
                 painter = ColorPainter(Color.Gray),
                 contentDescription = null,
-                onClick = {}
+                onClick = {},
             )
         }
     }
@@ -206,7 +199,7 @@ private fun LazyListScope.sourceItems(
             painter = source.logo.toAsyncImagePainter(),
             checked = source.id in state.filter.sources,
             contentDescription = source.name.value,
-            onClick = { onClick(source) }
+            onClick = { onClick(source) },
         )
     }
 }
@@ -222,12 +215,12 @@ private fun SourceItem(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Surface(
             elevation = 8.dp,
             shape = CircleShape,
-            onClick = onClick
+            onClick = onClick,
         ) {
             Image(
                 modifier = Modifier
@@ -235,7 +228,7 @@ private fun SourceItem(
                     .background(Color.White),
                 contentScale = ContentScale.Crop,
                 painter = painter,
-                contentDescription = contentDescription
+                contentDescription = contentDescription,
             )
 
             if (checked) {
@@ -246,7 +239,7 @@ private fun SourceItem(
                         .padding(SourceImageSize * 0.15f),
                     colorFilter = ColorFilter.tint(Color.White),
                     imageVector = Icons.Default.Check,
-                    contentDescription = contentDescription
+                    contentDescription = contentDescription,
                 )
             }
         }
@@ -262,7 +255,7 @@ private fun ClearSelectionButton(
         modifier = Modifier
             .clickable(onClick = onClick),
         text = if (filtersCount > 0U) "Clear ($filtersCount)" else "Clear",
-        style = MaterialTheme.typography.subtitle2
+        style = MaterialTheme.typography.subtitle2,
     )
 }
 
@@ -273,5 +266,5 @@ private fun Url.toAsyncImagePainter() = rememberAsyncImagePainter(
     ImageRequest.Builder(LocalPlatformContext.current)
         .data(toExternalValue())
         .crossfade(true)
-        .build()
+        .build(),
 )

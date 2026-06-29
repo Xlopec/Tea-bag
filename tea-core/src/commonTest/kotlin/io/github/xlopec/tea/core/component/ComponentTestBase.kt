@@ -56,7 +56,7 @@ abstract class ComponentTestBase(
             initializer = { counter++; initial },
             resolver = { _ -> },
             updater = { m: Char, str -> (str + m).command(m) },
-            scope = backgroundScope
+            scope = backgroundScope,
         )
 
         val component = factory(env)
@@ -72,9 +72,11 @@ abstract class ComponentTestBase(
     fun `when component receives input then it emits correct sequence of snapshots`() = runTest {
         val env = TestEnv<Char, String, Char>(
             initializer = Initializer(""),
-            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $snapshot" } } } },
+            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(
+                it.commands.isEmpty(),
+            ) { "Non empty snapshot $snapshot" } } } },
             updater = { m, _ -> m.toString().noCommand() },
-            scope = backgroundScope
+            scope = backgroundScope,
         )
 
         val messages = arrayOf('a', 'b', 'c')
@@ -83,7 +85,7 @@ abstract class ComponentTestBase(
             Initial(currentState = "", commands = setOf()),
             Regular(currentState = "a", commands = setOf(), previousState = "", message = 'a'),
             Regular(currentState = "b", commands = setOf(), previousState = "a", message = 'b'),
-            Regular(currentState = "c", commands = setOf(), previousState = "b", message = 'c')
+            Regular(currentState = "c", commands = setOf(), previousState = "b", message = 'c'),
         )
 
         assertContentEquals(expectedSnapshots, actualSnapshots)
@@ -105,14 +107,14 @@ abstract class ComponentTestBase(
                 }
             },
             updater = { m, str -> (str + m).command(m) },
-            scope = backgroundScope
+            scope = backgroundScope,
         )
 
         val actualSnapshots = factory(env)('a').take(3).toList()
         val expectedSnapshots = listOf(
             Initial(currentState = "", commands = setOf()),
             Regular(currentState = "a", commands = setOf('a'), previousState = "", message = 'a'),
-            Regular(currentState = "ab", commands = setOf('b'), previousState = "a", message = 'b')
+            Regular(currentState = "ab", commands = setOf('b'), previousState = "a", message = 'b'),
         )
 
         assertContentEquals(expectedSnapshots, actualSnapshots)
@@ -132,7 +134,7 @@ abstract class ComponentTestBase(
                 }
             },
             updater = { m, _ -> m.toString().noCommand() },
-            scope = backgroundScope
+            scope = backgroundScope,
         )
 
         val sink = mutableListOf<Snapshot<Char, String, Char>>()
@@ -157,7 +159,7 @@ abstract class ComponentTestBase(
                                     setOf(
                                         ch + 1, // only this message should be consumed
                                         ch + 2,
-                                        ch + 3
+                                        ch + 3,
                                     )
                                 } else {
                                     setOf()
@@ -168,7 +170,7 @@ abstract class ComponentTestBase(
                 }
             },
             updater = { m, str -> (str + m).command(m) },
-            scope = backgroundScope
+            scope = backgroundScope,
         )
 
         val take = 3
@@ -181,7 +183,7 @@ abstract class ComponentTestBase(
             val expectedSnapshots = listOf(
                 Initial(currentState = "", commands = setOf()),
                 Regular(currentState = "a", commands = setOf('a'), previousState = "", message = 'a'),
-                Regular(currentState = "ab", commands = setOf('b'), previousState = "a", message = 'b')
+                Regular(currentState = "ab", commands = setOf('b'), previousState = "a", message = 'b'),
             )
 
             expectedSnapshots.forEach { expectedSnapshot ->
@@ -210,7 +212,7 @@ abstract class ComponentTestBase(
             // cache will be disposed immediately causing test to fail
             shareOptions = { scope, upstream ->
                 upstream.shareIn(scope, SharingStarted.Lazily, 1)
-            }
+            },
         )
 
         val component = factory(env)
@@ -233,7 +235,7 @@ abstract class ComponentTestBase(
             initializer = Initializer(""),
             resolver = { snapshots -> resolver.collect(snapshots) },
             updater = { message, state -> state command message },
-            scope = backgroundScope
+            scope = backgroundScope,
         )
 
         val messages = 'a'..'z'
@@ -253,9 +255,11 @@ abstract class ComponentTestBase(
     fun `when component has multiple consumers then it can serve multiple message sources`() = runTest {
         val env = TestEnv<Char, String, Char>(
             initializer = Initializer(""),
-            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(it.commands.isEmpty()) { "Non empty snapshot $it" } } } },
+            resolver = { snapshot -> contextOf<CoroutineScope>().launch { snapshot.collect { check(
+                it.commands.isEmpty(),
+            ) { "Non empty snapshot $it" } } } },
             updater = { m, _ -> m.toString().noCommand() },
-            scope = backgroundScope
+            scope = backgroundScope,
         )
 
         val range = 'a'..'h'
@@ -282,14 +286,14 @@ abstract class ComponentTestBase(
                 listOf(
                     Initial(
                         currentState = "",
-                        commands = setOf<Char>()
-                    )
+                        commands = setOf<Char>(),
+                    ),
                 ) + range.mapIndexed { index, ch ->
                     Regular(
                         currentState = ch.toString(),
                         commands = setOf(),
                         previousState = if (index == 0) "" else ch.dec().toString(),
-                        message = ch
+                        message = ch,
                     )
                 }
 
@@ -314,7 +318,7 @@ abstract class ComponentTestBase(
             initializer = Initializer("", "a"),
             resolver = { snapshot -> scope.launch { snapshot.collect { /* no-op */ } } },
             updater = { m: String, s -> throw ComponentException("message=$m, state=$s") },
-            scope = scope
+            scope = scope,
         )
 
         val job = scope.launch { component("").collect() }
@@ -338,8 +342,8 @@ abstract class ComponentTestBase(
                 initializer = ThrowingInitializer(expectedException),
                 resolver = { snapshot -> scope.launch { snapshot.collect { /* no-op */ } } },
                 updater = { _, s -> s },
-                scope = scope
-            )
+                scope = scope,
+            ),
         )
 
         val job = scope.launch { component("").collect() }

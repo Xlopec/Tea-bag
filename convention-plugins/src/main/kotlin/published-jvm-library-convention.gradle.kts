@@ -22,10 +22,12 @@
  * SOFTWARE.
  */
 
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinJvm
+
 plugins {
     kotlin("jvm")
-    `maven-publish`
-    id("signing-convention")
+    id("com.vanniktech.maven.publish")
     id("documented-convention")
 }
 
@@ -39,50 +41,32 @@ kotlinJvm {
     }
 }
 
-val packSourcesJar by tasks.registering(Jar::class) {
-    dependsOn(tasks.classes)
-    archiveClassifier.set("sources")
-    from(projectSourceSets["main"].allSource)
+mavenPublishing {
+    configure(
+        KotlinJvm(
+            javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
+            sourcesJar = true,
+        ),
+    )
 
-    group = "release"
-    description = "Packs sources jar depending on kotlin plugin applied"
+    publishToMavenCentral()
+    signAllPublications()
+
+    coordinates(group.toString(), project.name, version.toString())
+
+    pom { configurePom(project.name) }
 }
 
-val packJavadocJar by tasks.registering(Jar::class) {
-    dependsOn(tasks.named("dokkaGeneratePublicationHtml"))
-    archiveClassifier.set("javadoc")
-    from(documentationDir)
-
-    group = "release"
-    description = "Packs javadoc jar"
-}
-
-val copyArtifacts by tasks.registering(Copy::class) {
+tasks.register<Copy>("copyArtifacts") {
     from(libsDir)
     into(artifactsDir)
 
-    mustRunAfter("publishToSonatype", "publishToMavenLocal")
+    mustRunAfter(
+        "publishAndReleaseToMavenCentral",
+        "publishToMavenCentral",
+        "publishToMavenLocal",
+    )
 
     group = "release"
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
-}
-
-publishing {
-    publications {
-        create<MavenPublication>(project.name) {
-            from(components["java"])
-            artifact(packJavadocJar)
-            artifact(packSourcesJar)
-            pom.configurePom(project.name)
-        }
-    }
-
-    repositories {
-        mavenLocal()
-    }
-}
-
-artifacts {
-    archives(packSourcesJar)
-    archives(packJavadocJar)
 }

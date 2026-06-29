@@ -32,8 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.xlopec.reader.app.feature.filter.FiltersState
-import io.github.xlopec.reader.app.misc.Loadable
 import io.github.xlopec.reader.app.model.Filter
+import io.github.xlopec.tea.async.Paginatable
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
@@ -41,8 +41,9 @@ import kotlin.uuid.Uuid
 
 private val PreviewState = FiltersState(
     id = Uuid.random(),
+    parentId = Uuid.random(),
     filter = Filter(FilterType.Regular, Query.of("Android")),
-    sourcesState = Loadable.newLoading()
+    sourcesState = Paginatable.loadingList(),
 )
 
 @Preview
@@ -51,7 +52,7 @@ internal fun FiltersPreviewDark() {
     ThemedPreview {
         FiltersScreen(
             state = PreviewState,
-            handler = {}
+            handler = {},
         )
     }
 }
@@ -72,7 +73,7 @@ internal fun FiltersPreviewLight() {
 internal fun SuggestionItems() {
     ThemedPreview {
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             RecentSearchItem(
                 modifier = Modifier.fillMaxWidth(),

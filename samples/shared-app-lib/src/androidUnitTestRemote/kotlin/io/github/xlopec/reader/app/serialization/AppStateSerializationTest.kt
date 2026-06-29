@@ -31,7 +31,7 @@ import io.github.xlopec.reader.app.feature.article.list.ArticlesLoadable
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.article.list.LoadArticles
 import io.github.xlopec.reader.app.feature.navigation.Tab
-import io.github.xlopec.reader.app.misc.Idle
+import io.github.xlopec.tea.async.Paginatable
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Description
 import io.github.xlopec.reader.app.model.Filter
@@ -45,7 +45,7 @@ import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
 import io.github.xlopec.tea.time.travel.protocol.ServerMessage
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -78,29 +78,29 @@ internal class AppStateSerializationTest {
                     urlToImage = null,
                     published = Clock.System.now().toLocalDateTime(TimeZone.UTC),
                     isFavorite = false,
-                    source = null
-                )
+                    source = null,
+                ),
             ),
             hasMore = false,
-            loadableState = Idle
-        )
+            state = Paginatable.Idle,
+        ),
     )
 
     private val loadingScreenState = ArticlesState.newLoading(
         Tab.Feed,
-        Filter(FilterType.Regular, Query.of("test"))
+        Filter(FilterType.Regular, Query.of("test")),
     )
 
     private val testState = AppState(
         screens = stackOf(
             previewScreenState,
-            loadingScreenState
+            loadingScreenState,
         ),
         settings = Settings(
             userDarkModeEnabled = true,
             systemDarkModeEnabled = false,
-            syncWithSystemDarkModeEnabled = false
-        )
+            syncWithSystemDarkModeEnabled = false,
+        ),
     )
 
     @Test
@@ -108,7 +108,7 @@ internal class AppStateSerializationTest {
 
         val message = NotifyComponentAttached(
             state = toJsonTree(testState),
-            commands = setOf()
+            commands = setOf(),
         )
         val json = toJson(message)
 
@@ -124,7 +124,7 @@ internal class AppStateSerializationTest {
             message = toJsonTree("Message"),
             oldState = toJsonTree(testState),
             newState = toJsonTree(loadingScreenState),
-            commands = setOf()
+            commands = setOf(),
         )
 
         val json = toJson(message)

@@ -64,7 +64,7 @@ dependencies {
     implementation(libs.convention.sqldelight)
     implementation(libs.convention.compose.plugin)
     implementation(libs.convention.compose.compiler)
-    implementation(libs.convention.nexus.publish)
+    implementation(libs.convention.vanniktech.publish)
     implementation(libs.convention.detekt)
     implementation(libs.convention.versions)
 

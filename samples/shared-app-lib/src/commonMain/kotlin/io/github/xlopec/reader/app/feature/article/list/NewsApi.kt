@@ -39,13 +39,13 @@ public interface NewsApi {
     public suspend fun fetchFromEverything(
         query: Query?,
         sources: ImmutableSet<SourceId>,
-        paging: Paging
+        paging: Paging,
     ): Either<AppException, ArticleResponse>
 
     public suspend fun fetchTopHeadlines(
         query: Query?,
         sources: ImmutableSet<SourceId>,
-        paging: Paging
+        paging: Paging,
     ): Either<AppException, ArticleResponse>
 
     public suspend fun fetchNewsSources(): Either<AppException, SourcesResponse>

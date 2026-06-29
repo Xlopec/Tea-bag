@@ -61,7 +61,7 @@ private fun appColors(
     val primaryVariant by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.primaryVariant else DarkThemeColors.primaryVariant)
     val secondary by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.secondary else DarkThemeColors.secondary)
     val secondaryVariant by animateColorAsState(
-        if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant
+        if (!isDarkModeEnabled) LightThemeColors.secondaryVariant else DarkThemeColors.secondaryVariant,
     )
     val background by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.background else DarkThemeColors.background)
     val surface by animateColorAsState(if (!isDarkModeEnabled) LightThemeColors.surface else DarkThemeColors.surface)
@@ -85,7 +85,7 @@ private fun appColors(
         onBackground = onBackground,
         onSurface = onSurface,
         onError = onError,
-        isLight = !isDarkModeEnabled
+        isLight = !isDarkModeEnabled,
     )
 }
 

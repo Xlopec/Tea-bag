@@ -30,12 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.navigation.Tab
-import io.github.xlopec.reader.app.misc.Idle
-import io.github.xlopec.reader.app.misc.Loadable
-import io.github.xlopec.reader.app.misc.LoadableState
-import io.github.xlopec.reader.app.misc.Loading
-import io.github.xlopec.reader.app.misc.LoadingNext
-import io.github.xlopec.reader.app.misc.Refreshing
+import io.github.xlopec.reader.app.AppException
+import io.github.xlopec.tea.async.Paginatable
+import io.github.xlopec.tea.async.Paginatable.Idle
+import io.github.xlopec.tea.async.Paginatable.Loading
+import io.github.xlopec.tea.async.Paginatable.LoadingNext
+import io.github.xlopec.tea.async.Paginatable.Refreshing
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Author
 import io.github.xlopec.reader.app.model.Description
@@ -48,7 +48,7 @@ import io.github.xlopec.reader.app.ui.misc.ColumnMessage
 import io.github.xlopec.reader.app.ui.theme.ThemedPreview
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.uuid.Uuid
@@ -61,9 +61,9 @@ internal fun ArticleSearchHeaderPreview() {
             state = ArticlesState(
                 tab = Tab.Trending,
                 filter = Filter(FilterType.Trending, Query.of("some input text")),
-                loadable = Loadable(data = persistentListOf(), hasMore = false, loadableState = Idle)
+                loadable = Paginatable(data = persistentListOf(), hasMore = false, state = Idle),
             ),
-            onMessage = {}
+            onMessage = {},
         )
     }
 }
@@ -75,7 +75,7 @@ internal fun ArticleActionsPreview() {
         ArticleActions(
             onMessage = {},
             article = PreviewArticle,
-            screenId = Uuid.random()
+            screenId = Uuid.random(),
         )
     }
 }
@@ -101,10 +101,10 @@ internal fun ArticlesScreenPreview() {
                 tab = Tab.Trending,
                 type = FilterType.Trending,
                 articles = PreviewArticles,
-                loadableState = Idle
+                loadableState = Idle,
             ),
             listState = ListState,
-            modifier = Modifier
+            modifier = Modifier,
         ) {}
     }
 }
@@ -118,10 +118,10 @@ internal fun ArticlesScreenLoadingNextPreview() {
                 tab = Tab.Trending,
                 type = FilterType.Trending,
                 articles = persistentListOf(PreviewArticle),
-                loadableState = LoadingNext
+                loadableState = LoadingNext,
             ),
             listState = ListState,
-            modifier = Modifier
+            modifier = Modifier,
         ) {}
     }
 }
@@ -135,10 +135,10 @@ internal fun ArticlesScreenLoadingPreview() {
                 tab = Tab.Trending,
                 type = FilterType.Trending,
                 articles = persistentListOf(),
-                loadableState = Loading
+                loadableState = Loading,
             ),
             listState = ListState,
-            modifier = Modifier
+            modifier = Modifier,
         ) {}
     }
 }
@@ -152,10 +152,10 @@ internal fun ArticlesScreenRefreshingPreview() {
                 tab = Tab.Trending,
                 type = FilterType.Trending,
                 articles = persistentListOf(PreviewArticle),
-                loadableState = Refreshing
+                loadableState = Refreshing,
             ),
             listState = ListState,
-            modifier = Modifier
+            modifier = Modifier,
         ) {}
     }
 }
@@ -167,7 +167,7 @@ internal fun ArticleItemPreview() {
         ArticleItem(
             screenId = Uuid.random(),
             article = PreviewArticle,
-            onMessage = {}
+            onMessage = {},
         )
     }
 }
@@ -176,15 +176,15 @@ private fun ArticlesState(
     tab: Tab,
     type: FilterType,
     articles: PersistentList<Article>,
-    loadableState: LoadableState,
+    loadableState: Paginatable.State<AppException>,
 ) = ArticlesState(
     tab = tab,
     filter = Filter(type, Query.of("input")),
-    loadable = Loadable(
+    loadable = Paginatable(
         data = articles,
         hasMore = false,
-        loadableState = loadableState
-    )
+        state = loadableState,
+    ),
 )
 
 private val PreviewArticle = Article(
@@ -195,18 +195,18 @@ private val PreviewArticle = Article(
         "Let your imagination fly! Modifiers let you modify your composable " +
             "in a very flexible way. For example, if you wanted to add some outer spacing, change " +
             "the background color of the composable, and round the corners of the Row, you could " +
-            "use the following code"
+            "use the following code",
     ),
     published = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
     isFavorite = true,
     urlToImage = UrlFor("https://miro.medium.com/max/4000/1*Ir8CdY5D5Do5R_22Vo3uew.png"),
-    source = null
+    source = null,
 )
 
 private val PreviewArticles = persistentListOf(
     PreviewArticle.copy(url = UrlFor("https://miro.medium.com/1")),
     PreviewArticle.copy(url = UrlFor("https://miro.medium.com/2")),
-    PreviewArticle.copy(url = UrlFor("https://miro.medium.com/3"))
+    PreviewArticle.copy(url = UrlFor("https://miro.medium.com/3")),
 )
 
 private val ListState = LazyListState(firstVisibleItemIndex = 0, firstVisibleItemScrollOffset = 5)

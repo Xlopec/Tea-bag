@@ -23,13 +23,28 @@
  */
 
 plugins {
-    signing
+    id("published-multiplatform-library-convention")
+    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.compiler)
 }
 
-signing {
-    useInMemoryPgpKeys(signingKey, signingPassword)
+kotlin {
+    enableUiTargets()
 
-    val publishing: PublishingExtension by project
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(projects.teaAsync)
+                api(libs.compose.runtime)
+                api(libs.compose.foundation)
+                implementation(libs.stdlib)
+            }
+        }
 
-    sign(publishing.publications)
+        commonTest {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
+        }
+    }
 }

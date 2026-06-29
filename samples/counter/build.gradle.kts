@@ -27,13 +27,8 @@ plugins {
 }
 
 kotlin {
-    compilerOptions {
-        freeCompilerArgs.add("-Xcontext-parameters")
-    }
-
     jvm()
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 

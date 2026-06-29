@@ -30,12 +30,9 @@ import org.gradle.kotlin.dsl.get
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
-import java.net.URI
 import java.nio.file.Paths
 
 const val CommitHashLength = 6
-val NexusUrl = URI("https://ossrh-staging-api.central.sonatype.com/service/local/")
-val SnapshotNexusUrl = URI("https://central.sonatype.com/repository/maven-snapshots/")
 
 private const val RefBranch = "refs/heads/"
 private const val RefTag = "refs/tags/"
@@ -63,18 +60,6 @@ val commitSha: String?
 
 val libraryVersion: Version
     get() = Version(tag, commitSha)
-
-val Project.ossrhUser: String?
-    get() = ciVariable("OSSRH_USER")
-
-val Project.ossrhPassword: String?
-    get() = ciVariable("OSSRH_PASSWORD")
-
-val Project.signingKey: String?
-    get() = ciVariable("SIGNING_KEY")
-
-val Project.signingPassword: String?
-    get() = ciVariable("SIGNING_PASSWORD")
 
 val Project.projectSourceSets: SourceSetContainer
     get() = extensions["sourceSets"] as SourceSetContainer
@@ -147,4 +132,4 @@ fun getenvSafe(
 private fun Project.getPropertySafe(
     name: String,
 ): String? =
-    properties[name]?.toString().takeUnless(CharSequence?::isNullOrEmpty)
+    findProperty(name)?.toString().takeUnless(CharSequence?::isNullOrEmpty)

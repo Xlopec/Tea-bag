@@ -43,7 +43,7 @@ fun KotlinMultiplatformExtension.enableAllTargets() {
 @OptIn(ExperimentalWasmDsl::class)
 fun KotlinMultiplatformExtension.enableUiTargets() {
     applyProjectHierarchyTemplate()
-    
+
     jvm {
         testRuns["test"].executionTask.configure {
             useJUnit()
@@ -65,7 +65,6 @@ fun KotlinMultiplatformExtension.enableUiTargets() {
     }
 
     macosArm64()
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 }

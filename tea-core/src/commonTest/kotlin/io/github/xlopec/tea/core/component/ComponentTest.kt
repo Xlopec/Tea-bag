@@ -51,7 +51,7 @@ class ComponentTest : ComponentTestBase(::Component) {
             initializer = Initializer(""),
             resolver = { _ -> },
             updater = { message: Char, state -> state command message },
-            scope = this
+            scope = this,
         )
 
         val lastInitial = Initial(currentState = "b", commands = setOf('e'))
@@ -59,7 +59,7 @@ class ComponentTest : ComponentTestBase(::Component) {
         val initialStates = listOf(
             Initial(currentState = "", commands = setOf('c')),
             Initial(currentState = "a", commands = setOf('d')),
-            lastInitial
+            lastInitial,
         )
 
         fun testInput(

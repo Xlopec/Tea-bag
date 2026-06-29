@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.xlopec/tea-core?style=plastic&versionPrefix=1.0.0-alpha10)](https://mvnrepository.com/artifact/io.github.xlopec/tea-core)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.xlopec/tea-core?style=plastic&versionPrefix=1.0.0-alpha11)](https://mvnrepository.com/artifact/io.github.xlopec/tea-core)
 [![Jetbrains Market Place](https://img.shields.io/jetbrains/plugin/d/14254)](https://plugins.jetbrains.com/plugin/14254-time-travel-debugger)
 
 # TEA Bag
@@ -105,6 +105,8 @@ Add the dependency:
 ```kotlin
 implementation("io.github.xlopec:tea-core:[version]")
 implementation("io.github.xlopec:tea-compose:[version]")
+implementation("io.github.xlopec:tea-async:[version]")
+implementation("io.github.xlopec:tea-async-compose:[version]")
 implementation("io.github.xlopec:tea-navigation:[version]")
 ```
 
@@ -122,6 +124,12 @@ Plugin is available on [JetBrains marketplace](https://plugins.jetbrains.com/plu
 
 - **tea-core** - contains core types along with basic component implementation
 - **tea-compose** - contains Compose Multiplatform integration
+- **tea-async** - generic state containers (`Loadable`, `Paginatable`) for modelling the
+  lifecycle of asynchronous operations (network fetches, form submissions, paginated lists, …)
+- **tea-async-compose** - Compose helpers for building UI from `Loadable` and `Paginatable`
+  values. Exposes slot-based dispatchers (`Loadable`, `Paginatable`) and their `LazyListScope`
+  variants (`loadableItems`, `paginatableItems`) that route each state of the container to its
+  own composable slot
 - **tea-navigation** - contains navigation extensions as well as predictive back navigation for iOS target
 - **tea-time-travel** - contains debuggable version of the component
 - **tea-time-travel-adapter-gson** - implements debug protocol and serialization by means

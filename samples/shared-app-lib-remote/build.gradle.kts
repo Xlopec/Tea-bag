@@ -30,7 +30,6 @@ plugins {
 android {
     compileSdk = 36
     namespace = "io.github.xlopec.shared.remote"
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 21
         consumerProguardFile("proguard-rules.pro")
@@ -58,7 +57,6 @@ kotlin {
     explicitApi()
 
     compilerOptions {
-        freeCompilerArgs.add("-Xcontext-parameters")
         optIn.addAll(
             DefaultOptIns +
                 "kotlinx.serialization.ExperimentalSerializationApi" +
@@ -67,7 +65,7 @@ kotlin {
     }
 }
 
-val allTests by tasks.registering(Task::class) {
+tasks.register("allTests") {
     dependsOn("test")
 }
 

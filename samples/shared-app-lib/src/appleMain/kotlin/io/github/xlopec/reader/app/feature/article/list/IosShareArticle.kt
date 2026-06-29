@@ -37,7 +37,7 @@ public object IosShareArticle : ShareArticle {
         UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
             viewControllerToPresent = viewController,
             animated = true,
-            completion = null
+            completion = null,
         )
     }
 }

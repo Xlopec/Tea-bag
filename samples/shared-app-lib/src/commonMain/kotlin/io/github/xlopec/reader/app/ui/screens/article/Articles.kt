@@ -80,15 +80,10 @@ import io.github.xlopec.reader.app.feature.article.list.OnShareArticle
 import io.github.xlopec.reader.app.feature.article.list.ToggleArticleIsFavorite
 import io.github.xlopec.reader.app.feature.navigation.NavigateToArticleDetails
 import io.github.xlopec.reader.app.feature.navigation.NavigateToFilters
-import io.github.xlopec.reader.app.misc.Exception
-import io.github.xlopec.reader.app.misc.Idle
-import io.github.xlopec.reader.app.misc.LoadableState
-import io.github.xlopec.reader.app.misc.Loading
-import io.github.xlopec.reader.app.misc.LoadingNext
-import io.github.xlopec.reader.app.misc.Refreshing
-import io.github.xlopec.reader.app.misc.isLoading
 import io.github.xlopec.reader.app.model.Article
+import io.github.xlopec.tea.async.compose.paginatableItems
 import io.github.xlopec.reader.app.model.Filter
+import kotlinx.collections.immutable.PersistentList
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.FilterType.Favorite
 import io.github.xlopec.reader.app.model.FilterType.Regular
@@ -110,21 +105,58 @@ public fun Articles(
 ) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
 
         ArticlesContent(listState, state, onMessage) {
 
-            if (state.hasDataToDisplay) {
-                articleItems(state, onMessage)
-            }
-
-            loadableContent(
-                state.id,
-                state.loadable.data.isEmpty(),
-                state.loadable.loadableState,
-                state.filter.type,
-                onMessage
+            paginatableItems(
+                paginatable = state.loadable,
+                onLoading = {
+                    item(key = "loading") {
+                        ArticlesProgress(modifier = Modifier.fillParentMaxSize())
+                    }
+                },
+                onRefreshing = { articles ->
+                    articleItems(state, articles, onMessage)
+                },
+                onLoadingNext = { articles ->
+                    articleItems(state, articles, onMessage)
+                    item(key = "loading-next") {
+                        ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
+                    }
+                },
+                onException = { error, articles ->
+                    val isEmpty = articles.isEmpty()
+                    if (!isEmpty) {
+                        articleItems(state, articles, onMessage)
+                    }
+                    item(key = "error") {
+                        ArticlesError(
+                            modifier = if (isEmpty) Modifier.fillParentMaxSize() else Modifier.fillParentMaxWidth(),
+                            message = error.readableMessage,
+                            onRetry = {
+                                onMessage(if (isEmpty) LoadArticles(state.id) else LoadNextArticles(state.id))
+                            },
+                        )
+                    }
+                },
+                onIdle = { articles ->
+                    if (articles.isEmpty()) {
+                        item(key = "empty", contentType = "empty") {
+                            ColumnMessage(
+                                modifier = Modifier
+                                    .fillParentMaxSize()
+                                    .padding(16.dp),
+                                title = "No articles",
+                                message = state.filter.type.toEmptyStateDescription(),
+                                onClick = { onMessage(LoadArticles(state.id)) },
+                            )
+                        }
+                    } else {
+                        articleItems(state, articles, onMessage)
+                    }
+                },
             )
         }
     }
@@ -136,40 +168,37 @@ public fun ArticleTestTag(
 
 private fun LazyListScope.articleItems(
     screen: ArticlesState,
+    articles: PersistentList<Article>,
     onMessage: MessageHandler,
 ) {
-    val articles = screen.loadable.data
-
-    require(articles.isNotEmpty()) { "Empty articles for screen=$screen" }
-
     val title = screen.filter.toScreenTitle()
 
     item(
         key = title,
-        contentType = screen.filter::class
+        contentType = screen.filter::class,
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start,
             text = title,
-            style = typography.subtitle1
+            style = typography.subtitle1,
         )
     }
 
     itemsIndexed(
         items = articles,
         key = { _, item -> item.url.toString() },
-        contentType = { _, item -> item::class }
+        contentType = { _, item -> item::class },
     ) { index, article ->
         Column(
             modifier = Modifier.semantics(mergeDescendants = true) {
                 testTag = ArticleTestTag(article.url)
-            }
+            },
         ) {
             ArticleItem(
                 screenId = screen.id,
                 article = article,
-                onMessage = onMessage
+                onMessage = onMessage,
             )
 
             LaunchedEffect(index == articles.lastIndex) {
@@ -181,52 +210,17 @@ private fun LazyListScope.articleItems(
     }
 }
 
-private fun LazyListScope.loadableContent(
-    id: ScreenId,
-    isEmpty: Boolean,
-    loadableState: LoadableState,
-    filterType: FilterType,
-    onMessage: MessageHandler,
-) = item(
-    key = loadableState::class.simpleName,
-    contentType = loadableState::class
-) {
-    when (loadableState) {
-        is Exception ->
-            ArticlesError(
-                modifier = if (isEmpty) Modifier.fillParentMaxSize() else Modifier.fillParentMaxWidth(),
-                message = loadableState.th.readableMessage,
-                onRetry = { onMessage(if (isEmpty) LoadArticles(id) else LoadNextArticles(id)) }
-            )
-
-        is Loading -> ArticlesProgress(modifier = Modifier.fillParentMaxSize())
-        is LoadingNext -> ArticlesProgress(modifier = Modifier.fillParentMaxWidth())
-        is Idle, is Refreshing -> {
-            if (isEmpty) {
-                ColumnMessage(
-                    modifier = Modifier
-                        .fillParentMaxSize()
-                        .padding(16.dp),
-                    title = "No articles",
-                    message = filterType.toEmptyStateDescription(),
-                    onClick = { onMessage(LoadArticles(id)) }
-                )
-            }
-        }
-    }
-}
-
 @Composable
 private fun ArticlesProgress(
     modifier: Modifier,
 ) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator(
             modifier = Modifier.semantics { testTag = ProgressIndicatorTag },
-            color = colors.secondaryVariant
+            color = colors.secondaryVariant,
         )
     }
 }
@@ -244,12 +238,12 @@ private fun ArticlesContent(
         contentPadding = PaddingValues(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        userScrollEnabled = screen.loadable.data.isNotEmpty()
+        userScrollEnabled = screen.loadable.data.isNotEmpty(),
     ) {
 
         item(
             key = "header",
-            contentType = "header"
+            contentType = "header",
         ) { ArticleSearchHeader(state = screen, onMessage = onMessage) }
 
         children()
@@ -265,7 +259,7 @@ private fun ArticleImage(
             .height(200.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
-        color = colors.onSurface.copy(alpha = 0.2f)
+        color = colors.onSurface.copy(alpha = 0.2f),
     ) {
 
         if (imageUrl != null) {
@@ -289,7 +283,7 @@ internal fun ArticleItem(
     Card(
         elevation = CardElevation,
         shape = CardShape,
-        onClick = { onMessage(NavigateToArticleDetails(article)) }
+        onClick = { onMessage(NavigateToArticleDetails(article)) },
     ) {
         Column {
 
@@ -304,7 +298,7 @@ internal fun ArticleItem(
             ArticleActions(
                 onMessage = onMessage,
                 article = article,
-                screenId = screenId
+                screenId = screenId,
             )
         }
     }
@@ -315,12 +309,12 @@ private fun ArticleContents(
     article: Article,
 ) {
     Column(
-        modifier = Modifier.padding(horizontal = 8.dp)
+        modifier = Modifier.padding(horizontal = 8.dp),
     ) {
 
         Text(
             text = article.title.value,
-            style = typography.h6
+            style = typography.h6,
         )
 
         val author = article.author
@@ -328,20 +322,20 @@ private fun ArticleContents(
         if (author != null) {
             Text(
                 text = author.value,
-                style = typography.subtitle2
+                style = typography.subtitle2,
             )
         }
 
         Text(
             text = "Published on ${article.published.formatted()}",
-            style = typography.body2
+            style = typography.body2,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = article.description?.value ?: "No description",
-            style = typography.body2
+            style = typography.body2,
         )
     }
 }
@@ -354,24 +348,24 @@ internal fun ArticleActions(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.End
+        horizontalArrangement = Arrangement.End,
     ) {
 
         IconButton(
-            onClick = { onMessage(OnShareArticle(article)) }
+            onClick = { onMessage(OnShareArticle(article)) },
         ) {
             Icon(
                 imageVector = Icons.Default.Share,
-                contentDescription = "Share"
+                contentDescription = "Share",
             )
         }
 
         IconButton(
-            onClick = { onMessage(ToggleArticleIsFavorite(screenId, article)) }
+            onClick = { onMessage(ToggleArticleIsFavorite(screenId, article)) },
         ) {
             Icon(
                 imageVector = if (article.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                contentDescription = if (article.isFavorite) "Remove from favorite" else "Add to favorite"
+                contentDescription = if (article.isFavorite) "Remove from favorite" else "Add to favorite",
             )
         }
     }
@@ -387,7 +381,7 @@ private fun ArticlesError(
         modifier = modifier,
         title = "Oops, something went wrong",
         message = "Failed to load articles, message: '${message.toDisplayErrorMessage()}'",
-        onClick = onRetry
+        onClick = onRetry,
     )
 }
 
@@ -411,7 +405,7 @@ internal fun ArticleSearchHeader(
             IconButton(onClick = onSearch) {
                 Icon(
                     imageVector = Default.Search,
-                    contentDescription = "Search"
+                    contentDescription = "Search",
                 )
             }
         },
@@ -420,12 +414,12 @@ internal fun ArticleSearchHeader(
             if (focusState.isFocused) {
                 onMessage(
                     NavigateToFilters(
-                        state.id,
-                        state.filter,
-                    )
+                        parentId = state.id,
+                        filter = state.filter,
+                    ),
                 )
             }
-        }
+        },
     )
 }
 
@@ -460,8 +454,5 @@ private fun Url.toImageRequest(): ImageRequest = ImageRequest.Builder(LocalPlatf
     .data(toExternalValue())
     .crossfade(true)
     .build()
-
-private val ArticlesState.hasDataToDisplay: Boolean
-    get() = loadable.data.isNotEmpty() && !loadable.isLoading
 
 private fun String.toDisplayErrorMessage() = replaceFirstChar { it.lowercase() }

@@ -27,9 +27,6 @@ package io.github.xlopec.reader.app.feature.filter
 import io.github.xlopec.reader.app.AppException
 import io.github.xlopec.reader.app.FilterUpdated
 import io.github.xlopec.reader.app.ScreenId
-import io.github.xlopec.reader.app.feature.article.list.Page
-import io.github.xlopec.reader.app.misc.toException
-import io.github.xlopec.reader.app.misc.toIdle
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.Source
@@ -37,6 +34,9 @@ import io.github.xlopec.reader.app.model.SourceId
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
+import io.github.xlopec.tea.async.Page
+import io.github.xlopec.tea.async.toException
+import io.github.xlopec.tea.async.toIdle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentHashSetOf
@@ -68,7 +68,7 @@ private fun FiltersState.onToggleSelection(
 private fun selectToggleOperation(
     id: SourceId,
     sources: PersistentSet<SourceId>,
-) = if (id in sources) PersistentSet<SourceId>::remove else PersistentSet<SourceId>::add
+) = if (id in sources) PersistentSet<SourceId>::removing else PersistentSet<SourceId>::adding
 
 private fun FiltersState.toFilterChangedUpdate(
     filter: Filter,
@@ -82,7 +82,7 @@ private fun FiltersState.onSourcesLoaded(
 ) = command(DoLoadSources(id))
 
 private fun FiltersState.onSourcesLoadResult(
-    result: SourcesLoadResult
+    result: SourcesLoadResult,
 ) = when (result) {
     is SourcesLoadException -> onSourcesLoadException(result.exception)
     is SourcesLoadSuccess -> onSourcesLoaded(result.sources)
@@ -101,8 +101,8 @@ private fun FiltersState.onRecentSearchesLoaded(
 ) = copy(recentSearches = suggestions.toPersistentList()).noCommand()
 
 private fun FiltersState.onRemoveRecentSearch(
-    query: Query
-) = copy(recentSearches = recentSearches.remove(query)) command DoRemoveRecentSearch(filter.type, query)
+    query: Query,
+) = copy(recentSearches = recentSearches.removing(query)) command DoRemoveRecentSearch(filter.type, query)
 
 private fun FiltersState.updatedFilter(
     how: Filter.() -> Filter,

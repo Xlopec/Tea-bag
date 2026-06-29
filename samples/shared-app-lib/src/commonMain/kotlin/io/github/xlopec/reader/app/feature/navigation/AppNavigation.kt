@@ -94,7 +94,7 @@ internal fun AppState.navigateToArticleDetails(
 internal fun AppState.navigateToFilters(
     nav: NavigateToFilters,
 ): Update<AppState, FilterCommand> {
-    val (screens, commands) = screens.mutate { push(FiltersInitialUpdate(nav.id, nav.filter)) }
+    val (screens, commands) = screens.mutate { push(FiltersInitialUpdate(nav.id, nav.parentId, nav.filter)) }
 
     return copy(screens = screens) command commands
 }

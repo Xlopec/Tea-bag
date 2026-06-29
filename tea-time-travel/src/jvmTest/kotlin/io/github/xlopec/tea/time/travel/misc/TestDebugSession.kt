@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.emptyFlow
 
 internal class TestDebugSession<M, S>(
     override val messages: Flow<M> = emptyFlow(),
-    override val states: Flow<S> = emptyFlow()
+    override val states: Flow<S> = emptyFlow(),
 ) : DebugSession<M, S, JsonElement> {
 
     private val _packets = mutableListOf<GsonNotifyServer>()

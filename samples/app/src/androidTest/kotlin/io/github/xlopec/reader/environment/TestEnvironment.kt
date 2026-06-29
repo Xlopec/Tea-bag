@@ -38,7 +38,7 @@ import io.github.xlopec.reader.app.feature.article.list.ShareArticle
 import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.network.SourcesResponse
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
-import io.github.xlopec.tea.data.Url
+import io.github.xlopec.reader.app.model.Url
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.TestDispatcher
@@ -51,22 +51,22 @@ interface TestEnvironment : Environment, MockNewsApi {
 
 interface MockNewsApi : NewsApi, IdlingResource {
     infix fun ArticlePredicate.yields(
-        provider: ArticleResponseProvider
+        provider: ArticleResponseProvider,
     )
 
     infix fun ArticlePredicate.yields(
-        result: Either<AppException, ArticleResponse>
+        result: Either<AppException, ArticleResponse>,
     )
 
     fun yieldsSourcesResponse(
-        result: Either<AppException, SourcesResponse>
+        result: Either<AppException, SourcesResponse>,
     )
 }
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 fun TestEnvironment(
     application: Application,
-    dispatcher: TestDispatcher = UnconfinedTestDispatcher()
+    dispatcher: TestDispatcher = UnconfinedTestDispatcher(),
 ): TestEnvironment {
     val testScope = TestScope(dispatcher)
     return object : TestEnvironment,
