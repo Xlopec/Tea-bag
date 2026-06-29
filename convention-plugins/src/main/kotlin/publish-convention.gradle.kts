@@ -22,22 +22,31 @@
  * SOFTWARE.
  */
 
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
+
 plugins {
-    `maven-publish`
-    id("signing-convention")
+    id("com.vanniktech.maven.publish")
     id("documented-convention")
 }
 
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
 
-val packJavadocJar = tasks.register<Jar>("packJavadocJar") {
-    dependsOn(tasks.named("dokkaGeneratePublicationHtml"))
-    archiveClassifier.set("javadoc")
-    from(documentationDir)
+mavenPublishing {
+    configure(
+        KotlinMultiplatform(
+            javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
+            sourcesJar = true,
+        ),
+    )
 
-    group = "release"
-    description = "Packs javadoc jar"
+    publishToMavenCentral()
+    signAllPublications()
+
+    coordinates(group.toString(), project.name, version.toString())
+
+    pom { configurePom(project.name) }
 }
 
 tasks.register<Copy>("copyArtifacts") {
@@ -45,28 +54,12 @@ tasks.register<Copy>("copyArtifacts") {
     into(artifactsDir)
 
     mustRunAfter(
-        "publishToSonatype",
+        "publishAndReleaseToMavenCentral",
+        "publishToMavenCentral",
         "publishToMavenLocal",
         tasks.filter { it.name.endsWith("MetadataElements") },
     )
 
     group = "release"
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
-}
-
-publishing {
-    // note that we have preconfigured maven publications
-    publications.withType<MavenPublication> {
-        artifact(packJavadocJar)
-        // other artifacts are added automatically
-        pom.configurePom(project.name)
-    }
-
-    repositories {
-        mavenLocal()
-    }
-}
-
-tasks.withType<AbstractPublishToMaven>().configureEach {
-    dependsOn(tasks.withType<Sign>())
 }
