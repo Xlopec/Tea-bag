@@ -22,10 +22,13 @@
  * SOFTWARE.
  */
 
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinJvm
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     kotlin("jvm")
-    `maven-publish`
-    id("signing-convention")
+    id("com.vanniktech.maven.publish")
     id("documented-convention")
 }
 
@@ -39,49 +42,34 @@ kotlinJvm {
     }
 }
 
-val packSourcesJar = tasks.register<Jar>("packSourcesJar") {
-    dependsOn(tasks.classes)
-    archiveClassifier.set("sources")
-    from(projectSourceSets["main"].allSource)
+exposeCentralPortalProperties()
 
-    group = "release"
-    description = "Packs sources jar depending on kotlin plugin applied"
-}
+mavenPublishing {
+    configure(
+        KotlinJvm(
+            javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
+            sourcesJar = true,
+        ),
+    )
 
-val packJavadocJar = tasks.register<Jar>("packJavadocJar") {
-    dependsOn(tasks.named("dokkaGeneratePublicationHtml"))
-    archiveClassifier.set("javadoc")
-    from(documentationDir)
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
 
-    group = "release"
-    description = "Packs javadoc jar"
+    coordinates(group.toString(), project.name, version.toString())
+
+    pom { configurePom(project.name) }
 }
 
 tasks.register<Copy>("copyArtifacts") {
     from(libsDir)
     into(artifactsDir)
 
-    mustRunAfter("publishToSonatype", "publishToMavenLocal")
+    mustRunAfter(
+        "publishAndReleaseToMavenCentral",
+        "publishToMavenCentral",
+        "publishToMavenLocal",
+    )
 
     group = "release"
     description = "Copies artifacts to the 'artifacts' from project's 'libs' dir for CI"
-}
-
-publishing {
-    publications {
-        create<MavenPublication>(project.name) {
-            from(components["java"])
-            artifact(packJavadocJar)
-            artifact(packSourcesJar)
-            pom.configurePom(project.name)
-        }
-    }
-
-    repositories {
-        mavenLocal()
-    }
-}
-
-tasks.named("assemble") {
-    dependsOn(packSourcesJar, packJavadocJar)
 }

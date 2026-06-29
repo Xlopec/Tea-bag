@@ -160,7 +160,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Publish artifacts
-        run: ./gradlew publishToSonatype closeSonatypeStagingRepository copyArtifacts --no-configure-on-demand --no-configuration-cache --no-daemon
+        run: ./gradlew publishAndReleaseToMavenCentral copyArtifacts --no-configure-on-demand --no-configuration-cache --no-daemon
         env:
           OSSRH_USER: ${{ secrets.OSSRH_USER }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}

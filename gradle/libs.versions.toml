@@ -20,7 +20,7 @@ convention-sqldelight = { module = "app.cash.sqldelight:gradle-plugin", version.
 convention-compose-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose" }
 convention-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 convention-versions = { module = "com.github.ben-manes:gradle-versions-plugin", version = "0.54.0" }
-convention-nexus-publish = { module = "io.github.gradle-nexus:publish-plugin", version = "2.0.0" }
+convention-vanniktech-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.30.0" }
 convention-detekt = { module = "dev.detekt:detekt-gradle-plugin", version = "2.0.0-alpha.5" }
 
 junit = { module = "junit:junit", version = "4.13.2" }
@@ -81,7 +81,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-nexus-publishing = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.30.0" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }

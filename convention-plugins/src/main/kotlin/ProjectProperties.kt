@@ -30,12 +30,9 @@ import org.gradle.kotlin.dsl.get
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
-import java.net.URI
 import java.nio.file.Paths
 
 const val CommitHashLength = 6
-val NexusUrl = URI("https://ossrh-staging-api.central.sonatype.com/service/local/")
-val SnapshotNexusUrl = URI("https://central.sonatype.com/repository/maven-snapshots/")
 
 private const val RefBranch = "refs/heads/"
 private const val RefTag = "refs/tags/"
