@@ -22,17 +22,8 @@
  * SOFTWARE.
  */
 
-import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPom
-import org.gradle.kotlin.dsl.extra
 import java.util.*
-
-fun Project.exposeCentralPortalProperties() {
-    signingKey?.let { extra["signingInMemoryKey"] = it }
-    signingPassword?.let { extra["signingInMemoryKeyPassword"] = it }
-    ossrhUser?.let { extra["mavenCentralUsername"] = it }
-    ossrhPassword?.let { extra["mavenCentralPassword"] = it }
-}
 
 fun MavenPom.configurePom(
     projectName: String,

@@ -33,8 +33,6 @@ plugins {
 version = libraryVersion.toVersionName()
 group = "io.github.xlopec"
 
-exposeCentralPortalProperties()
-
 mavenPublishing {
     configure(
         KotlinMultiplatform(

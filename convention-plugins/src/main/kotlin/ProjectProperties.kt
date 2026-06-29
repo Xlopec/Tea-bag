@@ -61,18 +61,6 @@ val commitSha: String?
 val libraryVersion: Version
     get() = Version(tag, commitSha)
 
-val Project.ossrhUser: String?
-    get() = ciVariable("OSSRH_USER")
-
-val Project.ossrhPassword: String?
-    get() = ciVariable("OSSRH_PASSWORD")
-
-val Project.signingKey: String?
-    get() = ciVariable("SIGNING_KEY")
-
-val Project.signingPassword: String?
-    get() = ciVariable("SIGNING_PASSWORD")
-
 val Project.projectSourceSets: SourceSetContainer
     get() = extensions["sourceSets"] as SourceSetContainer
 

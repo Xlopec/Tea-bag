@@ -41,8 +41,6 @@ kotlinJvm {
     }
 }
 
-exposeCentralPortalProperties()
-
 mavenPublishing {
     configure(
         KotlinJvm(
