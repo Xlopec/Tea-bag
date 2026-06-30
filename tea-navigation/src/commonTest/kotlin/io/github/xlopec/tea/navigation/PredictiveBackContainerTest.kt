@@ -9,6 +9,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -190,6 +193,94 @@ class PredictiveBackContainerTest {
         settle(ms = 600L)
 
         assertEquals(setOf(TestEntry("home")), composed.snapshot(), "only the new top should remain composed")
+    }
+
+    @Test
+    fun inner_handler_intercepting_complete_drives_smooth_settle_on_new_top() = backTest {
+        // Simulates the real-world pattern where a screen-level
+        // NavigationBackHandler (e.g. ArticleDetails) is composed inside the
+        // container's `content` and wins LIFO. The container's own handler
+        // never sees the terminal events; reconciliation runs through
+        // `LaunchedEffect(stack)` on the matching-new-top branch.
+        val currentStack = mutableStateOf(stack("home", "details"))
+        var containerPopFired: TestEntry? = null
+        var innerCompletedFired = 0
+        val composed = ComposedEntries()
+        set {
+            PredictiveBackContainer(
+                stack = currentStack.value,
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = { containerPopFired = it },
+                content = { entry ->
+                    composed.Track(entry)
+                    if (entry == TestEntry("details")) {
+                        val innerState = rememberNavigationEventState(NavigationEventInfo.None)
+                        NavigationBackHandler(
+                            state = innerState,
+                            isBackEnabled = true,
+                            onBackCompleted = {
+                                innerCompletedFired++
+                                currentStack.value = stack("home")
+                            },
+                        )
+                    }
+                },
+            )
+        }
+        settle()
+
+        backStarted()
+        backProgressed(0.6F)
+        settle()
+        backCompleted()
+        settle(ms = 600L)
+
+        // Inner handler fired exactly once and the container's own handler
+        // never did — LIFO routing held.
+        assertEquals(1, innerCompletedFired, "inner handler must fire on complete")
+        assertEquals(null, containerPopFired, "container's own onBackComplete must NOT fire when inner intercepts")
+        // Stack-reconciliation branch ran the smooth complete and settled
+        // on the new top — only "home" remains composed (no leftover
+        // "details" from a stuck `previous`).
+        assertEquals(setOf(TestEntry("home")), composed.snapshot())
+    }
+
+    @Test
+    fun inner_handler_intercepting_cancel_returns_to_original_top() = backTest {
+        val currentStack = mutableStateOf(stack("home", "details"))
+        var innerCancelledFired = 0
+        val composed = ComposedEntries()
+        set {
+            PredictiveBackContainer(
+                stack = currentStack.value,
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                content = { entry ->
+                    composed.Track(entry)
+                    if (entry == TestEntry("details")) {
+                        val innerState = rememberNavigationEventState(NavigationEventInfo.None)
+                        NavigationBackHandler(
+                            state = innerState,
+                            isBackEnabled = true,
+                            onBackCancelled = { innerCancelledFired++ },
+                            onBackCompleted = { currentStack.value = stack("home") },
+                        )
+                    }
+                },
+            )
+        }
+        settle()
+
+        backStarted()
+        backProgressed(0.4F)
+        settle()
+        backCancelled()
+        settle(ms = 600L)
+
+        assertEquals(1, innerCancelledFired, "inner handler must receive the cancel")
+        // Stack untouched, container's collector ran its cancel-animation,
+        // `previous` cleared → only "details" remains composed.
+        assertEquals(setOf(TestEntry("details")), composed.snapshot())
     }
 
     @Test
