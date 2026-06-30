@@ -28,6 +28,7 @@ package io.github.xlopec.reader.app
 
 import io.github.xlopec.reader.app.feature.navigation.Tab
 import io.github.xlopec.tea.navigation.mutate
+import io.github.xlopec.tea.navigation.switchToTab
 import io.github.xlopec.tea.navigation.toStackOrNull
 import kotlin.test.Test
 import kotlin.test.assertEquals

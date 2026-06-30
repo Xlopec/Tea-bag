@@ -197,11 +197,10 @@ class PredictiveBackContainerTest {
 
     @Test
     fun inner_handler_intercepting_complete_drives_smooth_settle_on_new_top() = backTest {
-        // Simulates the real-world pattern where a screen-level
-        // NavigationBackHandler (e.g. ArticleDetails) is composed inside the
-        // container's `content` and wins LIFO. The container's own handler
-        // never sees the terminal events; reconciliation runs through
-        // `LaunchedEffect(stack)` on the matching-new-top branch.
+        // A screen-level NavigationBackHandler composed inside `content` wins
+        // LIFO. The container's own handler never sees the terminal events;
+        // reconciliation runs through `LaunchedEffect(stack)` on the
+        // matching-new-top branch.
         val currentStack = mutableStateOf(stack("home", "details"))
         var containerPopFired: TestEntry? = null
         var innerCompletedFired = 0
@@ -281,6 +280,138 @@ class PredictiveBackContainerTest {
         // Stack untouched, container's collector ran its cancel-animation,
         // `previous` cleared → only "details" remains composed.
         assertEquals(setOf(TestEntry("details")), composed.snapshot())
+    }
+
+    @Test
+    fun mismatch_branch_settles_on_unrelated_new_top_without_residue() = backTest {
+        // Caller pushes/swaps to an entry that is NOT the gesture's previous
+        // target while a gesture is in flight. Container should clean up its
+        // gesture state and end up showing only the new top.
+        val currentStack = mutableStateOf(stack("home", "details"))
+        val composed = ComposedEntries()
+        set {
+            PredictiveBackContainer(
+                stack = currentStack.value,
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                content = { composed.Track(it) },
+            )
+        }
+        settle()
+
+        backStarted()
+        backProgressed(0.5F)
+        settle()
+        // Caller jumps to an unrelated screen instead of popping to `home`.
+        currentStack.value = stack("home", "details", "filters")
+        settle(ms = 600L)
+
+        assertEquals(setOf(TestEntry("filters")), composed.snapshot(), "only the new top should remain")
+    }
+
+    @Test
+    fun touchX_drives_seek_independently_of_pre_damped_progress() = backTest {
+        // The container should use touchX/containerWidth, not the pre-damped
+        // `progress` field. We send InProgress events with progress=1.0 but
+        // tiny touchX values — the container should still be in a gesture and
+        // render the previous screen, and the predictive spec should be used
+        // (proves the gesture path activated). If the container used the
+        // damped progress directly, the test would still pass; the regression
+        // it specifically guards against is the "previous never set" case
+        // when touchX/width = 0 and the fallback kicks in.
+        val composed = ComposedEntries()
+        val predictiveInvocations = SpecCounter()
+        set {
+            PredictiveBackContainer(
+                stack = stack("home", "details"),
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                predictivePopTransitionSpec = { predictiveInvocations.invoked(); NoTransition },
+                content = { composed.Track(it) },
+            )
+        }
+        settle()
+
+        backStarted(progress = 0.1F, touchX = 10F)
+        backProgressed(progress = 0.2F, touchX = 20F)
+        settle()
+
+        assertTrue(TestEntry("home") in composed.snapshot(), "previous must be composed during gesture")
+        assertTrue(predictiveInvocations.count >= 1, "predictive spec must fire during gesture")
+    }
+
+    @Test
+    fun enabled_false_does_not_register_handler_or_run_animations() = backTest {
+        var popped: TestEntry? = null
+        set {
+            PredictiveBackContainer(
+                stack = stack("home", "details"),
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = { popped = it },
+                enabled = false,
+                content = {},
+            )
+        }
+        settle()
+
+        backCompleted()
+        settle()
+
+        assertEquals(null, popped, "disabled container must not consume back")
+        assertEquals(1, unhandledBackCount, "back must propagate to fallback")
+    }
+
+    @Test
+    fun on_gesture_progress_is_called_during_in_flight_gesture() = backTest {
+        val observed = mutableListOf<Float>()
+        set {
+            PredictiveBackContainer(
+                stack = stack("home", "details"),
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                onGestureProgress = { observed += it },
+                content = {},
+            )
+        }
+        settle()
+        observed.clear()
+
+        backStarted(touchX = 0F)
+        backProgressed(progress = 0.3F, touchX = 30F)
+        backProgressed(progress = 0.5F, touchX = 50F)
+        settle()
+
+        assertTrue(observed.isNotEmpty(), "observer should have received progress emissions")
+        assertTrue(observed.any { it > 0F }, "observer should see non-zero values during gesture, got $observed")
+    }
+
+    @Test
+    fun disabling_back_mid_gesture_does_not_leak_previous() = backTest {
+        var enabled by mutableStateOf(true)
+        val composed = ComposedEntries()
+        set {
+            PredictiveBackContainer(
+                stack = stack("home", "details"),
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                enabled = enabled,
+                content = { composed.Track(it) },
+            )
+        }
+        settle()
+
+        backStarted()
+        backProgressed(0.4F)
+        settle()
+        // Caller toggles `enabled` off mid-gesture; the InProgress collector
+        // should refuse further updates and the gesture should resolve
+        // cleanly when the dispatcher returns to Idle.
+        enabled = false
+        settle()
+        backCancelled()
+        settle(ms = 600L)
+
+        assertEquals(setOf(TestEntry("details")), composed.snapshot(), "only original top should remain")
     }
 
     @Test

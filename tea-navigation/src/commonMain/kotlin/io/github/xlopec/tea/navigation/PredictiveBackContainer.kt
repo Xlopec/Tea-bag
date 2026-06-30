@@ -27,6 +27,7 @@ package io.github.xlopec.tea.navigation
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.rememberTransition
@@ -35,6 +36,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.navigationevent.NavigationEvent
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.NavigationEventTransitionState
@@ -61,12 +64,12 @@ import kotlinx.coroutines.launch
  *
  * ## How the gesture flow works
  * 1. While a gesture is in flight, the dispatcher emits [NavigationEventTransitionState.InProgress]
- *    events. The container reveals [previousScreenFor]'s result and seeks the transition by the
- *    event's progress.
- * 2. When the gesture ends, the dispatcher returns to [NavigationEventTransitionState.Idle]. The
- *    container can't tell cancel from complete from that signal alone — the topmost handler's
- *    callbacks aren't necessarily this container's. So it **speculatively** animates the lifted
- *    fraction back to 0 (cancel).
+ *    events. The container reveals [previousScreenFor]'s result and seeks the transition by
+ *    the finger position (derived from `touchX` and the container's measured width).
+ * 2. When the gesture ends, the dispatcher returns to [NavigationEventTransitionState.Idle].
+ *    The container can't tell cancel from complete from that signal alone — the topmost
+ *    handler's callbacks aren't necessarily this container's. So it **speculatively** animates
+ *    the lifted fraction back to 0 (cancel) using [gestureResolutionSpec].
  * 3. If the gesture was actually a complete, the caller (this container's own
  *    [onBackComplete] *or* a nested screen-level handler) mutates [stack]. The reconciliation
  *    step cancels the speculative cancel and smoothly drives the fraction to 1, then settles
@@ -76,16 +79,28 @@ import kotlinx.coroutines.launch
  * dispatcher fires `onBackCompleted` atomically. Step 1 is skipped; the stack mutation goes
  * straight through to the regular push/pop animation.
  *
- * @param stack current navigation stack; the top entry is rendered
+ * The container measures itself via [androidx.compose.ui.layout.onGloballyPositioned], so it
+ * works correctly even when nested inside paddings, insets or a `Scaffold` — finger position
+ * is mapped into container-local coordinates.
+ *
+ * @param stack current navigation stack; the top entry is rendered.
  * @param previousScreenFor returns the entry to reveal during a back gesture from `current`,
- * or `null` if back should be ignored for the current entry
+ *   or `null` if back should be ignored for the current entry.
  * @param onBackComplete invoked when an atomic back (or a gesture this container's handler
- *   received) needs to pop; the caller is expected to mutate [stack] in response
- * @param transitionSpec [ContentTransform] factory used for forward navigation
- * @param popTransitionSpec [ContentTransform] factory used for programmatic pops
- * @param predictivePopTransitionSpec [ContentTransform] factory used while the back gesture is in flight
- * and to finish/cancel after release
- * @param modifier modifier applied to the container
+ *   received) needs to pop; the caller is expected to mutate [stack] in response.
+ * @param modifier modifier applied to the container.
+ * @param enabled global toggle. When `false`, no back handler is registered (back propagates
+ *   to the parent / system fallback) and no gesture animation is shown.
+ * @param onGestureProgress optional observer for the in-flight gesture fraction (`0f..1f`).
+ *   Invoked every frame the gesture progresses, and once with `0f` when it resolves.
+ *   Useful for driving background dim, parallax depth, etc.
+ * @param transitionSpec [ContentTransform] factory used for forward navigation.
+ * @param popTransitionSpec [ContentTransform] factory used for programmatic pops.
+ * @param predictivePopTransitionSpec [ContentTransform] factory used while the back gesture
+ *   is in flight and to finish/cancel after release.
+ * @param gestureResolutionSpec animation spec used to animate `progress` back to `0f` (cancel)
+ *   or forward to `1f` (complete). Defaults to a 300 ms `tween`.
+ * @param content per-entry composable.
  */
 @Composable
 public fun <T : NavStackEntry<*>> PredictiveBackContainer(
@@ -93,29 +108,36 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     previousScreenFor: (stack: NavigationStack<T>, current: T) -> T?,
     onBackComplete: (T) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onGestureProgress: ((Float) -> Unit)? = null,
     transitionSpec: AnimatedContentTransitionScope<T>.() -> ContentTransform = PushTransitionSpec(),
     popTransitionSpec: AnimatedContentTransitionScope<T>.() -> ContentTransform = PopTransitionSpec(),
     predictivePopTransitionSpec: AnimatedContentTransitionScope<T>.() -> ContentTransform =
         PredictivePopTransitionSpec(),
+    gestureResolutionSpec: AnimationSpec<Float> = tween(),
     content: @Composable (T) -> Unit,
 ) {
     // `current` and `previous` are the only screens the seekable transition cares about.
     // `previous` is non-null iff a back gesture is in flight or being resolved.
     var current by remember { mutableStateOf(stack.screen) }
     var previous by remember { mutableStateOf<T?>(null) }
-    var progress by remember { mutableStateOf(0F) }
+    var progress by remember { mutableFloatStateOf(0F) }
     val transitionState = remember { SeekableTransitionState(current) }
     // Holds the speculative cancel-animation so the stack-reconciliation
     // effect can interrupt it when a gesture turns out to be a complete.
     val cancelJob = remember { mutableStateOf<Job?>(null) }
-    // Width of the container in pixels, used to convert the dispatcher's
-    // absolute touchX into a 0..1 seek fraction that tracks the finger 1:1.
-    // Android's `NavigationEvent.progress` is pre-damped against a system-
-    // defined max swipe (and the damping factor changes with orientation),
-    // which makes the visual outrun the finger — especially in landscape.
+    // Container left/width in window coordinates, captured via onGloballyPositioned.
+    // touchX comes from the dispatcher in WINDOW coordinates; we subtract our own
+    // left to land in container-local space and divide by width to get a 0..1 fraction.
+    var containerLeftPx by remember { mutableIntStateOf(0) }
     var containerWidthPx by remember { mutableIntStateOf(0) }
+    // Expose progress to observers. Initialized to 0 so the initial state is consistent.
+    val progressObserver = rememberUpdatedState(onGestureProgress)
+    LaunchedEffect(Unit) {
+        snapshotFlow { progress }.collect { progressObserver.value?.invoke(it) }
+    }
 
-    val canHandleBack = previousScreenFor(stack, current) != null
+    val canHandleBack = enabled && previousScreenFor(stack, current) != null
     val navState = rememberNavigationEventState(NavigationEventInfo.None)
 
     NavigationBackHandler(
@@ -133,41 +155,32 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     // collector reads the current values rather than a stale closure capture.
     val stackHolder = rememberUpdatedState(stack)
     val resolverHolder = rememberUpdatedState(previousScreenFor)
+    val enabledHolder = rememberUpdatedState(enabled)
     LaunchedEffect(Unit) {
         // Read from `dispatcher.transitionState` (the dispatcher-level
         // StateFlow) rather than `navState.transitionState` — the latter only
-        // updates on the topmost active handler. A nested screen handler
-        // (e.g. ArticleDetails) wins LIFO, and the container would otherwise
-        // miss the in-flight progress entirely.
+        // updates on the topmost active handler. A nested screen-level handler
+        // wins LIFO, and the container would otherwise miss the in-flight
+        // progress entirely.
         val flow = owner?.navigationEventDispatcher?.transitionState ?: return@LaunchedEffect
         flow.collect { event ->
             when (event) {
                 is NavigationEventTransitionState.InProgress -> {
+                    if (!enabledHolder.value) return@collect
                     cancelJob.value?.cancel()
                     cancelJob.value = null
                     if (previous == null) {
                         previous = resolverHolder.value(stackHolder.value, current)
                             ?: return@collect
                     }
-                    val w = containerWidthPx
-                    progress = if (w > 0) {
-                        // Convert absolute touchX into a 0..1 fraction in the
-                        // direction the gesture progresses, so the seek tracks
-                        // the finger 1:1 regardless of orientation.
-                        val raw = when (event.latestEvent.swipeEdge) {
-                            NavigationEvent.EDGE_RIGHT -> (w - event.latestEvent.touchX) / w
-                            else -> event.latestEvent.touchX / w
-                        }
-                        raw.coerceIn(0F, 1F)
-                    } else {
-                        // Fallback before the container has been measured.
-                        event.latestEvent.progress
-                    }
+                    progress = fingerFraction(event.latestEvent, containerLeftPx, containerWidthPx)
                 }
                 NavigationEventTransitionState.Idle -> {
                     if (previous != null) {
                         cancelJob.value = launch {
-                            animate(progress, 0F, animationSpec = tween()) { v, _ -> progress = v }
+                            animate(progress, 0F, animationSpec = gestureResolutionSpec) { v, _ ->
+                                progress = v
+                            }
                             previous = null
                             cancelJob.value = null
                         }
@@ -177,7 +190,13 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
         }
     }
 
-    Box(modifier = modifier.onSizeChanged { containerWidthPx = it.width }) {
+    Box(
+        modifier = modifier.onGloballyPositioned { coordinates ->
+            val pos = coordinates.positionInWindow()
+            containerLeftPx = pos.x.toInt()
+            containerWidthPx = coordinates.size.width
+        },
+    ) {
         val transition = rememberTransition(transitionState, label = "Screen transition")
 
         // Stack snapshot at the moment the transition's currentState last settled.
@@ -191,8 +210,9 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
         //  • match (`prev == newTop`): caller popped to our gesture target —
         //    finish the seek smoothly, then settle.
         //  • mismatch (`prev != null` but `prev != newTop`): caller mutated
-        //    elsewhere mid-gesture — snap-cancel, then let the post-gesture
-        //    branch animate the push/pop normally.
+        //    elsewhere mid-gesture — smoothly run the lifted fraction back to 0,
+        //    then adopt the new top (the post-gesture branch animates the
+        //    push/pop into place).
         //  • no gesture (`prev == null`): plain stack change — adopt the new top.
         LaunchedEffect(stack) {
             val newTop = stack.screen
@@ -201,7 +221,9 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                 prev != null && prev == newTop -> {
                     cancelJob.value?.cancel()
                     cancelJob.value = null
-                    animate(progress, 1F, animationSpec = tween()) { v, _ -> progress = v }
+                    animate(progress, 1F, animationSpec = gestureResolutionSpec) { v, _ ->
+                        progress = v
+                    }
                     Snapshot.withMutableSnapshot {
                         previous = null
                         progress = 0F
@@ -212,6 +234,9 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                 prev != null -> {
                     cancelJob.value?.cancel()
                     cancelJob.value = null
+                    animate(progress, 0F, animationSpec = gestureResolutionSpec) { v, _ ->
+                        progress = v
+                    }
                     Snapshot.withMutableSnapshot {
                         previous = null
                         progress = 0F
@@ -262,12 +287,32 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
 }
 
 /**
+ * Maps the dispatcher's `touchX` (window-coordinate pixels) into a `0..1` fraction in the
+ * direction the gesture progresses. Subtracting the container's left offset makes the
+ * mapping correct even when the container is not full-screen. Falls back to the dispatcher's
+ * pre-damped `progress` until the container has been measured.
+ */
+private fun fingerFraction(
+    event: NavigationEvent,
+    containerLeftPx: Int,
+    containerWidthPx: Int,
+): Float {
+    if (containerWidthPx <= 0) return event.progress
+    val localTouchX = event.touchX - containerLeftPx
+    val raw = when (event.swipeEdge) {
+        NavigationEvent.EDGE_RIGHT -> (containerWidthPx - localTouchX) / containerWidthPx
+        else -> localTouchX / containerWidthPx
+    }
+    return raw.coerceIn(0F, 1F)
+}
+
+/**
  * Detects whether [new] is a clean subset of [old] (i.e. a pop). Compares by
  * [NavStackEntry.id] so the check works regardless of whether entries are data classes.
  *
  * Adapted from `androidx.navigation3.ui.NavDisplay.isPop`.
  */
-private fun <T : NavStackEntry<*>> isPop(old: NavigationStack<T>, new: NavigationStack<T>): Boolean {
+internal fun <T : NavStackEntry<*>> isPop(old: NavigationStack<T>, new: NavigationStack<T>): Boolean {
     if (old.firstOrNull()?.id != new.firstOrNull()?.id) return false
     if (new.size > old.size) return false
     val diverging = new.indices.firstOrNull { i -> new[i].id != old[i].id }

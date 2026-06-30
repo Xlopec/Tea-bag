@@ -58,12 +58,12 @@ internal class BackTestScope(val ui: ComposeUiTest) {
         }
     }
 
-    fun backStarted(progress: Float = 0F) {
-        input.backStarted(NavigationEvent(swipeEdge = NavigationEvent.EDGE_LEFT, progress = progress))
+    fun backStarted(progress: Float = 0F, touchX: Float = 0F) {
+        input.backStarted(NavigationEvent(swipeEdge = NavigationEvent.EDGE_LEFT, progress = progress, touchX = touchX))
     }
 
-    fun backProgressed(progress: Float) {
-        input.backProgressed(NavigationEvent(swipeEdge = NavigationEvent.EDGE_LEFT, progress = progress))
+    fun backProgressed(progress: Float, touchX: Float = 0F) {
+        input.backProgressed(NavigationEvent(swipeEdge = NavigationEvent.EDGE_LEFT, progress = progress, touchX = touchX))
     }
 
     fun backCompleted() = input.backCompleted()
