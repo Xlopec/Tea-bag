@@ -41,6 +41,7 @@ kotlin {
                 api(libs.compose.foundation)
                 api(libs.immutable.collections)
                 implementation(libs.animation.core)
+                implementation(libs.navigationevent.compose)
             }
         }
         commonTest {

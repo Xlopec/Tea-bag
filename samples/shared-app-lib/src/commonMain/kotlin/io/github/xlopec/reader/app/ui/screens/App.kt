@@ -86,7 +86,6 @@ internal fun App(
             transitionSpec = { screenTransition() },
             popTransitionSpec = { popScreenTransition() },
             predictivePopTransitionSpec = PredictivePopTransition,
-            endEdgeEnabled = false,
         ) { screen ->
             Screen(
                 modifier = Modifier,

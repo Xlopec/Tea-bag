@@ -124,6 +124,7 @@ kotlin {
                 implementation(libs.settings.core)
                 implementation(libs.sqldelight.runtime)
                 implementation(libs.webview)
+                implementation(libs.navigationevent.compose)
             }
         }
 
@@ -138,7 +139,6 @@ kotlin {
                 implementation(libs.compose.fonts)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.coroutines.android)
-                implementation(libs.compose.activity)
                 implementation(libs.sqldelight.driver.android)
             }
         }
