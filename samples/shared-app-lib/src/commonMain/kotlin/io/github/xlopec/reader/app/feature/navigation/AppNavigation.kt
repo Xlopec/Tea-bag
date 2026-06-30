@@ -40,6 +40,7 @@ import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.navigation.NavigationStack
 import io.github.xlopec.tea.navigation.mutate
+import io.github.xlopec.tea.navigation.pop
 import io.github.xlopec.tea.navigation.push
 import io.github.xlopec.tea.navigation.switchToTab
 import kotlin.Int.Companion.MAX_VALUE
@@ -88,7 +89,7 @@ internal fun AppState.navigateToTab(
 internal fun AppState.navigateToArticleDetails(
     nav: NavigateToArticleDetails,
 ): Update<AppState, Command> {
-    val (screens, commands) = screens.mutate<_, _, Command> { push(ArticleDetailsState(nav.id, nav.article)) }
+    val (screens, commands) = screens.mutate<_, Command> { push(ArticleDetailsState(nav.id, nav.article)) }
 
     return copy(screens = screens) command commands
 }
@@ -111,7 +112,7 @@ internal fun AppState.popScreen(): Update<AppState, Command> {
     return if (screen is TabScreen) {
         noCommand()
     } else {
-        val (screens, commands) = screens.mutate<_, _, Command> { mutator.removeLast() }
+        val (screens, commands) = screens.mutate<_, Command> { pop() }
         copy(screens = screens) command commands
     }
 }

@@ -27,7 +27,7 @@ class NavigationStackTest {
 
     @Test
     fun push_appends_to_top() {
-        val (next, commands) = ids("a").mutate<_, _, Nothing> { push(TestEntry("b")) }
+        val (next, commands) = ids("a").mutate<_, Nothing> { push(TestEntry("b")) }
         assertEquals(listOf("a", "b"), next.value.ids())
         assertTrue(commands.isEmpty())
     }
@@ -35,14 +35,14 @@ class NavigationStackTest {
     @Test
     fun pop_removes_top_and_returns_it() {
         var popped: TestEntry? = null
-        val (next, _) = ids("a", "b").mutate<_, _, Nothing> { popped = pop() }
+        val (next, _) = ids("a", "b").mutate<_, Nothing> { popped = pop() }
         assertEquals(TestEntry("b"), popped)
         assertEquals(listOf("a"), next.value.ids())
     }
 
     @Test
     fun popAll_removes_matching_entries_and_collects_commands() {
-        val (next, commands) = ids("a", "b", "a", "c", "a").mutate<_, _, String> {
+        val (next, commands) = ids("a", "b", "a", "c", "a").mutate<_, String> {
             popAll(predicate = { it.id == "a" }, onPop = { setOf("removed-${it.id}") })
         }
         assertEquals(listOf("b", "c"), next.value.ids())
@@ -52,7 +52,7 @@ class NavigationStackTest {
     @Test
     fun replaceTop_swaps_top_and_returns_old() {
         var removed: TestEntry? = null
-        val (next, _) = ids("a", "b", "c").mutate<_, _, Nothing> {
+        val (next, _) = ids("a", "b", "c").mutate<_, Nothing> {
             removed = replaceTop(TestEntry("z"))
         }
         assertEquals(TestEntry("c"), removed)
@@ -62,7 +62,7 @@ class NavigationStackTest {
     @Test
     fun popUntil_removes_until_predicate_holds() {
         var removed: List<TestEntry> = emptyList()
-        val (next, _) = ids("a", "b", "c", "d").mutate<_, _, Nothing> {
+        val (next, _) = ids("a", "b", "c", "d").mutate<_, Nothing> {
             removed = popUntil(predicate = { it.id == "b" })
         }
         assertEquals(listOf("a", "b"), next.value.ids())
@@ -71,7 +71,7 @@ class NavigationStackTest {
 
     @Test
     fun popUntil_stops_at_root_even_if_predicate_never_holds() {
-        val (next, _) = ids("a", "b", "c").mutate<_, _, Nothing> {
+        val (next, _) = ids("a", "b", "c").mutate<_, Nothing> {
             popUntil(predicate = { it.id == "missing" })
         }
         assertEquals(listOf("a"), next.value.ids())
@@ -79,7 +79,7 @@ class NavigationStackTest {
 
     @Test
     fun popUntil_is_noop_when_predicate_already_holds_at_top() {
-        val (next, _) = ids("a", "b", "c").mutate<_, _, Nothing> {
+        val (next, _) = ids("a", "b", "c").mutate<_, Nothing> {
             popUntil(predicate = { it.id == "c" })
         }
         assertEquals(listOf("a", "b", "c"), next.value.ids())
@@ -87,14 +87,14 @@ class NavigationStackTest {
 
     @Test
     fun popTo_pops_until_id_is_top() {
-        val (next, _) = ids("a", "b", "c", "d").mutate<_, _, Nothing> { popTo("b") }
+        val (next, _) = ids("a", "b", "c", "d").mutate<_, Nothing> { popTo("b") }
         assertEquals(listOf("a", "b"), next.value.ids())
     }
 
     @Test
     fun clearAndPush_resets_stack_to_single_entry() {
         var removed: List<TestEntry> = emptyList()
-        val (next, _) = ids("a", "b", "c").mutate<_, _, Nothing> {
+        val (next, _) = ids("a", "b", "c").mutate<_, Nothing> {
             removed = clearAndPush(TestEntry("home"))
         }
         assertEquals(listOf("home"), next.value.ids())
@@ -103,8 +103,8 @@ class NavigationStackTest {
 
     @Test
     fun updateInstanceOf_updates_every_match() {
-        val (next, commands) = ids("a", "b", "a").mutate<_, _, String> {
-            updateInstanceOf<_, _, _, TestEntry> { entry ->
+        val (next, commands) = ids("a", "b", "a").mutate<_, String> {
+            updateInstanceOf<_, _, TestEntry> { entry ->
                 TestEntry(entry.id.uppercase()) to setOf("touched-${entry.id}")
             }
         }
@@ -114,7 +114,7 @@ class NavigationStackTest {
 
     @Test
     fun updateInstanceOfById_updates_only_the_matching_entry() {
-        val (next, commands) = ids("a", "b", "c").mutate<_, _, String> {
+        val (next, commands) = ids("a", "b", "c").mutate<_, String> {
             updateInstanceOfById<_, _, _, TestEntry>("b") {
                 TestEntry("B!") to setOf("hit")
             }
