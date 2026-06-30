@@ -120,7 +120,6 @@ internal fun ArticleDetailsScreen(
     var wasSwipe by remember { mutableStateOf(false) }
     LaunchedEffect(navState) {
         snapshotFlow { navState.transitionState }.collect { state ->
-            io.github.xlopec.tea.navigation.debugLog("[AD] local transitionState=$state")
             if (state is NavigationEventTransitionState.InProgress) wasSwipe = true
         }
     }
@@ -130,12 +129,8 @@ internal fun ArticleDetailsScreen(
         content = { innerPadding ->
             NavigationBackHandler(
                 state = navState,
-                onBackCancelled = {
-                    io.github.xlopec.tea.navigation.debugLog("[AD] onBackCancelled")
-                    wasSwipe = false
-                },
+                onBackCancelled = { wasSwipe = false },
                 onBackCompleted = {
-                    io.github.xlopec.tea.navigation.debugLog("[AD] onBackCompleted wasSwipe=$wasSwipe canGoBack=${navigator.canGoBack}")
                     val swipe = wasSwipe
                     wasSwipe = false
                     when {
