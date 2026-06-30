@@ -131,10 +131,12 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     // left to land in container-local space and divide by width to get a 0..1 fraction.
     var containerLeftPx by remember { mutableIntStateOf(0) }
     var containerWidthPx by remember { mutableIntStateOf(0) }
-    // Expose progress to observers. Initialized to 0 so the initial state is consistent.
     val progressObserver = rememberUpdatedState(onGestureProgress)
-    LaunchedEffect(Unit) {
-        snapshotFlow { progress }.collect { progressObserver.value?.invoke(it) }
+    // Single write site for `progress`: updates the state and pings any observer
+    // synchronously, so the observer doesn't need its own snapshotFlow coroutine.
+    fun setProgress(value: Float) {
+        progress = value
+        progressObserver.value?.invoke(value)
     }
 
     val canHandleBack = enabled && previousScreenFor(stack, current) != null
@@ -173,13 +175,13 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                         previous = resolverHolder.value(stackHolder.value, current)
                             ?: return@collect
                     }
-                    progress = fingerFraction(event.latestEvent, containerLeftPx, containerWidthPx)
+                    setProgress(fingerFraction(event.latestEvent, containerLeftPx, containerWidthPx))
                 }
                 NavigationEventTransitionState.Idle -> {
                     if (previous != null) {
                         cancelJob.value = launch {
                             animate(progress, 0F, animationSpec = gestureResolutionSpec) { v, _ ->
-                                progress = v
+                                setProgress(v)
                             }
                             previous = null
                             cancelJob.value = null
@@ -222,12 +224,13 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                     cancelJob.value?.cancel()
                     cancelJob.value = null
                     animate(progress, 1F, animationSpec = gestureResolutionSpec) { v, _ ->
-                        progress = v
+                        setProgress(v)
                     }
                     Snapshot.withMutableSnapshot {
                         previous = null
                         progress = 0F
                     }
+                    progressObserver.value?.invoke(0F)
                     transitionState.snapTo(newTop)
                     current = newTop
                 }
@@ -235,12 +238,13 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                     cancelJob.value?.cancel()
                     cancelJob.value = null
                     animate(progress, 0F, animationSpec = gestureResolutionSpec) { v, _ ->
-                        progress = v
+                        setProgress(v)
                     }
                     Snapshot.withMutableSnapshot {
                         previous = null
                         progress = 0F
                     }
+                    progressObserver.value?.invoke(0F)
                     transitionState.snapTo(current)
                     current = newTop
                 }
