@@ -136,7 +136,7 @@ class PredictiveBackContainerTest {
         rendered.clear()
 
         backStarted()
-        backProgressed(0.5F)
+        backProgressed(MidGestureProgress)
         settle()
 
         assertTrue(TestEntry("home") in rendered, "expected previous (home) to be rendered during gesture, got $rendered")
@@ -157,7 +157,7 @@ class PredictiveBackContainerTest {
         settle()
 
         backStarted()
-        backProgressed(0.3F)
+        backProgressed(MidGestureProgress)
         settle()
         backCancelled()
         // Cancel animation (~300ms) then AnimatedContent decomposes the
@@ -182,7 +182,7 @@ class PredictiveBackContainerTest {
         settle()
 
         backStarted()
-        backProgressed(0.6F)
+        backProgressed(MidGestureProgress)
         settle()
 
         // Simulate an inner screen handler intercepting completion and
@@ -229,7 +229,7 @@ class PredictiveBackContainerTest {
         settle()
 
         backStarted()
-        backProgressed(0.6F)
+        backProgressed(MidGestureProgress)
         settle()
         backCompleted()
         settle(ms = 600L)
@@ -271,7 +271,7 @@ class PredictiveBackContainerTest {
         settle()
 
         backStarted()
-        backProgressed(0.4F)
+        backProgressed(MidGestureProgress)
         settle()
         backCancelled()
         settle(ms = 600L)
@@ -300,7 +300,7 @@ class PredictiveBackContainerTest {
         settle()
 
         backStarted()
-        backProgressed(0.5F)
+        backProgressed(MidGestureProgress)
         settle()
         // Caller jumps to an unrelated screen instead of popping to `home`.
         currentStack.value = stack("home", "details", "filters")
@@ -401,7 +401,7 @@ class PredictiveBackContainerTest {
         settle()
 
         backStarted()
-        backProgressed(0.4F)
+        backProgressed(MidGestureProgress)
         settle()
         // Caller toggles `enabled` off mid-gesture; the InProgress collector
         // should refuse further updates and the gesture should resolve
@@ -473,3 +473,6 @@ private val NoTransition: ContentTransform = ContentTransform(
     targetContentZIndex = 0F,
     sizeTransform = null,
 )
+
+/** Arbitrary "gesture is partway through" fraction. Exact value isn't load-bearing. */
+private const val MidGestureProgress = 0.5F
