@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -42,6 +43,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.navigationevent.NavigationEvent
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.NavigationEventTransitionState
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
@@ -105,6 +108,12 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     // Holds the speculative cancel-animation so the stack-reconciliation
     // effect can interrupt it when a gesture turns out to be a complete.
     val cancelJob = remember { mutableStateOf<Job?>(null) }
+    // Width of the container in pixels, used to convert the dispatcher's
+    // absolute touchX into a 0..1 seek fraction that tracks the finger 1:1.
+    // Android's `NavigationEvent.progress` is pre-damped against a system-
+    // defined max swipe (and the damping factor changes with orientation),
+    // which makes the visual outrun the finger — especially in landscape.
+    var containerWidthPx by remember { mutableIntStateOf(0) }
 
     val canHandleBack = previousScreenFor(stack, current) != null
     val navState = rememberNavigationEventState(NavigationEventInfo.None)
@@ -140,7 +149,20 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                         previous = resolverHolder.value(stackHolder.value, current)
                             ?: return@collect
                     }
-                    progress = event.latestEvent.progress
+                    val w = containerWidthPx
+                    progress = if (w > 0) {
+                        // Convert absolute touchX into a 0..1 fraction in the
+                        // direction the gesture progresses, so the seek tracks
+                        // the finger 1:1 regardless of orientation.
+                        val raw = when (event.latestEvent.swipeEdge) {
+                            NavigationEvent.EDGE_RIGHT -> (w - event.latestEvent.touchX) / w
+                            else -> event.latestEvent.touchX / w
+                        }
+                        raw.coerceIn(0F, 1F)
+                    } else {
+                        // Fallback before the container has been measured.
+                        event.latestEvent.progress
+                    }
                 }
                 NavigationEventTransitionState.Idle -> {
                     if (previous != null) {
@@ -155,7 +177,7 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
         }
     }
 
-    Box(modifier = modifier) {
+    Box(modifier = modifier.onSizeChanged { containerWidthPx = it.width }) {
         val transition = rememberTransition(transitionState, label = "Screen transition")
 
         // Stack snapshot at the moment the transition's currentState last settled.
