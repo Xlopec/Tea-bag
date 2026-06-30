@@ -63,7 +63,7 @@ class NavigationStackTest {
     fun popUntil_removes_until_predicate_holds() {
         var removed: List<TestEntry> = emptyList()
         val (next, _) = ids("a", "b", "c", "d").mutate<_, _, Nothing> {
-            removed = popUntil { it.id == "b" }
+            removed = popUntil(predicate = { it.id == "b" })
         }
         assertEquals(listOf("a", "b"), next.value.ids())
         assertEquals(listOf("d", "c"), removed.ids())
@@ -72,7 +72,7 @@ class NavigationStackTest {
     @Test
     fun popUntil_stops_at_root_even_if_predicate_never_holds() {
         val (next, _) = ids("a", "b", "c").mutate<_, _, Nothing> {
-            popUntil { it.id == "missing" }
+            popUntil(predicate = { it.id == "missing" })
         }
         assertEquals(listOf("a"), next.value.ids())
     }
@@ -80,7 +80,7 @@ class NavigationStackTest {
     @Test
     fun popUntil_is_noop_when_predicate_already_holds_at_top() {
         val (next, _) = ids("a", "b", "c").mutate<_, _, Nothing> {
-            popUntil { it.id == "c" }
+            popUntil(predicate = { it.id == "c" })
         }
         assertEquals(listOf("a", "b", "c"), next.value.ids())
     }

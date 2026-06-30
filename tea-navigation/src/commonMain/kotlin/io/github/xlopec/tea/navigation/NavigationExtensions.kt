@@ -92,18 +92,24 @@ public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.push(init: U
 }
 
 /**
- * Removes and returns the top entry.
+ * Removes and returns the top entry. [onPop] runs against the removed entry and its
+ * commands are appended to the scope; defaults to producing none.
  */
-public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.pop(): E =
-    mutator.removeAt(mutator.lastIndex)
+public inline fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.pop(
+    onPop: (E) -> Set<C> = { emptySet() },
+): E {
+    val popped = mutator.removeAt(mutator.lastIndex)
+    commands += onPop(popped)
+    return popped
+}
 
 /**
- * Removes ALL entries matching [predicate] and records commands produced by [onPop]
- * for each removed entry.
+ * Removes ALL entries matching [predicate]. [onPop] runs against each removed entry and its
+ * commands are appended to the scope; defaults to producing none.
  */
-public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.popAll(
-    predicate: (E) -> Boolean,
-    onPop: (E) -> Set<C>,
+public inline fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.popAll(
+    crossinline predicate: (E) -> Boolean,
+    crossinline onPop: (E) -> Set<C> = { emptySet() },
 ) {
     mutator.removeAll { entry ->
         val shouldRemove = predicate(entry)
@@ -118,17 +124,16 @@ public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.popAll(
  * Pops entries from the top of the stack until [predicate] returns `true` for the new top,
  * or until the stack has only one entry (which is never popped). Returns the removed entries
  * in order of removal (top first).
- *
- * The check runs against the entry *currently* on top before each potential pop, so calling
- * `popUntil { it is Home }` from `[Home, Details, Filters]` removes `[Filters, Details]` and
- * leaves `[Home]`.
  */
-public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.popUntil(
+public inline fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.popUntil(
     predicate: (E) -> Boolean,
+    onPop: (E) -> Set<C> = { emptySet() },
 ): List<E> {
     val popped = mutableListOf<E>()
     while (mutator.size > 1 && !predicate(mutator.last())) {
-        popped += mutator.removeAt(mutator.lastIndex)
+        val entry = mutator.removeAt(mutator.lastIndex)
+        commands += onPop(entry)
+        popped += entry
     }
     return popped
 }
@@ -136,27 +141,39 @@ public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.popUntil(
 /**
  * Pops entries from the top of the stack until an entry with [id] is the new top, or until
  * the stack has only one entry (which is never popped). Returns the removed entries.
+ * [onPop] runs against each removed entry; defaults to producing no commands.
  */
-public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.popTo(id: I): List<E> =
-    popUntil { it.id == id }
+public inline fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.popTo(
+    id: I,
+    onPop: (E) -> Set<C> = { emptySet() },
+): List<E> = popUntil({ it.id == id }, onPop)
 
 /**
- * Replaces the top entry with [entry] and returns the removed top.
+ * Replaces the top entry with [entry], appends [commands] to the scope, and returns
+ * the removed top.
  */
-public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.replaceTop(entry: E): E {
+public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.replaceTop(
+    entry: E,
+    commands: Set<C> = emptySet(),
+): E {
     val popped = mutator.removeAt(mutator.lastIndex)
     mutator.add(entry)
+    this.commands += commands
     return popped
 }
 
 /**
- * Clears the entire stack and pushes [entry] as the new root. Returns the removed entries
- * in their original order (bottom first).
+ * Clears the entire stack, pushes [entry] as the new root, and appends [commands] to the scope.
+ * Returns the removed entries in their original order (bottom first).
  */
-public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.clearAndPush(entry: E): List<E> {
+public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.clearAndPush(
+    entry: E,
+    commands: Set<C> = emptySet(),
+): List<E> {
     val removed = mutator.toList()
     mutator.clear()
     mutator.add(entry)
+    this.commands += commands
     return removed
 }
 
@@ -215,7 +232,7 @@ public inline fun <I : Any, E : NavStackEntry<I>, C, reified S : E> MutatorScope
  * @param tab tab to switch to
  * @param belongsToTab predicate to check if a stack entry [E] belongs to a tab [T]
  */
-public fun <I : Any, E : NavStackEntry<I>, C, T> MutatorScope<I, E, C>.switchToTab(
+public inline fun <I : Any, E : NavStackEntry<I>, C, T> MutatorScope<I, E, C>.switchToTab(
     tab: T,
     belongsToTab: (E, T) -> Boolean,
 ) {
@@ -244,7 +261,8 @@ public fun <I : Any, E : NavStackEntry<I>, C, T> MutatorScope<I, E, C>.switchToT
     }
 }
 
-private fun <T> MutableList<T>.swap(
+@PublishedApi
+internal fun <T> MutableList<T>.swap(
     i: Int,
     j: Int,
 ) {
