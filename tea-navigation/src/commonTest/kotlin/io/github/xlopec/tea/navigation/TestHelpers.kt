@@ -35,6 +35,7 @@ internal fun backTest(body: BackTestScope.() -> Unit) = runComposeUiTest {
 @OptIn(ExperimentalTestApi::class)
 internal class BackTestScope(val ui: ComposeUiTest) {
     private val input = DirectNavigationEventInput()
+
     /**
      * Increments when a back event completes and no registered handler claims
      * it. Mirrors what the platform host's terminal behavior would be (e.g.

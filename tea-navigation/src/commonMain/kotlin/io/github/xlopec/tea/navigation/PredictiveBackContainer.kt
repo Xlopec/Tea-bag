@@ -103,6 +103,7 @@ import kotlinx.coroutines.launch
  * @param content per-entry composable.
  */
 @Composable
+@Suppress("CyclomaticComplexMethod")
 public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     stack: NavigationStack<T>,
     previousScreenFor: (stack: NavigationStack<T>, current: T) -> T?,
@@ -132,6 +133,7 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     var containerLeftPx by remember { mutableIntStateOf(0) }
     var containerWidthPx by remember { mutableIntStateOf(0) }
     val progressObserver = rememberUpdatedState(onGestureProgress)
+
     // Single write site for `progress`: updates the state and pings any observer
     // synchronously, so the observer doesn't need its own snapshotFlow coroutine.
     fun setProgress(value: Float) {
