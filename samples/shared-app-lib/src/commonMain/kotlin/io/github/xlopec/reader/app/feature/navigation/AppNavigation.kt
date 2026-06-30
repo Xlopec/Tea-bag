@@ -40,6 +40,8 @@ import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
 import io.github.xlopec.tea.navigation.NavigationStack
 import io.github.xlopec.tea.navigation.mutate
+import io.github.xlopec.tea.navigation.push
+import io.github.xlopec.tea.navigation.switchToTab
 import kotlin.Int.Companion.MAX_VALUE
 import kotlin.Int.Companion.MIN_VALUE
 

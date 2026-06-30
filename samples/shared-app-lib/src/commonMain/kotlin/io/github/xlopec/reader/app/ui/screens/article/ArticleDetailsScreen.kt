@@ -62,11 +62,13 @@ import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -75,6 +77,10 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.NavigationEventTransitionState
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.multiplatform.webview.web.LoadingState
 import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.WebViewNavigator
@@ -94,7 +100,6 @@ import io.github.xlopec.reader.app.model.isSecureProtocol
 import io.github.xlopec.reader.app.model.protocol
 import io.github.xlopec.reader.app.model.toExternalValue
 import io.github.xlopec.reader.app.ui.misc.ProgressInsetAwareTopAppBar
-import io.github.xlopec.reader.app.ui.screens.BackHandler
 import kotlinx.coroutines.launch
 
 @Composable
@@ -106,16 +111,37 @@ internal fun ArticleDetailsScreen(
     val webViewState = rememberWebViewState(url = screen.article.url.toExternalValue())
     val navigator = rememberWebViewNavigator(rememberCoroutineScope())
 
+    // System back behavior on this screen depends on the source:
+    //   • back gesture (predictive)  → always close the screen
+    //   • back button (atomic press) → navigate the WebView back if it has
+    //                                   history, otherwise close the screen
+    // The dispatcher doesn't tell us the source directly, but a predictive
+    // gesture is the only path that emits `InProgress` events before the
+    // terminal callback — so we infer "was a gesture" from observing one.
+    val navState = rememberNavigationEventState(NavigationEventInfo.None)
+    var wasGesture by remember { mutableStateOf(false) }
+    LaunchedEffect(navState) {
+        snapshotFlow { navState.transitionState }.collect { state ->
+            if (state is NavigationEventTransitionState.InProgress) wasGesture = true
+        }
+    }
+    NavigationBackHandler(
+        state = navState,
+        onBackCancelled = { wasGesture = false },
+        onBackCompleted = {
+            val gesture = wasGesture
+            wasGesture = false
+            when {
+                gesture -> handler(Pop)
+                navigator.canGoBack -> navigator.navigateBack()
+                else -> handler(Pop)
+            }
+        },
+    )
+
     Scaffold(
         modifier = modifier,
         content = { innerPadding ->
-            BackHandler {
-                if (navigator.canGoBack) {
-                    navigator.navigateBack()
-                } else {
-                    handler(Pop)
-                }
-            }
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
