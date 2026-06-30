@@ -41,6 +41,7 @@ kotlin {
                 api(libs.compose.foundation)
                 api(libs.immutable.collections)
                 implementation(libs.animation.core)
+                implementation(libs.navigationevent.compose)
             }
         }
         commonTest {
@@ -51,6 +52,10 @@ kotlin {
         jvmTest {
             dependencies {
                 implementation(libs.junit)
+                implementation(libs.coroutines.test)
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.uiTest)
+                implementation(compose.desktop.currentOs)
             }
         }
     }

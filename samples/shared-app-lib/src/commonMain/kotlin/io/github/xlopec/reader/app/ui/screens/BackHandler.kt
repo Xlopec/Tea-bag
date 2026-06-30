@@ -25,8 +25,17 @@
 package io.github.xlopec.reader.app.ui.screens
 
 import androidx.compose.runtime.Composable
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 
 @Composable
-internal expect fun BackHandler(
+internal fun BackHandler(
     onBack: () -> Unit,
-)
+) {
+    val state = rememberNavigationEventState(NavigationEventInfo.None)
+    NavigationBackHandler(
+        state = state,
+        onBackCompleted = onBack,
+    )
+}

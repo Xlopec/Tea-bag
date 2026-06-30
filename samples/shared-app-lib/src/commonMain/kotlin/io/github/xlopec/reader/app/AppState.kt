@@ -32,6 +32,8 @@ import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.navigation.mutate
 import io.github.xlopec.tea.navigation.screen
 import io.github.xlopec.tea.navigation.stackOf
+import io.github.xlopec.tea.navigation.updateInstanceOf
+import io.github.xlopec.tea.navigation.updateInstanceOfById
 import kotlin.uuid.Uuid
 
 public typealias ScreenId = Uuid
