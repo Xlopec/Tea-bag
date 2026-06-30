@@ -48,7 +48,7 @@ public inline val <T> NavigationStack<T>.previousScreen: T?
  *
  * Returns the updated stack and any commands produced during the block.
  */
-public fun <E : NavStackEntry<*>, C> NavigationStack<E>.mutate(
+public fun <I : Any, E : NavStackEntry<I>, C> NavigationStack<E>.mutate(
     block: context(MutableList<E>, MutableSet<C>) () -> Unit,
 ): Update<NavigationStack<E>, C> {
     val builder = value.builder()

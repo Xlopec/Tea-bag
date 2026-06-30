@@ -89,7 +89,7 @@ internal fun AppState.navigateToTab(
 internal fun AppState.navigateToArticleDetails(
     nav: NavigateToArticleDetails,
 ): Update<AppState, Command> {
-    val (screens, commands) = screens.mutate<_, Command> { push(ArticleDetailsState(nav.id, nav.article)) }
+    val (screens, commands) = screens.mutate<_, _, Command> { push(ArticleDetailsState(nav.id, nav.article)) }
 
     return copy(screens = screens) command commands
 }
@@ -112,7 +112,7 @@ internal fun AppState.popScreen(): Update<AppState, Command> {
     return if (screen is TabScreen) {
         noCommand()
     } else {
-        val (screens, commands) = screens.mutate<_, Command> { pop() }
+        val (screens, commands) = screens.mutate<_, _, Command> { pop() }
         copy(screens = screens) command commands
     }
 }
