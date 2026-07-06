@@ -44,7 +44,7 @@ class NavigationExtensionsTest {
         val group3 = listOf(*Group(Tab.Trending))
 
         val initialStack = (group1 + group2 + group3).toStackOrNull()!!
-        val (actualNavigationStack, commands) = initialStack.mutate<_, Nothing> {
+        val (actualNavigationStack, commands) = initialStack.mutate<_, _, Nothing> {
             switchToTab(Tab.Settings, ::testScreenBelongsToTab)
         }
         val expectedNavigationStack = (group1 + group3 + group2).toStackOrNull()!!
@@ -69,7 +69,7 @@ class NavigationExtensionsTest {
         val group3 = listOf(*Group(Tab.Trending))
 
         val initialStack = (group1 + group2 + group3).toStackOrNull()!!
-        val (actualNavigationStack, commands) = initialStack.mutate<_, Nothing> {
+        val (actualNavigationStack, commands) = initialStack.mutate<_, _, Nothing> {
             switchToTab(Tab.Trending, ::testScreenBelongsToTab)
         }
 
