@@ -104,7 +104,7 @@ class NavigationStackTest {
     @Test
     fun updateInstanceOf_updates_every_match() {
         val (next, commands) = ids("a", "b", "a").mutate<_, _, String> {
-            updateInstanceOf<_, _, _, TestEntry> { entry ->
+            updateInstanceOf<_, _, TestEntry> { entry ->
                 TestEntry(entry.id.uppercase()) to setOf("touched-${entry.id}")
             }
         }

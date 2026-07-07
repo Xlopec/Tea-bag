@@ -439,6 +439,122 @@ class PredictiveBackContainerTest {
         assertEquals(null, popped, "root screen must not pop")
         assertEquals(1, unhandledBackCount, "back at root must propagate to the dispatcher fallback")
     }
+
+    @Test
+    fun on_transition_settled_fires_with_top_after_initial_composition() = backTest {
+        val settled = mutableListOf<TestEntry>()
+        set {
+            PredictiveBackContainer(
+                stack = stack("home", "details"),
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                onTransitionSettled = { settled += it },
+                content = {},
+            )
+        }
+        settle()
+
+        assertEquals(listOf(TestEntry("details")), settled)
+    }
+
+    @Test
+    fun on_transition_settled_fires_after_programmatic_push_animation() = backTest {
+        var currentStack by mutableStateOf(stack("home"))
+        val settled = mutableListOf<TestEntry>()
+        set {
+            PredictiveBackContainer(
+                stack = currentStack,
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                onTransitionSettled = { settled += it },
+                content = {},
+            )
+        }
+        settle()
+        settled.clear()
+
+        currentStack = stack("home", "details")
+        // Long enough for the seekable transition's animateTo (default spring) to settle.
+        settle(ms = 1500L)
+
+        assertEquals(listOf(TestEntry("details")), settled)
+    }
+
+    @Test
+    fun on_transition_settled_fires_after_programmatic_pop_animation() = backTest {
+        var currentStack by mutableStateOf(stack("home", "details"))
+        val settled = mutableListOf<TestEntry>()
+        set {
+            PredictiveBackContainer(
+                stack = currentStack,
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                onTransitionSettled = { settled += it },
+                content = {},
+            )
+        }
+        settle()
+        settled.clear()
+
+        currentStack = stack("home")
+        settle(ms = 1500L)
+
+        assertEquals(listOf(TestEntry("home")), settled)
+    }
+
+    @Test
+    fun on_transition_settled_fires_with_new_top_after_completed_gesture() = backTest {
+        var currentStack by mutableStateOf(stack("home", "details"))
+        val settled = mutableListOf<TestEntry>()
+        set {
+            PredictiveBackContainer(
+                stack = currentStack,
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                onTransitionSettled = { settled += it },
+                content = {},
+            )
+        }
+        settle()
+        settled.clear()
+
+        backStarted()
+        backProgressed(MidGestureProgress)
+        settle()
+        // Simulate the pop the caller performs on complete; the reconciliation
+        // branch drives the seek to 1F and settles on `home`.
+        currentStack = stack("home")
+        backCompleted()
+        settle(ms = 1500L)
+
+        assertEquals(listOf(TestEntry("home")), settled)
+    }
+
+    @Test
+    fun on_transition_settled_does_not_re_fire_after_cancelled_gesture() = backTest {
+        val settled = mutableListOf<TestEntry>()
+        set {
+            PredictiveBackContainer(
+                stack = stack("home", "details"),
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                onTransitionSettled = { settled += it },
+                content = {},
+            )
+        }
+        settle()
+        // Initial fire captured; a cancel lands back on the same entry and
+        // `distinctUntilChanged` must suppress the duplicate emission.
+        assertEquals(listOf(TestEntry("details")), settled)
+
+        backStarted()
+        backProgressed(MidGestureProgress)
+        settle()
+        backCancelled()
+        settle(ms = 1500L)
+
+        assertEquals(listOf(TestEntry("details")), settled)
+    }
 }
 
 private class SpecCounter {

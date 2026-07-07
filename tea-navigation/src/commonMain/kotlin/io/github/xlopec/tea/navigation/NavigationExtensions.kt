@@ -27,10 +27,6 @@ package io.github.xlopec.tea.navigation
 import androidx.compose.ui.util.fastForEachIndexed
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
-import kotlinx.collections.immutable.PersistentList
-
-@DslMarker
-private annotation class NavigationStackMutatorScope
 
 /**
  * Returns the current screen to draw (the top of the stack).
@@ -46,68 +42,55 @@ public inline val <T> NavigationStack<T>.previousScreen: T?
     get() = getOrNull(lastIndex - 1)
 
 /**
- * Mutates a navigation stack by applying [block] to it. Returns the updated stack
- * and any commands produced by the mutators in [block].
+ * Mutates a navigation stack by applying [block]. The block receives the stack's mutable
+ * working copy and a command-buffer as context parameters, so the mutator operations
+ * (`push`, `pop`, …) are callable as plain functions.
+ *
+ * Returns the updated stack and any commands produced during the block.
  */
 public fun <I : Any, E : NavStackEntry<I>, C> NavigationStack<E>.mutate(
-    block: MutatorScope<I, E, C>.() -> Unit,
+    block: context(MutableList<E>, MutableSet<C>) () -> Unit,
 ): Update<NavigationStack<E>, C> {
     val builder = value.builder()
-    val commands = MutatorScope<I, E, C>(builder)
-        .apply(block)
-        .commands
-
+    val commands = mutableSetOf<C>()
+    block(builder, commands)
     return NavigationStack(builder.build()) command commands
 }
 
 /**
- * Scope handed to [mutate]'s block. Holds the mutable working copy of the stack
- * and a buffer for commands produced during mutation. Mutation operations live
- * as extensions; only the underlying state is held here.
+ * Pushes [entry] onto the stack. Any [cmds] are appended to the command buffer.
  */
-@NavigationStackMutatorScope
-public class MutatorScope<I : Any, E : NavStackEntry<I>, C> internal constructor(
-    builder: PersistentList.Builder<E>,
-) {
-    /** Commands buffered by the operations applied to this scope. */
-    public val commands: MutableSet<C> = mutableSetOf()
-
-    /** The mutable stack itself. Operations append to / remove from this list. */
-    public val mutator: MutableList<E> = builder
-}
-
-/**
- * Pushes [entry] onto the stack.
- */
-public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.push(entry: E) {
+context(mutator: MutableList<E>, commands: MutableSet<C>)
+public fun <E, C> push(entry: E, cmds: Set<C> = emptySet()) {
     mutator.add(entry)
+    commands += cmds
 }
 
 /**
  * Pushes the entry produced by [init] and records its commands.
  */
-public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.push(init: Update<E, C>) {
+context(mutator: MutableList<E>, commands: MutableSet<C>)
+public fun <E, C> push(init: Update<E, C>) {
     mutator.add(init.first)
     commands += init.second
 }
 
 /**
  * Removes and returns the top entry. [onPop] runs against the removed entry and its
- * commands are appended to the scope; defaults to producing none.
+ * commands are appended to the buffer; defaults to producing none.
  */
-public inline fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.pop(
-    onPop: (E) -> Set<C> = { emptySet() },
-): E {
+context(mutator: MutableList<E>, commands: MutableSet<C>)
+public inline fun <E, C> pop(onPop: (E) -> Set<C> = { emptySet() }): E {
     val popped = mutator.removeAt(mutator.lastIndex)
     commands += onPop(popped)
     return popped
 }
 
 /**
- * Removes ALL entries matching [predicate]. [onPop] runs against each removed entry and its
- * commands are appended to the scope; defaults to producing none.
+ * Removes ALL entries matching [predicate]. [onPop] runs against each removed entry.
  */
-public inline fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.popAll(
+context(mutator: MutableList<E>, commands: MutableSet<C>)
+public inline fun <E, C> popAll(
     crossinline predicate: (E) -> Boolean,
     crossinline onPop: (E) -> Set<C> = { emptySet() },
 ) {
@@ -123,9 +106,10 @@ public inline fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.popAl
 /**
  * Pops entries from the top of the stack until [predicate] returns `true` for the new top,
  * or until the stack has only one entry (which is never popped). Returns the removed entries
- * in order of removal (top first).
+ * in order of removal (top first). [onPop] runs against each removed entry.
  */
-public inline fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.popUntil(
+context(mutator: MutableList<E>, commands: MutableSet<C>)
+public inline fun <E, C> popUntil(
     predicate: (E) -> Boolean,
     onPop: (E) -> Set<C> = { emptySet() },
 ): List<E> {
@@ -139,41 +123,37 @@ public inline fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.popUn
 }
 
 /**
- * Pops entries from the top of the stack until an entry with [id] is the new top, or until
- * the stack has only one entry (which is never popped). Returns the removed entries.
- * [onPop] runs against each removed entry; defaults to producing no commands.
+ * Pops entries from the top until an entry with [id] is the new top, or until the stack
+ * has only one entry (which is never popped). [onPop] runs against each removed entry.
  */
-public inline fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.popTo(
+context(_: MutableList<E>, _: MutableSet<C>)
+public fun <I : Any, E : NavStackEntry<I>, C> popTo(
     id: I,
     onPop: (E) -> Set<C> = { emptySet() },
 ): List<E> = popUntil({ it.id == id }, onPop)
 
 /**
- * Replaces the top entry with [entry], appends [commands] to the scope, and returns
- * the removed top.
+ * Replaces the top entry with [entry], appends [cmds] to the buffer, and returns the
+ * removed top.
  */
-public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.replaceTop(
-    entry: E,
-    commands: Set<C> = emptySet(),
-): E {
+context(mutator: MutableList<E>, commands: MutableSet<C>)
+public fun <E, C> replaceTop(entry: E, cmds: Set<C> = emptySet()): E {
     val popped = mutator.removeAt(mutator.lastIndex)
     mutator.add(entry)
-    this.commands += commands
+    commands += cmds
     return popped
 }
 
 /**
- * Clears the entire stack, pushes [entry] as the new root, and appends [commands] to the scope.
+ * Clears the entire stack, pushes [entry] as the new root, and appends [cmds] to the buffer.
  * Returns the removed entries in their original order (bottom first).
  */
-public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.clearAndPush(
-    entry: E,
-    commands: Set<C> = emptySet(),
-): List<E> {
+context(mutator: MutableList<E>, commands: MutableSet<C>)
+public fun <E, C> clearAndPush(entry: E, cmds: Set<C> = emptySet()): List<E> {
     val removed = mutator.toList()
     mutator.clear()
     mutator.add(entry)
-    this.commands += commands
+    commands += cmds
     return removed
 }
 
@@ -181,7 +161,8 @@ public fun <I : Any, E : NavStackEntry<I>, C> MutatorScope<I, E, C>.clearAndPush
  * Modifies ***ALL*** entries that are instances of [S] using [updater] and records
  * the produced commands.
  */
-public inline fun <I : Any, E : NavStackEntry<I>, C, reified S : E> MutatorScope<I, E, C>.updateInstanceOf(
+context(mutator: MutableList<E>, commands: MutableSet<C>)
+public inline fun <E, C, reified S : E> updateInstanceOf(
     updater: (S) -> Update<E, C>,
 ) {
     mutator.fastForEachIndexed { i, entry ->
@@ -197,7 +178,8 @@ public inline fun <I : Any, E : NavStackEntry<I>, C, reified S : E> MutatorScope
  * Modifies the first entry that is an instance of [S] with [id] using [updater] and records
  * the produced commands.
  */
-public inline fun <I : Any, E : NavStackEntry<I>, C, reified S : E> MutatorScope<I, E, C>.updateInstanceOfById(
+context(mutator: MutableList<E>, commands: MutableSet<C>)
+public inline fun <I : Any, E : NavStackEntry<I>, C, reified S : E> updateInstanceOfById(
     id: I,
     updater: S.() -> Update<S, C>,
 ) {
@@ -232,7 +214,8 @@ public inline fun <I : Any, E : NavStackEntry<I>, C, reified S : E> MutatorScope
  * @param tab tab to switch to
  * @param belongsToTab predicate to check if a stack entry [E] belongs to a tab [T]
  */
-public inline fun <I : Any, E : NavStackEntry<I>, C, T> MutatorScope<I, E, C>.switchToTab(
+context(mutator: MutableList<E>, _: MutableSet<*>)
+public inline fun <E, T> switchToTab(
     tab: T,
     belongsToTab: (E, T) -> Boolean,
 ) {
