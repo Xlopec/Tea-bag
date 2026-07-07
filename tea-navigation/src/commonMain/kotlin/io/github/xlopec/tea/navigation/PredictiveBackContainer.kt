@@ -54,6 +54,8 @@ import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 /**
@@ -94,6 +96,13 @@ import kotlinx.coroutines.launch
  * @param onGestureProgress optional observer for the in-flight gesture fraction (`0f..1f`).
  *   Invoked every frame the gesture progresses, and once with `0f` when it resolves.
  *   Useful for driving background dim, parallax depth, etc.
+ * @param onTransitionSettled optional observer invoked with the top entry each time the
+ *   seekable transition settles onto a new entry (`currentState == targetState`). Fires on
+ *   the initial composition, after every push/pop animation completes, and after a predictive
+ *   back gesture resolves to a different entry — never mid-animation, and never twice in a
+ *   row for the same entry (a cancelled gesture that lands back on the current entry does
+ *   not re-fire). Useful for deferring heavy work (camera bind, network fetch, etc.) until
+ *   the entering screen is fully presented.
  * @param transitionSpec [ContentTransform] factory used for forward navigation.
  * @param popTransitionSpec [ContentTransform] factory used for programmatic pops.
  * @param predictivePopTransitionSpec [ContentTransform] factory used while the back gesture
@@ -111,6 +120,7 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onGestureProgress: ((Float) -> Unit)? = null,
+    onTransitionSettled: ((T) -> Unit)? = null,
     transitionSpec: AnimatedContentTransitionScope<T>.() -> ContentTransform = PushTransitionSpec(),
     popTransitionSpec: AnimatedContentTransitionScope<T>.() -> ContentTransform = PopTransitionSpec(),
     predictivePopTransitionSpec: AnimatedContentTransitionScope<T>.() -> ContentTransform =
@@ -133,12 +143,25 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     var containerLeftPx by remember { mutableIntStateOf(0) }
     var containerWidthPx by remember { mutableIntStateOf(0) }
     val progressObserver = rememberUpdatedState(onGestureProgress)
+    val settledObserver = rememberUpdatedState(onTransitionSettled)
 
     // Single write site for `progress`: updates the state and pings any observer
     // synchronously, so the observer doesn't need its own snapshotFlow coroutine.
     fun setProgress(value: Float) {
         progress = value
         progressObserver.value?.invoke(value)
+    }
+
+    // Fire settled directly from the SeekableTransitionState — decouples the
+    // signal from composition timing so it fires uniformly for the initial
+    // composition, regular push/pop animations, gesture cancels and gesture
+    // completions. `distinctUntilChanged` collapses a cancel that lands back
+    // on the same entry (null → E → null → E after filterNotNull becomes E).
+    LaunchedEffect(transitionState) {
+        snapshotFlow { transitionState.currentState.takeIf { it == transitionState.targetState } }
+            .filterNotNull()
+            .distinctUntilChanged()
+            .collect { settledObserver.value?.invoke(it) }
     }
 
     val canHandleBack = enabled && previousScreenFor(stack, current) != null
