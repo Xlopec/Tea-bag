@@ -29,6 +29,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.SeekableTransitionState
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.tween
@@ -38,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -55,6 +57,7 @@ import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
@@ -278,13 +281,25 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
         }
 
         val prev = previous
+        val targetZIndex = rememberMonotonicZIndex(
+            transition = transition,
+            sceneState = current,
+            isPop = isPop,
+            inPredictiveBack = prev != null,
+        )
 
         val contentTransform: AnimatedContentTransitionScope<T>.() -> ContentTransform = {
-            when {
+            val base = when {
                 prev != null -> predictivePopTransitionSpec(this)
                 isPop -> popTransitionSpec(this)
                 else -> transitionSpec(this)
             }
+            ContentTransform(
+                targetContentEnter = base.targetContentEnter,
+                initialContentExit = base.initialContentExit,
+                targetContentZIndex = targetZIndex,
+                sizeTransform = base.sizeTransform,
+            )
         }
 
         if (prev != null) {
@@ -313,6 +328,77 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
             content(animatedScreen)
         }
     }
+}
+
+/**
+ * Assigns each entry a monotonic zIndex derived from the outgoing entry's current
+ * value (± 1 per direction) so the current top always draws over the revealed one
+ * across chained pops. Prunes the map on settle so it doesn't accumulate stale
+ * entries.
+ *
+ * Needed because `AnimatedContent` caches each slot's `specOnEnter.targetContentZIndex`
+ * on first composition: a constant pop-target zIndex eventually collides with a prior
+ * pop's target, letting composition order win and dropping the outgoing screen behind
+ * the incoming one.
+ */
+@Composable
+private fun <T : NavStackEntry<*>> rememberMonotonicZIndex(
+    transition: Transition<T>,
+    sceneState: T,
+    isPop: Boolean,
+    inPredictiveBack: Boolean,
+): Float {
+    val zIndices = remember { mutableStateMapOf<Any, Float>() }
+    val initialKey = transition.currentState.id
+    val targetKey = transition.targetState.id
+    val initialZIndex = zIndices.getOrPut(initialKey) { 0f }
+    val targetZIndex = computeMonotonicZIndex(
+        initialKey = initialKey,
+        targetKey = targetKey,
+        initialZIndex = initialZIndex,
+        existingTargetZIndex = zIndices[targetKey],
+        targetIsScene = transition.targetState == sceneState,
+        isPop = isPop,
+        inPredictiveBack = inPredictiveBack,
+    )
+    zIndices[targetKey] = targetZIndex
+
+    LaunchedEffect(transition) {
+        snapshotFlow { transition.isRunning }
+            .filter { !it }
+            .collect {
+                val settledKey = transition.targetState.id
+                val stale = zIndices.keys.filter { it != settledKey }
+                stale.forEach { zIndices.remove(it) }
+            }
+    }
+    return targetZIndex
+}
+
+/**
+ * Pure zIndex arithmetic driving [rememberMonotonicZIndex]. Exposed as `internal`
+ * so the invariants can be unit-tested without a Compose test harness.
+ *
+ * Rules (evaluated top-down):
+ *  • Ongoing forward transition to an already-tracked target — reuse its assigned z
+ *    so a mid-flight state change doesn't reshuffle the ordering.
+ *  • initial == target (settled / trivial segment) — keep initial's z.
+ *  • Pop or predictive-back — target below initial (`initial - 1`).
+ *  • Push — target above initial (`initial + 1`).
+ */
+internal fun computeMonotonicZIndex(
+    initialKey: Any,
+    targetKey: Any,
+    initialZIndex: Float,
+    existingTargetZIndex: Float?,
+    targetIsScene: Boolean,
+    isPop: Boolean,
+    inPredictiveBack: Boolean,
+): Float = when {
+    !inPredictiveBack && !targetIsScene && existingTargetZIndex != null -> existingTargetZIndex
+    initialKey == targetKey -> initialZIndex
+    isPop || inPredictiveBack -> initialZIndex - 1f
+    else -> initialZIndex + 1f
 }
 
 /**

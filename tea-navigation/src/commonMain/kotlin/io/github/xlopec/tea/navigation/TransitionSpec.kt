@@ -40,6 +40,10 @@ private const val ParallaxDivisor = 4
  * iOS-style push. The new screen slides in from the trailing edge over the
  * previous one, while the previous parallax-shifts a quarter of the way
  * toward the leading edge.
+ *
+ * `targetContentZIndex` is left at its default — [PredictiveBackContainer]
+ * overrides it with a per-entry monotonic value so the current top stays drawn
+ * above the revealed one across chained pops.
  */
 public fun <T : Any> PushTransitionSpec(
     durationMillis: Int = TransitionDuration,
@@ -54,13 +58,16 @@ public fun <T : Any> PushTransitionSpec(
             targetOffset = { it / ParallaxDivisor },
             animationSpec = tween(durationMillis),
         ),
-        targetContentZIndex = 1f,
     )
 }
 
 /**
  * iOS-style pop (button or programmatic). The current screen slides off to the
  * trailing edge while the previous returns from its parallax position.
+ *
+ * `targetContentZIndex` is left at its default — [PredictiveBackContainer]
+ * overrides it with a per-entry monotonic value so the current top stays drawn
+ * above the revealed one across chained pops.
  */
 public fun <T : Any> PopTransitionSpec(
     durationMillis: Int = TransitionDuration,
@@ -75,7 +82,6 @@ public fun <T : Any> PopTransitionSpec(
             towards = SlideDirection.End,
             animationSpec = tween(durationMillis),
         ),
-        targetContentZIndex = -1f,
     )
 }
 
@@ -84,6 +90,10 @@ public fun <T : Any> PopTransitionSpec(
  * [PopTransitionSpec] but with linear easing — the slide is driven by
  * `SeekableTransitionState.seekTo(progress)` where `progress` is the finger
  * position, so any non-linear easing makes the screen run ahead of the finger.
+ *
+ * `targetContentZIndex` is left at its default — [PredictiveBackContainer]
+ * overrides it with a per-entry monotonic value so the current top stays drawn
+ * above the revealed one across chained pops.
  */
 public fun <T : Any> PredictivePopTransitionSpec(
     durationMillis: Int = TransitionDuration,
@@ -98,6 +108,5 @@ public fun <T : Any> PredictivePopTransitionSpec(
             towards = SlideDirection.End,
             animationSpec = tween(durationMillis, easing = LinearEasing),
         ),
-        targetContentZIndex = -1f,
     )
 }
