@@ -316,12 +316,22 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                     animate(progress, 0F, animationSpec = gestureResolutionSpec) { v, _ ->
                         setProgress(v)
                     }
+                    // Same rationale as the cancel branch's cancelSettling gate:
+                    // snapTo(current) below fires an AnimatedContent segment change
+                    // (prev → current); without the gate, contentTransform re-evaluates
+                    // with prev=null and falls through to the forward push spec, whose
+                    // slideIntoContainer(Start) targetContentEnter leaves the returning
+                    // screen stuck at +width off-screen for the residual segment.
+                    cancelSettling = true
+                    withFrameNanos { }
                     Snapshot.withMutableSnapshot {
                         previous = null
                         progress = 0F
                     }
                     progressObserver.value?.invoke(0F)
                     transitionState.snapTo(current)
+                    withFrameNanos { }
+                    cancelSettling = false
                     current = newTop
                 }
                 else -> current = newTop
