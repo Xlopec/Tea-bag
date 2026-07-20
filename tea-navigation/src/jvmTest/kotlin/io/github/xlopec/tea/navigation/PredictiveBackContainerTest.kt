@@ -27,6 +27,7 @@ import kotlin.test.assertTrue
  * "predictive-pop spec was invoked AND both entries are rendered".
  */
 @OptIn(ExperimentalTestApi::class)
+@Suppress("TooManyFunctions")
 class PredictiveBackContainerTest {
 
     @Test
@@ -307,6 +308,64 @@ class PredictiveBackContainerTest {
         settle(ms = 600L)
 
         assertEquals(setOf(TestEntry("filters")), composed.snapshot(), "only the new top should remain")
+    }
+
+    @Test
+    fun state_only_update_to_top_mid_gesture_does_not_disturb_the_gesture() = backTest {
+        // Regression: an async command result that updates the top screen's
+        // state (same id, different payload) must NOT be treated as a
+        // mid-gesture push/pop. Before the fix the container would fire the
+        // mismatch branch — animating progress back to 0 while the finger was
+        // still down — causing the well-known "jumps back and forth" bug.
+        val currentStack = mutableStateOf(
+            stackOf(TestEntry("home", payload = 0), TestEntry("details", payload = 0)),
+        )
+        val composed = ComposedEntries()
+        val predictiveInvocations = SpecCounter()
+        var contentRenderedWith: TestEntry? = null
+        set {
+            PredictiveBackContainer(
+                stack = currentStack.value,
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                predictivePopTransitionSpec = { predictiveInvocations.invoked(); NoTransition },
+                content = {
+                    composed.Track(it)
+                    if (it.id == "details") contentRenderedWith = it
+                },
+            )
+        }
+        settle()
+
+        backStarted()
+        backProgressed(MidGestureProgress)
+        settle()
+        assertTrue(TestEntry("home") in composed.snapshot(), "gesture should be revealing home")
+        predictiveInvocations.count = 0
+
+        // Simulate the async result: same top id, new payload — the exact
+        // shape stack.mutate { updateInstanceOfById(...) } produces.
+        currentStack.value = stackOf(TestEntry("home", payload = 0), TestEntry("details", payload = 42))
+        settle()
+
+        // Gesture still in flight: both entries composed, predictive spec still valid.
+        assertTrue(
+            TestEntry("home") in composed.snapshot(),
+            "home must remain composed after a mid-gesture state-only update, got ${composed.snapshot()}",
+        )
+        assertEquals(
+            TestEntry("details", payload = 42),
+            contentRenderedWith,
+            "content lambda must receive the freshest entry for the top id",
+        )
+
+        backCancelled()
+        settle(ms = 600L)
+        assertEquals(
+            setOf(TestEntry("details", payload = 42)),
+            composed.snapshot(),
+            "after cancel only the updated top should remain",
+        )
     }
 
     @Test
