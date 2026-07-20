@@ -169,6 +169,68 @@ class PredictiveBackContainerTest {
     }
 
     @Test
+    fun cancel_settle_does_not_invoke_forward_push_spec() = backTest {
+        // Regression: at cancel-end, `snapTo(current)` triggers an AnimatedContent
+        // segment change (prev → current) via updateTarget. Without the
+        // cancelSettling gate, contentTransform re-evaluates with `prev == null`
+        // and `isPop == false`, falling through to the forward `transitionSpec`
+        // (push). Its `slideIntoContainer(Start)` targetContentEnter leaves the
+        // returning screen stuck at +width off-screen, exposing the container
+        // background as a black/magenta flash.
+        val pushInvocations = SpecCounter()
+        val popInvocations = SpecCounter()
+        val predictiveInvocations = SpecCounter()
+        val composed = ComposedEntries()
+        set {
+            PredictiveBackContainer(
+                stack = stack("home", "details"),
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                transitionSpec = { pushInvocations.invoked(); NoTransition },
+                popTransitionSpec = { popInvocations.invoked(); NoTransition },
+                predictivePopTransitionSpec = { predictiveInvocations.invoked(); NoTransition },
+                content = { composed.Track(it) },
+            )
+        }
+        settle()
+        // Reset baseline: the initial composition legitimately invokes the push
+        // spec to establish the initial content's frozen `specOnEnter`.
+        pushInvocations.count = 0
+        popInvocations.count = 0
+        predictiveInvocations.count = 0
+
+        backStarted()
+        backProgressed(MidGestureProgress)
+        settle()
+        assertTrue(
+            predictiveInvocations.count >= 1,
+            "predictive-pop spec should be invoked during the gesture",
+        )
+        val pushBeforeCancel = pushInvocations.count
+        val popBeforeCancel = popInvocations.count
+
+        backCancelled()
+        settle(ms = 600L)
+
+        assertEquals(
+            setOf(TestEntry("details")),
+            composed.snapshot(),
+            "only the original top should remain composed after cancel",
+        )
+        assertEquals(
+            pushBeforeCancel,
+            pushInvocations.count,
+            "forward push spec must not be invoked for the snapTo(current) segment " +
+                "at cancel-settle (was $pushBeforeCancel, now ${pushInvocations.count})",
+        )
+        assertEquals(
+            popBeforeCancel,
+            popInvocations.count,
+            "programmatic pop spec must not be invoked; stack shape did not change",
+        )
+    }
+
+    @Test
     fun completed_gesture_with_external_pop_settles_on_new_top() = backTest {
         var currentStack by mutableStateOf(stack("home", "details"))
         val composed = ComposedEntries()
