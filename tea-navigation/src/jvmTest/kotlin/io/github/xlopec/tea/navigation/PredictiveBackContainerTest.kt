@@ -12,6 +12,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -227,6 +228,81 @@ class PredictiveBackContainerTest {
             popBeforeCancel,
             popInvocations.count,
             "programmatic pop spec must not be invoked; stack shape did not change",
+        )
+    }
+
+    @Test
+    @Ignore("Fails on today's code — mismatch reconciliation branch has the same " +
+        "snapTo(current) target-swap that the cancel branch used to have, without " +
+        "the cancelSettling gate. Enable when the refactor unifies both branches.")
+    fun mid_gesture_stack_mismatch_does_not_invoke_forward_push_spec() = backTest {
+        // Regression (companion to cancel_settle test): the reconciliation
+        // "mismatch" branch fires when a caller mutates the stack shape
+        // mid-gesture to something OTHER than the gesture target (e.g. an
+        // async command pushes a new screen while the finger is down). It
+        // then runs `animate(progress, 0F)`, nulls `previous`, and calls
+        // `transitionState.snapTo(current)` — the SAME snapTo-that-swaps-target
+        // pattern the cancel branch used to have. Without a gate, the
+        // returning `current` gets stuck at slideIntoContainer(Start)'s
+        // enter-start position and the container background flashes through.
+        val currentStack = mutableStateOf(stack("home", "details"))
+        val pushInvocations = SpecCounter()
+        val popInvocations = SpecCounter()
+        val predictiveInvocations = SpecCounter()
+        val composed = ComposedEntries()
+        set {
+            PredictiveBackContainer(
+                stack = currentStack.value,
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                transitionSpec = { pushInvocations.invoked(); NoTransition },
+                popTransitionSpec = { popInvocations.invoked(); NoTransition },
+                predictivePopTransitionSpec = { predictiveInvocations.invoked(); NoTransition },
+                content = { composed.Track(it) },
+            )
+        }
+        settle()
+        pushInvocations.count = 0
+        popInvocations.count = 0
+        predictiveInvocations.count = 0
+
+        backStarted()
+        backProgressed(MidGestureProgress)
+        settle()
+        assertTrue(
+            predictiveInvocations.count >= 1,
+            "predictive-pop spec should be invoked during the gesture",
+        )
+        val pushBeforeMutation = pushInvocations.count
+        val popBeforeMutation = popInvocations.count
+
+        // Mismatch: mutate the stack to a NEW top that isn't the gesture
+        // target (`home`). This drives the reconciliation `prev != null &&
+        // prev.id != newTop.id` branch, which animates progress→0 and calls
+        // `snapTo(current)` before adopting the new top.
+        currentStack.value = stack("home", "details", "extra")
+        settle(ms = 800L)
+
+        assertEquals(
+            setOf(TestEntry("extra")),
+            composed.snapshot(),
+            "only the new top should remain composed after mismatch reconciliation",
+        )
+        assertEquals(
+            popBeforeMutation,
+            popInvocations.count,
+            "pop spec must not be invoked; the mismatch resolves to a push, not a pop",
+        )
+        // The mismatch branch legitimately transitions to `extra` via a push.
+        // Exactly one push-spec invocation is expected for that final segment
+        // (details → extra). Anything more indicates the snapTo(current)
+        // target-swap also fell through to the push spec — the bug this test
+        // guards against.
+        assertEquals(
+            pushBeforeMutation + 1,
+            pushInvocations.count,
+            "expected exactly one push-spec invocation for the details→extra segment; " +
+                "extras indicate snapTo(current) segment also fell through to push spec",
         )
     }
 
