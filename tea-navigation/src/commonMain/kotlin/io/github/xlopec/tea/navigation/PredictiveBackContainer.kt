@@ -187,7 +187,12 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
             .collect { settleChangedObserver.value?.invoke(it) }
     }
 
-    val canHandleBack = enabled && previousScreenFor(stack, current) != null
+    // Resolve back-ability against the freshest top (`stack.screen`), not the
+    // animation-`current`, which is intentionally not refreshed on state-only
+    // updates (same id, new payload) and would otherwise be a stale instance the
+    // caller's resolver can't find in `stack` — leaving back disabled and the
+    // system closing the app.
+    val canHandleBack = enabled && previousScreenFor(stack, stack.screen) != null
     val navState = rememberNavigationEventState(NavigationEventInfo.None)
 
     NavigationBackHandler(
@@ -220,7 +225,8 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                     cancelJob.value?.cancel()
                     cancelJob.value = null
                     val prev = previous
-                        ?: resolverHolder.value(stackHolder.value, current)?.also { previous = it }
+                        ?: resolverHolder.value(stackHolder.value, stackHolder.value.screen)
+                            ?.also { previous = it }
                         ?: return@collect
                     val fraction = fingerFraction(event.latestEvent, containerLeftPx, containerWidthPx)
                     setProgress(fraction)

@@ -610,6 +610,47 @@ class PredictiveBackContainerTest {
     }
 
     @Test
+    fun state_only_update_to_top_keeps_back_enabled() = backTest {
+        // Regression: a state-only update to the top (same id, new payload) does not
+        // refresh the container's internal `current`, so a resolver that looks the
+        // current entry up by value in the stack would fail to find the stale instance
+        // and report "no previous" — disabling back and letting the system close the app.
+        // The container must resolve back-ability against the freshest top.
+        var currentStack by mutableStateOf(
+            stackOf(TestEntry("home"), TestEntry("details")),
+        )
+        var backHandled = false
+        set {
+            PredictiveBackContainer(
+                stack = currentStack,
+                // App-style resolver: locates the current entry in the stack by value.
+                previousScreenFor = { s, current ->
+                    val idx = s.indexOf(current)
+                    if (idx > 0) s[idx - 1] else null
+                },
+                onBackComplete = { backHandled = true },
+                content = {},
+            )
+        }
+        settle()
+
+        // Same id, new payload — a `stack.mutate { updateInstanceOfById(...) }`-shaped
+        // change. Structural key (ids) is unchanged, so `current` stays the old instance.
+        currentStack = stackOf(TestEntry("home"), TestEntry("details", payload = 42))
+        settle()
+
+        backCompleted()
+        settle()
+
+        assertEquals(
+            0,
+            unhandledBackCount,
+            "back must stay enabled after a state-only top update (must not reach the fallback)",
+        )
+        assertTrue(backHandled, "container's back handler must fire, not the system fallback")
+    }
+
+    @Test
     fun on_transition_settled_fires_with_top_after_initial_composition() = backTest {
         val settled = mutableListOf<TestEntry>()
         set {
