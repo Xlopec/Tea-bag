@@ -29,12 +29,10 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.rememberTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,9 +45,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.navigationevent.NavigationEvent
@@ -77,7 +75,7 @@ import kotlinx.coroutines.launch
  * 2. When the gesture ends, the dispatcher returns to [NavigationEventTransitionState.Idle].
  *    The container can't tell cancel from complete from that signal alone — the topmost
  *    handler's callbacks aren't necessarily this container's. So it **speculatively** animates
- *    the lifted fraction back to 0 (cancel) using [gestureResolutionSpec].
+ *    the lifted fraction back to 0 (cancel) using [predictivePopTransitionSpec]'s animation spec.
  * 3. If the gesture was actually a complete, the caller (this container's own
  *    [onBackComplete] *or* a nested screen-level handler) mutates [stack]. The reconciliation
  *    step cancels the speculative cancel and smoothly drives the fraction to 1, then settles
@@ -116,12 +114,10 @@ import kotlinx.coroutines.launch
  *   [onTransitionSettled] when you need to observe **both** edges of the settled state — e.g.
  *   to release a camera preview or pause heavy work the instant a back-swipe begins, and
  *   resume it only after the transition/gesture fully resolves.
- * @param transitionSpec [ContentTransform] factory used for forward navigation.
- * @param popTransitionSpec [ContentTransform] factory used for programmatic pops.
- * @param predictivePopTransitionSpec [ContentTransform] factory used while the back gesture
+ * @param transitionSpec [ScreenTransition] used for forward navigation.
+ * @param popTransitionSpec [ScreenTransition] used for programmatic pops.
+ * @param predictivePopTransitionSpec [ScreenTransition] used while the back gesture
  *   is in flight and to finish/cancel after release.
- * @param gestureResolutionSpec animation spec used to animate `progress` back to `0f` (cancel)
- *   or forward to `1f` (complete). Defaults to a 300 ms `tween`.
  * @param content per-entry composable.
  */
 @Composable
@@ -135,11 +131,9 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     onGestureProgress: ((Float) -> Unit)? = null,
     onTransitionSettled: ((T) -> Unit)? = null,
     onSettleChanged: ((T?) -> Unit)? = null,
-    transitionSpec: AnimatedContentTransitionScope<T>.() -> ContentTransform = PushTransitionSpec(),
-    popTransitionSpec: AnimatedContentTransitionScope<T>.() -> ContentTransform = PopTransitionSpec(),
-    predictivePopTransitionSpec: AnimatedContentTransitionScope<T>.() -> ContentTransform =
-        PredictivePopTransitionSpec(),
-    gestureResolutionSpec: AnimationSpec<Float> = tween(),
+    transitionSpec: ScreenTransition = PushTransitionSpec(),
+    popTransitionSpec: ScreenTransition = PopTransitionSpec(),
+    predictivePopTransitionSpec: ScreenTransition = PredictivePopTransitionSpec(),
     content: @Composable (T) -> Unit,
 ) {
     // `current` and `previous` are the only screens the seekable transition cares about.
@@ -151,11 +145,6 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     // Holds the speculative cancel-animation so the stack-reconciliation
     // effect can interrupt it when a gesture turns out to be a complete.
     val cancelJob = remember { mutableStateOf<Job?>(null) }
-    // True across the single snapTo-back segment at the end of a cancelled
-    // gesture. Silences AnimatedContent's enter/exit for that segment so the
-    // returning screen isn't left stuck at an off-screen enter-start position
-    // and the outgoing screen doesn't play a spurious exit slide.
-    var cancelSettling by remember { mutableStateOf(false) }
     // Container left/width in window coordinates, captured via onGloballyPositioned.
     // touchX comes from the dispatcher in WINDOW coordinates; we subtract our own
     // left to land in container-local space and divide by width to get a 0..1 fraction.
@@ -230,32 +219,34 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                     if (!enabledHolder.value) return@collect
                     cancelJob.value?.cancel()
                     cancelJob.value = null
-                    if (previous == null) {
-                        previous = resolverHolder.value(stackHolder.value, current)
-                            ?: return@collect
-                    }
-                    setProgress(fingerFraction(event.latestEvent, containerLeftPx, containerWidthPx))
+                    val prev = previous
+                        ?: resolverHolder.value(stackHolder.value, current)?.also { previous = it }
+                        ?: return@collect
+                    val fraction = fingerFraction(event.latestEvent, containerLeftPx, containerWidthPx)
+                    setProgress(fraction)
+                    // Single owner of the seek: drive transitionState directly here instead of
+                    // via a concurrent collector, so a settle's terminal snapTo can't race a
+                    // trailing seek that would re-target the revealed screen (and leave it as a
+                    // forward-push target off-screen for one frame — a background flash).
+                    launch { transitionState.seekTo(fraction.coerceIn(0F, 1F), prev) }
                 }
                 NavigationEventTransitionState.Idle -> {
                     if (previous != null) {
                         cancelJob.value = launch {
-                            animate(progress, 0F, animationSpec = gestureResolutionSpec) { v, _ ->
-                                setProgress(v)
+                            // Cancel-settle: run the lifted fraction back to 0, then snap onto
+                            // `current`. Per-frame seeks are launched; the awaited snapTo is the
+                            // final mutation, and mutatorMutex cancels any trailing seek — so the
+                            // segment settles on `current` with no residual target to mis-place.
+                            animate(
+                                transitionState.fraction,
+                                0F,
+                                animationSpec = predictivePopTransitionSpec.animationSpec,
+                            ) { value, _ ->
+                                setProgress(value)
+                                if (value != 0F) launch { transitionState.seekTo(value.coerceIn(0F, 1F)) }
                             }
-                            // Snap the transition back to `current` so onSettleChanged fires.
-                            // Flag the segment as cancel-settling so contentTransform returns
-                            // Enter/Exit=None: snapTo alone leaves the returning screen stuck
-                            // at its enter-start position (default forward-push spec places it
-                            // at +width off-screen), leaving the container background exposed.
-                            // The frame gap between setting the flag and the snap is required
-                            // so AnimatedContent's stored transitionSpec lambda is refreshed
-                            // to the None+None variant before the target-change fires.
-                            cancelSettling = true
-                            withFrameNanos { }
                             transitionState.snapTo(current)
                             previous = null
-                            withFrameNanos { }
-                            cancelSettling = false
                             cancelJob.value = null
                         }
                     }
@@ -299,39 +290,39 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                 prev != null && prev.id == newTop.id -> {
                     cancelJob.value?.cancel()
                     cancelJob.value = null
-                    animate(progress, 1F, animationSpec = gestureResolutionSpec) { v, _ ->
-                        setProgress(v)
+                    animate(
+                        transitionState.fraction,
+                        1F,
+                        animationSpec = predictivePopTransitionSpec.animationSpec,
+                    ) { value, _ ->
+                        setProgress(value)
+                        if (value != 1F) launch { transitionState.seekTo(value.coerceIn(0F, 1F)) }
                     }
+                    transitionState.snapTo(newTop)
                     Snapshot.withMutableSnapshot {
                         previous = null
                         progress = 0F
                     }
                     progressObserver.value?.invoke(0F)
-                    transitionState.snapTo(newTop)
                     current = newTop
                 }
                 prev != null -> {
                     cancelJob.value?.cancel()
                     cancelJob.value = null
-                    animate(progress, 0F, animationSpec = gestureResolutionSpec) { v, _ ->
-                        setProgress(v)
+                    animate(
+                        transitionState.fraction,
+                        0F,
+                        animationSpec = predictivePopTransitionSpec.animationSpec,
+                    ) { value, _ ->
+                        setProgress(value)
+                        if (value != 0F) launch { transitionState.seekTo(value.coerceIn(0F, 1F)) }
                     }
-                    // Same rationale as the cancel branch's cancelSettling gate:
-                    // snapTo(current) below fires an AnimatedContent segment change
-                    // (prev → current); without the gate, contentTransform re-evaluates
-                    // with prev=null and falls through to the forward push spec, whose
-                    // slideIntoContainer(Start) targetContentEnter leaves the returning
-                    // screen stuck at +width off-screen for the residual segment.
-                    cancelSettling = true
-                    withFrameNanos { }
+                    transitionState.snapTo(current)
                     Snapshot.withMutableSnapshot {
                         previous = null
                         progress = 0F
                     }
                     progressObserver.value?.invoke(0F)
-                    transitionState.snapTo(current)
-                    withFrameNanos { }
-                    cancelSettling = false
                     current = newTop
                 }
                 else -> current = newTop
@@ -346,35 +337,38 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
             inPredictiveBack = prev != null,
         )
 
+        // The caller-owned transition for the current segment, used for its
+        // `animationSpec` when a programmatic push/pop drives `fraction` below.
+        // (Placement geometry is chosen in the graphicsLayer from `previous` read
+        // live, so it stays in sync with the imperatively-driven seek.)
+        val activeSpec = when {
+            prev != null -> predictivePopTransitionSpec
+            isPop -> popTransitionSpec
+            else -> transitionSpec
+        }
+
         val contentTransform: AnimatedContentTransitionScope<T>.() -> ContentTransform = {
-            val base = when {
-                cancelSettling -> ContentTransform(EnterTransition.None, ExitTransition.None)
-                prev != null -> predictivePopTransitionSpec(this)
-                isPop -> popTransitionSpec(this)
-                else -> transitionSpec(this)
-            }
             ContentTransform(
-                targetContentEnter = base.targetContentEnter,
-                initialContentExit = base.initialContentExit,
+                targetContentEnter = EnterTransition.None,
+                initialContentExit = ExitTransition.None,
                 targetContentZIndex = targetZIndex,
-                sizeTransform = base.sizeTransform,
+                sizeTransform = null,
             )
         }
 
-        if (prev != null) {
-            // snapshotFlow conflates progress updates so heavy content
-            // (e.g. WebView) doesn't drop frames from per-emission
-            // LaunchedEffect cancel/restart.
-            LaunchedEffect(prev) {
-                snapshotFlow { progress }.collect { transitionState.seekTo(it, prev) }
-            }
-        } else {
-            // No gesture in flight: drive the transition toward `current` if
-            // it isn't there already (regular push/programmatic pop), or snap
-            // away any leftover target from a settled gesture.
+        if (prev == null) {
+            // No gesture in flight: drive `fraction` toward `current` with the active
+            // spec's timing so the graphicsLayer slide plays for a regular push /
+            // programmatic pop, or snap away any leftover target from a settled gesture.
+            // In-flight gesture seeking is driven imperatively from the dispatcher handler.
             LaunchedEffect(current) {
                 when {
-                    transitionState.currentState != current -> transitionState.animateTo(current)
+                    transitionState.currentState != current -> {
+                        animate(0F, 1F, animationSpec = activeSpec.animationSpec) { value, _ ->
+                            launch { transitionState.seekTo(value, current) }
+                        }
+                        transitionState.snapTo(current)
+                    }
                     transitionState.targetState != current -> transitionState.snapTo(current)
                 }
             }
@@ -390,7 +384,31 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
             // cached T for entries that have already left the stack but are
             // still animating out.
             val fresh = stack.firstOrNull { it.id == animatedScreen.id } ?: animatedScreen
-            content(fresh)
+            Box(
+                modifier = Modifier.graphicsLayer {
+                    val currentState = transitionState.currentState
+                    val targetState = transitionState.targetState
+                    if (currentState.id != targetState.id) {
+                        val role = if (animatedScreen.id == targetState.id) {
+                            ScreenRole.Incoming
+                        } else {
+                            ScreenRole.Outgoing
+                        }
+                        // Select the spec from `previous` read live at draw time, not from a
+                        // composition-captured flag: the imperative seek can move transitionState
+                        // a frame ahead of composition, and a stale flag would misclassify a
+                        // back-reveal as a forward push (placing the incoming screen off-screen).
+                        val spec = when {
+                            previous != null -> predictivePopTransitionSpec
+                            isPop -> popTransitionSpec
+                            else -> transitionSpec
+                        }
+                        spec.placement(this, role, transitionState.fraction)
+                    }
+                },
+            ) {
+                content(fresh)
+            }
         }
     }
 }
