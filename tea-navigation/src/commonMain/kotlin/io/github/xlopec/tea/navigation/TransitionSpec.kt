@@ -24,89 +24,80 @@
 
 package io.github.xlopec.tea.navigation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
-
-private const val TransitionDuration = 350
-
-// Fraction of the screen width the receding screen travels (parallax).
-// iOS uses ~30%; 1/4 reads close enough and matches the prior behaviour.
-private const val ParallaxDivisor = 4
+import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.GraphicsLayerScope
 
 /**
- * iOS-style push. The new screen slides in from the trailing edge over the
- * previous one, while the previous parallax-shifts a quarter of the way
+ * Which side of a running transition a screen is on. [Incoming] is the screen the
+ * transition is settling onto (the target); [Outgoing] is the one being left behind.
+ */
+public enum class ScreenRole { Incoming, Outgoing }
+
+/**
+ * A caller-owned navigation transition. It bundles the two things the generic
+ * [PredictiveBackContainer] must not decide for itself:
+ *
+ * - [placement]: where a screen sits, as a pure function of the transition `fraction`
+ *   (`0f` at the start of a segment, `1f` at the end) and the screen's [ScreenRole].
+ *   Evaluated inside a [androidx.compose.ui.graphics.graphicsLayer] block, so it sets
+ *   draw-phase transforms (`translationX`, `alpha`, `scaleX`, …) directly on the
+ *   [GraphicsLayerScope], reading [GraphicsLayerScope.size] for container dimensions.
+ * - [animationSpec]: the timing the container animates `fraction` with when it drives
+ *   the transition itself (programmatic push/pop, and the settle after a released
+ *   gesture). During an in-flight gesture `fraction` follows the finger, so the spec is
+ *   only consulted for the machine-driven portions.
+ *
+ * Because the container never routes this through `AnimatedContent`'s enter/exit, the
+ * whole transition is one seekable, cancellable value with no frozen off-screen state.
+ */
+@Immutable
+public class ScreenTransition(
+    public val animationSpec: AnimationSpec<Float>,
+    public val placement: GraphicsLayerScope.(role: ScreenRole, fraction: Float) -> Unit,
+)
+
+// Fraction of the screen width the receding screen travels (parallax). iOS uses ~30%;
+// 1/4 reads close enough and matches the prior behaviour.
+private const val DefaultParallaxFraction = 0.25f
+
+/**
+ * iOS-style push. The new ([ScreenRole.Incoming]) screen slides in from the trailing
+ * edge over the previous one, while the previous ([ScreenRole.Outgoing]) parallax-shifts
  * toward the leading edge.
- *
- * `targetContentZIndex` is left at its default — [PredictiveBackContainer]
- * overrides it with a per-entry monotonic value so the current top stays drawn
- * above the revealed one across chained pops.
  */
-public fun <T : Any> PushTransitionSpec(
-    durationMillis: Int = TransitionDuration,
-): AnimatedContentTransitionScope<T>.() -> ContentTransform = {
-    ContentTransform(
-        slideIntoContainer(
-            towards = SlideDirection.Start,
-            animationSpec = tween(durationMillis),
-        ),
-        slideOutOfContainer(
-            towards = SlideDirection.Start,
-            targetOffset = { it / ParallaxDivisor },
-            animationSpec = tween(durationMillis),
-        ),
-    )
+public fun PushTransitionSpec(
+    parallaxFraction: Float = DefaultParallaxFraction,
+    animationSpec: AnimationSpec<Float> = tween(),
+): ScreenTransition = ScreenTransition(animationSpec) { role, fraction ->
+    translationX = when (role) {
+        ScreenRole.Incoming -> (1f - fraction) * size.width
+        ScreenRole.Outgoing -> -parallaxFraction * fraction * size.width
+    }
 }
 
 /**
- * iOS-style pop (button or programmatic). The current screen slides off to the
- * trailing edge while the previous returns from its parallax position.
- *
- * `targetContentZIndex` is left at its default — [PredictiveBackContainer]
- * overrides it with a per-entry monotonic value so the current top stays drawn
- * above the revealed one across chained pops.
+ * iOS-style pop (button or programmatic). The current ([ScreenRole.Outgoing]) screen
+ * slides off to the trailing edge while the previous ([ScreenRole.Incoming]) returns
+ * from its parallax position at the leading edge.
  */
-public fun <T : Any> PopTransitionSpec(
-    durationMillis: Int = TransitionDuration,
-): AnimatedContentTransitionScope<T>.() -> ContentTransform = {
-    ContentTransform(
-        slideIntoContainer(
-            towards = SlideDirection.End,
-            initialOffset = { it / ParallaxDivisor },
-            animationSpec = tween(durationMillis),
-        ),
-        slideOutOfContainer(
-            towards = SlideDirection.End,
-            animationSpec = tween(durationMillis),
-        ),
-    )
+public fun PopTransitionSpec(
+    parallaxFraction: Float = DefaultParallaxFraction,
+    animationSpec: AnimationSpec<Float> = tween(),
+): ScreenTransition = ScreenTransition(animationSpec) { role, fraction ->
+    translationX = when (role) {
+        ScreenRole.Incoming -> -parallaxFraction * (1f - fraction) * size.width
+        ScreenRole.Outgoing -> fraction * size.width
+    }
 }
 
 /**
- * iOS-style predictive back (gesture-driven). Identical visually to
- * [PopTransitionSpec] but with linear easing — the slide is driven by
- * `SeekableTransitionState.seekTo(progress)` where `progress` is the finger
- * position, so any non-linear easing makes the screen run ahead of the finger.
- *
- * `targetContentZIndex` is left at its default — [PredictiveBackContainer]
- * overrides it with a per-entry monotonic value so the current top stays drawn
- * above the revealed one across chained pops.
+ * iOS-style predictive back (gesture-driven). Geometrically identical to
+ * [PopTransitionSpec]; the container seeks `fraction` from the finger position and uses
+ * [animationSpec] only for the settle after release.
  */
-public fun <T : Any> PredictivePopTransitionSpec(
-    durationMillis: Int = TransitionDuration,
-): AnimatedContentTransitionScope<T>.() -> ContentTransform = {
-    ContentTransform(
-        slideIntoContainer(
-            towards = SlideDirection.End,
-            initialOffset = { it / ParallaxDivisor },
-            animationSpec = tween(durationMillis, easing = LinearEasing),
-        ),
-        slideOutOfContainer(
-            towards = SlideDirection.End,
-            animationSpec = tween(durationMillis, easing = LinearEasing),
-        ),
-    )
-}
+public fun PredictivePopTransitionSpec(
+    parallaxFraction: Float = DefaultParallaxFraction,
+    animationSpec: AnimationSpec<Float> = tween(),
+): ScreenTransition = PopTransitionSpec(parallaxFraction, animationSpec)

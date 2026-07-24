@@ -1,8 +1,6 @@
 package io.github.xlopec.tea.navigation
 
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -27,6 +25,7 @@ import kotlin.test.assertTrue
  * "predictive-pop spec was invoked AND both entries are rendered".
  */
 @OptIn(ExperimentalTestApi::class)
+@Suppress("TooManyFunctions")
 class PredictiveBackContainerTest {
 
     @Test
@@ -55,8 +54,8 @@ class PredictiveBackContainerTest {
                 stack = currentStack,
                 previousScreenFor = PreviousIsSecondFromTop,
                 onBackComplete = {},
-                transitionSpec = { pushInvocations.invoked(); NoTransition },
-                popTransitionSpec = { popInvocations.invoked(); NoTransition },
+                transitionSpec = counting(pushInvocations),
+                popTransitionSpec = counting(popInvocations),
                 content = { rendered += it },
             )
         }
@@ -82,8 +81,8 @@ class PredictiveBackContainerTest {
                 stack = currentStack,
                 previousScreenFor = PreviousIsSecondFromTop,
                 onBackComplete = {},
-                transitionSpec = { pushInvocations.invoked(); NoTransition },
-                popTransitionSpec = { popInvocations.invoked(); NoTransition },
+                transitionSpec = counting(pushInvocations),
+                popTransitionSpec = counting(popInvocations),
                 content = { rendered += it },
             )
         }
@@ -128,7 +127,7 @@ class PredictiveBackContainerTest {
                 stack = stack("home", "details"),
                 previousScreenFor = PreviousIsSecondFromTop,
                 onBackComplete = {},
-                predictivePopTransitionSpec = { predictiveInvocations.invoked(); NoTransition },
+                predictivePopTransitionSpec = counting(predictiveInvocations),
                 content = { rendered += it },
             )
         }
@@ -165,6 +164,118 @@ class PredictiveBackContainerTest {
         settle(ms = 600L)
 
         assertEquals(setOf(TestEntry("details")), composed.snapshot(), "only the original top should remain composed")
+    }
+
+    @Test
+    fun cancel_settle_does_not_invoke_forward_push_spec() = backTest {
+        // Regression: a cancelled gesture must settle back onto the original top
+        // without the forward push spec ever becoming the active segment. On the
+        // legacy AnimatedContent-owned slide, the cancel `snapTo(current)` let the
+        // push spec's `slideIntoContainer(Start)` enter reset the returning screen
+        // to +width off-screen, flashing the container background. The predictive
+        // spec is the only one that may drive the cancel.
+        val pushInvocations = SpecCounter()
+        val popInvocations = SpecCounter()
+        val predictiveInvocations = SpecCounter()
+        val composed = ComposedEntries()
+        set {
+            PredictiveBackContainer(
+                stack = stack("home", "details"),
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                transitionSpec = counting(pushInvocations),
+                popTransitionSpec = counting(popInvocations),
+                predictivePopTransitionSpec = counting(predictiveInvocations),
+                content = { composed.Track(it) },
+            )
+        }
+        settle()
+        pushInvocations.count = 0
+        popInvocations.count = 0
+        predictiveInvocations.count = 0
+
+        backStarted()
+        backProgressed(MidGestureProgress)
+        settle()
+        assertTrue(
+            predictiveInvocations.count >= 1,
+            "predictive-pop spec should be active during the gesture",
+        )
+        val pushBeforeCancel = pushInvocations.count
+        val popBeforeCancel = popInvocations.count
+
+        backCancelled()
+        settle(ms = 600L)
+
+        assertEquals(
+            setOf(TestEntry("details")),
+            composed.snapshot(),
+            "only the original top should remain composed after cancel",
+        )
+        assertEquals(
+            pushBeforeCancel,
+            pushInvocations.count,
+            "forward push spec must not be invoked for the snapTo(current) segment " +
+                "at cancel-settle (was $pushBeforeCancel, now ${pushInvocations.count})",
+        )
+        assertEquals(
+            popBeforeCancel,
+            popInvocations.count,
+            "programmatic pop spec must not be invoked; stack shape did not change",
+        )
+    }
+
+    @Test
+    fun mid_gesture_stack_mismatch_resolves_to_new_top_without_pop() = backTest {
+        // The reconciliation "mismatch" branch fires when a caller mutates the
+        // stack shape mid-gesture to something OTHER than the gesture target (e.g.
+        // an async command pushes a new screen while the finger is down). It runs
+        // the lifted fraction back to 0, settles onto the gesture's current top,
+        // then adopts the new top via a fresh push. The predictive spec drives the
+        // gesture; the resolution is a push, never a pop; and no residue of the
+        // gesture's previous screen is left composed.
+        val currentStack = mutableStateOf(stack("home", "details"))
+        val pushInvocations = SpecCounter()
+        val popInvocations = SpecCounter()
+        val predictiveInvocations = SpecCounter()
+        val composed = ComposedEntries()
+        set {
+            PredictiveBackContainer(
+                stack = currentStack.value,
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                transitionSpec = counting(pushInvocations),
+                popTransitionSpec = counting(popInvocations),
+                predictivePopTransitionSpec = counting(predictiveInvocations),
+                content = { composed.Track(it) },
+            )
+        }
+        settle()
+        pushInvocations.count = 0
+        popInvocations.count = 0
+        predictiveInvocations.count = 0
+
+        backStarted()
+        backProgressed(MidGestureProgress)
+        settle()
+        assertTrue(
+            predictiveInvocations.count >= 1,
+            "predictive-pop spec should be active during the gesture",
+        )
+
+        currentStack.value = stack("home", "details", "extra")
+        settle(ms = 800L)
+
+        assertEquals(
+            setOf(TestEntry("extra")),
+            composed.snapshot(),
+            "only the new top should remain composed after mismatch reconciliation",
+        )
+        assertEquals(
+            0,
+            popInvocations.count,
+            "pop spec must not drive the resolution; a mid-gesture push resolves to a push",
+        )
     }
 
     @Test
@@ -310,6 +421,64 @@ class PredictiveBackContainerTest {
     }
 
     @Test
+    fun state_only_update_to_top_mid_gesture_does_not_disturb_the_gesture() = backTest {
+        // Regression: an async command result that updates the top screen's
+        // state (same id, different payload) must NOT be treated as a
+        // mid-gesture push/pop. Before the fix the container would fire the
+        // mismatch branch — animating progress back to 0 while the finger was
+        // still down — causing the well-known "jumps back and forth" bug.
+        val currentStack = mutableStateOf(
+            stackOf(TestEntry("home", payload = 0), TestEntry("details", payload = 0)),
+        )
+        val composed = ComposedEntries()
+        val predictiveInvocations = SpecCounter()
+        var contentRenderedWith: TestEntry? = null
+        set {
+            PredictiveBackContainer(
+                stack = currentStack.value,
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                predictivePopTransitionSpec = counting(predictiveInvocations),
+                content = {
+                    composed.Track(it)
+                    if (it.id == "details") contentRenderedWith = it
+                },
+            )
+        }
+        settle()
+
+        backStarted()
+        backProgressed(MidGestureProgress)
+        settle()
+        assertTrue(TestEntry("home") in composed.snapshot(), "gesture should be revealing home")
+        predictiveInvocations.count = 0
+
+        // Simulate the async result: same top id, new payload — the exact
+        // shape stack.mutate { updateInstanceOfById(...) } produces.
+        currentStack.value = stackOf(TestEntry("home", payload = 0), TestEntry("details", payload = 42))
+        settle()
+
+        // Gesture still in flight: both entries composed, predictive spec still valid.
+        assertTrue(
+            TestEntry("home") in composed.snapshot(),
+            "home must remain composed after a mid-gesture state-only update, got ${composed.snapshot()}",
+        )
+        assertEquals(
+            TestEntry("details", payload = 42),
+            contentRenderedWith,
+            "content lambda must receive the freshest entry for the top id",
+        )
+
+        backCancelled()
+        settle(ms = 600L)
+        assertEquals(
+            setOf(TestEntry("details", payload = 42)),
+            composed.snapshot(),
+            "after cancel only the updated top should remain",
+        )
+    }
+
+    @Test
     fun touchX_drives_seek_independently_of_pre_damped_progress() = backTest {
         // The container should use touchX/containerWidth, not the pre-damped
         // `progress` field. We send InProgress events with progress=1.0 but
@@ -326,7 +495,7 @@ class PredictiveBackContainerTest {
                 stack = stack("home", "details"),
                 previousScreenFor = PreviousIsSecondFromTop,
                 onBackComplete = {},
-                predictivePopTransitionSpec = { predictiveInvocations.invoked(); NoTransition },
+                predictivePopTransitionSpec = counting(predictiveInvocations),
                 content = { composed.Track(it) },
             )
         }
@@ -438,6 +607,47 @@ class PredictiveBackContainerTest {
         //     achieves; a handler that consumed the event would block it.
         assertEquals(null, popped, "root screen must not pop")
         assertEquals(1, unhandledBackCount, "back at root must propagate to the dispatcher fallback")
+    }
+
+    @Test
+    fun state_only_update_to_top_keeps_back_enabled() = backTest {
+        // Regression: a state-only update to the top (same id, new payload) does not
+        // refresh the container's internal `current`, so a resolver that looks the
+        // current entry up by value in the stack would fail to find the stale instance
+        // and report "no previous" — disabling back and letting the system close the app.
+        // The container must resolve back-ability against the freshest top.
+        var currentStack by mutableStateOf(
+            stackOf(TestEntry("home"), TestEntry("details")),
+        )
+        var backHandled = false
+        set {
+            PredictiveBackContainer(
+                stack = currentStack,
+                // App-style resolver: locates the current entry in the stack by value.
+                previousScreenFor = { s, current ->
+                    val idx = s.indexOf(current)
+                    if (idx > 0) s[idx - 1] else null
+                },
+                onBackComplete = { backHandled = true },
+                content = {},
+            )
+        }
+        settle()
+
+        // Same id, new payload — a `stack.mutate { updateInstanceOfById(...) }`-shaped
+        // change. Structural key (ids) is unchanged, so `current` stays the old instance.
+        currentStack = stackOf(TestEntry("home"), TestEntry("details", payload = 42))
+        settle()
+
+        backCompleted()
+        settle()
+
+        assertEquals(
+            0,
+            unhandledBackCount,
+            "back must stay enabled after a state-only top update (must not reach the fallback)",
+        )
+        assertTrue(backHandled, "container's back handler must fire, not the system fallback")
     }
 
     @Test
@@ -583,12 +793,14 @@ private class ComposedEntries {
     }
 }
 
-private val NoTransition: ContentTransform = ContentTransform(
-    targetContentEnter = EnterTransition.None,
-    initialContentExit = ExitTransition.None,
-    targetContentZIndex = 0F,
-    sizeTransform = null,
-)
+/**
+ * A [ScreenTransition] whose placement bumps [counter] every frame it is the active
+ * segment's spec. Since the container only evaluates the active spec's placement while a
+ * transition is running (`currentState != targetState`), a non-zero count means that
+ * mode (push / pop / predictive) drove a transition.
+ */
+private fun counting(counter: SpecCounter): ScreenTransition =
+    ScreenTransition(tween()) { _, _ -> counter.invoked() }
 
 /** Arbitrary "gesture is partway through" fraction. Exact value isn't load-bearing. */
 private const val MidGestureProgress = 0.5F
