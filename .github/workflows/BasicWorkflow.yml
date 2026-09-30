@@ -1,6 +1,14 @@
 name: Tea Bag CI Workflow
 
-on: [ push, pull_request ]
+on:
+  push:
+    branches: [ develop, master ]
+    tags: [ 'v*' ]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
 
@@ -96,6 +104,7 @@ jobs:
   Unit-tests:
     env:
       DEFAULT_BRANCH: master
+    timeout-minutes: 60
     #needs: Check
     strategy:
       matrix:
