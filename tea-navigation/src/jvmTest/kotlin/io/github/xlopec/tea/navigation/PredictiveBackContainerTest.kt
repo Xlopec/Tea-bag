@@ -99,6 +99,30 @@ class PredictiveBackContainerTest {
     }
 
     @Test
+    fun popped_entry_animates_out_with_its_latest_state() = backTest {
+        var currentStack by mutableStateOf(stackOf(TestEntry("home"), listOf(TestEntry("details", payload = 1))))
+        val rendered = mutableListOf<TestEntry>()
+        set {
+            PredictiveBackContainer(
+                stack = currentStack,
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                content = { rendered += it },
+            )
+        }
+        settle()
+        currentStack = stackOf(TestEntry("home"), listOf(TestEntry("details", payload = 2)))
+        settle()
+        rendered.clear()
+
+        currentStack = stack("home")
+        settle()
+
+        assertTrue(TestEntry("details", payload = 2) in rendered, "expected latest details state while animating out, got $rendered")
+        assertTrue(TestEntry("details", payload = 1) !in rendered, "stale details state rendered while animating out: $rendered")
+    }
+
+    @Test
     fun atomic_back_fires_onBackComplete_with_current() = backTest {
         var popped: TestEntry? = null
         set {

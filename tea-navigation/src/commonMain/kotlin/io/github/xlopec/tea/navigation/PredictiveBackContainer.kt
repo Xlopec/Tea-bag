@@ -142,6 +142,7 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     var previous by remember { mutableStateOf<T?>(null) }
     var progress by remember { mutableFloatStateOf(0F) }
     val transitionState = remember { SeekableTransitionState(current) }
+    val lastSeen = remember { mutableMapOf<Any?, T>() }
     // Holds the speculative cancel-animation so the stack-reconciliation
     // effect can interrupt it when a gesture turns out to be a complete.
     val cancelJob = remember { mutableStateOf<Job?>(null) }
@@ -275,6 +276,9 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
         // The stale capture is intentional — frozen baseline that only refreshes
         // when the transition settles.
         val transitionCurrentStackSnapshot = remember(transition.currentState) { stack }
+        LaunchedEffect(transition.currentState) {
+            lastSeen.keys.retainAll(stack.map { it.id }.toSet())
+        }
         val isPop = isPop(transitionCurrentStackSnapshot, stack)
 
         // Reconcile external stack mutations. Keyed on the ID sequence so
@@ -386,10 +390,14 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
         ) { animatedScreen ->
             // Resolve to the freshest entry from the current stack so
             // state-only updates (which no longer trigger reconciliation)
-            // still reach the composable. Falls back to the transition's
-            // cached T for entries that have already left the stack but are
-            // still animating out.
-            val fresh = stack.firstOrNull { it.id == animatedScreen.id } ?: animatedScreen
+            // still reach the composable. An entry that has already left the
+            // stack but is still animating out keeps its last seen state:
+            // AnimatedContent caches the first T it met for a key, which may be
+            // many updates stale by the time the entry is popped.
+            val fresh = stack.firstOrNull { it.id == animatedScreen.id }
+                ?.also { lastSeen[it.id] = it }
+                ?: lastSeen[animatedScreen.id]
+                ?: animatedScreen
             Box(
                 modifier = Modifier.graphicsLayer {
                     val currentState = transitionState.currentState
