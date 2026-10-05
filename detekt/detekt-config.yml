@@ -301,7 +301,6 @@ ktlint:
     active: true
     autoCorrect: true
   Wrapping:
-    # fixme wait for fix
     active: false
   # ktlint rules added in detekt 2.0 — disabled to preserve current code style
   ArgumentListWrapping:

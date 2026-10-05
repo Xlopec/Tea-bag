@@ -115,15 +115,6 @@ android {
             dimension = "remote"
         }
     }
-
-    sourceSets {
-
-        maybeCreate("remote")
-            .java.directories.addAll(listOf("remote/kotlin", "main/kotlin"))
-
-        maybeCreate("default")
-            .java.directories.addAll(listOf("default/kotlin", "main/kotlin"))
-    }
 }
 
 androidComponents {
