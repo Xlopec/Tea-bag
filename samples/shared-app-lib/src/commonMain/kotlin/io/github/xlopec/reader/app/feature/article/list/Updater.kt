@@ -33,11 +33,11 @@ import io.github.xlopec.reader.app.model.FilterType.Favorite
 import io.github.xlopec.reader.app.model.FilterType.Regular
 import io.github.xlopec.reader.app.model.FilterType.Trending
 import io.github.xlopec.reader.app.model.toggleFavorite
+import io.github.xlopec.tea.async.Page
+import io.github.xlopec.tea.async.isIdle
 import io.github.xlopec.tea.core.Update
 import io.github.xlopec.tea.core.command
 import io.github.xlopec.tea.core.noCommand
-import io.github.xlopec.tea.async.Page
-import io.github.xlopec.tea.async.isIdle
 
 internal fun ArticlesState.toArticlesUpdate(
     message: ArticlesMessage,

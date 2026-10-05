@@ -74,14 +74,14 @@ import io.github.xlopec.reader.app.feature.navigation.Tab.Feed
 import io.github.xlopec.reader.app.feature.navigation.Tab.Settings
 import io.github.xlopec.reader.app.feature.navigation.Tab.Trending
 import io.github.xlopec.reader.app.feature.settings.SettingsScreen
-import io.github.xlopec.tea.async.isException
-import io.github.xlopec.tea.async.isIdle
-import io.github.xlopec.tea.async.isRefreshing
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.ui.misc.InsetAwareTopAppBar
 import io.github.xlopec.reader.app.ui.misc.InsetsAwareBottomNavigation
 import io.github.xlopec.reader.app.ui.screens.article.Articles
 import io.github.xlopec.reader.app.ui.screens.settings.Settings
+import io.github.xlopec.tea.async.isException
+import io.github.xlopec.tea.async.isIdle
+import io.github.xlopec.tea.async.isRefreshing
 import io.github.xlopec.reader.app.model.FilterType.Favorite as FavoriteQuery
 import io.github.xlopec.reader.app.model.FilterType.Regular as RegularQuery
 import io.github.xlopec.reader.app.model.FilterType.Trending as TrendingQuery

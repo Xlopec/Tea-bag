@@ -81,9 +81,7 @@ import io.github.xlopec.reader.app.feature.article.list.ToggleArticleIsFavorite
 import io.github.xlopec.reader.app.feature.navigation.NavigateToArticleDetails
 import io.github.xlopec.reader.app.feature.navigation.NavigateToFilters
 import io.github.xlopec.reader.app.model.Article
-import io.github.xlopec.tea.async.compose.paginatableItems
 import io.github.xlopec.reader.app.model.Filter
-import kotlinx.collections.immutable.PersistentList
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.FilterType.Favorite
 import io.github.xlopec.reader.app.model.FilterType.Regular
@@ -93,6 +91,8 @@ import io.github.xlopec.reader.app.model.formatted
 import io.github.xlopec.reader.app.model.toExternalValue
 import io.github.xlopec.reader.app.ui.misc.ColumnMessage
 import io.github.xlopec.reader.app.ui.misc.SearchHeader
+import io.github.xlopec.tea.async.compose.paginatableItems
+import kotlinx.collections.immutable.PersistentList
 
 public const val ProgressIndicatorTag: String = "Progress Indicator"
 

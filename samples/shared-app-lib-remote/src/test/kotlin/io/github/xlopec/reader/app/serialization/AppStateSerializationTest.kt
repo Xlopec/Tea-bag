@@ -31,13 +31,13 @@ import io.github.xlopec.reader.app.feature.article.list.ArticlesLoadable
 import io.github.xlopec.reader.app.feature.article.list.ArticlesState
 import io.github.xlopec.reader.app.feature.article.list.LoadArticles
 import io.github.xlopec.reader.app.feature.navigation.Tab
-import io.github.xlopec.tea.async.Paginatable
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Description
 import io.github.xlopec.reader.app.model.Filter
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.Title
+import io.github.xlopec.tea.async.Paginatable
 import io.github.xlopec.tea.navigation.stackOf
 import io.github.xlopec.tea.time.travel.gson.Gson
 import io.github.xlopec.tea.time.travel.protocol.NotifyComponentAttached
@@ -45,7 +45,6 @@ import io.github.xlopec.tea.time.travel.protocol.NotifyComponentSnapshot
 import io.github.xlopec.tea.time.travel.protocol.ServerMessage
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlin.time.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -54,6 +53,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.net.URI
 import kotlin.test.assertEquals
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 @RunWith(JUnit4::class)

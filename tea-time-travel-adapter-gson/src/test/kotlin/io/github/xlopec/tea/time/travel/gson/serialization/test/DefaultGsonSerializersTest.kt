@@ -27,13 +27,13 @@ package io.github.xlopec.tea.time.travel.gson.serialization.test
 import com.google.gson.JsonNull
 import com.google.gson.JsonPrimitive
 import com.google.gson.reflect.TypeToken
+import io.github.xlopec.tea.time.travel.gson.Gson
+import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
 import io.github.xlopec.tea.time.travel.gson.serialization.data.Id
 import io.github.xlopec.tea.time.travel.gson.serialization.data.Name
 import io.github.xlopec.tea.time.travel.gson.serialization.data.Photo
-import io.github.xlopec.tea.time.travel.gson.serialization.data.User
-import io.github.xlopec.tea.time.travel.gson.Gson
-import io.github.xlopec.tea.time.travel.gson.GsonClientMessage
 import io.github.xlopec.tea.time.travel.gson.serialization.data.Singleton
+import io.github.xlopec.tea.time.travel.gson.serialization.data.User
 import io.github.xlopec.tea.time.travel.protocol.ApplyMessage
 import io.github.xlopec.tea.time.travel.protocol.ApplyState
 import io.github.xlopec.tea.time.travel.protocol.ClientMessage
