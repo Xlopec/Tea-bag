@@ -43,6 +43,7 @@ import io.github.xlopec.reader.app.model.FilterType.Regular
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.SourceId
 import io.github.xlopec.reader.app.model.Title
+import io.github.xlopec.reader.app.model.Url
 import io.github.xlopec.reader.app.ui.screens.App
 import io.github.xlopec.reader.app.ui.screens.article.ArticleTestTag
 import io.github.xlopec.reader.app.ui.screens.article.Articles
@@ -52,7 +53,6 @@ import io.github.xlopec.reader.environment.ArticleResponse
 import io.github.xlopec.reader.environment.anyArticleRequest
 import io.github.xlopec.reader.environment.invoke
 import io.github.xlopec.reader.environment.setTestContent
-import io.github.xlopec.tea.async.Url
 import io.github.xlopec.tea.core.ExperimentalTeaApi
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDateTime
