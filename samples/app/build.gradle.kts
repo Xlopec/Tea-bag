@@ -141,8 +141,8 @@ afterEvaluate {
 dependencies {
 
     implementation(projects.teaCore)
-    implementation(project(":samples:shared-app-lib"))
-    remoteImplementation(project(":samples:shared-app-lib-remote"))
+    implementation(projects.samples.sharedAppLib)
+    remoteImplementation(projects.samples.sharedAppLibRemote)
 
     coreLibraryDesugaring(libs.desugar.jdk)
 
@@ -151,9 +151,9 @@ dependencies {
 
     implementation(libs.splashscreen)
 
-    testImplementation(project(":samples:shared-app-lib"))
+    testImplementation(projects.samples.sharedAppLib)
     testImplementation(libs.kotlinx.datetime)
-    androidTestImplementation(project(":samples:shared-app-lib"))
+    androidTestImplementation(projects.samples.sharedAppLib)
     androidTestImplementation(libs.kotlinx.datetime)
     androidTestImplementation(libs.ui.test.junit4)
 

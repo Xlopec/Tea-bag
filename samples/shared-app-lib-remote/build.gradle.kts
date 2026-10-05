@@ -44,7 +44,7 @@ android {
     dependencies {
         api(projects.teaTimeTravel)
         api(projects.teaTimeTravelAdapterGson)
-        api(project(":samples:shared-app-lib"))
+        api(projects.samples.sharedAppLib)
         implementation(libs.ktor.http)
         implementation(libs.gson)
         testImplementation(libs.kotlin.test)
