@@ -50,13 +50,15 @@ class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        val component = component
+        afterRequiredPermissions {
+            val component = component
 
-        setContent {
-            App(component = component)
+            setContent {
+                App(component = component)
+            }
+
+            component.subscribeIn(systemDarkModeChanges, this)
         }
-
-        component.subscribeIn(systemDarkModeChanges, this)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

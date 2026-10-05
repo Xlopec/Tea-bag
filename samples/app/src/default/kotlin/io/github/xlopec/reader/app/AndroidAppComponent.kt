@@ -27,6 +27,7 @@
 package io.github.xlopec.reader.app
 
 import android.app.Application
+import androidx.activity.ComponentActivity
 import io.github.xlopec.reader.BuildConfig
 import io.github.xlopec.reader.app.command.Command
 import io.github.xlopec.tea.core.Component
@@ -37,3 +38,5 @@ fun AppComponent(
     scope: CoroutineScope,
 ): Component<Message, AppState, Command> = Environment(BuildConfig.DEBUG, application, scope)
     .let { env -> AppComponent(env, AppInitializer(application.systemDarkModeEnabled, env)) }
+
+fun ComponentActivity.afterRequiredPermissions(block: () -> Unit) = block()
