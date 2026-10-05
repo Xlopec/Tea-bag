@@ -38,7 +38,7 @@ android {
             keyAlias = getenvSafe("KEY_ALIAS")
         }
     }
-    compileSdk = 36
+    compileSdk = 37
     namespace = "io.github.xlopec.reader"
 
     defaultConfig {

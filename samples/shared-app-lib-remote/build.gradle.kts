@@ -28,7 +28,7 @@ plugins {
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
     namespace = "io.github.xlopec.shared.remote"
     defaultConfig {
         minSdk = 21
