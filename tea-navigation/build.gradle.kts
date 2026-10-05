@@ -56,8 +56,7 @@ kotlin {
             dependencies {
                 implementation(libs.junit)
                 implementation(libs.coroutines.test)
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.uiTest)
+                implementation(libs.compose.ui.test)
                 implementation(compose.desktop.currentOs)
             }
         }
