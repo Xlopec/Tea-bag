@@ -37,7 +37,6 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.stdlib)
                 implementation(projects.teaCore)
                 api(libs.compose.ui)
                 api(libs.compose.runtime)
@@ -54,8 +53,6 @@ kotlin {
         }
         jvmTest {
             dependencies {
-                implementation(libs.junit)
-                implementation(libs.coroutines.test)
                 implementation(libs.compose.ui.test)
                 implementation(compose.desktop.currentOs)
             }

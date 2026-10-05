@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import java.net.URI
 
 rootProject.name = "convention-plugins"
 
@@ -38,9 +37,6 @@ dependencyResolutionManagement {
         mavenCentral()
         maven("https://plugins.gradle.org/m2/")
         google()
-        maven {
-            url = URI("https://androidx.dev/storage/compose-compiler/repository/")
-        }
     }
 
     versionCatalogs {

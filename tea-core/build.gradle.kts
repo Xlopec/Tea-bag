@@ -59,7 +59,6 @@ kotlin {
         commonMain {
             dependencies {
                 api(libs.coroutines.core)
-                implementation(libs.stdlib)
             }
         }
 
@@ -67,7 +66,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
-                api(libs.turbine)
+                implementation(libs.turbine)
             }
         }
     }

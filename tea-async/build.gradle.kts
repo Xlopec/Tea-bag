@@ -34,7 +34,6 @@ kotlin {
         commonMain {
             dependencies {
                 api(libs.immutable.collections)
-                implementation(libs.stdlib)
             }
         }
 

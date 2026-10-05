@@ -40,13 +40,6 @@ kotlin {
                 api(projects.teaAsync)
                 api(libs.compose.runtime)
                 api(libs.compose.foundation)
-                implementation(libs.stdlib)
-            }
-        }
-
-        commonTest {
-            dependencies {
-                implementation(libs.kotlin.test)
             }
         }
     }

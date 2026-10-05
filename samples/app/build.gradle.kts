@@ -146,15 +146,10 @@ dependencies {
 
     coreLibraryDesugaring(libs.desugar.jdk)
 
-    implementation(libs.stdlib)
     implementation(libs.compose.activity)
 
     implementation(libs.splashscreen)
 
-    testImplementation(projects.samples.sharedAppLib)
-    testImplementation(libs.kotlinx.datetime)
-    androidTestImplementation(projects.samples.sharedAppLib)
-    androidTestImplementation(libs.kotlinx.datetime)
     androidTestImplementation(libs.ui.test.junit4)
 
     androidTestUtil(libs.android.test.orchestrator)

@@ -25,8 +25,6 @@
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.kotlin.dsl.get
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
@@ -36,9 +34,6 @@ const val CommitHashLength = 6
 
 private const val RefBranch = "refs/heads/"
 private const val RefTag = "refs/tags/"
-
-val isCiEnv: Boolean
-    get() = getenvSafe("CI")?.toBoolean() == true
 
 val branch: String?
     get() = getenvSafe("GITHUB_REF")
@@ -60,9 +55,6 @@ val commitSha: String?
 
 val libraryVersion: Version
     get() = Version(tag, commitSha)
-
-val Project.projectSourceSets: SourceSetContainer
-    get() = extensions["sourceSets"] as SourceSetContainer
 
 val Project.documentationDir: Provider<out Directory>
     get() = layout.buildDirectory.map { it.dir("documentation") }
@@ -96,9 +88,6 @@ val Project.detektConfig: File
 val Project.detektBaseline: File
     get() = Paths.get(rootDir.path, "detekt", "detekt-baseline.xml").toFile()
 
-val Project.metricsDir: Provider<out Directory>
-    get() = layout.buildDirectory.map { it.dir("compose_metrics") }
-
 val localBranch: String?
     get() = ProcessBuilder("git", "rev-parse", "--abbrev-ref", "HEAD")
         .start()
@@ -120,16 +109,7 @@ fun Project.testReportsDir(
     vararg subdirs: String,
 ): Provider<out Directory> = testReportsDir.map { subdirs.fold(it) { acc, path -> acc.dir(path) } }
 
-fun Project.ciVariable(
-    name: String,
-): String? = getenvSafe(name) ?: getPropertySafe(name)
-
 fun getenvSafe(
     name: String,
 ): String? =
     System.getenv(name).takeUnless(CharSequence?::isNullOrEmpty)
-
-private fun Project.getPropertySafe(
-    name: String,
-): String? =
-    findProperty(name)?.toString().takeUnless(CharSequence?::isNullOrEmpty)

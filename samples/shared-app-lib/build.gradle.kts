@@ -67,10 +67,6 @@ kotlin {
         }
     }
 
-    iosArm64()
-    iosSimulatorArm64()
-    applyDefaultHierarchyTemplate()
-
     listOf(
         iosArm64(),
         iosSimulatorArm64(),
@@ -115,7 +111,6 @@ kotlin {
                 implementation(libs.bundles.coil)
                 implementation(libs.compose.material)
                 implementation(libs.compose.material.icons.extended)
-                implementation(libs.stdlib)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.negotiation)

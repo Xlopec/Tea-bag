@@ -59,7 +59,6 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
         google()
-        maven("https://packages.jetbrains.team/maven/p/kpm/public/")
         // https://youtrack.jetbrains.com/projects/KT/issues/KT-68533/Kotlin-2.0-WasmJs-error-when-using-RepositoriesMode.FAILONPROJECTREPOS
         exclusiveContent {
             forRepository {

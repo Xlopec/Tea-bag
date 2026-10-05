@@ -28,13 +28,4 @@ plugins {
 
 kotlin {
     enableAllTargets()
-
-    sourceSets {
-        commonMain {
-            dependencies {
-                implementation(libs.stdlib)
-                implementation(libs.kotlinx.datetime)
-            }
-        }
-    }
 }
