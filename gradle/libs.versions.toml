@@ -19,7 +19,7 @@ convention-serializtion = { module = "org.jetbrains.kotlin:kotlin-serialization"
 convention-sqldelight = { module = "app.cash.sqldelight:gradle-plugin", version.ref = "sqldelight" }
 convention-compose-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose" }
 convention-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
-convention-versions = { module = "com.github.ben-manes:gradle-versions-plugin", version = "0.54.0" }
+convention-versions = { module = "io.github.ben-manes:gradle-versions-plugin", version = "0.65.0" }
 convention-vanniktech-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.37.0" }
 convention-detekt = { module = "dev.detekt:detekt-gradle-plugin", version = "2.0.0-alpha.6" }
 
@@ -75,7 +75,7 @@ ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", versi
 coil = ["coil-compose", "coil-network"]
 
 [plugins]
-version-check = { id = "com.github.ben-manes.versions", version = "0.54.0" }
+version-check = { id = "com.github.ben-manes.versions", version = "0.65.0" }
 kotlin-android-temp = { id = "com.android.built-in-kotlin", version.ref = "agp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
