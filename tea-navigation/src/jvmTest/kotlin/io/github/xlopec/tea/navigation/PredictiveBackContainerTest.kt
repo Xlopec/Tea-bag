@@ -16,11 +16,7 @@ import kotlin.test.assertTrue
  * Black-box tests for [PredictiveBackContainer]. Observations:
  * - which entries the seekable transition produces (via `content` invocations)
  * - which transition spec was selected (push / pop / predictive-pop)
- * - which entry `onBackComplete` was called with
- *
- * Direct fraction inspection is not possible (SeekableTransitionState is private
- * to the composable), so "is animating predictively" is asserted indirectly via
- * "predictive-pop spec was invoked AND both entries are rendered".
+ * - whether `onBack` fired, and what [PredictiveBackContainerState] / [NavEntryScope] report
  */
 @OptIn(ExperimentalTestApi::class)
 @Suppress("TooManyFunctions")
@@ -32,8 +28,7 @@ class PredictiveBackContainerTest {
         set {
             PredictiveBackContainer(
                 stack = stack("home", "details"),
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
+                onBack = {},
                 content = { rendered += it },
             )
         }
@@ -50,10 +45,8 @@ class PredictiveBackContainerTest {
         set {
             PredictiveBackContainer(
                 stack = currentStack,
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                transitionSpec = counting(pushInvocations),
-                popTransitionSpec = counting(popInvocations),
+                onBack = {},
+                transition = countingTransitions(push = pushInvocations, pop = popInvocations),
                 content = { rendered += it },
             )
         }
@@ -77,10 +70,8 @@ class PredictiveBackContainerTest {
         set {
             PredictiveBackContainer(
                 stack = currentStack,
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                transitionSpec = counting(pushInvocations),
-                popTransitionSpec = counting(popInvocations),
+                onBack = {},
+                transition = countingTransitions(push = pushInvocations, pop = popInvocations),
                 content = { rendered += it },
             )
         }
@@ -97,13 +88,12 @@ class PredictiveBackContainerTest {
     }
 
     @Test
-    fun atomic_back_fires_onBackComplete_with_current() = backTest {
-        var popped: TestEntry? = null
+    fun atomic_back_fires_onBack() = backTest {
+        var backs = 0
         set {
             PredictiveBackContainer(
                 stack = stack("home", "details"),
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = { popped = it },
+                onBack = { backs++ },
                 content = {},
             )
         }
@@ -113,7 +103,8 @@ class PredictiveBackContainerTest {
         backCompleted()
         settle()
 
-        assertEquals(TestEntry("details"), popped)
+        assertEquals(1, backs)
+        assertEquals(0, unhandledBackCount)
     }
 
     @Test
@@ -123,9 +114,8 @@ class PredictiveBackContainerTest {
         set {
             PredictiveBackContainer(
                 stack = stack("home", "details"),
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                predictivePopTransitionSpec = counting(predictiveInvocations),
+                onBack = {},
+                transition = countingTransitions(predictive = predictiveInvocations),
                 content = { rendered += it },
             )
         }
@@ -146,8 +136,7 @@ class PredictiveBackContainerTest {
         set {
             PredictiveBackContainer(
                 stack = stack("home", "details"),
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
+                onBack = {},
                 content = { composed.Track(it) },
             )
         }
@@ -179,11 +168,12 @@ class PredictiveBackContainerTest {
         set {
             PredictiveBackContainer(
                 stack = stack("home", "details"),
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                transitionSpec = counting(pushInvocations),
-                popTransitionSpec = counting(popInvocations),
-                predictivePopTransitionSpec = counting(predictiveInvocations),
+                onBack = {},
+                transition = countingTransitions(
+                    push = pushInvocations,
+                    pop = popInvocations,
+                    predictive = predictiveInvocations,
+                ),
                 content = { composed.Track(it) },
             )
         }
@@ -240,11 +230,12 @@ class PredictiveBackContainerTest {
         set {
             PredictiveBackContainer(
                 stack = currentStack.value,
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                transitionSpec = counting(pushInvocations),
-                popTransitionSpec = counting(popInvocations),
-                predictivePopTransitionSpec = counting(predictiveInvocations),
+                onBack = {},
+                transition = countingTransitions(
+                    push = pushInvocations,
+                    pop = popInvocations,
+                    predictive = predictiveInvocations,
+                ),
                 content = { composed.Track(it) },
             )
         }
@@ -283,8 +274,7 @@ class PredictiveBackContainerTest {
         set {
             PredictiveBackContainer(
                 stack = currentStack,
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
+                onBack = {},
                 content = { composed.Track(it) },
             )
         }
@@ -295,7 +285,7 @@ class PredictiveBackContainerTest {
         settle()
 
         // Simulate an inner screen handler intercepting completion and
-        // popping the stack externally — the container's onBackComplete
+        // popping the stack externally — the container's onBack
         // never fires; it reconciles via the stack change.
         currentStack = stack("home")
         backCompleted()
@@ -311,14 +301,13 @@ class PredictiveBackContainerTest {
         // reconciliation runs through `LaunchedEffect(stack)` on the
         // matching-new-top branch.
         val currentStack = mutableStateOf(stack("home", "details"))
-        var containerPopFired: TestEntry? = null
+        var containerPopFired = false
         var innerCompletedFired = 0
         val composed = ComposedEntries()
         set {
             PredictiveBackContainer(
                 stack = currentStack.value,
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = { containerPopFired = it },
+                onBack = { containerPopFired = true },
                 content = { entry ->
                     composed.Track(entry)
                     if (entry == TestEntry("details")) {
@@ -346,7 +335,7 @@ class PredictiveBackContainerTest {
         // Inner handler fired exactly once and the container's own handler
         // never did — LIFO routing held.
         assertEquals(1, innerCompletedFired, "inner handler must fire on complete")
-        assertEquals(null, containerPopFired, "container's own onBackComplete must NOT fire when inner intercepts")
+        assertEquals(false, containerPopFired, "container's own onBack must NOT fire when inner intercepts")
         // Stack-reconciliation branch ran the smooth complete and settled
         // on the new top — only "home" remains composed (no leftover
         // "details" from a stuck `previous`).
@@ -361,8 +350,7 @@ class PredictiveBackContainerTest {
         set {
             PredictiveBackContainer(
                 stack = currentStack.value,
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
+                onBack = {},
                 content = { entry ->
                     composed.Track(entry)
                     if (entry == TestEntry("details")) {
@@ -401,8 +389,7 @@ class PredictiveBackContainerTest {
         set {
             PredictiveBackContainer(
                 stack = currentStack.value,
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
+                onBack = {},
                 content = { composed.Track(it) },
             )
         }
@@ -433,9 +420,8 @@ class PredictiveBackContainerTest {
         set {
             PredictiveBackContainer(
                 stack = stack("home", "details"),
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                predictivePopTransitionSpec = counting(predictiveInvocations),
+                onBack = {},
+                transition = countingTransitions(predictive = predictiveInvocations),
                 content = { composed.Track(it) },
             )
         }
@@ -450,48 +436,29 @@ class PredictiveBackContainerTest {
     }
 
     @Test
-    fun enabled_false_does_not_register_handler_or_run_animations() = backTest {
-        var popped: TestEntry? = null
+    fun null_back_target_does_not_register_handler_or_run_animations() = backTest {
+        var backs = 0
+        val composed = ComposedEntries()
         set {
             PredictiveBackContainer(
                 stack = stack("home", "details"),
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = { popped = it },
-                enabled = false,
-                content = {},
+                onBack = { backs++ },
+                backTarget = { null },
+                content = { composed.Track(it) },
             )
         }
         settle()
+
+        backStarted()
+        backProgressed(MidGestureProgress)
+        settle()
+        assertEquals(setOf(TestEntry("details")), composed.snapshot(), "no reveal without a back target")
 
         backCompleted()
         settle()
 
-        assertEquals(null, popped, "disabled container must not consume back")
+        assertEquals(0, backs, "disabled container must not consume back")
         assertEquals(1, unhandledBackCount, "back must propagate to fallback")
-    }
-
-    @Test
-    fun on_gesture_progress_is_called_during_in_flight_gesture() = backTest {
-        val observed = mutableListOf<Float>()
-        set {
-            PredictiveBackContainer(
-                stack = stack("home", "details"),
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                onGestureProgress = { observed += it },
-                content = {},
-            )
-        }
-        settle()
-        observed.clear()
-
-        backStarted(touchX = 0F)
-        backProgressed(progress = 0.3F, touchX = 30F)
-        backProgressed(progress = 0.5F, touchX = 50F)
-        settle()
-
-        assertTrue(observed.isNotEmpty(), "observer should have received progress emissions")
-        assertTrue(observed.any { it > 0F }, "observer should see non-zero values during gesture, got $observed")
     }
 
     @Test
@@ -501,9 +468,8 @@ class PredictiveBackContainerTest {
         set {
             PredictiveBackContainer(
                 stack = stack("home", "details"),
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                enabled = enabled,
+                onBack = {},
+                backTarget = { if (enabled) it.previousScreen else null },
                 content = { composed.Track(it) },
             )
         }
@@ -512,9 +478,8 @@ class PredictiveBackContainerTest {
         backStarted()
         backProgressed(MidGestureProgress)
         settle()
-        // Caller toggles `enabled` off mid-gesture; the InProgress collector
-        // should refuse further updates and the gesture should resolve
-        // cleanly when the dispatcher returns to Idle.
+        // Caller withdraws the back target mid-gesture; the gesture should
+        // resolve cleanly when the dispatcher returns to Idle.
         enabled = false
         settle()
         backCancelled()
@@ -525,12 +490,11 @@ class PredictiveBackContainerTest {
 
     @Test
     fun root_with_no_previous_does_not_consume_back() = backTest {
-        var popped: TestEntry? = null
+        var backs = 0
         set {
             PredictiveBackContainer(
                 stack = stack("home"),
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = { popped = it },
+                onBack = { backs++ },
                 content = {},
             )
         }
@@ -540,129 +504,13 @@ class PredictiveBackContainerTest {
         settle()
 
         // Two things must hold at the root:
-        // (a) `onBackComplete` isn't invoked (nothing to pop).
+        // (a) `onBack` isn't invoked (nothing to pop).
         // (b) the back event isn't swallowed by the dispatcher — it must
         //     propagate to the platform fallback (Activity finish on Android,
         //     UIKit dismiss on iOS). This is what `isBackEnabled = false`
         //     achieves; a handler that consumed the event would block it.
-        assertEquals(null, popped, "root screen must not pop")
+        assertEquals(0, backs, "root screen must not pop")
         assertEquals(1, unhandledBackCount, "back at root must propagate to the dispatcher fallback")
-    }
-
-    @Test
-    fun on_transition_settled_fires_with_top_after_initial_composition() = backTest {
-        val settled = mutableListOf<TestEntry>()
-        set {
-            PredictiveBackContainer(
-                stack = stack("home", "details"),
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                onTransitionSettled = { settled += it },
-                content = {},
-            )
-        }
-        settle()
-
-        assertEquals(listOf(TestEntry("details")), settled)
-    }
-
-    @Test
-    fun on_transition_settled_fires_after_programmatic_push_animation() = backTest {
-        var currentStack by mutableStateOf(stack("home"))
-        val settled = mutableListOf<TestEntry>()
-        set {
-            PredictiveBackContainer(
-                stack = currentStack,
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                onTransitionSettled = { settled += it },
-                content = {},
-            )
-        }
-        settle()
-        settled.clear()
-
-        currentStack = stack("home", "details")
-        // Long enough for the seekable transition's animateTo (default spring) to settle.
-        settle(ms = 1500L)
-
-        assertEquals(listOf(TestEntry("details")), settled)
-    }
-
-    @Test
-    fun on_transition_settled_fires_after_programmatic_pop_animation() = backTest {
-        var currentStack by mutableStateOf(stack("home", "details"))
-        val settled = mutableListOf<TestEntry>()
-        set {
-            PredictiveBackContainer(
-                stack = currentStack,
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                onTransitionSettled = { settled += it },
-                content = {},
-            )
-        }
-        settle()
-        settled.clear()
-
-        currentStack = stack("home")
-        settle(ms = 1500L)
-
-        assertEquals(listOf(TestEntry("home")), settled)
-    }
-
-    @Test
-    fun on_transition_settled_fires_with_new_top_after_completed_gesture() = backTest {
-        var currentStack by mutableStateOf(stack("home", "details"))
-        val settled = mutableListOf<TestEntry>()
-        set {
-            PredictiveBackContainer(
-                stack = currentStack,
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                onTransitionSettled = { settled += it },
-                content = {},
-            )
-        }
-        settle()
-        settled.clear()
-
-        backStarted()
-        backProgressed(MidGestureProgress)
-        settle()
-        // Simulate the pop the caller performs on complete; the reconciliation
-        // branch drives the seek to 1F and settles on `home`.
-        currentStack = stack("home")
-        backCompleted()
-        settle(ms = 1500L)
-
-        assertEquals(listOf(TestEntry("home")), settled)
-    }
-
-    @Test
-    fun on_transition_settled_does_not_re_fire_after_cancelled_gesture() = backTest {
-        val settled = mutableListOf<TestEntry>()
-        set {
-            PredictiveBackContainer(
-                stack = stack("home", "details"),
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                onTransitionSettled = { settled += it },
-                content = {},
-            )
-        }
-        settle()
-        // Initial fire captured; a cancel lands back on the same entry and
-        // `distinctUntilChanged` must suppress the duplicate emission.
-        assertEquals(listOf(TestEntry("details")), settled)
-
-        backStarted()
-        backProgressed(MidGestureProgress)
-        settle()
-        backCancelled()
-        settle(ms = 1500L)
-
-        assertEquals(listOf(TestEntry("details")), settled)
     }
 
     @Test
@@ -675,9 +523,8 @@ class PredictiveBackContainerTest {
         set {
             PredictiveBackContainer(
                 stack = currentStack,
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                transitionSpec = counting(pushInvocations),
+                onBack = {},
+                transition = countingTransitions(push = pushInvocations),
                 contentKey = { if (it.id == "details") it.id else "tabs" },
                 content = {
                     rendered += it

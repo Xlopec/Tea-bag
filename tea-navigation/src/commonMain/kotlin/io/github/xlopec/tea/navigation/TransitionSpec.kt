@@ -25,6 +25,7 @@
 package io.github.xlopec.tea.navigation
 
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.GraphicsLayerScope
@@ -56,7 +57,31 @@ public enum class ScreenRole { Incoming, Outgoing }
 public class ScreenTransition(
     public val animationSpec: AnimationSpec<Float>,
     public val placement: GraphicsLayerScope.(role: ScreenRole, fraction: Float) -> Unit,
-)
+) {
+    public companion object {
+        public val None: ScreenTransition = ScreenTransition(snap()) { _, _ -> }
+    }
+}
+
+public enum class ScreenTransitionKind { Push, Pop, PredictivePop }
+
+public interface ScreenTransitionScope<out T> {
+    public val from: T
+    public val to: T
+    public val kind: ScreenTransitionKind
+}
+
+private class ScreenTransitionScopeImpl<T>(
+    override val from: T,
+    override val to: T,
+    override val kind: ScreenTransitionKind,
+) : ScreenTransitionScope<T>
+
+internal fun <T> (ScreenTransitionScope<T>.() -> ScreenTransition).resolve(
+    from: T,
+    to: T,
+    kind: ScreenTransitionKind,
+): ScreenTransition = ScreenTransitionScopeImpl(from, to, kind).this()
 
 // Fraction of the screen width the receding screen travels (parallax). iOS uses ~30%;
 // 1/4 reads close enough and matches the prior behaviour.
@@ -92,12 +117,11 @@ public fun PopTransitionSpec(
     }
 }
 
-/**
- * iOS-style predictive back (gesture-driven). Geometrically identical to
- * [PopTransitionSpec]; the container seeks `fraction` from the finger position and uses
- * [animationSpec] only for the settle after release.
- */
-public fun PredictivePopTransitionSpec(
-    parallaxFraction: Float = DefaultParallaxFraction,
-    animationSpec: AnimationSpec<Float> = tween(),
-): ScreenTransition = PopTransitionSpec(parallaxFraction, animationSpec)
+private val DefaultPush = PushTransitionSpec()
+private val DefaultPop = PopTransitionSpec()
+
+// iOS-style slides; a predictive pop shares the pop geometry, seeked by the finger.
+public fun DefaultScreenTransition(kind: ScreenTransitionKind): ScreenTransition = when (kind) {
+    ScreenTransitionKind.Push -> DefaultPush
+    ScreenTransitionKind.Pop, ScreenTransitionKind.PredictivePop -> DefaultPop
+}

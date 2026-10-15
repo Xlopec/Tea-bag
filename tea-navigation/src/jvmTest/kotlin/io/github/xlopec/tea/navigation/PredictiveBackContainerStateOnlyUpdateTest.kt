@@ -23,8 +23,7 @@ class PredictiveBackContainerStateOnlyUpdateTest {
         set {
             PredictiveBackContainer(
                 stack = currentStack,
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
+                onBack = {},
                 content = { rendered += it },
             )
         }
@@ -56,9 +55,8 @@ class PredictiveBackContainerStateOnlyUpdateTest {
         set {
             PredictiveBackContainer(
                 stack = currentStack.value,
-                previousScreenFor = PreviousIsSecondFromTop,
-                onBackComplete = {},
-                predictivePopTransitionSpec = counting(predictiveInvocations),
+                onBack = {},
+                transition = countingTransitions(predictive = predictiveInvocations),
                 content = {
                     composed.Track(it)
                     if (it.id == "details") contentRenderedWith = it
@@ -101,10 +99,9 @@ class PredictiveBackContainerStateOnlyUpdateTest {
     @Test
     fun state_only_update_to_top_keeps_back_enabled() = backTest {
         // Regression: a state-only update to the top (same id, new payload) does not
-        // refresh the container's internal `current`, so a resolver that looks the
-        // current entry up by value in the stack would fail to find the stale instance
-        // and report "no previous" — disabling back and letting the system close the app.
-        // The container must resolve back-ability against the freshest top.
+        // refresh the container's internal `current`. Back-ability resolved against that
+        // stale instance reported "no previous" — disabling back and letting the system
+        // close the app. `backTarget` only ever sees the live stack.
         var currentStack by mutableStateOf(
             stackOf(TestEntry("home"), TestEntry("details")),
         )
@@ -112,12 +109,7 @@ class PredictiveBackContainerStateOnlyUpdateTest {
         set {
             PredictiveBackContainer(
                 stack = currentStack,
-                // App-style resolver: locates the current entry in the stack by value.
-                previousScreenFor = { s, current ->
-                    val idx = s.indexOf(current)
-                    if (idx > 0) s[idx - 1] else null
-                },
-                onBackComplete = { backHandled = true },
+                onBack = { backHandled = true },
                 content = {},
             )
         }

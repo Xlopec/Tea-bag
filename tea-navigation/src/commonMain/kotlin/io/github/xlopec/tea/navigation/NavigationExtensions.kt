@@ -36,7 +36,7 @@ public inline val <T> NavigationStack<T>.screen: T
 
 /**
  * The entry immediately below [screen], or `null` if the stack has only one entry.
- * Convenient default for `previousScreenFor` in [PredictiveBackContainer].
+ * Default `backTarget` of [PredictiveBackContainer].
  */
 public inline val <T> NavigationStack<T>.previousScreen: T?
     get() = getOrNull(lastIndex - 1)
