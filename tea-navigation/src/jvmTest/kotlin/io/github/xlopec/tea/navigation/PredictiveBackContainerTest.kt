@@ -1,5 +1,6 @@
 package io.github.xlopec.tea.navigation
 
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -662,5 +663,52 @@ class PredictiveBackContainerTest {
         settle(ms = 1500L)
 
         assertEquals(listOf(TestEntry("details")), settled)
+    }
+
+    @Test
+    fun entries_sharing_a_content_key_swap_in_place_without_disposing_the_slot() = backTest {
+        var currentStack by mutableStateOf(stack("feed"))
+        val pushInvocations = SpecCounter()
+        val rendered = mutableListOf<TestEntry>()
+        var slotCompositions = 0
+        var slotDisposals = 0
+        set {
+            PredictiveBackContainer(
+                stack = currentStack,
+                previousScreenFor = PreviousIsSecondFromTop,
+                onBackComplete = {},
+                transitionSpec = counting(pushInvocations),
+                contentKey = { if (it.id == "details") it.id else "tabs" },
+                content = {
+                    rendered += it
+                    DisposableEffect(Unit) {
+                        slotCompositions++
+                        onDispose { slotDisposals++ }
+                    }
+                },
+            )
+        }
+        settle()
+        rendered.clear()
+        pushInvocations.count = 0
+
+        // Tab switch: same key, so the existing slot is rebound to the new entry.
+        currentStack = stack("favorite")
+        settle()
+
+        assertTrue(TestEntry("favorite") in rendered, "expected new tab to be rendered, got $rendered")
+        assertEquals(1, slotCompositions, "shared-key swap must reuse the slot")
+        assertEquals(0, slotDisposals, "shared-key swap must not dispose the slot")
+        assertEquals(0, pushInvocations.count, "shared-key swap must not run a transition")
+
+        // A push out of the shared slot still goes through the regular push path.
+        pushInvocations.count = 0
+        rendered.clear()
+        currentStack = stack("favorite", "details")
+        settle()
+
+        assertTrue(TestEntry("details") in rendered, "expected pushed entry to be rendered, got $rendered")
+        assertTrue(pushInvocations.count >= 1, "expected push spec for a distinct key")
+        assertEquals(2, slotCompositions, "distinct key must open a new slot")
     }
 }

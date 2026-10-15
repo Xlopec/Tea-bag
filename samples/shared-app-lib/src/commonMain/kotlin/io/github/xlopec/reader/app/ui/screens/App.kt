@@ -46,6 +46,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
+// All tab screens render in one content slot, so a tab switch swaps the screen
+// in place: the bottom bar (and its press ripple) survives instead of being
+// torn down with the old slot. Anything per-tab inside HomeScreen must key on
+// `screen.id` or it leaks across tabs.
+private object TabsContentKey
+
 @Composable
 internal fun App(
     currentState: AppState,
@@ -65,6 +71,7 @@ internal fun App(
                     ?.takeIf { current is FullScreen && current !is FiltersState }
             },
             onBackComplete = { handler(Pop) },
+            contentKey = { screen -> if (screen is TabScreen) TabsContentKey else screen.id },
         ) { screen ->
             Screen(
                 modifier = Modifier,

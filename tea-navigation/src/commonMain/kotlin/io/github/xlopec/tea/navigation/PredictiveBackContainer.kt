@@ -118,6 +118,10 @@ import kotlinx.coroutines.launch
  * @param popTransitionSpec [ScreenTransition] used for programmatic pops.
  * @param predictivePopTransitionSpec [ScreenTransition] used while the back gesture
  *   is in flight and to finish/cancel after release.
+ * @param contentKey maps an entry to the key of the content slot it renders in. Entries that
+ *   share a key swap in place with no transition, and composition state under that slot
+ *   survives the swap — e.g. bottom-nav tabs sharing one key keep the nav bar (and its press
+ *   ripple) alive across a tab switch. Defaults to [NavStackEntry.id].
  * @param content per-entry composable.
  */
 @Composable
@@ -134,6 +138,7 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     transitionSpec: ScreenTransition = PushTransitionSpec(),
     popTransitionSpec: ScreenTransition = PopTransitionSpec(),
     predictivePopTransitionSpec: ScreenTransition = PredictivePopTransitionSpec(),
+    contentKey: (T) -> Any = { it.id },
     content: @Composable (T) -> Unit,
 ) {
     // `current` and `previous` are the only screens the seekable transition cares about.
@@ -373,6 +378,10 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
             // In-flight gesture seeking is driven imperatively from the dispatcher handler.
             LaunchedEffect(current) {
                 when {
+                    // Same slot: nothing to animate, swap in place.
+                    transitionState.currentState != current &&
+                        contentKey(transitionState.currentState) == contentKey(current) ->
+                        transitionState.snapTo(current)
                     transitionState.currentState != current -> {
                         animate(0F, 1F, animationSpec = activeSpec.animationSpec) { value, _ ->
                             launch { transitionState.seekTo(value, current) }
@@ -386,7 +395,7 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
 
         transition.AnimatedContent(
             transitionSpec = contentTransform,
-            contentKey = { it.id },
+            contentKey = contentKey,
         ) { animatedScreen ->
             // Resolve to the freshest entry from the current stack so
             // state-only updates (which no longer trigger reconciliation)
@@ -402,8 +411,8 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                 modifier = Modifier.graphicsLayer {
                     val currentState = transitionState.currentState
                     val targetState = transitionState.targetState
-                    if (currentState.id != targetState.id) {
-                        val role = if (animatedScreen.id == targetState.id) {
+                    if (contentKey(currentState) != contentKey(targetState)) {
+                        val role = if (contentKey(animatedScreen) == contentKey(targetState)) {
                             ScreenRole.Incoming
                         } else {
                             ScreenRole.Outgoing
