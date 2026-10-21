@@ -49,6 +49,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -117,23 +118,28 @@ internal fun HomeScreen(
             )
         },
         content = { innerPadding ->
-            when (screen) {
-                is ArticlesState -> ArticlesContent(
-                    state = screen,
-                    scrollTrigger = scrollTrigger.intValue,
-                    onMessage = onMessage,
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize(),
-                )
+            // Fresh composition per tab: article items are keyed by URL, so without
+            // this a tab showing the same article would inherit the other tab's item
+            // effects (e.g. pagination) instead of running its own.
+            key(screen.id) {
+                when (screen) {
+                    is ArticlesState -> ArticlesContent(
+                        state = screen,
+                        scrollTrigger = scrollTrigger.intValue,
+                        onMessage = onMessage,
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize(),
+                    )
 
-                is SettingsScreen -> Settings(
-                    innerPadding = innerPadding,
-                    settings = app.settings,
-                    onMessage = onMessage,
-                )
+                    is SettingsScreen -> Settings(
+                        innerPadding = innerPadding,
+                        settings = app.settings,
+                        onMessage = onMessage,
+                    )
 
-                else -> error("unhandled branch $screen")
+                    else -> error("unhandled branch $screen")
+                }
             }
         },
     )
