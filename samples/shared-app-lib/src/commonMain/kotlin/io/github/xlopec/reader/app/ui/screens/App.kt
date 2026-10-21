@@ -44,7 +44,7 @@ import io.github.xlopec.reader.app.ui.theme.AppTheme
 import io.github.xlopec.tea.navigation.DefaultScreenTransition
 import io.github.xlopec.tea.navigation.PredictiveBackContainer
 import io.github.xlopec.tea.navigation.ScreenTransition
-import io.github.xlopec.tea.navigation.ScreenTransitionKind
+import io.github.xlopec.tea.navigation.StackEvent
 import io.github.xlopec.tea.navigation.previousScreen
 import io.github.xlopec.tea.navigation.screen
 import kotlinx.coroutines.flow.Flow
@@ -78,12 +78,12 @@ internal fun App(
             },
             contentKey = { screen -> if (screen is TabScreen) TabsContentKey else screen.id },
             // Filters expands out of / collapses back into the search bar itself;
-            // the iOS slide would double-animate it.
+            // the slide would double-animate it.
             transition = {
                 when {
-                    kind == ScreenTransitionKind.Push && to is FiltersState -> ScreenTransition.None
-                    kind == ScreenTransitionKind.Pop && from is FiltersState -> ScreenTransition.None
-                    else -> DefaultScreenTransition(kind)
+                    event == StackEvent.Push && to is FiltersState -> ScreenTransition.None
+                    event == StackEvent.Pop && from is FiltersState -> ScreenTransition.None
+                    else -> DefaultScreenTransition(event)
                 }
             },
         ) { screen ->

@@ -47,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.navigationevent.NavigationEvent
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.NavigationEventTransitionState
@@ -103,7 +104,7 @@ import kotlinx.coroutines.launch
  *   Defaults to [NavStackEntry.id].
  * @param transition picks the [ScreenTransition] for a segment from its
  *   [ScreenTransitionScope.from] / [ScreenTransitionScope.to] entries and
- *   [ScreenTransitionScope.kind]. Called during draw, so it must be cheap and pure; return
+ *   [ScreenTransitionScope.event]. Called during draw, so it must be cheap and pure; return
  *   [ScreenTransition.None] to skip the animation. Defaults to [DefaultScreenTransition].
  * @param content per-entry composable.
  */
@@ -116,7 +117,7 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     state: PredictiveBackContainerState<T> = rememberPredictiveBackContainerState(stack.screen),
     backTarget: (NavigationStack<T>) -> T? = { it.previousScreen },
     contentKey: (T) -> Any = { it.id },
-    transition: ScreenTransitionScope<T>.() -> ScreenTransition = { DefaultScreenTransition(kind) },
+    transition: ScreenTransitionScope<T>.() -> ScreenTransition = { DefaultScreenTransition(event) },
     content: @Composable NavEntryScope.(T) -> Unit,
 ) {
     // `current` and `previous` are the only screens the seekable transition cares about.
@@ -162,7 +163,7 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     val transitionHolder = rememberUpdatedState(transition)
 
     fun predictiveSpec(from: T, to: T) =
-        transitionHolder.value.resolve(from, to, ScreenTransitionKind.PredictivePop).animationSpec
+        transitionHolder.value.resolve(from, to, StackEvent.PredictivePop).animationSpec
 
     LaunchedEffect(Unit) {
         // Read from `dispatcher.transitionState` (the dispatcher-level
@@ -189,12 +190,12 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                     // via a concurrent collector, so a settle's terminal snapTo can't race a
                     // trailing seek that would re-target the revealed screen (and leave it as a
                     // forward-push target off-screen for one frame — a background flash).
-                    launch { transitionState.seekTo(fraction.coerceIn(0F, 1F), prev) }
+                    this@LaunchedEffect.launch { transitionState.seekTo(fraction.coerceIn(0F, 1F), prev) }
                 }
                 NavigationEventTransitionState.Idle -> {
                     val prev = previous
                     if (prev != null) {
-                        cancelJob.value = launch {
+                        cancelJob.value = this@LaunchedEffect.launch {
                             // Cancel-settle: run the lifted fraction back to 0, then snap onto
                             // `current`. Per-frame seeks are launched; the awaited snapTo is the
                             // final mutation, and mutatorMutex cancels any trailing seek — so the
@@ -255,8 +256,8 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                     cancelJob.value?.cancel()
                     cancelJob.value = null
                     animate(
-                        transitionState.fraction,
-                        1F,
+                        initialValue = transitionState.fraction,
+                        targetValue = 1F,
                         animationSpec = predictiveSpec(current, prev),
                     ) { value, _ ->
                         if (value != 1F) launch { transitionState.seekTo(value.coerceIn(0F, 1F)) }
@@ -269,8 +270,8 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                     cancelJob.value?.cancel()
                     cancelJob.value = null
                     animate(
-                        transitionState.fraction,
-                        0F,
+                        initialValue = transitionState.fraction,
+                        targetValue = 0F,
                         animationSpec = predictiveSpec(current, prev),
                     ) { value, _ ->
                         if (value != 0F) launch { transitionState.seekTo(value.coerceIn(0F, 1F)) }
@@ -291,10 +292,10 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
             inPredictiveBack = prev != null,
         )
 
-        // Kind of a programmatic segment, used for its `animationSpec` when a push/pop
+        // Stack event of a programmatic segment, used for its `animationSpec` when a push/pop
         // drives `fraction` below. (Placement geometry is chosen in the graphicsLayer
         // from `previous` read live, so it stays in sync with the imperatively-driven seek.)
-        val programmaticKind = if (isPop) ScreenTransitionKind.Pop else ScreenTransitionKind.Push
+        val programmaticEvent = if (isPop) StackEvent.Pop else StackEvent.Push
 
         val contentTransform: AnimatedContentTransitionScope<T>.() -> ContentTransform = {
             ContentTransform(
@@ -317,7 +318,7 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                     from != current && contentKey(from) == contentKey(current) ->
                         transitionState.snapTo(current)
                     from != current -> {
-                        val spec = transition.resolve(from, current, programmaticKind).animationSpec
+                        val spec = transition.resolve(from, current, programmaticEvent).animationSpec
                         animate(0F, 1F, animationSpec = spec) { value, _ ->
                             launch { transitionState.seekTo(value, current) }
                         }
@@ -343,6 +344,7 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                 ?: lastSeen[animatedScreen.id]
                 ?: animatedScreen
             val entryScope = remember(this, state, fresh.id) { NavEntryScopeImpl(this, state, fresh.id) }
+            val layoutDirection = LocalLayoutDirection.current
             Box(
                 modifier = Modifier.graphicsLayer {
                     val currentState = transitionState.currentState
@@ -353,17 +355,17 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
                         } else {
                             ScreenRole.Outgoing
                         }
-                        // Select the kind from `previous` read live at draw time, not from a
+                        // Select the event from `previous` read live at draw time, not from a
                         // composition-captured flag: the imperative seek can move transitionState
                         // a frame ahead of composition, and a stale flag would misclassify a
                         // back-reveal as a forward push (placing the incoming screen off-screen).
-                        val kind = when {
-                            previous != null -> ScreenTransitionKind.PredictivePop
-                            isPop -> ScreenTransitionKind.Pop
-                            else -> ScreenTransitionKind.Push
+                        val event = when {
+                            previous != null -> StackEvent.PredictivePop
+                            isPop -> StackEvent.Pop
+                            else -> StackEvent.Push
                         }
-                        transition.resolve(currentState, targetState, kind)
-                            .placement(this, role, transitionState.fraction)
+                        transition.resolve(currentState, targetState, event)
+                            .place(this, layoutDirection, role, transitionState.fraction)
                     }
                 },
             ) {

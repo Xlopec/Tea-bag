@@ -183,16 +183,16 @@ class PredictiveBackContainerStateTest {
     }
 
     @Test
-    fun transition_receives_from_to_and_kind_of_each_segment() = backTest {
+    fun transition_receives_from_to_and_event_of_each_segment() = backTest {
         var currentStack by mutableStateOf(stack("home"))
-        val segments = mutableSetOf<Triple<String, String, ScreenTransitionKind>>()
+        val segments = mutableSetOf<Triple<String, String, StackEvent>>()
         set {
             PredictiveBackContainer(
                 stack = currentStack,
                 onBack = {},
                 transition = {
-                    segments += Triple(from.id, to.id, kind)
-                    DefaultScreenTransition(kind)
+                    segments += Triple(from.id, to.id, event)
+                    DefaultScreenTransition(event)
                 },
                 content = {},
             )
@@ -201,19 +201,19 @@ class PredictiveBackContainerStateTest {
 
         currentStack = stack("home", "details")
         settle(ms = 1500L)
-        assertTrue(Triple("home", "details", ScreenTransitionKind.Push) in segments, "$segments")
+        assertTrue(Triple("home", "details", StackEvent.Push) in segments, "$segments")
 
         backStarted()
         backProgressed(MidGestureProgress)
         settle()
-        assertTrue(Triple("details", "home", ScreenTransitionKind.PredictivePop) in segments, "$segments")
+        assertTrue(Triple("details", "home", StackEvent.PredictivePop) in segments, "$segments")
         backCancelled()
         settle(ms = 1500L)
 
         segments.clear()
         currentStack = stack("home")
         settle(ms = 1500L)
-        assertEquals(setOf(Triple("details", "home", ScreenTransitionKind.Pop)), segments)
+        assertEquals(setOf(Triple("details", "home", StackEvent.Pop)), segments)
     }
 
     @Test

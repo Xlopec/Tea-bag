@@ -39,17 +39,17 @@ internal class ComposedEntries {
 internal fun counting(counter: SpecCounter): ScreenTransition =
     ScreenTransition(tween()) { _, _ -> counter.invoked() }
 
-/** Routes each [ScreenTransitionKind] to its own [counting] spec. */
+/** Routes each [StackEvent] to its own [counting] spec. */
 internal fun countingTransitions(
     push: SpecCounter = SpecCounter(),
     pop: SpecCounter = SpecCounter(),
     predictive: SpecCounter = SpecCounter(),
 ): ScreenTransitionScope<TestEntry>.() -> ScreenTransition = {
     counting(
-        when (kind) {
-            ScreenTransitionKind.Push -> push
-            ScreenTransitionKind.Pop -> pop
-            ScreenTransitionKind.PredictivePop -> predictive
+        when (event) {
+            StackEvent.Push -> push
+            StackEvent.Pop -> pop
+            StackEvent.PredictivePop -> predictive
         },
     )
 }
