@@ -39,7 +39,6 @@ internal class ComposedEntries {
 internal fun counting(counter: SpecCounter): ScreenTransition =
     ScreenTransition(tween()) { _, _ -> counter.invoked() }
 
-/** Routes each [StackEvent] to its own [counting] spec. */
 internal fun countingTransitions(
     push: SpecCounter = SpecCounter(),
     pop: SpecCounter = SpecCounter(),

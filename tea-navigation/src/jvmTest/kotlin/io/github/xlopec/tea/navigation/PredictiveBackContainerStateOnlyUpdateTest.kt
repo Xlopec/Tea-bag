@@ -3,7 +3,6 @@ package io.github.xlopec.tea.navigation
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.ExperimentalTestApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -13,7 +12,6 @@ import kotlin.test.assertTrue
  * reach the content lambda, must not be mistaken for a structural change, and must
  * survive the entry leaving the stack.
  */
-@OptIn(ExperimentalTestApi::class)
 class PredictiveBackContainerStateOnlyUpdateTest {
 
     @Test
@@ -76,7 +74,6 @@ class PredictiveBackContainerStateOnlyUpdateTest {
         currentStack.value = stackOf(TestEntry("home", payload = 0), TestEntry("details", payload = 42))
         settle()
 
-        // Gesture still in flight: both entries composed, predictive spec still valid.
         assertTrue(
             TestEntry("home") in composed.snapshot(),
             "home must remain composed after a mid-gesture state-only update, got ${composed.snapshot()}",

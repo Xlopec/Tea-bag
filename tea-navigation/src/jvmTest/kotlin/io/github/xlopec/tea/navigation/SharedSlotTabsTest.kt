@@ -13,7 +13,6 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.unit.dp
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -21,7 +20,6 @@ import kotlin.test.assertEquals
 // Synthetic version of the reader's home screen: every tab renders in one shared
 // slot (so the bottom bar survives a tab switch), and each tab lists articles keyed
 // by URL with a pagination effect on the last item.
-@OptIn(ExperimentalTestApi::class)
 class SharedSlotTabsTest {
 
     @Test

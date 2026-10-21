@@ -139,7 +139,6 @@ private fun <T : NavStackEntry<*>> StatefulPredictiveBackContainer(
     transition: ScreenTransitionScope<T>.() -> ScreenTransition,
     content: @Composable NavEntryScope.(T) -> Unit,
 ) {
-    // `current` and `previous` are the only screens the seekable transition cares about.
     // `previous` is non-null iff a back gesture is in flight or being resolved.
     var current by state::current
     var previous by state::previous
@@ -174,8 +173,6 @@ private fun <T : NavStackEntry<*>> StatefulPredictiveBackContainer(
     )
 
     val owner = LocalNavigationEventDispatcherOwner.current
-    // Hoist live inputs into snapshot state so the long-lived gesture
-    // collector reads the current values rather than a stale closure capture.
     val stackHolder = rememberUpdatedState(stack)
     val backTargetHolder = rememberUpdatedState(backTarget)
     val contentKeyHolder = rememberUpdatedState(contentKey)
@@ -311,9 +308,6 @@ private fun <T : NavStackEntry<*>> StatefulPredictiveBackContainer(
             inPredictiveBack = prev != null,
         )
 
-        // Stack event of a programmatic segment, used for its `animationSpec` when a push/pop
-        // drives `fraction` below. (Placement geometry is chosen in the graphicsLayer
-        // from `previous` read live, so it stays in sync with the imperatively-driven seek.)
         val programmaticEvent = if (isPop) StackEvent.Pop else StackEvent.Push
 
         val contentTransform: AnimatedContentTransitionScope<T>.() -> ContentTransform = {

@@ -80,10 +80,6 @@ import io.github.xlopec.tea.async.isException
 import io.github.xlopec.tea.async.isIdle
 import io.github.xlopec.tea.async.isRefreshing
 
-// One Scaffold for every tab: all TabScreens share a content slot in the
-// navigation container, so the bottom bar below is composed once and only
-// its `selected` flags change on a tab switch. Per-tab state is keyed on
-// `screen.id` so it doesn't leak between tabs.
 @Composable
 internal fun HomeScreen(
     modifier: Modifier,

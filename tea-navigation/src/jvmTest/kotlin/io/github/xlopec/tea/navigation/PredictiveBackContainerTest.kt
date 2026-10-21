@@ -4,7 +4,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
@@ -18,7 +17,6 @@ import kotlin.test.assertTrue
  * - which transition spec was selected (push / pop / predictive-pop)
  * - whether `onBack` fired, and what [PredictiveBackContainerState] / [NavEntryScope] report
  */
-@OptIn(ExperimentalTestApi::class)
 @Suppress("TooManyFunctions")
 class PredictiveBackContainerTest {
 
@@ -332,8 +330,6 @@ class PredictiveBackContainerTest {
         backCompleted()
         settle(ms = 600L)
 
-        // Inner handler fired exactly once and the container's own handler
-        // never did — LIFO routing held.
         assertEquals(1, innerCompletedFired, "inner handler must fire on complete")
         assertEquals(false, containerPopFired, "container's own onBack must NOT fire when inner intercepts")
         // Stack-reconciliation branch ran the smooth complete and settled
@@ -374,8 +370,6 @@ class PredictiveBackContainerTest {
         settle(ms = 600L)
 
         assertEquals(1, innerCancelledFired, "inner handler must receive the cancel")
-        // Stack untouched, container's collector ran its cancel-animation,
-        // `previous` cleared → only "details" remains composed.
         assertEquals(setOf(TestEntry("details")), composed.snapshot())
     }
 
@@ -398,7 +392,6 @@ class PredictiveBackContainerTest {
         backStarted()
         backProgressed(MidGestureProgress)
         settle()
-        // Caller jumps to an unrelated screen instead of popping to `home`.
         currentStack.value = stack("home", "details", "filters")
         settle(ms = 600L)
 
@@ -407,14 +400,8 @@ class PredictiveBackContainerTest {
 
     @Test
     fun touchX_drives_seek_independently_of_pre_damped_progress() = backTest {
-        // The container should use touchX/containerWidth, not the pre-damped
-        // `progress` field. We send InProgress events with progress=1.0 but
-        // tiny touchX values — the container should still be in a gesture and
-        // render the previous screen, and the predictive spec should be used
-        // (proves the gesture path activated). If the container used the
-        // damped progress directly, the test would still pass; the regression
-        // it specifically guards against is the "previous never set" case
-        // when touchX/width = 0 and the fallback kicks in.
+        // Guards the "previous never set" case: the seek follows touchX / width,
+        // not the dispatcher's pre-damped `progress`.
         val composed = ComposedEntries()
         val predictiveInvocations = SpecCounter()
         set {
