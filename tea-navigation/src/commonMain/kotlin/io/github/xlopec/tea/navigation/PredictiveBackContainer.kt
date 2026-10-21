@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -109,7 +110,6 @@ import kotlinx.coroutines.launch
  * @param content per-entry composable.
  */
 @Composable
-@Suppress("CyclomaticComplexMethod", "LongMethod")
 public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     stack: NavigationStack<T>,
     onBack: () -> Unit,
@@ -118,6 +118,25 @@ public fun <T : NavStackEntry<*>> PredictiveBackContainer(
     backTarget: (NavigationStack<T>) -> T? = { it.previousScreen },
     contentKey: (T) -> Any = { it.id },
     transition: ScreenTransitionScope<T>.() -> ScreenTransition = { DefaultScreenTransition(event) },
+    content: @Composable NavEntryScope.(T) -> Unit,
+) {
+    // Effects and remembered jobs below capture `state`; a new instance must
+    // start them over, or gestures keep driving the old one.
+    key(state) {
+        StatefulPredictiveBackContainer(stack, onBack, modifier, state, backTarget, contentKey, transition, content)
+    }
+}
+
+@Composable
+@Suppress("CyclomaticComplexMethod", "LongMethod", "LongParameterList")
+private fun <T : NavStackEntry<*>> StatefulPredictiveBackContainer(
+    stack: NavigationStack<T>,
+    onBack: () -> Unit,
+    modifier: Modifier,
+    state: PredictiveBackContainerState<T>,
+    backTarget: (NavigationStack<T>) -> T?,
+    contentKey: (T) -> Any,
+    transition: ScreenTransitionScope<T>.() -> ScreenTransition,
     content: @Composable NavEntryScope.(T) -> Unit,
 ) {
     // `current` and `previous` are the only screens the seekable transition cares about.

@@ -303,6 +303,39 @@ class PredictiveBackContainerStateTest {
     }
 
     @Test
+    fun swapping_the_state_moves_gestures_to_the_new_instance() = backTest {
+        val first = PredictiveBackContainerState(TestEntry("details"))
+        val second = PredictiveBackContainerState(TestEntry("details"))
+        var state by mutableStateOf(first)
+        val composed = ComposedEntries()
+        set {
+            PredictiveBackContainer(
+                stack = stack("home", "details"),
+                onBack = {},
+                state = state,
+                content = { composed.Track(it) },
+            )
+        }
+        settle()
+
+        state = second
+        settle()
+        backStarted()
+        backProgressed(MidGestureProgress)
+        settle()
+
+        assertEquals(TestEntry("home"), second.gestureTarget, "the gesture must drive the current state")
+        assertNull(first.gestureTarget, "the replaced state must not be touched")
+        assertTrue(TestEntry("home") in composed.snapshot(), "the reveal must be rendered")
+
+        backCancelled()
+        settle(ms = 1500L)
+
+        assertTrue(second.isSettled)
+        assertEquals(setOf(TestEntry("details")), composed.snapshot())
+    }
+
+    @Test
     fun hoisted_state_recovers_when_the_container_leaves_mid_gesture() = backTest {
         var shown by mutableStateOf(true)
         lateinit var state: PredictiveBackContainerState<TestEntry>
