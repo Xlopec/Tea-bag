@@ -1,9 +1,13 @@
 package io.github.xlopec.tea.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
@@ -451,24 +455,48 @@ class PredictiveBackContainerTest {
     @Test
     fun disabling_back_mid_gesture_does_not_leak_previous() = backTest {
         var enabled by mutableStateOf(true)
+        lateinit var state: PredictiveBackContainerState<TestEntry>
         val composed = ComposedEntries()
         set {
-            PredictiveBackContainer(
-                stack = stack("home", "details"),
-                onBack = {},
-                backTarget = { if (enabled) it.previousScreen else null },
-                content = { composed.Track(it) },
-            )
+            state = rememberPredictiveBackContainerState(TestEntry("details"))
+            Box(Modifier.size(400.dp)) {
+                PredictiveBackContainer(
+                    stack = stack("home", "details"),
+                    onBack = {},
+                    state = state,
+                    backTarget = { if (enabled) it.previousScreen else null },
+                    content = { entry ->
+                        composed.Track(entry)
+                        // The screen's own handler keeps the gesture alive after the
+                        // container withdraws, e.g. a dialog that takes over back.
+                        if (entry == TestEntry("details")) {
+                            NavigationBackHandler(
+                                state = rememberNavigationEventState(NavigationEventInfo.None),
+                                isBackEnabled = true,
+                                onBackCompleted = {},
+                            )
+                        }
+                    },
+                )
+            }
         }
         settle()
 
         backStarted()
-        backProgressed(MidGestureProgress)
+        backProgressed(progress = 0.25F, touchX = 100F)
         settle()
-        // Caller withdraws the back target mid-gesture; the gesture should
-        // resolve cleanly when the dispatcher returns to Idle.
+        val fractionBeforeWithdrawal = state.fraction
+        assertTrue(fractionBeforeWithdrawal > 0F, "the gesture should be following the finger")
+        // Caller withdraws the back target mid-gesture: the finger is no longer
+        // followed, and the gesture resolves cleanly when the dispatcher returns to Idle.
         enabled = false
         settle()
+        backProgressed(progress = 0.75F, touchX = 300F)
+        settle()
+        assertTrue(
+            state.fraction <= fractionBeforeWithdrawal,
+            "fraction advanced after back was withdrawn: $fractionBeforeWithdrawal -> ${state.fraction}",
+        )
         backCancelled()
         settle(ms = 600L)
 

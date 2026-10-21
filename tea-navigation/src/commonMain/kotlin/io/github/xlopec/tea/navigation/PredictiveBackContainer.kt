@@ -191,14 +191,17 @@ private fun <T : NavStackEntry<*>> StatefulPredictiveBackContainer(
         flow.collect { event ->
             when (event) {
                 is NavigationEventTransitionState.InProgress -> {
+                    // Back withdrawn mid-gesture: stop following the finger, but keep
+                    // `previous` so the Idle branch still settles it.
+                    val target = backTargetHolder.value(stackHolder.value) ?: return@collect
                     cancelJob.value?.cancel()
                     cancelJob.value = null
                     val top = stackHolder.value.screen
                     val prev = previous
-                        ?: backTargetHolder.value(stackHolder.value)
+                        ?: target
                             // A shared-slot entry can't be revealed beside the top; back
                             // still works, it just swaps in place on completion.
-                            ?.takeIf { contentKeyHolder.value(it) != contentKeyHolder.value(top) }
+                            .takeIf { contentKeyHolder.value(it) != contentKeyHolder.value(top) }
                             ?.also { previous = it }
                         ?: return@collect
                     val fraction = fingerFraction(event.latestEvent, containerLeftPx, containerWidthPx)
