@@ -31,19 +31,12 @@ import androidx.compose.runtime.Recomposer
 import androidx.compose.runtime.snapshots.Snapshot
 import io.github.xlopec.tea.compose.SnapshotNotifierPolicy.External
 import io.github.xlopec.tea.compose.SnapshotNotifierPolicy.WhileActive
-import io.github.xlopec.tea.core.ExperimentalTeaApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.time.ExperimentalTime
-import io.github.xlopec.tea.core.Snapshot as ComponentSnapshot
 
 /**
  * Resolves and composes the given snapshot flow in the provided coroutine scope
@@ -103,24 +96,3 @@ public fun ComposeResolver(
 
     composition.setContent(content)
 }
-
-@OptIn(ExperimentalTime::class)
-private suspend fun Recomposer.runRecomposer(
-    frameClockContext: CoroutineContext,
-    snapshotNotifierPolicy: SnapshotNotifierPolicy,
-) = coroutineScope {
-    when (snapshotNotifierPolicy) {
-        External -> Unit
-        WhileActive -> launch {
-            DefaultSnapshotManager.ensureStarted()
-        }
-    }
-
-    launch(frameClockContext, CoroutineStart.UNDISPATCHED) {
-        runRecomposeAndApplyChanges()
-    }
-}
-
-@OptIn(ExperimentalTeaApi::class)
-private fun <C> Flow<ComponentSnapshot<*, *, C>>.flattenCommands() =
-    transform { snapshot -> snapshot.commands.forEach { emit(it) } }

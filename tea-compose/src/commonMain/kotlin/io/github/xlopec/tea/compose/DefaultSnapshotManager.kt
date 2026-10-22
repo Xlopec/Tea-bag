@@ -26,7 +26,6 @@ package io.github.xlopec.tea.compose
 
 import androidx.compose.runtime.snapshots.ObserverHandle
 import androidx.compose.runtime.snapshots.Snapshot
-import io.github.xlopec.tea.compose.DefaultSnapshotManager.ensureStarted
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach

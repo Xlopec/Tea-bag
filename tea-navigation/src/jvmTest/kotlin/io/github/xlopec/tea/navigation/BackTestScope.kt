@@ -11,10 +11,6 @@ import androidx.navigationevent.NavigationEventDispatcher
 import androidx.navigationevent.NavigationEventDispatcherOwner
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 
-/** Default resolver: previous = second-from-top of the stack, null at the root. */
-internal val PreviousIsSecondFromTop: (NavigationStack<TestEntry>, TestEntry) -> TestEntry? =
-    { stack, _ -> stack.getOrNull(stack.lastIndex - 1) }
-
 /**
  * Runs a Compose UI test with a fresh [NavigationEventDispatcher] connected
  * via [DirectNavigationEventInput]. The test body uses [BackTestScope] to

@@ -13,21 +13,21 @@ struct NewsReaderApp: App {
 
     var body: some Scene {
         WindowGroup {
-            AppView(component: appDelegate.component)
+            AppView(entryPoint: appDelegate.entryPoint)
         }
     }
 }
 
 class NewsReaderAppDelegate: NSObject, UIApplicationDelegate {
     
-    let component: IosComponent
+    let entryPoint: AppEntryPoint
     
     override init() {
-        component = IosComponent(systemDarkModeEnabled: UIViewController().isDarkMode)
+        entryPoint = AppEntryPoint_appleKt.appEntryPoint(systemDarkModeEnabled: UIViewController().isDarkMode)
     }
     
     deinit {
-        component.destroy()
+        entryPoint.destroy()
     }
 }
 

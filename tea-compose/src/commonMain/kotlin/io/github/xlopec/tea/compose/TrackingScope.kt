@@ -28,7 +28,6 @@ import co.touchlab.stately.collections.ConcurrentMutableMap
 import co.touchlab.stately.concurrency.synchronize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
@@ -56,7 +55,6 @@ public fun TrackingScope(
     context: CoroutineContext,
 ): TrackingScope = TrackingScopeImpl(context)
 
-@OptIn(InternalCoroutinesApi::class)
 internal class TrackingScopeImpl(
     context: CoroutineContext,
 ) : TrackingScope {

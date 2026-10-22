@@ -35,7 +35,6 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.stdlib)
                 implementation(libs.coroutines.core)
                 implementation(projects.teaCore)
             }

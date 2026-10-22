@@ -26,12 +26,11 @@
 
 package io.github.xlopec.reader.app
 
-import android.app.Application
-import io.github.xlopec.reader.BuildConfig
-import kotlinx.coroutines.CoroutineScope
+import androidx.compose.runtime.Composable
 
-fun AppComponent(
-    application: Application,
-    scope: CoroutineScope,
-) = Environment(BuildConfig.DEBUG, application, scope)
-    .let { env -> DebuggableAppComponent(env, AppInitializer(application.systemDarkModeEnabled, env)) }
+internal val ComponentFactory: AppComponentFactory = ::DebuggableAppComponent
+
+@Composable
+internal fun AppContent(
+    entryPoint: () -> AppEntryPoint,
+) = RemoteApp(entryPoint = entryPoint)

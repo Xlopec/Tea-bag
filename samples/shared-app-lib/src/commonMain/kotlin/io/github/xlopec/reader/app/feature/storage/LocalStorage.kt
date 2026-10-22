@@ -26,7 +26,6 @@
 
 package io.github.xlopec.reader.app.feature.storage
 
-import io.github.xlopec.tea.async.Page
 import io.github.xlopec.reader.app.feature.filter.FiltersState.Companion.StoreSuggestionsLimit
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.Filter
@@ -34,6 +33,7 @@ import io.github.xlopec.reader.app.model.Filter.Companion.StoreSourcesLimit
 import io.github.xlopec.reader.app.model.FilterType
 import io.github.xlopec.reader.app.model.Query
 import io.github.xlopec.reader.app.model.Url
+import io.github.xlopec.tea.async.Page
 import kotlinx.collections.immutable.ImmutableList
 
 public interface LocalStorage {

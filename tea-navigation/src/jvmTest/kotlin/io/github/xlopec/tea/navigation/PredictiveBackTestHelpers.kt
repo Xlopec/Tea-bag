@@ -39,5 +39,19 @@ internal class ComposedEntries {
 internal fun counting(counter: SpecCounter): ScreenTransition =
     ScreenTransition(tween()) { _, _ -> counter.invoked() }
 
+internal fun countingTransitions(
+    push: SpecCounter = SpecCounter(),
+    pop: SpecCounter = SpecCounter(),
+    predictive: SpecCounter = SpecCounter(),
+): ScreenTransitionScope<TestEntry>.() -> ScreenTransition = {
+    counting(
+        when (event) {
+            StackEvent.Push -> push
+            StackEvent.Pop -> pop
+            StackEvent.PredictivePop -> predictive
+        },
+    )
+}
+
 /** Arbitrary "gesture is partway through" fraction. Exact value isn't load-bearing. */
 internal const val MidGestureProgress = 0.5F

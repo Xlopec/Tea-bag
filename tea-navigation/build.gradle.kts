@@ -30,11 +30,13 @@ plugins {
 
 kotlin {
     enableUiTargets()
+    // Compose UI tests on web need a webpack bundle to load the Skiko runtime, see CMP-4906
+    js { binaries.executable() }
+    wasmJs { binaries.executable() }
 
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.stdlib)
                 implementation(projects.teaCore)
                 api(libs.compose.ui)
                 api(libs.compose.runtime)
@@ -51,10 +53,7 @@ kotlin {
         }
         jvmTest {
             dependencies {
-                implementation(libs.junit)
-                implementation(libs.coroutines.test)
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.uiTest)
+                implementation(libs.compose.ui.test)
                 implementation(compose.desktop.currentOs)
             }
         }

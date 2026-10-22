@@ -90,8 +90,6 @@ public inline fun <reified M : Any, reified S : Any, reified C, J> Component(
     // todo: group to reduce number of arguments
     url: Url = Localhost,
     jsonSerializer: JsonSerializer<J>,
-    // see https://youtrack.jetbrains.com/issue/KT-47195
-    // see https://github.com/Kotlin/kotlinx.coroutines/issues/3005#issuecomment-1014577573
     noinline sessionFactory: SessionFactory<M, S, J> = { settings, block -> HttpClient.session(settings, block) },
     noinline shareOptions: ShareOptions<Snapshot<M, S, C>> = ShareStateWhileSubscribed(),
 ): Component<M, S, C> =

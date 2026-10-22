@@ -25,10 +25,11 @@
 plugins {
     alias(libs.plugins.kotlin.android.temp)
     alias(libs.plugins.android.library)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
     namespace = "io.github.xlopec.shared.remote"
     defaultConfig {
         minSdk = 21
@@ -44,7 +45,9 @@ android {
     dependencies {
         api(projects.teaTimeTravel)
         api(projects.teaTimeTravelAdapterGson)
-        api(project(":samples:shared-app-lib"))
+        api(projects.samples.sharedAppLib)
+        implementation(libs.compose.activity)
+        implementation(libs.compose.material)
         implementation(libs.ktor.http)
         implementation(libs.gson)
         testImplementation(libs.kotlin.test)

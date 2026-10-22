@@ -26,7 +26,6 @@
 
 package io.github.xlopec.reader.app.ui.screens.article
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -166,7 +165,6 @@ internal fun ArticleDetailsScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ArticleDetailsToolbar(
     id: ScreenId,

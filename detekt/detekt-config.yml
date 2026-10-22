@@ -81,14 +81,14 @@ complexity:
     allowedDepth: 4
   StringLiteralDuplication:
     active: false
-    excludes: ['**/test/**', '**/androidTest/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
+    excludes: ['**/test/**', '**/*Test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
     allowedDuplications: 3
     ignoreAnnotation: true
     allowedWithLengthLessThan: 5
     ignoreStringsRegex: '$^'
   TooManyFunctions:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
+    excludes: ['**/test/**', '**/*Test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
     allowedFunctionsPerFile: 20
     allowedFunctionsPerClass: 20
     allowedFunctionsPerInterface: 20
@@ -145,7 +145,7 @@ exceptions:
     methodNames: [ 'toString','hashCode','equals','finalize' ]
   InstanceOfCheckForException:
     active: false
-    excludes: ['**/test/**', '**/androidTest/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
+    excludes: ['**/test/**', '**/*Test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
   NotImplementedDeclaration:
     active: false
   PrintStackTrace:
@@ -170,7 +170,7 @@ exceptions:
     active: false
   TooGenericExceptionCaught:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
+    excludes: ['**/test/**', '**/*Test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
     exceptionNames:
       - ArrayIndexOutOfBoundsException
       - Error
@@ -301,7 +301,6 @@ ktlint:
     active: true
     autoCorrect: true
   Wrapping:
-    # fixme wait for fix
     active: false
   # ktlint rules added in detekt 2.0 — disabled to preserve current code style
   ArgumentListWrapping:
@@ -421,10 +420,10 @@ performance:
     active: true
   ForEachOnRange:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
+    excludes: ['**/test/**', '**/*Test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
   SpreadOperator:
     active: false
-    excludes: ['**/test/**', '**/androidTest/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt', '**/*.kts']
+    excludes: ['**/test/**', '**/*Test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt', '**/*.kts']
   UnnecessaryTemporaryInstantiation:
     active: true
 
@@ -450,7 +449,7 @@ potential-bugs:
     active: true
   LateinitUsage:
     active: false
-    excludes: ['**/test/**', '**/androidTest/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
+    excludes: ['**/test/**', '**/*Test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
     ignoreAnnotated: [ ]
     ignoreOnClassesPattern: ""
   MapGetWithNotNullAssertionOperator:

@@ -38,13 +38,13 @@ android {
             keyAlias = getenvSafe("KEY_ALIAS")
         }
     }
-    compileSdk = 36
+    compileSdk = 37
     namespace = "io.github.xlopec.reader"
 
     defaultConfig {
         applicationId = "io.github.xlopec.news.reader"
         minSdk = 23
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -115,15 +115,6 @@ android {
             dimension = "remote"
         }
     }
-
-    sourceSets {
-
-        maybeCreate("remote")
-            .java.directories.addAll(listOf("remote/kotlin", "main/kotlin"))
-
-        maybeCreate("default")
-            .java.directories.addAll(listOf("default/kotlin", "main/kotlin"))
-    }
 }
 
 androidComponents {
@@ -141,20 +132,15 @@ afterEvaluate {
 dependencies {
 
     implementation(projects.teaCore)
-    implementation(project(":samples:shared-app-lib"))
-    remoteImplementation(project(":samples:shared-app-lib-remote"))
+    implementation(projects.samples.sharedAppLib)
+    remoteImplementation(projects.samples.sharedAppLibRemote)
 
     coreLibraryDesugaring(libs.desugar.jdk)
 
-    implementation(libs.stdlib)
     implementation(libs.compose.activity)
 
     implementation(libs.splashscreen)
 
-    testImplementation(project(":samples:shared-app-lib"))
-    testImplementation(libs.kotlinx.datetime)
-    androidTestImplementation(project(":samples:shared-app-lib"))
-    androidTestImplementation(libs.kotlinx.datetime)
     androidTestImplementation(libs.ui.test.junit4)
 
     androidTestUtil(libs.android.test.orchestrator)

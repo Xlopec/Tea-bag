@@ -13,10 +13,10 @@ struct AppView: View {
 
     @SwiftUI.Environment(\.colorScheme) private var colorScheme: ColorScheme
 
-    let component: IosComponent
+    let entryPoint: AppEntryPoint
 
     var body: some View {
-        ComposeViewController(component: component)
+        ComposeViewController(entryPoint: entryPoint)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .ignoresSafeArea()
     }
@@ -31,10 +31,10 @@ struct AppView: View {
 
 struct ComposeViewController: UIViewControllerRepresentable {
 
-    let component: IosComponent
+    let entryPoint: AppEntryPoint
 
     func makeUIViewController(context: Context) -> UIViewController {
-        App_appleKt.appController(component: component)
+        App_appleKt.appController(entryPoint: entryPoint)
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {

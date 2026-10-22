@@ -33,8 +33,8 @@ plugins {
 
 //noinspection UseTomlInstead
 dependencies {
-    detektPlugins("dev.detekt:detekt-rules-ktlint-wrapper:2.0.0-alpha.5")
-    detektPlugins("dev.detekt:detekt-rules-libraries:2.0.0-alpha.5")
+    detektPlugins("dev.detekt:detekt-rules-ktlint-wrapper:2.0.0-alpha.6")
+    detektPlugins("dev.detekt:detekt-rules-libraries:2.0.0-alpha.6")
 }
 
 afterEvaluate {

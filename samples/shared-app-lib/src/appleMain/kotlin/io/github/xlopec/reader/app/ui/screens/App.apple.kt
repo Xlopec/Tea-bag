@@ -28,7 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.window.ComposeUIViewController
-import io.github.xlopec.reader.app.IosComponent
+import io.github.xlopec.reader.app.AppEntryPoint
 import io.github.xlopec.reader.app.Message
 import io.github.xlopec.reader.app.messageHandler
 import kotlinx.coroutines.Dispatchers
@@ -39,17 +39,17 @@ import kotlin.experimental.ExperimentalObjCName
 @OptIn(ExperimentalObjCName::class)
 @ObjCName("appController")
 public fun AppController(
-    component: IosComponent,
+    entryPoint: AppEntryPoint,
 ): UIViewController = ComposeUIViewController {
-    App(component)
+    App(entryPoint)
 }
 
 @Composable
 internal fun App(
-    component: IosComponent,
+    entryPoint: AppEntryPoint,
 ) {
     val messages = remember { MutableSharedFlow<Message>() }
-    val snapshots = remember { component.component(messages) }
+    val snapshots = remember { entryPoint.component(messages) }
     val snapshot = snapshots.collectAsNullableState(context = Dispatchers.Main).value ?: return
     val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
     val handler = remember { scope.messageHandler(messages) }

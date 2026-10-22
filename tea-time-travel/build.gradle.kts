@@ -43,11 +43,9 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(projects.teaCore)
-                implementation(libs.kotlinx.datetime)
                 implementation(projects.teaTimeTravelProtocol)
 
                 implementation(libs.arrow.core)
-                implementation(libs.stdlib)
                 implementation(libs.ktor.client.websockets)
                 implementation(libs.ktor.client.core)
             }

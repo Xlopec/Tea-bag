@@ -33,12 +33,12 @@ import io.github.xlopec.tea.time.travel.gson.serialization.data.PolyB
 import io.github.xlopec.tea.time.travel.gson.serialization.data.PolyContainer
 import io.github.xlopec.tea.time.travel.gson.serialization.serializer.MapDeserializer
 import io.github.xlopec.tea.time.travel.gson.serialization.serializer.PersistentListSerializer
-import kotlin.test.assertEquals
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import kotlin.test.assertEquals
 
 @RunWith(JUnit4::class)
 internal class TypeAppenderAdapterFactoryTest {

@@ -25,9 +25,11 @@
 package io.github.xlopec.tea.navigation
 
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.GraphicsLayerScope
+import androidx.compose.ui.unit.LayoutDirection
 
 /**
  * Which side of a running transition a screen is on. [Incoming] is the screen the
@@ -43,7 +45,9 @@ public enum class ScreenRole { Incoming, Outgoing }
  *   (`0f` at the start of a segment, `1f` at the end) and the screen's [ScreenRole].
  *   Evaluated inside a [androidx.compose.ui.graphics.graphicsLayer] block, so it sets
  *   draw-phase transforms (`translationX`, `alpha`, `scaleX`, …) directly on the
- *   [GraphicsLayerScope], reading [GraphicsLayerScope.size] for container dimensions.
+ *   [ScreenPlacementScope], reading [GraphicsLayerScope.size] for container dimensions.
+ *   Transforms are physical (`translationX > 0` moves right in RTL too), so mirror
+ *   direction-dependent motion by [ScreenPlacementScope.layoutDirection].
  * - [animationSpec]: the timing the container animates `fraction` with when it drives
  *   the transition itself (programmatic push/pop, and the settle after a released
  *   gesture). During an in-flight gesture `fraction` follows the finger, so the spec is
@@ -55,15 +59,58 @@ public enum class ScreenRole { Incoming, Outgoing }
 @Immutable
 public class ScreenTransition(
     public val animationSpec: AnimationSpec<Float>,
-    public val placement: GraphicsLayerScope.(role: ScreenRole, fraction: Float) -> Unit,
-)
+    public val placement: ScreenPlacementScope.(role: ScreenRole, fraction: Float) -> Unit,
+) {
+    public companion object {
+        public val None: ScreenTransition = ScreenTransition(snap()) { _, _ -> }
+    }
+}
 
-// Fraction of the screen width the receding screen travels (parallax). iOS uses ~30%;
-// 1/4 reads close enough and matches the prior behaviour.
+public interface ScreenPlacementScope : GraphicsLayerScope {
+    public val layoutDirection: LayoutDirection
+}
+
+private class ScreenPlacementScopeImpl(
+    layer: GraphicsLayerScope,
+    override val layoutDirection: LayoutDirection,
+) : ScreenPlacementScope, GraphicsLayerScope by layer
+
+internal fun ScreenTransition.place(
+    layer: GraphicsLayerScope,
+    layoutDirection: LayoutDirection,
+    role: ScreenRole,
+    fraction: Float,
+) = ScreenPlacementScopeImpl(layer, layoutDirection).placement(role, fraction)
+
+public enum class StackEvent { Push, Pop, PredictivePop }
+
+public interface ScreenTransitionScope<out T> {
+    public val from: T
+    public val to: T
+    public val event: StackEvent
+}
+
+private class ScreenTransitionScopeImpl<T>(
+    override val from: T,
+    override val to: T,
+    override val event: StackEvent,
+) : ScreenTransitionScope<T>
+
+internal fun <T> (ScreenTransitionScope<T>.() -> ScreenTransition).resolve(
+    from: T,
+    to: T,
+    event: StackEvent,
+): ScreenTransition = this(ScreenTransitionScopeImpl(from, to, event))
+
+// Fraction of the screen width the receding screen travels (parallax).
 private const val DefaultParallaxFraction = 0.25f
 
+// +1 when the trailing edge is on the right (LTR), -1 when it's on the left (RTL).
+private val ScreenPlacementScope.trailingSign: Float
+    get() = if (layoutDirection == LayoutDirection.Ltr) 1f else -1f
+
 /**
- * iOS-style push. The new ([ScreenRole.Incoming]) screen slides in from the trailing
+ * Push slide. The new ([ScreenRole.Incoming]) screen slides in from the trailing
  * edge over the previous one, while the previous ([ScreenRole.Outgoing]) parallax-shifts
  * toward the leading edge.
  */
@@ -71,14 +118,14 @@ public fun PushTransitionSpec(
     parallaxFraction: Float = DefaultParallaxFraction,
     animationSpec: AnimationSpec<Float> = tween(),
 ): ScreenTransition = ScreenTransition(animationSpec) { role, fraction ->
-    translationX = when (role) {
+    translationX = trailingSign * when (role) {
         ScreenRole.Incoming -> (1f - fraction) * size.width
         ScreenRole.Outgoing -> -parallaxFraction * fraction * size.width
     }
 }
 
 /**
- * iOS-style pop (button or programmatic). The current ([ScreenRole.Outgoing]) screen
+ * Pop slide (button or programmatic). The current ([ScreenRole.Outgoing]) screen
  * slides off to the trailing edge while the previous ([ScreenRole.Incoming]) returns
  * from its parallax position at the leading edge.
  */
@@ -86,18 +133,17 @@ public fun PopTransitionSpec(
     parallaxFraction: Float = DefaultParallaxFraction,
     animationSpec: AnimationSpec<Float> = tween(),
 ): ScreenTransition = ScreenTransition(animationSpec) { role, fraction ->
-    translationX = when (role) {
+    translationX = trailingSign * when (role) {
         ScreenRole.Incoming -> -parallaxFraction * (1f - fraction) * size.width
         ScreenRole.Outgoing -> fraction * size.width
     }
 }
 
-/**
- * iOS-style predictive back (gesture-driven). Geometrically identical to
- * [PopTransitionSpec]; the container seeks `fraction` from the finger position and uses
- * [animationSpec] only for the settle after release.
- */
-public fun PredictivePopTransitionSpec(
-    parallaxFraction: Float = DefaultParallaxFraction,
-    animationSpec: AnimationSpec<Float> = tween(),
-): ScreenTransition = PopTransitionSpec(parallaxFraction, animationSpec)
+private val DefaultPush = PushTransitionSpec()
+private val DefaultPop = PopTransitionSpec()
+
+// A predictive pop shares the pop geometry, seeked by the finger.
+public fun DefaultScreenTransition(event: StackEvent): ScreenTransition = when (event) {
+    StackEvent.Push -> DefaultPush
+    StackEvent.Pop, StackEvent.PredictivePop -> DefaultPop
+}

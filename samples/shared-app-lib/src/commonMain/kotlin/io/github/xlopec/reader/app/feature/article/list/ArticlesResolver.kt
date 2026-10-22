@@ -34,11 +34,11 @@ import io.github.xlopec.reader.app.feature.network.ArticleElement
 import io.github.xlopec.reader.app.feature.network.ArticleResponse
 import io.github.xlopec.reader.app.feature.storage.LocalStorage
 import io.github.xlopec.reader.app.misc.mapToPersistentList
-import io.github.xlopec.tea.async.Page
 import io.github.xlopec.reader.app.model.Article
 import io.github.xlopec.reader.app.model.FilterType.Favorite
 import io.github.xlopec.reader.app.model.FilterType.Regular
 import io.github.xlopec.reader.app.model.FilterType.Trending
+import io.github.xlopec.tea.async.Page
 import io.github.xlopec.tea.core.Sink
 import io.github.xlopec.tea.core.effect
 import io.github.xlopec.tea.core.effects

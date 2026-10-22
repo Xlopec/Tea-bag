@@ -1,13 +1,13 @@
 [versions]
-ktor = "3.5.1"
+ktor = "3.6.0"
 coroutines = "1.11.0"
-sqldelight = "2.3.2"
+sqldelight = "2.4.0"
 arrow = "2.2.3"
-coil = "3.5.0"
-agp = "9.2.1"
-kotlin = "2.4.0"
-compose = "1.11.1"
-compose-testing = "1.11.3"
+coil = "3.6.3"
+agp = "9.4.1"
+kotlin = "2.4.20"
+compose = "1.12.1"
+compose-testing = "1.12.1"
 
 [libraries]
 # Convention plugins
@@ -19,9 +19,9 @@ convention-serializtion = { module = "org.jetbrains.kotlin:kotlin-serialization"
 convention-sqldelight = { module = "app.cash.sqldelight:gradle-plugin", version.ref = "sqldelight" }
 convention-compose-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose" }
 convention-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
-convention-versions = { module = "com.github.ben-manes:gradle-versions-plugin", version = "0.54.0" }
+convention-versions = { module = "io.github.ben-manes:gradle-versions-plugin", version = "0.65.0" }
 convention-vanniktech-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version = "0.37.0" }
-convention-detekt = { module = "dev.detekt:detekt-gradle-plugin", version = "2.0.0-alpha.5" }
+convention-detekt = { module = "dev.detekt:detekt-gradle-plugin", version = "2.0.0-alpha.6" }
 
 junit = { module = "junit:junit", version = "4.13.2" }
 junit-runner = { module = "io.kotlintest:kotlintest-runner-junit4", version = "3.4.2" }
@@ -34,8 +34,6 @@ turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
-stdlib-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-ios = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
@@ -47,6 +45,7 @@ ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", 
 compose-activity = { module = "androidx.activity:activity-compose", version = "1.13.0" }
 navigationevent-compose = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version = "1.1.0" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose" }
+compose-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "compose" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
 compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose" }
@@ -61,10 +60,10 @@ sqldelight-driver-native = { module = "app.cash.sqldelight:native-driver", versi
 sqldelight-sqlight-dialect = { module = "app.cash.sqldelight:sqlite-3-18-dialect", version.ref = "sqldelight" }
 desugar-jdk = { module = "com.android.tools:desugar_jdk_libs", version = "2.1.5" }
 gson = { module = "com.google.code.gson:gson", version = "2.14.0" }
-immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.5.0" }
+immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.5.2" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
-compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.11.3" }
+compose-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.12.1" }
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
 ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
 ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose" }
@@ -76,13 +75,12 @@ ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", versi
 coil = ["coil-compose", "coil-network"]
 
 [plugins]
-version-check = { id = "com.github.ben-manes.versions", version = "0.54.0" }
+version-check = { id = "com.github.ben-manes.versions", version = "0.65.0" }
 kotlin-android-temp = { id = "com.android.built-in-kotlin", version.ref = "agp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.37.0" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }

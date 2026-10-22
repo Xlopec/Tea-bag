@@ -46,7 +46,6 @@ kotlin {
             dependencies {
                 api(projects.teaCore)
                 api(libs.compose.runtime)
-                implementation(libs.stdlib)
                 implementation(libs.concurrent.collections)
             }
         }
@@ -61,7 +60,6 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
-                api(libs.turbine)
             }
         }
     }

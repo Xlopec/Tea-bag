@@ -38,13 +38,8 @@ dependencies {
 
     api(projects.teaTimeTravelProtocol)
     api(libs.gson)
-    implementation(libs.kotlinx.datetime)
-    implementation(libs.stdlib.reflect)
-
-    implementation(libs.stdlib)
 
     testImplementation(libs.immutable.collections)
     testImplementation(libs.junit)
-    testImplementation(libs.coroutines.test)
     testImplementation(libs.kotlin.test)
 }

@@ -24,13 +24,16 @@
 
 package io.github.xlopec.reader.app.ui.screens
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import io.github.xlopec.reader.app.AppEntryPoint
 import io.github.xlopec.reader.app.AppState
 import io.github.xlopec.reader.app.Message
 import io.github.xlopec.reader.app.command.Command
+import io.github.xlopec.reader.app.feature.settings.SystemDarkModeChanged
 import io.github.xlopec.reader.app.messageHandler
 import io.github.xlopec.tea.core.Snapshot
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +42,23 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 
 @Composable
 public fun App(
+    entryPoint: AppEntryPoint,
+) {
+    App(component = entryPoint.component, followSystemDarkMode = true)
+}
+
+@Composable
+public fun App(
     component: (Flow<Message>) -> Flow<Snapshot<Message, AppState, Command>>,
+) {
+    App(component = component, followSystemDarkMode = false)
+}
+
+// A bare component keeps the dark mode its initializer set, so tests don't depend on the device theme.
+@Composable
+private fun App(
+    component: (Flow<Message>) -> Flow<Snapshot<Message, AppState, Command>>,
+    followSystemDarkMode: Boolean,
 ) {
     val messages = remember { MutableSharedFlow<Message>() }
     val snapshots = remember { component(messages) }
@@ -49,6 +68,14 @@ public fun App(
     val currentState = snapshot.currentState
 
     App(currentState = currentState, handler = handler)
+
+    if (followSystemDarkMode) {
+        val systemDarkModeEnabled = isSystemInDarkTheme()
+
+        LaunchedEffect(systemDarkModeEnabled) {
+            handler(SystemDarkModeChanged(systemDarkModeEnabled))
+        }
+    }
 
     val systemUiController = rememberWindowInsetsController()
 
