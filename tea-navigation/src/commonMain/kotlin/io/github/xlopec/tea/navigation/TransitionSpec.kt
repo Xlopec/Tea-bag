@@ -100,7 +100,7 @@ internal fun <T> (ScreenTransitionScope<T>.() -> ScreenTransition).resolve(
     from: T,
     to: T,
     event: StackEvent,
-): ScreenTransition = ScreenTransitionScopeImpl(from, to, event).this()
+): ScreenTransition = this(ScreenTransitionScopeImpl(from, to, event))
 
 // Fraction of the screen width the receding screen travels (parallax).
 private const val DefaultParallaxFraction = 0.25f

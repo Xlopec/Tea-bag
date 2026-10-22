@@ -74,20 +74,27 @@ public fun RemoteApp(
         var requested by rememberSaveable { mutableStateOf(false) }
         val request = rememberLauncherForActivityResult(RequestPermission()) { granted = it }
 
+        // A grant restored from saved state can be stale: revoking access in Settings kills
+        // the process, and the restored `true` would start the component without it. A
+        // pending request (`null`) is left alone so an open dialog isn't disturbed.
         LifecycleResumeEffect(Unit) {
-            if (context.hasLocalNetworkAccess) granted = true
+            if (context.hasLocalNetworkAccess) {
+                granted = true
+            } else if (granted == true) {
+                granted = false
+            }
             onPauseOrDispose {}
         }
 
-        when (granted) {
-            true -> App(entryPoint = remember { entryPoint() })
-            false -> LocalNetworkAccessError(onOpenSettings = { context.openAppSettings() })
-            null -> LaunchedEffect(Unit) {
+        when {
+            granted == true && context.hasLocalNetworkAccess -> App(entryPoint = remember { entryPoint() })
+            granted == null -> LaunchedEffect(Unit) {
                 if (!requested) {
                     requested = true
                     request.launch(ACCESS_LOCAL_NETWORK)
                 }
             }
+            else -> LocalNetworkAccessError(onOpenSettings = { context.openAppSettings() })
         }
     }
 }
