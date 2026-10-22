@@ -493,10 +493,7 @@ class PredictiveBackContainerTest {
         settle()
         backProgressed(progress = 0.75F, touchX = 300F)
         settle()
-        assertTrue(
-            state.fraction <= fractionBeforeWithdrawal,
-            "fraction advanced after back was withdrawn: $fractionBeforeWithdrawal -> ${state.fraction}",
-        )
+        assertEquals(fractionBeforeWithdrawal, state.fraction, "the fraction must freeze once back is withdrawn")
         backCancelled()
         settle(ms = 600L)
 
