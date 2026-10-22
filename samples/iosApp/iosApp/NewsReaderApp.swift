@@ -23,7 +23,7 @@ class NewsReaderAppDelegate: NSObject, UIApplicationDelegate {
     let entryPoint: AppEntryPoint
     
     override init() {
-        entryPoint = AppEntryPoint(systemDarkModeEnabled: UIViewController().isDarkMode)
+        entryPoint = AppEntryPoint_appleKt.appEntryPoint(systemDarkModeEnabled: UIViewController().isDarkMode)
     }
     
     deinit {

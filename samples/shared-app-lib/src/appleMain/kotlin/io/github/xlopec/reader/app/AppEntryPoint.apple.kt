@@ -22,25 +22,14 @@
  * SOFTWARE.
  */
 
+@file:Suppress("FunctionName")
+
 package io.github.xlopec.reader.app
 
-import android.app.Application
-import io.github.xlopec.reader.app.command.Command
-import io.github.xlopec.tea.core.Component
-import io.github.xlopec.tea.core.Initializer
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Default
-import kotlinx.coroutines.Job
+import kotlin.experimental.ExperimentalObjCName
 
-public typealias AppComponentFactory =
-        (Environment, Initializer<AppState, Command>) -> Component<Message, AppState, Command>
-
-public class AppEntryPoint(
-    application: Application,
-    debug: Boolean,
-    factory: AppComponentFactory,
-) {
-    private val scope = CoroutineScope(Job() + Default.limitedParallelism(1))
-    internal val component: Component<Message, AppState, Command> = Environment(debug, application, scope)
-        .let { env -> factory(env, AppInitializer(application.systemDarkModeEnabled, env)) }
-}
+@OptIn(ExperimentalObjCName::class)
+@ObjCName("appEntryPoint")
+public fun AppEntryPoint(
+    systemDarkModeEnabled: Boolean,
+): AppEntryPoint = AppEntryPoint(systemDarkModeEnabled, ::Environment, ::AppComponent)

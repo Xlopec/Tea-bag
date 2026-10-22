@@ -22,28 +22,29 @@
  * SOFTWARE.
  */
 
-@file:Suppress("FunctionName")
-
 package io.github.xlopec.reader.app
 
+import io.github.xlopec.reader.app.command.Command
+import io.github.xlopec.tea.core.Component
+import io.github.xlopec.tea.core.Initializer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 
+public typealias AppComponentFactory =
+    (Environment, Initializer<AppState, Command>) -> Component<Message, AppState, Command>
+
 public class AppEntryPoint(
     systemDarkModeEnabled: Boolean,
+    environment: (CoroutineScope) -> Environment,
+    factory: AppComponentFactory,
 ) {
-    private val componentScope = CoroutineScope(Job() + Default.limitedParallelism(1))
-    internal val component = AppComponent(systemDarkModeEnabled, componentScope)
+    private val scope = CoroutineScope(Job() + Default.limitedParallelism(1))
+    internal val component: Component<Message, AppState, Command> = environment(scope)
+        .let { env -> factory(env, AppInitializer(systemDarkModeEnabled, env)) }
 
     public fun destroy() {
-        componentScope.cancel()
+        scope.cancel()
     }
 }
-
-private fun AppComponent(
-    systemDarkModeEnabled: Boolean,
-    coroutineScope: CoroutineScope,
-) = Environment(coroutineScope)
-    .let { AppComponent(it, AppInitializer(systemDarkModeEnabled, it)) }
