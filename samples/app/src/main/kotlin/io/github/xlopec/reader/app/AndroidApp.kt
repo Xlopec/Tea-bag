@@ -29,20 +29,14 @@ package io.github.xlopec.reader.app
 
 import android.app.Activity
 import android.app.Application
-import io.github.xlopec.reader.app.command.Command
-import io.github.xlopec.tea.core.Component
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Default
-import kotlinx.coroutines.Job
+import io.github.xlopec.reader.BuildConfig
 
 class AndroidApp : Application() {
-    val component by lazy {
-        AppComponent(this, CoroutineScope(Job() + Default.limitedParallelism(1)))
-    }
+    val entryPoint by lazy { AppEntryPoint(this, BuildConfig.DEBUG, ComponentFactory) }
 }
 
 inline val Activity.androidApp: AndroidApp
     get() = application as AndroidApp
 
-inline val Activity.component: Component<Message, AppState, Command>
-    get() = androidApp.component
+inline val Activity.entryPoint: AppEntryPoint
+    get() = androidApp.entryPoint

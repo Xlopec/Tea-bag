@@ -26,17 +26,13 @@
 
 package io.github.xlopec.reader.app
 
-import android.app.Application
-import androidx.activity.ComponentActivity
-import io.github.xlopec.reader.BuildConfig
-import io.github.xlopec.reader.app.command.Command
-import io.github.xlopec.tea.core.Component
-import kotlinx.coroutines.CoroutineScope
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import io.github.xlopec.reader.app.ui.screens.App
 
-fun AppComponent(
-    application: Application,
-    scope: CoroutineScope,
-): Component<Message, AppState, Command> = Environment(BuildConfig.DEBUG, application, scope)
-    .let { env -> AppComponent(env, AppInitializer(application.systemDarkModeEnabled, env)) }
+internal val ComponentFactory: AppComponentFactory = ::AppComponent
 
-fun ComponentActivity.afterRequiredPermissions(block: () -> Unit) = block()
+@Composable
+internal fun AppContent(
+    entryPoint: () -> AppEntryPoint,
+) = App(entryPoint = remember { entryPoint() })

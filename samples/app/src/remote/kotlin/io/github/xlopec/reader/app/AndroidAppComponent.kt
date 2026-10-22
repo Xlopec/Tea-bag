@@ -26,26 +26,11 @@
 
 package io.github.xlopec.reader.app
 
-import android.Manifest.permission.ACCESS_LOCAL_NETWORK
-import android.app.Application
-import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.CINNAMON_BUN
-import androidx.activity.ComponentActivity
-import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
-import io.github.xlopec.reader.BuildConfig
-import kotlinx.coroutines.CoroutineScope
+import androidx.compose.runtime.Composable
 
-fun AppComponent(
-    application: Application,
-    scope: CoroutineScope,
-) = Environment(BuildConfig.DEBUG, application, scope)
-    .let { env -> DebuggableAppComponent(env, AppInitializer(application.systemDarkModeEnabled, env)) }
+internal val ComponentFactory: AppComponentFactory = ::DebuggableAppComponent
 
-fun ComponentActivity.afterRequiredPermissions(block: () -> Unit) {
-    if (SDK_INT < CINNAMON_BUN || checkSelfPermission(ACCESS_LOCAL_NETWORK) == PERMISSION_GRANTED) {
-        block()
-    } else {
-        registerForActivityResult(RequestPermission()) { block() }.launch(ACCESS_LOCAL_NETWORK)
-    }
-}
+@Composable
+internal fun AppContent(
+    entryPoint: () -> AppEntryPoint,
+) = RemoteApp(entryPoint = entryPoint)

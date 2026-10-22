@@ -31,7 +31,7 @@ import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 
-public class IosComponent(
+public class AppEntryPoint(
     systemDarkModeEnabled: Boolean,
 ) {
     private val componentScope = CoroutineScope(Job() + Default.limitedParallelism(1))

@@ -24,52 +24,21 @@
 
 package io.github.xlopec.reader.app
 
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
 import io.github.xlopec.reader.R
-import io.github.xlopec.reader.app.feature.settings.SystemDarkModeChanged
-import io.github.xlopec.reader.app.ui.screens.App
-import io.github.xlopec.tea.core.ExperimentalTeaApi
-import io.github.xlopec.tea.core.subscribeIn
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity(), CoroutineScope by MainScope() {
+class MainActivity : ComponentActivity() {
 
-    private val systemDarkModeChanges = MutableSharedFlow<SystemDarkModeChanged>()
-
-    @OptIn(ExperimentalTeaApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.NewsReader)
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        afterRequiredPermissions {
-            val component = component
-
-            setContent {
-                App(component = component)
-            }
-
-            component.subscribeIn(systemDarkModeChanges, this)
+        setContent {
+            AppContent { entryPoint }
         }
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        launch {
-            systemDarkModeChanges.emit(SystemDarkModeChanged(newConfig.systemDarkModeEnabled))
-        }
-    }
-
-    override fun onDestroy() {
-        cancel()
-        super.onDestroy()
     }
 }

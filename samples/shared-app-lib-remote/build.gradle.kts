@@ -25,6 +25,7 @@
 plugins {
     alias(libs.plugins.kotlin.android.temp)
     alias(libs.plugins.android.library)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -45,6 +46,8 @@ android {
         api(projects.teaTimeTravel)
         api(projects.teaTimeTravelAdapterGson)
         api(projects.samples.sharedAppLib)
+        implementation(libs.compose.activity)
+        implementation(libs.compose.material)
         implementation(libs.ktor.http)
         implementation(libs.gson)
         testImplementation(libs.kotlin.test)
